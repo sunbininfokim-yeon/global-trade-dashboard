@@ -1,0 +1,1031 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "GA",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "gov202insbd5a2c1e"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-18",
+        "provider_record_sha256": "32b31613d4472e29274a463307c63697d8bc3425abf786fdfe6e044ec7d82455",
+        "snapshot_sha256": "cc9022aef6b8fe7baf8fe218de8d090ab442c7fa8d3ddff46df52fe9b30f16f1",
+        "primary_toplines": {
+          "Rick Jackson": 49,
+          "Keisha Lance Bottoms": 47
+        },
+        "sources": [
+          "https://jamesmagazinega.com/2026/10/14/georgia-governors-poll-from-insideradvantage-jackson-maintains-slight-edge/"
+        ],
+        "question_sample_n": 800,
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 800,
+          "field_dates": [
+            "2026-10-12",
+            "2026-10-13"
+          ],
+          "weighting": "age_race_gender_political_affiliation",
+          "mode": "not_disclosed",
+          "sampling_frame": "not_disclosed",
+          "commissioner": "not_disclosed",
+          "full_questionnaire": "top_line_tabs_announced_not_obtained",
+          "question_wording_checked": false,
+          "undecided_pct": 4,
+          "reported_margin_of_error_pp": 3.46,
+          "primary_published_on": "2026-10-14"
+        },
+        "ballot_format": "named_candidate_vote_intention_as_reported",
+        "reported_precision": null,
+        "sponsor_review": {
+          "primary_internal": false,
+          "provider_sponsors": [],
+          "commissioner": null,
+          "primary_commissioners": []
+        },
+        "admission": {
+          "pollster": "InsiderAdvantage",
+          "provider_url": "https://jamesmagazinega.com/2026/10/14/georgia-governors-poll-from-insideradvantage-jackson-maintains-slight-edge/",
+          "methodology_url": "https://jamesmagazinega.com/2026/10/14/georgia-governors-poll-from-insideradvantage-jackson-maintains-slight-edge/",
+          "source_role": "pollster_primary",
+          "group": "insideradvantage",
+          "signal_eligible": true,
+          "signal_exclusion_reasons": []
+        },
+        "limitations_ko": "개별 원문의 후보 수치·기간·표본·모집단을 검토. 누락된 문항/표집/가중치는 추정하지 않으며 보고된 정밀도를 당선확률·격차 유의성·기관 정확도 등급으로 바꾸지 않음. 이후 다른 발표는 이 검토를 자동 상속하지 않음.",
+        "primary_web_review": {
+          "status": "primary_text_read_via_web",
+          "reviewed_at": "2026-10-18T23:11:59.248519+00:00",
+          "raw_response_sha256": null,
+          "direct_http_status": "timeout",
+          "identity_sources": [
+            "https://jamesmagazinega.com/contact-us/",
+            "https://jamesmagazinega.com/2026/02/17/opinion-debunking-the-georgia-election-debunkers/"
+          ],
+          "scope": "original pollster-owned publication and numbers/method disclosure read; direct collector still unavailable"
+        },
+        "missing_fields": [
+          "full_question_wording",
+          "mode",
+          "sampling_frame",
+          "external_commissioner_or_funder"
+        ]
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-18",
+    "fetched_at": "2026-10-18T23:03:56.165943+00:00",
+    "receipt": {
+      "state": "GA",
+      "cycle": 2026,
+      "captured_at": "2026-10-18T23:03:56.165943+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-18",
+      "capture_kind": "new_provider_request_with_individual_source_review",
+      "new_provider_collection": true,
+      "provider_records": 34,
+      "response_sha256": "892f70157b46bf040ac728d511ffa2ddf88b2be3a56c7cee8912f9d25040fedb",
+      "serialized_provider_response_sha256": "0f6396ebeb3253c4f67c849cd8dd30af2b519f6b680eaa778822d0e44e7e9937"
+    },
+    "provider_records": [
+      {
+        "id": "gov202insbd5a2c1e",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://jamesmagazinega.com/2026/10/14/georgia-governors-poll-from-insideradvantage-jackson-maintains-slight-edge/",
+        "created_at": "2026-10-15",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-13",
+        "pollster": "InsiderAdvantage",
+        "answers": [
+          {
+            "choice": "Rick Jackson",
+            "pct": 49.0
+          },
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202eme1bcacacc",
+        "poll_type": "us-senator",
+        "sample_size": 1000,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1WMIkxH0hZRhWe0dbY6wtuuqshJGChuhv/edit?gid=1306158051#gid=1306158051",
+        "created_at": "2026-03-30",
+        "start_date": "2026-02-28",
+        "end_date": "2026-03-02",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 47.7
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 43.3
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Nexstar Media/WGN-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202qua80fe18a7",
+        "poll_type": "us-senator",
+        "sample_size": 624,
+        "population": "rv",
+        "url": "https://drive.google.com/file/d/1s_XyIo0Rre1TGtVisHKu9hW3S4yEvxRl/view",
+        "created_at": "2026-03-30",
+        "start_date": "2025-09-09",
+        "end_date": "2025-09-12",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 37.8
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 37.7
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202tip0382be0d",
+        "poll_type": "us-senator",
+        "sample_size": 2395,
+        "population": "lv",
+        "url": "https://dailycaller.com/2025/08/07/mike-collins-georgia-senate-poll",
+        "created_at": "2026-03-30",
+        "start_date": "2025-07-28",
+        "end_date": "2025-08-01",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 45.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202cyg167b9abc",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://www.ajc.com/politics/2025/05/brad-raffensperger-for-senate-poll-shows-dead-heat-with-jon-ossoff/",
+        "created_at": "2026-03-30",
+        "start_date": "2025-05-15",
+        "end_date": "2025-05-17",
+        "pollster": "Cygnal",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 46.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Democracy Defense Project"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202traba6abade",
+        "poll_type": "us-senator",
+        "sample_size": 1426,
+        "population": "lv",
+        "url": "https://www.thetrafalgargroup.org/wp-content/uploads/2025/04/GA-26-US-Senate-0428_Full-Report.pdf",
+        "created_at": "2026-03-30",
+        "start_date": "2025-04-24",
+        "end_date": "2025-04-27",
+        "pollster": "Trafalgar Group",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 47.5
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 42.8
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202wpa60d3da4e",
+        "poll_type": "us-senator",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://www.politico.com/news/2025/01/16/kemp-ossoff-poll-georgia-senate-00198719",
+        "created_at": "2026-03-30",
+        "start_date": "2025-01-14",
+        "end_date": "2025-01-15",
+        "pollster": "WPA Intelligence",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 44.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Club for Growth"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202ech1a9afcfb",
+        "poll_type": "us-senator",
+        "sample_size": 407,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 51.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202ech80c320f6",
+        "poll_type": "us-senator",
+        "sample_size": 407,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 52.0
+          },
+          {
+            "choice": "Buddy Carter",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202ech56b14f04",
+        "poll_type": "governor",
+        "sample_size": 407,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 49.0
+          },
+          {
+            "choice": "Burt Jones",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202echefe344a9",
+        "poll_type": "governor",
+        "sample_size": 407,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 49.0
+          },
+          {
+            "choice": "Rick Jackson",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202ech26f9403d",
+        "poll_type": "governor",
+        "sample_size": 407,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 46.0
+          },
+          {
+            "choice": "Brad Raffensperger",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202ech3642d002",
+        "poll_type": "governor",
+        "sample_size": 407,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-27",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Rick Jackson",
+            "pct": 43.0
+          },
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 49.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202ech353ec4d7",
+        "poll_type": "governor",
+        "sample_size": 407,
+        "population": "lv",
+        "url": "https://netchoice.org/wp-content/uploads/2026/04/NetChoice-Apr-2026-National-Antitrust-Survey-Topline.pdf",
+        "created_at": "2026-04-27",
+        "start_date": "2026-04-03",
+        "end_date": "2026-04-09",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Burt Jones",
+            "pct": 43.0
+          },
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 49.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202eme529afc79",
+        "poll_type": "us-senator",
+        "sample_size": 1000,
+        "population": "lv",
+        "url": "https://docs.google.com/spreadsheets/d/1WMIkxH0hZRhWe0dbY6wtuuqshJGChuhv/edit?gid=1306158051#gid=1306158051",
+        "created_at": "2026-06-12",
+        "start_date": "2026-02-28",
+        "end_date": "2026-03-02",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 48.9
+          },
+          {
+            "choice": "Derek Dooley",
+            "pct": 41.4
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Nexstar Media/WGN-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202quafd79c6ef",
+        "poll_type": "us-senator",
+        "sample_size": 624,
+        "population": "rv",
+        "url": "https://drive.google.com/file/d/1s_XyIo0Rre1TGtVisHKu9hW3S4yEvxRl/view",
+        "created_at": "2026-06-12",
+        "start_date": "2025-09-09",
+        "end_date": "2025-09-12",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 42.1
+          },
+          {
+            "choice": "Derek Dooley",
+            "pct": 35.4
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202tip53f19ba5",
+        "poll_type": "us-senator",
+        "sample_size": 2395,
+        "population": "lv",
+        "url": "https://dailycaller.com/2025/08/07/mike-collins-georgia-senate-poll/",
+        "created_at": "2026-06-12",
+        "start_date": "2025-07-28",
+        "end_date": "2025-08-01",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 45.0
+          },
+          {
+            "choice": "Derek Dooley",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202cona0cf1d89",
+        "poll_type": "governor",
+        "sample_size": 510,
+        "population": "lv",
+        "url": "https://acrobat.adobe.com/id/urn:aaid:sc:US:29f66864-4f32-47fe-b5e2-85322b2a761b?viewer%21megaVerb=group-discover&utm_source=substack&utm_medium=email",
+        "created_at": "2026-06-17",
+        "start_date": "2026-05-30",
+        "end_date": "2026-06-02",
+        "pollster": "Concord Public Opinion Partners",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 53.0
+          },
+          {
+            "choice": "Rick Jackson",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Education Reform Now Advocacy"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202con870ff02c",
+        "poll_type": "governor",
+        "sample_size": 510,
+        "population": "lv",
+        "url": "https://acrobat.adobe.com/id/urn:aaid:sc:US:29f66864-4f32-47fe-b5e2-85322b2a761b?viewer%21megaVerb=group-discover&utm_source=substack&utm_medium=email",
+        "created_at": "2026-06-17",
+        "start_date": "2026-05-30",
+        "end_date": "2026-06-02",
+        "pollster": "Concord Public Opinion Partners",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 52.0
+          },
+          {
+            "choice": "Burt Jones",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Education Reform Now Advocacy"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202beab7bc5f78",
+        "poll_type": "governor",
+        "sample_size": 1002,
+        "population": "rv",
+        "url": "https://www.foxnews.com/politics/fox-news-poll-early-look-georgia-senate-race",
+        "created_at": "2026-07-02",
+        "start_date": "2026-06-23",
+        "end_date": "2026-06-27",
+        "pollster": "Beacon Research/Shaw & Co. Research",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 52.0
+          },
+          {
+            "choice": "Rick Jackson",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Fox News"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202bea8e2b79ff",
+        "poll_type": "us-senator",
+        "sample_size": 1002,
+        "population": "rv",
+        "url": "https://www.foxnews.com/politics/fox-news-poll-early-look-georgia-senate-race",
+        "created_at": "2026-07-02",
+        "start_date": "2026-06-23",
+        "end_date": "2026-06-27",
+        "pollster": "Beacon Research/Shaw & Co. Research",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 56.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Fox News"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202wic14336d15",
+        "poll_type": "governor",
+        "sample_size": 1175,
+        "population": "lv",
+        "url": "https://wick.io/research-georgia-election-survey-june-2026",
+        "created_at": "2026-07-09",
+        "start_date": "2026-06-27",
+        "end_date": "2026-06-30",
+        "pollster": "Wick",
+        "answers": [
+          {
+            "choice": "Rick Jackson",
+            "pct": 43.2
+          },
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 42.7
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202wic6dd1649c",
+        "poll_type": "us-senator",
+        "sample_size": 1175,
+        "population": "lv",
+        "url": "https://wick.io/research-georgia-election-survey-june-2026",
+        "created_at": "2026-07-09",
+        "start_date": "2026-06-27",
+        "end_date": "2026-06-30",
+        "pollster": "Wick",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 46.7
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 42.9
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202fabf0dec779",
+        "poll_type": "governor",
+        "sample_size": 1060,
+        "population": "lv",
+        "url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-georgia/",
+        "created_at": "2026-07-23",
+        "start_date": "2026-07-13",
+        "end_date": "2026-07-16",
+        "pollster": "Fabrizio, Lee & Associates/Impact Research",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 48.0
+          },
+          {
+            "choice": "Rick Jackson",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "AARP"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202fab389395b2",
+        "poll_type": "us-senator",
+        "sample_size": 1060,
+        "population": "lv",
+        "url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-georgia/",
+        "created_at": "2026-07-23",
+        "start_date": "2026-07-13",
+        "end_date": "2026-07-16",
+        "pollster": "Fabrizio, Lee & Associates/Impact Research",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 52.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "AARP"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202qua92a3f0e3",
+        "poll_type": "governor",
+        "sample_size": 815,
+        "population": "lv",
+        "url": "https://quantusinsights.org/f/georgia-voters-put-affordability-first-as-2026-races-tighten",
+        "created_at": "2026-08-11",
+        "start_date": "2026-07-29",
+        "end_date": "2026-08-01",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 46.4
+          },
+          {
+            "choice": "Rick Jackson",
+            "pct": 44.9
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Natural Gas Association of Georgia"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202ins63791cfb",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://jamesmagazinega.com/2026/08/18/exclusive-jmo-insideradvantage-georgia-survey-ossoff-leads-jackson-lance-bottoms-tied/",
+        "created_at": "2026-08-20",
+        "start_date": "2026-08-16",
+        "end_date": "2026-08-17",
+        "pollster": "InsiderAdvantage",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 50.1
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 42.6
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "James Magazine"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202ins19d2636f",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://jamesmagazinega.com/2026/08/18/exclusive-jmo-insideradvantage-georgia-survey-ossoff-leads-jackson-lance-bottoms-tied/",
+        "created_at": "2026-08-20",
+        "start_date": "2026-08-16",
+        "end_date": "2026-08-17",
+        "pollster": "InsiderAdvantage",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 46.2
+          },
+          {
+            "choice": "Rick Jackson",
+            "pct": 46.3
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "James Magazine"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202bigbe8a8854",
+        "poll_type": "us-senator",
+        "sample_size": 678,
+        "population": "lv",
+        "url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-21",
+        "end_date": "2026-09-23",
+        "pollster": "Big Data Poll",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 55.4
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 44.6
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Public Polling Project"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202bigf56bfd9a",
+        "poll_type": "governor",
+        "sample_size": 678,
+        "population": "lv",
+        "url": "https://www.bigdatapoll.com/blog/peach-state-poll-jon-ossoff-opens-up-lead-over-mike-collins-in-georgia/",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-21",
+        "end_date": "2026-09-23",
+        "pollster": "Big Data Poll",
+        "answers": [
+          {
+            "choice": "Rick Jackson",
+            "pct": 50.5
+          },
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 49.5
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Public Polling Project"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202insbbb32dd3",
+        "poll_type": "us-senator",
+        "sample_size": 1200,
+        "population": "lv",
+        "url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-22",
+        "end_date": "2026-09-23",
+        "pollster": "InsiderAdvantage",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 50.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202insa0df0d3c",
+        "poll_type": "governor",
+        "sample_size": 1200,
+        "population": "lv",
+        "url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-22",
+        "end_date": "2026-09-23",
+        "pollster": "InsiderAdvantage",
+        "answers": [
+          {
+            "choice": "Rick Jackson",
+            "pct": 48.0
+          },
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202wed7f897488",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://drive.google.com/file/d/1ztqd_FYClBh1OknXwKOqi6zJXxECcqDK/view?usp=sharing",
+        "created_at": "2026-10-04",
+        "start_date": "2026-10-02",
+        "end_date": "2026-10-03",
+        "pollster": "Wedgewood Polls",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 55.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202wed3b9968cd",
+        "poll_type": "governor",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://drive.google.com/file/d/1ztqd_FYClBh1OknXwKOqi6zJXxECcqDK/view?usp=sharing",
+        "created_at": "2026-10-04",
+        "start_date": "2026-10-02",
+        "end_date": "2026-10-03",
+        "pollster": "Wedgewood Polls",
+        "answers": [
+          {
+            "choice": "Rick Jackson",
+            "pct": 51.0
+          },
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 49.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      }
+    ],
+    "provider_records_sha256": "cc7c9e7dac1510b4e8ca0a73abf7b5df3638cfa19da8d0e3fe603efd56ec2fef",
+    "primary_records": []
+  },
+  "source_ref": "codex/poll-national-source-coverage-20261018",
+  "source_commit": "f0878e183670c5c7c6f888468c05e303bc9e4883"
+}
