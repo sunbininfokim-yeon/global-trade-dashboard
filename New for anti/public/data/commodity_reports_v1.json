@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-19T15:50:55.048765+00:00",
+  "generated_at": "2026-10-19T21:13:37.500372+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,23 +17,24 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 45,
-    "sources_failed": 2,
-    "raw_items": 842,
-    "scored": 206,
-    "unclassified": 534,
-    "rejected": 61,
-    "published": 193,
+    "sources_ok": 42,
+    "sources_failed": 5,
+    "raw_items": 822,
+    "scored": 208,
+    "unclassified": 524,
+    "rejected": 51,
+    "published": 194,
     "commodities": 30,
     "buckets": 106
   },
   "feed_status": [
     {
       "source_id": "us_usda_newsroom",
-      "ok": true,
-      "count": 10,
-      "error": null,
-      "mode": "live"
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "mode": "live",
+      "carried_over": 1
     },
     {
       "source_id": "us_nass_todays_reports",
@@ -148,10 +149,11 @@
     },
     {
       "source_id": "int_iai",
-      "ok": true,
-      "count": 10,
-      "error": null,
-      "mode": "live"
+      "ok": false,
+      "count": 0,
+      "error": "URLError: <urlopen error [Errno 111] Connection refused>",
+      "mode": "live",
+      "carried_over": 1
     },
     {
       "source_id": "int_silver_institute",
@@ -276,14 +278,16 @@
       "ok": true,
       "count": 1,
       "error": null,
-      "mode": "live"
+      "mode": "live",
+      "archived": 1
     },
     {
       "source_id": "int_cobalt_institute",
-      "ok": true,
-      "count": 5,
-      "error": null,
-      "mode": "live"
+      "ok": false,
+      "count": 0,
+      "error": "URLError: <urlopen error [Errno 101] Network is unreachable>",
+      "mode": "live",
+      "carried_over": 2
     },
     {
       "source_id": "id_esdm",
@@ -376,8 +380,8 @@
     "enabled": true,
     "model": "gemini-flash-lite-latest",
     "calls": 1,
-    "annotated": 4,
-    "reused": 62,
+    "annotated": 1,
+    "reused": 65,
     "error": null
   },
   "boards": {
@@ -931,7 +935,7 @@
       ],
       "USA": [
         "29ee4e32a01f13fd",
-        "cf7aa64afdfed283"
+        "44b8a849491ef3dc"
       ],
       "PAK": [
         "598ef301ee60a6fd"
@@ -976,7 +980,7 @@
       ],
       "USA": [
         "ad1c1ef90835d9ab",
-        "cf7aa64afdfed283",
+        "44b8a849491ef3dc",
         "c6333ba481073b9b"
       ],
       "IND": [
@@ -992,7 +996,7 @@
       ],
       "USA": [
         "0466c9487c9388ef",
-        "cf7aa64afdfed283"
+        "44b8a849491ef3dc"
       ],
       "IND": [
         "6269fa1eda293c5a"
@@ -1021,7 +1025,7 @@
       ],
       "USA": [
         "c4f72a7b34d56733",
-        "cf7aa64afdfed283"
+        "44b8a849491ef3dc"
       ],
       "UKR": [
         "088f09f9aa8eb7c7"
@@ -1288,6 +1292,7 @@
     },
     "zinc": {
       "_global": [
+        "35492c5d5adb7531",
         "959d91c46a9a7514"
       ],
       "CAN": [
@@ -1361,7 +1366,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.579,
+      "importance": 5.554,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1394,7 +1399,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.216,
+      "importance": 5.195,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1427,7 +1432,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.554,
+      "importance": 4.538,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1460,7 +1465,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.504,
+      "importance": 4.484,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1492,7 +1497,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.304,
+      "importance": 4.286,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1525,7 +1530,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.017,
+      "importance": 4.002,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1557,7 +1562,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.964,
+      "importance": 3.948,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1589,7 +1594,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.894,
+      "importance": 3.878,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1622,7 +1627,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.894,
+      "importance": 3.878,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1654,7 +1659,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.601,
+      "importance": 3.589,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1688,7 +1693,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.519,
+      "importance": 3.505,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -1718,7 +1723,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.338,
+      "importance": 3.325,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -1749,7 +1754,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.323,
+      "importance": 3.316,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1782,7 +1787,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.291,
+      "importance": 3.285,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1815,7 +1820,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.286,
+      "importance": 3.279,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1850,7 +1855,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.265,
+      "importance": 3.255,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1882,7 +1887,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.246,
+      "importance": 3.233,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1914,7 +1919,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.218,
+      "importance": 3.208,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1946,7 +1951,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.13,
+      "importance": 3.117,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -1977,7 +1982,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.074,
+      "importance": 3.062,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2008,7 +2013,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.074,
+      "importance": 3.062,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2039,7 +2044,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.968,
+      "importance": 2.964,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2072,7 +2077,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.889,
+      "importance": 2.882,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -2105,7 +2110,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.869,
+      "importance": 2.858,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2138,7 +2143,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.869,
+      "importance": 2.858,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2169,7 +2174,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.869,
+      "importance": 2.858,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2200,44 +2205,13 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.867,
+      "importance": 2.856,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
       ],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-10-06T18:41:39.172320+00:00"
-    },
-    {
-      "id": "615a576a6c5f72ee",
-      "title": {
-        "original": "Japan: Grain and Feed Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Japan’s rice production in marketing year (MY) 2026/27 continues to rebound from a slump in MY 2024/25, with the latest forecast edging out last year's official...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/japan-grain-and-feed-update",
-      "published_at": "2026-09-30T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "rice"
-      ],
-      "countries": [
-        "JPN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.822,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-02T14:57:14.186495+00:00"
     },
     {
       "id": "6e3880b1a989890a",
@@ -2262,7 +2236,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.818,
+      "importance": 2.812,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2270,6 +2244,37 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "615a576a6c5f72ee",
+      "title": {
+        "original": "Japan: Grain and Feed Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Japan’s rice production in marketing year (MY) 2026/27 continues to rebound from a slump in MY 2024/25, with the latest forecast edging out last year's official...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/japan-grain-and-feed-update",
+      "published_at": "2026-09-30T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "rice"
+      ],
+      "countries": [
+        "JPN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.812,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-02T14:57:14.186495+00:00"
     },
     {
       "id": "598ef301ee60a6fd",
@@ -2294,7 +2299,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.776,
+      "importance": 2.766,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2325,7 +2330,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.765,
+      "importance": 2.759,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2358,7 +2363,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.656,
+      "importance": 2.65,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2390,7 +2395,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.625,
+      "importance": 2.62,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2422,7 +2427,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.554,
+      "importance": 2.544,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2454,7 +2459,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.532,
+      "importance": 2.524,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2486,7 +2491,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.532,
+      "importance": 2.524,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2515,7 +2520,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.504,
+      "importance": 2.494,
       "reasons": [
         "series:USDA_GAIN"
       ],
@@ -2673,14 +2678,14 @@
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
     },
     {
-      "id": "cf7aa64afdfed283",
+      "id": "44b8a849491ef3dc",
       "title": {
         "original": "Crop Progress",
         "original_lang": "en",
         "ko": null
       },
       "summary": "NASS releases Crop Progress and Condition Estimates...",
-      "url": "http://www.nass.usda.gov/Publications/Todays_Reports/reports/prog4126.pdf",
+      "url": "http://www.nass.usda.gov/Publications/Todays_Reports/reports/prog4226.pdf",
       "published_at": null,
       "agency": "USDA NASS",
       "agency_ko": "미 농무부 국립농업통계청(NASS)",
@@ -2704,7 +2709,7 @@
         "no_date"
       ],
       "agency_url": "http://www.nass.usda.gov/",
-      "first_seen_at": "2026-10-13T23:50:44.033302+00:00"
+      "first_seen_at": "2026-10-19T21:13:37.500372+00:00"
     },
     {
       "id": "3038b0ed9276919c",
@@ -2729,7 +2734,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.294,
+      "importance": 2.292,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2761,7 +2766,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.229,
+      "importance": 2.22,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -2793,7 +2798,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.076,
+      "importance": 2.074,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2826,7 +2831,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.07,
+      "importance": 2.06,
       "reasons": [
         "has_figure"
       ],
@@ -2868,7 +2873,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.023,
+      "importance": 2.015,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2899,7 +2904,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 2.002,
+      "importance": 1.996,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2931,7 +2936,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.994,
+      "importance": 1.989,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2962,7 +2967,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.982,
+      "importance": 1.973,
       "reasons": [
         "country_in_text"
       ],
@@ -2993,7 +2998,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.886,
+      "importance": 1.877,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3024,7 +3029,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.813,
+      "importance": 1.807,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3056,42 +3061,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.802,
+      "importance": 1.795,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
-    },
-    {
-      "id": "dd5c47496ef59166",
-      "title": {
-        "original": "Dari Kebun Petani ke Pasar Dunia, Langkah Coko Cacao Company Angkat Potensi Kakao Lokal",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": "Kabupaten Tangerang, 19 Oktober 2026 – Di balik secangkir minuman cokelat Coko Cacao Company, tersimpan perjalanan panjang biji kakao dari kebun petani hingga menjadi produk bernilai tambah. Perjalanan tersebut bukan sekadar tentang menghasilkan olahan cokelat, tetapi juga membuka peluang bagi kakao lokal untuk menjangkau pasar yang lebih luas.Berawal dari bisnis minuman cokelat siap minum (ready to drink/RTD) melalui Artisan Coko, Coko Cacao Company kemudian melihat peluang lain dalam rantai pasok kakao Indonesia. Berkenalan dengan petani lokal dari berbagai daerah membuat perusahaan ini…",
-      "url": "https://www.kemendag.go.id/berita/siaran-pers/dari-kebun-petani-ke-pasar-dunia-langkah-coko-cacao-company-angkat-potensi-kakao-lokal",
-      "published_at": "2026-10-19T00:31:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "cocoa"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.776,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-19T05:14:32.236634+00:00"
     },
     {
       "id": "45b970c626da923e",
@@ -3117,7 +3092,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.774,
+      "importance": 1.767,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3134,6 +3109,36 @@
       },
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "dd5c47496ef59166",
+      "title": {
+        "original": "Dari Kebun Petani ke Pasar Dunia, Langkah Coko Cacao Company Angkat Potensi Kakao Lokal",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": "Kabupaten Tangerang, 19 Oktober 2026 – Di balik secangkir minuman cokelat Coko Cacao Company, tersimpan perjalanan panjang biji kakao dari kebun petani hingga menjadi produk bernilai tambah. Perjalanan tersebut bukan sekadar tentang menghasilkan olahan cokelat, tetapi juga membuka peluang bagi kakao lokal untuk menjangkau pasar yang lebih luas.Berawal dari bisnis minuman cokelat siap minum (ready to drink/RTD) melalui Artisan Coko, Coko Cacao Company kemudian melihat peluang lain dalam rantai pasok kakao Indonesia. Berkenalan dengan petani lokal dari berbagai daerah membuat perusahaan ini…",
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/dari-kebun-petani-ke-pasar-dunia-langkah-coko-cacao-company-angkat-potensi-kakao-lokal",
+      "published_at": "2026-10-19T00:31:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "cocoa"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.767,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-19T05:14:32.236634+00:00"
     },
     {
       "id": "0c63536d04e4f037",
@@ -3159,7 +3164,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.747,
+      "importance": 1.739,
       "reasons": [
         "country_in_text"
       ],
@@ -3190,7 +3195,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.73,
+      "importance": 1.722,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3222,7 +3227,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.725,
+      "importance": 1.717,
       "reasons": [
         "country_in_text"
       ],
@@ -3265,7 +3270,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.71,
+      "importance": 1.703,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -3296,7 +3301,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.691,
+      "importance": 1.686,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3407,7 +3412,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.657,
+      "importance": 1.652,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3440,7 +3445,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.656,
+      "importance": 1.648,
       "reasons": [
         "country_in_text"
       ],
@@ -3481,7 +3486,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.655,
+      "importance": 1.648,
       "reasons": [
         "country_in_text"
       ],
@@ -3497,37 +3502,6 @@
       },
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-15T20:00:47.021398+00:00"
-    },
-    {
-      "id": "7c2c4d1c8844ab36",
-      "title": {
-        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Postponement of Final Determination of Sales at Less-Than-Fair-Value Investigation and Extension of Provisional Measures",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) is postponing the deadline for issuing the final determination in the less-than-fair-value (LTFV) investigation of large diameter graphite electrodes (LDGE) from the People's Republic of China (China) until February 12, 2027, and is extending the provisional measures from a four-month period to a period of not more than six months.",
-      "url": "https://www.federalregister.gov/documents/2026/10/19/2026-21294/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-postponement-of-final",
-      "published_at": "2026-10-19T00:00:00+00:00",
-      "agency": "U.S. Federal Register (federal agencies)",
-      "agency_ko": "미국 관보(연방기관 고시)",
-      "source_id": "us_federal_register_minerals",
-      "commodities": [
-        "graphite"
-      ],
-      "countries": [
-        "CHN",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.627,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.federalregister.gov/",
-      "first_seen_at": "2026-10-17T12:22:50.861121+00:00"
     },
     {
       "id": "51e9b64989fadc3d",
@@ -3553,13 +3527,44 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.627,
+      "importance": 1.619,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.world-nuclear-news.org/",
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
+    },
+    {
+      "id": "7c2c4d1c8844ab36",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Postponement of Final Determination of Sales at Less-Than-Fair-Value Investigation and Extension of Provisional Measures",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) is postponing the deadline for issuing the final determination in the less-than-fair-value (LTFV) investigation of large diameter graphite electrodes (LDGE) from the People's Republic of China (China) until February 12, 2027, and is extending the provisional measures from a four-month period to a period of not more than six months.",
+      "url": "https://www.federalregister.gov/documents/2026/10/19/2026-21294/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-postponement-of-final",
+      "published_at": "2026-10-19T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.619,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-17T12:22:50.861121+00:00"
     },
     {
       "id": "5a1967d788350658",
@@ -3584,7 +3589,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.572,
+      "importance": 1.565,
       "reasons": [
         "country_in_text"
       ],
@@ -3620,6 +3625,34 @@
       ],
       "agency_url": "http://www.nass.usda.gov/",
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
+    },
+    {
+      "id": "35492c5d5adb7531",
+      "title": {
+        "original": "ILZSG October 2026 Press Release",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "- PRESS RELEASE 19th October 2026 ILZSG SESSION/FORECASTS 1. The International Lead and Zinc Study Group held its seventy-first Session in Lisbon, Portugal on 15-16 October 2026. 2. The Session included a meeting of the Study Group’s Statistical and Forecasting Committee to review the current levels of world supply and demand for lead and zinc and the outlook for 20 27. The Standing, Mine and Smelter Projects, and Economic and Environment Committees and Industry Advisory Panel also met. In each of the Committees a number of speakers made presentations containing valuable information about…",
+      "url": "https://www.ilzsg.org/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20October%202026%20Press%20Release.pdf",
+      "published_at": null,
+      "agency": "International Lead and Zinc Study Group",
+      "agency_ko": "국제납아연연구그룹(ILZSG)",
+      "source_id": "int_ilzsg",
+      "commodities": [
+        "zinc"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.559,
+      "reasons": [
+        "no_date"
+      ],
+      "agency_url": "https://www.ilzsg.org/",
+      "first_seen_at": "2026-10-19T21:13:37.500372+00:00"
     },
     {
       "id": "959d91c46a9a7514",
@@ -3673,7 +3706,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.544,
+      "importance": 1.537,
       "reasons": [
         "country_in_text"
       ],
@@ -3702,7 +3735,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.538,
+      "importance": 1.531,
       "reasons": [
         "country_in_text"
       ],
@@ -3741,7 +3774,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.484,
+      "importance": 1.477,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -3779,7 +3812,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.466,
+      "importance": 1.464,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3979,7 +4012,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.445,
+      "importance": 1.438,
       "reasons": [
         "country_in_text"
       ],
@@ -4020,7 +4053,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.429,
+      "importance": 1.426,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -4050,7 +4083,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.415,
+      "importance": 1.409,
       "reasons": [
         "country_in_text"
       ],
@@ -4093,7 +4126,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.41,
+      "importance": 1.407,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4125,7 +4158,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.399,
+      "importance": 1.397,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -4156,7 +4189,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.387,
+      "importance": 1.381,
       "reasons": [
         "country_in_text"
       ],
@@ -4200,7 +4233,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.384,
+      "importance": 1.379,
       "reasons": [
         "country_in_text"
       ],
@@ -4238,7 +4271,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.374,
+      "importance": 1.368,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
@@ -4265,7 +4298,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.36,
+      "importance": 1.354,
       "reasons": [
         "country_in_text"
       ],
@@ -4434,7 +4467,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.307,
+      "importance": 1.302,
       "reasons": [
         "country_in_text"
       ],
@@ -4465,7 +4498,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.307,
+      "importance": 1.302,
       "reasons": [
         "country_in_text"
       ],
@@ -4496,7 +4529,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.307,
+      "importance": 1.302,
       "reasons": [
         "country_in_text"
       ],
@@ -4527,7 +4560,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.294,
+      "importance": 1.288,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4564,7 +4597,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.292,
+      "importance": 1.288,
       "reasons": [],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
@@ -4591,7 +4624,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.282,
+      "importance": 1.276,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4628,7 +4661,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.282,
+      "importance": 1.276,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -4666,7 +4699,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.259,
+      "importance": 1.256,
       "reasons": [
         "country_in_text"
       ],
@@ -4695,7 +4728,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.259,
+      "importance": 1.254,
       "reasons": [
         "country_in_text"
       ],
@@ -4737,7 +4770,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.236,
+      "importance": 1.231,
       "reasons": [
         "country_in_text"
       ],
@@ -4756,66 +4789,6 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-08T21:28:45.467562+00:00"
-    },
-    {
-      "id": "636939b535053039",
-      "title": {
-        "original": "Petroleum Marketing Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 01 Oct 2026) The October 2026 <em>Petroleum Marketing Monthly</em>, with data through July 2026, presents monthly and annual price and volume statistics for crude oil sales in the United States.",
-      "url": "http://www.eia.gov/petroleum/marketing/monthly/",
-      "published_at": "2026-10-01T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.214,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "98845f2fb8d7060a",
-      "title": {
-        "original": "Quarterly Coal Distribution Report—Second Quarter 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Thu, 01 Oct 2026) The <em>Quarterly Coal Distribution Report</em> (QCDR) provides detailed U.S. domestic coal distribution data (excluding waste coal and imports) for second-quarter 2026 by coal-origin state, coal-destination state, mode of transportation, and consuming sector. Quarterly coal distribution data for all quarters are preliminary and will be updated in the corresponding <em>Annual Coal Distribution Report</em>.",
-      "url": "http://www.eia.gov/coal/distribution/quarterly/",
-      "published_at": "2026-10-01T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.214,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
     },
     {
       "id": "11ac17f1a9aa9e08",
@@ -4968,6 +4941,66 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "636939b535053039",
+      "title": {
+        "original": "Petroleum Marketing Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 01 Oct 2026) The October 2026 <em>Petroleum Marketing Monthly</em>, with data through July 2026, presents monthly and annual price and volume statistics for crude oil sales in the United States.",
+      "url": "http://www.eia.gov/petroleum/marketing/monthly/",
+      "published_at": "2026-10-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.209,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "98845f2fb8d7060a",
+      "title": {
+        "original": "Quarterly Coal Distribution Report—Second Quarter 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Thu, 01 Oct 2026) The <em>Quarterly Coal Distribution Report</em> (QCDR) provides detailed U.S. domestic coal distribution data (excluding waste coal and imports) for second-quarter 2026 by coal-origin state, coal-destination state, mode of transportation, and consuming sector. Quarterly coal distribution data for all quarters are preliminary and will be updated in the corresponding <em>Annual Coal Distribution Report</em>.",
+      "url": "http://www.eia.gov/coal/distribution/quarterly/",
+      "published_at": "2026-10-01T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.209,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
+    },
+    {
       "id": "4a341ad3a2d594e0",
       "title": {
         "original": "US maritime nuclear firm Bluecore Energy announces uranium purchase",
@@ -4991,42 +5024,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.209,
+      "importance": 1.204,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.world-nuclear-news.org/",
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
-    },
-    {
-      "id": "de49cf7992871dbf",
-      "title": {
-        "original": "Natural Gas Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Wed, 30 Sep 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
-      "url": "http://www.eia.gov/naturalgas/monthly/",
-      "published_at": "2026-09-30T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.194,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
     },
     {
       "id": "91c5d4fabdf7e01f",
@@ -5052,13 +5055,43 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.192,
+      "importance": 1.19,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "de49cf7992871dbf",
+      "title": {
+        "original": "Natural Gas Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Wed, 30 Sep 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
+      "url": "http://www.eia.gov/naturalgas/monthly/",
+      "published_at": "2026-09-30T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.189,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
     },
     {
       "id": "b736550c463bc772",
@@ -5083,7 +5116,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.188,
+      "importance": 1.185,
       "reasons": [
         "country_in_text"
       ],
@@ -5115,7 +5148,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.181,
+      "importance": 1.177,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5146,7 +5179,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.178,
+      "importance": 1.175,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -5176,7 +5209,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.171,
+      "importance": 1.166,
       "reasons": [
         "country_in_text"
       ],
@@ -5219,12 +5252,43 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.157,
+      "importance": 1.153,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
+    },
+    {
+      "id": "181e4ee82214496a",
+      "title": {
+        "original": "EIA expects highest natural gas inventories in a decade heading into winter",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The U.S. Energy Information Administration expects natural gas inventories will increase to 3,985 billion cubic feet (Bcf) in October, the most gas in inventories ahead of the winter heating season since 2016.",
+      "url": "https://www.eia.gov/pressroom/releases/press591.php",
+      "published_at": "2026-08-11T17:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_press",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.136,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "d293c0b8e58bb026",
@@ -5250,7 +5314,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.138,
+      "importance": 1.134,
       "reasons": [
         "country_in_text"
       ],
@@ -5281,43 +5345,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.138,
+      "importance": 1.134,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
-    },
-    {
-      "id": "181e4ee82214496a",
-      "title": {
-        "original": "EIA expects highest natural gas inventories in a decade heading into winter",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The U.S. Energy Information Administration expects natural gas inventories will increase to 3,985 billion cubic feet (Bcf) in October, the most gas in inventories ahead of the winter heating season since 2016.",
-      "url": "https://www.eia.gov/pressroom/releases/press591.php",
-      "published_at": "2026-08-11T17:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_press",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.138,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "86f680f62484ba7d",
@@ -5341,7 +5374,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.133,
+      "importance": 1.128,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5379,7 +5412,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.123,
+      "importance": 1.118,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-10-16T13:10:29.687929+00:00"
@@ -5407,7 +5440,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.121,
+      "importance": 1.118,
       "reasons": [
         "country_in_text"
       ],
@@ -5435,7 +5468,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.083,
+      "importance": 1.081,
       "reasons": [
         "has_figure"
       ],
@@ -5464,7 +5497,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.081,
+      "importance": 1.077,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5504,54 +5537,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.077,
+      "importance": 1.075,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "500ccb61f23619e0",
-      "title": {
-        "original": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals",
-        "original_lang": "en",
-        "ko": "테러 및 초국가적 범죄 조직 지정; 벨라루스, 마약 퇴치 및 리비아 지정 해제",
-        "en": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals"
-      },
-      "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20260930",
-      "published_at": "2026-09-30T00:00:00+00:00",
-      "agency": "U.S. Treasury, Office of Foreign Assets Control",
-      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
-      "source_id": "us_ofac_recent_actions",
-      "commodities": [],
-      "countries": [
-        "LBY"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.076,
-      "reasons": [
-        "country_in_text"
-      ],
-      "board": "export_controls",
-      "control": {
-        "issuer": "USA",
-        "issuer_body": "OFAC",
-        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "sanctions",
-        "items": [],
-        "targets": [
-          "BLR",
-          "LBY"
-        ],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "8566a0485af28101",
@@ -5576,12 +5567,54 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.076,
+      "importance": 1.074,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "500ccb61f23619e0",
+      "title": {
+        "original": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals",
+        "original_lang": "en",
+        "ko": "테러 및 초국가적 범죄 조직 지정; 벨라루스, 마약 퇴치 및 리비아 지정 해제",
+        "en": "Counter Terrorism and Transnational Criminal Organizations Designations; Belarus, Counter Narcotics, and Libya Designations Removals"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260930",
+      "published_at": "2026-09-30T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "LBY"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.072,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "sanctions",
+        "items": [],
+        "targets": [
+          "BLR",
+          "LBY"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "9a22d2cdf0982434",
@@ -5606,7 +5639,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.072,
+      "importance": 1.07,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5636,7 +5669,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.059,
+      "importance": 1.055,
       "reasons": [
         "country_in_text"
       ],
@@ -5679,7 +5712,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.053,
+      "importance": 1.049,
       "reasons": [
         "country_in_text"
       ],
@@ -5707,47 +5740,10 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.05,
+      "importance": 1.046,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
-    },
-    {
-      "id": "d56da6f00c4a616a",
-      "title": {
-        "original": "Counter Narcotics and Counter Terrorism Designations",
-        "original_lang": "en",
-        "ko": "마약 및 테러 대응 제재 지정",
-        "en": "Counter Narcotics and Counter Terrorism Designations"
-      },
-      "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20261013",
-      "published_at": "2026-10-13T00:00:00+00:00",
-      "agency": "U.S. Treasury, Office of Foreign Assets Control",
-      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
-      "source_id": "us_ofac_recent_actions",
-      "commodities": [],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.046,
-      "reasons": [],
-      "board": "export_controls",
-      "control": {
-        "issuer": "USA",
-        "issuer_body": "OFAC",
-        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "sanctions",
-        "items": [],
-        "targets": [],
-        "extracted_by": "gemini"
-      },
-      "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
     },
     {
       "id": "1a5e5c6b232458f1",
@@ -5772,7 +5768,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.044,
+      "importance": 1.042,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5781,45 +5777,41 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "846a4ec9ba0dc965",
+      "id": "d56da6f00c4a616a",
       "title": {
-        "original": "Issuance of Amended Venezuela General Licenses",
+        "original": "Counter Narcotics and Counter Terrorism Designations",
         "original_lang": "en",
-        "ko": "개정 베네수엘라 일반 면허 발급",
-        "en": "Issuance of Amended Venezuela General Licenses"
+        "ko": "마약 및 테러 대응 제재 지정",
+        "en": "Counter Narcotics and Counter Terrorism Designations"
       },
       "summary": null,
-      "url": "https://ofac.treasury.gov/recent-actions/20260928",
-      "published_at": "2026-09-28T00:00:00+00:00",
+      "url": "https://ofac.treasury.gov/recent-actions/20261013",
+      "published_at": "2026-10-13T00:00:00+00:00",
       "agency": "U.S. Treasury, Office of Foreign Assets Control",
       "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
       "source_id": "us_ofac_recent_actions",
       "commodities": [],
       "countries": [
-        "VEN"
+        "USA"
       ],
       "scope": "country",
-      "country_source": "text",
+      "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.042,
-      "reasons": [
-        "country_in_text"
-      ],
+      "importance": 1.041,
+      "reasons": [],
       "board": "export_controls",
       "control": {
         "issuer": "USA",
         "issuer_body": "OFAC",
         "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
-        "measure": "export_restriction",
+        "measure": "sanctions",
         "items": [],
-        "targets": [
-          "VEN"
-        ],
+        "targets": [],
         "extracted_by": "gemini"
       },
       "agency_url": "https://ofac.treasury.gov/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+      "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
     },
     {
       "id": "7796ff7e4f3b30ae",
@@ -6543,6 +6535,47 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "846a4ec9ba0dc965",
+      "title": {
+        "original": "Issuance of Amended Venezuela General Licenses",
+        "original_lang": "en",
+        "ko": "개정 베네수엘라 일반 면허 발급",
+        "en": "Issuance of Amended Venezuela General Licenses"
+      },
+      "summary": null,
+      "url": "https://ofac.treasury.gov/recent-actions/20260928",
+      "published_at": "2026-09-28T00:00:00+00:00",
+      "agency": "U.S. Treasury, Office of Foreign Assets Control",
+      "agency_ko": "미국 재무부 해외자산통제국(OFAC)",
+      "source_id": "us_ofac_recent_actions",
+      "commodities": [],
+      "countries": [
+        "VEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.038,
+      "reasons": [
+        "country_in_text"
+      ],
+      "board": "export_controls",
+      "control": {
+        "issuer": "USA",
+        "issuer_body": "OFAC",
+        "issuer_body_ko": "미국 재무부 해외자산통제국(OFAC)",
+        "measure": "export_restriction",
+        "items": [],
+        "targets": [
+          "VEN"
+        ],
+        "extracted_by": "gemini"
+      },
+      "agency_url": "https://ofac.treasury.gov/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
       "id": "01399109dc789f34",
       "title": {
         "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Critical Circumstances Determination in Countervailing Duty Investigation",
@@ -6566,7 +6599,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.037,
+      "importance": 1.034,
       "reasons": [
         "country_in_text"
       ],
@@ -6599,7 +6632,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.02,
+      "importance": 1.016,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6638,7 +6671,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.001,
+      "importance": 0.997,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6675,7 +6708,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.967,
+      "importance": 0.963,
       "reasons": [
         "country_in_text"
       ],
@@ -6693,62 +6726,6 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
-    },
-    {
-      "id": "64c0cc4a2c480eea",
-      "title": {
-        "original": "Centenario-Ratones Lithium Plant Expansion Project: 3 Questions for Jean-Baptiste Hogard, Director of Eramet’s Lithium Business Unit",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Eramet is considering a first expansion of Centenario-Ratones and plans to apply for inclusion in Argentina’s Large Investment Incentive Regime, known as RIGI. What is at stake in this next phase? Jean-Baptiste Hogard: This first expansion marks a major milestone in Eramet’s long-term commitment to Argentina. It would add 11,000 t-LCE, or metric tons [...] The post Centenario-Ratones Lithium Plant Expansion Project: 3 Questions for Jean-Baptiste Hogard, Director of Eramet’s Lithium Business Unit appeared first on Eramet .",
-      "url": "https://www.eramet.com/en/news/centenario-ratones-lithium-plant-expansion-project-3-questions-for-jean-baptiste-hogard-director-of-eramets-lithium-business-unit/",
-      "published_at": "2026-10-01T13:00:03+00:00",
-      "agency": "Eramet",
-      "agency_ko": "에라메(망간·니켈·리튬 생산사)",
-      "source_id": "fr_eramet_news",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "ARG"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.955,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eramet.com/",
-      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
-    },
-    {
-      "id": "0260f9aa0131b0b8",
-      "title": {
-        "original": "Petroleum Supply Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Wed, 30 Sep 2026) The report includes supply and disposition of crude oil and petroleum products on the national and regional levels. The data series describe production, imports and exports, movements, and inventories.",
-      "url": "http://www.eia.gov/petroleum/supply/monthly/",
-      "published_at": "2026-09-30T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.955,
-      "reasons": [],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "7aa1d9ea8f7acd29",
@@ -6835,6 +6812,62 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "0260f9aa0131b0b8",
+      "title": {
+        "original": "Petroleum Supply Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Wed, 30 Sep 2026) The report includes supply and disposition of crude oil and petroleum products on the national and regional levels. The data series describe production, imports and exports, movements, and inventories.",
+      "url": "http://www.eia.gov/petroleum/supply/monthly/",
+      "published_at": "2026-09-30T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.952,
+      "reasons": [],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "64c0cc4a2c480eea",
+      "title": {
+        "original": "Centenario-Ratones Lithium Plant Expansion Project: 3 Questions for Jean-Baptiste Hogard, Director of Eramet’s Lithium Business Unit",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Eramet is considering a first expansion of Centenario-Ratones and plans to apply for inclusion in Argentina’s Large Investment Incentive Regime, known as RIGI. What is at stake in this next phase? Jean-Baptiste Hogard: This first expansion marks a major milestone in Eramet’s long-term commitment to Argentina. It would add 11,000 t-LCE, or metric tons [...] The post Centenario-Ratones Lithium Plant Expansion Project: 3 Questions for Jean-Baptiste Hogard, Director of Eramet’s Lithium Business Unit appeared first on Eramet .",
+      "url": "https://www.eramet.com/en/news/centenario-ratones-lithium-plant-expansion-project-3-questions-for-jean-baptiste-hogard-director-of-eramets-lithium-business-unit/",
+      "published_at": "2026-10-01T13:00:03+00:00",
+      "agency": "Eramet",
+      "agency_ko": "에라메(망간·니켈·리튬 생산사)",
+      "source_id": "fr_eramet_news",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.951,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eramet.com/",
+      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
+    },
+    {
       "id": "62ac4be598c099c2",
       "title": {
         "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
@@ -6857,7 +6890,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.951,
+      "importance": 0.95,
       "reasons": [
         "country_in_text"
       ],
@@ -6887,7 +6920,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.903,
+      "importance": 0.9,
       "reasons": [
         "country_in_text"
       ],
@@ -6930,7 +6963,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.899,
+      "importance": 0.897,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -6957,7 +6990,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.891,
+      "importance": 0.888,
       "reasons": [
         "country_in_text"
       ],
@@ -7001,7 +7034,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.88,
+      "importance": 0.877,
       "reasons": [
         "country_in_text"
       ],
@@ -7042,7 +7075,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.878,
+      "importance": 0.875,
       "reasons": [],
       "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -7068,7 +7101,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.873,
+      "importance": 0.871,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -7097,38 +7130,11 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.867,
+      "importance": 0.865,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.federalregister.gov/",
-      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
-    },
-    {
-      "id": "8f2b164b5e4ab3cf",
-      "title": {
-        "original": "Thorizon, Urenco to cooperate on MSR fuel cycle",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "A memorandum of understanding with the molten salt reactor developer Thorizon will examine Urenco's potential role in the molten salt fuel supply chain and how depleted uranium could become a fuel resource for advanced nuclear.",
-      "url": "https://www.world-nuclear-news.org/articles/thorizon-urenco-to-cooperate-on-msr-fuel-cycle",
-      "published_at": "2026-10-08T12:47:19+00:00",
-      "agency": "World Nuclear News",
-      "agency_ko": "월드 뉴클리어 뉴스(WNN)",
-      "source_id": "int_wnn",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.864,
-      "reasons": [],
-      "agency_url": "https://www.world-nuclear-news.org/",
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
     },
     {
@@ -7154,12 +7160,39 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.862,
+      "importance": 0.861,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "8f2b164b5e4ab3cf",
+      "title": {
+        "original": "Thorizon, Urenco to cooperate on MSR fuel cycle",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "A memorandum of understanding with the molten salt reactor developer Thorizon will examine Urenco's potential role in the molten salt fuel supply chain and how depleted uranium could become a fuel resource for advanced nuclear.",
+      "url": "https://www.world-nuclear-news.org/articles/thorizon-urenco-to-cooperate-on-msr-fuel-cycle",
+      "published_at": "2026-10-08T12:47:19+00:00",
+      "agency": "World Nuclear News",
+      "agency_ko": "월드 뉴클리어 뉴스(WNN)",
+      "source_id": "int_wnn",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.861,
+      "reasons": [],
+      "agency_url": "https://www.world-nuclear-news.org/",
+      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
     },
     {
       "id": "62f11e17ce23601c",
@@ -7184,7 +7217,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.861,
+      "importance": 0.859,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -7212,7 +7245,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.859,
+      "importance": 0.856,
       "reasons": [
         "country_in_text"
       ],
@@ -7254,7 +7287,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.855,
+      "importance": 0.852,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7291,7 +7324,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.814,
+      "importance": 0.811,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7333,7 +7366,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.806,
+      "importance": 0.804,
       "reasons": [
         "country_in_text"
       ],
@@ -7362,7 +7395,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.794,
+      "importance": 0.792,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7399,7 +7432,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.754,
+      "importance": 0.752,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7466,7 +7499,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.696,
+      "importance": 0.695,
       "reasons": [
         "country_in_text"
       ],
@@ -7496,7 +7529,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.682,
+      "importance": 0.681,
       "reasons": [
         "country_in_text"
       ],
@@ -7536,7 +7569,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.664,
+      "importance": 0.663,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -7565,7 +7598,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.65,
+      "importance": 0.649,
       "reasons": [
         "country_in_text"
       ],
@@ -7596,7 +7629,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.65,
+      "importance": 0.649,
       "reasons": [
         "country_in_text"
       ],
@@ -7708,7 +7741,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.562,
+      "importance": 0.561,
       "reasons": [
         "country_in_text"
       ],
@@ -7793,7 +7826,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.502,
+      "importance": 0.501,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -7834,7 +7867,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.482,
+      "importance": 0.481,
       "reasons": [],
       "agency_url": "https://www.nrc.gov/",
       "first_seen_at": "2026-10-16T05:25:12.584037+00:00"
