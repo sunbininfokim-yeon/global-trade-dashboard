@@ -49,16 +49,23 @@ export const governorElectionSummaryHtml = (country, now = Date.now()) => {
         <div class="elections-governor-list">${rows.sort((a,b) => a.state.localeCompare(b.state)).map((r) => `<div><button type="button" data-overview-state="${r.state}" data-overview-office="governor" data-overview-district=""><strong>${escapeHtml(usaStateNameKo(r.state))} · ${r.election_in_cycle ? '선거' : '비선거'}</strong><span>${escapeHtml(governorStatus[r.incumbent_ballot_status] || '확인 중')}</span></button>${originLink(r.source.url || r.source.source_url, '근거 ↗')}</div>`).join('')}</div></details></div>`;
 };
 
-export const campaignFundraisingHtml = (candidate, race, contract, now = Date.now()) => {
+export const linkedCampaignRow = (candidate, race, now = Date.now()) => {
     const row = candidate?.campaign_fundraising;
-    if (race?.office === 'governor') return '<div class="elections-campaign-summary is-missing"><strong>후보 캠프 모금</strong><small>주별 캠프 공시 미연결 · 연방 FEC·슈퍼팩 금액으로 대신 채우지 않습니다.</small></div>';
     const linked = row?.status === 'reported_campaign_summary_ballot_unverified'
         && row.candidate_id === candidate?.candidate_id && row.race_id === race?.race_id
         && row.state === (race?.state_id || race?.state) && row.office === race?.office
+        && row.district === (race?.district ?? null)
         && row.election_year === 2026 && Number(race?.cycle) === 2026
         && row.currency === 'USD' && row.amount_unit === 'cents' && row.includes_outside_spending === false
         && reviewed(row.coverage_end, now) && reviewed(row.snapshot_as_of, now)
+        && row.coverage_end <= row.snapshot_as_of
         && row.amounts && originLink(row.source_url);
+    return linked ? row : null;
+};
+export const campaignFundraisingHtml = (candidate, race, contract, now = Date.now()) => {
+    const row = candidate?.campaign_fundraising;
+    if (race?.office === 'governor') return '<div class="elections-campaign-summary is-missing"><strong>후보 캠프 모금</strong><small>주별 캠프 공시 미연결 · 연방 FEC·슈퍼팩 금액으로 대신 채우지 않습니다.</small></div>';
+    const linked = linkedCampaignRow(candidate,race,now);
     if (!linked) return `<div class="elections-campaign-summary is-missing"><strong>후보 캠프 모금</strong><small>${row?.status === 'candidate_identity_scope_conflict' || row?.amounts ? '후보·지역구·공시 범위 대조 필요 · 금액 보류' : '캠프 모금 자료 연결 대기 · 0달러가 아닙니다.'}</small></div>`;
     const a = row.amounts, health = contract?.source_status?.candidate_fundraising;
     const delayed = row.carried_forward_reason || health?.status === 'failed_last_good_preserved';

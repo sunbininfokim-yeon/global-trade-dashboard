@@ -7,7 +7,7 @@ import { candidateMatchupHtml } from '../country-explorer/special/usa-candidate-
 import { usaStateSuperPac } from '../country-explorer/special/usa-state-superpac.js';
 const now = Date.parse('2026-10-19T12:00:00Z');
 const source = 'https://www.fec.gov/data/candidate/S6OH00163/?cycle=2026';
-const moneyRow = () => ({candidate_id:'S6OH00163',race_id:'USA:OH:senate',state:'OH',office:'senate',election_year:2026,
+const moneyRow = () => ({candidate_id:'S6OH00163',race_id:'USA:OH:senate',state:'OH',office:'senate',district:null,election_year:2026,
     status:'reported_campaign_summary_ballot_unverified',currency:'USD',amount_unit:'cents',includes_outside_spending:false,
     coverage_end:'2026-09-30',snapshot_as_of:'2026-10-19',source_url:source,
     source_receipts:{summary:{url:'https://www.fec.gov/files/bulk-downloads/2026/weball26.zip'}},

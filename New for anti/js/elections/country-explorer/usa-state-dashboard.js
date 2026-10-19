@@ -201,7 +201,7 @@ export const renderUsaStateDashboard = (root, {
                 <p class="elections-panel-note">최근 기간의 조사 우세와 누적 기록을 따로 봅니다. 단일 기관은 참고로 표시합니다.</p>
                 ${statePollEvidenceHtml(state.id, board, health, days, open, {open:evidenceOpen})}`;
             // 실패 안내는 접이식 섹션 **밖**에 둔다 -- 닫힌 <details> 안에 있으면 아무도 못 본다.
-            return '<div data-district-focus></div>' + electionOverviewHtml(country, latest.ratings, { state, board, health, days })
+            return '<div data-district-focus></div>' + electionOverviewHtml(country, latest.ratings, { state, board, health, days,financeRaces:latest.financeRaces,financeContract:latest.financeContract })
                 + failureNote(latest.financeFailed)
                 + '<p class="elections-panel-note">하원 지도: 옅은 파랑 DEM · 옅은 빨강 GOP = Cook Solid/Likely 우세 가정. 진한 색 = 최근 조사상 우세. 회색 = 미정. 선거 후에는 공식 결과만 칠합니다.</p>'
                 + '<p class="elections-section-heading">선거별 자료 <small>눌러서 펼치기</small></p>'

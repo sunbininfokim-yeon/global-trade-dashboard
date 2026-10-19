@@ -3,6 +3,7 @@ import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_
 import { normalizeParty, pollSignal, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
 import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
 import { governorContextHtml, governorElectionSummaryHtml } from './usa-candidate-context.js';
+import { stateFundraisingHtml } from './usa-state-fundraising.js';
 
 const number = (value) => Number.isFinite(value) ? String(value) : '—';
 const tile = (label, value, cls, key, office) => `<button type="button" class="elections-rating-tile ${cls}" data-rating-filter="${key}" aria-expanded="false" aria-controls="elections-${office}-${key}"><span>${label}</span><strong>${number(value)}</strong></button>`;
@@ -43,7 +44,7 @@ export const bindElectionOverview = (root, onOpen) => {
     root.querySelectorAll('[data-overview-state]').forEach((button) => button.addEventListener('click', () => onOpen?.(button.dataset.overviewState, button.dataset.overviewDistrict || null, button.dataset.overviewOffice)));
 };
 
-export const electionOverviewHtml = (country, ratings, { state = null, board = null, health = null, days = 7, now = Date.now() } = {}) => {
+export const electionOverviewHtml = (country, ratings, { state = null, board = null, health = null, days = 7, now = Date.now(), financeRaces = null, financeContract = null } = {}) => {
     const current = currentElectionSeats(country, state);
     const summary = country?.ui_ready?.congress?.summary;
     const afterElection = raceClosedByDate({ election_date: '2026-11-03' }, now);
@@ -64,6 +65,7 @@ export const electionOverviewHtml = (country, ratings, { state = null, board = n
                     <div class="is-dem"><span>DEM</span><strong>${number(row.counts?.DEM)}</strong></div>
                     <div class="is-gop"><span>GOP</span><strong>${number(row.counts?.GOP)}</strong></div>
                 </div></div>
+                ${state ? stateFundraisingHtml(state,office,financeRaces,board,financeContract,now) : ''}
                 ${[others, unknown, vacant].filter(Boolean).length ? `<p class="elections-seat-extras">${[others, unknown, vacant].filter(Boolean).join(' · ')}</p>` : ''}
                 ${office === 'governor' ? state ? governorContextHtml(state,now) : governorElectionSummaryHtml(country,now) : ''}
                 ${office === 'senate' && resultUniverse ? `<div class="elections-senate-scope" aria-label="상원 비선거와 선거 대상 현재 보유">
