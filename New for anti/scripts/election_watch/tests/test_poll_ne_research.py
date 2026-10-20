@@ -47,7 +47,10 @@ class NETests(unittest.TestCase):
                 for window in race['windows'].values():self.assertIsNone(window['party'])
         primary=[o for rid,r in hist['races'].items() if rid.startswith('USA:NE:') for o in r['observations'] if o['id'].startswith('primary-')]
         self.assertEqual(len(primary),4)
-        self.assertTrue(all(o['provider_record_date'] is None and not o['aggregation_eligibility']['eligible'] for o in primary))
+        self.assertTrue(all(not o['aggregation_eligibility']['eligible'] for o in primary))
+        dated=[o for o in primary if o['id'].startswith('primary-html-coefficient-')]
+        self.assertEqual(len(dated),1);self.assertEqual(dated[0]['provider_record_date'],'2026-10-02')
+        self.assertEqual(sum(o['provider_record_date'] is None for o in primary),3)
     def test_provider_duplicate_and_conflict(self):
         r=copy.deepcopy(self.entries[0]['record']);r['id']='later-ne-api-record';r['created_at']='2026-10-06'
         rows,receipts=self.merge([r]);self.assertEqual(len(rows),4);self.assertIn(r['id'],receipts[0]['provider_duplicate_ids'])

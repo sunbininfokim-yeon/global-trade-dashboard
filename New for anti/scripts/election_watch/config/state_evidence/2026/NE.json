@@ -2033,6 +2033,24 @@
         },
         "snapshot_sha256": "0985a644c02f1e4e1f9f9a400e85d1c40e20190060703dd76c92c657dc97ae2e"
       }
+    },
+    {
+      "file": "usa_polls/html_table_sources_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "id": "coefficient-ne-senate",
+        "adapter": "coefficient_public_html_v1",
+        "state": "NE",
+        "race_id": "USA:NE:senate",
+        "index_url": "https://battlegrounds.coefficient.org/",
+        "release_url": "https://battlegrounds.coefficient.org/ne/",
+        "pollster": "co/efficient",
+        "pollster_group": "coefficient",
+        "reviewed_on": "2026-10-20"
+      }
     }
   ],
   "capture": {
@@ -2114,11 +2132,192 @@
           "provider_duplicate_ids": [],
           "reviewed_replaced_provider_ids": [],
           "separate_question_provider_ids": []
+        },
+        {
+          "id": "primary-html-coefficient-fec73affafa2dcf51a56",
+          "state": "NE",
+          "kind": "html_table",
+          "contract_id": "coefficient-ne-senate",
+          "contract_sha256": "278901329ba6963c6a39919f3be0d1c4f08459174ee709c1c70916bd180a9edb",
+          "record": {
+            "id": "primary-html-coefficient-fec73affafa2dcf51a56",
+            "subject": "2026 Nebraska",
+            "poll_type": "us-senator",
+            "seat_name": null,
+            "pollster": "co/efficient",
+            "start_date": "2026-09-28",
+            "end_date": "2026-09-30",
+            "created_at": "2026-10-02",
+            "sample_size": 1113,
+            "population": "lv",
+            "answers": [
+              {
+                "choice": "Pete Ricketts",
+                "pct": 45.0
+              },
+              {
+                "choice": "Dan Osborn",
+                "pct": 40.0
+              },
+              {
+                "choice": "Mike Marvin",
+                "pct": 2.0
+              },
+              {
+                "choice": "Robin Richards",
+                "pct": 1.0
+              },
+              {
+                "choice": "Chuck Conboy",
+                "pct": 1.0
+              }
+            ],
+            "url": "https://battlegrounds.coefficient.org/ne/",
+            "sponsors": [],
+            "internal": false,
+            "partisan": null,
+            "primary_source_capture": {
+              "status": "primary_documents_rechecked",
+              "original_reviewed_on": "2026-10-20",
+              "checked_at": "2026-10-20T11:57:16.799389+00:00",
+              "documents": [
+                {
+                  "url": "https://battlegrounds.coefficient.org/",
+                  "sha256": "09d4d7cf7b96ef6424452b2f55f00b31047e5afd73d59869c235bd24cd23f1f2",
+                  "status": "unchanged",
+                  "checked_at": "2026-10-20T11:57:16.488962+00:00"
+                },
+                {
+                  "url": "https://battlegrounds.coefficient.org/ne/",
+                  "sha256": "46356d7ebe8e1e7084975a9632284df247cd5a81e17ae569cc6e846b9852878b",
+                  "status": "unchanged",
+                  "checked_at": "2026-10-20T11:57:16.799389+00:00"
+                }
+              ],
+              "provider_duplicate_ids": [
+                "primary-coefficient-ne-20260928-20260930-senate"
+              ],
+              "reviewed_replaced_provider_ids": [],
+              "extraction_method": "structured_primary_html_table_v1"
+            }
+          },
+          "quality_review": {
+            "reviewed_on": "2026-10-20",
+            "review_method": "structured_primary_html_table_v1",
+            "provider_record_sha256": "9fdc2574784489a16e387ec347dcde17c763fcc42cdb5c9f444112b19c9b0f00",
+            "primary_supplement_record_sha256": "9fdc2574784489a16e387ec347dcde17c763fcc42cdb5c9f444112b19c9b0f00",
+            "sources": [
+              "https://battlegrounds.coefficient.org/",
+              "https://battlegrounds.coefficient.org/ne/"
+            ],
+            "primary_documents": [
+              {
+                "url": "https://battlegrounds.coefficient.org/",
+                "sha256": "09d4d7cf7b96ef6424452b2f55f00b31047e5afd73d59869c235bd24cd23f1f2"
+              },
+              {
+                "url": "https://battlegrounds.coefficient.org/ne/",
+                "sha256": "46356d7ebe8e1e7084975a9632284df247cd5a81e17ae569cc6e846b9852878b"
+              }
+            ],
+            "primary_toplines": {
+              "Pete Ricketts": 45.0,
+              "Dan Osborn": 40.0,
+              "Mike Marvin": 2.0,
+              "Robin Richards": 1.0,
+              "Chuck Conboy": 1.0
+            },
+            "question_sample_n": 1113,
+            "admission": {
+              "pollster": "co/efficient",
+              "provider_url": "https://battlegrounds.coefficient.org/ne/",
+              "group": "coefficient",
+              "methodology_url": "https://battlegrounds.coefficient.org/ne/",
+              "source_role": "pollster_primary",
+              "signal_eligible": false,
+              "signal_exclusion_reasons": [
+                "automated_release_question_context_review_pending"
+              ]
+            },
+            "ballot_format": "ordinary_named_candidate_ballot",
+            "disclosure_review": {
+              "population": "LV",
+              "sample_n": 1113,
+              "field_dates": [
+                "2026-09-28",
+                "2026-09-30"
+              ],
+              "primary_release_date": "2026-10-02",
+              "release_date_source": "https://battlegrounds.coefficient.org/",
+              "question_wording_checked": true,
+              "question": "If the November 3rd general election for U.S. Senate were held today, who would you vote for?",
+              "question_scope": "USA:NE:senate",
+              "other_responses": [
+                {
+                  "label": "Undecided",
+                  "pct": 11.0
+                }
+              ],
+              "methodology": "co/efficient surveyed 1,113 likely general election voters in Nebraska on September 28-30, 2026, using mobile text responses and landline interviews. Results are weighted on age, gender, race, education, congressional district, and community type to reflect the likely 2026 general electorate. The margin of error is ±2.92 percentage points. Full question wording appears with each result above.",
+              "publication_date_status": "publisher_index_exact_date"
+            },
+            "reported_precision": {
+              "kind": "publisher_reported_margin_of_error",
+              "half_width_pp": 2.92,
+              "scope": "publisher statewide sample"
+            },
+            "missing_fields": [
+              "commissioner_identity",
+              "question_order_context_review",
+              "historical_accuracy_rating"
+            ],
+            "limitations_ko": "기관 공개 목록 날짜와 본문 방법론·후보 표 자동 추출. 새 발표는 문항 순서·의뢰자 검토 전 참고 전용. 정확도·승률 아님.",
+            "snapshot_sha256": "b238f9687e44d1fa424343f00bb65f01937f04181af1f7289bd81814af33ee59"
+          },
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T11:57:16.799389+00:00",
+          "documents": [
+            {
+              "url": "https://battlegrounds.coefficient.org/",
+              "sha256": "09d4d7cf7b96ef6424452b2f55f00b31047e5afd73d59869c235bd24cd23f1f2",
+              "status": "unchanged",
+              "checked_at": "2026-10-20T11:57:16.488962+00:00"
+            },
+            {
+              "url": "https://battlegrounds.coefficient.org/ne/",
+              "sha256": "46356d7ebe8e1e7084975a9632284df247cd5a81e17ae569cc6e846b9852878b",
+              "status": "unchanged",
+              "checked_at": "2026-10-20T11:57:16.799389+00:00"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "extraction_method": "structured_primary_html_table_v1",
+          "failures": []
+        },
+        {
+          "kind": "html_table_health",
+          "state": "NE",
+          "contract_id": "coefficient-ne-senate",
+          "status": "ok_reference_only",
+          "parsed_observations": 1,
+          "carried_forward_observations": 0,
+          "signal_eligible_observations": 0,
+          "failures": []
         }
       ],
       "primary_document_replay": true,
       "original_document_collected_on": "2026-10-20",
-      "primary_network_refetch": false
+      "primary_network_refetch": false,
+      "new_html_collection": {
+        "checked_at": "2026-10-20T11:57:16.799389+00:00",
+        "source_contract_id": "coefficient-ne-senate",
+        "new_network_collection": true,
+        "observations": 1,
+        "provider_capture_date_unchanged": true,
+        "integration_kind": "production_duplicate_merge_replay_of_actual_network_receipt"
+      }
     },
     "provider_records": [
       {
@@ -2559,6 +2758,68 @@
           "provider_duplicate_ids": [],
           "reviewed_replaced_provider_ids": [],
           "separate_question_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-html-coefficient-fec73affafa2dcf51a56",
+        "subject": "2026 Nebraska",
+        "poll_type": "us-senator",
+        "seat_name": null,
+        "pollster": "co/efficient",
+        "start_date": "2026-09-28",
+        "end_date": "2026-09-30",
+        "created_at": "2026-10-02",
+        "sample_size": 1113,
+        "population": "lv",
+        "answers": [
+          {
+            "choice": "Pete Ricketts",
+            "pct": 45.0
+          },
+          {
+            "choice": "Dan Osborn",
+            "pct": 40.0
+          },
+          {
+            "choice": "Mike Marvin",
+            "pct": 2.0
+          },
+          {
+            "choice": "Robin Richards",
+            "pct": 1.0
+          },
+          {
+            "choice": "Chuck Conboy",
+            "pct": 1.0
+          }
+        ],
+        "url": "https://battlegrounds.coefficient.org/ne/",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T11:57:16.799389+00:00",
+          "documents": [
+            {
+              "url": "https://battlegrounds.coefficient.org/",
+              "sha256": "09d4d7cf7b96ef6424452b2f55f00b31047e5afd73d59869c235bd24cd23f1f2",
+              "status": "unchanged",
+              "checked_at": "2026-10-20T11:57:16.488962+00:00"
+            },
+            {
+              "url": "https://battlegrounds.coefficient.org/ne/",
+              "sha256": "46356d7ebe8e1e7084975a9632284df247cd5a81e17ae569cc6e846b9852878b",
+              "status": "unchanged",
+              "checked_at": "2026-10-20T11:57:16.799389+00:00"
+            }
+          ],
+          "provider_duplicate_ids": [
+            "primary-coefficient-ne-20260928-20260930-senate"
+          ],
+          "reviewed_replaced_provider_ids": [],
+          "extraction_method": "structured_primary_html_table_v1"
         }
       }
     ]
