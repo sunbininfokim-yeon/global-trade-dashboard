@@ -13,7 +13,7 @@
 
 ## 클로드가 할 일
 
-1. 이 디렉터리를 읽는다. 머지되면 `https://global-trade-dashboard.sunbin-info-kim.workers.dev/data/isr_knesset26_research_2026-10-20/` 아래에서 받는다.
+1. 이 디렉터리를 읽는다. 머지되면 `https://global-trade-dashboard.sunbin-info-kim.workers.dev/public/data/isr_knesset26_research_2026-10-20/` 아래에서 받는다.
 2. 화면에 올릴 의석은 `question_id` 가 `reported_seats` 이고 `review_status` 가 `accepted` 인 행만이다. `partial`, `held`, `record_type: gap` 은 그리지 않는다.
 3. 같은 `poll_id` 의 재보도를 다른 조사로 세지 않는다.
 4. 기사에 적힌 블럭 합은 그 기사의 합이다. 61이어도 구성된 정부가 아니다. 블럭 칸을 연정 결과로 바꾸지 않는다.
