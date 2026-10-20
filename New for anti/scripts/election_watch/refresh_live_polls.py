@@ -148,7 +148,7 @@ def main():
             provider_saved = True
         primary_receipts = retry['primary_receipts'] if retry else []
         if production_policy and not args.input and not retry:
-            rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of)
+            rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of, isolate_conflicts=True)
         if html_snapshot is not None and not args.input and not retry:
             previous = read(args.output) if args.output.exists() else {}
             old_html = saved_html_receipts(previous, packets())
