@@ -34,7 +34,8 @@ def document(url,opener):
     return tree(text),{'url':url,'sha256':hashlib.sha256(body).hexdigest(),'status':'unchanged','checked_at':datetime.now(timezone.utc).isoformat()}
 
 def release_date(index,entry,as_of):
-    links=[n for n in index.nodes('a') if urljoin(INDEX,n.attrs.get('href',''))==entry['release_url']]
+    links=[n for n in index.nodes('a') if urljoin(INDEX,n.attrs.get('href',''))==entry['release_url']
+        and re.search(r'([A-Z][a-z]+ \d{1,2}, 2026)',n.text())]
     require(len(links)==1,'coefficient release link missing/ambiguous')
     match=re.search(r'([A-Z][a-z]+ \d{1,2}, 2026)',links[0].text())
     require(match,'coefficient exact release day missing')

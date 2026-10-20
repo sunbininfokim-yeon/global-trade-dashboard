@@ -9,7 +9,7 @@ ENTRY={'id':'synthetic-coefficient','adapter':'coefficient_public_html_v1','stat
 SNAP={'schema':'usa_poll_html_table_sources_v1','cycle':2026,'records':[ENTRY]}
 RACE={'state':'NE','office':'senate','subject':'2026 Nebraska','poll_type':'us-senator','seat_name':None,'contest_id':'USA:NE:senate:2026:general','general_from':'2026-09-01','election_date':'2026-11-03','required_candidates':['Candidate R','Candidate I'],'candidates':{'Candidate R':{'party':'REP'},'Candidate I':{'party':'IND'}}}
 POLICY={'cycle':2026,'races':{ENTRY['race_id']:RACE},'quality_reviews':{}}
-INDEX='<html><body><a href="/ne/">Nebraska: October 2, 2026</a></body></html>'
+INDEX='<html><body><a href="/ne/">Nebraska: October 2, 2026</a><a href="/ne/">NE</a><a href="/ne/">NE</a></body></html>'
 METHOD='co/efficient surveyed 1,113 likely general election voters in Nebraska on September 28-30, 2026, using mobile text responses and landline interviews. Results are weighted on age, gender, race, education, congressional district, and community type. The margin of error is ±2.92 percentage points.'
 QUESTION='If the November 3rd general election for U.S. Senate were held today, who would you vote for?'
 def html(r=45):
