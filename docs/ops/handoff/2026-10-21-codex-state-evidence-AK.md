@@ -4,6 +4,7 @@
 
 - checkout: `/Users/yeoninair/Documents/해운 데이터/us-ne-research-integration-20261020` (이전 #654를 모두 push한 뒤 순차 재사용; 타 세션 checkout 변경 없음)
 - branch: `codex/ak-poll-evidence-20261021`
+- Draft PR: <https://github.com/sunbininfokim-yeon/global-trade-dashboard/pull/655> (미병합·미배포)
 - packet 없는 공용 기반: #651 `codex/poll-capture-validation-recovery-20261020`; 시작 SHA `763ba363c06a22ec71b0ccb5d7f14c8ddbd4938f`
 - 확인한 최신 main: `9bf900f67ae062c4ab03433db938ebb7291822d8`. 시작 main과 미국 election_watch/주별 규칙 파일 차이 없음. 미병합 다른 주 PR 위에 쌓지 않는다.
 - #654는 발견·Cursor 대기열 공용 PR이며 이 주별 PR에 그 diff를 복사하지 않는다.
