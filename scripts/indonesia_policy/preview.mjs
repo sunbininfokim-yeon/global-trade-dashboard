@@ -15,6 +15,7 @@ const files={'/indonesia-policy/':['index.html','text/html; charset=utf-8'],
  '/indonesia-policy/search.mjs':['search.mjs','text/javascript; charset=utf-8'],
  '/indonesia-policy/source-links.mjs':['source-links.mjs','text/javascript; charset=utf-8'],
  '/indonesia-policy/legal-effect.mjs':['legal-effect.mjs','text/javascript; charset=utf-8'],
+ '/indonesia-policy/result-groups.mjs':['result-groups.mjs','text/javascript; charset=utf-8'],
  '/indonesia-policy/search.css':['search.css','text/css; charset=utf-8']};
 http.createServer(async(req,res)=>{
  try{

@@ -1,5 +1,7 @@
 # 인도네시아 정책 시범 수집기
 
+[검색 분류·상품/지역 메일 조건](../../docs/indonesia-policy-search-and-mailing-scope-20261020.md): 데스크톱 네 열·태블릿/모바일 한 목록, 석탄/동칼리만탄 메일 검토 후보를 준비했다. IDN 구독·변경 알림·자동 수집 예약은 아직 연결되지 않았다.
+
 미국과 분리된 policy_idn 전용 수집·저장·검색 경로다. [분리 계약](../../docs/indonesia-policy-isolation-contract.md)과 [검색 계약](../../docs/indonesia-policy-search.md)을 따른다. 수집/import는 검색 UI, 미국 검색, 메일, Gemini 호출, 반복 스케줄을 실행하지 않는다.
 
 [2026-10-20 석탄 보강 결과](../../docs/indonesia-policy-coal-core-20261020.md): 원문 2건·효력 근거 16건·관계/적용범위/조문 12건을 운영 DB에 추가했다. `sources-coal-core-20261020.json`, `coal-review-pack-20261020.json`, `coal-legal-effect-pack-20261020.json`에 수집·재적용 입력을 보관한다. 스캔 PDF 1건과 신규 임베딩은 미완료이며 법령 전체의 현행성을 확정한 것은 아니다.
