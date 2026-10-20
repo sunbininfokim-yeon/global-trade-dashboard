@@ -73,7 +73,7 @@ test('real DB search/detail, country isolation, empty/error states and mobile la
   await page.getByRole('button',{name:'세부사항'}).first().click();
   await page.locator('#detail pre').waitFor();assert.ok((await page.locator('#detail pre').innerText()).length>=150);
   await page.getByRole('button',{name:'상세 닫기'}).click();
-  await page.locator('select[name=topic]').selectOption('biofuel');
+  await page.locator('#search-form select[name=topic]').selectOption('biofuel');
   await page.waitForFunction(()=>!document.querySelector('#status').textContent.includes('검색 중'));
   await page.locator('#query').fill('');await page.getByRole('button',{name:'검색',exact:true}).click();
   await page.waitForFunction(n=>document.querySelector('#status').textContent.startsWith(n+'건'),biofuel.total);
@@ -103,7 +103,7 @@ test('mineral/stage filters and common-law labels work without provider calls',a
   await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261017/common-business-desktop.png'});
   await page.goto('http://127.0.0.1:4317/indonesia-policy/?q=보크사이트,제련&topic=bauxite&stream=midstream');
   await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('키워드·동의어 검색'));
-  assert.equal(await page.locator('select[name=topic]').inputValue(),'bauxite');
+  assert.equal(await page.locator('#search-form select[name=topic]').inputValue(),'bauxite');
   assert.equal(await page.locator('select[name=stream]').inputValue(),'midstream');
   assert.ok(await page.locator('article:visible').count()>0);
   await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261017/value-chain-desktop.png'});
@@ -159,5 +159,34 @@ test('reviewed passages and business scope distinguish document matches, clause 
   await card.getByRole('button',{name:'세부사항',exact:true}).click();
   await page.getByText('관계·사업 검토 근거를 불러오지 못했습니다. 원문 자료는 아래에서 확인하세요.',{exact:true}).waitFor();
   assert.ok((await page.locator('#detail pre').innerText()).length>1000);assert.deepEqual(errors,[]);
+ }finally{await browser.close();}
+});
+test('mail subscriptions keep product/region separate from search and support opt-out without a provider call',async()=>{
+ const browser=await chromium.launch({headless:true,executablePath:process.env.IDN_BROWSER_EXECUTABLE||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+ try{
+  const page=await browser.newPage({viewport:{width:1024,height:950}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.addInitScript(()=>{
+   window.__idnMailCalls=[];window.__idnSubscriptions=[];
+   window.__idnMockClient={auth:{getUser:async()=>({data:{user:{id:'fixture-self'}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},
+    rpc:async(name,args)=>{window.__idnMailCalls.push({name,args});
+     if(name==='idn_my_mail_subscriptions')return {data:{country:'IDN',delivery_enabled:false,regions:['Kalimantan Timur','Kalimantan Barat'],subscriptions:window.__idnSubscriptions},error:null};
+     if(name==='idn_set_my_mail_subscription'){let s=window.__idnSubscriptions.find(s=>s.topic===args.p_topic&&s.region===args.p_region);if(!s){s={id:'fixture-sub',topic:args.p_topic,region:args.p_region};window.__idnSubscriptions.push(s);}s.enabled=args.p_enabled;return {data:s.id,error:null};}
+     throw Error('unexpected RPC');}};
+  });
+  await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm',r=>r.fulfill({contentType:'text/javascript',body:'export function createClient(){return window.__idnMockClient}'}));
+  await page.goto('http://127.0.0.1:4317/indonesia-policy/?q=석탄');
+  await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('건 검색됨'));
+  const root=page.locator('#mail-subscriptions');await root.locator('summary').click();
+  await root.getByText('메일 구독 저장',{exact:true}).waitFor();
+  await root.locator('[name=region]').selectOption('Kalimantan Timur');await root.getByRole('button',{name:'메일 구독 저장',exact:true}).click();
+  await root.getByText('석탄 · 동칼리만탄 · 구독 중',{exact:true}).waitFor();
+  assert.equal(new URL(page.url()).searchParams.get('q'),'석탄');assert.equal(await page.locator('#search-form [name=topic]').inputValue(),'');
+  await root.getByRole('button',{name:'구독 해제',exact:true}).click();await root.getByText('석탄 · 동칼리만탄 · 해제됨',{exact:true}).waitFor();
+  assert.ok((await root.innerText()).includes('자동 발송은 아직 준비 중'));
+  const calls=await page.evaluate(()=>window.__idnMailCalls);assert.equal(calls.filter(c=>c.name==='idn_set_my_mail_subscription').length,2);
+  assert.ok(calls.every(c=>['idn_my_mail_subscriptions','idn_set_my_mail_subscription'].includes(c.name)));
+  await page.setViewportSize({width:390,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  await root.scrollIntoViewIfNeeded();await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261021/mailing/subscription-mobile.png'});
+  assert.deepEqual(errors,[]);
  }finally{await browser.close();}
 });

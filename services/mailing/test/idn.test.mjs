@@ -1,0 +1,150 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {PGlite} from '@electric-sql/pglite';
+import {renderDelivery,runMailing} from '../core.mjs';
+const U='00000000-0000-0000-0000-000000000001',V='00000000-0000-0000-0000-000000000002';
+const migrations=['20260911010000_mailing_outbox.sql','20260919_bill_notification_pause.sql','20260919_favorite_notify_enabled.sql','20261002020000_mailing_subscription_preferences.sql',
+ '20261017080335_indonesia_policy_corpus.sql','20261017080543_indonesia_policy_source_checks.sql','20261018112152_indonesia_policy_isolation.sql','20261018112503_indonesia_policy_biofuel.sql'];
+const migration='20261020174850_indonesia_policy_mailing.sql';
+const gateway='20261020213953_indonesia_mail_auth_gateways.sql';
+const release='20261020214317_indonesia_mail_review_enqueue.sql';
+const sql=name=>readFileSync(new URL('../../../supabase/migrations/'+name,import.meta.url),'utf8');
+const hash=s=>createHash('sha256').update(s).digest('hex');
+const body='Ketentuan batubara dan perlindungan lingkungan untuk usaha pertambangan. '.repeat(8);
+const document=(id,level='national',region='Indonesia')=>({document_id:id,country_code:'IDN',title:id,title_ko:'환경·석탄 시험 문서',issuer_name:'Test',issuer_level:level,jurisdiction:region,document_type:'Permen',document_number:id,document_year:2026,topics:['coal','biofuel'],primary_stage:'coal',scope_note:'Reviewed test scope',source_url:'https://test.go.id/'+id,legal_status:'unverified',status_note:'Test',observed_at:'2026-10-01T00:00:00Z',content_hash:hash(body),content_kind:'official_text',text_content:body,text_truncated:false});
+async function fixture(fn){
+ const db=new PGlite();
+ try{
+  await db.exec(`create role anon;create role authenticated;create role service_role bypassrls; create schema auth;
+   create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+   create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
+   create table public.profiles(id uuid primary key,email text);
+   create table user_favorites(user_id uuid,item_kind text,item_id text,title text,created_at timestamptz default now(),primary key(user_id,item_kind,item_id));
+   create table bills(bill_id text primary key,title text,current_stage text,latest_action_text text,status_updated_at timestamptz);
+   create table executive_orders(eo_number int primary key,title text,summary text,updated_at timestamptz);
+   create table commodity_report_notifications(user_id uuid,report_id text,sent_at timestamptz default now(),primary key(user_id,report_id));
+   create table commodity_digest_source_prefs(user_id uuid,source_id text,primary key(user_id,source_id));
+   insert into auth.users values('${U}','verified@example.test',now()),('${V}','second@example.test',now());
+   insert into profiles values('${U}','profile@example.test'),('${V}','profile2@example.test');`);
+  for(const name of migrations)await db.exec(sql(name));
+  const rpc=async(name,args=[])=> (await db.query(`select public.${name}(${args.map((_,i)=>'$'+(i+1)).join(',')}) result`,args)).rows[0].result;
+  const save=async d=>rpc('idn_store_document',[JSON.stringify(d)]);
+  await save(document('idn-national'));
+  await save(document('idn-east','provincial','Kalimantan Timur'));
+  await save(document('idn-west','provincial','Kalimantan Barat'));
+  await db.exec(sql(migration));
+  await db.exec(sql(gateway));
+  await db.exec(sql(release));
+  const acting=async(id,fn)=>{
+   await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');
+   try{return await fn();}finally{await db.exec('reset role');}
+  };
+  const sub=(user=U,topic='coal',region='Kalimantan Timur',enabled=true)=>acting(user,()=>rpc('idn_set_my_mail_subscription',[topic,region,enabled]));
+  const change=async(id='idn-national',extra='New official requirement.')=>{
+   const d=document(id,id==='idn-east'?'provincial':'national',id==='idn-east'?'Kalimantan Timur':'Indonesia');
+   d.text_content=body+extra;d.content_hash=hash(d.text_content);d.observed_at=new Date().toISOString();
+   await save(d);return (await db.query('select * from policy_idn.mail_changes where document_id=$1 and content_hash=$2',[id,d.content_hash])).rows[0];
+  };
+  const review=(c,patch={})=>rpc('idn_review_mail_change',[c.change_id,JSON.stringify({event_type:'official_content_changed',summary:'Official source content changed; legal effect requires separate review.',reviewer:'fixture-review',quote:body.slice(0,60),source_url:'https://test.go.id/'+c.document_id,topics:['coal'],scope:'national',regions:[],...patch})]);
+  await fn({db,rpc,save,acting,sub,change,review});
+ }finally{await db.close();}
+}
+test('IDN install/replay establishes a quiet baseline and captures only newer version candidates',()=>fixture(async({db,rpc,change,save})=>{
+ await db.exec(sql(migration));await db.exec(sql(gateway));await db.exec(sql(gateway));await db.exec(sql(release));assert.equal((await rpc('idn_mail_review_queue')).pending.length,0);
+ const c=await change();assert.equal(c.candidate_kind,'content_changed');
+ await save({...document('idn-national'),content_hash:hash(body+'older'),text_content:body+'older',observed_at:'2026-09-01T00:00:00Z'});
+ await save(document('idn-new'));await db.exec(sql(migration));await db.exec(sql(gateway));
+ const q=await rpc('idn_mail_review_queue');assert.equal(q.delivery_enabled,false);assert.equal(q.pending.length,2);
+ assert.equal(q.pending.find(x=>x.document_id==='idn-new').candidate_kind,'new_document');
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,0);
+}));
+test('Auth RPCs isolate subscribers, reject forged input, and do not expose private tables or operator RPCs',()=>fixture(async({db,rpc,acting,sub})=>{
+ await sub();await sub(V,'coal','Kalimantan Barat');
+ assert.equal((await acting(U,()=>rpc('idn_my_mail_subscriptions'))).subscriptions.length,1);
+ await assert.rejects(sub(U,'coal','Unknown Province'));
+ await assert.rejects(sub(U,'us_bills'));
+ await db.exec('set role anon');await assert.rejects(rpc('idn_my_mail_subscriptions'));await db.exec('reset role');
+ await acting(U,async()=>{
+  await assert.rejects(db.query('select * from policy_idn.mail_subscriptions'));
+  await assert.rejects(rpc('idn_set_mail_delivery_enabled',[true]));
+  await assert.rejects(rpc('idn_review_mail_change',[crypto.randomUUID(),'{}']));
+ });
+ assert.equal((await db.query("select has_function_privilege('anon','public.idn_set_my_mail_subscription(text,text,boolean)','execute') allowed")).rows[0].allowed,false);
+ assert.equal((await db.query("select prosecdef from pg_proc where oid='public.idn_set_my_mail_subscription(text,text,boolean)'::regprocedure")).rows[0].prosecdef,false);
+}));
+test('review binds exact source/quote/topic/region; text hashes never imply a legal amendment',()=>fixture(async({rpc,change,review})=>{
+ const c=await change('idn-east');
+ await assert.rejects(review(c));
+ await assert.rejects(review(c,{scope:'regions',regions:['Kalimantan Barat']}));
+ await assert.rejects(review(c,{scope:'regions',regions:['Kalimantan Timur'],quote:'This quote is absent from the official version'}));
+ await assert.rejects(review(c,{scope:'regions',regions:['Kalimantan Timur'],source_url:'https://evil.example/doc'}));
+ await assert.rejects(review(c,{scope:'regions',regions:['Kalimantan Timur'],topics:['nickel_mining']}));
+ assert.equal(await review(c,{scope:'regions',regions:['Kalimantan Timur']}),true);
+ assert.equal(await review(c,{scope:'regions',regions:['Kalimantan Timur']}),false);
+ assert.equal((await rpc('idn_enqueue_mail_change',[c.change_id,false])).enqueued,0);
+ await assert.rejects(rpc('idn_enqueue_mail_change',[c.change_id,true]));
+}));
+test('product AND region/national matches deduplicate overlaps and send next-day policy mail through the existing lease',()=>fixture(async({db,rpc,sub,change,review})=>{
+ await sub();await sub(U,'coal','Kalimantan Barat');await sub(V,'nickel_mining','Kalimantan Timur');
+ await rpc('idn_set_mail_delivery_enabled',[true]);const c=await change();await review(c);
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,1);
+ const dry=await rpc('idn_enqueue_mail_change',[c.change_id,false]);assert.equal(dry.matching_users,1);assert.equal(dry.enqueued,0);
+ assert.equal((await rpc('idn_enqueue_mail_change',[c.change_id,true])).enqueued,0);
+ assert.equal((await rpc('idn_enqueue_mail_change',[c.change_id,true])).enqueued,0);
+ assert.equal(await rpc('mail_claim',['policy']),null);
+ await db.exec("update mailing_outbox set due_at=now()-interval '1 minute'");
+ let request;
+ const result=await runMailing({MAIL_SEND_ENABLED:'true',RESEND_API_KEY:'mock'},{rpc:async(name,args={})=>{
+  const entries=Object.entries(args);return (await db.query(`select public.${name}(${entries.map(([k],i)=>k+'=>$'+(i+1)).join(',')}) r`,entries.map(([,v])=>typeof v==='object'&&v!==null?JSON.stringify(v):v))).rows[0].r;
+ },fetcher:async(_url,options)=>{request=JSON.parse(options.body);return Response.json({id:'fixture-idn-message'});}});
+ assert.equal(result.accepted,1);assert.match(request.subject,/인도네시아/);assert.match(request.text,/전국 적용 범위 검토/);
+ assert.match(request.html,/인도네시아 구독 해제/);
+ assert.equal((await db.query("select count(*)::int n from mailing_deliveries where state='sent'")).rows[0].n,1);
+}));
+test('different region and late subscriptions are excluded; disable/re-enable cannot revive an old queued item',()=>fixture(async({db,rpc,sub,change,review})=>{
+ await sub();await sub(V,'coal','Kalimantan Barat');await rpc('idn_set_mail_delivery_enabled',[true]);
+ const c=await change('idn-east');await review(c,{scope:'regions',regions:['Kalimantan Timur']});
+ await sub(V,'coal','Kalimantan Timur');assert.equal((await rpc('idn_enqueue_mail_change',[c.change_id,true])).matching_users,1);
+ await sub(U,'coal','Kalimantan Timur',false);await sub();
+ assert.equal((await db.query('select public.mail_item_active(o) active from mailing_outbox o')).rows[0].active,false);
+ await db.exec("update mailing_outbox set due_at=now()-interval '1 minute'");assert.equal(await rpc('mail_claim',['policy']),null);
+}));
+test('last-moment review hold cancels prepared delivery; US favorite guards remain',()=>fixture(async({db,rpc,sub,change,review})=>{
+ await sub();await rpc('idn_set_mail_delivery_enabled',[true]);const c=await change();await review(c);await rpc('idn_enqueue_mail_change',[c.change_id,true]);
+ await db.exec("update mailing_outbox set due_at=now()-interval '1 minute'");const d=await rpc('mail_claim',['policy']);
+ await rpc('idn_hold_mail_change',[c.change_id]);
+ assert.equal(await rpc('mail_prepare',[d.delivery_id,d.lease_token,JSON.stringify(renderDelivery(d,'alerts@example.test'))]),null);
+ const def=(await db.query("select pg_get_functiondef('public.mail_item_active(public.mailing_outbox)'::regprocedure) f")).rows[0].f;
+ assert.match(def,/bill_notifications_paused/);assert.match(def,/notify_enabled/);assert.match(def,/commodity_report_notifications/);
+}));
+test('unsubscribe and global policy opt-out are rechecked after claim; activation does not revive old IDN jobs',()=>fixture(async({db,rpc,sub,change,review})=>{
+ await sub();await rpc('idn_set_mail_delivery_enabled',[true]);const c=await change();await review(c);await rpc('idn_enqueue_mail_change',[c.change_id,true]);
+ await db.exec("update mailing_outbox set due_at=now()-interval '1 minute'");const d=await rpc('mail_claim',['policy']);
+ await sub(U,'coal','Kalimantan Timur',false);
+ assert.equal(await rpc('mail_prepare',[d.delivery_id,d.lease_token,JSON.stringify(renderDelivery(d,'alerts@example.test'))]),null);
+ await sub();const c2=await change('idn-national','Another changed requirement.');await review(c2);await rpc('idn_enqueue_mail_change',[c2.change_id,true]);
+ await db.exec("insert into mailing_preferences(user_id,policy_enabled) values('"+U+"',false)");
+ assert.equal((await db.query('select public.mail_item_active(o) active from mailing_outbox o where content->>\'change_id\'=$1',[c2.change_id])).rows[0].active,false);
+ await db.exec('update mailing_preferences set policy_enabled=true');
+ await rpc('idn_set_mail_delivery_enabled',[false]);await rpc('idn_set_mail_delivery_enabled',[true]);
+ assert.equal((await db.query('select public.mail_item_active(o) active from mailing_outbox o where content->>\'change_id\'=$1',[c2.change_id])).rows[0].active,false);
+}));
+test('US bill notify switch and pause continue to suppress the existing branch after IDN migration',()=>fixture(async({db,rpc})=>{
+ await db.exec(`insert into bills values('119-hr-test','US sentinel','introduced','',now());
+ insert into user_favorites(user_id,item_kind,item_id) values('${U}','bill','119-hr-test');
+ update bills set current_stage='reported';`);
+ const active=async()=>(await db.query("select public.mail_item_active(o) a from mailing_outbox o where item_kind='bill'")).rows[0].a;
+ assert.equal(await active(),true);await db.exec('update user_favorites set notify_enabled=false');assert.equal(await active(),false);
+ await db.exec('update user_favorites set notify_enabled=true;update profiles set bill_notifications_paused=true');assert.equal(await active(),false);
+ assert.equal((await rpc('idn_mail_review_queue')).pending.length,0);
+}));
+test('failed queue write rolls back review completion and retry releases exactly one event',()=>fixture(async({db,rpc,sub,change,review})=>{
+ await sub();await rpc('idn_set_mail_delivery_enabled',[true]);const c=await change();
+ await db.exec(`create function public.idn_fixture_failure() returns trigger language plpgsql as $$ begin raise exception 'fixture queue failure'; end $$;
+ create trigger idn_fixture_failure before insert on mailing_outbox for each row execute function public.idn_fixture_failure();`);
+ await assert.rejects(review(c));assert.equal((await db.query('select state from policy_idn.mail_changes where change_id=$1',[c.change_id])).rows[0].state,'pending');
+ await db.exec('drop trigger idn_fixture_failure on mailing_outbox');assert.equal(await review(c),true);
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,1);
+}));

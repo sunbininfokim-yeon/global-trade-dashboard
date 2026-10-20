@@ -28,6 +28,7 @@ const esc = (value) =>
         c
       ],
   );
+const IDN_EVENTS = {new_document:'신규 공식 문서',amended:'개정 근거 확인',repealed:'폐지 근거 확인',effective:'시행 근거 확인',official_content_changed:'공식 내용 변경 · 법적 개정 여부 별도 확인'};
 export function safeLink(value) {
   try {
     const u = new URL(value);
@@ -46,7 +47,9 @@ export function renderDelivery(delivery, from) {
         ? `${STAGES[c.from_stage] || c.from_stage || "이전 상태"} → ${STAGES[c.to_stage] || c.to_stage || "변경 상태"}`
         : item.item_kind === "executive_order"
           ? "공식 요약 변경"
-          : c.source_id;
+          : item.item_kind === "idn_policy"
+            ? IDN_EVENTS[c.event_type] || "인도네시아 공식 자료 변경"
+            : c.source_id;
     const life = item.item_kind === "bill" && c.lifecycle?.version === 1 ? c.lifecycle : null;
     const chamberLabel = { house: "하원", senate: "상원" };
     const context = life ? [
@@ -56,7 +59,9 @@ export function renderDelivery(delivery, from) {
       life.latest_event?.date ? `근거 날짜: ${String(life.latest_event.date).slice(0, 10)}` : null,
       life.latest_event?.vote ? `표결: 찬성 ${life.latest_event.vote.yea_count ?? "미확인"} · 반대 ${life.latest_event.vote.nay_count ?? "미확인"}` : null,
       life.next?.label ? `다음 확인: ${life.next.label}` : null,
-    ].filter(Boolean).join(" / ") : "";
+    ].filter(Boolean).join(" / ") : item.item_kind === "idn_policy"
+      ? `인도네시아 / ${c.scope === "national" ? "전국 적용 범위 검토" : (Array.isArray(c.regions) ? c.regions.join(", ") : "적용 지역 확인 필요")} / 개별 사업 적용성은 원문 확인 필요`
+      : "";
     const detail = String(c.detail || "").slice(0, 600);
     const evidenceUrl = safeLink(life?.latest_event?.source_url);
     const url = safeLink(c.url);
@@ -67,14 +72,16 @@ export function renderDelivery(delivery, from) {
   });
   const title =
     delivery.kind === "policy"
-      ? "즐겨찾기 정책 변경 알림"
+      ? delivery.items.every(item => item.item_kind === "idn_policy")
+        ? "인도네시아 규제 변경 알림"
+        : "즐겨찾기 정책 변경 알림"
       : "주간 원자재 보고서";
   return {
     from,
     to: delivery.recipient,
     subject: `[ChokePoint Monitor] ${title} ${rows.length}건`,
-    text: `${title}\n\n${rows.map((r) => r.text).join("\n\n")}\n\n수신 설정: https://chokemonitor.com/mypage`,
-    html: `<div lang="ko"><h2>${esc(title)}</h2><ul>${rows.map((r) => r.html).join("")}</ul><p><a href="https://chokemonitor.com/mypage">메일 수신 설정</a></p></div>`,
+    text: `${title}\n\n${rows.map((r) => r.text).join("\n\n")}\n\n수신 설정: https://chokemonitor.com/mypage${delivery.items.some(item=>item.item_kind==="idn_policy") ? "\n인도네시아 구독 해제: https://chokemonitor.com/indonesia-policy/#mail-subscriptions" : ""}`,
+    html: `<div lang="ko"><h2>${esc(title)}</h2><ul>${rows.map((r) => r.html).join("")}</ul><p><a href="https://chokemonitor.com/mypage">메일 수신 설정</a></p>${delivery.items.some(item=>item.item_kind==="idn_policy") ? '<p><a href="https://chokemonitor.com/indonesia-policy/#mail-subscriptions">인도네시아 구독 해제</a></p>' : ''}</div>`,
   };
 }
 
