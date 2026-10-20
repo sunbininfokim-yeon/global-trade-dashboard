@@ -87,6 +87,8 @@ IDN_TEST_NODE_MODULES=/tmp/idn-db-tests/node_modules \
 
 ## 법령 효력·원 부처 연결
 
+[원 부처 재점검 및 공식 재게시 목록 복구](../../docs/indonesia-policy-ministry-recovery-20261020.md): 네 원 부처는 실제 점검/403/시간 초과를 보류 사유로 저장하며, `probe_catalogues.py`로 새 폴더에서 한 차례 재점검할 수 있다. 원 재정부와 별개인 관세청 `djbc-kemenkeu` 분류 734건/30페이지를 연결했다. 카탈로그 전체 2,868행이며 본문 문서는 68개로 유지된다. 반복 페이지·표시 총수 변화·디스크 여유 부족 시 체크포인트를 보존하고 멈춘다. 자동 예약/AI 호출을 추가하지 않았다.
+
 [2026-10-20 인수 문서](../../docs/indonesia-policy-legal-effect-20261020.md)에 시행/개정/폐지/경과조치 17건, 원 부처 다섯 곳 점검 결과와 한계를 기록했다. `legal-effect-pack-20261019.json`은 `import-legal-effect.cjs`로 기본 미리보기 후 명시적 `--write`로 적용한다. 마이그레이션은 `20261019152914_indonesia_policy_legal_effect.sql`까지 순서대로 적용한다. 현재 문서 68개 전체의 유효성이 확정된 것은 아니다. 무역부 원 목록 96건은 본문 문서와 구분되는 부분 수집 메타데이터다.
 
 ## 문서개요 임베딩 실행
