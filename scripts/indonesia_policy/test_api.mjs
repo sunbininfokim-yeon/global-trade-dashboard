@@ -52,6 +52,8 @@ test('coal operations terms retrieve Indonesian clauses without conflating price
  assert.ok(parseTerms('기준가격')[0].aliases.includes('harga patokan'));
  assert.ok(parseTerms('광구중복')[0].aliases.includes('tumpang tindih'));
  assert.ok(parseTerms('행정제재')[0].aliases.includes('sanksi administratif'));
+ assert.ok(parseTerms('벌크통관')[0].aliases.includes('barang impor curah'));
+ assert.ok(!parseTerms('벌크통관')[0].aliases.includes('bea keluar'));
 });
 test('IDN handler calls only IDN RPC and keeps the server key out of responses',async()=>{
  const handler=createHandler(async(url,options)=>{

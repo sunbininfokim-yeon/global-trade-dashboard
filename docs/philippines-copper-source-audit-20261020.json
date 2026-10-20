@@ -1,0 +1,86 @@
+{
+  "country": "PHL",
+  "checked_at": "2026-10-20T12:15:45.586486+00:00",
+  "mode": "research_only_no_database_writes",
+  "sources": [
+    {
+      "source_id": "phl-ra7942",
+      "source_url": "https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/2/3617",
+      "observed_http_status": 200,
+      "raw_sha256": "1f9c69339abd72a7626a05a61550bc2570da236743fae81864bd7a1cd6a180c1",
+      "extracted_characters": 82174,
+      "observation": "official_html_text",
+      "current_legal_effect": "unverified"
+    },
+    {
+      "source_id": "phl-ra12253",
+      "source_url": "https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/2/99695",
+      "observed_http_status": 200,
+      "raw_sha256": "ca4f5db21e547f553fa8c38d426ae6f66d94769b12004b0b3c65fbe28c0fbd1e",
+      "extracted_characters": 23683,
+      "observation": "official_html_text",
+      "current_legal_effect": "unverified"
+    },
+    {
+      "source_id": "phl-ra8371",
+      "source_url": "https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/2/2562",
+      "observed_http_status": 200,
+      "raw_sha256": "1d9f670b7c27eff280e2ec3a97c60c3e0bf62577f8169b725442b61ced20eed1",
+      "extracted_characters": 74681,
+      "observation": "official_html_text",
+      "current_legal_effect": "unverified"
+    },
+    {
+      "source_id": "phl-dao201021",
+      "source_url": "https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/10/67619",
+      "observed_http_status": 200,
+      "raw_sha256": "b59aab6ed56d6c5b7a11ddc1c73eb2a2c3eb235890e69ffe02dea0cf29b97434",
+      "extracted_characters": 552,
+      "observation": "official_registry_metadata_only",
+      "current_legal_effect": "unverified"
+    },
+    {
+      "id": "phl-dao202140",
+      "url": "https://apidb.denr.gov.ph/infores/uploads/DAO-2021-40.pdf",
+      "http_status": 200,
+      "bytes": 488198,
+      "sha256": "c8718d21633e27b6719a5319096b20642a2eb5ee9d04dd989476a987e3a7acd8",
+      "content_type": "application/pdf",
+      "pages": 9,
+      "head": "",
+      "observation": "official_scan_pdf_acquired_ocr_pending",
+      "current_legal_effect": "unverified"
+    },
+    {
+      "source_id": "phl-ra12253-irr",
+      "source_url": "https://www.dof.gov.ph/wp-content/uploads/2025/12/MINING-IRR.pdf",
+      "observation": "local_http_403_web_index_visible",
+      "current_legal_effect": "unverified"
+    }
+  ],
+  "official_catalogue_probe": {
+    "url": "https://elibrary.judiciary.gov.ph/republic_acts/fetch_ra",
+    "method": "POST",
+    "flow": "Published DataTables form with same-session page token",
+    "http_status": 200,
+    "sha256": "bacbed3940a441536de3876d2388ce1d647428e07fde0b880ee986aa2ac379a8",
+    "json_valid": true,
+    "records_total": 12468,
+    "records_filtered": 1,
+    "returned_rows": 1,
+    "sample": [
+      [
+        "REPUBLIC ACT NO. 7942",
+        "1995-03-03",
+        "<a href='https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/2/3617'>AN ACT INSTITUTING A NEW SYSTEM OF MINERAL RESOURCES EXPLORATION, DEVELOPMENT, UTILIZATION, AND CONSERVATION</a>"
+      ]
+    ],
+    "verified_scope": "Single filtered lookup for RA 7942; no complete enumeration, durable API contract or change monitoring verified."
+  },
+  "blocked_regional_probe": {
+    "source_url": "https://region10.mgb.gov.ph/mine-management-division/",
+    "http_status": 403,
+    "retries": 0
+  },
+  "scope_limit": "Central-source feasibility only. Local ordinances, permits, amendments, fiscal applicability, and full national coverage are not verified."
+}

@@ -34,6 +34,7 @@ const GROUPS = [
  ['복구보증금','광산복구보증금','jaminan reklamasi'],
  ['허가구역중복','광구중복','중복허가','permit overlap','tumpang tindih'],
  ['행정제재','administrative sanctions','sanksi administratif'],
+ ['벌크화물','벌크 화물','벌크통관','bulk cargo','barang impor curah','barang ekspor curah'],
  ['이탄지','peatland','gambut'],['기후적응','climate adaptation','adaptasi perubahan iklim','climate_adaptation'],
  ['환경성과평가','기업환경평가','proper','properlink','environmental_performance'],
  ['로열티','royalty','royalties','iuran produksi','royalties_tax'],
