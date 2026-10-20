@@ -17,6 +17,7 @@ from election_watch.superpac import SourceError
 from election_watch.poll_primary_supplements import merge_primary_supplements
 from election_watch.poll_html_tables import merge_html_tables, bind_html_reviews, saved_html_receipts
 from election_watch.poll_refresh_provenance import retain_state_provenance
+from election_watch.poll_intake import attach_saved_intake
 from election_watch.state_inputs import packets
 
 ROOT = Path(__file__).resolve().parent
@@ -183,6 +184,8 @@ def main():
         history = poll_history(rows, policy, args.as_of)
         previous = read(args.output) if args.output.exists() else None
         retain_state_provenance(board, history, previous, packets() if production_policy else ())
+        if production_policy:
+            attach_saved_intake(board, previous, args.retry_capture)
         if args.input:
             board['source_status'] = 'replay'
         archive_path = args.output.with_name(f'usa_election_poll_history_{policy["cycle"]}.json')

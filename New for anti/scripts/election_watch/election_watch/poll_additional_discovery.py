@@ -158,7 +158,7 @@ def extend_report(report, additional):
     report['source_health'].update(additional['source_health'])
     report['summary'] = {'discovered_records': len(report['records']),
         'races': len({r['race_id'] for r in report['records'] if r.get('race_id')}),
-        'by_office': dict(Counter(r['office'] for r in report['records'])),
+        'by_office': dict(Counter(r['office'] or 'unresolved' for r in report['records'])),
         'signal_eligible_records': 0, 'commentary_entries': len(report['commentary'])}
     report['status'] = 'partial' if report['status'] != 'ok' or any(
         r['status'] in ('partial', 'unavailable') for r in additional['source_health'].values()) else 'ok'
