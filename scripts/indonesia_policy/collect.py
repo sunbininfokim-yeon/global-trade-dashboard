@@ -109,7 +109,7 @@ def verify_identity(text, entry):
     return all(normalized(t).casefold() in value for t in entry["identity_phrases"])
 
 
-def collect(entry, cache_dir):
+def collect(entry, cache_dir, blocked_hosts=None):
     catalogue_review = entry.get("catalogue_review")
     if catalogue_review is not None and (not isinstance(catalogue_review, dict)
             or not re.fullmatch(r"[a-z0-9-]{1,100}", catalogue_review.get("source_id", ""))
@@ -162,6 +162,8 @@ def collect(entry, cache_dir):
     if not is_pdf and preferred:
         candidate = preferred[0]
         try:
+            if urlparse(candidate["url"]).hostname in (blocked_hosts or set()):
+                raise ValueError("body_host_in_cooldown")
             time.sleep(2)
             pdf, pdf_url, pdf_hash = fetch(candidate["url"], cache_dir)
             if pdf.startswith(b"%PDF"):
@@ -236,7 +238,7 @@ def main():
         try:
             if urlparse(entry["url"]).hostname in blocked_hosts:
                 raise ValueError("host_blocked_earlier_in_run")
-            doc = collect(entry, out / "raw")
+            doc = collect(entry, out / "raw", blocked_hosts)
             if doc.get("body_fetch_blocked_host"):
                 blocked_hosts.add(doc["body_fetch_blocked_host"])
             result["documents"].append(doc)

@@ -10,6 +10,8 @@ const migrations=['20260911010000_mailing_outbox.sql','20260919_bill_notificatio
 const migration='20261020174850_indonesia_policy_mailing.sql';
 const gateway='20261020213953_indonesia_mail_auth_gateways.sql';
 const release='20261020214317_indonesia_mail_review_enqueue.sql';
+const preserve='20261020215056_indonesia_preserve_source_text.sql';
+const serialize='20261020230106_indonesia_ingest_serialization.sql';
 const sql=name=>readFileSync(new URL('../../../supabase/migrations/'+name,import.meta.url),'utf8');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const body='Ketentuan batubara dan perlindungan lingkungan untuk usaha pertambangan. '.repeat(8);
@@ -37,6 +39,8 @@ async function fixture(fn){
   await db.exec(sql(migration));
   await db.exec(sql(gateway));
   await db.exec(sql(release));
+  await db.exec(sql(preserve));
+  await db.exec(sql(serialize));
   const acting=async(id,fn)=>{
    await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');
    try{return await fn();}finally{await db.exec('reset role');}
@@ -147,4 +151,14 @@ test('failed queue write rolls back review completion and retry releases exactly
  await assert.rejects(review(c));assert.equal((await db.query('select state from policy_idn.mail_changes where change_id=$1',[c.change_id])).rows[0].state,'pending');
  await db.exec('drop trigger idn_fixture_failure on mailing_outbox');assert.equal(await review(c),true);
  assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,1);
+}));
+test('metadata or truncated fallback preserves complete text, freshness and quiet mail state',()=>fixture(async({db,rpc,save})=>{
+ const before=(await db.query("select last_observed_at from policy_idn.documents where document_id='idn-national'")).rows[0].last_observed_at;
+ const fallback={...document('idn-national'),title_ko:'must not replace',content_kind:'official_metadata',observed_at:new Date().toISOString(),text_content:body+'catalogue fallback',content_hash:hash(body+'catalogue fallback')};
+ assert.equal(await save(fallback),false);
+ assert.equal(await save({...fallback,content_kind:'official_text',text_truncated:true}),false);
+ assert.equal((await db.query("select last_observed_at from policy_idn.documents where document_id='idn-national'")).rows[0].last_observed_at.toISOString(),before.toISOString());
+ assert.equal((await rpc('idn_mail_review_queue')).pending.length,0);
+ assert.equal((await db.query("select outcome from policy_idn.source_checks where document_id='idn-national'")).rows[0].outcome,'failed');
+ assert.equal(await save({...fallback,document_id:'idn-new-meta',document_number:'new-meta'}),true);
 }));

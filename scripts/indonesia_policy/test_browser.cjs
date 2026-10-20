@@ -180,6 +180,7 @@ test('mail subscriptions keep product/region separate from search and support op
   await root.getByText('메일 구독 저장',{exact:true}).waitFor();
   await root.locator('[name=region]').selectOption('Kalimantan Timur');await root.getByRole('button',{name:'메일 구독 저장',exact:true}).click();
   await root.getByText('석탄 · 동칼리만탄 · 구독 중',{exact:true}).waitFor();
+  assert.equal(await root.locator('[name=region]').inputValue(),'Kalimantan Timur');
   assert.equal(new URL(page.url()).searchParams.get('q'),'석탄');assert.equal(await page.locator('#search-form [name=topic]').inputValue(),'');
   await root.getByRole('button',{name:'구독 해제',exact:true}).click();await root.getByText('석탄 · 동칼리만탄 · 해제됨',{exact:true}).waitFor();
   assert.ok((await root.innerText()).includes('자동 발송은 아직 준비 중'));

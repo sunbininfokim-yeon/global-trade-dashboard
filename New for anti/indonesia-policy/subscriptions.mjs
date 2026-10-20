@@ -10,7 +10,9 @@ export function mountSubscriptions(root,connect){
   const token=++serial;list.replaceChildren();form.hidden=true;
   if(!await api.user()){if(token===serial)status.textContent='로그인한 계정으로 구독을 저장합니다. 마이페이지에서 로그인 후 이 화면으로 돌아오세요.';return;}
   const data=await api.list();if(token!==serial)return;
+  const selected=region.value;
   region.replaceChildren(...data.regions.map(r=>new Option(regionNames[r]?`${regionNames[r]} (${r})`:r,r)));
+  if(data.regions.includes(selected))region.value=selected;
   status.textContent=data.delivery_enabled?'확인된 변경 근거를 알립니다. 전국 적용 규정도 포함합니다.':'구독 설정을 저장할 수 있습니다. 인도네시아 자동 발송은 아직 준비 중입니다.';
   form.hidden=false;form.querySelector('button').disabled=!data.regions.length;
   for(const s of data.subscriptions){
@@ -24,7 +26,7 @@ export function mountSubscriptions(root,connect){
  }
  root.addEventListener('toggle',async()=>{
   if(!root.open||started)return;started=true;status.textContent='로그인·구독 정보를 확인하는 중입니다.';
-  try{api=subscriptionClient(await connect());api.onChange(()=>{void refresh().catch(e=>{status.textContent=e.message;form.hidden=true;});});await refresh();}catch(e){status.textContent=e.message||'구독 연결을 확인하지 못했습니다.';started=false;}
+  try{if(!api){api=subscriptionClient(await connect());api.onChange(()=>{void refresh().catch(e=>{status.textContent=e.message;form.hidden=true;});});}await refresh();}catch(e){status.textContent=e.message||'구독 연결을 확인하지 못했습니다.';started=false;}
  });
  form.addEventListener('submit',e=>{e.preventDefault();void save(form.elements.topic.value,region.value,true);});
  return {refresh:async()=>{if(api)await refresh();}};
