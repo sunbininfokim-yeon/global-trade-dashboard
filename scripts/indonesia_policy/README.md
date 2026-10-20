@@ -2,6 +2,12 @@
 
 미국과 분리된 policy_idn 전용 수집·저장·검색 경로다. [분리 계약](../../docs/indonesia-policy-isolation-contract.md)과 [검색 계약](../../docs/indonesia-policy-search.md)을 따른다. 수집/import는 검색 UI, 미국 검색, 메일, Gemini 호출, 반복 스케줄을 실행하지 않는다.
 
+[2026-10-20 석탄 보강 결과](../../docs/indonesia-policy-coal-core-20261020.md): 원문 2건·효력 근거 16건·관계/적용범위/조문 12건을 운영 DB에 추가했다. `sources-coal-core-20261020.json`, `coal-review-pack-20261020.json`, `coal-legal-effect-pack-20261020.json`에 수집·재적용 입력을 보관한다. 스캔 PDF 1건과 신규 임베딩은 미완료이며 법령 전체의 현행성을 확정한 것은 아니다.
+
+[같은 날 운영 의무 추가 보강](../../docs/indonesia-policy-coal-operations-20261020.md): RKAB 기본·개정 원문 2건, 검토 근거 21건·효력 근거 8건을 더 반영했다. 석탄 혼합·DMO·기준가격·복구보증금·광구 중복 검색을 보강했다. 실제 DB 검색 평가: `node scripts/indonesia_policy/evaluate-search.mjs scripts/indonesia_policy/search-evaluation-coal-20261020.json --env-file /ABS/ENV` (읽기 전용·유료 AI 호출 없음).
+
+[미완료 처리·필리핀 확장 판단](../../docs/indonesia-policy-closure-and-philippines-decision-20261020.md): PMK26 스캔을 로컬 OCR로 저장했고 전체 73문서 개요·선택 조문 26개의 벡터가 현재 입력과 일치한다. 임베딩 대기는 0개다. OCR 전체 전사·현행 효력 검증 완료를 뜻하지 않는다. DMO·가격 하위 원문은 보류이며 필리핀은 공식 목록·출처 조사만 했다. `prepare_ocr.py`는 검토한 원본·OCR 출력 해시에 한정해 비공개 collection을 준비하며 DB·AI 호출을 하지 않는다.
+
 ## 공식 목록을 먼저 수집·대조
 
 개별 검색과 관련 링크 탐색에 앞서 [기관별 목록 수집](../../docs/indonesia-policy-catalogue-20261019.md)을 사용한다. 현재 공식 목록4개에서 출처별 후보2,038행을 수집했고 원 부처5개는 연동 미확인으로 보류했다. 실제 등록된 JSON 피드는 아직 없으며 이번 실수집은 HTML 표·페이지 어댑터다. 목록 후보는 검토된 법령 본문·벡터와 별도다.
