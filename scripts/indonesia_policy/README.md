@@ -4,6 +4,8 @@
 
 [2026-10-20 석탄 보강 결과](../../docs/indonesia-policy-coal-core-20261020.md): 원문 2건·효력 근거 16건·관계/적용범위/조문 12건을 운영 DB에 추가했다. `sources-coal-core-20261020.json`, `coal-review-pack-20261020.json`, `coal-legal-effect-pack-20261020.json`에 수집·재적용 입력을 보관한다. 스캔 PDF 1건과 신규 임베딩은 미완료이며 법령 전체의 현행성을 확정한 것은 아니다.
 
+[같은 날 운영 의무 추가 보강](../../docs/indonesia-policy-coal-operations-20261020.md): RKAB 기본·개정 원문 2건, 검토 근거 21건·효력 근거 8건을 더 반영했다. 석탄 혼합·DMO·기준가격·복구보증금·광구 중복 검색을 보강했다. 실제 DB 검색 평가: `node scripts/indonesia_policy/evaluate-search.mjs scripts/indonesia_policy/search-evaluation-coal-20261020.json --env-file /ABS/ENV` (읽기 전용·유료 AI 호출 없음).
+
 ## 공식 목록을 먼저 수집·대조
 
 개별 검색과 관련 링크 탐색에 앞서 [기관별 목록 수집](../../docs/indonesia-policy-catalogue-20261019.md)을 사용한다. 현재 공식 목록4개에서 출처별 후보2,038행을 수집했고 원 부처5개는 연동 미확인으로 보류했다. 실제 등록된 JSON 피드는 아직 없으며 이번 실수집은 HTML 표·페이지 어댑터다. 목록 후보는 검토된 법령 본문·벡터와 별도다.
