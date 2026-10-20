@@ -1,15 +1,16 @@
 """Source capture survives unrelated regression/forecast problems, never publishes unchecked data."""
 import json
+import io
 from pathlib import Path
 import sys
 import tempfile
 import unittest
 from urllib.error import HTTPError, URLError
 from unittest.mock import patch
-from contextlib import nullcontext
+from contextlib import nullcontext, redirect_stdout
 import refresh_live_polls as refresh
 from election_watch import live_polls
-from election_watch.poll_run_capture import validate_capture
+from election_watch.poll_run_capture import validate_capture, collection_failure, primary_capture_health
 from test_live_polls import POLICY,poll
 
 
@@ -49,6 +50,8 @@ class CaptureTests(unittest.TestCase):
             status=json.loads(checkpoint.with_suffix('.status.json').read_text())
             self.assertTrue(status['provider_checkpoint_saved_for_attempt'])
             self.assertFalse(status['public_data_modified'])
+            self.assertEqual(status['stage'],'revalidate_policy')
+            self.assertEqual(status['error_code'],'validation_failed')
             self.assertEqual(json.loads(output.read_text())['fetched_at'],'2026-10-01T00:00:00Z')
 
     def test_provider_only_audit_cannot_be_replayed_for_publication(self):
@@ -57,6 +60,7 @@ class CaptureTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_capture(json.loads(checkpoint.with_suffix('.provider.json').read_text()))
             self.assertEqual(json.loads(checkpoint.with_suffix('.status.json').read_text())['status'],'captured_unpublished')
+            self.assertEqual(json.loads(checkpoint.with_suffix('.status.json').read_text())['primary_source_health']['status'],'not_observed')
 
     def test_failure_records_attempt_without_replacing_last_valid_public_data(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -65,7 +69,48 @@ class CaptureTests(unittest.TestCase):
             self.assertEqual(json.loads(output.read_text())['fetched_at'],'2026-10-01T00:00:00Z')
             status=json.loads(checkpoint.with_suffix('.status.json').read_text())
             self.assertEqual(status['status'],'capture_failed');self.assertFalse(status['public_data_modified'])
+            self.assertEqual(status['stage'],'fetch_provider');self.assertEqual(status['error_code'],'network_error')
             self.assertFalse((root/'usa_election_live_polls_status_v1.json').exists())
+
+    def test_configuration_failure_is_recorded_before_provider_request(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+             patch.object(refresh,'read',side_effect=json.JSONDecodeError('bad JSON','{',1)), \
+             patch.object(refresh,'fetch_polls') as fetch:
+            code,output,checkpoint=self.run_capture(Path(tmp))
+            self.assertEqual(code,1);fetch.assert_not_called()
+            status=json.loads(checkpoint.with_suffix('.status.json').read_text())
+            self.assertEqual(status['stage'],'load_configuration');self.assertEqual(status['error_code'],'invalid_json')
+            self.assertFalse(status['provider_checkpoint_saved_for_attempt'])
+            self.assertFalse(checkpoint.exists())
+            self.assertEqual(json.loads(output.read_text())['fetched_at'],'2026-10-01T00:00:00Z')
+
+    def test_error_diagnostics_never_copy_arbitrary_exception_content(self):
+        secret='SYNTHETIC_SECRET_NOT_A_REAL_KEY'
+        message='https://pollster.example/?api_key='+secret
+        for error in (ValueError(message),URLError(message),HTTPError(message,403,message,{},None)):
+            with self.subTest(error=type(error).__name__),tempfile.TemporaryDirectory() as tmp,redirect_stdout(io.StringIO()) as stdout:
+                code,_,checkpoint=self.run_capture(Path(tmp),error)
+                self.assertEqual(code,1)
+                text=checkpoint.with_suffix('.status.json').read_text()+stdout.getvalue()
+                self.assertNotIn(secret,text);self.assertNotIn('api_key',text)
+        self.assertEqual(collection_failure(ValueError('empty or changed API schema'),'fetch_provider')['error_code'],'provider_schema_changed')
+        self.assertEqual(collection_failure(ValueError('primary_and_provider_wave_conflict'),'merge_primary_supplements')['error_code'],'primary_and_provider_wave_conflict')
+
+    def test_primary_health_distinguishes_conflict_outage_and_no_receipts(self):
+        receipts=[{'id':'synthetic-healthy','status':'primary_documents_rechecked'},
+            {'id':'synthetic-conflict','status':'primary_provider_conflict_reference_only',
+             'documents':[{'status':'unavailable'}]},
+            {'id':'synthetic-carried','status':'carried_forward_reference_only'},
+            {'kind':'html_table_health','contract_id':'synthetic-html-source','status':'unavailable_no_previous_data'}]
+        health=primary_capture_health(receipts)
+        self.assertEqual(health['status'],'review_required');self.assertEqual(health['receipt_count'],4)
+        self.assertEqual(health['conflict_release_ids'],['synthetic-conflict'])
+        self.assertEqual(health['reference_only_release_ids'],['synthetic-carried','synthetic-conflict'])
+        self.assertEqual(health['document_problem_release_ids'],['synthetic-conflict'])
+        self.assertEqual(health['unavailable_contract_ids'],['synthetic-html-source'])
+        self.assertEqual(primary_capture_health(receipts[:1])['status'],'ok')
+        self.assertEqual(primary_capture_health([])['status'],'not_observed')
+        self.assertEqual(primary_capture_health([{'status':'future-status'}])['status'],'review_required')
 
     def test_capture_cannot_publish_replay_or_omit_checkpoint_path(self):
         for args in (['--capture-only'],['--capture-only','--capture-output','/tmp/test.json','--input','/tmp/replay.json']):

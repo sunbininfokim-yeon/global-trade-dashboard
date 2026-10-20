@@ -116,6 +116,24 @@ class HtmlTablesTests(TestCase):
         self.assertEqual(bad,[]);self.assertEqual(len(good),1)
         self.assertFalse(good[0]['aggregation_eligibility']['eligible'])
         self.assertEqual(receipts[0]['status'],'provider_wave_conflict_reference_only')
+        self.assertEqual(receipts[0]['conflicting_provider_records'],[api])
+        self.assertIn('primary_and_provider_wave_conflict',good[0]['aggregation_eligibility']['reasons'])
+        saved=validate_capture(make_capture(rows,[api],'https://api.votehub.com/polls?subject=2026',DAY,DAY+'T06:00:00+00:00',receipts))
+        replay,bad=normalize(saved['rows'],bind_html_reviews(POLICY,saved['rows'],saved['primary_receipts'],SNAP,DAY),DAY)
+        self.assertFalse(bad);self.assertFalse(replay[0]['aggregation_eligibility']['eligible'])
+        self.assertEqual(replay[0]['primary_source_capture']['conflicting_provider_records'],[api])
+
+    def test_conflict_evidence_survives_later_source_outage(self):
+        from election_watch.poll_run_capture import primary_capture_health
+        rows,_=self.capture();api=deepcopy(rows[0]);api.pop('primary_source_capture');api['id']='synthetic-conflict';api['answers'][0]['pct']=47
+        _,receipts=self.capture([api])
+        rows,new=self.capture(previous=receipts,p={ENTRY['index_url']:html('source unavailable')})
+        good,bad=normalize(rows,bind_html_reviews(POLICY,rows,new,SNAP,DAY),DAY)
+        self.assertFalse(bad);self.assertFalse(good[0]['aggregation_eligibility']['eligible'])
+        self.assertIn('primary_and_provider_wave_conflict',good[0]['aggregation_eligibility']['reasons'])
+        self.assertIn('primary_source_unavailable_or_changed',good[0]['aggregation_eligibility']['reasons'])
+        self.assertEqual(good[0]['primary_source_capture']['conflicting_provider_records'],[api])
+        self.assertEqual(primary_capture_health(new)['conflict_release_ids'],[rows[0]['id']])
     def test_failure_preserves_original_date_and_values(self):
         original,receipts=self.capture()
         rows,new=self.capture(previous=receipts,p={ENTRY['index_url']:html('down')})

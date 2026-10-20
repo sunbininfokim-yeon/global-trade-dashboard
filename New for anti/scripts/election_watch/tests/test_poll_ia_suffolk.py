@@ -3,7 +3,7 @@ import copy,hashlib,io,json,unittest
 from pathlib import Path
 from election_watch.governor_matchups import apply_matchups
 from election_watch.poll_targets import apply_targets
-from election_watch.live_polls import normalize,summarize
+from election_watch.live_polls import normalize,summarize,build_live
 from election_watch.poll_primary_supplements import merge_primary_supplements
 ROOT=Path(__file__).resolve().parents[1];C=ROOT/'config/usa_polls';P=ROOT.parent.parent/'public/data';DAY='2026-10-08';read=lambda p:json.loads(p.read_text())
 class IowaSuffolkTests(unittest.TestCase):
@@ -40,8 +40,10 @@ class IowaSuffolkTests(unittest.TestCase):
  def test_snapshot_change_does_not_admit_new_release(self):
   for key,value in [('sample_size',300),('sponsors',['campaign']),('end_date','2026-10-05')]:
    raw=copy.deepcopy(self.raw[0]);raw[key]=value;obs,rejected=normalize([raw],self.policy,DAY);self.assertFalse(obs);self.assertEqual(rejected[0]['reason'],'primary_review_provider_metadata_changed')
- def test_house_still_missing_and_report_index_not_zero_spending(self):
-  b=read(P/'usa_election_live_polls_v1.json')
+ def test_statewide_audits_do_not_create_house_polls_or_zero_spending(self):
+  audit=read(P/'usa_election_poll_release_reviews/2026/IA-primary-20261009.json')
+  fixed=self.raw+[r['provider_record'] for r in audit['records']]
+  b=build_live(fixed,self.policy,{'schema':'usa_confirmed_results_v1','results':[]},DAY,DAY,'fixture')
   for d in ['01','02','03','04']:
    r=b['races']['USA:IA:house:'+d];self.assertFalse(r['observations']);self.assertIsNone(r['windows']['7']['party']);self.assertEqual(r['windows']['7']['status'],'no_recent_poll')
   idx=read(P/'usa_governor_ie_report_indexes/2026/IA.json');self.assertFalse(idx['cycle_discovery_complete']);self.assertFalse(idx['candidate_amounts_available']);self.assertTrue(all(r['support_cents'] is None and r['oppose_cents'] is None for r in idx['records']))

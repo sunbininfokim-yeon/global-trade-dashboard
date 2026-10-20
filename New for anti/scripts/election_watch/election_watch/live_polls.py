@@ -329,9 +329,11 @@ def normalize(rows, policy, as_of):
             if publisher_reference:
                 reasons.append('publisher_identified_release_review_pending')
                 if p.get('sample_size') is None:reasons.append('reference_sample_n_not_disclosed_by_api')
-            if primary and primary['status']=='primary_provider_conflict_reference_only':
+            if primary and (primary['status']=='primary_provider_conflict_reference_only'
+                            or primary.get('conflict_reason')=='primary_and_provider_wave_conflict'):
                 reasons.append('primary_and_provider_wave_conflict')
-            if primary and primary['status']=='carried_forward_reference_only':
+            if primary and (primary['status']=='carried_forward_reference_only'
+                            or any(d.get('status')!='unchanged' for d in primary.get('documents', []))):
                 reasons.append('primary_source_unavailable_or_changed')
             if partisan_reference and not count_commissioned:
                 reasons.append('party_commissioned_reference')

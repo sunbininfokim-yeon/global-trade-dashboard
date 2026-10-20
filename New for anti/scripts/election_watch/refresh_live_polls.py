@@ -60,7 +60,8 @@ def main():
     args = p.parse_args()
     if args.capture_only and (not args.capture_output or args.input or args.retry_capture):
         p.error('--capture-only requires --capture-output and cannot replay an input')
-    from election_watch.poll_run_capture import validate_capture, make_capture, restore_ballots
+    from election_watch.poll_run_capture import (validate_capture, make_capture, restore_ballots,
+                                               collection_failure, primary_capture_health)
     retry = validate_capture(read(args.retry_capture)) if args.retry_capture else None
     if retry:
         if args.input: raise ValueError('ambiguous polling replay')
@@ -126,18 +127,21 @@ def main():
                 # Review priority failures must not discard good polling data.
                 policy['house_poll_focus_health'] = {'status': 'hold', 'checked_as_of': args.as_of, 'error_type': type(exc).__name__}
         return policy
-    html_snapshot = read(ROOT/'config/usa_polls/html_table_sources_2026.json') if production_policy else None
     provider_saved = False
+    stage = 'load_configuration'
     try:
+        html_snapshot = read(ROOT/'config/usa_polls/html_table_sources_2026.json') if production_policy else None
         ballots = read(ballot_reviews) if ballot_reviews else None
         policy = selected_policy()
         quality = read(args.quality_reviews)
         if quality['schema'] != 'usa_poll_quality_reviews_v1' or quality['cycle'] != policy['cycle']:
             raise ValueError('quality review schema/cycle')
+        stage = 'fetch_provider'
         rows, url = ((retry['rows'], retry['source_url']) if retry else
                      (read(args.input), 'replay') if args.input else fetch_polls(policy['cycle'], args.as_of))
         provider_rows = retry['provider_rows'] if retry else rows
         if args.capture_only:
+            stage = 'save_provider_checkpoint'
             # Retain the actual API response before supplemental-source or
             # ballot review can fail. This audit format cannot be replayed as
             # a complete, validated publication checkpoint.
@@ -148,29 +152,39 @@ def main():
             provider_saved = True
         primary_receipts = retry['primary_receipts'] if retry else []
         if production_policy and not args.input and not retry:
+            stage = 'merge_primary_supplements'
             rows, primary_receipts = merge_primary_supplements(rows, read(ROOT/'config/usa_polls/primary_supplements_2026.json'), args.as_of, isolate_conflicts=True)
         if html_snapshot is not None and not args.input and not retry:
+            stage = 'merge_html_tables'
             previous = read(args.output) if args.output.exists() else {}
             old_html = saved_html_receipts(previous, packets())
             rows, html_receipts = merge_html_tables(rows, html_snapshot, policy, args.as_of, old_html)
             primary_receipts += html_receipts
+        primary_health = primary_capture_health(primary_receipts)
+        stage = 'refresh_ballots'
         refresh_ballots()
+        stage = 'revalidate_policy'
         policy = selected_policy()
         if args.capture_output and not args.input:
+            stage = 'save_capture_checkpoint'
             atomic(args.capture_output, make_capture(rows, provider_rows, url, args.as_of, checked, primary_receipts,
                                                     ballot_capture, ballot_health))
         if args.capture_only:
             atomic(args.capture_output.with_suffix('.status.json'), {
                 'status': 'captured_unpublished', 'captured_at': checked, 'as_of': args.as_of,
-                'provider_records': len(provider_rows), 'records_with_supplements': len(rows)})
+                'provider_records': len(provider_rows), 'records_with_supplements': len(rows),
+                'primary_source_health': primary_health})
             print('Polling source captured; publication still requires validation')
             return 0
         policy['quality_reviews'] = quality['reviews']
+        stage = 'validate_poll_observations'
         if html_snapshot is not None:
             policy = bind_html_reviews(policy, rows, primary_receipts, html_snapshot, args.as_of)
         board = build_live(rows, policy, read(args.results), args.as_of, checked, url)
         if primary_receipts:
             board['primary_supplement_receipts'] = primary_receipts
+        board['primary_source_health'] = primary_health
+        stage = 'attach_coverage'
         try:
             finance = load_finance_links(args.finance_index, policy['cycle'])
         except (OSError, ValueError, KeyError, TypeError) as exc:
@@ -180,17 +194,20 @@ def main():
         if target_catalog:
             attach_gaps(board, finance)
             board['ballot_source_health'] = ballot_health
+        stage = 'build_history'
         history = poll_history(rows, policy, args.as_of)
         previous = read(args.output) if args.output.exists() else None
         retain_state_provenance(board, history, previous, packets() if production_policy else ())
         if args.input:
             board['source_status'] = 'replay'
         archive_path = args.output.with_name(f'usa_election_poll_history_{policy["cycle"]}.json')
+        stage = 'publish_poll_data'
         atomic(archive_path, history)
         atomic(args.output, board)
         forecast_status = publish_scenarios(board, args, checked)
         atomic(health, {'checked_at': checked, 'status': board['source_status'], 'as_of': args.as_of,
-                        'seat_scenario': forecast_status, 'ballot_source': ballot_health})
+                        'seat_scenario': forecast_status, 'ballot_source': ballot_health,
+                        'primary_source_health': primary_health})
         print(board['coverage'])
         print({d: {s: sum(r['windows'][d]['status'] == s for r in board['races'].values())
                    for s in ('poll_lead','single_poll_lead','no_recent_poll','tie','unknown_leader_party')} for d in ('7','14')})
@@ -200,12 +217,13 @@ def main():
             # It must not mark valid polling collection/publication as failed.
             print('::warning::Seat forecast is held; validated polling data remains available')
     except Exception as exc:
+        failure = collection_failure(exc, stage)
         if args.capture_only:
             atomic(args.capture_output.with_suffix('.status.json'), {
                 'status': 'capture_failed', 'attempted_at': checked, 'as_of': args.as_of,
-                'error_type': type(exc).__name__, 'public_data_modified': False,
+                **failure, 'public_data_modified': False,
                 'provider_checkpoint_saved_for_attempt': provider_saved})
-            print('Polling capture failed:', type(exc).__name__)
+            print('Polling capture failed:', failure)
             return 1
         # Official outcomes are independent of the poll transport. If the API
         # fails, still accept a newly reviewed result without refreshing polls.
@@ -225,9 +243,9 @@ def main():
             publish_scenarios(existing, args, checked, {'status': 'error'})
         except (OSError, ValueError, KeyError, TypeError, SourceError):
             pass
-        atomic(health, {'checked_at': checked, 'status': 'error', 'error_type': type(exc).__name__,
+        atomic(health, {'checked_at': checked, 'status': 'error', **failure,
                         'note_ko': '수집 실패. 마지막 정상 자료를 보존하며 지도 색상은 중립 처리합니다.'})
-        print('Poll refresh failed:', type(exc).__name__)
+        print('Poll refresh failed:', failure)
         return 1
     return 0
 
