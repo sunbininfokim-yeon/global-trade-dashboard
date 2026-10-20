@@ -997,6 +997,22 @@ class ExporterSourcesTests(unittest.TestCase):
         self.assertEqual([it.url for it in items], ["http://government.ru/docs/1/"])
         self.assertEqual(items[0].board, "export_controls")
 
+    def test_carried_over_items_keep_the_board_title_filter(self):
+        from commodity_reports import build as build_mod
+        src = self._source("id_kemendag")
+        prev = {"items": [
+            {"id": "a", "source_id": "id_kemendag", "url": "https://www.kemendag.go.id/a",
+             "title": {"original": "HPE dan HR Emas Periode II Oktober 2026 Kembali Turun"}},
+            {"id": "b", "source_id": "id_kemendag", "url": "https://www.kemendag.go.id/b",
+             "title": {"original": "Pemerintah Tetapkan Larangan Ekspor Bijih Bauksit"}},
+        ]}
+        for it in prev["items"]:
+            it["published_at"] = "2026-10-14T00:00:00+00:00"
+        carried = build_mod.previous_raws(prev, [src], datetime(2026, 10, 20, tzinfo=timezone.utc))
+        boards = {r.url: r.board for r in carried.get("id_kemendag", [])}
+        self.assertIsNone(boards["https://www.kemendag.go.id/a"])
+        self.assertEqual(boards["https://www.kemendag.go.id/b"], "export_controls")
+
     def test_indonesian_trade_ministry_only_puts_export_controls_on_the_board(self):
         rss = """<?xml version="1.0"?><rss><channel>
           <item><title>Pemerintah Tetapkan Larangan Ekspor Bijih Bauksit Mulai Juni</title>
