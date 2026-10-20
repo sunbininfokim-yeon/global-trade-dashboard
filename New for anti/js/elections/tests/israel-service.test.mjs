@@ -13,7 +13,7 @@ test('paired source data and health must match exact body hash', async () => {
         globalThis.fetch = response();
         const { loadIsraelElectionAnalysis } = await import('../data/israel-service.js?case=ok');
         const result = await loadIsraelElectionAnalysis();
-        assert.equal(result.board?.coverage.accepted_seat_polls, 6);assert.equal(result.error, null);
+        assert.equal(result.board?.coverage.accepted_seat_polls, 8);assert.equal(result.error, null);
     } finally { globalThis.fetch = previous; }
 });
 test('transport failure returns unavailable, never an empty polling board', async () => {

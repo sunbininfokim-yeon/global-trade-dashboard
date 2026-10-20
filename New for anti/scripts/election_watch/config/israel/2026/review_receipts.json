@@ -1,13 +1,13 @@
 {
   "draft": true,
-  "evidence_as_of": "2026-10-14",
+  "evidence_as_of": "2026-10-20",
   "mode": "reviewed_snapshot",
   "input_sha256": {
-    "sources.json": "4d749ea5dbd51db0095e45f7b370f765c24db565068be7e0e312c36d25ebd1a3",
-    "election_calendar.json": "c80647a0def132d9015b0e01996cf4668d8c7207ef9aab505a92c61a6a24fab8",
-    "lists.json": "7aa746f38445170fca5acfa531402b4fb98c0a1c9ea3859347d55097d1656357",
-    "poll_observations.jsonl": "2ebeab0dedd470adf320d3595b7003d59059e738b00d7c6fade553284309b6d1",
-    "coalition_positions.jsonl": "7021f21d74c70baa25d0ee8d951de3dbc4ed9e36a1f8018440188c620cfeb2f6"
+    "poll_observations.jsonl": "1bfe569bdaa5c3bfcadb4d40c77a2415f656788690429aa2c071633b8bfe4a5d",
+    "coalition_positions.jsonl": "729d25628d44a83ea3e707cce92e85bb50dc5778aaef89ebc69c906937218a00",
+    "election_calendar.json": "5dc2728270d3ed85b15982859f264e2dea63174a03f25276c0505e761ba76154",
+    "lists.json": "1912607c423427c30f7d494c2225fc63041bb2eb2f6095eba73640c0325eab77",
+    "sources.json": "25a5df9db649edc9ceea5064d69366d01e91304c9ad08272289316e0803142d2"
   },
   "receipts": [
     {
@@ -191,7 +191,190 @@
       "draft": true,
       "collection": "ordinary web tool open/search, no geo bypass",
       "receipt_type": "research facts and access receipt; not raw HTTP source bytes"
+    },
+    {
+      "id": "n12-poll-2026-10-19",
+      "url": "https://www.mako.co.il/news-israel-elections/2026/Article-a6eb664b9d451a1026.htm",
+      "opened": true,
+      "access": "web tool: original publisher article body",
+      "use": "Original Channel 12 / Midgam poll",
+      "review_status": "accepted",
+      "facts": {
+        "n_respondents": 507,
+        "n_invited": 2502,
+        "sampling_error_pp": 4.4,
+        "seat_sum": 120
+      },
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "evidence_locator": "web extraction lines 101-113 and 150-167",
+      "last_data_date": "2026-10-19"
+    },
+    {
+      "id": "i24-poll-2026-10-18",
+      "url": "https://www.i24news.tv/he/news/israel-elections-2026/polls/artc-81805",
+      "opened": true,
+      "access": "web tool: original publisher article body",
+      "use": "Original i24 / Direct Polls seat poll",
+      "review_status": "accepted",
+      "facts": {
+        "n_respondents": 525,
+        "sampling_error_pp": 4.2,
+        "seat_sum": 120
+      },
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "evidence_locator": "web extraction lines 68-90",
+      "last_data_date": "2026-10-18"
+    },
+    {
+      "id": "maariv-poll-2026-10-16",
+      "url": "https://www.maariv.co.il/news/elections-2026/article-1377736",
+      "opened": false,
+      "access": "web tool: non-retryable open error; original publisher body not returned",
+      "use": "Maariv seat poll, Panel4All, institute unnamed",
+      "review_status": "held",
+      "facts": null,
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "last_data_date": "2026-10-16"
+    },
+    {
+      "id": "kikar-tatika-2026-10-15",
+      "url": "https://www.kikar.co.il/scoop-news/87804",
+      "opened": true,
+      "access": "web tool: publisher flash body only; full seat table absent",
+      "use": "Kikar flash of a Tatika poll",
+      "review_status": "held",
+      "facts": {
+        "complete_seat_table": false,
+        "plotted": false
+      },
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "evidence_locator": "web extraction lines 57-66",
+      "last_data_date": "2026-10-15"
+    },
+    {
+      "id": "ynet-surplus-deadline-2026-10-16",
+      "url": "https://www.ynet.co.il/news/elections2026/article/hjextlj2gl",
+      "opened": true,
+      "access": "web tool: publisher article body",
+      "use": "Surplus deadline at the committee offices",
+      "review_status": "partial",
+      "facts": {
+        "reported_deadline": "2026-10-16",
+        "committee_filed_register_opened": false
+      },
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "evidence_locator": "web extraction lines 64-106",
+      "last_data_date": "2026-10-16"
+    },
+    {
+      "id": "kikar-surplus-2026-10-16",
+      "url": "https://www.kikar.co.il/political-news/surplus-agreements-elections-hendel-winter-ben-gvi",
+      "opened": true,
+      "access": "web tool: publisher article body",
+      "use": "Kikar list of five announced surplus pairs",
+      "review_status": "partial",
+      "facts": {
+        "reported_surplus_pairs": 5,
+        "committee_filed_register_opened": false
+      },
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "evidence_locator": "web extraction lines 77-115",
+      "last_data_date": "2026-10-16"
+    },
+    {
+      "id": "ynet-gantz-2026-10-19",
+      "url": "https://www.ynet.co.il/news/elections2026/article/syy00ec73zl",
+      "opened": true,
+      "access": "web tool: publisher article body",
+      "use": "Gantz says he will not run",
+      "review_status": "partial",
+      "facts": {
+        "withdrawal_announced": true,
+        "committee_list_removal_opened": false,
+        "registered_list_retained": true
+      },
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "evidence_locator": "web extraction lines 76-92",
+      "last_data_date": "2026-10-19"
+    },
+    {
+      "id": "israel-hayom-2026-10-15",
+      "url": "https://www.israelhayom.co.il/news/politics/article/21636491",
+      "opened": true,
+      "access": "web tool returned publisher article text in this check; imported snapshot records HTTP 403. This is not a raw HTTP receipt.",
+      "use": "Israel Hayom poll",
+      "review_status": "held",
+      "facts": {
+        "poll_observation_added": false,
+        "plotted": false
+      },
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "evidence_locator": "web extraction lines 11-54"
+    },
+    {
+      "id": "kan-poll-2026-10-18",
+      "url": "https://www.kan.org.il/content/kan-news/politic/1110393/",
+      "opened": false,
+      "access": "web tool returned zero article lines; imported snapshot records HTTP 403",
+      "use": "Kan poll",
+      "review_status": "held",
+      "facts": null,
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes"
+    },
+    {
+      "id": "channel13-poll-2026-10-19",
+      "url": "https://13tv.co.il/item/news/politics/politics/jw3wm-905406894/",
+      "opened": true,
+      "access": "web tool returned publisher article text in this check; imported snapshot records HTTP 403. This is not a raw HTTP receipt.",
+      "use": "Channel 13 poll",
+      "review_status": "held",
+      "facts": {
+        "poll_observation_added": false,
+        "plotted": false
+      },
+      "checked_at": "2026-10-20T11:55:25.502874+00:00",
+      "cycle": "knesset-26",
+      "draft": true,
+      "collection": "ordinary web tool open; no geo bypass",
+      "receipt_type": "research facts and access receipt; not raw HTTP source bytes",
+      "evidence_locator": "web extraction lines 80-96"
     }
   ],
-  "note": "Copied reviewed research inputs; no new live collection. Existing source timestamps are unchanged."
+  "note": "Imported the 2026-10-20 research snapshot from PR #643; original source timestamps are unchanged. The new receipts record this run's ordinary web-tool checks independently of the imported HTTP access metadata. Access checks do not promote held polls, reported agreements, or list eligibility."
 }
