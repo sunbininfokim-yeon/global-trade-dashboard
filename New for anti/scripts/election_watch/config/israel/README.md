@@ -30,7 +30,7 @@ promotion. Partial polls may be read but cannot drive the selection calculator.
 The 61-seat calculator is same-poll arithmetic, not a government-formation model.
 An absent list has unknown reported seats, not inferred zero seats.
 
-The current packet has six accepted seat polls, three partial seat polls and two
+The current packet has eight accepted seat polls, four partial seat polls and two
 held historical records. Its 38 lists are reported by news, not an official
 candidate-ranked list. Current Knesset OData, official candidate ranks, law text,
 and filed surplus-vote agreements remain held. The broadcaster-hosted judgment

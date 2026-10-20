@@ -28,7 +28,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input-dir', type=Path, default=ROOT / 'config/israel/2026')
     parser.add_argument('--output', type=Path, default=ROOT.parents[1] / 'public/data/israel_election_analysis_v1.json')
-    parser.add_argument('--as-of', default='2026-10-14', help='Evidence date; rebuilding cannot advance it')
+    parser.add_argument('--as-of', default='2026-10-20', help='Evidence date; rebuilding cannot advance it')
     parser.add_argument('--built-at', default=None)
     parser.add_argument('--check', action='store_true', help='Validate and compare existing generated files')
     args = parser.parse_args()
