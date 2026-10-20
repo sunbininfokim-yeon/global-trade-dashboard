@@ -1,6 +1,6 @@
 # NE reviewed dossier integration — 2026-10-20
 
-Owner Codex, user explicitly resumed NE on Oct20; the historical NE stop note is superseded for this work only. Checkout `/Users/yeoninair/Documents/해운 데이터/us-ne-research-integration-20261020`, branch `codex/ne-research-integration-20261020`. Latest fetched main/base 8f0883617. Packet-free prerequisite #644 (`11c74877d`); NE PR bases that common branch, not any other state. No open NE PR was present on start. Source checkout was dirty and stale; it was read only, never reset or switched. No other state was started.
+Owner Codex, user explicitly resumed NE on Oct20; the historical NE stop note is superseded for this work only. Checkout `/Users/yeoninair/Documents/해운 데이터/us-ne-research-integration-20261020`, branch `codex/ne-research-integration-20261020`. Latest fetched main/base 8f0883617. Packet-free prerequisite #644 (`11c74877d`); NE PR #647 bases that common branch, not any other state. No open NE PR was present on start. Source checkout was dirty and stale; it was read only, never reset or switched. No other state was started.
 
 ## What changed
 
@@ -22,6 +22,6 @@ After #644 and NE inputs are integrated, the existing scheduled collector reads 
 
 ## Checks and publication
 
-NE regressions5 pass: artifact fingerprints and metadata, all official rosters, current-window exclusion, other-state preservation, future-API duplication/conflict and unavailable-source retention. Common polling/primary regressions41 pass. Finance33, election JS114, ownership14 pass; deploy-chain42 workflows pass. Broader state-input/federal/governor checks are separately reported in PR; a previously started broad discover run was interrupted and is not a full-suite pass.
+NE regressions5 pass: artifact fingerprints and metadata, all official rosters, current-window exclusion, other-state preservation, future-API duplication/conflict and unavailable-source retention. Common polling/primary regressions41 pass. Finance33, election JS114, ownership14 pass; deploy-chain42 workflows pass. Broader state-input/federal/governor group ran40 cases:39 passed and1 failed to import a legacy top-level test helper. That one case passed after rerun with PYTHONPATH=.:tests; no product/test source was changed to fix the invocation. a previously started broad discover run was interrupted and is not a full-suite pass.
 
 Temporary replay reports: `/private/tmp/ne-replay-live.json`, `/private/tmp/ne-replay-history.json` (not committed). Scope check uses actual PR base11c74877d. NE packet, NE research originals (HTTP header line endings normalized only), NE-only test and this handoff are the only state-PR changes. Public JSON/UI/collector/workflow/shared catalogs/TASKS remain unchanged in the state diff. No main merge, deployment, operational workflow dispatch or reset action. Next state is not started; user/other researcher must check current ownership/order first.
