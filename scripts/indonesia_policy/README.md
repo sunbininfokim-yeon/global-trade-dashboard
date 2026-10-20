@@ -2,6 +2,8 @@
 
 미국과 분리된 policy_idn 전용 수집·저장·검색 경로다. [분리 계약](../../docs/indonesia-policy-isolation-contract.md)과 [검색 계약](../../docs/indonesia-policy-search.md)을 따른다. 수집/import는 검색 UI, 미국 검색, 메일, Gemini 호출, 반복 스케줄을 실행하지 않는다.
 
+[2026-10-20 석탄 보강 결과](../../docs/indonesia-policy-coal-core-20261020.md): 원문 2건·효력 근거 16건·관계/적용범위/조문 12건을 운영 DB에 추가했다. `sources-coal-core-20261020.json`, `coal-review-pack-20261020.json`, `coal-legal-effect-pack-20261020.json`에 수집·재적용 입력을 보관한다. 스캔 PDF 1건과 신규 임베딩은 미완료이며 법령 전체의 현행성을 확정한 것은 아니다.
+
 ## 공식 목록을 먼저 수집·대조
 
 개별 검색과 관련 링크 탐색에 앞서 [기관별 목록 수집](../../docs/indonesia-policy-catalogue-20261019.md)을 사용한다. 현재 공식 목록4개에서 출처별 후보2,038행을 수집했고 원 부처5개는 연동 미확인으로 보류했다. 실제 등록된 JSON 피드는 아직 없으며 이번 실수집은 HTML 표·페이지 어댑터다. 목록 후보는 검토된 법령 본문·벡터와 별도다.
