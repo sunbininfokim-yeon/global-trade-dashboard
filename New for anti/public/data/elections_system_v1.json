@@ -432,34 +432,6 @@
       "term_note_ko": "투표는 의무. 자동 등록."
     },
     {
-      "id": "col-chamber",
-      "iso3": "COL",
-      "type": "general",
-      "chamber": "chamber",
-      "name_ko": "콜롬비아 하원",
-      "name_en": "Chamber of Representatives",
-      "term_years": 4,
-      "seats_total": 183,
-      "method_ko": "비례대표 (지역구 등)",
-      "method_detail_ko": "2026 의회선거 페이지: 하원 183, 상원 103(전국 100+원주민 2+대선 차점 1). Elections in Colombia 문서는 하원 162·상원 102로 적어 병기한다. 이 행의 정수는 2026 회차 페이지를 따른다.",
-      "districts": {
-        "count": 183,
-        "kind_ko": "하원 선거구",
-        "geometry_asset": "없음"
-      },
-      "threshold_ko": "없음",
-      "rounds": 1,
-      "runoff_rule_ko": "없음",
-      "voting_age": 18,
-      "compulsory": false,
-      "head_selection_ko": "없음. 대통령은 별도 직선.",
-      "sources": [
-        "https://en.wikipedia.org/wiki/2026_Colombian_parliamentary_election",
-        "https://en.wikipedia.org/wiki/Congress_of_Colombia"
-      ],
-      "seats_note_ko": "하원 183(2026 회차 페이지). 다른 위키 요약은 162. 상원과 합산하지 말 것."
-    },
-    {
       "id": "col-president",
       "iso3": "COL",
       "type": "presidential",
@@ -485,6 +457,34 @@
         "https://www.arielapp.co/es/biblioteca/documento/cne-resolucion-e-3181-de-2026-a09c4fc3"
       ],
       "seats_note_ko": "대통령 1인. 부통령은 같은 공식으로 뽑히며 의석에 넣지 않는다."
+    },
+    {
+      "id": "col-senate",
+      "iso3": "COL",
+      "type": "general",
+      "chamber": "senate",
+      "name_ko": "콜롬비아 상원",
+      "name_en": "Senate of the Republic",
+      "term_years": 4,
+      "term_note_ko": "법령 720호가 2026-2030 회기로 의석을 정한다. 상원 보도자료는 임기를 4년으로 적는다.",
+      "seats_total": 102,
+      "seats_note_ko": "법령 720호 2.3.1.5.1부터 5.4. 전국 100석과 원주민 특별 2석. 대선 차점자가 받으면 103석이 된다. 그 석은 3월 8일 투표가 아니다. 상원 보도자료는 회기 전체를 103석으로 적는다. 하원과 합산하지 말 것.",
+      "method_ko": "전국 명부 분배수, 원주민 2석은 선거상수",
+      "method_detail_ko": "등재청 개표 안내. 상원 문턱은 유효표의 3%. 문턱을 넘긴 명부를 1, 2, 3…으로 나눈 몫 가운데 의석 수만큼의 큰 값에서 마지막이 분배수다. 헌법 263조 3항을 안내가 인용한다. 2석 선거구는 선거상수의 30%를 넘긴 명부 사이에서 선거상수로 나눈다.",
+      "districts": {
+        "count": 2,
+        "kind_ko": "전국 명부와 원주민 특별",
+        "geometry_asset": "없음"
+      },
+      "threshold_ko": "전국 명부 유효표의 3%. 원주민 2석은 선거상수의 30%",
+      "rounds": 1,
+      "runoff_rule_ko": "없음",
+      "head_selection_ko": "없음. 대통령은 별도 직선.",
+      "sources": [
+        "https://sidn.ramajudicial.gov.co/SIDN/NORMATIVA/TEXTOS_COMPLETOS/5_DECRETOS/DECRETOS%202025/Decreto%200719%20de%202025.pdf",
+        "https://wapp.registraduria.gov.co/electoral/2026/congreso-de-la-republica/IMG/pdf/cartilla_comision_escrutadora_congreso.pdf",
+        "https://www.senado.gov.co/index.php/el-senado/noticias/7175-ojo-al-dato-cuantos-senadores-y-representantes-se-eligen-este-8-de-marzo"
+      ]
     },
     {
       "id": "cpv-president",
@@ -911,8 +911,8 @@
       "chamber": "없음",
       "name_ko": "헝가리 국회",
       "name_en": "National Assembly",
-    "term_years": 4,
-    "term_note_ko": "기본법 2조 3항. 해산이 아니면 총선은 직전 국회가 뽑힌 뒤 네 번째 해 4월 또는 5월이다. 3조 1항. 임기는 개원부터 다음 국회 개원까지다.",
+      "term_years": 4,
+      "term_note_ko": "기본법 2조 3항. 해산이 아니면 총선은 직전 국회가 뽑힌 뒤 네 번째 해 4월 또는 5월이다. 3조 1항. 임기는 개원부터 다음 국회 개원까지다.",
       "seats_total": 199,
       "seats_note_ko": "선거법 3조. 소선거구 106석과 전국 명부 93석. 소수민족 대변인은 이 199석이 아니다. 2026년 명부 가운데 우대 의석을 받은 소수민족 명부는 없다.",
       "method_ko": "소선거구 상대다수와 전국 명부 동트",
@@ -924,14 +924,14 @@
       },
       "threshold_ko": "단독 명부 5%. 두 정당 공동 명부 10%. 셋 이상 15%. 소수민족 명부는 우대 쿼터",
       "rounds": 1,
-    "runoff_rule_ko": "없음",
-    "compulsory": false,
-    "head_selection_ko": "없음. 총리는 이 선거로 직접 뽑지 않는다.",
-    "sources": [
-      "https://njt.jog.gov.hu/jogszabaly/2011-4301-02-00",
-      "https://njt.jog.gov.hu/jogszabaly/2011-203-00-00",
-      "https://vtr.valasztas.hu/ogy2026"
-    ]
+      "runoff_rule_ko": "없음",
+      "compulsory": false,
+      "head_selection_ko": "없음. 총리는 이 선거로 직접 뽑지 않는다.",
+      "sources": [
+        "https://njt.jog.gov.hu/jogszabaly/2011-4301-02-00",
+        "https://njt.jog.gov.hu/jogszabaly/2011-203-00-00",
+        "https://vtr.valasztas.hu/ogy2026"
+      ]
     },
     {
       "id": "idn-dpr",
