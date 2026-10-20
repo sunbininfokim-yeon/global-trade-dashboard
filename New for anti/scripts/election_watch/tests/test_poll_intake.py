@@ -5,6 +5,9 @@ from tempfile import TemporaryDirectory
 import hashlib
 import json
 import unittest
+from unittest.mock import patch
+import sys
+import discover_poll_sources as cli
 
 from election_watch.polls import read,digest
 from election_watch.poll_intake import (canonical_url,discovery_candidates,research_candidates,
@@ -24,7 +27,7 @@ def board():
 
 
 def discovery(url='https://pollster.example/release?releaseid=123',rid=RID):
-    return {'schema':'usa_poll_source_discovery_v1','cycle':2026,'as_of':DAY,'captured_at':STAMP,
+    return {'schema':'usa_poll_source_discovery_v1','cycle':2026,'as_of':DAY,'captured_at':STAMP,'status':'ok',
         'records':[{'id':'synthetic-discovery','source':'synthetic source','source_url':url,
             'race_id':rid,'office':'governor','signal_eligible':True,'status':'claimed_approved'}],
         'source_health':{'fixture':{'status':'ok'}}}
@@ -141,6 +144,7 @@ class IntakeTests(unittest.TestCase):
             p['reported_figures_not_complete_ballots'][0]['results_pct'][0]['pct']=None
             rows,bad=research_candidates(d,root,C,DAY,STAMP)
             self.assertFalse(rows);self.assertEqual(len(bad),1)
+            self.assertEqual(bad[0]['error_code'],'invalid_percentage')
 
     def test_hash_mismatch_and_path_escape_are_rejected_without_losing_other_records(self):
         with TemporaryDirectory() as tmp:
@@ -150,6 +154,7 @@ class IntakeTests(unittest.TestCase):
             d['polls'].extend([changed,escape])
             rows,bad=research_candidates(d,root,C,DAY,STAMP)
             self.assertEqual(len(rows),1);self.assertEqual(len(bad),2)
+            self.assertEqual({r['error_code'] for r in bad},{'source_fingerprint_changed','source_file_outside_dossier'})
 
     def test_candidate_spelling_party_conflict_and_withdrawal_need_review(self):
         with TemporaryDirectory() as tmp:
@@ -187,15 +192,69 @@ class IntakeTests(unittest.TestCase):
             provider=[{'id':'synthetic-provider'}];checkpoint.write_text(json.dumps({'provider_rows':provider}))
             report=discovery();report['provider_comparison']={'captured_at':STAMP,'provider_rows_sha256':digest(provider)}
             sidecar=checkpoint.with_suffix('.discovery.json');sidecar.write_text(json.dumps(report))
-            b=board();attach_saved_intake(b,None,checkpoint)
+            b=board();queue_path=root/'intake.json';attach_saved_intake(b,None,checkpoint,queue_path)
             self.assertEqual(b['poll_intake_health']['status'],'ok')
+            self.assertEqual(b['poll_intake']['schema'],'usa_poll_intake_summary_v1')
+            self.assertNotIn('records',b['poll_intake']);original=queue_path.read_bytes()
             old=deepcopy(b);report['provider_comparison']['provider_rows_sha256']='0'*64
-            sidecar.write_text(json.dumps(report));attach_saved_intake(b,old,checkpoint)
+            sidecar.write_text(json.dumps(report));attach_saved_intake(b,old,checkpoint,queue_path)
             self.assertEqual(b['poll_intake'],old['poll_intake'])
+            self.assertEqual(queue_path.read_bytes(),original)
             self.assertEqual(b['poll_intake_health']['status'],'carried_forward')
-            sidecar.unlink();fresh=board();attach_saved_intake(fresh,None,checkpoint)
+            sidecar.unlink();fresh=board();attach_saved_intake(fresh,None,checkpoint,root/'missing.json')
             self.assertEqual(fresh['poll_intake_health']['status'],'unavailable')
             self.assertNotIn('poll_intake',fresh)
+
+    def test_queue_write_failure_does_not_replace_existing_queue_or_block_polls(self):
+        with TemporaryDirectory() as tmp:
+            root=Path(tmp);checkpoint=root/'capture.json';queue_path=root/'intake.json'
+            provider=[{'id':'synthetic'}];checkpoint.write_text(json.dumps({'provider_rows':provider}))
+            report=discovery();report['provider_comparison']={'captured_at':STAMP,'provider_rows_sha256':digest(provider)}
+            checkpoint.with_suffix('.discovery.json').write_text(json.dumps(report))
+            b=board();attach_saved_intake(b,None,checkpoint,queue_path)
+            before=queue_path.read_bytes();old=deepcopy(b);polls=deepcopy(b['races'])
+            with patch('election_watch.polls.atomic',side_effect=OSError('synthetic disk write failure')):
+                attach_saved_intake(b,old,checkpoint,queue_path)
+            self.assertEqual(b['poll_intake_health']['status'],'carried_forward')
+            self.assertEqual(b['races'],polls);self.assertEqual(queue_path.read_bytes(),before)
+
+    def test_publisher_stages_only_existing_queue_without_raw_research_files(self):
+        import publish_polling_run as publisher
+        from election_watch.poll_intake import INTAKE_FILE
+        with patch('election_watch.state_inputs.packets',return_value=[]), \
+             patch.object(Path,'read_text',return_value='{"states":{}}'), \
+             patch.object(Path,'is_file',return_value=False):
+            self.assertNotIn(publisher.PUBLIC+INTAKE_FILE,publisher.stage_paths())
+        with patch('election_watch.state_inputs.packets',return_value=[]), \
+             patch.object(Path,'read_text',return_value='{"states":{}}'), \
+             patch.object(Path,'is_file',return_value=True):
+            paths=publisher.stage_paths()
+            self.assertIn(publisher.PUBLIC+INTAKE_FILE,paths)
+            self.assertFalse(any('/raw/' in p or '/research/' in p for p in paths))
+
+    def test_daily_discovery_cli_keeps_podcast_and_cursor_inputs_and_binds_provider_hash(self):
+        with TemporaryDirectory() as tmp:
+            root=Path(tmp);d=dossier(root);input_file=root/'NY_2026_records.json'
+            input_file.write_text(json.dumps(d))
+            config=root/'config/usa_polls';config.mkdir(parents=True)
+            (config/'targets_2026.json').write_text(json.dumps(C))
+            provider=[{'id':'synthetic-provider'}];provider_file=root/'capture.provider.json'
+            provider_file.write_text(json.dumps({'schema':'usa_poll_provider_capture_v1',
+                'provider_rows':provider,'captured_at':STAMP}))
+            output=root/'capture.discovery.json';report=discovery()
+            report['records'][0]['source_url']='https://pollster.example/release?releaseid=123'
+            with patch.object(cli,'ROOT',root), \
+                 patch.object(sys,'argv',['discover','--as-of',DAY,'--output',str(output),
+                    '--provider-capture',str(provider_file),'--research-dossier',str(input_file)]), \
+                 patch.object(cli,'collect_270',return_value=report), \
+                 patch.object(cli,'collect_additional',return_value={'records':[],'commentary':[{'id':'synthetic-podcast'}],'source_health':{}}), \
+                 patch.object(cli,'collect_primary',return_value={'records':[],'source_health':{}}) as primary:
+                self.assertEqual(cli.main(),0)
+            saved=json.loads(output.read_text());primary.assert_called_once()
+            self.assertEqual(saved['commentary'],[{'id':'synthetic-podcast'}])
+            self.assertEqual(saved['provider_comparison']['provider_rows_sha256'],digest(provider))
+            self.assertEqual(len(saved['research_intake'][0]['candidates']),1)
+            self.assertFalse(saved['research_intake'][0]['rejected_inputs'])
 
     def test_unsafe_source_url_cannot_be_normalized(self):
         for url in ('http://example.org/','https://user:password@example.org/','https://example.org:8080/'):

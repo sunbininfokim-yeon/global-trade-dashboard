@@ -22,6 +22,9 @@ def stage_paths():
         'usa_election_live_polls_status_v1.json', 'usa_election_poll_history_2026.json',
         'usa_midterms_forecast_v1.json', 'elections_board_v1.json',
         'usa_election_state_evidence_index_v1.json')]
+    from election_watch.poll_intake import INTAKE_FILE
+    if Path(PUBLIC+INTAKE_FILE).is_file():
+        paths.append(PUBLIC+INTAKE_FILE)
     index = __import__('json').loads(Path(PUBLIC+'usa_election_state_evidence_index_v1.json').read_text())
     paths += [PUBLIC+index['states'][p['state']]['data_file'] for p in packets()]
     return paths

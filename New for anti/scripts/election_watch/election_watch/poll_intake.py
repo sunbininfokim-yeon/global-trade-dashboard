@@ -16,7 +16,27 @@ from .polls import digest, require
 from .poll_source_discovery import safe_link
 
 SCHEMA = 'usa_poll_intake_v1'
+INTAKE_FILE = 'usa_election_live_polls_intake_v1.json'
 PRIORITY_STATES = ['NY','TN','GA','FL','PA','MI','WI','AZ','NV','NC','TX']
+
+
+def rejection_code(exc):
+    known = {
+        'research source fingerprint changed':'source_fingerprint_changed',
+        'research file escapes dossier':'source_file_outside_dossier',
+        'research source file missing/oversized':'source_file_missing_or_oversized',
+        'research field dates invalid':'field_dates_invalid',
+        'research release date invalid':'release_date_invalid',
+        'research invalid percentage':'invalid_percentage',
+        'research duplicate answer/invalid total':'duplicate_answer_or_invalid_total',
+        'research answer table missing':'question_answers_missing',
+        'research district outside current map':'district_outside_current_map',
+        'missing research district':'district_missing',
+        'unscheduled research office':'office_not_scheduled',
+        'discovered race normalization conflict':'race_normalization_conflict',
+        'intake URL scheme/port':'unsafe_source_url',
+    }
+    return known.get(str(exc),'input_schema_or_value_invalid')
 
 
 def canonical_url(value):
@@ -61,7 +81,7 @@ def discovery_candidates(report, catalog):
                 'kind':'publisher_or_aggregator_discovery', 'evidence':evidence,
                 'reasons':['primary_document_review_required']+([] if rid else ['race_identity_unresolved'])})
         except (ValueError, KeyError, TypeError, AttributeError) as exc:
-            rejected.append({'input_id':entry.get('id'),'error_type':type(exc).__name__})
+            rejected.append({'input_id':entry.get('id'),'error_type':type(exc).__name__,'error_code':rejection_code(exc)})
     return rows, rejected
 
 
@@ -139,9 +159,10 @@ def research_candidates(dossier, directory, catalog, as_of, captured_at=None):
                     rows.append({'race_id':rid,'source_url':url,'seen_at':seen_at,
                         'kind':'research_dossier','evidence':evidence,'reasons':sorted(set(reasons))})
                 except (ValueError, KeyError, TypeError, AttributeError) as exc:
-                    rejected.append({'input_id':poll.get('id'),'question_index':index,'error_type':type(exc).__name__})
+                    rejected.append({'input_id':poll.get('id'),'question_index':index,'error_type':type(exc).__name__,
+                                     'error_code':rejection_code(exc)})
         except (OSError,ValueError,KeyError,TypeError,AttributeError) as exc:
-            rejected.append({'input_id':poll.get('id'),'error_type':type(exc).__name__})
+            rejected.append({'input_id':poll.get('id'),'error_type':type(exc).__name__,'error_code':rejection_code(exc)})
     return rows,rejected
 
 
@@ -279,15 +300,18 @@ def research_tasks(intake, board):
             'note_ko':'원문 조사 작업 목록. 기존 후보명·정당도 기준일을 확인하고 원문 표기는 별도로 보존합니다. 승인 또는 집계 입력이 아닙니다.'}
 
 
-def attach_saved_intake(board, previous, checkpoint):
+def attach_saved_intake(board, previous, checkpoint, intake_path=None):
     """Existing Actions downloads this discovery sibling with the captured inputs."""
-    from .polls import read
-    old = (previous or {}).get('poll_intake')
+    from .polls import read, atomic
+    old_summary = (previous or {}).get('poll_intake')
     if checkpoint is None:
-        if old: board['poll_intake'] = deepcopy(old)
+        if old_summary: board['poll_intake'] = deepcopy(old_summary)
         return
     path = Path(checkpoint).with_suffix('.discovery.json')
     try:
+        old = read(intake_path) if intake_path and Path(intake_path).exists() else None
+        if old is None and old_summary and old_summary.get('schema')==SCHEMA:
+            old = old_summary  # Preserve an unpublished inline preview during migration.
         require(path.exists(), 'intake discovery artifact unavailable')
         report = read(path)
         require(report.get('schema')=='usa_poll_source_discovery_v1'
@@ -300,10 +324,15 @@ def attach_saved_intake(board, previous, checkpoint):
         candidates,rejected = discovery_candidates(report,catalog)
         for result in report.get('research_intake',[]):
             candidates.extend(result['candidates']); rejected.extend(result['rejected_inputs'])
-        board['poll_intake'] = build_intake(candidates,board,board['as_of'],report['captured_at'],old,
-                                          report.get('source_health',{}),rejected)
+        queue = build_intake(candidates,board,board['as_of'],report['captured_at'],old,
+                             report.get('source_health',{}),rejected)
+        require(intake_path is not None, 'intake output path required')
+        atomic(Path(intake_path),queue)
+        board['poll_intake'] = {'schema':'usa_poll_intake_summary_v1','data_file':INTAKE_FILE,
+            'as_of':queue['as_of'],'checked_at':queue['checked_at'],'status':queue['status'],
+            'summary':deepcopy(queue['summary'])}
         board['poll_intake_health'] = {'status':'ok','artifact_captured_at':report['captured_at']}
     except (OSError,ValueError,KeyError,TypeError,AttributeError) as exc:
-        if old: board['poll_intake'] = deepcopy(old)
-        board['poll_intake_health'] = {'status':'carried_forward' if old else 'unavailable',
+        if old_summary: board['poll_intake'] = deepcopy(old_summary)
+        board['poll_intake_health'] = {'status':'carried_forward' if old_summary else 'unavailable',
             'attempted_at':board['fetched_at'],'error_type':type(exc).__name__}
