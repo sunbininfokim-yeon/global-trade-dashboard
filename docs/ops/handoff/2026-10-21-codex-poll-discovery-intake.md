@@ -75,3 +75,7 @@ main 기반 전체849개 검사가303.455초에 통과했다(`/private/tmp/poll-
 #651 및 #649 각각과 `git merge-tree --write-tree` 충돌 없음. #651 합본은 브랜치 병합 없이 임시 코드로 내보내1540개 API 입력을 보존한 채 실제 원문 문서 재확인을 수행했다(보완 후1574행·영수증40개). 동일 provider captured_at를 유지한 비게시 재생에서219개 관측·136개 집계 적격 과거 포함 관측을 얻었다. 새 대기열 문서의 자동 집계 승인0건과 구분한다. #651 복구가 일일 수집에 먼저 필요하며 이 PR은 독립 main 기반이다. API·원문·대기열을 재생한 것이 main 또는 사이트 반영을 뜻하지 않는다.
 
 별도 파일 저장 이후에도 기존 모든 polling 값·날짜·주별 출처와 대기열 records가 이전 재생과 정확히 일치함을 assert했다. 재시도 new_documents=0. 전체 대기열3186797바이트를 별도 파일에 저장했고 지도용 board에는 요약만 둔다. 새 데이터 파일은 기존 publisher의 명시 목록에 조건부로 포함한다. Source hash 불일치·입력 파일 경로 이탈·숫자 오류는 제한된 error_code로 기록하며 임의 예외 문자열은 복사하지 않는다.
+
+최종 #651 합본 회귀81개 통과(18.164초, combined-tests.log). 처음 임시 시험에서 합본 HTML collector 파일 하나를 내보내지 않은 환경 오류를 확인해 완전한 merge-tree 소스로 교체했으며, 완성된 합본으로 검사와 동일 입력 재생을 다시 통과했다. 제품 branch의 수정이나 검사 우회가 아니며 full-source replay에서도 모든 원래 polling 값·상태/출처·날짜가 보존되고 대기열 retry new_documents=0임을 재확인했다.
+
+Draft PR: https://github.com/sunbininfokim-yeon/global-trade-dashboard/pull/654 . 권장 반영 순서는 #651 복구 → #654 발견/대기열이다. #644/#649는 별도 검토 가능한 기존 확장이며 #654와 텍스트 충돌 없음. GitHub PR 검사와 main 실제 수집/배포는 별도 상태다. 사용자 배포 보류를 유지하며 병합·배포·운영 workflow dispatch를 실행하지 않았다.
