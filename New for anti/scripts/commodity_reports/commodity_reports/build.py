@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from typing import Any, Dict, Iterable, List, Optional
 
-from .feeds import RawReport, report_id, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
+from .feeds import RawReport, _board_for, report_id, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
 from .gemini import GeminiAnnotator
 from .score import ReportScorer, ScoredReport
 from .tag import CommodityTagger, CountryTagger, Tagged, tag_report
@@ -174,7 +174,11 @@ def previous_raws(
             market_only=bool(src.get("market_only")),
             commodity_from=src.get("commodity_from", "text"),
             commodity_scope=list(src.get("commodity_scope") or []),
-            board=src.get("board") or None,
+            # Same rule as a fresh fetch: a general ministry feed's carried-over
+            # item joins the board only if its headline passes board_title_re
+            # (2026-10-20: every Kemendag news item had piled onto the
+            # export-controls board through this path).
+            board=_board_for(src, (item.get("title") or {}).get("original") or ""),
         )
         if r.url and r.title:
             out.setdefault(src["id"], []).append(r)
