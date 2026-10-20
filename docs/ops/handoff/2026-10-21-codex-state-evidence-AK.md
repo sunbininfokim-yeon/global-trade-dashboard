@@ -60,3 +60,9 @@ AK packet은 기존 `primary_supplements_2026.json`·`quality_reviews_2026.json`
 ## 인수와 순서
 
 #651 공용 검증 복구 후 이 AK 독립 PR을 검토한다. #654 발견/대기열과는 주별 파일 충돌이 없다. 병합·배포·운영 workflow dispatch는 실행하지 않는다. 다음 주 작업은 시작하지 않았다. TX-09 Hobby 공개 원문을 발견했으나 이번 PR에 타주 데이터를 넣지 않았다.
+
+## 최종 검증
+
+공용 날짜 검사2개를 #651 커밋 `b3bef6b44d3bcbe70f05d2a95fa87fb66390e8fe`로 분리하고 AK 브랜치를 그 위로 재배치했다. 이 값이 실제 PR base SHA다. 최초 원자료 수집에 사용한 `source_commit=763ba363`은 수집 당시 값이므로 변경하지 않았다. 최종 AK 입력과 함께 **전체 polling708개가318.656초에 통과**했다(`/private/tmp/poll-ak-20261021/polling-final.log`). AK25·자금77·JS114·소유권14·배포연결42 검사도 통과했다. 공용 테스트만 별도 수정했으며 운영 비교 로직이나 데이터 검증을 완화하지 않았다.
+
+최종 wave_id를 포함한 비게시 재생에서도 다른503개 선거와 원래 날짜를 보존했다. 기존 AK config operation19개 및 이전 API37행도 변경 없이 유지했다. 최신 main은 공식 보고서 갱신만 추가된 `8c3d10c7bc14dc175b3e51f1fda03fcb464dc502`이며 미국 선거 코드/입력 차이는 없다. `git merge-tree --write-tree`로 #654 합본과 main 합본 각각 충돌 없음을 확인했으며 실제 branch/main 병합은 하지 않았다. 새 GitHub PR의 검사와 사이트 배포는 로컬 통과와 별도 상태다.
