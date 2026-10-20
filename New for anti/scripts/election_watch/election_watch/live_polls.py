@@ -231,7 +231,17 @@ def normalize(rows, policy, as_of):
                 partisan_reference = True
             require((p.get('internal') is False or p.get('internal') is True and primary_internal) and (p.get('partisan') is None or partisan_reference),
                     'internal_or_partisan')
-            start, end, published = (date.fromisoformat(p[k]) for k in ('start_date', 'end_date', 'created_at'))
+            undated = p.get('created_at') is None
+            if undated:
+                # Review/capture dates must never fabricate a release date.
+                require(p['id'].startswith('primary-') and p.get('primary_source_capture')
+                        and admission and admission['signal_eligible'] is False
+                        and 'publication_date_not_disclosed' in admission.get('signal_exclusion_reasons', [])
+                        and policy['quality_reviews'][p['id']].get('disclosure_review', {}).get(
+                            'publication_date_status') == 'not_disclosed',
+                        'undated_poll_requires_reviewed_primary_reference')
+            start, end = (date.fromisoformat(p[k]) for k in ('start_date', 'end_date'))
+            published = day if undated else date.fromisoformat(p['created_at'])
             require(start <= end <= published <= day, 'date_order_or_future')
             race = races[rid]
             require(len(race['required_candidates']) >= 2, 'matchup_not_reviewed')
