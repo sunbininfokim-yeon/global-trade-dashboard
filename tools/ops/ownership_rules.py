@@ -96,4 +96,6 @@ def scoped_paths(branch):
             COMMODITY_OPS_BRANCH: COMMODITY_OPS_PATHS,
             BAUXITE_UI_BRANCH: BAUXITE_UI_PATHS,
             MN_URANIUM_BRANCH: MN_URANIUM_PATHS,
-            IDN_SEARCH_BRANCH: IDN_SEARCH_PATHS}.get(branch, frozenset())
+            IDN_SEARCH_BRANCH: IDN_SEARCH_PATHS,
+            # User explicitly requested Mac-to-Actions collection switch on 2026-10-21.
+            'codex/idn-actions-20261021': frozenset({'.github/workflows/sync-indonesia-policy.yml'})}.get(branch, frozenset())
