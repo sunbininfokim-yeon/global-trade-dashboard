@@ -38,6 +38,23 @@ test('business-law queries preserve distinct issues and multilingual phrases',()
  assert.ok(!parseTerms('금')[0].aliases.includes('금'));
  assert.ok(parseTerms('은광')[0].aliases.includes('perak'));
 });
+test('coal operations terms retrieve Indonesian clauses without conflating price indices or fuel mandates',()=>{
+ const terms=parseTerms('석탄, RKAB, 복구보증금');
+ assert.equal(terms.length,3);
+ assert.ok(terms[1].aliases.includes('rencana kerja dan anggaran biaya'));
+ assert.ok(terms[2].aliases.includes('jaminan reklamasi'));
+ assert.ok(parseTerms('국내공급의무')[0].aliases.includes('kepentingan dalam negeri'));
+ assert.ok(parseTerms('석탄 혼합')[0].aliases.includes('pencampuran batubara'));
+ assert.ok(!parseTerms('석탄혼합')[0].aliases.includes('biodiesel'));
+ assert.ok(!parseTerms('석탄혼합')[0].aliases.includes('pencampuran'));
+ assert.ok(!parseTerms('HBA')[0].aliases.includes('harga patokan'));
+ assert.ok(!parseTerms('HPB')[0].aliases.includes('harga batubara acuan'));
+ assert.ok(parseTerms('기준가격')[0].aliases.includes('harga patokan'));
+ assert.ok(parseTerms('광구중복')[0].aliases.includes('tumpang tindih'));
+ assert.ok(parseTerms('행정제재')[0].aliases.includes('sanksi administratif'));
+ assert.ok(parseTerms('벌크통관')[0].aliases.includes('barang impor curah'));
+ assert.ok(!parseTerms('벌크통관')[0].aliases.includes('bea keluar'));
+});
 test('IDN handler calls only IDN RPC and keeps the server key out of responses',async()=>{
  const handler=createHandler(async(url,options)=>{
   assert.equal(url,'https://db.test/rest/v1/rpc/idn_search_documents_v2');

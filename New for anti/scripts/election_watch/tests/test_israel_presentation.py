@@ -19,13 +19,13 @@ class IsraelPresentationTests(unittest.TestCase):
         self.doc = self.inputs['ko_translations.json']
 
     def build(self):
-        return build(self.inputs, '2026-10-14', '2026-10-15T06:00:00+00:00')
+        return build(self.inputs, '2026-10-20', '2026-10-21T06:00:00+00:00')
 
     def test_translation_coverage_and_provenance_without_api(self):
         with patch('election_watch.israel_translation.urlopen') as api:
             validate_translations(self.doc, self.items)
         api.assert_not_called()
-        self.assertEqual(len(self.items), 227)
+        self.assertEqual(len(self.items), 234)
         self.assertEqual(self.doc['provider'], 'Google Gemini API')
         self.assertTrue(all(row['model'] and row['translated_at'] for row in self.doc['translations']))
 
@@ -86,7 +86,7 @@ class IsraelPresentationTests(unittest.TestCase):
         original = copy.deepcopy(self.inputs['poll_observations.jsonl'])
         board = self.build()
         self.assertEqual(board['observations'], [r for r in original if r.get('record_type') == 'observation'])
-        self.assertEqual(board['evidence_as_of'], '2026-10-14')
+        self.assertEqual(board['evidence_as_of'], '2026-10-20')
         self.assertEqual(board['coalition_context']['reviewed_on'], '2026-10-15')
         self.assertIsNone(board['rules']['threshold_pct'])
         self.assertFalse(board['coverage_complete'])
