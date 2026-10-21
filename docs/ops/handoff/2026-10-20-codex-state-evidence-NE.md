@@ -35,3 +35,11 @@ A new live html_table receipt and raw observation were added separately from the
 New dated fieldwork at the same reviewed state route is automatically extracted, candidate/party/method/header-checked, deduplicated and sent to the existing reference archive; new question context is not automatically admitted as a lead signal. Failed/malformed/changed same-wave releases retain old values with failure status. The NE governor contract was deliberately not enabled because the printed Lidstorm vs reviewed Lindstrom discrepancy requires explicit identity review. Other states need separate opt-ins.
 
 Follow-up NE+adapter15 tests passed, on top of shared77, JS114, ownership14 and chain42. Scope check uses current basec89333dec. No national generated assets or other-state inputs are committed. Merge/deployment and scheduled runner execution have not been performed. The existing scheduler will use the new contract only after the prerequisites and this input are integrated.
+
+## 2026-10-21 최신 main 합본 재검증
+
+- main96af0fca와 공용#644/#649/#656을 합쳤다. 후보명부를 과거 조사일로 검사하던 회귀는 주별 파일에 섞지 않고 #656으로 분리했다. co/efficient synthetic capture clock도 #649에 있다.
+- 전체 polling743(337.866초)·별도18(NE5포함)·finance77·선거JS114·ownership14·deploy-chain42 통과.
+- 타주501선거·타주history·타주state_captures·root날짜·focus104와 타주focus 값 유지. 같은입력 반복재생 board/history 동일. NE 원래수집시각10/20 08:44:51.616945UTC 유지.
+- #649를 기반으로 주별범위검사 통과. #649/#656이 아직미병합이므로 base를main으로 바꾸면 공용파일이 주별diff에 섞인다. 현재base는#649를 유지하고 기반 병합 후main으로 전환한다. 주별분리검사 예외/우회 없음.
+- 최신main내용 동기화와 main병합/배포는 구분한다. 병합·배포·운영workflow dispatch는하지않았다.

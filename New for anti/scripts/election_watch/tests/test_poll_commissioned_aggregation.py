@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """Commissioned polls need exact initial-question review, not a party-wide waiver."""
 from copy import deepcopy
 from pathlib import Path
@@ -9,7 +10,7 @@ from election_watch.live_polls import normalize, summarize
 C=Path(__file__).resolve().parents[1]/'config'
 class CommissionedAggregationTests(unittest.TestCase):
     def setUp(self):
-        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),'2026-10-18'),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),'2026-10-18')
+        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
         self.raw=deepcopy(next(e['record']for e in read(C/'usa_polls/primary_supplements_2026.json')['records']if e['record']['id']=='primary-dccc-wi-house01-20260929'))
     def normalize(self, raw=None, policy=None, day='2026-10-18'):

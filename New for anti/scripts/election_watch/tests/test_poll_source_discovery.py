@@ -118,7 +118,8 @@ class DiscoveryTests(unittest.TestCase):
             output=Path(tmp)/'discovery.json'
             with patch.object(sys,'argv',['discovery','--output',str(output),'--provider-capture',str(checkpoint)]), \
                  patch.object(cli,'collect_270',return_value=report), \
-                 patch.object(cli,'collect_additional',return_value={'records':[],'commentary':[],'source_health':{}}):
+                 patch.object(cli,'collect_additional',return_value={'records':[],'commentary':[],'source_health':{}}), \
+                 patch.object(cli,'collect_primary',return_value={'records':[],'source_health':{}}):
                 self.assertEqual(cli.main(),0)
             saved=json.loads(output.read_text())
             self.assertEqual(saved['records'],records)

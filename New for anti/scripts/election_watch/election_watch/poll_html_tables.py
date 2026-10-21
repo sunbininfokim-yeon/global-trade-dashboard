@@ -262,8 +262,13 @@ def merge_html_tables(rows, snapshot, policy, as_of, previous_receipts=(), state
             if any(r.get('sample_size')!=raw['sample_size'] or values(r)!=values(raw) or
                    r.get('internal')!=raw['internal'] or r.get('partisan')!=raw['partisan'] or
                    (r.get('sponsors')or[])!=raw['sponsors'] for r in same):
-                item['record']['primary_source_capture']['status']='carried_forward_reference_only'
+                capture=item['record']['primary_source_capture']
+                capture['status']='primary_provider_conflict_reference_only'
+                capture['conflict_reason']='primary_and_provider_wave_conflict'
+                capture['conflicting_provider_records']=deepcopy(same)
                 item['status']='provider_wave_conflict_reference_only'
+                item['conflict_reason']=capture['conflict_reason']
+                item['conflicting_provider_records']=deepcopy(same)
                 # Do not count the disagreeing API record as another institution.
             output=[r for r in output if r not in same and r.get('id')!=raw['id']]
             item['record']['primary_source_capture']['provider_duplicate_ids']=[r['id']for r in same]

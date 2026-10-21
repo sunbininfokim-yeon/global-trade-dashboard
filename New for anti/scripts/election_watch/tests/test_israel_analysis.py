@@ -11,7 +11,7 @@ from election_watch.israel_analysis import build, health, read_inputs
 
 ROOT = Path(__file__).resolve().parents[1]
 INPUT = ROOT / 'config/israel/2026'
-BUILT = '2026-10-14T12:00:00+00:00'
+BUILT = '2026-10-20T12:00:00+00:00'
 
 
 class IsraelAnalysisTests(unittest.TestCase):
@@ -19,7 +19,7 @@ class IsraelAnalysisTests(unittest.TestCase):
         self.inputs = read_inputs(INPUT)
 
     def board(self):
-        return build(self.inputs, '2026-10-14', BUILT)
+        return build(self.inputs, '2026-10-20', BUILT)
 
     def seat(self):
         return next(row for row in self.inputs['poll_observations.jsonl']
@@ -27,11 +27,12 @@ class IsraelAnalysisTests(unittest.TestCase):
 
     def test_research_counts_and_original_numbers(self):
         board = self.board()
-        self.assertEqual(board['coverage'], {'accepted_seat_polls': 6, 'partial_seat_polls': 3,
-                         'held_seat_polls': 2, 'reported_lists': 38, 'sources': 56})
+        self.assertEqual(board['coverage'], {'accepted_seat_polls': 8, 'partial_seat_polls': 4,
+                         'held_seat_polls': 2, 'reported_lists': 38, 'sources': 66})
         expected = {'midgam-n12-2026-10-05': 501, 'midgam-n12-2026-10-12': 509,
                     'lazar-maariv-2026-10-07': 700, 'direct-polls-i24-2026-10-07': 518,
-                    'midgam-n12-2026-09-22': 501, 'kantar-israelhayom-2026-10-07': 555}
+                    'midgam-n12-2026-09-22': 501, 'kantar-israelhayom-2026-10-07': 555,
+                    'midgam-n12-2026-10-19': 507, 'direct-polls-i24-2026-10-18': 525}
         seats = [r for r in board['observations'] if r['question_id'] == 'reported_seats' and r['review_status'] == 'accepted']
         self.assertEqual({r['poll_id']: r['n_respondents'] for r in seats}, expected)
         self.assertTrue(all(sum(v['seats'] for v in row['values']) == 120 for row in seats))
@@ -39,12 +40,12 @@ class IsraelAnalysisTests(unittest.TestCase):
         self.assertIsNone(board['current_seats'])
         self.assertIsNone(board['rules']['threshold_pct'])
         self.assertEqual(board['list_review_status'], 'partial')
-        self.assertEqual(board['evidence_as_of'], '2026-10-14')
+        self.assertEqual(board['evidence_as_of'], '2026-10-20')
 
     def test_inputs_and_dates_are_not_mutated_by_rebuild(self):
         original = copy.deepcopy(self.inputs)
         first = self.board()
-        later = build(self.inputs, '2026-10-14', '2026-10-15T12:00:00+00:00')
+        later = build(self.inputs, '2026-10-20', '2026-10-21T12:00:00+00:00')
         self.assertEqual(self.inputs, original)
         self.assertEqual(first['observations'], later['observations'])
         self.assertEqual(first['evidence_as_of'], later['evidence_as_of'])
@@ -81,7 +82,7 @@ class IsraelAnalysisTests(unittest.TestCase):
         self.seat()['cycle'] = 'knesset-25'
         with self.assertRaisesRegex(ValueError, 'cycle'):
             self.board()
-        self.setUp(); self.seat()['field_end'] = '2026-10-15'
+        self.setUp(); self.seat()['field_end'] = '2026-10-21'
         with self.assertRaisesRegex(ValueError, 'after evidence'):
             self.board()
 

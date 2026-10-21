@@ -21,3 +21,14 @@ Initial default urllib returned403; after the approval review became available, 
 No active source contract is installed in this packet-free common diff; activation belongs to the NE input PR. NE Senate opt-in is separately prepared at `/private/tmp/coefficient-ne-activation.patch`, based on #647's current packet. It must be applied/reviewed on that state branch after the common feature is available, and collected successfully before claiming live automated delivery. The existing NE governor page has the Lidstorm/Lindstrom identity discrepancy: do not enable that question by guessing the name. Other states need their own reviewed contracts and independent PRs. New publisher page layouts/URLs require parser/contract review.
 
 NE data PR #647 must not be rebased onto another state. If this common PR is published, move #647's prerequisite base to that packet-free branch and add the NE-only opt-in change separately; preserve original API/document receipts. Never merge generated JSON. Existing scheduled collection will call the adapter once that contract is integrated; no schedule/deploy changes required. Main merge, deployment, workflow dispatch and resets remain unperformed. Common implementation is committed on its dedicated branch; remote PR/CI state must be checked separately. This handoff does not prove merge or deployment.
+
+## 2026-10-21 main 동기화
+
+- 최신 게시 main `96af0fca70f0e9b598e7d0f909a8205e19426420`과 #644를 합쳤다. TASKS 충돌은 co/efficient 행과 수집 복구 행을 모두 보존했다. 전국 생성물의 수동 병합·재수집·게시 없음.
+- 합본 검증에서 가상 HTML 문서가 실제 오늘을 검토일로 받아 고정된 10/20 normalize에서 `future_quality_review`가 발생했다. synthetic capture clock만 10/20으로 고정하고 검토일 단언을 추가했다. 운영 수집일이나 future 검증은 변경하지 않았다.
+- 최종 집중 검증: co/efficient10 + HTML/원문/복구42 = 52개 통과. #644는 원문/복구/intake35개 통과. 후속 NE 합본 전체 검사 결과는 후속 인수 문서에 기록한다.
+- 반영 순서는 #644 → #649 → #647. 추가 병합·배포·workflow dispatch는 하지 않는다.
+
+### 최종 공용 기반
+
+#656의 공용 catalog-clock 회귀 수정을 포함했다. 반영 순서는 #656 → #644 → #649 → NE#647이며 #656/#644 순서는 교환 가능하다. 최종 합본 polling743·별도18(NE5중복)·finance77·선거JS114·ownership14·배포연결42 통과. 다른501선거·원래수집일·focus104·재생멱등 확인. 상세 원문6건 재검토와 미반영 항목은 `2026-10-21-codex-poll-recovery-followup.md`에 기록했다. 추가 병합/배포 없음.

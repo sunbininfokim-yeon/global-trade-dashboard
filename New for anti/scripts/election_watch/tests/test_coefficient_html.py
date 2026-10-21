@@ -1,6 +1,8 @@
 """Synthetic HTML only; fixtures never become published poll observations."""
 from copy import deepcopy
+from datetime import datetime, timezone
 from unittest import TestCase
+from unittest.mock import patch
 from urllib.error import URLError
 from election_watch.poll_html_tables import merge_html_tables,bind_html_reviews,contracts
 from election_watch.live_polls import normalize,summarize
@@ -15,7 +17,17 @@ QUESTION='If the November 3rd general election for U.S. Senate were held today, 
 def html(r=45):
     rows=''.join(f'<div class="bar-row"><span class="bar-k">{name}</span><span class="bar-v tnum">{value}%</span></div>' for name,value in [('Candidate R, Republican',r),('Candidate I, Nonpartisan',44),('Undecided',11)])
     return f'<html><body><h1>Nebraska · U.S. Senate</h1><p class="vitals"><span><b>Fielded</b> September 28-30, 2026</span><span><b>Mode</b> Mobile text responses and landline interviews</span><span><b>Sample</b> 1,113 likely general election voters</span><span><b>MoE</b> ±2.92%</span><span><b>Released</b> October 2026</span></p><p class="meth-p">{METHOD}</p><details><summary><span>Q6 </span>{QUESTION}</summary>{rows}</details><p>Independent public polling. Not sponsored by any candidate committee, party committee or other independent expenditure.</p></body></html>'
+class FixedCaptureClock(datetime):
+    @classmethod
+    def now(cls,tz=None):
+        return cls(2026,10,20,6,0,0,tzinfo=timezone.utc)
+
 class CoefficientTests(TestCase):
+    def setUp(self):
+        # The synthetic historical capture must not acquire today's review
+        # date, which correctly fails historical normalization as a future review.
+        clock=patch('election_watch.poll_coefficient_html.datetime',FixedCaptureClock)
+        clock.start();self.addCleanup(clock.stop)
     def capture(self,index=INDEX,body=None,old=(),rows=(),snapshot=SNAP):
         pages={ENTRY['index_url']:index,ENTRY['release_url']:body or html()}
         def opener(req,**kw):
@@ -26,6 +38,7 @@ class CoefficientTests(TestCase):
         rows,receipts=self.capture();self.assertEqual(len(rows),1)
         p=bind_html_reviews(POLICY,rows,receipts,SNAP,'2026-10-20');good,bad=normalize(rows,p,'2026-10-20')
         self.assertFalse(bad);self.assertEqual(good[0]['provider_record_date'],'2026-10-02')
+        self.assertEqual(good[0]['source_quality']['reviewed_on'],'2026-10-20')
         self.assertEqual(good[0]['field_end'],'2026-09-30');self.assertFalse(good[0]['aggregation_eligibility']['eligible'])
         self.assertIsNone(summarize(good,RACE,'2026-10-20',14)['party'])
     def test_new_wave_discovered_at_same_source_without_manual_values(self):

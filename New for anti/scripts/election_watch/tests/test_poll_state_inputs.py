@@ -1,5 +1,6 @@
 """State PR isolation, original capture replay and publication races."""
 from copy import deepcopy
+from datetime import datetime, timedelta
 import json
 from pathlib import Path
 import subprocess
@@ -106,7 +107,10 @@ class StateInputTests(unittest.TestCase):
 
     def test_newer_manual_state_capture_cannot_be_rolled_back(self):
         old = read(PUBLIC/'usa_election_live_polls_v1.json')
-        packet = packets()[0]; old.setdefault('state_captures', {})[packet['state']] = {'captured_at':'2026-10-11T00:00:00Z'}
+        packet = packets()[0]
+        newer = (datetime.fromisoformat(packet['capture']['fetched_at'].replace('Z','+00:00'))
+                 + timedelta(days=1)).isoformat()
+        old.setdefault('state_captures', {})[packet['state']] = {'captured_at':newer}
         with self.assertRaisesRegex(ValueError, 'newer state capture'):
             rebuild(old, read(PUBLIC/'usa_election_poll_history_2026.json'), [packet], PUBLIC)
 
@@ -122,8 +126,10 @@ class StateInputTests(unittest.TestCase):
 
     def test_packet_receipt_cannot_replace_newer_manual_collection_receipt(self):
         packet = packets()[0]; state = packet['state']
+        newer = (datetime.fromisoformat(packet['capture']['fetched_at'].replace('Z','+00:00'))
+                 + timedelta(days=1)).isoformat()
         old = {'schema':'usa_live_polls_v1', 'cycle':2026, 'races':{},
-               'state_captures':{state:{'captured_at':'2026-10-12T00:00:00Z'}}}
+               'state_captures':{state:{'captured_at':newer}}}
         board = {'schema':'usa_live_polls_v1', 'cycle':2026, 'races':{}}
         history = {'cycle':2026, 'races':{}}
         retain_state_provenance(board, history, old, [packet])

@@ -92,6 +92,14 @@ class IowaPrimaryTests(unittest.TestCase):
     def test_reachable_report_index_does_not_claim_financial_coverage(self):
         access = read(PUBLIC/'usa_governor_source_access/2026/IA.json')
         polls = read(PUBLIC/'usa_election_live_polls_v1.json')
+        # Fixed reviewed observations/receipt, not a mutable national capture.
+        observations=self.current()
+        for rid,race in polls['races'].items():
+            if race['state']=='IA':race['observations']=[o for o in observations if o['race_id']==rid]
+        polls.setdefault('state_captures',{})['IA']={'state':'IA','cycle':2026,
+            'primary_rechecked_ids':[o['id'] for o in observations],
+            'primary_review_data_file':'usa_election_poll_release_reviews/2026/IA-primary-20261009.json',
+            'governor_source_checked_at':access['checked_at']}
         result = build_state('IA', 'B', read(CONFIG/'state_evidence_plan_2026.json'),
             read(CONFIG/'targets_2026.json'), read(ROOT/'config/federal_matchups/2026.json'),
             self.gov, polls,
