@@ -15,11 +15,12 @@ const serialize='20261020230106_indonesia_ingest_serialization.sql';
 const lease='20261020231311_indonesia_sync_lease.sql';
 const completeSource='20261020231617_indonesia_mail_complete_source_gate.sql';
 const multiScope='20261021040724_indonesia_multi_scope_subscriptions.sql';
+const automaticIngestion='20261021043352_indonesia_automatic_ingestion.sql';
 const sql=name=>readFileSync(new URL('../../../supabase/migrations/'+name,import.meta.url),'utf8');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const body='Ketentuan batubara dan perlindungan lingkungan untuk usaha pertambangan. '.repeat(8);
 const document=(id,level='national',region='Indonesia')=>({document_id:id,country_code:'IDN',title:id,title_ko:'환경·석탄 시험 문서',issuer_name:'Test',issuer_level:level,jurisdiction:region,document_type:'Permen',document_number:id,document_year:2026,topics:['coal','biofuel'],primary_stage:'coal',scope_note:'Reviewed test scope',source_url:'https://test.go.id/'+id,legal_status:'unverified',status_note:'Test',observed_at:'2026-10-01T00:00:00Z',content_hash:hash(body),content_kind:'official_text',text_content:body,text_truncated:false});
-async function fixture(fn){
+async function fixture(fn,withCatalogue=false){
  const db=new PGlite();
  try{
   await db.exec(`create role anon;create role authenticated;create role service_role bypassrls; create schema auth;
@@ -47,6 +48,15 @@ async function fixture(fn){
   await db.exec(sql(lease));
   await db.exec(sql(completeSource));
   await db.exec(sql(multiScope));
+  if(withCatalogue){
+   // Search projection used by the real catalogue reconciliation migration.
+   await db.exec(`create view policy_idn.embedding_corpus with(security_invoker=true) as
+    select d.*,v.content_kind,v.text_truncated from policy_idn.documents d join lateral
+    (select content_kind,text_truncated from policy_idn.versions v where v.document_id=d.document_id order by observed_at desc limit 1) v on true;
+    grant select on policy_idn.embedding_corpus to service_role;`);
+   await db.exec(sql('20261019095306_indonesia_policy_catalogue_inventory.sql'));
+   await db.exec(sql(automaticIngestion));
+  }
   const acting=async(id,fn)=>{
    await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');
    try{return await fn();}finally{await db.exec('reset role');}
@@ -61,6 +71,49 @@ async function fixture(fn){
   await fn({db,rpc,save,acting,sub,change,review});
  }finally{await db.close();}
 }
+test('a selected province receives nationwide central laws, while central rules limited to another province stay excluded',()=>fixture(async({db,rpc,save,sub,review})=>{
+ await sub(U,'coal','Aceh');await sub(V,'palm_oil','Banten');await rpc('idn_set_mail_delivery_enabled',[true]);
+ const d={...document('idn-central-law'),document_type:'UU',topics:['coal','palm_oil']};await save(d);
+ let c=(await rpc('idn_mail_review_queue')).pending.find(x=>x.document_id===d.document_id);
+ await review(c,{topics:['coal','palm_oil'],scope:'national',regions:[]});
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,2);
+ const other={...d,text_content:body+' Central regulation limited to Aceh.',observed_at:new Date().toISOString()};other.content_hash=hash(other.text_content);await save(other);
+ c=(await rpc('idn_mail_review_queue')).pending.find(x=>x.content_hash===other.content_hash);
+ await review(c,{topics:['coal','palm_oil'],scope:'regions',regions:['Aceh']});
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox where user_id=$1',[U])).rows[0].n,2);
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox where user_id=$1',[V])).rows[0].n,1);
+}));
+test('automatic official ingestion atomically stores text/audit/result, deduplicates replay and rejects stale catalogue or lost lease',()=>fixture(async({db,rpc,acting})=>{
+ const token=(await rpc('idn_acquire_sync_lease',['mac:automatic-test',900])).lease_token;
+ const metadata={source_record_id:'auto-1',title:'Peraturan Pemerintah Nomor 99 Tahun 2026 tentang Batubara',page_url:'https://test.go.id/list',download_url:'https://test.go.id/new.pdf',document_type:'PP',document_number:'99',document_year:2026,issuer_key:'national',issuer_level:'national',jurisdiction:null};
+ const snapshot={run_id:crypto.randomUUID(),source_id:'auto-test',source_config:{source_id:'auto-test',url:'https://test.go.id/list',scope:'Official published source table, not all national law'},finished_at:new Date().toISOString(),status:'enumerated_scope',stop_reason:'listing_exhausted',records:[metadata],pending_urls:[],pages:[{url:metadata.page_url,raw_sha256:'a'.repeat(64)}],failures:[]};
+ await rpc('idn_sync_store_catalogue',[JSON.stringify(snapshot),token]);
+ const r=(await rpc('idn_ingestion_queue',[['auto-test'],5])).items[0];assert.equal(r.source_record_id,'auto-1');
+ const d={...document('idn-automatic'),document_type:'PP',document_number:'99',automatic_admission:{metadata_hash:r.metadata_hash,heading_identity_verified:true,legal_effect_verified:false}};
+ const finish=(hashValue=r.metadata_hash,documentValue=d)=>rpc('idn_complete_ingestion',['auto-test','auto-1',hashValue,documentValue===null?null:JSON.stringify(documentValue),'stored','verified heading; legal effect unverified',86400,token]);
+ assert.equal((await finish()).new_version,true);assert.equal((await finish()).new_version,false);
+ assert.equal((await rpc('idn_ingestion_queue',[['auto-test'],5])).items.length,0);
+ assert.equal((await finish('f'.repeat(32))).stale,true);
+ await assert.rejects(finish(r.metadata_hash,{...d,content_kind:'official_metadata'}),/complete identified/);
+ assert.equal((await rpc('idn_ingestion_status')).states.stored,1);
+ assert.equal((await db.query("select legal_status from policy_idn.documents where document_id='idn-automatic'")).rows[0].legal_status,'unverified');
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,0);
+ await acting(U,async()=>{await assert.rejects(rpc('idn_ingestion_status'));await assert.rejects(db.query('select * from policy_idn.automatic_ingestions'));});
+ await rpc('idn_release_sync_lease',[token]);await assert.rejects(finish(),/lease lost/);
+},true));
+test('automatic ingestion result failure rolls back the document and audit before a clean retry',()=>fixture(async({db,rpc})=>{
+ const token=(await rpc('idn_acquire_sync_lease',['mac:rollback-test',900])).lease_token;
+ const metadata={source_record_id:'r',title:'Peraturan Pemerintah Nomor 98 Tahun 2026 tentang Batubara',page_url:'https://test.go.id/list',download_url:'https://test.go.id/98.pdf',document_type:'PP',document_number:'98',document_year:2026,issuer_key:'national'};
+ const snapshot={run_id:crypto.randomUUID(),source_id:'rollback-test',source_config:{source_id:'rollback-test',url:metadata.page_url,scope:'Official scoped table for rollback verification'},finished_at:new Date().toISOString(),status:'enumerated_scope',records:[metadata],pending_urls:[],pages:[{url:metadata.page_url}],failures:[]};
+ await rpc('idn_sync_store_catalogue',[JSON.stringify(snapshot),token]);const r=(await rpc('idn_ingestion_queue',[['rollback-test'],5])).items[0];
+ const d={...document('idn-auto-rollback'),automatic_admission:{metadata_hash:r.metadata_hash}};
+ const finish=()=>rpc('idn_complete_ingestion',['rollback-test','r',r.metadata_hash,JSON.stringify(d),'stored','verified fixture',86400,token]);
+ await db.exec("create function policy_idn.reject_auto_result() returns trigger language plpgsql as $$ begin raise exception 'result unavailable';end $$;create trigger reject_auto_result before insert on policy_idn.automatic_ingestions for each row execute function policy_idn.reject_auto_result()");
+ await assert.rejects(finish(),/result unavailable/);
+ assert.equal((await db.query("select count(*)::int n from policy_idn.documents where document_id='idn-auto-rollback'")).rows[0].n,0);
+ assert.equal((await db.query("select count(*)::int n from policy_idn.source_checks where document_id='idn-auto-rollback'")).rows[0].n,0);
+ await db.exec('drop trigger reject_auto_result on policy_idn.automatic_ingestions');assert.equal((await finish()).new_version,true);
+},true));
 test('multi-scope subscriptions expose nationwide plus 38 BPS provinces, preserve coverage gaps, and save combinations atomically',()=>fixture(async({db,rpc,acting})=>{
  const list=()=>acting(U,()=>rpc('idn_my_mail_subscriptions'));
  const options=(await list()).region_options;assert.equal(options.length,39);

@@ -46,9 +46,11 @@ def identity(title):
             kind, issuer = typ, agency
             level = 'national' if agency else None
             break
-    for place in ['Jawa Tengah', 'Sulawesi Barat', 'Kalimantan Timur', 'Sulawesi Tengah']:
+    places = [p[1] for p in json.loads(Path(__file__).with_name('mail-regions.json').read_text())['provinces']]
+    for place in sorted(places, key=len, reverse=True):
         if kind in ('Perda', 'Pergub', 'Perbup') and place.lower() in low:
             jurisdiction, level = place, 'provincial' if kind != 'Perbup' else None
+            break
     match = re.search(r'\b(?:nomor|no\.?)\s+([\w./-]+)\s+tahun\s+((?:19|20)\d{2})\b', head, re.I)
     number, year = (match.group(1), int(match.group(2))) if match else (None, None)
     if not match:

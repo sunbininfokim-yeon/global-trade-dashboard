@@ -51,7 +51,8 @@ def atomic_json(path, value):
 class Gateway:
     ROUTES = {"idn_store_document", "idn_store_source_check", "idn_mail_review_queue",
               "idn_acquire_sync_lease", "idn_renew_sync_lease", "idn_release_sync_lease",
-              "idn_sync_store_document", "idn_sync_store_source_check", "idn_sync_status"}
+              "idn_sync_store_document", "idn_sync_store_source_check", "idn_sync_status",
+              "idn_sync_store_catalogue", "idn_ingestion_queue", "idn_complete_ingestion", "idn_ingestion_status", "idn_catalogue_status"}
 
     def __init__(self, env_file=None):
         values = dict(os.environ)
@@ -114,10 +115,14 @@ class DatabaseLease:
             raise RuntimeError("IDN refresh lease lost; checkpoint retained")
 
     def __call__(self, name, args):
-        if name not in ("idn_store_document", "idn_store_source_check"):
+        if name not in ("idn_store_document", "idn_store_source_check", "idn_store_catalogue"):
             raise ValueError("not an IDN source write")
         self.heartbeat()
         return self.rpc(name.replace("idn_store_", "idn_sync_store_"), {**args, "p_lease_token": self.token})
+
+    def complete_ingestion(self, args):
+        self.heartbeat()
+        return self.rpc("idn_complete_ingestion", {**args, "p_lease_token": self.token})
 
     def __exit__(self, *_):
         try:
@@ -141,7 +146,7 @@ def batch_state(stats):
     return "ok"
 
 
-def run(manifest, state_dir, rpc, *, limit=5, collect_fn=collect, now=time.time, pause=time.sleep, heartbeat=lambda: None):
+def run(manifest, state_dir, rpc, *, limit=5, collect_fn=collect, now=time.time, pause=time.sleep, heartbeat=lambda: None, external_cooldowns=None):
     if not 1 <= limit <= 20 or not manifest:
         raise ValueError("nonempty manifest and limit 1..20 required")
     ids = [e["document_id"] for e in manifest]
@@ -165,6 +170,8 @@ def run(manifest, state_dir, rpc, *, limit=5, collect_fn=collect, now=time.time,
             "version": 1, "manifest_hash": digest, "cursor": 0, "cycle": 0, "active": None, "cooldowns": {}}
         if state.get("version") != 1 or state.get("manifest_hash") != digest:
             raise ValueError("manifest changed; preserve checkpoint and use a new state directory")
+        for host, until in (external_cooldowns or {}).items():
+            state["cooldowns"][host] = max(state["cooldowns"].get(host, 0), until)
         stats = dict(attempted=0, new_versions=0, source_failures=0, metadata_only=0, complete_text_checks=0, cooldown_skips=0, stopped=False)
         for _ in range(min(limit, len(manifest))):
             if (root / "STOP").exists():
