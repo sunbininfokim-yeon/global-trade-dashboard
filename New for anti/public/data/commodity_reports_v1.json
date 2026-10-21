@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-21T12:23:22.762996+00:00",
+  "generated_at": "2026-10-21T12:34:37.897437+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -19,13 +19,13 @@
   "stats": {
     "sources_ok": 65,
     "sources_failed": 1,
-    "raw_items": 1465,
-    "scored": 526,
-    "unclassified": 753,
-    "rejected": 81,
-    "published": 465,
+    "raw_items": 1480,
+    "scored": 450,
+    "unclassified": 761,
+    "rejected": 75,
+    "published": 393,
     "commodities": 33,
-    "buckets": 243
+    "buckets": 204
   },
   "feed_status": [
     {
@@ -121,7 +121,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 48 reports linked, 13 read, 23 already known",
+      "note": "45 list pages, 47 reports linked, 11 read, 25 already known",
       "archived": 22
     },
     {
@@ -463,14 +463,16 @@
       "ok": true,
       "count": 40,
       "error": null,
-      "mode": "live"
+      "mode": "live",
+      "archived": 9
     },
     {
       "source_id": "gn_idn_esdm_id",
       "ok": true,
       "count": 40,
       "error": null,
-      "mode": "live"
+      "mode": "live",
+      "archived": 6
     },
     {
       "source_id": "gn_palm_oil_en",
@@ -511,9 +513,9 @@
   "translation": {
     "enabled": true,
     "model": "gemini-flash-lite-latest",
-    "calls": 3,
-    "annotated": 48,
-    "reused": 56,
+    "calls": 2,
+    "annotated": 30,
+    "reused": 80,
     "error": null
   },
   "boards": {
@@ -1009,29 +1011,11 @@
         "1ecab6510c79a333",
         "c981e38b1716fe00",
         "1df61fab545dc95c",
-        "cb992472c22d64ec",
         "755265be684d892e",
         "333bf7304a6961c5",
         "62f11e17ce23601c",
         "b8e0e19f0f00a266",
         "b87baa2603ba1ba3"
-      ],
-      "USA": [
-        "6a4a5c479cce39a3",
-        "7386f4bb45850f38",
-        "49ee619960302b86",
-        "afdd94969e685c61",
-        "2471fd3ff48cbdc7",
-        "0cc889de9eed1bf0",
-        "2048baa98920b823",
-        "73bc7cd0a5fd9d7e",
-        "1ecab6510c79a333",
-        "f67926fadcc1ef47",
-        "955ad309a414417b",
-        "9931db39512deddb",
-        "cb992472c22d64ec",
-        "9307f930910dd12d",
-        "ab1247b85d2d8409"
       ],
       "CHN": [
         "afdd94969e685c61",
@@ -1039,6 +1023,19 @@
         "f67926fadcc1ef47",
         "c981e38b1716fe00",
         "9307f930910dd12d"
+      ],
+      "USA": [
+        "6a4a5c479cce39a3",
+        "7386f4bb45850f38",
+        "49ee619960302b86",
+        "afdd94969e685c61",
+        "2471fd3ff48cbdc7",
+        "2048baa98920b823",
+        "73bc7cd0a5fd9d7e",
+        "1ecab6510c79a333",
+        "f67926fadcc1ef47",
+        "955ad309a414417b",
+        "9931db39512deddb"
       ],
       "PER": [
         "154c30b8c72eee8f",
@@ -1057,8 +1054,7 @@
         "e62d50eaa244470a",
         "9f1dcf491994952e",
         "adfe4486a50cd2b6",
-        "325de2847d816842",
-        "84c6d1280b67d17c"
+        "325de2847d816842"
       ],
       "ESP": [
         "2c28d1e03cee1129"
@@ -1074,8 +1070,7 @@
       ],
       "AUS": [
         "523dd37428427086",
-        "30865a9e48fdf5c3",
-        "f4b10ee8e47b6b33"
+        "30865a9e48fdf5c3"
       ],
       "CAN": [
         "ddda9d4e2c9ac764",
@@ -1084,56 +1079,18 @@
       ],
       "CHE": [
         "154c30b8c72eee8f",
-        "30865a9e48fdf5c3",
-        "f4b10ee8e47b6b33"
-      ],
-      "BOL": [
-        "738a0f84402d4d70"
+        "30865a9e48fdf5c3"
       ],
       "ZMB": [
         "b1dfbcd2cc053e27",
         "8c243ecfa3814f92",
         "ce9b8645ae75194f",
         "80a200d2fa7e3423"
-      ],
-      "PAK": [
-        "02e9b6a0814cea47"
-      ]
-    },
-    "soybeans": {
-      "_global": [
-        "fb2c4431c486bc84",
-        "fea1697202557590",
-        "e02f0015513318b7",
-        "976dad99c36e6871"
-      ],
-      "VNM": [
-        "2147f5407a8ae8de"
-      ],
-      "ARG": [
-        "e36e7155dc085ab6",
-        "21c3dd4f0cf93fd0"
-      ],
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "USA": [
-        "0466c9487c9388ef",
-        "44b8a849491ef3dc"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "MYS": [
-        "dd65e722f06ed85f"
       ]
     },
     "rice": {
       "KHM": [
         "b9464782992065f8"
-      ],
-      "VNM": [
-        "a14ff3afe55392ed"
       ],
       "VEN": [
         "bf540915870c3b2a"
@@ -1164,9 +1121,6 @@
       "BRA": [
         "e65bffd316bf9313",
         "90caf018877f574b"
-      ],
-      "IDN": [
-        "60be92f98ff7c803"
       ]
     },
     "sugar": {
@@ -1244,8 +1198,6 @@
         "cd9065dc0821bdba",
         "7a317150b44f8349",
         "5cc5a9f86bdef2e0",
-        "f228af10922c9f08",
-        "fb81280090b81bbb",
         "c15a313674037476",
         "2469120340370df4",
         "3038b0ed9276919c"
@@ -1259,9 +1211,6 @@
         "f76b32fe407fefbd",
         "aed369cb89fe2a3c",
         "e02f0015513318b7"
-      ],
-      "USA": [
-        "fb81280090b81bbb"
       ]
     },
     "wheat": {
@@ -1274,9 +1223,6 @@
       "USA": [
         "29ee4e32a01f13fd",
         "44b8a849491ef3dc"
-      ],
-      "VNM": [
-        "a14ff3afe55392ed"
       ],
       "PAK": [
         "598ef301ee60a6fd"
@@ -1328,10 +1274,36 @@
         "6269fa1eda293c5a"
       ]
     },
-    "corn": {
+    "soybeans": {
       "VNM": [
-        "a14ff3afe55392ed"
+        "2147f5407a8ae8de"
       ],
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "TUR": [
+        "b6c8cf9b7c06332d"
+      ],
+      "USA": [
+        "0466c9487c9388ef",
+        "44b8a849491ef3dc"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "_global": [
+        "fb2c4431c486bc84",
+        "e02f0015513318b7",
+        "976dad99c36e6871"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
+      ],
+      "MYS": [
+        "dd65e722f06ed85f"
+      ]
+    },
+    "corn": {
       "VEN": [
         "bf540915870c3b2a"
       ],
@@ -1382,8 +1354,7 @@
       ],
       "_global": [
         "4424bb725ad56042",
-        "9d5117c088cd78d5",
-        "7a4009879d581b2a"
+        "9d5117c088cd78d5"
       ]
     },
     "oil": {
@@ -1392,15 +1363,6 @@
         "636939b535053039",
         "cfe32235018b6add",
         "0466c9487c9388ef"
-      ],
-      "UKR": [
-        "c791a928b7e891f7"
-      ],
-      "RUS": [
-        "c791a928b7e891f7"
-      ],
-      "IRN": [
-        "c791a928b7e891f7"
       ],
       "AUS": [
         "6ede5478c6aaf180"
@@ -1415,13 +1377,7 @@
         "0aefbda7b035d0f3",
         "ad0245762986be84",
         "0260f9aa0131b0b8",
-        "7a4009879d581b2a",
         "735b13587e14b5a5"
-      ],
-      "IDN": [
-        "3db6bb8ac1d892f7",
-        "d328a14be36f486f",
-        "4150d1d770415e9a"
       ]
     },
     "thermal_coal": {
@@ -1445,14 +1401,8 @@
         "b1430460022fd15c",
         "017535dc019be671",
         "d4d76b6365d670c0",
-        "47023876b16dfec2",
-        "797da8f87f33fa66",
-        "3b71abcc79133ec7",
-        "2efcb5dd0f5ad7b9",
-        "4d041b79db1188eb",
-        "e045a40d863b3fe6",
-        "24a3e7dee389c443",
-        "6746dc0c57b06cca"
+        "9eb82007422f2a67",
+        "47023876b16dfec2"
       ],
       "RUS": [
         "257b27e525138712"
@@ -1460,23 +1410,17 @@
       "IND": [
         "257b27e525138712",
         "77c32ad74f107c4a",
-        "8aa37d402fc28af1",
-        "0d8040fc9cdba2cc",
-        "eb318f4fe697c24e",
-        "4eefa0c0a6dd66ef"
+        "8aa37d402fc28af1"
       ],
       "AUS": [
         "13329e4ef4a76edf",
-        "a75714719654ea06",
-        "6942f23cb21ba74a",
-        "0d8040fc9cdba2cc"
+        "a43368beb62d2f18"
       ],
       "JPN": [
         "13329e4ef4a76edf"
       ],
       "CHN": [
-        "47023876b16dfec2",
-        "76e09f56fd203be0"
+        "47023876b16dfec2"
       ],
       "IRN": [
         "47023876b16dfec2"
@@ -1484,22 +1428,8 @@
       "CAN": [
         "8175db49b824eb6e"
       ],
-      "_global": [
-        "ff4173c23d5ba5d5",
-        "7a4009879d581b2a"
-      ],
-      "MNG": [
-        "0d8040fc9cdba2cc"
-      ],
       "KAZ": [
-        "63b6a100095ad69b",
-        "f017755671b56605"
-      ],
-      "COL": [
-        "db0a5a5dfcc2e38c"
-      ],
-      "ARE": [
-        "f017755671b56605"
+        "63b6a100095ad69b"
       ]
     },
     "light_oils": {
@@ -1508,37 +1438,6 @@
       ],
       "USA": [
         "00abaa8d059c1ade"
-      ]
-    },
-    "tin": {
-      "USA": [
-        "29b98a2907b78c50",
-        "9fc6c0f2f5e3568a"
-      ],
-      "AUS": [
-        "ab5d7c1e7e1f1c44",
-        "91c5d4fabdf7e01f"
-      ],
-      "CHN": [
-        "1b171ff4ac638164"
-      ],
-      "_global": [
-        "70af2de6182199ad",
-        "1bce389d49273d38",
-        "feec825500717296",
-        "b8100702b4d10bff",
-        "022ee0b6016f3dd5"
-      ],
-      "MYS": [
-        "9fc6c0f2f5e3568a"
-      ],
-      "GBR": [
-        "91c5d4fabdf7e01f"
-      ],
-      "IDN": [
-        "3cac3e995aa9e757",
-        "735c18ef1e790226",
-        "16f99349c6e2ef80"
       ]
     },
     "rubber": {
@@ -1560,72 +1459,26 @@
         "51f7850f5e34ba32",
         "4a341ad3a2d594e0",
         "51e9b64989fadc3d",
-        "51278a4a74b4b5f6",
         "9fc7f595c939c5ae",
         "3712a39225da7475",
-        "ba618f04f9896f0b",
-        "28c6d6b2f4c56f55",
-        "1f9862073e12b4a6",
         "3756023f1ecf08de",
         "7c01bc88c3ee5cf9",
-        "d47df2487c631cb2",
         "b9dbe511d03f6801"
       ],
       "_global": [
         "b945e519fa260d49",
         "a979ff111630885e",
         "48f447e7e1a919bc",
-        "8f2b164b5e4ab3cf",
-        "db801cf010a740cd",
-        "2d3a80aad1cb8598",
-        "45e4e83f0350c6a7",
-        "02ec3015ebf0752a"
+        "8f2b164b5e4ab3cf"
       ],
       "ZAF": [
         "2d85da4eb092121f"
       ],
-      "NER": [
-        "8c1c1e792d3d26e8",
-        "c779e2f37f3d0997",
-        "ba618f04f9896f0b",
-        "1f9862073e12b4a6",
-        "7f4d2e2c487858d7"
-      ],
-      "AUS": [
-        "8c1c1e792d3d26e8",
-        "c779e2f37f3d0997",
-        "64e3fe317c3a2dbc"
-      ],
       "FRA": [
-        "3712a39225da7475",
-        "7f4d2e2c487858d7"
-      ],
-      "CAN": [
-        "ba618f04f9896f0b",
-        "1f9862073e12b4a6",
-        "e298614c4f5af3f3",
-        "260cbb85971c6723",
-        "c9d394282f7d4445"
+        "3712a39225da7475"
       ],
       "CHN": [
-        "b0d9827004892116",
-        "64e3fe317c3a2dbc"
-      ],
-      "SAU": [
-        "28c6d6b2f4c56f55",
-        "904482c9e0ce6f6e"
-      ],
-      "RUS": [
-        "76fe0e9e03a8033b"
-      ],
-      "UKR": [
-        "76fe0e9e03a8033b"
-      ],
-      "NAM": [
-        "64e3fe317c3a2dbc"
-      ],
-      "COD": [
-        "dc4e089e2a5941d6"
+        "b0d9827004892116"
       ]
     },
     "uranium_ore": {
@@ -1636,72 +1489,53 @@
         "51f7850f5e34ba32",
         "4a341ad3a2d594e0",
         "51e9b64989fadc3d",
-        "51278a4a74b4b5f6",
         "9fc7f595c939c5ae",
         "3712a39225da7475",
-        "ba618f04f9896f0b",
-        "28c6d6b2f4c56f55",
-        "1f9862073e12b4a6",
         "3756023f1ecf08de",
         "7c01bc88c3ee5cf9",
-        "d47df2487c631cb2",
         "b9dbe511d03f6801"
       ],
       "_global": [
         "b945e519fa260d49",
         "a979ff111630885e",
         "48f447e7e1a919bc",
-        "8f2b164b5e4ab3cf",
-        "db801cf010a740cd",
-        "2d3a80aad1cb8598",
-        "45e4e83f0350c6a7",
-        "02ec3015ebf0752a"
+        "8f2b164b5e4ab3cf"
       ],
       "ZAF": [
         "2d85da4eb092121f"
       ],
-      "NER": [
-        "8c1c1e792d3d26e8",
-        "c779e2f37f3d0997",
-        "ba618f04f9896f0b",
-        "1f9862073e12b4a6",
-        "7f4d2e2c487858d7"
-      ],
-      "AUS": [
-        "8c1c1e792d3d26e8",
-        "c779e2f37f3d0997",
-        "64e3fe317c3a2dbc"
-      ],
       "FRA": [
-        "3712a39225da7475",
-        "7f4d2e2c487858d7"
-      ],
-      "CAN": [
-        "ba618f04f9896f0b",
-        "1f9862073e12b4a6",
-        "e298614c4f5af3f3",
-        "260cbb85971c6723",
-        "c9d394282f7d4445"
+        "3712a39225da7475"
       ],
       "CHN": [
-        "b0d9827004892116",
-        "64e3fe317c3a2dbc"
+        "b0d9827004892116"
+      ]
+    },
+    "tin": {
+      "_global": [
+        "70af2de6182199ad",
+        "1bce389d49273d38",
+        "29b98a2907b78c50",
+        "feec825500717296",
+        "b8100702b4d10bff",
+        "022ee0b6016f3dd5"
       ],
-      "SAU": [
-        "28c6d6b2f4c56f55",
-        "904482c9e0ce6f6e"
+      "AUS": [
+        "ab5d7c1e7e1f1c44",
+        "91c5d4fabdf7e01f"
       ],
-      "RUS": [
-        "76fe0e9e03a8033b"
+      "CHN": [
+        "1b171ff4ac638164"
       ],
-      "UKR": [
-        "76fe0e9e03a8033b"
+      "MYS": [
+        "9fc6c0f2f5e3568a"
       ],
-      "NAM": [
-        "64e3fe317c3a2dbc"
+      "GBR": [
+        "91c5d4fabdf7e01f"
       ],
-      "COD": [
-        "dc4e089e2a5941d6"
+      "IDN": [
+        "3cac3e995aa9e757",
+        "16f99349c6e2ef80"
       ]
     },
     "gold": {
@@ -1709,15 +1543,14 @@
         "4e37ad6d9815d7ba",
         "20c121ad1f9ec2c8",
         "dd2a786692b8c5a8",
+        "45b970c626da923e",
         "6d3e7543b7514565"
       ],
       "USA": [
         "8f0f18d41e712d6c",
         "c03b7d5f7b899736",
         "af55cd14a4146f77",
-        "18d073cb166cd598",
-        "45b970c626da923e",
-        "8942d7a2cd652a65"
+        "18d073cb166cd598"
       ],
       "ETH": [
         "9bb5774b8de8434c"
@@ -1730,8 +1563,6 @@
         "f056109d6519c066",
         "b0f23686d2f72585",
         "c3860eb91977a095",
-        "681db44e09046090",
-        "bad97575fb2051ce",
         "7aa1d9ea8f7acd29"
       ],
       "IND": [
@@ -1751,9 +1582,6 @@
       "SEN": [
         "165286fdfcd59cd3"
       ],
-      "BOL": [
-        "738a0f84402d4d70"
-      ],
       "GHA": [
         "87950070f87e62cd"
       ],
@@ -1764,17 +1592,11 @@
       "ZAF": [
         "bb1ee698b745c3cb"
       ],
-      "IRN": [
-        "8942d7a2cd652a65"
-      ],
       "AUS": [
         "cd17059915564b39"
       ],
       "COL": [
         "9a241ae46519ad26"
-      ],
-      "PAK": [
-        "02e9b6a0814cea47"
       ]
     },
     "iron_ore": {
@@ -1818,37 +1640,21 @@
         "257b27e525138712"
       ],
       "IND": [
-        "257b27e525138712",
-        "0d8040fc9cdba2cc"
+        "257b27e525138712"
       ],
       "AUS": [
-        "13329e4ef4a76edf",
-        "0d8040fc9cdba2cc"
+        "13329e4ef4a76edf"
       ],
       "JPN": [
         "13329e4ef4a76edf"
-      ],
-      "MNG": [
-        "0d8040fc9cdba2cc"
-      ],
-      "CHN": [
-        "76e09f56fd203be0"
       ]
     },
     "silver": {
       "USA": [
-        "c03b7d5f7b899736",
-        "8942d7a2cd652a65"
-      ],
-      "BOL": [
-        "738a0f84402d4d70"
-      ],
-      "IRN": [
-        "8942d7a2cd652a65"
+        "c03b7d5f7b899736"
       ],
       "_global": [
-        "b0f23686d2f72585",
-        "84c6d1280b67d17c"
+        "b0f23686d2f72585"
       ]
     },
     "rare_earths": {
@@ -1856,7 +1662,6 @@
         "df38cd5d67596094",
         "f2554f242a710bdc",
         "f79031a41821b87e",
-        "9eeb3d8428748000",
         "204f86b98ee1cef8"
       ],
       "CHN": [
@@ -1864,8 +1669,7 @@
         "7f4ba91c4a8830f4",
         "f79031a41821b87e",
         "cddc99f2c1393e79",
-        "74c415986d3d8ef7",
-        "9eeb3d8428748000"
+        "74c415986d3d8ef7"
       ],
       "CHL": [
         "0cebb9ebd73959f2"
@@ -1878,8 +1682,7 @@
         "cddc99f2c1393e79"
       ],
       "_global": [
-        "2828f36e2222dc99",
-        "84c6d1280b67d17c"
+        "2828f36e2222dc99"
       ]
     },
     "aluminum": {
@@ -1940,60 +1743,51 @@
         "c981e38b1716fe00",
         "0960a258e30be791"
       ],
-      "USA": [
-        "58a1872bb42a64a6",
-        "19bfd629c8b6f251",
-        "7a3084ada978f0a1",
-        "477b8c12e145933e",
-        "44e05f03eab98000"
-      ],
       "ZWE": [
         "a7a358b8b2596e31",
         "d4e19f4ddec8fe98"
       ],
       "AUS": [
         "7854227a2e6feb0d",
-        "7a3084ada978f0a1",
-        "2f3883e7893daeb1"
+        "7a3084ada978f0a1"
       ],
       "CHL": [
         "c981e38b1716fe00",
         "55b7a64545e54a64",
-        "2f3883e7893daeb1"
+        "44e05f03eab98000"
       ],
       "FRA": [
-        "3021ee9aaaae2363",
-        "73d3f3e297741b01"
+        "3021ee9aaaae2363"
       ],
       "ARG": [
         "19bfd629c8b6f251",
         "563b0bb98cc3a350",
-        "73d3f3e297741b01",
         "64c0cc4a2c480eea"
+      ],
+      "USA": [
+        "19bfd629c8b6f251",
+        "7a3084ada978f0a1"
       ],
       "BOL": [
         "19bfd629c8b6f251"
       ],
-      "_global": [
-        "8d72f1147646df7f",
-        "f57308730d1b4777",
-        "ffd8269ef253602c",
-        "d6bedea8263432d0",
-        "34e816db3bcbea48",
-        "7dd5ac32ea51efe7",
-        "681db44e09046090",
-        "bad97575fb2051ce"
-      ],
       "BRA": [
-        "41f3145d1f07c96c",
-        "272403b893be4b87",
-        "66f0a1945be81294"
+        "41f3145d1f07c96c"
       ],
       "ZAF": [
         "354da6c0ae014c04"
       ],
       "GHA": [
         "87950070f87e62cd"
+      ],
+      "_global": [
+        "8d72f1147646df7f",
+        "f57308730d1b4777",
+        "ffd8269ef253602c",
+        "d6bedea8263432d0",
+        "58a1872bb42a64a6",
+        "34e816db3bcbea48",
+        "7dd5ac32ea51efe7"
       ],
       "KOR": [
         "7a3084ada978f0a1"
@@ -2009,13 +1803,11 @@
       "USA": [
         "0dda098d9f4b41e6",
         "386fd62f137c2bf0",
-        "87979bb768c0a30a",
         "955ad309a414417b",
         "a5f2211651a59816",
         "1fa3cdaf1596dc51",
         "530926e3b5217307",
-        "9931db39512deddb",
-        "6e24ee10b7a82dc8"
+        "9931db39512deddb"
       ],
       "IDN": [
         "dd458bfc56de25cd",
@@ -2024,6 +1816,7 @@
         "8c95bee4461bb12c",
         "d6c431656b8328c2",
         "257b27e525138712",
+        "87979bb768c0a30a",
         "5d138b077a2eaa78",
         "5a2732fdd69b66dc",
         "2423c731178acf59",
@@ -2033,13 +1826,15 @@
         "f04d981f4973e9f3",
         "c55c7ece21e11b20",
         "b1430460022fd15c",
+        "e76bb75d8cce193a",
         "0b70eb028043e002",
         "017535dc019be671",
         "8dc9227bf3bbd6c1",
+        "c7cb3f036be5022b",
         "bfeb3628354529a3",
         "e90cf0db8d150ee8",
         "61e056231a5ccbc9",
-        "efbd5a05bce4faf4",
+        "d409a9b5327ce57c",
         "68678a59e36f17cc",
         "142be4b59d10bd63",
         "b68b0e58b09e2836",
@@ -2049,21 +1844,7 @@
         "5096d3c72c6d59ec",
         "b1ca8c0894765143",
         "04c0339454ea0e5a",
-        "e10a5971c241d35d",
-        "c5642fb0e2d6d0e2",
-        "fcf4028c645e6ef5",
-        "47d5b86ab2dacf6a",
-        "7bf227474b106e00",
-        "735c18ef1e790226",
-        "7d8a96e1b66ddc2b",
-        "7c1c694008c43c8e",
-        "5746eeb5511659e1",
-        "cfbd6e911663a22a",
-        "81d6f24efaf52a9d",
-        "f24ecbfa5c97363a",
-        "7208909a6cdc6fd5",
-        "c8478fa3fa40947f",
-        "63f3770bca54fc4f"
+        "e10a5971c241d35d"
       ],
       "RUS": [
         "257b27e525138712"
@@ -2103,9 +1884,7 @@
         "cd17059915564b39"
       ],
       "PHL": [
-        "68678a59e36f17cc",
-        "fcf4028c645e6ef5",
-        "7bf227474b106e00"
+        "68678a59e36f17cc"
       ]
     },
     "graphite": {
@@ -2159,10 +1938,6 @@
         "a979ff111630885e",
         "3663a7d940e42f4f",
         "7671b1c780a2ff75"
-      ],
-      "COD": [
-        "24d98ab42971530e",
-        "dc4e089e2a5941d6"
       ]
     },
     "manganese": {
@@ -2217,14 +1992,13 @@
         "copper"
       ],
       "countries": [
-        "CHL",
-        "USA"
+        "CHL"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.372,
+      "importance": 5.371,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -2233,36 +2007,6 @@
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "fea1697202557590",
-      "title": {
-        "original": "European Union: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Post raises its EU oilseed area planted forecast by 2 percent for MY 2026/27 from its Spring report. MY 2026/27 production is lowered after heat and drought cut...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/10/european-union-oilseeds-and-products-update",
-      "published_at": "2026-10-16T14:24:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.362,
-      "reasons": [
-        "series:USDA_GAIN",
-        "has_figure",
-        "revision_language"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "b9464782992065f8",
@@ -2287,7 +2031,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.121,
+      "importance": 5.12,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2353,7 +2097,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 4.708,
+      "importance": 4.707,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "has_figure",
@@ -2386,7 +2130,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.633,
+      "importance": 4.632,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2451,7 +2195,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.343,
+      "importance": 4.342,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2483,7 +2227,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.166,
+      "importance": 4.165,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2549,7 +2293,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.896,
+      "importance": 3.895,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2557,39 +2301,6 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-02T20:56:24.054037+00:00"
-    },
-    {
-      "id": "a14ff3afe55392ed",
-      "title": {
-        "original": "Vietnam: Grain and Feed Quarterly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Vietnam's economy posted strong growth in the first nine months of 2026, and the livestock and aquaculture sectors grew steadily. Rising food and feed demand is...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/10/vietnam-grain-and-feed-quarterly",
-      "published_at": "2026-10-19T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "wheat",
-        "corn",
-        "rice"
-      ],
-      "countries": [
-        "VNM"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.891,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "2147f5407a8ae8de",
@@ -2679,7 +2390,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.769,
+      "importance": 3.768,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2777,7 +2488,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.266,
+      "importance": 3.265,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2874,7 +2585,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.23,
+      "importance": 3.229,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -2907,7 +2618,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.189,
+      "importance": 3.188,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2939,7 +2650,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.138,
+      "importance": 3.137,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2964,8 +2675,7 @@
         "copper"
       ],
       "countries": [
-        "CHN",
-        "USA"
+        "CHN"
       ],
       "scope": "country",
       "country_source": "text",
@@ -2979,37 +2689,6 @@
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "e36e7155dc085ab6",
-      "title": {
-        "original": "Argentina: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Argentina’s oilseed sector enters MY2026/27 with a positive outlook, supported by strong prices, favorable producer margins, and expectations for abundant...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/10/argentina-oilseeds-and-products-update",
-      "published_at": "2026-10-07T12:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "ARG"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.075,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "80352747ac8a00ff",
@@ -3034,7 +2713,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.028,
+      "importance": 3.027,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3065,7 +2744,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.976,
+      "importance": 2.975,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3096,7 +2775,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.976,
+      "importance": 2.975,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3193,7 +2872,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.783,
+      "importance": 2.782,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3226,7 +2905,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.783,
+      "importance": 2.782,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3257,7 +2936,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.783,
+      "importance": 2.782,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3319,7 +2998,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.769,
+      "importance": 2.768,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -3414,7 +3093,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.696,
+      "importance": 2.695,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3478,7 +3157,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.587,
+      "importance": 2.586,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -3486,38 +3165,6 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "29b98a2907b78c50",
-      "title": {
-        "original": "Alphamin focuses on exploration as Q3 output steady",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Tin miner Alphamin Resources (TSXV: AFM; JSE: APH) announced third-quarter production of 5,030 tonnes tin-in-concentrate, almost identical to the previous quarter, supported by steady grades and mining rates. In line with the 0.3% quarter-on-quarter change in production, the company’s tin sales were steady at 5,046 tonnes. EBITDA increased 2.2% from Q2 to US$171 million with the company benefitting from stronger tin prices… Read the full article for free by registering on Tin Desk The post Alphamin focuses on exploration as Q3 output steady appeared first on International Tin Association .",
-      "url": "https://www.internationaltin.org/alphamin-focuses-on-exploration-as-q3-output-steady/?utm_source=rss&utm_medium=rss&utm_campaign=alphamin-focuses-on-exploration-as-q3-output-steady",
-      "published_at": "2026-10-07T13:27:29+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.47,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-10-07T15:50:50.281353+00:00"
     },
     {
       "id": "0ae7470a5aa9f5a7",
@@ -3636,6 +3283,37 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "b6c8cf9b7c06332d",
+      "title": {
+        "original": "Türkiye: Oilseeds and Products Semi-Annual",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
+      "published_at": "2026-09-23T15:01:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "TUR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 2.466,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
     },
     {
       "id": "e08bde069abdfd83",
@@ -3913,7 +3591,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.248,
+      "importance": 2.247,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3947,7 +3625,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.244,
+      "importance": 2.243,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3985,6 +3663,35 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-20T13:49:49.389931+00:00"
+    },
+    {
+      "id": "29b98a2907b78c50",
+      "title": {
+        "original": "Alphamin focuses on exploration as Q3 output steady",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Tin miner Alphamin Resources (TSXV: AFM; JSE: APH) announced third-quarter production of 5,030 tonnes tin-in-concentrate, almost identical to the previous quarter, supported by steady grades and mining rates. In line with the 0.3% quarter-on-quarter change in production, the company’s tin sales were steady at 5,046 tonnes. EBITDA increased 2.2% from Q2 to US$171 million with the company benefitting from stronger tin prices… Read the full article for free by registering on Tin Desk The post Alphamin focuses on exploration as Q3 output steady appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/alphamin-focuses-on-exploration-as-q3-output-steady/?utm_source=rss&utm_medium=rss&utm_campaign=alphamin-focuses-on-exploration-as-q3-output-steady",
+      "published_at": "2026-10-07T13:27:29+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.174,
+      "reasons": [
+        "has_figure",
+        "revision_language"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-10-07T15:50:50.281353+00:00"
     },
     {
       "id": "9d9f80da68b1c67d",
@@ -4361,7 +4068,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 1.917,
+      "importance": 1.916,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "revision_language",
@@ -4424,7 +4131,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.908,
+      "importance": 1.907,
       "reasons": [
         "country_in_text"
       ],
@@ -4454,7 +4161,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.864,
+      "importance": 1.863,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -4551,7 +4258,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.807,
+      "importance": 1.806,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -4844,37 +4551,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "45b970c626da923e",
-      "title": {
-        "original": "HPE dan HR Emas Turun 3,5% Periode I Oktober 2026, Ini Penyebabnya",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": "Kemendag menetapkan HPE dan HR emas turun 3,5% di awal Oktober 2026, dipengaruhi pasar global dan nilai tukar. Berlaku 1-14 Oktober 2026.Logam mulia Emasku yang diproduksi oleh PT Hartadinata Abadi Tbk. (HRTA)./dok. HRTABisnis.com, JAKARTA — Kementerian Perdagangan (Kemendag) telah menetapkan Harga Patokan Ekspor (HPE) dan Harga Referensi (HR) komoditas emas untuk periode pertama Oktober 2026. Pada periode ini, HPE emas turun 3,5% menjadi US$139.409,07 per kilogram dari US$144.469,49 per kilogram pada periode kedua September 2026. Selain itu, HR emas juga turun menjadi US$4.336,11 per troy…",
-      "url": "https://www.kemendag.go.id/berita/pojok-media/hpe-dan-hr-emas-turun-35-periode-i-oktober-2026-ini-penyebabnya",
-      "published_at": "2026-10-01T05:56:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.721,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
-    },
-    {
       "id": "dd5c47496ef59166",
       "title": {
         "original": "Dari Kebun Petani ke Pasar Dunia, Langkah Coko Cacao Company Angkat Potensi Kakao Lokal",
@@ -4897,7 +4573,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.708,
+      "importance": 1.707,
       "reasons": [
         "country_in_text"
       ],
@@ -4928,7 +4604,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.681,
+      "importance": 1.68,
       "reasons": [
         "country_in_text"
       ],
@@ -5021,7 +4697,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.67,
+      "importance": 1.669,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -5173,37 +4849,6 @@
       "first_seen_at": "2026-10-17T18:47:20.144283+00:00"
     },
     {
-      "id": "44e05f03eab98000",
-      "title": {
-        "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "El mercado pasó de una recuperación, impulsada por restricciones de oferta, a una corrección moderada desde mediados de mayo. El precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada el 19 de agosto: 12,2% bajo el valor del 13 de mayo, pero 106% sobre el promedio de 2025. La caída en los precio[...] La entrada Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/precio-spot-del-carbonato-de-litio-alcanzo-us-19-525-por-tonelada-en-agosto/",
-      "published_at": "2026-09-17T12:58:25+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.652,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.cochilco.cl/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
       "id": "df38cd5d67596094",
       "title": {
         "original": "Phoenix Tailings to build $375M rare earth plant in New York",
@@ -5320,7 +4965,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.616,
+      "importance": 1.615,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5418,7 +5063,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.613,
+      "importance": 1.612,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5450,7 +5095,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.595,
+      "importance": 1.594,
       "reasons": [
         "country_in_text"
       ],
@@ -5543,7 +5188,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.565,
+      "importance": 1.564,
       "reasons": [
         "country_in_text"
       ],
@@ -5690,7 +5335,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.527,
+      "importance": 1.526,
       "reasons": [
         "has_figure",
         "revision_language"
@@ -5811,7 +5456,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.498,
+      "importance": 1.497,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -6018,69 +5663,34 @@
       "first_seen_at": "2026-10-19T15:50:55.048765+00:00"
     },
     {
-      "id": "cb992472c22d64ec",
+      "id": "45b970c626da923e",
       "title": {
-        "original": "Copper price firms on reduced likelihood of higher US interest rates",
-        "original_lang": "en",
+        "original": "HPE dan HR Emas Turun 3,5% Periode I Oktober 2026, Ini Penyebabnya",
+        "original_lang": "id",
         "ko": null
       },
-      "summary": "Copper rose for a second straight session on Monday as fading prospects of an increase to US interest rates and the growing likelihood of mine strikes in Chile outweighed pressure from a strong dollar. Benchmark three-month copper on the London Metal Exchange was up 1.2% at $14,427 a metric ton as of 16:00 GMT after earlier touching as high as $14,447.50. The metal hit a record $14,875 on September 10 on concerns over tight supplies outside the US before losing ground last week. “Copper is helped by (an) uptick in equities as US Fed rate hike possibilities in October are dimming,” said…",
-      "url": "https://www.mining.com/web/copper-price-firms-on-reduced-likelihood-of-higher-us-interest-rates/",
-      "published_at": "2026-10-05T16:44:51+00:00",
-      "agency": "MINING.COM (니켈)",
-      "agency_ko": "마이닝닷컴 니켈",
-      "source_id": "int_mining_nickel",
+      "summary": "Kemendag menetapkan HPE dan HR emas turun 3,5% di awal Oktober 2026, dipengaruhi pasar global dan nilai tukar. Berlaku 1-14 Oktober 2026.Logam mulia Emasku yang diproduksi oleh PT Hartadinata Abadi Tbk. (HRTA)./dok. HRTABisnis.com, JAKARTA — Kementerian Perdagangan (Kemendag) telah menetapkan Harga Patokan Ekspor (HPE) dan Harga Referensi (HR) komoditas emas untuk periode pertama Oktober 2026. Pada periode ini, HPE emas turun 3,5% menjadi US$139.409,07 per kilogram dari US$144.469,49 per kilogram pada periode kedua September 2026. Selain itu, HR emas juga turun menjadi US$4.336,11 per troy…",
+      "url": "https://www.kemendag.go.id/berita/pojok-media/hpe-dan-hr-emas-turun-35-periode-i-oktober-2026-ini-penyebabnya",
+      "published_at": "2026-10-01T05:56:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
       "commodities": [
-        "copper"
+        "gold"
       ],
       "countries": [
-        "USA",
-        "CHL"
+        "IDN"
       ],
       "scope": "country",
-      "country_source": "text",
+      "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.471,
+      "importance": 1.475,
       "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
+        "has_figure"
       ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "477b8c12e145933e",
-      "title": {
-        "original": "Surge Battery boosts returns, cuts costs for Nevada lithium project",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "A new economic study for Surge Battery Metals ’ (TSXV: NILI; US-OTC: NILIF) Nevada North lithium project has lifted forecast returns and reduced expenses. Using an 8% discount rate and a lithium carbonate equivalent (LCE) price of $24,000 per tonne, Nevada North is now projected to generate an after-tax net present value (NPV) of $9.81 billion and a 24% internal rate of return (IRR) for a 4.2-year after-tax payback period, Surge said in a prefeasibility study (PFS). The project would require $2.77 billion in initial capital for its first stage, followed by another $2.35 billion to expand…",
-      "url": "https://www.mining.com/surge-battery-boosts-returns-cuts-costs-for-nevada-lithium-project/",
-      "published_at": "2026-10-05T15:13:28+00:00",
-      "agency": "MINING.COM (리튬)",
-      "agency_ko": "마이닝닷컴 리튬",
-      "source_id": "int_mining_lithium",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.47,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "4098432089e3ba07",
@@ -6306,7 +5916,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.46,
+      "importance": 1.459,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -6338,7 +5948,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.459,
+      "importance": 1.458,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -6467,12 +6077,42 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.418,
+      "importance": 1.417,
       "reasons": [
         "has_figure"
       ],
       "agency_url": "https://www.mining.com/",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "44e05f03eab98000",
+      "title": {
+        "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El mercado pasó de una recuperación, impulsada por restricciones de oferta, a una corrección moderada desde mediados de mayo. El precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada el 19 de agosto: 12,2% bajo el valor del 13 de mayo, pero 106% sobre el promedio de 2025. La caída en los precio[...] La entrada Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/precio-spot-del-carbonato-de-litio-alcanzo-us-19-525-por-tonelada-en-agosto/",
+      "published_at": "2026-09-17T12:58:25+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.416,
+      "reasons": [
+        "has_figure"
+      ],
+      "agency_url": "https://www.cochilco.cl/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "5f087a520744649c",
@@ -6496,7 +6136,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.41,
+      "importance": 1.409,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -6569,40 +6209,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "c791a928b7e891f7",
-      "title": {
-        "original": "Glencore says trading profits will top $5 billion this year",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Glencore Plc expects its commodity-trading profits to exceed $5 billion this year, putting it on track for one of the best results in its history. The bumper haul has primarily been driven by “the materially reshaped crude oil, refined products, gas and freight markets,” the trading house said in a statement on Friday. A $5 billion profit would be Glencore’s best result since its 2022 record, when energy markets were rocked by Russia’s full-scale invasion of Ukraine. In 2026, traders are again reaping huge earnings as the Iran war fuels wild energy price swings and major dislocations between…",
-      "url": "https://www.mining.com/web/glencore-says-trading-profits-will-top-5-billion-this-year/",
-      "published_at": "2026-10-02T22:45:22+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "UKR",
-        "RUS",
-        "IRN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.404,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "9bb5774b8de8434c",
       "title": {
         "original": "Ethiopia launches its first gold refinery, Prime Minister says",
@@ -6628,38 +6234,6 @@
       "importance": 1.403,
       "reasons": [
         "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "a75714719654ea06",
-      "title": {
-        "original": "Yancoal Australia’s Premier Coal workers reject pay deal, set strike action",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Majority of workers at Yancoal Australia’s (ASX: YAL) Premier Coal mine rejected the miner’s proposed workplace deal and will begin strike action on Saturday, Australia’s Mining and Energy Union said, citing demands for higher pay and greater job security. Around 91.5% of Premier Coal workers voted against the agreement as the closure of the Collie mine approaches. The enterprise agreement is expected to be workers’ last, MEU WA District Secretary Greg Busson said on Friday. Earlier in September, more than 90% MEU members voted in favour of industrial action, including work stoppages of more…",
-      "url": "https://www.mining.com/web/yancoal-australias-premier-coal-workers-reject-pay-deal-set-strike-action/",
-      "published_at": "2026-10-02T14:09:45+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "AUS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.396,
-      "reasons": [
-        "has_figure",
-        "revision_language",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
@@ -6729,7 +6303,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.388,
+      "importance": 1.387,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -6758,7 +6332,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.387,
+      "importance": 1.386,
       "reasons": [
         "has_figure"
       ],
@@ -6810,8 +6384,7 @@
         "tin"
       ],
       "countries": [
-        "MYS",
-        "USA"
+        "MYS"
       ],
       "scope": "country",
       "country_source": "text",
@@ -6847,7 +6420,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.379,
+      "importance": 1.378,
       "reasons": [
         "has_figure"
       ],
@@ -6878,7 +6451,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.373,
+      "importance": 1.372,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -7334,7 +6907,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.321,
+      "importance": 1.32,
       "reasons": [
         "country_in_text"
       ],
@@ -7364,7 +6937,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.319,
+      "importance": 1.318,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -7394,7 +6967,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.312,
+      "importance": 1.311,
       "reasons": [
         "country_in_text"
       ],
@@ -7470,7 +7043,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.306,
+      "importance": 1.305,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -7566,7 +7139,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.299,
+      "importance": 1.298,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -7769,36 +7342,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "681db44e09046090",
-      "title": {
-        "original": "Top 50 mining companies take $264 billion hit as gold trade unwinds, lithium stocks exit",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The world’s 50 most valuable mining stocks were worth $2.26 trillion at the close of September – the second-largest monthly decline in the history of the ranking. September took back three quarters of August’s record $357 billion advance , and it did so for the same reason the gain arrived: gold. Bullion futures in New York slid from $4,441 an ounce at the end of August to $4,158 at the end of September, a 6.4% retreat that leaves the metal below where it started the year. The macro picture all worked against gold, which relies solely on price appreciation to create investor returns. The…",
-      "url": "https://www.mining.com/top-50-mining-companies-take-264-billion-hit-as-gold-trade-unwinds-lithium-stocks-exit/",
-      "published_at": "2026-10-04T20:00:34+00:00",
-      "agency": "MINING.COM (니켈)",
-      "agency_ko": "마이닝닷컴 니켈",
-      "source_id": "int_mining_nickel",
-      "commodities": [
-        "gold",
-        "lithium"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.276,
-      "reasons": [
-        "has_figure",
-        "revision_language"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "41f3145d1f07c96c",
       "title": {
         "original": "Sigma Lithium stock jumps as Brazil court clears Grota mine restart",
@@ -7923,36 +7466,6 @@
       "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
     },
     {
-      "id": "bad97575fb2051ce",
-      "title": {
-        "original": "The top 50 biggest mining companies in the world",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Top 50 mining companies take $264 billion hit as gold trade unwinds, lithium stocks exit The world’s 50 most valuable mining stocks were worth $2.26 trillion at the close of September – the second-largest monthly decline in the history of the ranking. September took back three quarters of August’s record $357 billion advance , and it did so for the same reason the gain arrived: gold. Bullion futures in New York slid from $4,441 an ounce at the end of August to $4,158 at the end of September, a 6.4% retreat that leaves the metal below where it started the year. The macro picture all worked…",
-      "url": "https://www.mining.com/top-50-biggest-mining-companies/",
-      "published_at": "2026-10-04T07:01:00+00:00",
-      "agency": "MINING.COM (니켈)",
-      "agency_ko": "마이닝닷컴 니켈",
-      "source_id": "int_mining_nickel",
-      "commodities": [
-        "gold",
-        "lithium"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.264,
-      "reasons": [
-        "has_figure",
-        "revision_language"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "976dad99c36e6871",
       "title": {
         "original": "European Union: European Commission Authorizes Seven GE Crops for Import",
@@ -8002,75 +7515,10 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.247,
+      "importance": 1.246,
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-14T13:59:45.416517+00:00"
-    },
-    {
-      "id": "6e24ee10b7a82dc8",
-      "title": {
-        "original": "Westwin Elements to build $502M nickel refinery in Mississippi",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Credit: Westwin Elements Westwin Elements announced Monday plans to invest $502 million over five years to establish a commercial-scale Class 1 nickel refinery at the Belwood Industrial Site in Natchez, Mississippi in a step toward building America’s domestic critical mineral refining capacity. The Natchez facility will build on experience at Westwin’s 20-tonne-per-year demonstration plant in Lawton, Oklahoma, which has completed multiple production campaigns of on-spec Class 1 nickel powder using nickel carbonyl refining technology, the company said. Westwin has completed a Bankable…",
-      "url": "https://www.mining.com/westwin-elements-to-build-502m-nickel-refinery-in-mississippi/",
-      "published_at": "2026-10-05T21:27:18+00:00",
-      "agency": "MINING.COM (니켈)",
-      "agency_ko": "마이닝닷컴 니켈",
-      "source_id": "int_mining_nickel",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.24,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "c779e2f37f3d0997",
-      "title": {
-        "original": "Niger increases stake in Madaouela uranium project to 40%, statement says",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Niger increased its stake in the Madaouela uranium project to 40% from 20%, bringing an end to its dispute with Australian explorer Atomic Eagle (ASX: AEU), the West African country’s mining ministry said on Wednesday. Niger is a major uranium producer. In 2016, it awarded a permit to exploit uranium at the Madaouela project located in the Agadez region to Atomic Eagle, formerly named GoviEx. In 2024, Niger revoked the miner’s permit for the Madaouela uranium project and returned the asset to the state, prompting the company to file for international arbitration. The parties agreed in…",
-      "url": "https://www.mining.com/web/niger-increases-stake-in-madaouela-uranium-project-to-40-statement-says/",
-      "published_at": "2026-09-24T16:54:29+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "NER",
-        "AUS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.237,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "93896897c8293795",
@@ -8094,7 +7542,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.233,
+      "importance": 1.232,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -8131,7 +7579,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.233,
+      "importance": 1.232,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -8465,7 +7913,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.181,
+      "importance": 1.18,
       "reasons": [
         "country_in_text"
       ],
@@ -8626,39 +8074,6 @@
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
     },
     {
-      "id": "738a0f84402d4d70",
-      "title": {
-        "original": "Half a million miners stand between Bolivia and a critical minerals rush",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Rodrigo Paz, Bolivia’s first investor-friendly president in more than 20 years, wants global miners to extract the nation’s copper, gold, silver and other critical mineral deposits. Almost half a million local miners stand in his way. The cooperatives that represent those miners are one of the country’s most formidable political forces, representing as much as 8% of the workforce and half of Bolivia’s mineral extraction. They have exploited the country’s mineral riches with little oversight and regulation for decades, and repeatedly brought governments to heel through protests that…",
-      "url": "https://www.mining.com/web/half-a-million-miners-stand-between-bolivia-and-a-critical-minerals-rush/",
-      "published_at": "2026-10-02T19:45:10+00:00",
-      "agency": "MINING.COM (리튬)",
-      "agency_ko": "마이닝닷컴 리튬",
-      "source_id": "int_mining_lithium",
-      "commodities": [
-        "gold",
-        "silver",
-        "copper"
-      ],
-      "countries": [
-        "BOL"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.177,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "4a341ad3a2d594e0",
       "title": {
         "original": "US maritime nuclear firm Bluecore Energy announces uranium purchase",
@@ -8812,69 +8227,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "272403b893be4b87",
-      "title": {
-        "original": "Brazil court order shuts Sigma Lithium mine",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Sigma Lithium (TSXV, Nasdaq: SGML; ASX: SAU) has halted all mining and processing at its Grota do Cirilo complex in Brazil, two days after dismissing reports that a court had suspended the operation’s environmental licences. The shutdown began Wednesday after Sigma received an electronic notice from Minas Gerais state environmental regulator FEAM late the previous day, the company said. Grota do Cirilo, about 450 km northeast of state capital Belo Horizonte, is Sigma’s only producing asset and has annual lithium concentrate capacity of 330,000 tonnes. Its first stage reached commercial…",
-      "url": "https://www.mining.com/brazil-court-order-shuts-sigma-lithium-mine/",
-      "published_at": "2026-10-01T17:28:45+00:00",
-      "agency": "MINING.COM (리튬)",
-      "agency_ko": "마이닝닷컴 리튬",
-      "source_id": "int_mining_lithium",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "BRA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.156,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "73d3f3e297741b01",
-      "title": {
-        "original": "Eramet plans $350 million lithium expansion in Argentina",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Eramet (EPA: ERA) plans to invest about $350 million to expand its production of battery metal lithium in Argentina, the French mining group said on Thursday. The expansion, subject to a final investment decision (FID), aims to add 11,000 metric tons of annual capacity of lithium carbonate equivalent, on top of current capacity of 24,000 tons, Eramet said. Eramet plans to seek inclusion under Argentina’s RIGI investment scheme, it said in a statement issued after Chair and CEO Christel Bories met Argentine President Javier Milei in Paris. The company did not give a timeline for the expansion…",
-      "url": "https://www.mining.com/web/eramet-plans-350-million-lithium-expansion-in-argentina/",
-      "published_at": "2026-10-01T15:00:18+00:00",
-      "agency": "MINING.COM (리튬)",
-      "agency_ko": "마이닝닷컴 리튬",
-      "source_id": "int_mining_lithium",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "ARG",
-        "FRA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.154,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "25541b98e1af190a",
       "title": {
         "original": "Canadian LNG project signs third international offtake deal",
@@ -8999,41 +8351,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "ba618f04f9896f0b",
-      "title": {
-        "original": "US backs Global Atomic’s Niger uranium mine with $414M loan",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Canadian uranium developer Global Atomic (TSX: GLO) has won conditional support for a $414.2 million US government loan to build its Dasa mine in Niger, reviving financing that had been delayed by political risk after the country’s 2023 military takeover. The debt financing is about 40% higher than the initial $295-million the International Development Finance Corp. proposed in 2024. It’s in line with expanded costs for the mine, considered to host one of Africa’s highest-grade uranium deposits, which could start production in 2028. “[This] is a significant milestone for the company, and we…",
-      "url": "https://www.mining.com/us-backs-global-atomics-niger-uranium-mine-with-414m-loan/",
-      "published_at": "2026-09-18T15:43:58+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "NER",
-        "USA",
-        "CAN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.139,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "8aa37d402fc28af1",
       "title": {
         "original": "India’s biggest power producer plans more private coal buying, people say",
@@ -9059,37 +8376,6 @@
       "importance": 1.138,
       "reasons": [
         "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "6942f23cb21ba74a",
-      "title": {
-        "original": "Glencore’s Hunter Valley coal mine cleared to 2045",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Glencore’s (LON: GLEN) Hunter Valley thermal coal complex in Australia has won state approval to continue mining until 2045 after regulators found its economic and social benefits outweighed its potential environmental impacts. The New South Wales Independent Planning Commission approved the continuation of mining at the HVO North and South open pits near Singleton, allowing the Glencore-Yancoal joint venture to extract about 429 million tonnes of coal. The operations had been facing the expiry of existing approvals at the end of 2026. “Our deepest and most sincere thanks must go to our…",
-      "url": "https://www.mining.com/glencores-hunter-valley-coal-mine-cleared-to-2045/",
-      "published_at": "2026-09-30T17:34:12+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "AUS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.138,
-      "reasons": [
-        "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
@@ -9199,36 +8485,6 @@
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
     },
     {
-      "id": "58a1872bb42a64a6",
-      "title": {
-        "original": "Lithium Africa Receives Two Non-Binding Offers to Fund the Springbok Project, Including a US$60 Million Investment Proposal",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOV1NpZjZRVzdJSDZnUDV2LXZ1TzBXZE9SUUh1V1lsTDRtV0J2dDh3NlVrbmh5NGNRcUJBWGJTdkVDVHRNSnhJY2hrV2Q2c0xHNGp3bElvOWd5OERkR3F6WWlaWWV1Z1Njdjh0OEh1ZVpwbzdVXzdwMHRaSmpfX01XSEV3MmM4LS14Tm5lZGpwOFlsaVd5dUhEQzhOb3FTalVlSnVv?oc=5",
-      "published_at": "2026-10-20T07:00:00+00:00",
-      "agency": "Yahoo Finance · Google News",
-      "agency_ko": "Yahoo Finance (구글 뉴스 경유)",
-      "source_id": "gn_africa_minerals",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.111,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "d293c0b8e58bb026",
       "title": {
         "original": "Large Diameter Graphite Electrodes From India: Preliminary Affirmative Determination of Sales at Less-Than-Fair-Value, Preliminary Affirmative Determination of Critical Circumstances, Postponement of Final Determination, and Extension of Provisional Measures",
@@ -9291,38 +8547,6 @@
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
     },
     {
-      "id": "51278a4a74b4b5f6",
-      "title": {
-        "original": "Peninsula’s uranium resource grows as ramp-up lags",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "An update for Peninsula Energy’s (ASX: PEN; US-OTC: PENMF) producing Lance project in Wyoming lifts its contained uranium to 59 million lb., reinforcing its position as the largest single nuclear metal project in the United States by publicly disclosed and compliant resources. Lance now hosts 15.5 million measured and indicated tonnes grading 0.05% uranium oxide (U 3 O 8 ) for 16.2 million lb. contained U 3 O 8 and 38.5 million inferred tonnes at 0.04% U 3 O 8 for 41.7 million lb. U 3 O 8, Peninsula reported on Friday. Though the resource only rose 1.7% over the previous amount from 2023, the…",
-      "url": "https://www.mining.com/peninsulas-uranium-resource-grows-as-ramp-up-lags/",
-      "published_at": "2026-09-28T15:23:11+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.101,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "7dd5ac32ea51efe7",
       "title": {
         "original": "Savannah Resources close to second offtake deal for Portugal lithium project",
@@ -9379,36 +8603,6 @@
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "87979bb768c0a30a",
-      "title": {
-        "original": "Govt targets up to US$50 billion in nickel exports by 2026",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPZDNuMk9scy1yUE1udFMtVXlqbnJteVVJejNLMmJLbWhVUXFzTmVDMkVieFRqc3dySVVfYXhOYTlHam9xTWNOSHRYSGItbXM4V1ZRMmltMWxRelpPcGtXMXVGTTVtVi02TmlsSWdQbGxuSC15VGZFWFd1OE9HTlYyN1NDZVFoa250TXRaMmpqVjFQUUJfbHp5dDdCWdIBoAFBVV95cUxPRmJ2RHh2YnJNNHRtM3NiQ3RRcy1DbUxMb0dkeTR1dVNYNWVzcXBEQzh4T1FrS3M4VXI1RE16N3V0SWtwamNva3JWbElob25NdXVrV1N4OERMX1o4TVpuMDN1MHVOOXZucmlzRFQ3Q0ZjdzNRSzVhWjkyLUJ4LVVoTV9GOGpock90NExZUTVuUnNzR3Z4NEVNcmk4bXhtQUk4?oc=5",
-      "published_at": "2026-10-19T13:31:46+00:00",
-      "agency": "ANTARA News · Google News",
-      "agency_ko": "ANTARA News (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.094,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "86f680f62484ba7d",
@@ -9509,37 +8703,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "eb318f4fe697c24e",
-      "title": {
-        "original": "India orders captive coal plants to maximise power output on surging demand",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "India has ordered more than 100 captive coal-fired power plants to operate at maximum capacity from October 1 through year-end to meet what it expects will be a rise in electricity demand. The federal power ministry’s order, invoked under emergency provisions of the Electricity Act, applies to plants with installed capacity of at least 50 megawatts. The aim is to meet an “expected rise in electricity demand in the coming months,” showed the order dated September 25 and seen by Reuters. Nearly 40% of coal-fired plants are operating with critically low fuel stock due to a surge in power demand…",
-      "url": "https://www.mining.com/web/india-orders-captive-coal-plants-to-maximise-power-output-on-surging-demand/",
-      "published_at": "2026-09-27T18:11:27+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IND"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.086,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "b0d9827004892116",
       "title": {
         "original": "AFC eyes iron ore and uranium investments in Africa",
@@ -9624,7 +8787,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.07,
+      "importance": 1.069,
       "reasons": [
         "country_in_text"
       ],
@@ -9781,39 +8944,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "8c1c1e792d3d26e8",
-      "title": {
-        "original": "Atomic Eagle expects renewed financing interest in Niger after uranium deal",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "An agreement reached this week between the government of Niger and uranium developer Atomic Eagle (ASX: AEU) is expected to help improve access to financing for uranium projects in the West African nation, the company’s chief executive told Reuters. Niger doubled its stake in the Madaouela uranium project to 40%, bringing an end to a dispute with Australia’s Atomic Eagle, the mining ministry said on Wednesday. Niger increases stake in Madaouela uranium project to 40%, statement says The country is one of Africa’s largest uranium producers, holding about 336,000 metric tons of identified…",
-      "url": "https://www.mining.com/web/atomic-eagle-expects-renewed-financing-interest-in-niger-after-uranium-deal/",
-      "published_at": "2026-09-25T13:53:05+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "NER",
-        "AUS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.052,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "40c416f81351d284",
       "title": {
         "original": "Правительство продлило временный запрет на вывоз отдельных видов топлива производителями",
@@ -9877,7 +9007,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.046,
+      "importance": 1.045,
       "reasons": [
         "country_in_text"
       ],
@@ -10813,38 +9943,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "4eefa0c0a6dd66ef",
-      "title": {
-        "original": "Indian sponge iron at two-year high, boosted by costly coal imports, domestic shortages",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "India’s benchmark sponge iron prices surged to a two-year high in August as higher prices of imported coal and tight domestic supplies of the fuel push up production costs, traders and analysts said. The world’s biggest producer of sponge iron, India has about 336 plants turning out about 50 million metric tons, mostly used as a raw material by secondary steel producers. The steel and sponge iron sector is India’s biggest consumer of imported coal, accounting for about 40% of consumption, traders say. As a result of higher prices, India’s thermal coal imports by steel and sponge iron makers…",
-      "url": "https://www.mining.com/web/indian-sponge-iron-at-two-year-high-boosted-by-costly-coal-imports-domestic-shortages/",
-      "published_at": "2026-09-09T14:11:02+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IND"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.026,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "9fc7f595c939c5ae",
       "title": {
         "original": "Homestake Mining Company of California; Grants Reclamation Project; License Amendment Application",
@@ -11039,7 +10137,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.013,
+      "importance": 1.012,
       "reasons": [
         "country_in_text"
       ],
@@ -11190,37 +10288,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "e045a40d863b3fe6",
-      "title": {
-        "original": "Indonesia grants Bayan Resources 15-20 mln tons of additional coal mining quota, official says",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Indonesia has issued an additional mining quota of around 15 to 20 million metric tons to three units of coal miner Bayan Resources (IDX: BYAN), energy ministry official Tri Winarno said on Monday. Tri said the additional coal mining quota has been granted to three subsidiaries of Bayan Resources, namely PT Tiwa Abadi, PT Tanur Jaya and PT Fajar Sakti Prima. Bayan Resources declared force majeure last week on the coal supply obligations at the three units because they had not received approval from the Energy Ministry to increase production. Indonesian coal miner Bayan Resources declares…",
-      "url": "https://www.mining.com/web/indonesia-grants-bayan-resources-15-20-mln-tons-of-additional-coal-mining-quota-official-says/",
-      "published_at": "2026-09-21T13:37:31+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.994,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "c15a313674037476",
       "title": {
         "original": "HR CPO dan HPE Biji Kakao Naik, HPE Getah Pinus Turun, HPE Produk Kulit Tetap, HPE Produk Kayu Bervariasi pada Oktober 2026",
@@ -11311,17 +10378,17 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "efbd5a05bce4faf4",
+      "id": "d409a9b5327ce57c",
       "title": {
         "original": "Indonesia's nickel product output to fall 4% this year, smelter group forecasts",
         "original_lang": "en",
         "ko": null
       },
       "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxQcmprbHFBQkV4YzVsQ3BmY1RLRURtUWVhOXpJTVZoeHpmakxQUmNLekVZa1dkMENtLVNTdjVDUEtlQUJMaE5XUHA5M3BzTUR6YUpEOXVNWHRxNEViaVNOSUlTOWtha0xmMGI3WnJydm01V1hPdUxnSlBxUEFGcDlrUUJtV3drRDMtVWlEQWF6UXdMci0tMjF2RXJ6QWxZeUozeFIya3ZxZnEwelZPV1VXMGlFeXA0c2F1Q2MwYzByVWJfWlhQWEZ2bHFmTmRvMXJHZnl5aW1RcXptZ1l6QjdwbA?oc=5",
-      "published_at": "2026-10-14T08:45:32+00:00",
-      "agency": "TradingView · Google News",
-      "agency_ko": "TradingView (구글 뉴스 경유)",
+      "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPX2R0NkpoeklhNVV0c183VE1QWXlZYmUzdmVhZy1nUnNnRzJhWmdrZktRSWNab2o1V2h4WllpRDZsd2pUUWJUU1VHNjNBM2tGNHUzdXp6RFBGNDlNUGk3UF9Ya2t3cW9uak50dDllSy1jcXpmb1pJcDFaUTY3ekdpampEVzY5d1YzeTl6UnE0bjRBaFVoc2lYUzhJcFBJWTlucUswWHhGZDdrU3ZESjVrMGtfaWViZlpZZ25aZnZGMTNqVEJ3S2RNLU53?oc=5",
+      "published_at": "2026-10-14T08:47:01+00:00",
+      "agency": "marketscreener.com · Google News",
+      "agency_ko": "marketscreener.com (구글 뉴스 경유)",
       "source_id": "gn_idn_nickel_coal_en",
       "commodities": [
         "nickel"
@@ -11338,69 +10405,7 @@
         "has_figure",
         "country_in_text"
       ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "8942d7a2cd652a65",
-      "title": {
-        "original": "Value of top 50 mining companies surges by $357 billion after monster August rally",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The gain took the ranking back above $2.5 trillion for the first time since February when gold stocks were shining brightest thanks to bullion trading close to $1,000 per ounce above today’s levels. Gold started the month at $4,043 an ounce and climbed to almost $4,660 by 25 August, its highest since mid-May, before a hawkish Jackson Hole speech from Federal Reserve chair Kevin Warsh and fresh US strikes on Iran knocked it back. Even after that retreat bullion finished almost 10% higher, its best month since January, and silver did better still, at one point up 20% inside three weeks to $70…",
-      "url": "https://www.mining.com/value-of-top-50-mining-companies-surge-by-357-billion-after-monster-august-rally/",
-      "published_at": "2026-09-04T23:52:01+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "gold",
-        "silver"
-      ],
-      "countries": [
-        "IRN",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.98,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "ff4173c23d5ba5d5",
-      "title": {
-        "original": "Op-Ed: Asia’s seaborne thermal coal market is shrinking very slowly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(The views expressed here are those of Clyde Russell, a columnist for Reuters) The market for seaborne thermal coal in Asia is engaged in the slowest of races as a mild decline in demand competes with an equally gentle decline in supply in the coming years. This means that the longer-term outlook for prices will largely be driven by which of supply and demand dips at a slightly faster pace than the other. Asia dominates the seaborne trade in the type of coal most commonly used to generate electricity, accounting for nearly 90% of the volumes in recent years. The continent’s seaborne imports…",
-      "url": "https://www.mining.com/web/op-ed-asias-seaborne-thermal-coal-market-is-shrinking-very-slowly/",
-      "published_at": "2026-10-01T00:03:18+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.98,
-      "reasons": [
-        "has_figure"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+      "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
     },
     {
       "id": "c5dea03c4e9894fe",
@@ -11462,36 +10467,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "45e4e83f0350c6a7",
-      "title": {
-        "original": "CHARTS: Uranium miners race to catch surging nuclear demand",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The uranium market is slipping into a structural deficit as surging nuclear demand outpaces the development of new mines. Global uranium exploration and development spending exceeded $1.78 billion in 2023 and 2024, up about 46% from the previous two years, according to a new report jointly published by the OECD Nuclear Energy Agency (NEA) and International Atomic Energy Agency (IAEA). Production is responding, rising about 20% over the same period to more than 116,000 tonnes uranium (tU). Output reached 61,924 tU in 2024 alone, the highest annual level since 2016. Still, Benchmark Mineral…",
-      "url": "https://www.mining.com/charts-uranium-miners-race-to-catch-surging-nuclear-demand/",
-      "published_at": "2026-09-16T12:30:00+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.976,
-      "reasons": [
-        "has_figure",
-        "revision_language"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "eed212cb144f51a7",
       "title": {
         "original": "Palm Output in Malaysia to Hit Record Before Drop, Growers Say",
@@ -11514,7 +10489,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.975,
+      "importance": 0.974,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -11544,7 +10519,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.972,
+      "importance": 0.971,
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -11690,40 +10665,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "1f9862073e12b4a6",
-      "title": {
-        "original": "US seals big uranium investment in Niger, two years after troops left",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The US government has approved up to $414 million in financing for a uranium project in Niger, according to the project’s developer, in what sources described as a win for Washington two years after the West African nation expelled all US forces. The US Development Finance Corp approved the debt facility for Canadian miner Global Atomic’s (TSX: GLO) Dasa project, which the company describes as the highest-grade uranium deposit in Africa, according to a company statement on Wednesday. The investment could bolster US access to a strategic uranium supply at a time when Niger, the world’s…",
-      "url": "https://www.mining.com/web/us-seals-big-uranium-investment-in-niger-two-years-after-troops-left/",
-      "published_at": "2026-09-17T12:01:00+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "NER",
-        "USA",
-        "CAN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.943,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "f65c47c507570e77",
       "title": {
         "original": "Democratic Republic of the Congo-related Designations Removals",
@@ -11793,6 +10734,33 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "58a1872bb42a64a6",
+      "title": {
+        "original": "Lithium Africa Receives Two Non-Binding Offers to Fund the Springbok Project, Including a US$60 Million Investment Proposal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOV1NpZjZRVzdJSDZnUDV2LXZ1TzBXZE9SUUh1V1lsTDRtV0J2dDh3NlVrbmh5NGNRcUJBWGJTdkVDVHRNSnhJY2hrV2Q2c0xHNGp3bElvOWd5OERkR3F6WWlaWWV1Z1Njdjh0OEh1ZVpwbzdVXzdwMHRaSmpfX01XSEV3MmM4LS14Tm5lZGpwOFlsaVd5dUhEQzhOb3FTalVlSnVv?oc=5",
+      "published_at": "2026-10-20T07:00:00+00:00",
+      "agency": "Yahoo Finance · Google News",
+      "agency_ko": "Yahoo Finance (구글 뉴스 경유)",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.935,
+      "reasons": [
+        "has_figure"
+      ],
+      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "f76b32fe407fefbd",
@@ -11972,35 +10940,32 @@
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
     },
     {
-      "id": "e298614c4f5af3f3",
+      "id": "87979bb768c0a30a",
       "title": {
-        "original": "Triton Uranium eyes 46.5 million pound resource at Atlas project in Saskatchewan",
+        "original": "Govt targets up to US$50 billion in nickel exports by 2026",
         "original_lang": "en",
         "ko": null
       },
-      "summary": "Canadian developer Triton Uranium announced Tuesday it has completed four technical reports for its Atlas project in Saskatchewan, outlining low-grade, open-pit uranium potential of up to 46.56 million pounds of uranium (U₃O₈), within satellite occurrences and exploration target areas across the property. The large, low-grade open-pit model has optimized the resource estimate for the Red Rock deposit, which includes an Indicated Mineral Resource of 276,702 tonnes grading 0.087% U₃O₈, containing approximately 531,052 pounds of U₃O₈, as well as, an Inferred Mineral Resource of 20,946 tonnes…",
-      "url": "https://www.mining.com/triton-uranium-eyes-46-5-million-pound-resource-at-atlas-project-in-saskatchewan/",
-      "published_at": "2026-09-16T00:07:32+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPZDNuMk9scy1yUE1udFMtVXlqbnJteVVJejNLMmJLbWhVUXFzTmVDMkVieFRqc3dySVVfYXhOYTlHam9xTWNOSHRYSGItbXM4V1ZRMmltMWxRelpPcGtXMXVGTTVtVi02TmlsSWdQbGxuSC15VGZFWFd1OE9HTlYyN1NDZVFoa250TXRaMmpqVjFQUUJfbHp5dDdCWdIBoAFBVV95cUxPRmJ2RHh2YnJNNHRtM3NiQ3RRcy1DbUxMb0dkeTR1dVNYNWVzcXBEQzh4T1FrS3M4VXI1RE16N3V0SWtwamNva3JWbElob25NdXVrV1N4OERMX1o4TVpuMDN1MHVOOXZucmlzRFQ3Q0ZjdzNRSzVhWjkyLUJ4LVVoTV9GOGpock90NExZUTVuUnNzR3Z4NEVNcmk4bXhtQUk4?oc=5",
+      "published_at": "2026-10-19T13:31:46+00:00",
+      "agency": "ANTARA News · Google News",
+      "agency_ko": "ANTARA News (구글 뉴스 경유)",
+      "source_id": "gn_idn_nickel_coal_en",
       "commodities": [
-        "uranium",
-        "uranium_ore"
+        "nickel"
       ],
       "countries": [
-        "CAN"
+        "IDN"
       ],
       "scope": "country",
-      "country_source": "text",
+      "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.926,
+      "importance": 0.921,
       "reasons": [
-        "has_figure",
-        "country_in_text"
+        "has_figure"
       ],
-      "agency_url": "https://www.mining.com/",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12030,37 +10995,6 @@
       "reasons": [
         "has_figure"
       ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "7a4009879d581b2a",
-      "title": {
-        "original": "Coal demand to rise 1.2% as Hormuz closure drives gas prices: IEA",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Global coal demand is expected to rise 1.2% in 2026 amid conflicts in the Middle East and disruptions at the Strait of Hormuz, bringing global consumption to 8.94 billion tonnes, a new update by the International Energy Agency (IEA) shows. The fresh estimate reverses the IEA’s previous forecast for a slight year-over-year decline. The agency attributed the revision to higher gas prices, shifting weather patterns and increased coal-fired generation in countries with spare capacity. The disruption has particularly affected liquefied natural gas (LNG), an important competing fuel for power…",
-      "url": "https://www.mining.com/coal-demand-to-rise-1-2-as-hormuz-closure-drives-gas-prices-iea/",
-      "published_at": "2026-09-10T16:45:51+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "oil",
-        "gas",
-        "thermal_coal"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.913,
-      "reasons": [
-        "has_figure",
-        "revision_language"
-      ],
-      "agency_url": "https://www.mining.com/",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12124,38 +11058,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "904482c9e0ce6f6e",
-      "title": {
-        "original": "Saudi Arabia touts 110 million tonnes of uranium-bearing ore find",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Saudi Arabia has identified an estimated 110 million tonnes of uranium-bearing ore in the Medina region as the Kingdom moves to develop nuclear power and expand its domestic mineral resources. Energy Minister Prince Abdulaziz bin Salman announced the estimate Monday at the International Atomic Energy Agency’s (IAEA) 70th General Conference in Vienna, saying Saudi Arabia is continuing uranium exploration while examining recovery of the metal as a byproduct of fertilizer production. “Exploration and geological studies have revealed estimated resources of around 110 million tonnes of ore with…",
-      "url": "https://www.mining.com/saudi-arabia-touts-110-million-tonnes-of-uranium-bearing-ore-find/",
-      "published_at": "2026-09-14T11:59:00+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "SAU"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.91,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "cd17059915564b39",
       "title": {
         "original": "BHP sells shuttered Australian nickel plant to Gold Fields",
@@ -12181,40 +11083,6 @@
       "series_label_ko": null,
       "importance": 0.903,
       "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "7f4d2e2c487858d7",
-      "title": {
-        "original": "Atomic Eagle claws back Niger uranium project",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Atomic Eagle (ASX:AEU) has regained control of its Madaouela project in Niger, two years after the government revoked the mining permit of predecessor company GoviEx Uranium amid a dispute that led to international arbitration. The Mining Convention that Atomic Eagle negotiated with the Niger military government includes a revised exploration permit for Madaouela and gives the company a 60% stake in the project, with the government holding 40%, Atomic Eagle reported Monday. The government also awarded a permit to state miner Tsumco for the In Azaoua area, where French miner Orano held a 63%…",
-      "url": "https://www.mining.com/atomic-eagle-claws-back-niger-uranium-project/",
-      "published_at": "2026-08-25T22:38:00+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "NER",
-        "FRA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.901,
-      "reasons": [
-        "has_figure",
-        "revision_language",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
@@ -12323,40 +11191,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "76fe0e9e03a8033b",
-      "title": {
-        "original": "Europe relies increasingly on Russia for uranium needs, Sprott says",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "European reliance on Russian nuclear fuel increased in 2025 despite efforts to diversify its uranium supply after Russia’s invasion of Ukraine, Sprott Asset Management said in a new report this week. Russian uranium deliveries to EU utilities rose 7%, conversion deliveries rose 9% and uranium enrichment sales gained by 12% last year, Jacob White, director of ETF Product Management wrote in the report titled “On the Cusp of a New Contracting Cycle.” “European utilities must secure alternative uranium supply and fuel-processing capacity to replace Russian material, increasing competition for…",
-      "url": "https://www.mining.com/europe-relies-increasingly-on-russia-for-uranium-needs-sprott-says/",
-      "published_at": "2026-08-21T15:35:47+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "RUS",
-        "UKR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.874,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "de8f050cc8e8f84d",
       "title": {
         "original": "Iran-related Designations; Cuba Designations; Belarus-related Designations Removals",
@@ -12378,7 +11212,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.871,
+      "importance": 0.87,
       "reasons": [
         "country_in_text"
       ],
@@ -12441,39 +11275,6 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
-    },
-    {
-      "id": "28c6d6b2f4c56f55",
-      "title": {
-        "original": "US Democrats look to stop Trump’s Saudi nuclear deal",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "US House of Representatives Democrats raised concerns on Thursday about President Donald Trump’s civil nuclear agreement with Saudi Arabia, and said they had introduced a resolution of disapproval seeking to block the deal from coming into force. Trump sent the proposed agreement to Congress in August, opening a 90-day window for lawmakers’ review and giving them an opportunity to try to pass a resolution of disapproval. Democrats and nonproliferation advocates have criticized the nuclear pact for not barring ​Saudi Arabia from enriching uranium or reprocessing nuclear waste, two potential…",
-      "url": "https://www.mining.com/web/us-democrats-look-to-stop-trumps-saudi-nuclear-deal/",
-      "published_at": "2026-09-17T19:18:08+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "SAU",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.857,
-      "reasons": [
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "c4debe37366d175b",
@@ -12708,7 +11509,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.83,
+      "importance": 0.829,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -12722,37 +11523,6 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-02T20:56:24.054037+00:00"
-    },
-    {
-      "id": "2f3883e7893daeb1",
-      "title": {
-        "original": "Chilean lithium project draws investors despite metal rout",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "CleanTech Lithium Plc is lining up a partner for its flagship Chilean project as it prepares for an Australian listing, with its CEO saying investor interest is building despite a sharp pullback in prices for the battery metal. More than 20 companies signed agreements to review confidential material for the Laguna Verde project and London-listed CleanTech aims to select a partner this year or early 2027, Chief Executive Officer Ignacio Mehech said in a Tuesday interview. The firm also expects to complete a dual listing by year-end via an Australian public offering. Mehech plans to travel to…",
-      "url": "https://www.mining.com/web/chilean-lithium-project-draws-investors-despite-metal-rout/",
-      "published_at": "2026-10-01T17:00:51+00:00",
-      "agency": "MINING.COM (리튬)",
-      "agency_ko": "마이닝닷컴 리튬",
-      "source_id": "int_mining_lithium",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "CHL",
-        "AUS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.826,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "325de2847d816842",
@@ -12777,69 +11547,6 @@
       "series_label_ko": null,
       "importance": 0.816,
       "reasons": [],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "66f0a1945be81294",
-      "title": {
-        "original": "Brazil regulator orders partial halt at Sigma Lithium mine over ‘imminent risk’",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Brazil’s mining regulator ANM has ordered Sigma Lithium (NASDAQ: SGML) to halt mining activities in part of its Grota do Cirilo mine, citing an unspecified “imminent risk,” according to a document seen by Reuters on Wednesday. The agency ordered immediate corrective work to begin on the eastern slope of the mine’s north pit, where it said there was a “ruptured section.” The area will remain under interdiction until the company completes the work on the eastern slope, ANM said. ANM also demanded a number of measures to mitigate risks at the mine, adding that it “will take appropriate measures…",
-      "url": "https://www.mining.com/web/brazil-regulator-orders-partial-halt-at-sigma-lithium-mine-over-imminent-risk/",
-      "published_at": "2026-09-30T17:08:22+00:00",
-      "agency": "MINING.COM (리튬)",
-      "agency_ko": "마이닝닷컴 리튬",
-      "source_id": "int_mining_lithium",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "BRA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.813,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "0d8040fc9cdba2cc",
-      "title": {
-        "original": "SAIL flies in Mongolian coking coal as it seeks new supplies, sources say",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Steel Authority of India (SAIL) SAIL.NS has airlifted coking coal from Mongolia for the first time, testing the landlocked nation as a potential new supplier as India seeks to reduce its dependence on Australia, two sources said. The state-backed steelmaker flew in a 1-metric-ton sample earlier this month and will assess whether the coal meets its steelmaking requirements, the sources said, declining to be identified because the development has not been made public. SAIL, one of India’s largest steelmakers, planned the trial last year, in a move first reported by Reuters. India, the world’s…",
-      "url": "https://www.mining.com/web/sail-flies-in-mongolian-coking-coal-as-it-seeks-new-supplies-sources-say/",
-      "published_at": "2026-09-30T15:06:10+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal",
-        "met_coal"
-      ],
-      "countries": [
-        "MNG",
-        "AUS",
-        "IND"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.811,
-      "reasons": [
-        "country_in_text"
-      ],
       "agency_url": "https://www.mining.com/",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
@@ -13351,7 +12058,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.757,
+      "importance": 0.756,
       "reasons": [
         "country_in_text"
       ],
@@ -13439,7 +12146,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.749,
+      "importance": 0.748,
       "reasons": [
         "country_in_text"
       ],
@@ -13468,7 +12175,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.749,
+      "importance": 0.748,
       "reasons": [
         "country_in_text"
       ],
@@ -13650,67 +12357,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "2efcb5dd0f5ad7b9",
-      "title": {
-        "original": "Indonesian coal miner Bayan Resources lifts force majeure after quota revision approval",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Indonesian coal miner PT Bayan Resources (IDX: BYAN) said on Thursday that it has lifted a force majeure declaration on coal supply deals after the government granted additional production quotas to the company for this year. Bayan and three of its units declared force majeure on their coal supply obligations last week because proposed revisions to their mining quotas had not yet been issued. The companies’ production quota revisions were obtained on September 23, Bayan said in a stock exchange filing. Bayan said it expects the units to resume operations soon. Indonesia granted an additional…",
-      "url": "https://www.mining.com/web/indonesian-coal-miner-bayan-resources-lifts-force-majeure-after-quota-revision-approval/",
-      "published_at": "2026-09-24T16:39:27+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.742,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "f4b10ee8e47b6b33",
-      "title": {
-        "original": "Glencore sets Oct. 14 date for Australian market debut",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Glencore (LON: GLEN) expects to begin trading on the Australian Securities Exchange (ASX) on Oct. 14, tapping the country’s A$4.4 trillion ($3.1 trillion) pension market to support its copper expansion and potential acquisitions. The secondary listing, announced in August , has met all regulatory requirements and will trade under the ticker GLC, the Swiss miner and commodities trader said Thursday . It will not involve a capital raise or the issuance of new shares. Each Australian-listed CHESS Depositary Interest (CDI), which allows investors to trade shares of a foreign company locally, will…",
-      "url": "https://www.mining.com/glencore-sets-oct-14-date-for-australian-market-debut/",
-      "published_at": "2026-09-24T10:49:00+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "AUS",
-        "CHE"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.739,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "c3860eb91977a095",
       "title": {
         "original": "Hong Kong and Singapore pitch rival gold hubs to bullion market",
@@ -13758,7 +12404,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.735,
+      "importance": 0.734,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -13774,128 +12420,32 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
-      "id": "db0a5a5dfcc2e38c",
+      "id": "b87baa2603ba1ba3",
       "title": {
-        "original": "Glencore halts Cerrejón coal railway after attack",
-        "original_lang": "en",
+        "original": "Informe Salud Mental en la Industria Minera Nacional",
+        "original_lang": "es",
         "ko": null
       },
-      "summary": "Glencore’s (LON: GLEN) Cerrejón coal mine in Colombia halted railway operations after explosives struck its network, marking the sixth attack on its infrastructure this year. A train was affected by the attack, which happened on the evening of Sept. 22 near Uribia in the northern department of La Guajira. The company said no injuries were reported, adding that mine activities continue as normal. “Since early this morning on September 23rd, the National Army has deployed troops to secure the area and oversee the inspection of the infrastructure,” the company said in a statement to Reuters…",
-      "url": "https://www.mining.com/glencore-halts-cerrejon-coal-railway-after-attack/",
-      "published_at": "2026-09-23T16:22:42+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
+      "summary": "Este trabajo sistematiza información actualizada sobre salud mental y gestión de riesgos psicosociales en la industria minera nacional, a partir de cuatro fuentes principales: las estadísticas de enfermedades profesionales de la Superintendencia de Seguridad Social ( SUSESO) para el período 2019 –2025, los resultados del cuestionario de Evaluación de Ambiente Laboral – Salud mental (CEAL-SM)/[...] La entrada Informe Salud Mental en la Industria Minera Nacional se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-salud-mental-en-la-industria-minera-nacional/",
+      "published_at": "2026-08-13T15:07:49+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
       "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "COL"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.731,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "c9d394282f7d4445",
-      "title": {
-        "original": "Canadian miner NexGen Energy holds talks with BHP as it seeks $1 billion for uranium project",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Canadian uranium miner NexGen Energy is sharing information and “talking regularly” with mining giant BHP, about its Rook ‌I mining project in Saskatchewan, CEO Leigh Curyer told Reuters when asked about a potential equity stake. NexGen put the first shovel in the ground to kick off construction of what is slated to be one of the world’s largest uranium mines on Thursday and will look to raise $1 billion in capital in ​the next nine months. The miner is considering financing options of prepayment agreements with utility companies, debt finance and direct ​equity in the project. Asked if the…",
-      "url": "https://www.mining.com/web/canadian-miner-nexgen-energy-holds-talks-with-bhp-as-it-seeks-1-billion-for-uranium-project/",
-      "published_at": "2026-08-17T17:44:41+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "CAN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.717,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "9eeb3d8428748000",
-      "title": {
-        "original": "Aerospace suppliers test rare-earth alternatives to ease reliance on China",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Rare earth shortages are pushing some suppliers of aerospace companies to revisit decades-old turbine coating formulas once considered obsolete, after US-China tensions disrupted supplies from the world’s dominant producer of critical minerals. China has a near monopoly on rare earths and materials such as yttrium , indium phosphide and tungsten , which are used in a range of aerospace and defense systems, including jet engine coatings, turbine components and semiconductor chips. Despite early efforts, producers of coatings for aerospace remain years away from replacing modern…",
-      "url": "https://www.mining.com/web/aerospace-suppliers-test-rare-earth-alternatives-to-ease-reliance-on-china/",
-      "published_at": "2026-09-21T10:29:00+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "rare_earths"
-      ],
-      "countries": [
-        "CHN",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.709,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "02e9b6a0814cea47",
-      "title": {
-        "original": "Attacks on mining operations on the rise in Pakistan: report",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "More than 30 mining operations have been attacked in Pakistan’s resource-rich Balochistan province in 2026, raising security risks as the country seeks investment to develop some of the world’s largest undeveloped copper-gold deposits. Balochistan recorded 38 attacks connected with extractive operations between January and September, bringing the total over the past three years to more than 130, according to data from the Armed Conflict Location & Event Data (ACLED) report . “This risks undermining Pakistan’s drive to attract international investment and develop its mineral sector amid the…",
-      "url": "https://www.mining.com/attacks-on-mining-operations-on-the-rise-in-pakistan-report/",
-      "published_at": "2026-09-20T18:57:53+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "gold",
         "copper"
       ],
       "countries": [
-        "PAK"
+        "CHL"
       ],
       "scope": "country",
-      "country_source": "text",
+      "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.703,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+      "importance": 0.7,
+      "reasons": [],
+      "agency_url": "https://www.cochilco.cl/",
+      "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
     {
       "id": "242476f36a5f145c",
@@ -13925,34 +12475,6 @@
         "country_in_text"
       ],
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "b87baa2603ba1ba3",
-      "title": {
-        "original": "Informe Salud Mental en la Industria Minera Nacional",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "Este trabajo sistematiza información actualizada sobre salud mental y gestión de riesgos psicosociales en la industria minera nacional, a partir de cuatro fuentes principales: las estadísticas de enfermedades profesionales de la Superintendencia de Seguridad Social ( SUSESO) para el período 2019 –2025, los resultados del cuestionario de Evaluación de Ambiente Laboral – Salud mental (CEAL-SM)/[...] La entrada Informe Salud Mental en la Industria Minera Nacional se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/informe-salud-mental-en-la-industria-minera-nacional/",
-      "published_at": "2026-08-13T15:07:49+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.7,
-      "reasons": [],
-      "agency_url": "https://www.cochilco.cl/",
-      "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
     {
       "id": "ad0245762986be84",
@@ -14139,37 +12661,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "7bf227474b106e00",
-      "title": {
-        "original": "Indonesian imports of Philippine nickel ore up 82% to cover quota restrictions",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxOa3VuNG9aemJpRDQ5TUxwNnB0MGxxMFhaamFmZXNMRlFPZGJsRWFJRnNUYUxGcDY0U2JQcVJCVVQ2VU9XUm1hWV9TXy1Gc1ktUHlnVWpsdTVmbHg3QmFMWUdFNEoyZFc4WEhSaFdwZUlJZ1dWT0g3QjRnckh4Uy1IM3RKSWhpSGZpSUFIc0hyZl80WVVaQ0liTTFKTU9vNHgxbG50THBpWk9HTFpfNlNaUjJrWkRUcm1YaTIwTkNURQ?oc=5",
-      "published_at": "2026-09-21T09:33:35+00:00",
-      "agency": "Benchmark Mineral Intelligence · Google News",
-      "agency_ko": "Benchmark Mineral Intelligence (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN",
-        "PHL"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.673,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "10bbac6a43674461",
       "title": {
         "original": "Malaysia Sees Significant Surge in Early-October Palm Oil Exports",
@@ -14196,94 +12687,6 @@
       "reasons": [
         "country_in_text"
       ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "84c6d1280b67d17c",
-      "title": {
-        "original": "Op-Ed: The energy transition is starting to feed itself",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(The opinions expressed here are those of Gavin Maguire, a columnist for Reuters.) The shift toward electric vehicles, renewables, battery storage and expanded power grids is driving a surge in demand for copper, rare earths, silver and other materials. But the electrification push is starting to create its own supply, too. According to the International Energy Agency (IEA), clean energy technologies require far larger quantities of minerals than conventional energy systems, and demand linked to the energy transition is only set to grow over the coming decades. That accelerating demand…",
-      "url": "https://www.mining.com/web/op-ed-the-energy-transition-is-starting-to-feed-itself/",
-      "published_at": "2026-10-02T18:48:15+00:00",
-      "agency": "MINING.COM (리튬)",
-      "agency_ko": "마이닝닷컴 리튬",
-      "source_id": "int_mining_lithium",
-      "commodities": [
-        "silver",
-        "copper",
-        "rare_earths"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.672,
-      "reasons": [],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "02ec3015ebf0752a",
-      "title": {
-        "original": "Anfield Energy starts blasting at historic Velvet-Wood uranium mine in Utah",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Anfield Energy (TSX.V: AEC; NASDAQ: AEC) said this week it has completed the first underground blast at its Velvet-Wood uranium and vanadium project in San Juan County, Utah, following receipt of a permit in June. This is the first underground blast conducted at the project in nearly 40 years and represents another key milestone in the ongoing underground rehabilitation and development program, the company said. The Velvet deposit produced about 4 million pounds of U₃O₈ (uranium oxide) between 1979 and 1984 under previous owners. Anfield has now rehabilitated the first 700 feet of the…",
-      "url": "https://www.mining.com/anfield-energy-starts-blasting-at-historic-velvet-wood-uranium-mine-in-utah/",
-      "published_at": "2026-08-28T22:49:46+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.664,
-      "reasons": [
-        "has_figure"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "735c18ef1e790226",
-      "title": {
-        "original": "Indonesia to open trading at planned commodity bourse on January 4, official says",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Indonesia plans to start trading at its new commodity exchange on January 4, 2027, with tin and ferronickel to be included in the opening transactions, the chief supervisor of the commodity exchange said on Tuesday. State miners are expected to be among the first participants in the exchange, according to a slide presented at a parliamentary hearing by chief supervisor Sarjito, who goes by a single name. The commodity exchange, to be known as ICOMEX, is part of President Subianto’s push to expand state control over the country’s vast natural resources and their proceeds. In a fiery speech…",
-      "url": "https://www.mining.com/web/indonesia-to-open-trading-at-planned-commodity-bourse-on-january-4-official-says/",
-      "published_at": "2026-09-15T19:21:11+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "tin",
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.66,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -14369,63 +12772,6 @@
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "6746dc0c57b06cca",
-      "title": {
-        "original": "Indonesian coal miner Bayan Resources declares force majeure on coal supply",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Indonesian coal miner PT Bayan Resources (IDX: BYAN) and three subsidiaries have declared force majeure on their coal supply obligations as proposed revisions to their mining quotas have not been issued, the company said in a stock exchange filing on Monday. Bayan Resources said requests made to the government by its units PT Tiwa Abadi, PT Tanur Jaya and PT Fajar Sakti Prima to revise their mining quotasfor 2026 have not yet been granted. The quota revision needs to be approved to enable them to continue production, and “this condition affected the ability of the company and subsidiaries to…",
-      "url": "https://www.mining.com/web/indonesian-coal-miner-bayan-resources-declares-force-majeure-on-coal-supply/",
-      "published_at": "2026-09-14T13:49:26+00:00",
-      "agency": "MINING.COM (석탄)",
-      "agency_ko": "마이닝닷컴 석탄",
-      "source_id": "int_mining_coal",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.65,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "db801cf010a740cd",
-      "title": {
-        "original": "Madagascar villagers file claim against Rio Tinto over alleged mine contamination",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "More than 6,500 people in Madagascar have filed a claim in London’s High Court against Rio Tinto (LON: RIO), alleging contamination from the mining group’s mineral sands operation exposed them to dangerous levels of lead and uranium. The claim relates to Rio Tinto’s (ASX: RIO) QIT Madagascar Minerals (QMM) mine. Communities near the site have previously protested over water releases from the mine into the surrounding environment, according to law firm Leigh Day, which is representing the claimants. The claimants allege acidic wastewater containing uranium, lead and other metals was discharged…",
-      "url": "https://www.mining.com/web/madagascar-villagers-file-claim-against-rio-tinto-over-alleged-mine-contamination/",
-      "published_at": "2026-09-30T15:25:24+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.649,
-      "reasons": [],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "2c618d36214618e8",
@@ -14517,39 +12863,6 @@
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
-    },
-    {
-      "id": "64e3fe317c3a2dbc",
-      "title": {
-        "original": "Australian uranium firms eye Namibia mines for nuclear revival",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "A pair of Australian mining firms are pushing ahead with plans to build major uranium projects in Namibia, joining Chinese companies in the country, as nations around the world embrace atomic power. Bannerman Energy Ltd. and Deep Yellow Ltd., both based in Perth, are looking to capitalize on an improved outlook for uranium, which has been recovering from a lengthy slump following the Fukushima disaster in 2011. Analysts now forecast widening supply deficits. Countries from China to the US and India are betting on nuclear energy as a low-carbon means of meeting growing electricity demand…",
-      "url": "https://www.mining.com/web/australian-uranium-firms-eye-namibia-mines-for-nuclear-revival/",
-      "published_at": "2026-09-10T21:02:47+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "AUS",
-        "NAM",
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.624,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "142be4b59d10bd63",
@@ -14827,7 +13140,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.599,
+      "importance": 0.598,
       "reasons": [],
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
@@ -14907,6 +13220,35 @@
       "importance": 0.596,
       "reasons": [],
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "a43368beb62d2f18",
+      "title": {
+        "original": "Australia’s high court blocks NSW coal mine expansion",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPeU1Pcnl3STd0TV9CaXI1S2FSTzgzUFhYZnQ3dEc3Ni14V3Y1YmVrMlZvZ3FhNm0wdmZtbjc2bUpqSFJVcjl1MUtwMU1KMzFObjF4ZklJZ1k4UEJyWGpGY3NZT1JDMXVRLXFFMjNRVTlVTlk2QmxPN0NWNzdYa1FxQzVIWVMwWDBVMzJEXzB5bUN6d3Q1S2lEY2YzNGdjcTBUclJhTkFDRVdYRU5acG55RWhEWFh5ZU9mOVo0TS05N3U5TmJrNkFj?oc=5",
+      "published_at": "2026-10-07T17:18:33+00:00",
+      "agency": "Argus Media · Google News (Argus Media)",
+      "agency_ko": "Argus Media (구글 뉴스 경유(아거스))",
+      "source_id": "gn_argus",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "AUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.594,
+      "reasons": [
+        "country_in_text"
+      ],
+      "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
     },
     {
       "id": "4663227137b8521e",
@@ -15060,7 +13402,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.585,
+      "importance": 0.584,
       "reasons": [],
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
@@ -15087,33 +13429,6 @@
       "series_label_ko": null,
       "importance": 0.584,
       "reasons": [],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "2d3a80aad1cb8598",
-      "title": {
-        "original": "SuperCritical, University of Michigan team up on offshore uranium recovery",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "SuperCritical Materials Corp. has partnered with the University of Michigan to test whether its uranium-from-seawater technology can withstand the mechanical demands of industrial-scale offshore deployment. The research will focus on the mechanical design, prototyping and testing of systems using SuperCritical’s licensed adsorbent technology, which captures dissolved uranium as seawater passes across its surface. The material is retrieved after a defined exposure period and processed to recover the uranium. “This collaboration combines SuperCritical’s technology and development program with…",
-      "url": "https://www.mining.com/supercritical-university-of-michigan-team-up-on-offshore-uranium-recovery/",
-      "published_at": "2026-09-23T14:26:37+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.584,
-      "reasons": [],
-      "agency_url": "https://www.mining.com/",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -15170,35 +13485,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "f228af10922c9f08",
-      "title": {
-        "original": "Toyota Tsusho Enters Biomethane Production and Sales Business in Indonesia- Commercial Operations to Start in 2027 Using Palm Oil Mill Effluent as Feedstock",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE03ZDk2QWVGTnh0azZxaXhpRUFHLXEzR3ZnVGlwOVR0bHRRaFpKdk9yRTNERXAxMlBrY3p1ZEtNS01LQ2hMdW9acWozUzV4N09JQWNib1JMS240SmVUay1PMlFJMFVNbFFTZHZDSWQ1SkZKb0R6Y29ieQ?oc=5",
-      "published_at": "2026-10-06T07:00:00+00:00",
-      "agency": "豊田通商株式会社 · Google News",
-      "agency_ko": "豊田通商株式会社 (구글 뉴스 경유)",
-      "source_id": "gn_palm_oil_en",
-      "commodities": [
-        "palm_oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.58,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "4b3afa220a3d8fe8",
       "title": {
         "original": "The New Wild West of Gold Mining Is West Africa",
@@ -15219,7 +13505,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.579,
+      "importance": 0.578,
       "reasons": [],
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
@@ -15449,122 +13735,6 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
-      "id": "60be92f98ff7c803",
-      "title": {
-        "original": "25 merek beras fortifikasi tak penuhi standar, ini daftarnya",
-        "original_lang": "id",
-        "ko": "기준을 충족하지 못한 25개 강화 쌀 브랜드, 명단은 다음과 같습니다",
-        "en": "25 brands of fortified rice do not meet standards, here is the list"
-      },
-      "summary": "Menteri Pertanian Andi Amran Sulaiman (kiri) bersama Kepala Badan Komunikasi Pemerintah M. Qodari (kanan) menunjukkan barang bukti beras fortifikasi yang tidak memenuhi standar di gedung Kementerian Pertanian, Jakarta, Selasa (15/9/2026). ANTARA FOTO/Samsul/Bal/kye/am.",
-      "url": "https://www.antaranews.com/berita/5748713/25-merek-beras-fortifikasi-tak-penuhi-standar-ini-daftarnya",
-      "published_at": "2026-09-19T03:37:08+00:00",
-      "agency": "ANTARA News (경제)",
-      "agency_ko": "안타라 통신 경제",
-      "source_id": "id_antara_ekonomi",
-      "commodities": [
-        "rice"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.55,
-      "reasons": [],
-      "agency_url": "https://www.antaranews.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "3db6bb8ac1d892f7",
-      "title": {
-        "original": "7 energi alternatif pengganti minyak bumi, apa saja?",
-        "original_lang": "id",
-        "ko": "석유를 대체하는 7가지 대체 에너지, 무엇이 있나요?",
-        "en": "7 alternative energies replacing petroleum, what are they?"
-      },
-      "summary": "Petugas membersihkan panel pembangkit listrik tenaga surya (PLTS) irigasi di Desa Talawi Mudiak, Sawahlunto, Sumatera Barat, Sabtu (12/9/2026). PLTS berkapasitas 18,7 kilowatt peak (kWp) itu untuk menggerakkan pompa irigasi bagi 62 hektare sawah dan ladang tadah hujan sehingga memberikan manfaat bagi 460 orang meliputi 115 petani dan 345 anggota keluarga mereka. ANTARA FOTO/Fitra Yogi/nym.",
-      "url": "https://www.antaranews.com/berita/5748681/7-energi-alternatif-pengganti-minyak-bumi-apa-saja",
-      "published_at": "2026-09-19T03:13:16+00:00",
-      "agency": "ANTARA News (경제)",
-      "agency_ko": "안타라 통신 경제",
-      "source_id": "id_antara_ekonomi",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.55,
-      "reasons": [],
-      "agency_url": "https://www.antaranews.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "d328a14be36f486f",
-      "title": {
-        "original": "Apa yang terjadi jika minyak bumi habis? Ini 6 dampaknya",
-        "original_lang": "id",
-        "ko": "석유가 고갈되면 어떻게 될까요? 6가지 영향은 다음과 같습니다",
-        "en": "What happens if petroleum runs out? Here are 6 impacts"
-      },
-      "summary": "Minyak bumi menjadi salah satu sumber daya yang punya peran besar dalam kehidupan modern. Selama ini, minyak tidak ...",
-      "url": "https://www.antaranews.com/berita/5748648/apa-yang-terjadi-jika-minyak-bumi-habis-ini-6-dampaknya",
-      "published_at": "2026-09-19T02:43:25+00:00",
-      "agency": "ANTARA News (경제)",
-      "agency_ko": "안타라 통신 경제",
-      "source_id": "id_antara_ekonomi",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.55,
-      "reasons": [],
-      "agency_url": "https://www.antaranews.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "4150d1d770415e9a",
-      "title": {
-        "original": "Benarkah minyak bumi akan habis dalam 40 tahun? Ini faktanya",
-        "original_lang": "id",
-        "ko": "석유가 40년 안에 고갈된다는 것이 사실인가요? 그 진실은 다음과 같습니다",
-        "en": "Is it true that petroleum will run out in 40 years? Here are the facts"
-      },
-      "summary": "Badan Pengelola Migas Aceh (BPMA) bersama Lembaga Minyak dan Gas Bumi (LEMIGAS) dan KKKS saat melakukan pengujian dan verifikasi minyak hasil dari sumur masyarakat di wilayah kewenangan Aceh, Kamis (17/9/2026). (ANTARA/HO/Humas BPMA)",
-      "url": "https://www.antaranews.com/berita/5748561/benarkah-minyak-bumi-akan-habis-dalam-40-tahun-ini-faktanya",
-      "published_at": "2026-09-19T00:56:52+00:00",
-      "agency": "ANTARA News (경제)",
-      "agency_ko": "안타라 통신 경제",
-      "source_id": "id_antara_ekonomi",
-      "commodities": [
-        "oil"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.55,
-      "reasons": [],
-      "agency_url": "https://www.antaranews.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "c55c7ece21e11b20",
       "title": {
         "original": "Penjarahan Nikel Rp401 Miliar, Kejagung Sikat Dirut PT CNI, Modus Ekspor Bodong dan Suap Berantai Pejabat ESDM!",
@@ -15622,65 +13792,32 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "260cbb85971c6723",
+      "id": "e76bb75d8cce193a",
       "title": {
-        "original": "NexGen expands Sask program after high-grade uranium results",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "NexGen Energy (TSX: NXE; NYSE: NXE; ASX: NXG) says it will add a fifth drill rig to its program at Patterson Corridor East (PCE) in Saskatchewan, following new results showing continuous high-grade uranium mineralization. Highlight hole RK-26-293 returned 4.7 metres measuring more than 10,000 counts per second (CPS), including 0.1 metres of more than 61,000 cps. These readings point to potential for additional mineralized continuation nearby and below, says the company. Other holes of interest included RK-26-290c1, with a cumulative 19.5 metres of more than 10,000 cps, and RK-26-294, with 6.9…",
-      "url": "https://www.mining.com/nexgen-expands-sask-program-after-high-grade-uranium-results/",
-      "published_at": "2026-08-26T14:48:23+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "CAN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.543,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "fb81280090b81bbb",
-      "title": {
-        "original": "US Bans Imports From 2 Indonesian Palm Oil Producers over Forced Labor",
-        "original_lang": "en",
-        "ko": null
+        "original": "Jadi Tersangka Baru, Dirut PT CNI Ditahan Kejagung dalam Kasus Ekspor Nikel Ilegal",
+        "original_lang": "id",
+        "ko": "새로운 피의자가 된 PT CNI 대표이사, 불법 니켈 수출 사건으로 검찰에 구속",
+        "en": "Becoming a New Suspect, PT CNI President Director Detained by Attorney General's Office in Illegal Nickel Export Case"
       },
       "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNUkE4REg1Y0tkbXBraE5hWW1jUktiUnpicHpVS0RxeHowOEttZW9yLUp5ZDQwTVNHUTVlZUp3cFhQZDZTTXpUMkNENWp5R21Sak53T2VYbXQ0U05TcDllYWhSY0Njd2lQNTdXZzNYRExZTXlIMTV1QTRoTlVtQzJWNTJQWmZRVEFGYkNoTURjUG9fU3BFYUo4V25KTm1zVEFHTGVjVnR3?oc=5",
-      "published_at": "2026-10-02T07:00:00+00:00",
-      "agency": "Jakarta Globe · Google News",
-      "agency_ko": "Jakarta Globe (구글 뉴스 경유)",
-      "source_id": "gn_palm_oil_en",
+      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPRHRlX3ZUc2dRaUEwMm5VY2hsaTRSSWtXT29Sc043ZU5famVvMUdVZEJOaFFfSm5CaTE1MEExalBBZ0tiLU8zTURudzJrYkJ3aW94d0JNcnZMTTBnWTRocnoyOTBuTDBqdnlsdzFxaG1na2NLSTNaZDRYbmRLVEZCMkdpNDFJVWtPa1lDZGlrOTdodnpCN3ZKUF9JMVc2MERtNzYxNFpDc1lfZGF6TlpIOWJCZw?oc=5",
+      "published_at": "2026-10-16T23:11:02+00:00",
+      "agency": "Koranpelita.co · Google News (인니어)",
+      "agency_ko": "Koranpelita.co (구글 뉴스 경유(인니어))",
+      "source_id": "gn_idn_esdm_id",
       "commodities": [
-        "palm_oil"
+        "nickel"
       ],
       "countries": [
-        "IDN",
-        "USA"
+        "IDN"
       ],
       "scope": "country",
-      "country_source": "text",
+      "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.542,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+      "importance": 0.546,
+      "reasons": [],
+      "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
     },
     {
       "id": "0b70eb028043e002",
@@ -15823,6 +13960,34 @@
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
     },
     {
+      "id": "c7cb3f036be5022b",
+      "title": {
+        "original": "Dirut PT CNI Jadi Tersangka Korupsi Nikel, Kerugian Negara Rp401,65 M",
+        "original_lang": "id",
+        "ko": "PT CNI 대표이사, 니켈 부패 혐의로 피의자 입건... 국가 손실 4,016억 5천만 루피아",
+        "en": "PT CNI President Director Becomes Nickel Corruption Suspect, State Loss Rp401.65 Billion"
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOck4zTXo3ZEh2VXFWT0pQUDJRY296bUkzNG5QQWZoRkY0VVZpUFB3MG5BdGFFX2lPQVlfU1pkeUY1dXRvYkRuTUwxNmlDVVV1MEwtYkRYeUNUVmY3RzJYbVl4c01kbzRSV242dzF3bFF6U1hObGw4N0JLekg5Nl9oTER2UFVMdzFIWm80WW01dGFsaDQ1UU5JTXcwLWg3Q0FYeFdfY2RHaVBvakpyaUg4Y3R6QmxwVjZ1RTBYaklnczNnX0t40gHKAUFVX3lxTE9iMlcwU0FpekREaVkzMDBhekVieXIwNXJ4b3RiSzdDVHVtN19MYk1naUN3dWpzc2k1dTBGSTBXTzQtaG83WWtlMnJHNFVNNGJwUGxzX0Fxbk5YQWswZGhOaGpqUjAxYmd5bHBvVkJIb1RzTnRJdWd5VjZ6eUdTRVRzRDFaM0ZDM2l0ZWUzWVhPVUtsWGZDbkJXT2NYZC1NNDlvb0Vib05mQ0R6SXQySWZUYnFuaHhCQUFidDFjVmFwVDV5RW9QZjVfNWc?oc=5",
+      "published_at": "2026-10-15T14:33:20+00:00",
+      "agency": "CNBC Indonesia · Google News (인니어)",
+      "agency_ko": "CNBC Indonesia (구글 뉴스 경유(인니어))",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.531,
+      "reasons": [],
+      "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
+    },
+    {
       "id": "9f1dcf491994952e",
       "title": {
         "original": "Copper squeeze breathes new life into old mines",
@@ -15876,37 +14041,6 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
-      "id": "d47df2487c631cb2",
-      "title": {
-        "original": "Centrus sees US military as key market for its enriched uranium",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Centrus Energy Corp. sees a new market for its enriched uranium coming from the US military, as the nuclear fuel producer awaits a potential boost from a supply deal to meet America’s security needs. “The national security needs are real needs,” Centrus investor relations head Neal Nagarajan said Thursday during a meeting at Bloomberg’s headquarters in New York. “And we are the only commercially viable option right now for the national security sector.” Chief Executive Officer Amir Vexler said in the interview that he anticipates a US government contract to supply nuclear fuel for defense…",
-      "url": "https://www.mining.com/web/centrus-sees-us-military-as-key-market-for-its-enriched-uranium/",
-      "published_at": "2026-08-21T14:06:40+00:00",
-      "agency": "MINING.COM (우라늄)",
-      "agency_ko": "마이닝닷컴 우라늄",
-      "source_id": "int_mining_uranium",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.524,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
       "id": "61e056231a5ccbc9",
       "title": {
         "original": "Ekspor Nikel Ditargetkan Tembus USD45 Miliar pada 2026, Menko Bahlil: Hilirisasi Kunci Kemandirian Ekonomi",
@@ -15916,7 +14050,7 @@
       },
       "summary": null,
       "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxNRkhJY0EtQ2pRLVhHSFl3cXY3X0M5YXBCTmxMWmZmbktEbEdKWEtjU1o1VVljeEFrcV9NTjlJdzJvZ0REejhSTGh2M2I1VnJjRDhFeXdyN01valhURS1lM2c1Y3FBN1JKM0h3REwzaDlvSVloM3RSdnI0ZUw3NkFSUUtrd01wR2dKcXdRWFNydDE3VTdMMnl4UnhLX0NOQkFSbjFWUVE5LThJLWhWbnZoU01QX280cWlLRWpkLUtXcHl6bmVHX0Vic0ZzeHNhV21HdUkyZTh2QnBFS3F1OUdlRWxYOHI0ZGJ6MFBxVQ?oc=5",
-      "published_at": "2026-10-14T12:03:36+00:00",
+      "published_at": "2026-10-14T12:02:55+00:00",
       "agency": "Kementerian ESDM · Google News (인니어)",
       "agency_ko": "Kementerian ESDM (구글 뉴스 경유(인니어))",
       "source_id": "gn_idn_esdm_id",
@@ -15961,36 +14095,6 @@
       "reasons": [],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
-    },
-    {
-      "id": "76e09f56fd203be0",
-      "title": {
-        "original": "Coking Coal Outlook: China Supply Shocks and Price Trends",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOUmYxZkp4dFhDQV92VTFsc0h0NFN3VFNVaHBkenc3RUlrU0lrY1AydlljMXF3OXJScVRxLWtUZ042aEFBMm53R1VfSHluYUdZM3RtZU5BUHQzaHFPS1A2MEZIeUtjODBlTVlZbkdEY1ptVWtUcDY1U1B6ZnNRanBsd2RGQVhiQQ?oc=5",
-      "published_at": "2026-09-28T23:06:14+00:00",
-      "agency": "Argus Media · Google News (Argus Media)",
-      "agency_ko": "Argus Media (구글 뉴스 경유(아거스))",
-      "source_id": "gn_argus",
-      "commodities": [
-        "thermal_coal",
-        "met_coal"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.514,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "d4d76b6365d670c0",
@@ -16047,6 +14151,34 @@
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
+      "id": "9eb82007422f2a67",
+      "title": {
+        "original": "Bahlil Soroti Dominasi Perusahaan Besar dalam RKAB Batubara, Produksi Turun PNBP Naik",
+        "original_lang": "id",
+        "ko": "바흘릴, 석탄 RKAB에서 대기업의 지배력 지적... 생산량 감소했으나 비세입(PNBP)은 증가",
+        "en": "Bahlil Highlights Dominance of Large Companies in Coal RKAB, Production Down PNBP Up"
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPQWw0aHZZN3pGVzE1a0RWTlBDVUNBRkgwY012cjV6cHJwVTU2dllRV2JVVEpDdTdQdlo5OFg0ckNyY2dEN2NJYkNhd1ZGSHFSRXEzYm1DWEUwREVnVEJKRy1yWTlVa1FKVERZdzRhbFFRZHVTb3dIRTdOV2pGTlU5b3lNa3lrY3RXV2toQ05rYkFlRjFEQWRUX1RHcFZkVXJDd0doNzlMNmt1Q1pMM2w3SFFtOTBKRlRFLXIw0gG0AUFVX3lxTE1tZERJQVI5Vngtb0lQMldDTHdMYjZWeXRhbXd1T1cxVXh1VDlfQ3pSOVRtV0ZyMTQ4TXlYcTZxM3RlQmlJTjN4V09wWElsb2hVYWU4WXFpX18xY1ZhcTd5dGQ5VTBUdVVKdlNWYWdTSGFhSHFKUE5CQ3RRajlheHpEUXR3aFVqOGhyV3JNVEFEekowN2dhdEJacWF4dXY4OVJmS0oyZGhUZjRuVFFyMS1mSHhRSg?oc=5",
+      "published_at": "2026-10-13T04:32:48+00:00",
+      "agency": "kontan.co.id · Google News (인니어)",
+      "agency_ko": "kontan.co.id (구글 뉴스 경유(인니어))",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.506,
+      "reasons": [],
+      "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
+    },
+    {
       "id": "51fd0b97a38800e4",
       "title": {
         "original": "商务部新闻发言人就将14家欧盟实体列入出口管制管控名单答记者问",
@@ -16084,94 +14216,6 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
-    },
-    {
-      "id": "fcf4028c645e6ef5",
-      "title": {
-        "original": "Will Indonesia's Nickel Quota Finally Bind as Monsoon Slows Philippine Ore?",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPeWFUNG10SDRnTUdlYjA5bHJQYXBJdzJMLVdGRFdCdHBiZEVHdVhPZVVfSGZ5WkJZdm1OTmMxTy1lN2ZtalY2aUhMQXB4TFpYTm9URzNsNURKTzdSOFlqckFINXNObHF5OEhJVXVyRFRtbE1SYmplU0JYV3NhaGlKWHhBX3VnTDNsUU51VHQ2S3MxMWVlbmZyUWFXbmNmMDlrSl9ON2IzN0Q3a1p5?oc=5",
-      "published_at": "2026-09-25T14:44:33+00:00",
-      "agency": "Crux Investor · Google News",
-      "agency_ko": "Crux Investor (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "PHL",
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.489,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "3b71abcc79133ec7",
-      "title": {
-        "original": "Indonesian coal deal fuels doubts over production quota approvals",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNY1NuMFdlanpQY1d1Z3A3Uy1uanZnU3IwV25aSlg3U2ZYWlFTbHMxRlBhTjIwZnJpUHVhQUZldTYwQmE0NTBIaTNSYzNDQUkwUV8wUGREdUJOY2dkVjVqRUM2MGVheXFsVjZCYWlaRUZyb1FrRjNlWUk0Rk5qa2VVdXdYSUJSVmQ5dlhXWnpPVUdGZEpUSl90ck9lQUtyLVNrZVN6eU0yLW1sdy11Zk00aGtmbDJCOTJtWmNQTTB2b9IBvwFBVV95cUxPREFndnVBZ1o4b1N1Vy1DMDFmMllXeWNqZ2JSZ0c5MXFUeENUcDhYZ184c190bjZ5Y201cnJIU3Joem5raDFwWFZoWFRvTHd5Ul80cWdDRjhDeUdyZ3FNbnpIVmZOTUJOVjVGd3ZELVBwZkNJUGJqb3NpclhGVUJxSEdPejJGYzBuYUNSYnJ5N2R1MzMyYnJuTXpMekhld0tfa2lXS3pXNXZqUjZoWWFMU3ZGV2tKWkF5YmJJS3lnSQ?oc=5",
-      "published_at": "2026-09-25T07:00:00+00:00",
-      "agency": "South China Morning Post · Google News",
-      "agency_ko": "South China Morning Post (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.486,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "4d041b79db1188eb",
-      "title": {
-        "original": "Indonesian coal miner Bayan Resources lifts force majeure after quota revision approval",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQMzJNYVpiYnpfQkNweG4tUHg1M01VdHhWcTVuMWtjampNRmRXM0QzY0V5bTRJUk5tUV93T2JVdVZ0QzludTlFc2VJclNaU01IdUwyY05zbFFnSTNYTjNtSmhiX3pJLUVGSm5hV19DZ1NXX2JkUkl5OG1YUTB1Zmloa0FmRUh1M2JSdjIxZDVPcjN6U3NxN2lTd1dWdnZ3dTZIVDVxQlRuSWRUWnlWMGs3a0lTRlU3QQ?oc=5",
-      "published_at": "2026-09-24T07:00:00+00:00",
-      "agency": "Mining.com · Google News",
-      "agency_ko": "Mining.com (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.479,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "7c01bc88c3ee5cf9",
@@ -16238,94 +14282,6 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
-    },
-    {
-      "id": "f24ecbfa5c97363a",
-      "title": {
-        "original": "EcoPro Says Indonesia Nickel Investments Generate 20% Operating Margin",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1EamgwUGFERUw3VTZUT3RCV05MektYY2ZFU2NqT1pCSXVHRUUyRTVWb3lZaWptNVNTMVJ2QUtFMHN6NFdqUnpWSUxUaHlsUEVJeEVPckhCT2lIaXBjRHVtbi1IQTJ0RDQ?oc=5",
-      "published_at": "2026-08-11T07:00:00+00:00",
-      "agency": "THE ELEC, Korea Electronics Industry Media · Google News",
-      "agency_ko": "THE ELEC, Korea Electronics Industry Media (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.47,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "47d5b86ab2dacf6a",
-      "title": {
-        "original": "COMMENTARY: Indonesia's nickel production curbs leave market unconvinced",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPc0lQXzluNHpHblVLUGl0aUNHcGREQk5BZmdVWTRlY3I5eVN0S3ZHR3o2OUhVXzdoMjB4Vk9kNmljM0V1dmZTN3ZDREdWMWZiR1NsVWxrd0ZnTzluNndwTUwwODM0SFA5WnQxWmk1VG9FZmd0bmVaa1l4cGNVLURmQkJBT3hUbTBOYTQyOC1wOVAzZXJzamlaWmh1cngzTnUzTjVhTncwMEJZcU5ZalgycHBTVUVNYnhoMTRET0IwSEhLNU1UNFNN?oc=5",
-      "published_at": "2026-09-22T07:00:00+00:00",
-      "agency": "Reuters · Google News",
-      "agency_ko": "Reuters (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.466,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "24a3e7dee389c443",
-      "title": {
-        "original": "Indonesia grants Bayan Resources 15-20 mln tons of additional coal mining quota, official says",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNRkxoUGtYeVFCSEZhdng5eXl0Mk44TGRQTEZuZk4zcG1rd0FPc1lfa3lkMENONkMxMXhFand2bnNraDFjUV9fNXhSSXlTb1NVLVlkRFdvMzJFcHpWbjhFQXhTYlFTVjRsVkl4OFZ3aDNYZ3BnenoyTThNLXI4OHFWQ1VyTW5uN1B3UEtDcjVMMEVjWVRNLVY2M1RwMmxnNXNiNGNwQ1ZYU1YtNVdhbkU4NDRiNHpOSnhOaG40eXh3?oc=5",
-      "published_at": "2026-09-21T07:00:00+00:00",
-      "agency": "Mining.com · Google News",
-      "agency_ko": "Mining.com (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.46,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "5096d3c72c6d59ec",
@@ -16407,410 +14363,6 @@
       "series_id": null,
       "series_label_ko": null,
       "importance": 0.454,
-      "reasons": [],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "c5642fb0e2d6d0e2",
-      "title": {
-        "original": "Akses ke Eropa Terganjal, ESDM Janji Perbaiki Tata Kelola Nikel",
-        "original_lang": "id",
-        "ko": "유럽 접근 막혀, 에너지광물자원부는 니켈 거버넌스 개선 약속",
-        "en": "Access to Europe Hindered, MEMR Promises to Improve Nickel Governance"
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNTjlvTnRoQVphc1dTcGdHT3NKd25SZW5MV2p0ZUhrTFJJc1czQnlPQnludGhPb1lKdHJrMElWLVdLTGVPRmhWQ1k5ZHZKb3A4UTNJN0dyUGN0a0Z5SU56QVlSYzBfSTdBU0MtTXB2TjVTT1h4R2RoOEJSdm1HQ2E1ZUFxTFBxeVprdER4b2tn?oc=5",
-      "published_at": "2026-10-02T07:00:00+00:00",
-      "agency": "PERHAPI – Perhimpunan Ahli Pertambangan Indonesia · Google News (인니어)",
-      "agency_ko": "PERHAPI – Perhimpunan Ahli Pertambangan Indonesia (구글 뉴스 경유(인니어))",
-      "source_id": "gn_idn_esdm_id",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.417,
-      "reasons": [],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "797da8f87f33fa66",
-      "title": {
-        "original": "Revisi RKAB Batu Bara Hampir Tuntas, Produksi Bisa Tembus 700 Juta Ton",
-        "original_lang": "id",
-        "ko": "석탄 RKAB 개정 거의 완료, 생산량 7억 톤 돌파 가능",
-        "en": "Coal RKAB Revision Almost Complete, Production Can Exceed 700 Million Tons"
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQVzItWU5iRUo1TWVFaGg2YVR0Q1VJVEN5OFlUajJxb29SdjhGc2dPY0EyOVAyLVFLVFFHZWthVC1DNXlFY2J6Q1dwSkg0SXpBOTNYLTZwZnJqUll3TlRua3p6YzBDblVTQThDSnA1NllRWmxFVjVTendYOXBPMmxWWFdmMHdjVGhBZDdjcjNHcnlrT0hRZUkzR0VCTzZYUlNpSEZteE5iaGFkQlB0bTM1cWNzaTQyRDQzZkpfQXVmUjVtYXdFc1dV0gHMAUFVX3lxTE1iajJSblhiV3F5RndEYUJ6ekNUNXo4bTVuRzR1VVVIcHFpVDY4UFZab25mTEpsczZaUWM5SzlqcEQzOXNfNFRwcmw5b2ZSOEdNWWljc2xEclgwVFNHVzlUM0IyOFFlVEZOUHRjS0JROXNMUkJ0c3JwSUJCWHc4VzRlalZuZDJJUzRSVXZ1dnhCN3dzLXdEV2x3RndTQWEzcXBYTXBkMC1sSnNTbXhybzVKcE5vV0l2UXhSSW9LcU5ZOU5RUi1lLUNYdlFPOA?oc=5",
-      "published_at": "2026-09-29T07:00:00+00:00",
-      "agency": "CNBC Indonesia · Google News (인니어)",
-      "agency_ko": "CNBC Indonesia (구글 뉴스 경유(인니어))",
-      "source_id": "gn_idn_esdm_id",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.397,
-      "reasons": [],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "ab1247b85d2d8409",
-      "title": {
-        "original": "US imports more Congo copper as consumer acceptance grows",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPaTJWZEN6WkthU1B5a3RoMm4wOG45eGFZQlpwcTVIc01PUk1COHRCNDRhVEktblNDR2dKc3o0dHo0N3ZLODR4TDdlUFRjU0g1bXNBSTV5QjJma1JkVmNiamJPTmcwdjk3aWNsQ2tEVTNvai1iT2ZhakcwR19IUUZYWDJLamhNNEpUcnhndG4ySGw2VnRNUUZHTkh0cFF3dUJDWmx5V3dB?oc=5",
-      "published_at": "2026-09-07T07:00:00+00:00",
-      "agency": "Reuters · Google News",
-      "agency_ko": "Reuters (구글 뉴스 경유)",
-      "source_id": "gn_africa_minerals",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.391,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "5746eeb5511659e1",
-      "title": {
-        "original": "Nickel's 32,000-Tonne Deficit Faces a Reversal Risk in 2027",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPTnBRLU9QQzZKRHNmUXlPb1lwVzBSVFhwUzJOZTF0U1NjcFNGTVpneHIzTC1ORUY3aDlXOTQzdlM3enFXUGN5M2tvRjhqRFIwNXhvMWlnSnlMZ0lrNmFvb2N5MmJlUld3RlRpd2JuLWhGeDVJT0xDSGozZUtJZjNNY2NKX1RFOW5SY0RUNEQ2VUE4dWp5dVYwcQ?oc=5",
-      "published_at": "2026-08-25T07:00:00+00:00",
-      "agency": "Crux Investor · Google News",
-      "agency_ko": "Crux Investor (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.377,
-      "reasons": [
-        "revision_language"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "7d8a96e1b66ddc2b",
-      "title": {
-        "original": "Indonesia's Quotas Might Backfire: Nickel Below $17,000 and Smelters Idle",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQZnFQQXpJNDhENUFoME1NYnlpX3FQVlg3RHl1VHJLVVMyYXY3SjV1WHM3R0k2VVhHUDdEendoTU9pQkYxREJnOG1DMFpuamRZMjdxOHRWRUpGYVZEY0RvV09PMU1NaVphT3UwSmU0cnNSLXpEdGhzamd1YXpBQS1yNzViTWh6N2VyUEZ3WTBBN2VvV2JJZDRBMmg2V09CVWN4REw2azRZQ1U?oc=5",
-      "published_at": "2026-09-03T07:00:00+00:00",
-      "agency": "Crux Investor · Google News",
-      "agency_ko": "Crux Investor (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.376,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "f017755671b56605",
-      "title": {
-        "original": "UAE firm to invest in Kazakhstan coal sector | Latest Market News",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNbzdOSGFwVkxHWTJ1SHZFMVdISGtKdDFXTWVuWElDc3F2OE12VzMyM3dvR1ZZRjE5YTZ6NEE0QUppZDV0eTlSZ3lEX3A3TURFTU82WUl0cU9udkhwMU1oZ2NvUXdpc25mZ3pNM3BScW16YVdlelNaRi1ZdWZ5VGdmakp5NEFkOFltcjltYTBmTVV2WjRqcnkwWTRqMVNiZ2huMnBIa0hpeGhuZ1NwREo0SHNleVZ4VHlFbzZJ?oc=5",
-      "published_at": "2026-08-17T07:00:00+00:00",
-      "agency": "Argus Media · Google News (Argus Media)",
-      "agency_ko": "Argus Media (구글 뉴스 경유(아거스))",
-      "source_id": "gn_argus",
-      "commodities": [
-        "thermal_coal"
-      ],
-      "countries": [
-        "KAZ",
-        "ARE"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.332,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "24d98ab42971530e",
-      "title": {
-        "original": "DRC may reduce cobalt quota if market needs rebalancing, ARECOMS says: exclusive",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNSXM3M0R1d3lSakdvb2t5VVhITVlJOHpyREo4eUt0bWZZV3BmZllTM0hZcEhUNkhsWFBQdHUzZ0NtaFpsYkludFVHVWE2R2ZRbDl5ZG1uWXhaV1NpN1d6d1ZKNXRZdTg3Q2hWdUluTzhyclRYcm5mWUxBcm91QjZxbW4tZE1UMVdHLUQzd2J3UXZzMWhSTm8tQklUQzBlWmlMQlpTZ0E4SnVyMTVNcWQ0SUVRWU1GQUk?oc=5",
-      "published_at": "2026-08-12T07:00:00+00:00",
-      "agency": "Fastmarkets · Google News",
-      "agency_ko": "Fastmarkets (구글 뉴스 경유)",
-      "source_id": "gn_africa_minerals",
-      "commodities": [
-        "cobalt"
-      ],
-      "countries": [
-        "COD"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.323,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "7208909a6cdc6fd5",
-      "title": {
-        "original": "Nickel Drops After Report Indonesia to Lift Quota for Major Mine",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNbXRFbFJybk9TTzAtek9fN1JwRFZ4UElmb3NLUklWblBsakpnMXVTaC1xelBhWG1yQmxwTkJONXVNMFRkYWFUY1dGeWhEVm5xVDhJNjVxaWNPOTZRdmxJUTJMVWxfM0JiZmtCN1luUlJCdTVwYWRsVVZ6V0Z1eVhnQ1ZOeVpqVTB0OWg4X3NocEl2Q1ktZVpRZlRwcWF1dVA1MEhLZ3c5bWpkQ05HYlZqcUk3QjV2UQ?oc=5",
-      "published_at": "2026-08-06T07:00:00+00:00",
-      "agency": "Bloomberg.com · Google News",
-      "agency_ko": "Bloomberg.com (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.314,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "c8478fa3fa40947f",
-      "title": {
-        "original": "[SMM Nickel Flash] According to market sources, a major Indonesian nic",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQN1dwQW81QkxqbmthZEdXX3hxbUIyMmc5WmVoaFM1UWY3am1kenhQU2FHTTFIaTB0ZnhkZjFYQmdPRWw3NThiQVVxS0Q1VS1qeU5kWDRlZ0ZaVWp0eTM2LWxMdndsbmF5WG9iR3VhTE41WGNTcTZGbUJSRXJEckdXRm9aOXpOLTdwTjgxM3V6anVkZkNyRnJseU9RWmVkUTZRSV9lSWxBMGNqU1NZUVdWdFIzdk9NSnBlcHc1Yk5DQ0RUUHdKS0xwTC01ZmlYUQ?oc=5",
-      "published_at": "2026-08-06T07:00:00+00:00",
-      "agency": "Shanghai Metals Market · Google News",
-      "agency_ko": "Shanghai Metals Market (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.314,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "63f3770bca54fc4f",
-      "title": {
-        "original": "Indonesia's Quotas Are Now Pushing Nickel's Floor to $18,000: What Junior Investors Should Monitor",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPVnlNdHZjdUVIc0psZ3FLYTJLcU9rLXd4VHBUc19XbnhuTkV2MGE1aDNWMU02ajVvc0V4UmI0LVRocE9oNlpRV0VJR3JoVWNSLW5CZzNJamNaSXNIT2xWeDJZT0pXaC1PYlZ5Z2NVU1JnZi1GWXlmUjdMSEs2cFFDZzgxNU91OHZqRlZOckVzb3RKZk5VSmdUZDNfS0pHQmQ2NkctNGFSN1ZKNlZxNW1jVG1HYw?oc=5",
-      "published_at": "2026-08-02T07:00:00+00:00",
-      "agency": "Crux Investor · Google News",
-      "agency_ko": "Crux Investor (구글 뉴스 경유)",
-      "source_id": "gn_idn_nickel_coal_en",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.309,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "dc4e089e2a5941d6",
-      "title": {
-        "original": "Uranium in cobalt-hydroxide exports from the Democratic Republic of the Congo",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1xUjF2MFZySXBRTFIwMHY5ZkctMlo3WmJ4MWxOQm5GOUIxSEViWFIzcDRJaWM3NlN5M05idHp5UTZVbU1LLUtuWG9IWDNodDFjcWdHd0Vzd2QzaFR5X1hj?oc=5",
-      "published_at": "2026-07-30T07:00:00+00:00",
-      "agency": "Nature · Google News",
-      "agency_ko": "Nature (구글 뉴스 경유)",
-      "source_id": "gn_africa_minerals",
-      "commodities": [
-        "cobalt",
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "COD"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.306,
-      "reasons": [
-        "country_in_text"
-      ],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "7c1c694008c43c8e",
-      "title": {
-        "original": "APNI Minta RKAB Nikel Dirahasiakan, Apa Alasannya?",
-        "original_lang": "id",
-        "ko": "APNI, 니켈 RKAB 비공개 요청, 이유는 무엇인가?",
-        "en": "APNI Asks Nickel RKAB to Be Confidential, What is the Reason?"
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOQjg0Z0xscjZmWU1lcDBEQnBoTGF3VkZWeWtSYkNleUJtRUhXOE55NjdYNC1ud2Fub0FhcTY2RDNQME1ybUowU3VRUEZCZ28xZjRXRDJfcDg5Y3U5Q2RRTkxjd1BuUGVPWjg1cWNwUklrYm5YV3poTW9rZC1vZFVKV1hwNmtEd21S?oc=5",
-      "published_at": "2026-08-31T07:00:00+00:00",
-      "agency": "KabarBursa.com · Google News (인니어)",
-      "agency_ko": "KabarBursa.com (구글 뉴스 경유(인니어))",
-      "source_id": "gn_idn_esdm_id",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.282,
-      "reasons": [],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "cfbd6e911663a22a",
-      "title": {
-        "original": "ESDM Mulai Setujui RKAB Nikel—Batu Bara, Capai Belasan Perusahaan - Energi",
-        "original_lang": "id",
-        "ko": "에너지광물자원부, 니켈·석탄 RKAB 승인 시작… 수십 개사에 달해 - 에너지",
-        "en": "ESDM Starts Approving Nickel-Coal RKAB, Reaches Dozens of Companies - Energy"
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQelRHdDNVM0tiT0hJZHhXbHVxeThpTDdzd2hoZ3JrcHlGSDBwUUZwTWpqaFlmMkxEcVVGZ2VvT3ZhVmphRC11dllzX2FseENGeGFlaWRKMkR5X0FKckpqalBzVEFFMWpreldwVllReVRHZkY0T3JVMEdGd09xb3BrdGlHQzJXbU0yRFJtR0duUDdCREQyb0J2bkRCM2UweUg2MTU0bkZ4SlNRUTJwVmc2NVR3cnV1cGc?oc=5",
-      "published_at": "2026-08-19T07:00:00+00:00",
-      "agency": "Bloomberg Technoz · Google News (인니어)",
-      "agency_ko": "Bloomberg Technoz (구글 뉴스 경유(인니어))",
-      "source_id": "gn_idn_esdm_id",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.258,
-      "reasons": [],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "81d6f24efaf52a9d",
-      "title": {
-        "original": "Tak Ada Tambahan RKAB Nikel 2026, Pasokan Bijih ke Smelter Berpotensi Terganggu",
-        "original_lang": "id",
-        "ko": "2026년 추가 니켈 RKAB 없음, 제련소로의 광석 공급 차질 우려",
-        "en": "No Additional 2026 Nickel RKAB, Ore Supply to Smelters Potentially Disrupted"
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNYmFTZ1EwVVVkX1FSbjROcnFfU2Jmd2xmc2szLUFOeHJvN2dkQTVoNFZnUDk5eHhMY215Mm5BOHZkZEVQcUVMMjFva0R1WHlsS2V0VEVLVkhsdlFtR3o4Y1J3YnpDUUd3R0ZGSlluWEZqMUYwa2pFaE5ndXBvMldQclpRR0g4LUxWYlJkZy12dVJESlRpWXNFMnA5QUpQMWhLeDFOaHlYN1V4bG93Z1M0ZmVha9IBrAFBVV95cUxQZ01uamJlQ2xCWlRzc0xiYnRlck01Nkhna2VjVWwybGVPcUhleHNadDNSclMxLWV2Y1l6SWJJUHZvNmJLVFBPVXlIbm1mN2h3UlphZFFJMHhJQWVuYnNqTHR5Rk5nRHhrbmNDV2pDeWxuYjNBV0FTdFZCSEMxTzMyR2RvekhaSTlNcjZwTmR5eDh3UmxQVnFtVGtoTGEtRkR4WElGTUtDelVZd1Vx?oc=5",
-      "published_at": "2026-08-14T07:00:00+00:00",
-      "agency": "kontan.co.id · Google News (인니어)",
-      "agency_ko": "kontan.co.id (구글 뉴스 경유(인니어))",
-      "source_id": "gn_idn_esdm_id",
-      "commodities": [
-        "nickel"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.251,
       "reasons": [],
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     }
