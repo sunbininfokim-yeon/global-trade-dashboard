@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """NM primary charts and explicit roster aliases; no fuzzy candidate matching."""
 from copy import deepcopy
 import unittest
@@ -10,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1];C=ROOT/'config';DAY='2026-10-18'
 class NMJournalReleaseTests(unittest.TestCase):
     def setUp(self):
         self.audit=read(ROOT.parent.parent/'public/data/usa_election_poll_release_reviews/2026/NM-journal-20261019.json')
-        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY)
+        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
         self.rows=[r['provider_record']for r in self.audit['records']]
     def test_both_house_polls_admitted_with_primary_sample_and_party(self):

@@ -7,6 +7,7 @@
 
 | id | task | owner | files / scope | branch | status | note |
 |----|------|-------|---------------|--------|--------|------|
+| POLL-HISTORICAL-CATALOG-CLOCK-20261021 | 과거 조사 검사의 최신 명부 검증 시각 분리 | codex | election_watch 공용 회귀 테스트·전용 인수 | `codex/poll-historical-catalog-clock-20261021` | review | #647 합본에서 발견한 18개 테스트의 catalog clock만 분리. 조사 DAY·normalize·원래 수집일·운영 검증 유지. 주별 입력·UI·workflow·전국 JSON·병합·배포 제외. |
 | POLL-CAPTURE-RECOVERY-20261020 | 일일 수집 충돌 격리·갱신 의존 검사 복구 | codex | election_watch 공용 capture/정규화·고정 검토 fixture 검사·전용 인수 | `codex/poll-capture-validation-recovery-20261020` | review | #651 추가 보강 완료. Python835·집중113·JS114·소유권14·배포연결42 통과. 실패 단계/오류 코드·원문/HTML 충돌 근거·참고 상태 요약, IA 잔여 가변 검사 고정. 비게시 replay212건의 기존 값/날짜/주별 출처 전부 동일. workflow/UI/주별 입력/전국 JSON/병합/배포 제외. |
 | US-ELECTION-CONTEXT-UI-20261019 | 주지사 맥락·캠프 모금·후보 약력 UI와 원문 출처 | codex | js/elections 전용 렌더러·회귀 검사·전용 handoff | `codex/us-election-context-ui-20261019` | review | 사용자 UI 연결·원문 출처 명시 요청. #637: 주별 직위 카드 상단 DEM/GOP 모금·관측 합계 추가, 선거 JS 114개 통과. #635 공용 기반 의존. 주별 packet·수집기·전국 생성물·Worker·workflow·공용 index/style·병합·배포 제외. |
 | US-ELECTION-CONTEXT-DATA-20261019 | 주지사 선거·현직 상태, 공개 조사 발견 경로, 후보 캠프 모금 계약 | codex | election_watch 공용 backend·설정·검사·전용 handoff | `codex/us-election-context-data-20261019` | review | 사용자 4개 후속 지시. packet 없는 공용 기반. 전국 생성물·UI·workflow·병합·배포 제외. 주별 실제 조사 입력은 독립 PR. |
