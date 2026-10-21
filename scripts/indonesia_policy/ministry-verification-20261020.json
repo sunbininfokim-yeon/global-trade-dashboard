@@ -1,0 +1,49 @@
+{
+  "country": "IDN",
+  "purpose": "Four original ministries rechecked; no enumeration claim",
+  "sources": [
+    {
+      "source_id": "esdm-original",
+      "url": "https://jdih.esdm.go.id/dokumen/index",
+      "checked_at": "2026-10-20T06:50:59.938475+00:00",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "enumeration_verified": false,
+      "actual_url": "https://jdih.esdm.go.id/dokumen/index",
+      "raw_sha256": "1e936011e5404a9059f6db54b452f7cb70ba7aa8a6cdb2b42e77481f4852eba7",
+      "outcome": "maintenance",
+      "title": "ESDM-MAINTENANCE",
+      "observed_links": []
+    },
+    {
+      "source_id": "pertanian-original",
+      "url": "https://jdih.pertanian.go.id/",
+      "checked_at": "2026-10-20T06:50:59.938986+00:00",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "enumeration_verified": false,
+      "outcome": "http_403",
+      "error_type": "HTTPError",
+      "http_status": 403
+    },
+    {
+      "source_id": "kemenperin-original",
+      "url": "https://jdih.kemenperin.go.id/",
+      "checked_at": "2026-10-20T06:50:59.939104+00:00",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "enumeration_verified": false,
+      "outcome": "connection_timeout",
+      "error_type": "ConnectTimeout",
+      "http_status": null
+    },
+    {
+      "source_id": "kemenkeu-original",
+      "url": "https://jdih.kemenkeu.go.id/search?bentuk=Peraturan+Menteri&order=desc&teu=Kementerian+Keuangan",
+      "checked_at": "2026-10-20T06:50:59.939273+00:00",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "enumeration_verified": false,
+      "outcome": "read_timeout",
+      "error_type": "ReadTimeout",
+      "http_status": null,
+      "additional_transport_check": "curl HTTPS connection: SSL connection timeout; no HTTP response"
+    }
+  ]
+}
