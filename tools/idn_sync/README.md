@@ -13,7 +13,7 @@ The collector is pinned to reviewed commit `7cdbb19868426bcd82e0f5a263d260fadf18
 This permits collection without merging or deploying that PR's UI/mail changes.
 Update this explicit pin only after reviewing collector changes.
 
-Private Supabase Storage bucket `idn-collector-state`, object `automatic/current.tar.gz`,
+Private Supabase Storage bucket `idn-collector-state`, manifest `automatic/current.json` and content-hashed `automatic/chunks/*`,
 contains official-source cache, processing artifacts, cursors and host cooldowns.
 No credentials are written into it. It is not an Actions public artifact or repository file.
 A missing/corrupt snapshot fails closed rather than restarting at zero.
@@ -26,7 +26,17 @@ A hard runner kill can precede upload. The next run replays the prior checkpoint
 hashes and fenced transactions prevent duplicate versions. A just-discovered cooldown may
 be lost on hard kill. No exactly-once remote checkpoint claim is made.
 An upload failure fails the workflow and preserves the previous remote checkpoint.
-Archives reject traversal, links, >20k files, >1 GiB expansion and >48 MiB compression.
+The first run #39593520141 failed at the old 48 MiB archive cap after committing DB work.
+Its ephemeral final cursor could not be recovered. One replay from the last saved Mac
+checkpoint is necessary; document hashes and DB admission retry state preserve idempotency.
+Archives reject traversal, links, >20k files and >1 GiB expansion/compression.
+Each uploaded chunk is at most 16 MiB, below the unchanged 48 MiB bucket object limit.
+Only after all chunks upload does a small manifest atomically replace the latest pointer.
+Restoration checks individual sizes/digests and whole-archive digest before extraction.
+A genuinely missing manifest restores the original Mac `automatic/current.tar.gz`;
+a corrupt manifest, missing chunk, or network/auth error never falls back to old progress.
+Prior chunks and the legacy archive are preserved. Stored historical chunks can grow;
+no automatic evidence deletion or unlimited storage claim is made.
 The collector also stops at its existing 1 GiB state capacity guard. Review capacity instead
 of deleting evidence automatically. Mac must remain disabled while cloud collection is active.
 
