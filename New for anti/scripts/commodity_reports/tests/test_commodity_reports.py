@@ -1500,5 +1500,250 @@ class AggregatorFeedTests(unittest.TestCase):
         self.assertEqual(plain["count"], 12)   # else the build-wide cap
 
 
+class NewsFilterTests(unittest.TestCase):
+    """Links, outlets and story identity for news headlines (newsfilter.py)."""
+
+    @staticmethod
+    def _gn_page(sig="SIG", ts="1700000000"):
+        return f'<c-wiz><div data-n-a-sg="{sig}" data-n-a-ts="{ts}" data-n-a-id="X"></div></c-wiz>'
+
+    @staticmethod
+    def _gn_reply(target):
+        inner = json.dumps(["garturlres", target, 1])
+        return ")]}'\n\n" + json.dumps([["wrb.fr", "Fbv4je", inner, None, None, None, "generic"]])
+
+    def test_a_google_news_link_resolves_to_the_article_address(self):
+        from commodity_reports import newsfilter as nf
+        seen = {}
+
+        def post(url, body):
+            seen["body"] = body
+            return self._gn_reply("https://www.reuters.com/markets/nickel-quota-2026-10-20/")
+
+        got = nf.resolve_google_news_url("https://news.google.com/rss/articles/CBMiNEW?oc=5",
+                                         get=lambda u: self._gn_page(), post=post)
+        self.assertEqual(got, "https://www.reuters.com/markets/nickel-quota-2026-10-20/")
+        # The request names the article and carries the page's signature, not a guess.
+        self.assertIn("CBMiNEW", seen["body"])
+        self.assertIn("SIG", seen["body"])
+
+    def test_an_old_style_link_carries_its_address(self):
+        import base64
+        from commodity_reports import newsfilter as nf
+        token = base64.urlsafe_b64encode(b"\x08\x13\x22\x20https://www.mining.com/web/a-story/\xd2\x01\x00").decode().rstrip("=")
+        got = nf.resolve_google_news_url(f"https://news.google.com/rss/articles/{token}",
+                                         get=lambda u: self.fail("no request needed"), post=lambda u, b: self.fail("no request needed"))
+        self.assertEqual(got, "https://www.mining.com/web/a-story/")
+
+    def test_an_unresolvable_link_is_none_never_a_guess(self):
+        from commodity_reports import newsfilter as nf
+        url = "https://news.google.com/rss/articles/CBMiNEW"
+
+        def boom(*_a):
+            raise OSError("blocked")
+
+        self.assertIsNone(nf.resolve_google_news_url(url, get=boom, post=boom))
+        self.assertIsNone(nf.resolve_google_news_url(url, get=lambda u: "<html>no signature</html>", post=boom))
+        self.assertIsNone(nf.resolve_google_news_url(url, get=lambda u: self._gn_page(), post=lambda u, b: "garbage"))
+        # A reply whose answer is not an http(s) address is not an address.
+        self.assertIsNone(nf.resolve_google_news_url(url, get=lambda u: self._gn_page(), post=lambda u, b: self._gn_reply("javascript:alert(1)")))
+        self.assertIsNone(nf.resolve_google_news_url("https://www.reuters.com/a", get=boom, post=boom))
+
+    def test_outlet_domains(self):
+        from commodity_reports import newsfilter as nf
+        self.assertEqual(nf.registrable_domain("https://sg.finance.yahoo.com/news/x"), "yahoo.com")
+        self.assertEqual(nf.registrable_domain("https://www.theguardian.co.uk/a"), "theguardian.co.uk")
+        self.assertEqual(nf.registrable_domain("https://www.kontan.co.id/a"), "kontan.co.id")
+        self.assertEqual(nf.registrable_domain("investasi.kontan.co.id"), "kontan.co.id")
+        self.assertTrue(nf.same_outlet("https://investasi.kontan.co.id/news/x", "https://www.kontan.co.id"))
+        # A redirect that lands on another site is not the outlet's article.
+        self.assertFalse(nf.same_outlet("https://spam.example/reuters-nickel", "https://www.reuters.com"))
+        self.assertFalse(nf.same_outlet("https://www.reuters.com/a", None))
+        self.assertFalse(nf.same_outlet("", "https://www.reuters.com"))
+
+    def test_trusted_outlets_come_from_the_list_not_the_feed(self):
+        from commodity_reports import newsfilter as nf
+        from commodity_reports.build import load_trusted_outlets
+        trusted = load_trusted_outlets()
+        self.assertGreaterEqual(len(trusted), 50)
+        self.assertTrue(nf.trusted_outlet("https://www.reuters.com", trusted))
+        self.assertTrue(nf.trusted_outlet("https://www.thejakartapost.com", trusted))
+        self.assertFalse(nf.trusted_outlet("https://prnewswire.com", trusted))      # press-release wires are not news
+        self.assertFalse(nf.trusted_outlet("https://someblog.example", trusted))
+        self.assertFalse(nf.trusted_outlet(None, trusted))
+
+    def test_same_story_needs_most_of_the_words_not_just_the_commodity(self):
+        from commodity_reports import newsfilter as nf
+        t = nf.story_tokens
+        a = t("Indonesia weighs nickel smelter freeze: what it means for Chinese investors")
+        b = t("Indonesia's nickel smelter freeze weighs on Chinese investors")
+        self.assertTrue(nf.same_story(a, b))
+        # Same commodity, same country, different news -- two rows.
+        self.assertFalse(nf.same_story(a, t("Indonesia nickel ore imports from the Philippines hit record")))
+        self.assertFalse(nf.same_story(t("Copper rises"), t("Copper falls")))
+        self.assertFalse(nf.same_story(set(), a))
+
+
+class NewsHeadlineBuildTests(unittest.TestCase):
+    """End to end: a Google News feed in, only real, relevant, distinct headlines out."""
+
+    NOW = datetime(2026, 10, 21, tzinfo=timezone.utc)
+    SOURCE_ID = "gn_idn_nickel_coal_en"
+    GN = "https://news.google.com/rss/articles/"
+
+    @classmethod
+    def _item(cls, token, title, outlet, site, day="Tue, 20 Oct 2026 08:00:00 GMT"):
+        return (f"<item><title>{title} - {outlet}</title><link>{cls.GN}{token}</link><pubDate>{day}</pubDate>"
+                f"<description>&lt;b&gt;{title}&lt;/b&gt; sneaky summary text about copper</description>"
+                f"<source url=\"{site}\">{outlet}</source></item>")
+
+    def _feed(self):
+        items = [
+            self._item("TOK_REUTERS", "Indonesia weighs nickel smelter freeze, what it means for Chinese investors",
+                       "Reuters", "https://www.reuters.com"),
+            # The same story from another trusted outlet: one row, not two.
+            self._item("TOK_BLOOMBERG", "Indonesia's nickel smelter freeze weighs on Chinese investors",
+                       "Bloomberg.com", "https://www.bloomberg.com"),
+            # Different story, same commodity and country: stays.
+            self._item("TOK_PRICES", "Nickel prices climb as LME stocks fall to a two year low", "Reuters", "https://www.reuters.com"),
+            # An outlet that is not on the list: never even asked for.
+            self._item("TOK_BLOG", "Nickel miners in Indonesia tripled their profits, insiders say", "NickelInsider", "https://nickelinsider.example"),
+            # Google hands back a different site than the outlet it names.
+            self._item("TOK_FAKE", "Nickel quota rumour moves Indonesia market", "Reuters", "https://www.reuters.com"),
+            # Google cannot say where it points.
+            self._item("TOK_LOST", "Indonesia nickel royalty change draws pushback from smelters", "Reuters", "https://www.reuters.com"),
+            # Nothing we track.
+            self._item("TOK_FOOTBALL", "Jakarta football derby ends in a draw", "Reuters", "https://www.reuters.com"),
+        ]
+        return "<?xml version='1.0'?><rss><channel><title>x</title>" + "".join(items) + "</channel></rss>"
+
+    def _resolver(self, calls):
+        answers = {
+            "TOK_REUTERS": "https://www.reuters.com/markets/commodities/nickel-freeze-2026-10-20/",
+            "TOK_BLOOMBERG": "https://www.bloomberg.com/news/articles/2026-10-20/nickel-freeze",
+            "TOK_PRICES": "https://www.reuters.com/markets/commodities/nickel-prices-2026-10-20/",
+            "TOK_FAKE": "https://clickbait.example/win-a-prize",
+            "TOK_BLOG": "https://nickelinsider.example/profits",
+        }
+
+        def resolve(url):
+            token = url.rsplit("/", 1)[-1]
+            calls.append(token)
+            return answers.get(token)
+
+        return resolve
+
+    def _build(self, tmp, calls, previous=None):
+        import shutil
+        fx = Path(tmp) / "fx"
+        if not fx.exists():
+            shutil.copytree(FIXTURES, fx)
+            (fx / f"{self.SOURCE_ID}.xml").write_text(self._feed(), encoding="utf-8")
+        kw = {}
+        if previous is not None:
+            prev = Path(tmp) / "previous.json"
+            prev.write_text(json.dumps(previous), encoding="utf-8")
+            kw["previous_path"] = prev
+        return build_commodity_reports(fetch_live=False, fixture_dir=fx, now=self.NOW,
+                                       news_resolver=self._resolver(calls), **kw)
+
+    def _rows(self, doc):
+        return [it for it in doc["items"] if it["source_id"] == self.SOURCE_ID]
+
+    def test_only_real_relevant_distinct_headlines_survive(self):
+        import tempfile
+        calls = []
+        with tempfile.TemporaryDirectory() as tmp:
+            doc = self._build(tmp, calls)
+        rows = self._rows(doc)
+        urls = sorted(r["url"] for r in rows)
+        # Two stories: the freeze (Reuters and Bloomberg folded) and the price move.
+        self.assertEqual(len(rows), 2, urls)
+        for r in rows:
+            self.assertFalse(r["url"].startswith("https://news.google.com"), r["url"])
+            self.assertEqual(r["publisher_type"], "news")
+            self.assertIsNone(r["summary"])                  # a headline and a link, nothing else
+            self.assertNotIn("reasons", r)
+            self.assertIn("nickel", r["commodities"])
+        freeze = next(r for r in rows if "freeze" in r["url"])
+        self.assertEqual(freeze.get("also"), 1)              # "+1 outlet" on the survivor
+        news = doc["news"]
+        self.assertEqual(news["folded_same_story"], 1)
+        self.assertEqual(news["dropped_untrusted_outlet"], 1)
+        self.assertIn("nickelinsider.example", news["untrusted_outlets"])
+        self.assertEqual(news["outlet_mismatch"], 1)
+        self.assertEqual(news["unresolved"], 1)
+        # The football item was never worth a request; the untrusted outlet neither.
+        self.assertNotIn("TOK_FOOTBALL", calls)
+        self.assertNotIn("TOK_BLOG", calls)
+
+    def test_a_link_is_asked_for_once_then_remembered(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            first_calls = []
+            first = self._build(tmp, first_calls)
+            self.assertIn("TOK_REUTERS", first_calls)
+            second_calls = []
+            second = self._build(tmp, second_calls, previous=first)
+        # What was resolved is not asked again; neither is what was judged (folded into another
+        # outlet's story, or pointing at the wrong site). Only a link Google could not answer is retried.
+        self.assertEqual(second_calls, ["TOK_LOST"])
+        self.assertEqual(sorted(r["url"] for r in self._rows(second)), sorted(r["url"] for r in self._rows(first)))
+        self.assertGreaterEqual(second["news"]["resolved_cached"], 2)
+        self.assertEqual(second["news"]["skipped_known"], 2)
+
+    def test_without_a_resolver_an_aggregator_link_is_dropped_not_shown_as_is(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            doc = self._build(tmp, [])
+            fx = Path(tmp) / "fx"
+            doc = build_commodity_reports(fetch_live=False, fixture_dir=fx, now=self.NOW, news_resolver=None)
+        # With no live fetch there is no resolver; nothing from Google News may reach the page.
+        self.assertEqual(self._rows(doc), [])
+        self.assertGreater(doc["news"]["unresolved"], 0)
+
+    def test_the_folded_story_count_rides_along_with_a_carried_row(self):
+        from commodity_reports import build as build_mod
+        from commodity_reports.score import ScoredReport
+        import dataclasses
+        src = {"id": "mining", "agency": "MINING.COM", "agency_ko": "마이닝닷컴", "kind": "rss",
+               "url": "https://m.example/feed", "publisher_type": "news"}
+        previous = {"items": [{"source_id": "mining", "url": "https://www.mining.com/a", "title": {"original": "Nickel freeze"},
+                               "summary": None, "published_at": "2026-10-20T00:00:00+00:00",
+                               "agency": "MINING.COM", "also": 2, "src_ref": "abc123"}]}
+        got = build_mod.previous_raws(previous, [src], self.NOW)["mining"][0]
+        self.assertEqual((got.also, got.src_ref), (2, "abc123"))
+        self.assertEqual(got.commodity_from, "title")   # a carried headline is read like a fresh one
+
+        # Seen twice (the carried copy and a fresh one): the larger count survives.
+        fields = {f.name for f in dataclasses.fields(ScoredReport)}
+
+        def rep(also):
+            base = dict.fromkeys(fields)
+            base.update(id="x", source_id="mining", url="https://www.mining.com/a", title="Nickel freeze",
+                        importance=1.0, also=also)
+            return ScoredReport(**base)
+
+        self.assertEqual([r.also for r in build_mod._dedupe([rep(0), rep(2)])], [2])
+
+    def test_an_official_report_is_never_folded_into_a_headline(self):
+        from commodity_reports.build import merge_stories
+        from commodity_reports.score import ScoredReport
+        import dataclasses
+        fields = {f.name for f in dataclasses.fields(ScoredReport)}
+
+        def rep(rid, src, title):
+            base = dict.fromkeys(fields)
+            base.update(id=rid, source_id=src, title=title, title_en=None, commodities=["nickel"],
+                        published_at="2026-10-20T00:00:00+00:00", also=0)
+            return ScoredReport(**base)
+
+        official = rep("1", "id_esdm", "Indonesia nickel smelter freeze weighs on Chinese investors")
+        news = rep("2", "gn", "Indonesia nickel smelter freeze weighs on Chinese investors")
+        rows = [official, news]
+        self.assertEqual(merge_stories(rows, {"gn"}), [])
+        self.assertEqual([r.id for r in rows], ["1", "2"])
+
+
 if __name__ == "__main__":
     unittest.main()

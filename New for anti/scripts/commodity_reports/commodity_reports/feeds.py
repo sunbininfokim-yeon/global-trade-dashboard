@@ -73,6 +73,13 @@ class RawReport:
     default_country: Optional[str] = None
     commodity_hint: List[str] = field(default_factory=list)
     scope_hint: str = "country"
+    # Aggregator items (Google News): the outlet's own site, from <source url>,
+    # which the resolved article address must sit on. And the short hash of the
+    # aggregator link, kept on the published item so a later build does not ask
+    # Google for the same address twice.
+    publisher_url: Optional[str] = None
+    src_ref: Optional[str] = None
+    also: int = 0   # carried from the last build: other outlets already folded into this row
 
 
 def strip_html(doc: str) -> str:
@@ -225,6 +232,11 @@ def _board_for(source: Dict[str, Any], title: str) -> Optional[str]:
 
 
 def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
+    # A news outlet's item is a headline and a link, nothing else: no summary
+    # is kept, and what it is about is read from the headline alone.
+    is_news = source.get("publisher_type") == "news"
+    if is_news:
+        kw["summary"] = ""
     # A feed whose item titles say nothing ("Data For 10/05/26") gets a label.
     if source.get("title_prefix") and kw.get("title"):
         kw["title"] = f"{source['title_prefix']}{kw['title']}"
@@ -243,7 +255,7 @@ def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
         commodity_hint=list(source.get("commodity_hint") or []),
         scope_hint=source.get("scope_hint", "country"),
         market_only=bool(source.get("market_only")),
-        commodity_from=source.get("commodity_from", "text"),
+        commodity_from="title" if is_news else source.get("commodity_from", "text"),
         commodity_scope=list(source.get("commodity_scope") or []),
         board=_board_for(source, kw.get("title", "")),
         **kw,
@@ -273,7 +285,7 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
     title_keep = re.compile(source["title_re"]) if source.get("title_re") else None
     items: List[RawReport] = []
     for el in entries[:max_items]:
-        title = link = pub = publisher = ""
+        title = link = pub = publisher = publisher_url = ""
         bodies: List[str] = []
         for child in list(el):
             name = _local(child.tag)
@@ -293,6 +305,7 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
                 pub = text
             elif name == "source" and text and not publisher:
                 publisher = text
+                publisher_url = child.attrib.get("url", "")
         title = strip_html(title)
         summary = strip_html(max(bodies, key=len) if bodies else "")
         if not title or not link:
@@ -331,6 +344,7 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
             names = {
                 "agency": f"{publisher} · {source.get('agency', 'Google News')}",
                 "agency_ko": f"{publisher} ({source.get('agency_ko', '구글 뉴스 경유')})",
+                "publisher_url": publisher_url or None,
             }
         items.append(
             _raw_from(
