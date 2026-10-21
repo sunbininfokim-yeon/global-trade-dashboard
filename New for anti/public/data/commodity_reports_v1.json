@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-21T12:34:37.897437+00:00",
+  "generated_at": "2026-10-21T12:44:45.575991+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,15 +17,15 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 65,
+    "sources_ok": 79,
     "sources_failed": 1,
-    "raw_items": 1480,
-    "scored": 450,
-    "unclassified": 761,
-    "rejected": 75,
-    "published": 393,
-    "commodities": 33,
-    "buckets": 204
+    "raw_items": 1734,
+    "scored": 505,
+    "unclassified": 873,
+    "rejected": 81,
+    "published": 442,
+    "commodities": 34,
+    "buckets": 232
   },
   "feed_status": [
     {
@@ -121,7 +121,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 47 reports linked, 11 read, 25 already known",
+      "note": "45 list pages, 47 reports linked, 13 read, 23 already known",
       "archived": 22
     },
     {
@@ -464,7 +464,7 @@
       "count": 40,
       "error": null,
       "mode": "live",
-      "archived": 9
+      "archived": 1
     },
     {
       "source_id": "gn_idn_esdm_id",
@@ -472,7 +472,7 @@
       "count": 40,
       "error": null,
       "mode": "live",
-      "archived": 6
+      "archived": 3
     },
     {
       "source_id": "gn_palm_oil_en",
@@ -508,14 +508,112 @@
       "count": 40,
       "error": null,
       "mode": "live"
+    },
+    {
+      "source_id": "gh_mincom",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_uneca",
+      "ok": true,
+      "count": 0,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "za_govza",
+      "ok": true,
+      "count": 0,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cd_gecamines",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "zw_zimplats",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_allafrica_mining",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_allafrica_energy",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_drc_cobalt_copper",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_zambia_zimbabwe",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_guinea_bauxite",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_sahel_uranium",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_west_africa_gold",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_east_africa_graphite",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
     }
   ],
   "translation": {
     "enabled": true,
     "model": "gemini-flash-lite-latest",
     "calls": 2,
-    "annotated": 30,
-    "reused": 80,
+    "annotated": 38,
+    "reused": 79,
     "error": null
   },
   "boards": {
@@ -998,6 +1096,34 @@
     "GNB": {
       "name": "Guinea-Bissau",
       "name_ko": "기니비사우"
+    },
+    "BWA": {
+      "name": "Botswana",
+      "name_ko": "보츠와나"
+    },
+    "MDG": {
+      "name": "Madagascar",
+      "name_ko": "마다가스카르"
+    },
+    "MRT": {
+      "name": "Mauritania",
+      "name_ko": "모리타니"
+    },
+    "RWA": {
+      "name": "Rwanda",
+      "name_ko": "르완다"
+    },
+    "SDN": {
+      "name": "Sudan",
+      "name_ko": "수단"
+    },
+    "MWI": {
+      "name": "Malawi",
+      "name_ko": "말라위"
+    },
+    "CMR": {
+      "name": "Cameroon",
+      "name_ko": "카메룬"
     }
   },
   "index": {
@@ -1022,6 +1148,7 @@
         "3a55343654c7fe18",
         "f67926fadcc1ef47",
         "c981e38b1716fe00",
+        "0e569cb46a87db62",
         "9307f930910dd12d"
       ],
       "USA": [
@@ -1033,6 +1160,7 @@
         "2048baa98920b823",
         "73bc7cd0a5fd9d7e",
         "1ecab6510c79a333",
+        "426b6904d997f3ed",
         "f67926fadcc1ef47",
         "955ad309a414417b",
         "9931db39512deddb"
@@ -1043,9 +1171,14 @@
       ],
       "COD": [
         "6a4a5c479cce39a3",
+        "afdd94969e685c61",
+        "a010bfb8d8d30f37",
         "3a55343654c7fe18",
         "73bc7cd0a5fd9d7e",
+        "426b6904d997f3ed",
         "f67926fadcc1ef47",
+        "0e569cb46a87db62",
+        "2a606e0f3d4a3365",
         "ddda9d4e2c9ac764"
       ],
       "_global": [
@@ -1081,16 +1214,52 @@
         "154c30b8c72eee8f",
         "30865a9e48fdf5c3"
       ],
+      "CIV": [
+        "85a64b74e0625f38"
+      ],
       "ZMB": [
         "b1dfbcd2cc053e27",
+        "65b1f8a40b406335",
         "8c243ecfa3814f92",
         "ce9b8645ae75194f",
-        "80a200d2fa7e3423"
+        "80a200d2fa7e3423",
+        "2ccb4dd22cf8c60f"
+      ]
+    },
+    "soybeans": {
+      "_global": [
+        "fb2c4431c486bc84",
+        "fea1697202557590",
+        "e02f0015513318b7",
+        "976dad99c36e6871"
+      ],
+      "VNM": [
+        "2147f5407a8ae8de"
+      ],
+      "ARG": [
+        "e36e7155dc085ab6",
+        "21c3dd4f0cf93fd0"
+      ],
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "USA": [
+        "0466c9487c9388ef",
+        "44b8a849491ef3dc"
+      ],
+      "IND": [
+        "6269fa1eda293c5a"
+      ],
+      "MYS": [
+        "dd65e722f06ed85f"
       ]
     },
     "rice": {
       "KHM": [
         "b9464782992065f8"
+      ],
+      "VNM": [
+        "a14ff3afe55392ed"
       ],
       "VEN": [
         "bf540915870c3b2a"
@@ -1209,6 +1378,7 @@
         "fb2c4431c486bc84",
         "631c0f4620378c62",
         "f76b32fe407fefbd",
+        "e0eb3127c55bf69f",
         "aed369cb89fe2a3c",
         "e02f0015513318b7"
       ]
@@ -1223,6 +1393,9 @@
       "USA": [
         "29ee4e32a01f13fd",
         "44b8a849491ef3dc"
+      ],
+      "VNM": [
+        "a14ff3afe55392ed"
       ],
       "PAK": [
         "598ef301ee60a6fd"
@@ -1274,36 +1447,10 @@
         "6269fa1eda293c5a"
       ]
     },
-    "soybeans": {
-      "VNM": [
-        "2147f5407a8ae8de"
-      ],
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "TUR": [
-        "b6c8cf9b7c06332d"
-      ],
-      "USA": [
-        "0466c9487c9388ef",
-        "44b8a849491ef3dc"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
-      ],
-      "_global": [
-        "fb2c4431c486bc84",
-        "e02f0015513318b7",
-        "976dad99c36e6871"
-      ],
-      "ARG": [
-        "21c3dd4f0cf93fd0"
-      ],
-      "MYS": [
-        "dd65e722f06ed85f"
-      ]
-    },
     "corn": {
+      "VNM": [
+        "a14ff3afe55392ed"
+      ],
       "VEN": [
         "bf540915870c3b2a"
       ],
@@ -1465,11 +1612,11 @@
         "7c01bc88c3ee5cf9",
         "b9dbe511d03f6801"
       ],
-      "_global": [
-        "b945e519fa260d49",
-        "a979ff111630885e",
-        "48f447e7e1a919bc",
-        "8f2b164b5e4ab3cf"
+      "MRT": [
+        "e22579044ab660a8",
+        "0bf83569a3995ced",
+        "e9da8fc884b00d1f",
+        "b945e519fa260d49"
       ],
       "ZAF": [
         "2d85da4eb092121f"
@@ -1479,6 +1626,19 @@
       ],
       "CHN": [
         "b0d9827004892116"
+      ],
+      "_global": [
+        "48f447e7e1a919bc",
+        "8f2b164b5e4ab3cf"
+      ],
+      "COD": [
+        "a979ff111630885e"
+      ],
+      "NAM": [
+        "578722584ca89a4f",
+        "3febda28e092dcac",
+        "4f832872786102d7",
+        "b14725cfde87f442"
       ]
     },
     "uranium_ore": {
@@ -1495,11 +1655,11 @@
         "7c01bc88c3ee5cf9",
         "b9dbe511d03f6801"
       ],
-      "_global": [
-        "b945e519fa260d49",
-        "a979ff111630885e",
-        "48f447e7e1a919bc",
-        "8f2b164b5e4ab3cf"
+      "MRT": [
+        "e22579044ab660a8",
+        "0bf83569a3995ced",
+        "e9da8fc884b00d1f",
+        "b945e519fa260d49"
       ],
       "ZAF": [
         "2d85da4eb092121f"
@@ -1509,6 +1669,19 @@
       ],
       "CHN": [
         "b0d9827004892116"
+      ],
+      "_global": [
+        "48f447e7e1a919bc",
+        "8f2b164b5e4ab3cf"
+      ],
+      "COD": [
+        "a979ff111630885e"
+      ],
+      "NAM": [
+        "578722584ca89a4f",
+        "3febda28e092dcac",
+        "4f832872786102d7",
+        "b14725cfde87f442"
       ]
     },
     "tin": {
@@ -1552,15 +1725,26 @@
         "af55cd14a4146f77",
         "18d073cb166cd598"
       ],
+      "SDN": [
+        "bf50c51b2128fa23",
+        "435a6376798d48de",
+        "f056109d6519c066",
+        "b8ee6cb9ddf1d20a",
+        "8149cbd255dec6e4",
+        "3e547117d4b67bb1"
+      ],
+      "ZWE": [
+        "b5927186d51d1b08"
+      ],
       "ETH": [
         "9bb5774b8de8434c"
       ],
       "_global": [
         "0aefbda7b035d0f3",
+        "59e725bf00d8929f",
         "cb495f5e5b21ace9",
         "4b3afa220a3d8fe8",
         "e3f7d6a1686a3c4d",
-        "f056109d6519c066",
         "b0f23686d2f72585",
         "c3860eb91977a095",
         "7aa1d9ea8f7acd29"
@@ -1582,8 +1766,16 @@
       "SEN": [
         "165286fdfcd59cd3"
       ],
+      "CIV": [
+        "85a64b74e0625f38"
+      ],
       "GHA": [
-        "87950070f87e62cd"
+        "2fd17feba347f64d",
+        "87950070f87e62cd",
+        "7b2245b0eaa6fe66"
+      ],
+      "TZA": [
+        "c06f1cac6ad17458"
       ],
       "CAN": [
         "af55cd14a4146f77",
@@ -1597,6 +1789,11 @@
       ],
       "COL": [
         "9a241ae46519ad26"
+      ],
+      "EGY": [
+        "b8ee6cb9ddf1d20a",
+        "8149cbd255dec6e4",
+        "3e547117d4b67bb1"
       ]
     },
     "iron_ore": {
@@ -1623,6 +1820,9 @@
       ],
       "JPN": [
         "6ede5478c6aaf180"
+      ],
+      "ZAF": [
+        "40196fb3f86bcdeb"
       ],
       "USA": [
         "b0d9827004892116"
@@ -1683,6 +1883,9 @@
       ],
       "_global": [
         "2828f36e2222dc99"
+      ],
+      "MDG": [
+        "4c63b556e76046df"
       ]
     },
     "aluminum": {
@@ -1741,10 +1944,15 @@
     "lithium": {
       "CHN": [
         "c981e38b1716fe00",
-        "0960a258e30be791"
+        "0960a258e30be791",
+        "5102aa4caead4177"
       ],
       "ZWE": [
+        "d4e1520e6cb42bce",
+        "4e8bdea805afea76",
         "a7a358b8b2596e31",
+        "d1e63d4cabd2e73b",
+        "5102aa4caead4177",
         "d4e19f4ddec8fe98"
       ],
       "AUS": [
@@ -1797,6 +2005,9 @@
       ],
       "MLI": [
         "864101e61e204069"
+      ],
+      "IND": [
+        "d4e1520e6cb42bce"
       ]
     },
     "nickel": {
@@ -1880,6 +2091,9 @@
         "b68b0e58b09e2836",
         "a5f2211651a59816"
       ],
+      "CIV": [
+        "85a64b74e0625f38"
+      ],
       "AUS": [
         "cd17059915564b39"
       ],
@@ -1889,6 +2103,7 @@
     },
     "graphite": {
       "CHN": [
+        "22df7a9b8113d8c0",
         "7c2c4d1c8844ab36",
         "8c808c791d878054",
         "01399109dc789f34",
@@ -1902,6 +2117,9 @@
         "01399109dc789f34",
         "7048269299edaac8",
         "75fbe378785e717c"
+      ],
+      "TZA": [
+        "22df7a9b8113d8c0"
       ],
       "IND": [
         "3cbc48c76fcf7031",
@@ -1935,14 +2153,30 @@
         "c981e38b1716fe00"
       ],
       "_global": [
-        "a979ff111630885e",
         "3663a7d940e42f4f",
         "7671b1c780a2ff75"
+      ],
+      "COD": [
+        "a979ff111630885e",
+        "f484562a825125bd"
       ]
     },
     "manganese": {
       "FRA": [
+        "edfe4d850166ea47",
         "3021ee9aaaae2363"
+      ],
+      "GAB": [
+        "edfe4d850166ea47"
+      ],
+      "NAM": [
+        "5873429282e91db1"
+      ],
+      "CHN": [
+        "2cea2b94700901c2"
+      ],
+      "_global": [
+        "057a5be1ae6f4bc7"
       ]
     },
     "chromium": {
@@ -1950,6 +2184,7 @@
         "89c2ae835e6ab4cd"
       ],
       "USA": [
+        "71576ce5b37131f4",
         "89c2ae835e6ab4cd",
         "5666fbe7cf9fc7d8",
         "bc829361bcef186f"
@@ -1957,6 +2192,12 @@
       "IND": [
         "5666fbe7cf9fc7d8",
         "bc829361bcef186f"
+      ],
+      "ZAF": [
+        "23f236dc2b72dd12",
+        "71576ce5b37131f4",
+        "2fadbee549045a2a",
+        "d10c920ac254e3d4"
       ]
     },
     "bauxite": {
@@ -1969,8 +2210,22 @@
       "CHN": [
         "cddc99f2c1393e79"
       ],
+      "GIN": [
+        "cc0329f56f6d52c6"
+      ],
       "_global": [
-        "27cf48e72d916367"
+        "27cf48e72d916367",
+        "e8ffb90b03b0455a"
+      ]
+    },
+    "platinum": {
+      "ZAF": [
+        "07572e9fae99f64b",
+        "aed892b125a11b4f",
+        "19ccd694380768a9"
+      ],
+      "_global": [
+        "c680f323e39e78db"
       ]
     }
   },
@@ -1998,7 +2253,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.371,
+      "importance": 5.37,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -2007,6 +2262,36 @@
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "fea1697202557590",
+      "title": {
+        "original": "European Union: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Post raises its EU oilseed area planted forecast by 2 percent for MY 2026/27 from its Spring report. MY 2026/27 production is lowered after heat and drought cut...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/10/european-union-oilseeds-and-products-update",
+      "published_at": "2026-10-16T14:24:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 5.36,
+      "reasons": [
+        "series:USDA_GAIN",
+        "has_figure",
+        "revision_language"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "b9464782992065f8",
@@ -2031,7 +2316,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.12,
+      "importance": 5.119,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2063,7 +2348,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.046,
+      "importance": 5.045,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2097,7 +2382,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 4.707,
+      "importance": 4.706,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "has_figure",
@@ -2130,7 +2415,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.632,
+      "importance": 4.631,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2162,7 +2447,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.423,
+      "importance": 4.422,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2195,7 +2480,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.342,
+      "importance": 4.341,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2259,7 +2544,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 4.1,
+      "importance": 4.099,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "has_figure",
@@ -2303,6 +2588,39 @@
       "first_seen_at": "2026-10-02T20:56:24.054037+00:00"
     },
     {
+      "id": "a14ff3afe55392ed",
+      "title": {
+        "original": "Vietnam: Grain and Feed Quarterly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Vietnam's economy posted strong growth in the first nine months of 2026, and the livestock and aquaculture sectors grew steadily. Rising food and feed demand is...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/10/vietnam-grain-and-feed-quarterly",
+      "published_at": "2026-10-19T15:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat",
+        "corn",
+        "rice"
+      ],
+      "countries": [
+        "VNM"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.889,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
       "id": "2147f5407a8ae8de",
       "title": {
         "original": "Vietnam: Oilseeds and Products Update",
@@ -2325,7 +2643,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.835,
+      "importance": 3.834,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2357,7 +2675,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.769,
+      "importance": 3.768,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2422,7 +2740,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.505,
+      "importance": 3.504,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2681,7 +2999,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 3.131,
+      "importance": 3.13,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -2689,6 +3007,37 @@
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "e36e7155dc085ab6",
+      "title": {
+        "original": "Argentina: Oilseeds and Products Update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Argentina’s oilseed sector enters MY2026/27 with a positive outlook, supported by strong prices, favorable producer margins, and expectations for abundant...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/10/argentina-oilseeds-and-products-update",
+      "published_at": "2026-10-07T12:00:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "soybeans"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_GAIN",
+      "series_label_ko": "USDA GAIN 주재관 보고",
+      "importance": 3.074,
+      "reasons": [
+        "series:USDA_GAIN",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "80352747ac8a00ff",
@@ -2967,7 +3316,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.774,
+      "importance": 2.773,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -3276,44 +3625,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.466,
+      "importance": 2.465,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "b6c8cf9b7c06332d",
-      "title": {
-        "original": "Türkiye: Oilseeds and Products Semi-Annual",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Türkiye’s sunflower seed crop for the 2026/27 marketing year is expected to be better than last year’s, due in part to favorable weather conditions and an...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/turkiye-oilseeds-and-products-semi-annual",
-      "published_at": "2026-09-23T15:01:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "TUR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.466,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
     },
     {
       "id": "e08bde069abdfd83",
@@ -3339,7 +3657,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.466,
+      "importance": 2.465,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3495,7 +3813,7 @@
       "country_source": "text",
       "series_id": "USDA_OUTLOOK",
       "series_label_ko": "USDA 품목별 아웃룩",
-      "importance": 2.337,
+      "importance": 2.336,
       "reasons": [
         "series:USDA_OUTLOOK",
         "country_in_text"
@@ -3685,7 +4003,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.174,
+      "importance": 2.173,
       "reasons": [
         "has_figure",
         "revision_language"
@@ -3716,7 +4034,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.158,
+      "importance": 2.157,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3812,12 +4130,46 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.992,
+      "importance": 1.991,
       "reasons": [
         "has_figure"
       ],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-17T18:47:20.144283+00:00"
+    },
+    {
+      "id": "b945e519fa260d49",
+      "title": {
+        "original": "Mauritania’s first uranium mine comes into view despite funding, security issues",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Aura Energy (ASX: AEE; AIM: AURA) is moving closer to building Mauritania’s first uranium mine after a bankable feasibility study outlined a $500-million valuation for its Tiris project, despite a 52% increase in construction costs to $350 million. The study gives Tiris a post-tax internal rate of return (IRR) of 28%, 11 percentage points lower than in a technical report from 2024, even though the uranium price assumption rose 12% to $90 per pound. Tiris is about 1,100 km northeast of the capital Nouakchott, located in the mineral-rich but high-risk Tiris Zemmour region. “The army manages…",
+      "url": "https://www.mining.com/mauritanias-first-uranium-mine-comes-into-view-despite-funding-security-issues/",
+      "published_at": "2026-10-20T22:20:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "MRT"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.974,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "b1609c9909ad99bc",
@@ -3849,6 +4201,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -3947,6 +4300,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4003,13 +4357,14 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.927,
+      "importance": 1.926,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4043,6 +4398,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4074,6 +4430,9 @@
         "revision_language",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4106,6 +4465,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4233,6 +4593,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4265,6 +4626,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4297,6 +4659,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4328,6 +4691,9 @@
         "has_figure",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4361,6 +4727,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4388,13 +4755,14 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.77,
+      "importance": 1.769,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4420,13 +4788,14 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.766,
+      "importance": 1.765,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4484,42 +4853,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.742,
+      "importance": 1.741,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
-    },
-    {
-      "id": "b945e519fa260d49",
-      "title": {
-        "original": "Mauritania’s first uranium mine comes into view despite funding, security issues",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Aura Energy (ASX: AEE; AIM: AURA) is moving closer to building Mauritania’s first uranium mine after a bankable feasibility study outlined a $500-million valuation for its Tiris project, despite a 52% increase in construction costs to $350 million. The study gives Tiris a post-tax internal rate of return (IRR) of 28%, 11 percentage points lower than in a technical report from 2024, even though the uranium price assumption rose 12% to $90 per pound. Tiris is about 1,100 km northeast of the capital Nouakchott, located in the mineral-rich but high-risk Tiris Zemmour region. “The army manages…",
-      "url": "https://www.mining.com/mauritanias-first-uranium-mine-comes-into-view-despite-funding-security-issues/",
-      "published_at": "2026-10-20T22:20:00+00:00",
-      "agency": "MINING.COM",
-      "agency_ko": "마이닝닷컴(광업 전문 매체)",
-      "source_id": "int_mining_all",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.738,
-      "reasons": [
-        "has_figure",
-        "revision_language"
-      ],
-      "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
       "id": "6aec164b2be6923b",
@@ -4542,12 +4881,13 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.724,
+      "importance": 1.723,
       "reasons": [
         "has_figure",
         "revision_language"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4634,7 +4974,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.675,
+      "importance": 1.674,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -4665,13 +5005,14 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.67,
+      "importance": 1.669,
       "reasons": [
         "has_figure",
         "revision_language",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4704,6 +5045,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4730,7 +5072,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.667,
+      "importance": 1.666,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4878,6 +5220,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4909,6 +5252,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4940,6 +5284,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -4974,6 +5319,38 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "f056109d6519c066",
+      "title": {
+        "original": "Sudan gold rush leaves toxic legacy as war drives mining",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Hundreds of thousands of Sudanese civilians displaced by war are fuelling an expansion of artisanal gold mining that threatens drinking water, farmland and public health in the country’s River Nile and Northern states, according to a Sudan Tribune report . The conflict has devastated agriculture, industry and trade, leaving informal gold prospecting among the few remaining sources of income. An estimated 2 million to 5 million people now depend on the largely unregulated sector. Miners in El-Obeidiya told the Sudan Tribune that economic desperation has left them relying on mercury mixers and…",
+      "url": "https://www.mining.com/sudan-gold-rush-leaves-toxic-legacy-as-war-drives-mining/",
+      "published_at": "2026-10-19T15:45:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "SDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.614,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
       "id": "7f4ba91c4a8830f4",
       "title": {
         "original": "Shenghe Resources said to sell majority stakes in some businesses",
@@ -5002,6 +5379,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5031,12 +5409,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.613,
+      "importance": 1.612,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5069,6 +5448,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5312,6 +5692,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5341,6 +5722,7 @@
         "revision_language"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5372,6 +5754,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5405,6 +5788,38 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "b5927186d51d1b08",
+      "title": {
+        "original": "Zimbabwe: Zimbabwe Set to Surpass 50 Tonnes Gold Delivery Target",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "[New Zimbabwe] ZIMBABWE is on track not just to meet, but to surpass its 50-tonne gold delivery target for the year, as deliveries to Fidelity Gold Refinery had already reached 35.88 tonnes by the end of September 2026.",
+      "url": "https://allafrica.com/stories/202610160153.html",
+      "published_at": "2026-10-16T09:36:46+00:00",
+      "agency": "allAfrica (광업)",
+      "agency_ko": "올아프리카 광업 뉴스",
+      "source_id": "int_allafrica_mining",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "ZWE"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.51,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "agency_url": "https://allafrica.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
       "id": "8d5f284ca5e72442",
       "title": {
         "original": "Global nickel market set for surplus this year and next, INSG says",
@@ -5425,12 +5840,13 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.501,
+      "importance": 1.5,
       "reasons": [
         "has_figure",
         "revision_language"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5462,6 +5878,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5495,6 +5912,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5526,6 +5944,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5557,6 +5976,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5621,6 +6041,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5891,6 +6312,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5922,6 +6344,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5954,6 +6377,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -5979,7 +6403,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.445,
+      "importance": 1.444,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -6011,12 +6435,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.432,
+      "importance": 1.431,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6082,6 +6507,7 @@
         "has_figure"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6107,7 +6533,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.416,
+      "importance": 1.415,
       "reasons": [
         "has_figure"
       ],
@@ -6175,6 +6601,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6206,6 +6633,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6231,12 +6659,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.403,
+      "importance": 1.402,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6337,34 +6766,7 @@
         "has_figure"
       ],
       "agency_url": "https://www.mining.com/",
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "f056109d6519c066",
-      "title": {
-        "original": "Sudan gold rush leaves toxic legacy as war drives mining",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Hundreds of thousands of Sudanese civilians displaced by war are fuelling an expansion of artisanal gold mining that threatens drinking water, farmland and public health in the country’s River Nile and Northern states, according to a Sudan Tribune report . The conflict has devastated agriculture, industry and trade, leaving informal gold prospecting among the few remaining sources of income. An estimated 2 million to 5 million people now depend on the largely unregulated sector. Miners in El-Obeidiya told the Sudan Tribune that economic desperation has left them relying on mercury mixers and…",
-      "url": "https://www.mining.com/sudan-gold-rush-leaves-toxic-legacy-as-war-drives-mining/",
-      "published_at": "2026-10-19T15:45:00+00:00",
-      "agency": "MINING.COM",
-      "agency_ko": "마이닝닷컴(광업 전문 매체)",
-      "source_id": "int_mining_all",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.384,
-      "reasons": [
-        "has_figure"
-      ],
-      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6425,6 +6827,7 @@
         "has_figure"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6457,6 +6860,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6511,7 +6915,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.364,
+      "importance": 1.363,
       "reasons": [
         "country_in_text"
       ],
@@ -6791,6 +7195,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6814,7 +7219,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.325,
+      "importance": 1.324,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
@@ -6850,6 +7255,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6882,6 +7288,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -6943,6 +7350,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7017,6 +7425,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7049,6 +7458,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7082,6 +7492,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7108,12 +7519,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.304,
+      "importance": 1.303,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7145,6 +7557,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7171,7 +7584,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.296,
+      "importance": 1.295,
       "reasons": [
         "country_in_text"
       ],
@@ -7210,6 +7623,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7241,6 +7655,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7267,12 +7682,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.283,
+      "importance": 1.282,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7300,12 +7716,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.283,
+      "importance": 1.282,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7333,12 +7750,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.278,
+      "importance": 1.277,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7370,6 +7788,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7844,7 +8263,40 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "22df7a9b8113d8c0",
+      "title": {
+        "original": "Tanzania: Can Tanzania Set Its Sights On China's Graphite Crown?",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "[Capital FM] Tanzania wants to overtake China in graphite production within 15 years. It is a bold target for a country with substantial reserves but only a small share of global output. The announcement signals its intention to become a major force in the fast-growing battery materials market.",
+      "url": "https://allafrica.com/stories/202610210439.html",
+      "published_at": "2026-10-21T11:25:12+00:00",
+      "agency": "allAfrica (광업)",
+      "agency_ko": "올아프리카 광업 뉴스",
+      "source_id": "int_allafrica_mining",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "TZA",
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.199,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://allafrica.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "add281ec9d9fcd56",
@@ -7918,6 +8370,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7948,6 +8401,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -7974,11 +8428,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.179,
+      "importance": 1.178,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8074,6 +8529,73 @@
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
     },
     {
+      "id": "40196fb3f86bcdeb",
+      "title": {
+        "original": "South Africa's August mining output down 12.7% y/y on lower PGMs, coal, iron-ore production",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQUjVPdElvSnhTbzhOaXk2VXhkbzBUdUFIMWZ6VUFUUUFhbGQzS3FoM1V0ZGR5RUVORzlENmxUcmUzUDEwLURZY1paYnRfZFNOWDRwTFJVWGtBbml3akZZQkgxU0dQRlpRQ2lJNlhrSHpMR2NENW1VaTY1cVJfRlowbVZXZ1ZsVEtXRVhNSkJpOGNSdW9NOHEycVVBLUoxOWpxYVNXc1NsQkZVLWx4WktHYU9yNmlCNE1WeURlX2xJbHV4MVZOMGJPd2VZSjNNeDN4ZTZCVmRscXhlTlZnTk4w?oc=5",
+      "published_at": "2026-10-13T09:43:00+00:00",
+      "agency": "Mining Weekly · Google News",
+      "agency_ko": "Mining Weekly (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "iron_ore"
+      ],
+      "countries": [
+        "ZAF"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.169,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "85a64b74e0625f38",
+      "title": {
+        "original": "Cote d'Ivoire: Ivory Coast Grants Six New Mining Exploration Permits",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "[Daba Finance] On October 14, 2026, the Ivorian Council of Ministers approved six new mining permits. These decrees specifically authorize exploration for gold, copper, and nickel in various regions of the country. Five different companies have been granted these authorizations to begin their exploration activities.",
+      "url": "https://allafrica.com/stories/202610200102.html",
+      "published_at": "2026-10-20T04:45:55+00:00",
+      "agency": "allAfrica (광업)",
+      "agency_ko": "올아프리카 광업 뉴스",
+      "source_id": "int_allafrica_mining",
+      "commodities": [
+        "gold",
+        "copper",
+        "nickel"
+      ],
+      "countries": [
+        "CIV"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.166,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://allafrica.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
       "id": "4a341ad3a2d594e0",
       "title": {
         "original": "US maritime nuclear firm Bluecore Energy announces uranium purchase",
@@ -8162,6 +8684,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8187,7 +8710,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.159,
+      "importance": 1.158,
       "reasons": [
         "country_in_text"
       ],
@@ -8224,6 +8747,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8249,7 +8773,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.152,
+      "importance": 1.151,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -8343,11 +8867,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.15,
+      "importance": 1.149,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8379,7 +8904,41 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "2fd17feba347f64d",
+      "title": {
+        "original": "[SMM Gold Flash] Ghana’s Gold Board reports that 5.4 tonnes of the 5.",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNMk5fZTdSVzFmUDFPUDAzczZLUkNMMll0SngwdkFzYnZHTTN5ZHZJVW02dHY3LUpJWFdmVkpaMDRObEEwZzBsMnRQbFVoVnNnVWNoUGhNVlFSMTVSY2VySWpDWXJnd040Vk1lTWd6djl4cUxnTmNQVnpRUVRnWGpjLXJfMGdVbFNUSnA1d1p2VVVlZ0ZhTXRkX2dFR0ZYSjJkT2ZIZHVVUnFqQTRPVWthZVdQNGJnZE0?oc=5",
+      "published_at": "2026-10-21T10:03:00+00:00",
+      "agency": "Shanghai Metals Market · Google News",
+      "agency_ko": "Shanghai Metals Market (구글 뉴스 경유)",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "GHA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.137,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "75055bab5a49bc0a",
@@ -8508,7 +9067,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.105,
+      "importance": 1.104,
       "reasons": [
         "country_in_text"
       ],
@@ -8539,7 +9098,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.105,
+      "importance": 1.104,
       "reasons": [
         "country_in_text"
       ],
@@ -8572,6 +9131,7 @@
         "has_figure"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8642,6 +9202,37 @@
       "first_seen_at": "2026-10-13T02:13:32.410529+00:00"
     },
     {
+      "id": "c06f1cac6ad17458",
+      "title": {
+        "original": "Tanzania: Twiga Model Endures As North Mara Licence Renewed for 15 Years",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "[Daily News] Mara -- For the people of Tarime, the renewal of Barrick's mining licences for another 15 years is more than an extension of a commercial arrangement. It offers a test of whether a mining model built on government participation, community investment and shared economic interests can sustain a more constructive relationship between a major gold mine and its neighbours.",
+      "url": "https://allafrica.com/stories/202610160676.html",
+      "published_at": "2026-10-16T21:51:42+00:00",
+      "agency": "allAfrica (광업)",
+      "agency_ko": "올아프리카 광업 뉴스",
+      "source_id": "int_allafrica_mining",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "TZA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.09,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://allafrica.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
       "id": "3a55343654c7fe18",
       "title": {
         "original": "Congo arrests hundreds of Chinese miners in copper heartland",
@@ -8670,6 +9261,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8700,6 +9292,9 @@
         "has_figure",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8733,6 +9328,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8792,6 +9388,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8845,11 +9442,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.065,
+      "importance": 1.064,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -8875,7 +9473,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.059,
+      "importance": 1.058,
       "reasons": [
         "country_in_text"
       ],
@@ -9012,6 +9610,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -9079,11 +9678,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.043,
+      "importance": 1.042,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -9116,6 +9716,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -9940,6 +10541,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10001,6 +10603,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10024,7 +10627,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.02,
+      "importance": 1.019,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -10052,7 +10655,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.016,
+      "importance": 1.015,
       "reasons": [],
       "agency_url": "https://mpoc.org.my/",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
@@ -10085,6 +10688,9 @@
         "revision_language",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10185,6 +10791,9 @@
         "has_figure",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10217,6 +10826,40 @@
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
+    },
+    {
+      "id": "426b6904d997f3ed",
+      "title": {
+        "original": "Mercuria delivers 12,000 tons of DRC copper to US Project Vault",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPekhjWVJhNWlobEJBLUN1UC1wMl9NWWZMZ3A0TjZLeGF0ZjdKa2czYkFXel9Ea1lqT05aVWI4NHlsQ1BfTlAzSUZueDRvSVdIVkFwb1JRNzRmUzVxMUZ6ZkRlWDEyZmF1bnpLRUtxdXoxSEY0U2p6bjV5OFJLZDdORnhlQkp1dE1YZUNsYWFwaFpnVmY1?oc=5",
+      "published_at": "2026-10-15T15:01:20+00:00",
+      "agency": "Mining.com · Google News",
+      "agency_ko": "Mining.com (구글 뉴스 경유)",
+      "source_id": "gn_drc_cobalt_copper",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "COD",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.009,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "d56da6f00c4a616a",
@@ -10280,11 +10923,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.006,
+      "importance": 1.005,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10345,6 +10989,9 @@
         "revision_language",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10370,11 +11017,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.986,
+      "importance": 0.985,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10405,7 +11053,44 @@
         "has_figure",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
+    },
+    {
+      "id": "edfe4d850166ea47",
+      "title": {
+        "original": "France moves to become top shareholder in mining giant behind Gabon’s world-leading manganese operation under $558 million funding plan",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPWkt1Nmh0M3E4cFkxRlJFcDN0UWJmLU1yc1JfeEdQckxhYW16SnhrSGluM3F6dkEyS1A1RVd3eldCOHdsRHgwZG1KZFBtS2Z6bnFhU1NpS3FfOV9fQzVpYjF6QVhYU2d5ZWFPd2o1ZDRqcm03dlByYW9xdnFFUHNOV1Ywc1ZBMmNpcVRkU3ViTldwQ01ldkJXTzFjUHV3TDlILTFtR1lBaDdvd09OUlBKR25DcDJlRE5ZOXRTRzl5dEtHZkZzUmsyUGd6RzNROWxsMmozVEpn?oc=5",
+      "published_at": "2026-10-14T06:56:02+00:00",
+      "agency": "Business Insider Africa · Google News",
+      "agency_ko": "Business Insider Africa (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "manganese"
+      ],
+      "countries": [
+        "FRA",
+        "GAB"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.982,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "c5dea03c4e9894fe",
@@ -10435,6 +11120,9 @@
         "revision_language",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10464,6 +11152,7 @@
         "revision_language"
       ],
       "agency_url": "https://www.investing.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10494,6 +11183,9 @@
         "revision_language",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10523,6 +11215,40 @@
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
+    },
+    {
+      "id": "71576ce5b37131f4",
+      "title": {
+        "original": "[SMM Chromium Analysis] South Africa's Ferrochrome Exports Surge 20% in August, Led by North American Demand",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxOcV9NVWpReEtab0ZiaDB3X0gzcEtoV2YwSXV4cVVSX0xFcEpuLVA1ZVNCZGw4OWZ3U0lRZV9idXdxR1htZ0s3bkgzNUVZSWZjU0Y1cUlZeHNLVnNqOVk4V0ZpaVRzSW0tS08wZmlKRWlHSHdXYXdsbkEtN1JBYkJudEpxVVc1bzdJWFhOVGxvWC1TT28zOHBOWUJhaW5LVnN3ZGhWSjZ2V1JTMUdianFGcnVNVnBiQjBtenQ3c0VNUGtiRkpJTkVKY1VTV200YWoxa2pFMnNuWmdqeWNRZUpKM21R?oc=5",
+      "published_at": "2026-10-13T13:01:00+00:00",
+      "agency": "Shanghai Metals Market · Google News",
+      "agency_ko": "Shanghai Metals Market (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "chromium"
+      ],
+      "countries": [
+        "ZAF",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.968,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "7aa1d9ea8f7acd29",
@@ -10632,7 +11358,38 @@
       "importance": 0.949,
       "reasons": [],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "59e725bf00d8929f",
+      "title": {
+        "original": "GoldBod says 76% of gold exported since August refined locally",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQN2M0Nk9XdE5RNUwxU2EycTV2eWp4czc5TnVVM2xWYXNsMmU4T080LVhtQUVUVlpFVEtFQmlKanA1YUZrN1FYRGZwQ3pUUXhPOFJNWnJ2cTlLUnVxbk10VnhHd0ZvM1dFRDM0clNGWVNxd0RNX080Y3lGNHRnMUhnQUU1ZHJCR0VxclNJbnEwTmNkRnJPOEHSAZQBQVVfeXFMUFNWalpnYkNOVVZDZnJsQ01YeFpveUJlSDV0RFFsUFZRc2JlVmhxcFVzNWZxbDJRVDFfaFIxamxmOEFnYUo0ZWgyTzJWYkNkMHZZbHI0V1NSbVdnT3hZeW9sYkh3WnBrcGQ2WjM4VUlMd2FwYkVkbWRFV2dsbEJPRk9lcXVidzBfRlljRDYwWFZZdHFXNg?oc=5",
+      "published_at": "2026-10-20T21:12:12+00:00",
+      "agency": "Modern Ghana · Google News",
+      "agency_ko": "Modern Ghana (구글 뉴스 경유)",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.947,
+      "reasons": [
+        "has_figure"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "74c415986d3d8ef7",
@@ -10662,6 +11419,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10686,7 +11444,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.942,
+      "importance": 0.941,
       "reasons": [
         "country_in_text"
       ],
@@ -10760,6 +11518,9 @@
       "reasons": [
         "has_figure"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10787,6 +11548,9 @@
       "reasons": [
         "series:USDA_OUTLOOK"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10814,11 +11578,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.932,
+      "importance": 0.931,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10851,6 +11616,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10881,6 +11647,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10966,6 +11733,9 @@
       "reasons": [
         "has_figure"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -10995,6 +11765,9 @@
       "reasons": [
         "has_figure"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11025,6 +11798,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11055,6 +11829,7 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11086,7 +11861,41 @@
         "country_in_text"
       ],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "d10c920ac254e3d4",
+      "title": {
+        "original": "South Africa’s high-carbon ferrochrome exports rose to 117,180 mt in A",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxPbFBrU2ZWQ0kzRWpRQ0NDZDJHY1l2Xy1ZMFhUR1lUT0t0TE9hZTRZVE5VY1ZTU2Zmbk5HRkh5RGY3emJPZFFhQU1heFd6OEhOTW1WaUFiVmdyN2VTMmt2d054OHpJMDJBVXJ4V1Y1OUVNZ3lTUF9vQ0ZreGJKWDBYUDh5bHRkOHA0TFZSZFg0LV9odkU4ZlJlV3F0b0hOMHk5NzRVZjVuby1VQXBMZlNDYVNRemN6U1RDRWUweTItNTlBRVRTT2FyRTMzRVFHVGx1ajdPZ2gydS1lZFNBQnBhNlBoMmJpekx6ekZxVg?oc=5",
+      "published_at": "2026-10-09T13:58:00+00:00",
+      "agency": "Shanghai Metals Market · Google News",
+      "agency_ko": "Shanghai Metals Market (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "chromium"
+      ],
+      "countries": [
+        "ZAF"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.898,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "b8820250e3d215f2",
@@ -11188,7 +11997,44 @@
         "revision_language",
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "5102aa4caead4177",
+      "title": {
+        "original": "Chinese Investment Fuels Zimbabwe’s $2.16 Billion Lithium Export Surge",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOQWVobUxGcFc1ODNRQl9xcE5NRjc3QnlWbS1jeE8xVTl2NVRlNE54aVJ4MVJTcWRWeDFWcHhFQkZudzA5WjNiTmctb1JfaWFzeE5FRG1GbElEUnljS3o1TE1zRmJVYnBOcEJ3RE5XY3lRVW5tRVBraXhWckJNMzlxckNyQQ?oc=5",
+      "published_at": "2026-10-08T07:00:00+00:00",
+      "agency": "The China-Global South Project · Google News",
+      "agency_ko": "The China-Global South Project (구글 뉴스 경유)",
+      "source_id": "gn_zambia_zimbabwe",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ZWE",
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.878,
+      "reasons": [
+        "has_figure",
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "de8f050cc8e8f84d",
@@ -11297,7 +12143,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.856,
+      "importance": 0.855,
       "reasons": [],
       "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -11323,7 +12169,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.854,
+      "importance": 0.853,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -11351,7 +12197,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.852,
+      "importance": 0.851,
       "reasons": [
         "country_in_text"
       ],
@@ -11548,7 +12394,38 @@
       "importance": 0.816,
       "reasons": [],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "e0eb3127c55bf69f",
+      "title": {
+        "original": "CPO Futures End Mixed Amid Concerns Over Higher Inventories",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1JSnMzdV9lNE4tVzMyMzBqSmtaRnVQWDFTZTRNSkpDS3VwRlRGVXd5dmwxbXU1amVNNnRlenZldERwMHVIQ2ZGUlE2TjVMcFFodHBZWQ?oc=5",
+      "published_at": "2026-10-19T13:21:29+00:00",
+      "agency": "BernamaBiz · Google News",
+      "agency_ko": "BernamaBiz (구글 뉴스 경유)",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.806,
+      "reasons": [
+        "revision_language"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "929e1ee5c8475871",
@@ -11644,10 +12521,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.78,
+      "importance": 0.779,
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11677,7 +12557,42 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "65b1f8a40b406335",
+      "title": {
+        "original": "First Quantum's expanded Zambia copper mine on track to exceed processing target",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOZTVGVTlnMVgzYUVBTEtaSi1Ca3pWa3NISTZ1UWRkZjdtdWNab0FHRkxZRU5rN1BhS01TaHBJNDFnWDREN0RNQnRDOFExdTVJUWd3X3RoSXpQU3FUc1VYdWNIUXpuLWF3ZVloZmFUVEhvNjFSc0pvVUFZMWE4UUNjRm9MTnBEbGI2dGkySHd2MTFTZmtSZHN6Q2pibm9DZ1BjUkFRZXhEM2dweEZHeks0Uk1QT3o5X0ZQai1TampPTTZ5MEs3MnJuZzhia1N3UQ?oc=5",
+      "published_at": "2026-10-21T09:34:03+00:00",
+      "agency": "marketscreener.com · Google News",
+      "agency_ko": "marketscreener.com (구글 뉴스 경유)",
+      "source_id": "gn_zambia_zimbabwe",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "ZMB"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.778,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "b673d36754c213c3",
@@ -11703,10 +12618,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.777,
+      "importance": 0.776,
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11736,6 +12654,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11776,6 +12697,105 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "e22579044ab660a8",
+      "title": {
+        "original": "Mauritania’s first uranium mine: Tiris project economics and risk notes for engineers",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOTWZWMUhyTG9FWkduSVFGeG9zTXVEb05FZ0dmNFk4aEg1d1BQVmI4czZyRWp0VEVVMjdjdmFZbExtZUF3TlVhM0ZkQzdYSnJpRFlIdFF0RHBGZ3dUTkFmVXo0MU1GZm93SHZubkRCUU10QUhmR1RNU01WT1J2cmZwZDhtZXAyT2hfczZrLU10aDJZZzlLTWJ5cFExWlpsS2ZEWDg3b0hxZ2ViY25BMTk5end6QVVWTGZVUUQ4LXVCZEtvUQ?oc=5",
+      "published_at": "2026-10-21T00:01:00+00:00",
+      "agency": "Geomechanics.io · Google News",
+      "agency_ko": "Geomechanics.io (구글 뉴스 경유)",
+      "source_id": "gn_sahel_uranium",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "MRT"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.771,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "0bf83569a3995ced",
+      "title": {
+        "original": "Mauritania’s first uranium mine comes into view despite funding, security issues",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQY2JMUzlqVTQyNE8tVVo1Z3EzeTVEdzdxQ0p2bUxQSk0xekgzYUstSk5tTS1qdnVwQnVQbVR3LUVuaDJBb2N4TGF0S0dRTlh1YlhSWDFuWm5HMnlXY0JBZGdsQXJra3A1T0JqWXJhbVlrVk9TcDRwTmdpNFo0OXZPV1hHZkcweU4zSzFlcVNvZEJfVUtmdWdReEZjRFg2RHdUQXBkUg?oc=5",
+      "published_at": "2026-10-20T23:14:52+00:00",
+      "agency": "Mining.com · Google News",
+      "agency_ko": "Mining.com (구글 뉴스 경유)",
+      "source_id": "gn_sahel_uranium",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "MRT"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.771,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "e9da8fc884b00d1f",
+      "title": {
+        "original": "Aura Energy's Tiris Uranium Project: $500M Mauritania Mine Advances - News and Statistics",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPQVlpNXFGRV9OY2kzWTBCZlRWR01Jcl8wd3Y0ZHJsdUZybzFqN05LQm40WDRZVmZLdU9PX2I0MWl5dTczb3p0UFRGR0lpTnVRWFMwb2NhejRDQlRFZ3VFZnItNGdqOFF0bGcwejRqMjhmMWRwdkxfQWVnbHdfUmZaVUFzOHRYajNQdVZJY2tGdVNXSzNsemsza0VhbjgydzVhS2FiQnREaG9TVFRsbGN5ZldTVDVET2pFYkE?oc=5",
+      "published_at": "2026-10-20T23:11:33+00:00",
+      "agency": "IndexBox · Google News",
+      "agency_ko": "IndexBox (구글 뉴스 경유)",
+      "source_id": "gn_sahel_uranium",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "MRT"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.771,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
       "id": "864101e61e204069",
       "title": {
         "original": "After Mali, Ganfeng Lithium plans another African mine",
@@ -11802,6 +12822,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11831,6 +12854,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11861,6 +12887,43 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "a979ff111630885e",
+      "title": {
+        "original": "Undeclared uranium hitches a ride on cobalt exports from Congo, study says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNYlR5bGVBaGxqUW9qZHlxeFcyVlFmLV9sMHlFeUZfOG0zRTROOHRKeE5naTBPRmVwM21YTmN1OHdiWWE1dmZyU203TGZiS2ctUDh4N3h2a2Nvci1mM1ZtRUZKVzhCWVI5eHdfOHRJZ1pYMUlqSjJwVk03VTg1a2J1N1dDMUZsT0drU1lxbmIyWkJBZENHNlBpVmlESE9DQlB6OWh3Ri01NkxQaVdTWU84X2ZB?oc=5",
+      "published_at": "2026-10-20T07:57:27+00:00",
+      "agency": "American Nuclear Society · Google News",
+      "agency_ko": "American Nuclear Society (구글 뉴스 경유)",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "cobalt",
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "COD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.76,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11886,10 +12949,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.76,
+      "importance": 0.759,
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11915,10 +12981,13 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.76,
+      "importance": 0.759,
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11948,6 +13017,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -11977,6 +13049,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12006,6 +13081,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12033,6 +13111,7 @@
       "importance": 0.757,
       "reasons": [],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12062,7 +13141,42 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "bf50c51b2128fa23",
+      "title": {
+        "original": "Sudan gold rush toxic legacy: mercury risk insights for mine project teams",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNOFh3cHQzZ0prM2l3RFJzNl9VQWNodWdSSHUzRTBpQ2NmWDFVWjdJaU1VaGUxcER3a05XSUFvaXJZQjlhYVlWSTRHT3lqODFFdnlRSU9Udl9MR1NJaTdlc2E0UW9Mc1dGWE1od29QdUZERXp5a0Q4YnpHWTEtODAyZzdUUnBkVkY2NDZySXdlVlZ2VlFnbm1vbVUtUTQ3dUdvcjVCemZoUDFiWkNCemNadE5SN2Y?oc=5",
+      "published_at": "2026-10-20T00:03:21+00:00",
+      "agency": "Geomechanics.io · Google News",
+      "agency_ko": "Geomechanics.io (구글 뉴스 경유)",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "SDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.755,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "9a241ae46519ad26",
@@ -12091,7 +13205,42 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "435a6376798d48de",
+      "title": {
+        "original": "Sudan gold rush leaves toxic legacy as war drives mining",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNM3MxSHBsQzFFYlpvaDNPb2FJZ2JLdDlQMlk1blo5UzFOa3I1VnpyOVliWEw3WkJVbGR2Y1lfZXhFanpFckVxdGVoWlAxSkViUmU1VXpLVUNMZml3NHdERXY1N2hnNXgyV2MyQndiVDgzeE5HSWdpRW5FUktiNEN1VmNrV1hFdDg?oc=5",
+      "published_at": "2026-10-19T17:15:52+00:00",
+      "agency": "Mining.com · Google News",
+      "agency_ko": "Mining.com (구글 뉴스 경유)",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "SDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.751,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "63b6a100095ad69b",
@@ -12120,7 +13269,42 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News (Argus Media)",
+      "source_agency_ko": "구글 뉴스 경유(아거스)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "23f236dc2b72dd12",
+      "title": {
+        "original": "South Africa’s ferrochrome smelting industry illustrates the challenge",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxQSFdJY0tQTk10YlNrOThPR0Fha0JyeWFCNzlSbjRndl81YXdPdm1JUFMxcVJNWndWNmp0al9JX3FsSTRpQ3VEQ2U5Z2dld0ViLV9NUmRvQXNXZVdnTGR0aDhmUGo0S0ZySWdMdXZkLTdza1haR0lHYTQ1cFg0VlhtQ2JQNDVZS2d5SU9sR3VkVXdLbDdtVjJXQlFpdjY1UWtoNWlYMGxaWlRvMWVnNVNjaGY4dTk0NGIzWDFuRTRzNXVxcjR0RWZOV19laWpEREhhUDMtakZ6ZDdtTWZzRU0tcDFISG9RN0VLQTZFbVR4M19JejYtaVE?oc=5",
+      "published_at": "2026-10-19T14:09:00+00:00",
+      "agency": "Shanghai Metals Market · Google News",
+      "agency_ko": "Shanghai Metals Market (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "chromium"
+      ],
+      "countries": [
+        "ZAF"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.749,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "afdd94969e685c61",
@@ -12140,6 +13324,7 @@
       ],
       "countries": [
         "CHN",
+        "COD",
         "USA"
       ],
       "scope": "country",
@@ -12150,6 +13335,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12179,6 +13367,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12208,6 +13399,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12234,11 +13428,79 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.748,
+      "importance": 0.747,
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "578722584ca89a4f",
+      "title": {
+        "original": "Paladin achieves uranium production at Namibia mine",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOT2o0aFhUN09xMFlsYng3bXVKVDVBQlJqMkk5MlhSVGpyblgyemo0cHhlbjhNS2tieENvYWg2S1BCMG9KcHcyRjZmVWJNLS04aVRGSWlURHNLbEhtaXMtVWRjUFVTekRrMndZY0dhaEFKUDM4SWpBNTVWY2hJakt3VDBBLUNNSWdFUHhZZlRlX1E5Q3N2Q0Z6V2FWWklXQ3VX?oc=5",
+      "published_at": "2026-10-19T11:53:16+00:00",
+      "agency": "Global Mining Review · Google News",
+      "agency_ko": "Global Mining Review (구글 뉴스 경유)",
+      "source_id": "gn_sahel_uranium",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "NAM"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.747,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "a010bfb8d8d30f37",
+      "title": {
+        "original": "DR Congo inaugurates $522mn Kamoa-Kakula solar and battery complex supplying major copper mine",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPazVzZFczY3l0cHVWb0E0QnFqRWgxeTFOSGp1b2dnMnpHVXkxcFlRNlNvdWNkam5DQm9Hc0dYeUVnX3lBUHZtOTBXeWJ1NEx2SnZJYU44anFNOU9TSVF1ME91eDRIaXU2UDcyREphMWtyT0tuN1RFNmtjbXBHOUw5emtuN0JlUnFqVTQ1ajR0ZjFNTHRQeW9WdEEtZzhEZENxOVA4TW5oV05LRTYteHNrbUppbUg0WUlQRFp6Mm53YjdYUERPUGU4cA?oc=5",
+      "published_at": "2026-10-19T11:03:23+00:00",
+      "agency": "IntelliNews · Google News",
+      "agency_ko": "IntelliNews (구글 뉴스 경유)",
+      "source_id": "gn_drc_cobalt_copper",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "COD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.747,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "322db866b2db9d0b",
@@ -12267,7 +13529,42 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "7b2245b0eaa6fe66",
+      "title": {
+        "original": "Galiano Gold : Supporting Ghana’s Mining Future",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNemRLWFUtbTZqRE5DTWl1Rmo1bnRqUmY3VFJoLWRMaGlnZDRZX0s1OTRMMm1MazZrNUVxMHFCeVNlWGRsTG1wQ3VOYWxubDJKX3VOR013Y2xYREF2N0ZUMWFrTmdKa1g1Uk9UbDBSc056NXE4REI5c25BQlNuVlVCY3F4aG5rU3BnZ2lBMw?oc=5",
+      "published_at": "2026-10-19T09:58:14+00:00",
+      "agency": "Africa Outlook Magazine · Google News",
+      "agency_ko": "Africa Outlook Magazine (구글 뉴스 경유)",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "GHA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.746,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "8a7ba31d22fa737d",
@@ -12296,7 +13593,43 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "3febda28e092dcac",
+      "title": {
+        "original": "Madison Metals discovers high-grade uranium at Namibia project",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOYWtReTlreXJRUFpveUp1Zk92dUR2eXVPdzdWb1FnTVZ1bmw4cWhjSDFkcFV6bHVqWlQzLWdhSEY2S291UHZkeDhTbmRMZ1NYNXhyQzE1R1g1WDNBMGQ3RDUxQVpPVldYZEVkX2NTNVZpV1Npa2VaT25lNF8xVjR1ejg2empnSDBrTnQyaXFGY2NJYTNGdDhWOHRDdWpUZy1RUUlpZHJmTWY0ZnY1U0Qw?oc=5",
+      "published_at": "2026-10-19T07:05:07+00:00",
+      "agency": "Global Mining Review · Google News",
+      "agency_ko": "Global Mining Review (구글 뉴스 경유)",
+      "source_id": "gn_sahel_uranium",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "NAM"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.744,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "efa0ce82c88cbf44",
@@ -12325,6 +13658,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12354,6 +13690,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12377,9 +13716,10 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.735,
+      "importance": 0.734,
       "reasons": [],
       "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12418,6 +13758,137 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "4f832872786102d7",
+      "title": {
+        "original": "Deep Yellow delays Tumas uranium project investment decision Staff Reporter DEEP Yellow has withdrawn its target of making a final investment decision on its Tumas uranium project in Namibia by the end of 2026, citing weak equity market conditions, while",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFB3Y21VMG9EaTZwWEE2dzRva1VZU3hDNHVjRDhHMkpFWHQ3Yy1qWjdVMWF4ejlzOTZkODhtOVBYRXFBY2ROZElaS2pxdEtzWWwyMkE?oc=5",
+      "published_at": "2026-10-18T05:00:42+00:00",
+      "agency": "Instagram · Google News",
+      "agency_ko": "Instagram (구글 뉴스 경유)",
+      "source_id": "gn_sahel_uranium",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "NAM"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.727,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "b8ee6cb9ddf1d20a",
+      "title": {
+        "original": "Egypt, Sudan bickering over illegal gold mining near border",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOV0Nvb19jTEJfWnBNdnhRY3ZwbDlWSmNtaElkRnEydnBuQWl5WFAyYTY5bDBmamlIYXZyMDhFTmR4QnRsRHVXMnpkR1BIT01NUkNxOEl5U2NzYmdBUnp2TVZDbHFmSVBZd1BYckNGbThobkZ5OW00OVlnWUllZTVfLVpKS203dw?oc=5",
+      "published_at": "2026-10-16T21:07:50+00:00",
+      "agency": "APAnews - Agence de Presse Africaine · Google News",
+      "agency_ko": "APAnews - Agence de Presse Africaine (구글 뉴스 경유)",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "EGY",
+        "SDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.708,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "2ccb4dd22cf8c60f",
+      "title": {
+        "original": "IRH and Zambia’s state miner resolve copper financing dispute",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQTFhzbHRiRzFiaUtac3RsSTRyYWNtbGRHOVNUT2NDRVBZczFQZHc1N2l0TXRiSGVLcXJrNG42bmZYOFpXVE5idS1yb3pZN0ZiRkdEcG03dFBXV3BzNnFmbEFuNzI3MjhGVEVaTHhLN3V6MjdZemE0TnZuV0V1dUtYYnpfSzFpbVZ1OHBLajJqb1ZWOHc2WW16RkIySWNEMGNpNUZYZ2xB?oc=5",
+      "published_at": "2026-10-16T12:37:00+00:00",
+      "agency": "Semafor · Google News",
+      "agency_ko": "Semafor (구글 뉴스 경유)",
+      "source_id": "gn_zambia_zimbabwe",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "ZMB"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.703,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "b14725cfde87f442",
+      "title": {
+        "original": "Deep Yellow pushes out FID on Tumas uranium project in Namibia",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNejF3dThCNW1XM1hyTmY1VmxwQ0lVeTk2bWtLeXh0N2NsVV90eUJ2alhSc3dLbHVjM3EyRlFnbE5ld2FreVlYQ0g2X29CaFN5ZjN5N0tPTjBLZWtUaXlwOVpwZkxfa3J5TWVIN2xUWmhoSkQ5bEdMQl8tM0RKU3ZpT01RVE9GMFJDUjRCY1dEa1lWRm5EbmRBWC1JMHZIN1ozWVVVMHVueFRUZjY4bkNv?oc=5",
+      "published_at": "2026-10-16T12:31:00+00:00",
+      "agency": "Mining Weekly · Google News",
+      "agency_ko": "Mining Weekly (구글 뉴스 경유)",
+      "source_id": "gn_sahel_uranium",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "NAM"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.703,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "b87baa2603ba1ba3",
@@ -12474,6 +13945,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12500,6 +13974,7 @@
       "importance": 0.698,
       "reasons": [],
       "agency_url": "https://www.investing.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12526,7 +14001,72 @@
       "importance": 0.697,
       "reasons": [],
       "agency_url": "https://www.investing.com/",
+      "publisher_type": "news",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "5873429282e91db1",
+      "title": {
+        "original": "SA’s Tshipi puts 828 000 t of manganese through Namibia’s Port of Lüderitz",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNdEZpYVJIQzN3MGFuWllSV1FLV3Zac3JWUHliS2NmWktBM0RzcFM4b0M3Nm9xelExLVo0QWJoWllvcHNKUXJHaFZxODFfZU1IQnBZR2I5QnNtTlRBWDNrR09iWEVaM21JTXVtRWtyUWJVRjBtdkF3aVVBengyMk5SSUF5enVYSXJQbXRUQ3V6M1drWjB1ak5mTXNZS0YxdWMzUDR3SlprOFdzTW9sWm9mRW1tbTl4MFlTSXMxeldHaWdjUXBRNzY1WA?oc=5",
+      "published_at": "2026-10-15T22:00:00+00:00",
+      "agency": "Mining Weekly · Google News",
+      "agency_ko": "Mining Weekly (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "manganese"
+      ],
+      "countries": [
+        "NAM"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.694,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "4c63b556e76046df",
+      "title": {
+        "original": "Ampasindava rare earth ionic clay project, Madagascar – update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNTmkwU1dFYld6WWVIWWVUalEyNW5mN1Y1WHdDZmc0a0ozUlFNSVcybHFDeEdYcHlGR0VsdV9GVGJ2c0FQS1VJRWpDSFl3TE9PdFhvVlBjVExNNnkyQmZTd3FZODhwaVRnVEM3bW9RZkE5QWtpQnJTeWZJQ1NQWHhFUUwxYTh0V0Z1emptVjdOV2QzRmx3YmRRM0VmRDIzMTJ5UTdKOWh4UFBtREU?oc=5",
+      "published_at": "2026-10-15T22:00:00+00:00",
+      "agency": "Mining Weekly · Google News",
+      "agency_ko": "Mining Weekly (구글 뉴스 경유)",
+      "source_id": "gn_east_africa_graphite",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [
+        "MDG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.694,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "b9dbe511d03f6801",
@@ -12587,7 +14127,75 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "cc0329f56f6d52c6",
+      "title": {
+        "original": "Guinean bauxite prices face headwinds as C3 freight retreats; supply restart threshold within reach",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQQUVSbHJ0dzFYbnhfQVM4TmhCaUFCMGJmXzg1WEhMRHU2dDQ1cTJPZFdsR3pUZThkdFVxSkdMQVlQbDhWalN1VnVyeXRsRFo4S01IVThaZElfX2ZUOW5RUmVieUhyRWIwRGxZS2VRNUhPN2xwY1QxaUZyZ3pYaUx1YWtVUm5ubkRmai10QTZBZnVPS2dTSVZHNmJlOEFiSDJTSmt3NDgtQ244QWhvZ0wybnFLTWlaMnVmdFlFWEt4am56ejQwZWxlQ25hYmNSakFm?oc=5",
+      "published_at": "2026-10-15T05:55:35+00:00",
+      "agency": "AL Circle · Google News",
+      "agency_ko": "AL Circle (구글 뉴스 경유)",
+      "source_id": "gn_guinea_bauxite",
+      "commodities": [
+        "bauxite"
+      ],
+      "countries": [
+        "GIN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.685,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "d4e1520e6cb42bce",
+      "title": {
+        "original": "India's Lohum targets EV batteries after opening Zimbabwe lithium mine",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQSmFabHFhMGdVXy02RGRFLXp4UXlNUHFRT2t5OEdTV1JoV3RlbXc3Z05VcFV2Rzg2RDlEcHkwZVZrZVVKWU00Z21vNHgyUmVzVmhKam5mbkRGMmhrcFZYTUR4ajM4RWZvVFNUM1I5cmhrMUpKTmtmdzVUdTZPRDI1aUlEb1B2MTdhQnJfSEtBYjdlamU5Ym5XQ2V0bi1CdTZ2MGpYMFVnOEVWZUJCai1LeGJhLVE1VmtabnJn?oc=5",
+      "published_at": "2026-10-15T02:56:00+00:00",
+      "agency": "Nikkei Asia · Google News",
+      "agency_ko": "Nikkei Asia (구글 뉴스 경유)",
+      "source_id": "gn_zambia_zimbabwe",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ZWE",
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.683,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "62948d40ba0908de",
@@ -12612,7 +14220,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.677,
+      "importance": 0.676,
       "reasons": [
         "country_in_text"
       ],
@@ -12630,6 +14238,71 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "2cea2b94700901c2",
+      "title": {
+        "original": "World’s biggest manganese producer faces China cost hurdle in battery push",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPbFg1MTZxRmU3RlFlamdJaXI2bmZnTzF4XzNPWU9KekVPMXo4QnZWRzl3ZEQyZlRncHRCd3JGdFFRRzhFOFBDcDhNa0R5S25iTU5vT3VkdVVERW1aLVBIYXBVSU9FRE1qM290V1hCQVJ2eElKSTNUZzVCNEU4LVQtb1NlRmh4a1JTeFdxUGh1WkVCLUh6RUJEMGsxRl9lalhFa0cxbDBzT3VqSTdwMHpqMzRTRFNKX3pXTUo0eQ?oc=5",
+      "published_at": "2026-10-14T12:49:59+00:00",
+      "agency": "The Northern Miner · Google News",
+      "agency_ko": "The Northern Miner (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "manganese"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.675,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "0e569cb46a87db62",
+      "title": {
+        "original": "Mercuria agrees $250m Congo copper deal with China miner",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQdE9KZEl2M1R2cjdTQVJxS0pVcnBtSERuUTVkT2xxMmJjYlppREVsXzI2dGgtRFVORFdqYkg2Z1B4eV8xc0dVaU1oNEtLVzVHLUlyNnNyY2RVY2hnQUVYN2xpeFVIQXBiTVEtNnIxWmJzOGx2SDV0OWlFYkJvWUdiUnFUVGo5ZzNmT0tLdVRwVTVzV2RMZkxVQzdkRHBpV21lU1g0YnFn?oc=5",
+      "published_at": "2026-10-14T10:08:00+00:00",
+      "agency": "Mining Weekly · Google News",
+      "agency_ko": "Mining Weekly (구글 뉴스 경유)",
+      "source_id": "gn_drc_cobalt_copper",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHN",
+        "COD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.674,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "5cc5a9f86bdef2e0",
@@ -12658,6 +14331,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12687,7 +14363,138 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "2a606e0f3d4a3365",
+      "title": {
+        "original": "Kamoa Copper and CrossBoundary Energy sign agreement for baseload renewable energy system",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQcDR1c3RVRjJWcVlJd052aWhreFBWbXlSZVUwLWJGMFlHSXNCVEN3aFNjOW5LN2VlRHN0V3dyUGp0UklZbkRDR2tZVUxzTmNHbkpFSkkySU5ST210dkZRNlJUbi0tTjdNNDVyQXBGTWRIYmI1MVlLbXZTbndqcVlXcVRGRGVPTG92OVlkY3BGV2RycjdYVWxiS2Y1amRmbUMwRkluVy1hTjluT2EzeV82U0hVRWxHTHNXai1Pc01yWTBlSmhkbHdnUkJOcldQbGVwdG9n?oc=5",
+      "published_at": "2026-10-14T03:03:12+00:00",
+      "agency": "Global Mining Review · Google News",
+      "agency_ko": "Global Mining Review (구글 뉴스 경유)",
+      "source_id": "gn_drc_cobalt_copper",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "COD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.67,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "4e8bdea805afea76",
+      "title": {
+        "original": "PHOTO ESSAY: Zimbabwe’s Lithium Boom Connects Goromonzi to the Global Battery Industry",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5Sd0FiTFRJRkk2VmFPaUUzbXRQSUpjQnRKUFRRdmQzV3Z3QXM2LUVraFhPZXc0ZHI4aXJaVklkeFBma29yVDl0OWFQSElQVkZXY1RRLWc1R3NOdDlHTXFJTktFdFVUYUJlSXNhNnM2aU5GNXdwSjVCTm0tU2VaTUk?oc=5",
+      "published_at": "2026-10-13T18:27:24+00:00",
+      "agency": "The China-Global South Project · Google News",
+      "agency_ko": "The China-Global South Project (구글 뉴스 경유)",
+      "source_id": "gn_zambia_zimbabwe",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ZWE"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.665,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "07572e9fae99f64b",
+      "title": {
+        "original": "MISTRA roundtable to explore practical steps for South Africa’s PGM-powered hydrogen economy",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNb3MtU2thM0dVc2NRY3JWYm5jZTI3aHZ0REZCRWM1ZzY2MlFyZXJGNm1KOFdOdkhRVV9pb1BYR3FMTXBkNGJWVWNxM21lbzZNRHFORGdwa1lFejd2YWJOalVPZ0l2a2lfaS0xN1FEbE41UURGdEFZb0JhekRvNGRkQzBkM1p1aVVjVmRFclA1VFpZenJ0MHRqd3VqLTRxRDB3dE1LWjBkQ0ROMzQ0Z0VnQ2xfbXVIWmZVYTRLdUhrOTZLTnB1cEdTUlpZV1AxaXdLU1pidHdB?oc=5",
+      "published_at": "2026-10-13T09:06:00+00:00",
+      "agency": "Mining Weekly · Google News",
+      "agency_ko": "Mining Weekly (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "platinum"
+      ],
+      "countries": [
+        "ZAF"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.66,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "aed892b125a11b4f",
+      "title": {
+        "original": "World’s top platinum-producing company says South Africa still has what it takes to dominate global mining",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPMGNLTW5HU1JrV0VnRjBCLXpEbkxoR0NFSTc0V3B3XzFhZXBMdlV6RGMwYTdKcmN1bk13RGpXX0NZUHp2WWRIYUp3dk5ucWhiN2Q4VE1FR2xNRTktb2Vhd1JYU19yN0V3R24yTTY0NHNwN0xXY2UwY2xoT3p1R01kODl6MTRZaW50UUZzMjBEemFSeEpoSzFIV0JFMXh1WWxhNEN6NlI3YlVEMjJiT1dHSGpSbXYxWWlFWUI2dVpxNFRPZ21NdjAzZlNSX1F3TFZzeWMyN1BR?oc=5",
+      "published_at": "2026-10-13T08:00:41+00:00",
+      "agency": "Business Insider Africa · Google News",
+      "agency_ko": "Business Insider Africa (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "platinum"
+      ],
+      "countries": [
+        "ZAF"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.66,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "39b113a988823d03",
@@ -12716,7 +14523,43 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News (Argus Media)",
+      "source_agency_ko": "구글 뉴스 경유(아거스)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "8149cbd255dec6e4",
+      "title": {
+        "original": "Dozens of gold workers in northern Sudan were killed over the weekend after warplanes bombed an open air mine near the Egyptian border, according to Sudanese rights groups, graphic video and eyewitnesses interviewed by The New York Times.",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQbUpkcXlkTlBIQ2huc0Q1Q3NtUUR5V3pBVWhJdVFUNUI3WHNGdG9rRU1DRFphWHVJeXg3QTFBaDRNMGthMHFQQkxpelZwcHQxNTRSdmRzbloySEdhT2lsV0hFaGZzd0ctQkgxajlyZGgyYk1XdU1Nc0pRRndqMV9QRkF1bm9aOElGTkxVWVd1M053R1hRVmlQSWNPYlJHT3JIcnA4ZThpYVNORmZQSEZ3S3pmNlo0ZmhSWG9QQVJyV3hNb1A5Q28wR1V6U0kwNk53Q2U4?oc=5",
+      "published_at": "2026-10-13T07:00:00+00:00",
+      "agency": "Facebook · Google News",
+      "agency_ko": "Facebook (구글 뉴스 경유)",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "EGY",
+        "SDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.659,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "7d506ea2933dfe61",
@@ -12745,6 +14588,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12774,6 +14620,103 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "2fadbee549045a2a",
+      "title": {
+        "original": "South Africa’s ferrochrome industry faces a broader competitiveness ch",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOMjQ3V21fNGRHVGR1ZUNUVXNwa2VURUxSbmROM3B3SG1sbU1uLW5wbTZLRDY4VFAyT1NFUk5vdmhOdmJaNFpWdjRmQ1o0SDBuSS1neW16YUIzZlF5WmwzU3RBSzhKODVZV01lbDJkWUdNazRUNjl2Wm1vSk43RXJIU2hCTkVHbzA1ZGRleFU5RU4zUVdCbGs5ckphUUd6R2RvcXVTUjg2bzd5VnBlX18tUWxBT3ljQVlXSmptd3p5bUJPb2FnUDNWQ09XMnM?oc=5",
+      "published_at": "2026-10-12T12:37:00+00:00",
+      "agency": "Shanghai Metals Market · Google News",
+      "agency_ko": "Shanghai Metals Market (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "chromium"
+      ],
+      "countries": [
+        "ZAF"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.65,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "19ccd694380768a9",
+      "title": {
+        "original": "HMM Platinum continues firefighting efforts, seeks refuge in South Africa",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQd3NYSXM5ektLdzVZN1pWQXJLaXVWWmxQTWwzS191NlRfUTJXdkQwNEF1dW82WVFnYzd2UzdhNGlNZ255LWstZXZOajFLNUs0QUVaR2U3cjJ1NzRLSE1aT0lfdENJODZLOUlpYU04ZFprWUx3U2FIMElRay1sTTlkNHRBQURIVWdDc01jVG81aw?oc=5",
+      "published_at": "2026-10-12T08:01:00+00:00",
+      "agency": "Kuehne+Nagel · Google News",
+      "agency_ko": "Kuehne+Nagel (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "platinum"
+      ],
+      "countries": [
+        "ZAF"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.647,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
+      "id": "3e547117d4b67bb1",
+      "title": {
+        "original": "Deadly gold mine air strikes highlight Egypt-Sudan border insecurity",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOU2dnaHNITDBvX213czhVVkliQlljXzFiY2diU2tmRXo4NUpfWXlJUFZRSUI2V0NVWFNxa0wtRGNQYlR6b1FLWUY0R0V0UW1xVEV5c0xJZlBMTzNMajU3ME5KN1NZb1RiSzJuV2t4QU9LMWNXa0E2TW9XLW9vbFhaY2lvUEVWNXNmRXl5ek9ySmVCWlZGdllIZXJjVjNRUXZ1RHhEdm9nUlR6Y2xab3FR0gG0AUFVX3lxTE9scUJENm5GandPYWxfYnJ0MnFOYWI5WFZNVUxxd0N5N2ktSzJubkhLeGpWdDVKODhYSi14NVdQM2JsY1p2LUxXamJpOE1PU0x4ZkRkTkVjdTRyaUlFSGxJWVl0UW82NjFzUklzSm1hNlBNVmhxN1ZZb3lXNUJWVlNQeGItOGprXzZ6TFoxaG0wZzNuWTVNSlJjRFNzZHpSTUVSZHVfSWd2ZE1SR0xOT2hmdGI3Ng?oc=5",
+      "published_at": "2026-10-12T07:00:00+00:00",
+      "agency": "Al Jazeera · Google News",
+      "agency_ko": "Al Jazeera (구글 뉴스 경유)",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "EGY",
+        "SDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.647,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
       "id": "2c618d36214618e8",
       "title": {
         "original": "Malaysia's Palm Oil Production Significantly Exceeds Expectations in September",
@@ -12800,6 +14743,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12892,6 +14838,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -12936,6 +14885,38 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "d1e63d4cabd2e73b",
+      "title": {
+        "original": "Zimbabwe says no justification to delay lithium export ban",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQRFBKdlpnengtbWVWby1QeGcwTHNTOTRGS1Q2N2dKbzAyZmx6ZkFFNTE1ZFBQODAySFlSajRwYndiUDhxSW5VLTBfY1pmVTVJNGludml0bUVWZU5jWUZxUkpFUWUzbk1IcXY3Q0ZZaTlwQXZNaE9SQ3R4RU9ETjRnSFVETmEtbzlZY29GNmgwOA?oc=5",
+      "published_at": "2026-10-09T07:00:00+00:00",
+      "agency": "Mining.com · Google News",
+      "agency_ko": "Mining.com (구글 뉴스 경유)",
+      "source_id": "gn_zambia_zimbabwe",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ZWE"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.612,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
       "id": "05101536483c310c",
       "title": {
         "original": "商务部新闻发言人就将10家美国实体列入出口管制管控名单答记者问",
@@ -12977,6 +14958,38 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "f484562a825125bd",
+      "title": {
+        "original": "ARECOMS tightens Congo’s cobalt export controls to shore up prices",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNQW5KbjI2ZDVOTWdldkpNQ0JaRW9sWEFjWUR4V1pMeFdtR2lzelh4aVhHNUItdnpGQTR5REFtSHhHWmVKWjFZTHhOS3FxYTRTVWNURVlybGRJckhXamZkRDNJd2FTQXpRODk1M3ZLUkYxQTNEUFVyVUFDb0YwVVhKcTJyZ0puMjNWRmc5bm55Zkg5bHpWWUZBTw?oc=5",
+      "published_at": "2026-10-09T01:10:00+00:00",
+      "agency": "Capmad · Google News",
+      "agency_ko": "Capmad (구글 뉴스 경유)",
+      "source_id": "gn_drc_cobalt_copper",
+      "commodities": [
+        "cobalt"
+      ],
+      "countries": [
+        "COD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.609,
+      "reasons": [
+        "country_in_text"
+      ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
+    },
+    {
       "id": "55fc30ee6762f643",
       "title": {
         "original": "Indonesia mulls nickel smelter moratorium as global supply swells",
@@ -13003,6 +15016,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13032,6 +15048,9 @@
       "series_label_ko": null,
       "importance": 0.599,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13061,6 +15080,9 @@
       "series_label_ko": null,
       "importance": 0.599,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13089,6 +15111,9 @@
       "series_label_ko": null,
       "importance": 0.599,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13117,6 +15142,9 @@
       "series_label_ko": null,
       "importance": 0.599,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13142,6 +15170,9 @@
       "series_label_ko": null,
       "importance": 0.598,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13168,6 +15199,9 @@
       "series_label_ko": null,
       "importance": 0.598,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (Fastmarkets)",
+      "source_agency_ko": "구글 뉴스 경유(패스트마켓)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13193,6 +15227,9 @@
       "series_label_ko": null,
       "importance": 0.597,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13219,6 +15256,9 @@
       "series_label_ko": null,
       "importance": 0.596,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13248,6 +15288,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News (Argus Media)",
+      "source_agency_ko": "구글 뉴스 경유(아거스)",
       "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
     },
     {
@@ -13277,6 +15320,9 @@
       "reasons": [
         "country_in_text"
       ],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13300,9 +15346,40 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.59,
+      "importance": 0.589,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "e8ffb90b03b0455a",
+      "title": {
+        "original": "Signal Ocean commodity radar spotlight: Bauxite - chart of the week 43.2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNa1huaWtFVlFldVlzZWVKck1mNHdFSWdXNm00SmdvbXplbkxjaHJ5S0ZBbl9vUU85MkZPQkFZR3BrZHl1RGhBemloTmNJWGQ4RGM5ay1SQVZDWVRfWG5waUNCU1ZSZzVCMTdqYTVtNzZZbE9fcHdiZU9rcUxlQm1DN3FaeWt3WWdOSGQ2UW5VYi01dXVKMGc0cmdjbVl4S1U?oc=5",
+      "published_at": "2026-10-20T12:39:00+00:00",
+      "agency": "American Journal of Transportation · Google News",
+      "agency_ko": "American Journal of Transportation (구글 뉴스 경유)",
+      "source_id": "gn_guinea_bauxite",
+      "commodities": [
+        "bauxite"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.587,
+      "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "cb495f5e5b21ace9",
@@ -13327,6 +15404,9 @@
       "series_label_ko": null,
       "importance": 0.587,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13352,33 +15432,9 @@
       "series_label_ko": null,
       "importance": 0.586,
       "reasons": [],
-      "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
-    },
-    {
-      "id": "a979ff111630885e",
-      "title": {
-        "original": "Undeclared uranium hitches a ride on cobalt exports from Congo, study says",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNYlR5bGVBaGxqUW9qZHlxeFcyVlFmLV9sMHlFeUZfOG0zRTROOHRKeE5naTBPRmVwM21YTmN1OHdiWWE1dmZyU203TGZiS2ctUDh4N3h2a2Nvci1mM1ZtRUZKVzhCWVI5eHdfOHRJZ1pYMUlqSjJwVk03VTg1a2J1N1dDMUZsT0drU1lxbmIyWkJBZENHNlBpVmlESE9DQlB6OWh3Ri01NkxQaVdTWU84X2ZB?oc=5",
-      "published_at": "2026-10-20T07:57:27+00:00",
-      "agency": "American Nuclear Society · Google News",
-      "agency_ko": "American Nuclear Society (구글 뉴스 경유)",
-      "source_id": "gn_africa_minerals",
-      "commodities": [
-        "cobalt",
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.585,
-      "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13404,6 +15460,9 @@
       "series_label_ko": null,
       "importance": 0.584,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13429,6 +15488,9 @@
       "series_label_ko": null,
       "importance": 0.584,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13457,6 +15519,9 @@
       "series_label_ko": null,
       "importance": 0.583,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13482,6 +15547,9 @@
       "series_label_ko": null,
       "importance": 0.581,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (Argus Media)",
+      "source_agency_ko": "구글 뉴스 경유(아거스)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13507,6 +15575,9 @@
       "series_label_ko": null,
       "importance": 0.578,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13536,6 +15607,9 @@
       "series_label_ko": null,
       "importance": 0.575,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13562,6 +15636,9 @@
       "series_label_ko": null,
       "importance": 0.575,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13590,6 +15667,9 @@
       "series_label_ko": null,
       "importance": 0.574,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13619,7 +15699,38 @@
       "series_label_ko": null,
       "importance": 0.574,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
+    },
+    {
+      "id": "057a5be1ae6f4bc7",
+      "title": {
+        "original": "South32 lifts SA manganese output as Wessels improves, but sales fall",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOa3Ftb3BqbHFHTWpSYjdoZU5ibjF3ZUxSbkhKU1h4UEdHajFLRGgwNlBLWnFHdG5FSG9rWXpLOG45eGVMeFNfMjZQNFhTSGE2dWVkbTdZVWNlTmFrZDVrZms4YzBzZnZZSE5rc19NbXVucHRJbGpnRFFQWERpNXh6Y2xWek5VSllKTFJGTHpPbi0?oc=5",
+      "published_at": "2026-10-19T08:16:42+00:00",
+      "agency": "MiningMX · Google News",
+      "agency_ko": "MiningMX (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "manganese"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.573,
+      "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "2423c731178acf59",
@@ -13648,6 +15759,9 @@
       "series_label_ko": null,
       "importance": 0.573,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13673,6 +15787,9 @@
       "series_label_ko": null,
       "importance": 0.572,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13702,6 +15819,9 @@
       "series_label_ko": null,
       "importance": 0.559,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13760,6 +15880,9 @@
       "series_label_ko": null,
       "importance": 0.548,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13789,6 +15912,9 @@
       "series_label_ko": null,
       "importance": 0.547,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13815,8 +15941,11 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.546,
+      "importance": 0.545,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
     },
     {
@@ -13845,6 +15974,9 @@
       "series_label_ko": null,
       "importance": 0.539,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13872,6 +16004,9 @@
       "series_label_ko": null,
       "importance": 0.539,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13901,6 +16036,9 @@
       "series_label_ko": null,
       "importance": 0.539,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13929,6 +16067,9 @@
       "series_label_ko": null,
       "importance": 0.538,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -13985,7 +16126,38 @@
       "series_label_ko": null,
       "importance": 0.531,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
+    },
+    {
+      "id": "c680f323e39e78db",
+      "title": {
+        "original": "Valterra buys half of Tharisa’s PGM concentrate",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE5ETzNHRmlkODNzSFZzT2hNX0FINFVGbkIxaHk4aGp0TWZWVVpJZXU0RU9WY1NuakNVcXAzaWxfQU1tX2FDVzBJbTFqb3V0eEZxaWFmdkwxTm1EcWNyaEZMTGhDNTlYWEZ3b0JvcmhKUFR5cXNab0t1SA?oc=5",
+      "published_at": "2026-10-15T14:32:50+00:00",
+      "agency": "Mining.com.au · Google News",
+      "agency_ko": "Mining.com.au (구글 뉴스 경유)",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "platinum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.531,
+      "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-21T12:44:45.575991+00:00"
     },
     {
       "id": "9f1dcf491994952e",
@@ -14010,6 +16182,9 @@
       "series_label_ko": null,
       "importance": 0.527,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -14038,6 +16213,9 @@
       "series_label_ko": null,
       "importance": 0.527,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -14050,7 +16228,7 @@
       },
       "summary": null,
       "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxNRkhJY0EtQ2pRLVhHSFl3cXY3X0M5YXBCTmxMWmZmbktEbEdKWEtjU1o1VVljeEFrcV9NTjlJdzJvZ0REejhSTGh2M2I1VnJjRDhFeXdyN01valhURS1lM2c1Y3FBN1JKM0h3REwzaDlvSVloM3RSdnI0ZUw3NkFSUUtrd01wR2dKcXdRWFNydDE3VTdMMnl4UnhLX0NOQkFSbjFWUVE5LThJLWhWbnZoU01QX280cWlLRWpkLUtXcHl6bmVHX0Vic0ZzeHNhV21HdUkyZTh2QnBFS3F1OUdlRWxYOHI0ZGJ6MFBxVQ?oc=5",
-      "published_at": "2026-10-14T12:02:55+00:00",
+      "published_at": "2026-10-14T12:03:36+00:00",
       "agency": "Kementerian ESDM · Google News (인니어)",
       "agency_ko": "Kementerian ESDM (구글 뉴스 경유(인니어))",
       "source_id": "gn_idn_esdm_id",
@@ -14066,6 +16244,9 @@
       "series_label_ko": null,
       "importance": 0.519,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -14122,6 +16303,9 @@
       "series_label_ko": null,
       "importance": 0.509,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -14148,6 +16332,9 @@
       "series_label_ko": null,
       "importance": 0.509,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (Fastmarkets)",
+      "source_agency_ko": "구글 뉴스 경유(패스트마켓)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -14176,6 +16363,9 @@
       "series_label_ko": null,
       "importance": 0.506,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:34:37.897437+00:00"
     },
     {
@@ -14308,6 +16498,9 @@
       "series_label_ko": null,
       "importance": 0.454,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -14336,6 +16529,9 @@
       "series_label_ko": null,
       "importance": 0.454,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     },
     {
@@ -14364,6 +16560,9 @@
       "series_label_ko": null,
       "importance": 0.454,
       "reasons": [],
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-21T12:23:22.762996+00:00"
     }
   ]
