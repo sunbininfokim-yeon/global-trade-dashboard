@@ -5,49 +5,78 @@
   "targets": [
     {
       "group": "coalprice",
-      "id": "esdm_hba_aug1_article",
-      "url": "https://www.esdm.go.id/id/media-center/arsip-berita/esdm-tetapkan-hba-periode-pertama-agustus-2026-usd-12444-per-ton-turun-562-persen",
-      "variants": true,
+      "id": "esdm_list_links",
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita",
+      "link_text": true,
+      "link_re": "arsip-berita/",
+      "samples": 30,
       "context": [
-        "HBA II",
-        "4\\.100",
-        "HBA I\\b"
+        "(?i)halaman",
+        "(?i)selanjutnya|next",
+        "(?i)cari|search",
+        "(?i)hba"
       ],
-      "context_width": 260
+      "context_width": 140
     },
     {
       "group": "coalprice",
-      "id": "esdm_arsip_berita",
-      "url": "https://www.esdm.go.id/id/media-center/arsip-berita",
-      "variants": true,
+      "id": "esdm_list_page2",
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita?page=2",
       "link_text": true,
-      "link_re": "arsip-berita/[^/]*hba",
+      "link_re": "arsip-berita/",
+      "samples": 5
+    },
+    {
+      "group": "coalprice",
+      "id": "esdm_search_search",
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita?search=HBA",
+      "link_text": true,
+      "link_re": "arsip-berita/",
       "samples": 12
     },
     {
       "group": "coalprice",
-      "id": "minerba_harga_acuan",
-      "url": "https://minerba.esdm.go.id/harga_acuan",
-      "variants": true,
-      "context": [
-        "HBA",
-        "Periode"
-      ],
-      "context_width": 200,
-      "link_re": "(?i)\\.(pdf|xlsx?)\\b|kepmen",
-      "samples": 8
+      "id": "esdm_search_q",
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita?q=HBA",
+      "link_text": true,
+      "link_re": "arsip-berita/",
+      "samples": 12
     },
     {
       "group": "coalprice",
-      "id": "wb_commodity_markets",
-      "url": "https://www.worldbank.org/en/research/commodity-markets",
-      "variants": true,
-      "link_re": "(?i)CMO-Historical|\\.xlsx",
-      "samples": 8,
-      "context": [
-        "(?i)historical data"
-      ],
-      "context_width": 160
+      "id": "esdm_search_keyword",
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita?keyword=HBA",
+      "link_text": true,
+      "link_re": "arsip-berita/",
+      "samples": 12
+    },
+    {
+      "group": "coalprice",
+      "id": "esdm_site_search",
+      "url": "https://www.esdm.go.id/id/search?q=HBA",
+      "link_text": true,
+      "link_re": "arsip-berita/",
+      "samples": 12
+    },
+    {
+      "group": "coalprice",
+      "id": "esdm_rss",
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita/rss",
+      "samples": 3
+    },
+    {
+      "group": "coalprice",
+      "id": "esdm_feed",
+      "url": "https://www.esdm.go.id/rss",
+      "samples": 3
+    },
+    {
+      "group": "coalprice",
+      "id": "esdm_article_page_links",
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita/esdm-tetapkan-hba-periode-pertama-agustus-2026-usd-12444-per-ton-turun-562-persen",
+      "link_text": true,
+      "link_re": "arsip-berita/",
+      "samples": 15
     }
   ]
 }
