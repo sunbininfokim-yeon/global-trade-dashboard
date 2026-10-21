@@ -2,8 +2,8 @@
   "schema": "usa_state_evidence_packet_v1",
   "cycle": 2026,
   "state": "AK",
-  "source_ref": "origin/codex/ak-state-evidence-20261009",
-  "source_commit": "6072b2e061df434751b049d06547732f7c96989f",
+  "source_ref": "codex/poll-capture-validation-recovery-20261020",
+  "source_commit": "763ba363c06a22ec71b0ccb5d7f14c8ddbd4938f",
   "config_operations": [
     {
       "file": "federal_matchups/2026.json",
@@ -1810,26 +1810,1583 @@
           "note_ko": "공식 Form15-6 후보/발의 지지·반대 공시 경로. 후보 캠프 일반비용과 구분. 접근·개정·대상 필드 매핑 미완료."
         }
       }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q10",
+          "poll_type": "governor",
+          "subject": "2026 Alaska",
+          "seat_name": null,
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 694,
+          "answers": [
+            {
+              "choice": "Jonathan S. \"JKT\" Kreiss-Tomkins",
+              "pct": 46
+            },
+            {
+              "choice": "Bernadette M. Wilson",
+              "pct": 28
+            },
+            {
+              "choice": "Dave Bronson",
+              "pct": 12
+            },
+            {
+              "choice": "Treg Taylor",
+              "pct": 9
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "c03f2ae40f91af9f2bf34c0bc1a86486de39e3b51a6fbeb59e5d883a895adc12",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q13",
+            "provider_snapshot_sha256": "8e519f64da0275938a9e6e8459f79e0b0fc6747c5a95f1e03b08d881250768f9",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q13 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q14",
+            "provider_snapshot_sha256": "6b39469df150b247b7800525cd1db3aa8101dc682881c832d3aeabf5c110830f",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q14 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q10"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "c03f2ae40f91af9f2bf34c0bc1a86486de39e3b51a6fbeb59e5d883a895adc12",
+        "primary_supplement_record_sha256": "c03f2ae40f91af9f2bf34c0bc1a86486de39e3b51a6fbeb59e5d883a895adc12",
+        "snapshot_sha256": "67da3a5ed579549c1d97b989d448b24470b2139896b56c6e2ecefadf5333b6dc",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Jonathan S. \"JKT\" Kreiss-Tomkins": 46,
+          "Bernadette M. Wilson": 28,
+          "Dave Bronson": 12,
+          "Treg Taylor": 9
+        },
+        "question_sample_n": 694,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 694,
+          "sample_base": "weighted_full_sample",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 10,
+          "source_pdf_page": 11,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "Rank up to four candidates, with 1 as first choice and 4 as last choice; rank at least one option, and rank Not sure first if unsure.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": false,
+          "scenario_assumption": null,
+          "undecided_pct": 5,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "first_preference",
+        "ranked_choice_question": {
+          "kind": "first_preference",
+          "question": "Q10: Rank up to four candidates, with 1 as first choice and 4 as last choice; rank at least one option, and rank Not sure first if unsure.",
+          "compared_candidates": [
+            "Jonathan S. \"JKT\" Kreiss-Tomkins",
+            "Bernadette M. Wilson",
+            "Dave Bronson",
+            "Treg Taylor"
+          ],
+          "label_ko": "4후보 첫 선호 · 참고",
+          "question_number": 10,
+          "source_pdf_page": 11,
+          "hypothetical": false,
+          "active_weighted_n": 694,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q13",
+          "poll_type": "governor",
+          "subject": "2026 Alaska",
+          "seat_name": null,
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 629,
+          "answers": [
+            {
+              "choice": "Jonathan S. \"JKT\" Kreiss-Tomkins",
+              "pct": 53
+            },
+            {
+              "choice": "Bernadette M. Wilson",
+              "pct": 47
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "8e519f64da0275938a9e6e8459f79e0b0fc6747c5a95f1e03b08d881250768f9",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q10",
+            "provider_snapshot_sha256": "c03f2ae40f91af9f2bf34c0bc1a86486de39e3b51a6fbeb59e5d883a895adc12",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q10 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q14",
+            "provider_snapshot_sha256": "6b39469df150b247b7800525cd1db3aa8101dc682881c832d3aeabf5c110830f",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q14 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q13"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "8e519f64da0275938a9e6e8459f79e0b0fc6747c5a95f1e03b08d881250768f9",
+        "primary_supplement_record_sha256": "8e519f64da0275938a9e6e8459f79e0b0fc6747c5a95f1e03b08d881250768f9",
+        "snapshot_sha256": "77571e476c01a0d89101addf277f2e0900355c7b04eee514250b9a9ec1dc020b",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Jonathan S. \"JKT\" Kreiss-Tomkins": 53,
+          "Bernadette M. Wilson": 47
+        },
+        "question_sample_n": 629,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 629,
+          "sample_base": "weighted_active_ballots_as_published",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 13,
+          "source_pdf_page": 11,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "Q13: 미정 응답, Taylor/English, Bronson/Church를 순서대로 제거한 게시 모의. Q12의 50%는 반올림 표기이며 정확한 과반 여부는 알 수 없습니다. 소진표를 Wilson에게 임의 재배분하는 별도 가정은 Q14입니다.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": false,
+          "scenario_assumption": "Q13: 미정 응답, Taylor/English, Bronson/Church를 순서대로 제거한 게시 모의. Q12의 50%는 반올림 표기이며 정확한 과반 여부는 알 수 없습니다. 소진표를 Wilson에게 임의 재배분하는 별도 가정은 Q14입니다.",
+          "undecided_pct": null,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "simulated_final_round",
+        "ranked_choice_question": {
+          "kind": "simulated_final_round",
+          "question": "Q13: Q13: 미정 응답, Taylor/English, Bronson/Church를 순서대로 제거한 게시 모의. Q12의 50%는 반올림 표기이며 정확한 과반 여부는 알 수 없습니다. 소진표를 Wilson에게 임의 재배분하는 별도 가정은 Q14입니다.",
+          "compared_candidates": [
+            "Jonathan S. \"JKT\" Kreiss-Tomkins",
+            "Bernadette M. Wilson"
+          ],
+          "label_ko": "후보 제거 후 최종 2후보 모의 · 참고",
+          "question_number": 13,
+          "source_pdf_page": 11,
+          "hypothetical": false,
+          "active_weighted_n": 629,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q14",
+          "poll_type": "governor",
+          "subject": "2026 Alaska",
+          "seat_name": null,
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 660,
+          "answers": [
+            {
+              "choice": "Jonathan S. \"JKT\" Kreiss-Tomkins",
+              "pct": 50
+            },
+            {
+              "choice": "Bernadette M. Wilson",
+              "pct": 50
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "6b39469df150b247b7800525cd1db3aa8101dc682881c832d3aeabf5c110830f",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q10",
+            "provider_snapshot_sha256": "c03f2ae40f91af9f2bf34c0bc1a86486de39e3b51a6fbeb59e5d883a895adc12",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q10 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q13",
+            "provider_snapshot_sha256": "8e519f64da0275938a9e6e8459f79e0b0fc6747c5a95f1e03b08d881250768f9",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q13 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q14"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "6b39469df150b247b7800525cd1db3aa8101dc682881c832d3aeabf5c110830f",
+        "primary_supplement_record_sha256": "6b39469df150b247b7800525cd1db3aa8101dc682881c832d3aeabf5c110830f",
+        "snapshot_sha256": "48dc1375e8ec5828affb0d41c406248b66c5d6f91ac11e56fe9ac5c744bdf680",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Jonathan S. \"JKT\" Kreiss-Tomkins": 50,
+          "Bernadette M. Wilson": 50
+        },
+        "question_sample_n": 660,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 660,
+          "sample_base": "weighted_active_ballots_as_published",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 14,
+          "source_pdf_page": 12,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "공화당 티켓을 한 번 이상 순위에 기입했으나 소진된 표를 Wilson/Shower에 이전하는 가정.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": true,
+          "scenario_assumption": "공화당 티켓을 한 번 이상 순위에 기입했으나 소진된 표를 Wilson/Shower에 이전하는 가정.",
+          "undecided_pct": null,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "simulated_final_round",
+        "ranked_choice_question": {
+          "kind": "simulated_final_round",
+          "question": "Q14: 공화당 티켓을 한 번 이상 순위에 기입했으나 소진된 표를 Wilson/Shower에 이전하는 가정.",
+          "compared_candidates": [
+            "Jonathan S. \"JKT\" Kreiss-Tomkins",
+            "Bernadette M. Wilson"
+          ],
+          "label_ko": "소진표 재배분 가정 · 참고",
+          "question_number": 14,
+          "source_pdf_page": 12,
+          "hypothetical": true,
+          "active_weighted_n": 660,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q15",
+          "poll_type": "us-senator",
+          "subject": "2026 Alaska",
+          "seat_name": null,
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 694,
+          "answers": [
+            {
+              "choice": "Mary Peltola",
+              "pct": 47
+            },
+            {
+              "choice": "Dan S. Sullivan",
+              "pct": 44
+            },
+            {
+              "choice": "Daniel J. Sullivan Jr.",
+              "pct": 4
+            },
+            {
+              "choice": "Gerald L. Heikes",
+              "pct": 1
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "3fc9b5ee19b45d5424546c13ae0b0647368b7d4986755f1321ef141e40d693ac",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q18",
+            "provider_snapshot_sha256": "085f67ff824f49740d070c1f8137bf2d6f65af6040d061003dc20d0b2382ca08",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q18 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q19",
+            "provider_snapshot_sha256": "6234c56f31d172695e44d13531c1d615caaaf6293882710d758fc0ab21107560",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q19 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q15"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "3fc9b5ee19b45d5424546c13ae0b0647368b7d4986755f1321ef141e40d693ac",
+        "primary_supplement_record_sha256": "3fc9b5ee19b45d5424546c13ae0b0647368b7d4986755f1321ef141e40d693ac",
+        "snapshot_sha256": "fe59d218792533980b1a88c564876de84d59216dac4320ef0d021dac1bae1170",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Mary Peltola": 47,
+          "Dan S. Sullivan": 44,
+          "Daniel J. Sullivan Jr.": 4,
+          "Gerald L. Heikes": 1
+        },
+        "question_sample_n": 694,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 694,
+          "sample_base": "weighted_full_sample",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 15,
+          "source_pdf_page": 12,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "Rank up to four candidates, with 1 as first choice and 4 as last choice; rank at least one option, and rank Not sure first if unsure.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": false,
+          "scenario_assumption": null,
+          "undecided_pct": 3,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "first_preference",
+        "ranked_choice_question": {
+          "kind": "first_preference",
+          "question": "Q15: Rank up to four candidates, with 1 as first choice and 4 as last choice; rank at least one option, and rank Not sure first if unsure.",
+          "compared_candidates": [
+            "Mary Peltola",
+            "Dan S. Sullivan",
+            "Daniel J. Sullivan Jr.",
+            "Gerald L. Heikes"
+          ],
+          "label_ko": "4후보 첫 선호 · 참고",
+          "question_number": 15,
+          "source_pdf_page": 12,
+          "hypothetical": false,
+          "active_weighted_n": 694,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q18",
+          "poll_type": "us-senator",
+          "subject": "2026 Alaska",
+          "seat_name": null,
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 671,
+          "answers": [
+            {
+              "choice": "Mary Peltola",
+              "pct": 51
+            },
+            {
+              "choice": "Dan S. Sullivan",
+              "pct": 49
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "085f67ff824f49740d070c1f8137bf2d6f65af6040d061003dc20d0b2382ca08",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q15",
+            "provider_snapshot_sha256": "3fc9b5ee19b45d5424546c13ae0b0647368b7d4986755f1321ef141e40d693ac",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q15 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q19",
+            "provider_snapshot_sha256": "6234c56f31d172695e44d13531c1d615caaaf6293882710d758fc0ab21107560",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q19 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q18"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "085f67ff824f49740d070c1f8137bf2d6f65af6040d061003dc20d0b2382ca08",
+        "primary_supplement_record_sha256": "085f67ff824f49740d070c1f8137bf2d6f65af6040d061003dc20d0b2382ca08",
+        "snapshot_sha256": "02985bd294dbb64ce9f32f2d9690c33380264c37d1c1ac06e48eee2446ef55ac",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Mary Peltola": 51,
+          "Dan S. Sullivan": 49
+        },
+        "question_sample_n": 671,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 671,
+          "sample_base": "weighted_active_ballots_as_published",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 18,
+          "source_pdf_page": 13,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "미정 응답과 Heikes, Daniel J. Sullivan Jr.를 순서대로 제외한 게시 모의. 소진표를 임의로 재배분하지 않은 Q18.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": false,
+          "scenario_assumption": "미정 응답과 Heikes, Daniel J. Sullivan Jr.를 순서대로 제외한 게시 모의. 소진표를 임의로 재배분하지 않은 Q18.",
+          "undecided_pct": null,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "simulated_final_round",
+        "ranked_choice_question": {
+          "kind": "simulated_final_round",
+          "question": "Q18: 미정 응답과 Heikes, Daniel J. Sullivan Jr.를 순서대로 제외한 게시 모의. 소진표를 임의로 재배분하지 않은 Q18.",
+          "compared_candidates": [
+            "Mary Peltola",
+            "Dan S. Sullivan"
+          ],
+          "label_ko": "후보 제거 후 최종 2후보 모의 · 참고",
+          "question_number": 18,
+          "source_pdf_page": 13,
+          "hypothetical": false,
+          "active_weighted_n": 671,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q19",
+          "poll_type": "us-senator",
+          "subject": "2026 Alaska",
+          "seat_name": null,
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 675,
+          "answers": [
+            {
+              "choice": "Mary Peltola",
+              "pct": 50
+            },
+            {
+              "choice": "Dan S. Sullivan",
+              "pct": 50
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "6234c56f31d172695e44d13531c1d615caaaf6293882710d758fc0ab21107560",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q15",
+            "provider_snapshot_sha256": "3fc9b5ee19b45d5424546c13ae0b0647368b7d4986755f1321ef141e40d693ac",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q15 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q18",
+            "provider_snapshot_sha256": "085f67ff824f49740d070c1f8137bf2d6f65af6040d061003dc20d0b2382ca08",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q18 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q19"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "6234c56f31d172695e44d13531c1d615caaaf6293882710d758fc0ab21107560",
+        "primary_supplement_record_sha256": "6234c56f31d172695e44d13531c1d615caaaf6293882710d758fc0ab21107560",
+        "snapshot_sha256": "f9bd6b4ac431b9fb246b5514b2aacb7c9aa432bfc52c4ccbc8325d8819926cde",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Mary Peltola": 50,
+          "Dan S. Sullivan": 50
+        },
+        "question_sample_n": 675,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 675,
+          "sample_base": "weighted_active_ballots_as_published",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 19,
+          "source_pdf_page": 13,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "Daniel J. Sullivan Jr.를 순위에 기입했으나 소진된 표를 현직 Dan S. Sullivan에 이전하는 가정.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": true,
+          "scenario_assumption": "Daniel J. Sullivan Jr.를 순위에 기입했으나 소진된 표를 현직 Dan S. Sullivan에 이전하는 가정.",
+          "undecided_pct": null,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "simulated_final_round",
+        "ranked_choice_question": {
+          "kind": "simulated_final_round",
+          "question": "Q19: Daniel J. Sullivan Jr.를 순위에 기입했으나 소진된 표를 현직 Dan S. Sullivan에 이전하는 가정.",
+          "compared_candidates": [
+            "Mary Peltola",
+            "Dan S. Sullivan"
+          ],
+          "label_ko": "소진표 재배분 가정 · 참고",
+          "question_number": 19,
+          "source_pdf_page": 13,
+          "hypothetical": true,
+          "active_weighted_n": 675,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q20",
+          "poll_type": "us-representative",
+          "subject": "2026 AK-01",
+          "seat_name": "AK-01",
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 694,
+          "answers": [
+            {
+              "choice": "Nick Begich",
+              "pct": 48
+            },
+            {
+              "choice": "Bill Hill",
+              "pct": 42
+            },
+            {
+              "choice": "Eric Hafner",
+              "pct": 5
+            },
+            {
+              "choice": "James C. \"Jim\" McDermott",
+              "pct": 1
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "9ca3e3b356cbbe5ee669cb623180b5c22472a0b60eb347d0b1335969d86ac104",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q23",
+            "provider_snapshot_sha256": "bbd76edc0ede1da71d055df57a709782428ba63fb336c268426f1e874d2a7e0d",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q23 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q24",
+            "provider_snapshot_sha256": "9ca1292c7301a2e159c783fb42e5c4247eefb1b2dea8ac1398d3bb23f9f26ec2",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q24 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q20"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "9ca3e3b356cbbe5ee669cb623180b5c22472a0b60eb347d0b1335969d86ac104",
+        "primary_supplement_record_sha256": "9ca3e3b356cbbe5ee669cb623180b5c22472a0b60eb347d0b1335969d86ac104",
+        "snapshot_sha256": "0ce9bee718ee98a36098f23db8feeceb700c58c4cb090632b09c530a26cbbe26",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Nick Begich": 48,
+          "Bill Hill": 42,
+          "Eric Hafner": 5,
+          "James C. \"Jim\" McDermott": 1
+        },
+        "question_sample_n": 694,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 694,
+          "sample_base": "weighted_full_sample",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 20,
+          "source_pdf_page": 13,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "Rank up to four candidates, with 1 as first choice and 4 as last choice; rank at least one option, and rank Not sure first if unsure.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": false,
+          "scenario_assumption": null,
+          "undecided_pct": 4,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "first_preference",
+        "ranked_choice_question": {
+          "kind": "first_preference",
+          "question": "Q20: Rank up to four candidates, with 1 as first choice and 4 as last choice; rank at least one option, and rank Not sure first if unsure.",
+          "compared_candidates": [
+            "Nick Begich",
+            "Bill Hill",
+            "Eric Hafner",
+            "James C. \"Jim\" McDermott"
+          ],
+          "label_ko": "4후보 첫 선호 · 참고",
+          "question_number": 20,
+          "source_pdf_page": 13,
+          "hypothetical": false,
+          "active_weighted_n": 694,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q23",
+          "poll_type": "us-representative",
+          "subject": "2026 AK-01",
+          "seat_name": "AK-01",
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 659,
+          "answers": [
+            {
+              "choice": "Nick Begich",
+              "pct": 51
+            },
+            {
+              "choice": "Bill Hill",
+              "pct": 49
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "bbd76edc0ede1da71d055df57a709782428ba63fb336c268426f1e874d2a7e0d",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q20",
+            "provider_snapshot_sha256": "9ca3e3b356cbbe5ee669cb623180b5c22472a0b60eb347d0b1335969d86ac104",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q20 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q24",
+            "provider_snapshot_sha256": "9ca1292c7301a2e159c783fb42e5c4247eefb1b2dea8ac1398d3bb23f9f26ec2",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q24 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q23"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "bbd76edc0ede1da71d055df57a709782428ba63fb336c268426f1e874d2a7e0d",
+        "primary_supplement_record_sha256": "bbd76edc0ede1da71d055df57a709782428ba63fb336c268426f1e874d2a7e0d",
+        "snapshot_sha256": "dfb88372bfe3f939c5e0fb6dca3563bc0d8a76a7547c8e67eef0845b33205667",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Nick Begich": 51,
+          "Bill Hill": 49
+        },
+        "question_sample_n": 659,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 659,
+          "sample_base": "weighted_active_ballots_as_published",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 23,
+          "source_pdf_page": 14,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "미정 응답, McDermott, Hafner를 순서대로 제외한 게시 모의. Q23의 유효 가중 표본 659.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": false,
+          "scenario_assumption": "미정 응답, McDermott, Hafner를 순서대로 제외한 게시 모의. Q23의 유효 가중 표본 659.",
+          "undecided_pct": null,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "simulated_final_round",
+        "ranked_choice_question": {
+          "kind": "simulated_final_round",
+          "question": "Q23: 미정 응답, McDermott, Hafner를 순서대로 제외한 게시 모의. Q23의 유효 가중 표본 659.",
+          "compared_candidates": [
+            "Nick Begich",
+            "Bill Hill"
+          ],
+          "label_ko": "후보 제거 후 최종 2후보 모의 · 참고",
+          "question_number": 23,
+          "source_pdf_page": 14,
+          "hypothetical": false,
+          "active_weighted_n": 659,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "AK",
+        "reviewed_on": "2026-10-20",
+        "record": {
+          "id": "primary-ak-dfp-20261016-q24",
+          "poll_type": "us-representative",
+          "subject": "2026 AK-01",
+          "seat_name": "AK-01",
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "start_date": "2026-10-08",
+          "end_date": "2026-10-16",
+          "created_at": "2026-10-20",
+          "population": "lv",
+          "sample_size": 668,
+          "answers": [
+            {
+              "choice": "Nick Begich",
+              "pct": 50
+            },
+            {
+              "choice": "Bill Hill",
+              "pct": 50
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null
+        },
+        "record_sha256": "9ca1292c7301a2e159c783fb42e5c4247eefb1b2dea8ac1398d3bb23f9f26ec2",
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "primary-ak-dfp-20261016-q20",
+            "provider_snapshot_sha256": "9ca3e3b356cbbe5ee669cb623180b5c22472a0b60eb347d0b1335969d86ac104",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q20 from the same DFP study"
+          },
+          {
+            "id": "primary-ak-dfp-20261016-q23",
+            "provider_snapshot_sha256": "bbd76edc0ede1da71d055df57a709782428ba63fb336c268426f1e874d2a7e0d",
+            "reason": "different_ranked_choice_question",
+            "question": "Distinct reviewed Q23 from the same DFP study"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-ak-dfp-20261016-q24"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-20",
+        "reviewed_at": "2026-10-20T23:07:02.638191+00:00",
+        "provider_record_sha256": "9ca1292c7301a2e159c783fb42e5c4247eefb1b2dea8ac1398d3bb23f9f26ec2",
+        "primary_supplement_record_sha256": "9ca1292c7301a2e159c783fb42e5c4247eefb1b2dea8ac1398d3bb23f9f26ec2",
+        "snapshot_sha256": "1562acaaeae49ae4be5117c9660817118815b2ab088364900888b754da54fd3e",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+            "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+            "format": "reviewed_pdf_v1"
+          }
+        ],
+        "primary_toplines": {
+          "Nick Begich": 50,
+          "Bill Hill": 50
+        },
+        "question_sample_n": 668,
+        "disclosure_review": {
+          "population": "LV",
+          "field_dates": [
+            "2026-10-08",
+            "2026-10-16"
+          ],
+          "study_sample_n": 694,
+          "question_sample_n": 668,
+          "sample_base": "weighted_active_ballots_as_published",
+          "geographic_scope": "Alaska statewide; at-large House covers the same state",
+          "question_number": 24,
+          "source_pdf_page": 14,
+          "column": "Topline",
+          "question_wording_checked": true,
+          "question_wording_summary": "Eric Hafner를 순위에 기입했으나 소진된 표를 Bill Hill에 이전하는 가정.",
+          "first_choice_is_not_final_count": true,
+          "hypothetical_scenario": true,
+          "scenario_assumption": "Eric Hafner를 순위에 기입했으나 소진된 표를 Bill Hill에 이전하는 가정.",
+          "undecided_pct": null,
+          "mode": "SMS and web panel; English",
+          "weighting": "age, gender, education, race, geography, recalled vote",
+          "sampling_frame": null,
+          "probability_design_verified": false,
+          "commissioner": null,
+          "external_commissioner_disclosure": "not disclosed",
+          "full_questionnaire_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "original_publication_date": "2026-10-20",
+          "study_id": "ak-dfp-20261008-20261016"
+        },
+        "ballot_format": "simulated_final_round",
+        "ranked_choice_question": {
+          "kind": "simulated_final_round",
+          "question": "Q24: Eric Hafner를 순위에 기입했으나 소진된 표를 Bill Hill에 이전하는 가정.",
+          "compared_candidates": [
+            "Nick Begich",
+            "Bill Hill"
+          ],
+          "label_ko": "소진표 재배분 가정 · 참고",
+          "question_number": 24,
+          "source_pdf_page": 14,
+          "hypothetical": true,
+          "active_weighted_n": 668,
+          "wave_id": "ak-dfp-20261008-20261016"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "group": "dataforprogress",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "ranked_choice_separate_question_reference"
+          ]
+        },
+        "sponsor_review": {
+          "primary_commissioners": [],
+          "primary_internal": false,
+          "commissioner_disclosure": "not disclosed; no claim of independent commissioning",
+          "publisher": "Data for Progress",
+          "publisher_accuracy_rating": null
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_full_study_margin",
+          "half_width_pp": 4,
+          "confidence_level_pct": null,
+          "applies_to_final_or_conditional_question": false,
+          "validated_here": false
+        },
+        "missing_fields": [
+          "sampling_frame",
+          "independent_commissioner_verification",
+          "confidence_level_pct",
+          "historical_accuracy_rating",
+          "final_round_precision"
+        ],
+        "limitations_ko": "동일 조사 파동의 첫 선호·제거 후 모의·소진표 재배분 가정을 분리한 참고 자료. 일반 7/14일 우세·승패·지도색 집계에는 포함하지 않습니다. N은 원문의 각 문항 Weighted N이며 전체 표본 694를 최종 유효표로 대체하지 않습니다. 표본오차 ±4는 발표된 전체 조사 수치로 예측 정확도나 최종 라운드 오차 검증이 아닙니다."
+      }
     }
   ],
   "capture": {
-    "as_of": "2026-10-09",
-    "fetched_at": "2026-10-09T04:59:12.473203+00:00",
+    "as_of": "2026-10-20",
+    "fetched_at": "2026-10-20T23:05:13.375006+00:00",
     "receipt": {
       "state": "AK",
       "cycle": 2026,
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
-      "captured_at": "2026-10-09T04:59:12.473203+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-20",
+      "captured_at": "2026-10-20T23:05:13.375006+00:00",
       "capture_kind": "provider_transport_and_reviewed_primary_supplements",
-      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
-      "provider_records": 37,
+      "serialized_provider_response_sha256": "230c3316fa94b9083c3a99a411fb71d2b9b7a107f5bafb1a32a82ac174ecc789",
+      "provider_records": 39,
       "primary_supplement_receipts": [
         {
           "id": "primary-ak-quantus-20260930-first-choice",
           "state": "AK",
           "status": "primary_documents_rechecked",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T04:59:27.376454+00:00",
+          "checked_at": "2026-10-20T23:07:05.171635+00:00",
           "documents": [
             {
               "url": "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download",
@@ -1842,6 +3399,174 @@
           "separate_question_provider_ids": [
             "us-202qua198b0338"
           ]
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q10",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:05.538840+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q13",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:05.949482+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q10"
+          ]
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q14",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:06.272494+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q10",
+            "primary-ak-dfp-20261016-q13"
+          ]
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q15",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:06.621298+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q18",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:07.008138+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q15"
+          ]
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q19",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:07.369940+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q15",
+            "primary-ak-dfp-20261016-q18"
+          ]
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q20",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:07.729755+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q23",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:08.074965+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q20"
+          ]
+        },
+        {
+          "id": "primary-ak-dfp-20261016-q24",
+          "state": "AK",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:08.421811+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q20",
+            "primary-ak-dfp-20261016-q23"
+          ]
         }
       ],
       "primary_rechecked_ids": [
@@ -1852,27 +3577,97 @@
         "gov202fab5e9d8b1c",
         "us-202fab0388654c"
       ],
-      "primary_review_data_file": "usa_election_poll_release_reviews/2026/AK-primary-20261009.json",
-      "primary_review_scope": "Quantus PDF and Cygnal memo checked; AARP primary publisher text checked, full questionnaire inaccessible; all RCV questions reference only",
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/AK-dfp-20261021.json",
+      "primary_review_scope": "DFP October 8-16 study: three first choices, three published two-candidate simulations and three hypothetical continuation/reallocation scenarios; all RCV reference only. Existing Quantus release rechecked; other old reviews retain their original dates.",
       "governor_source_checked_at": "2026-10-09T04:53:55.597272+00:00",
       "federal_finance_recollected": false,
-      "federal_identity_reviewed_on": "2026-10-09"
+      "federal_identity_reviewed_on": "2026-10-09",
+      "new_provider_collection": true,
+      "prior_capture_receipt": {
+        "state": "AK",
+        "cycle": 2026,
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
+        "captured_at": "2026-10-09T04:59:12.473203+00:00",
+        "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+        "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
+        "provider_records": 37,
+        "primary_supplement_receipts": [
+          {
+            "id": "primary-ak-quantus-20260930-first-choice",
+            "state": "AK",
+            "status": "primary_documents_rechecked",
+            "original_reviewed_on": "2026-10-09",
+            "checked_at": "2026-10-09T04:59:27.376454+00:00",
+            "documents": [
+              {
+                "url": "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download",
+                "status": "unchanged",
+                "sha256": "7c8c88cf83234fad2acd5fd19d3647e8048c1ce541fefd12eeeb8b1ab375422f"
+              }
+            ],
+            "provider_duplicate_ids": [],
+            "reviewed_replaced_provider_ids": [],
+            "separate_question_provider_ids": [
+              "us-202qua198b0338"
+            ]
+          }
+        ],
+        "primary_rechecked_ids": [
+          "us-202qua198b0338",
+          "primary-ak-quantus-20260930-first-choice",
+          "us-202fabecd2ecd9",
+          "gov202cyg016be6c7",
+          "gov202fab5e9d8b1c",
+          "us-202fab0388654c"
+        ],
+        "primary_review_data_file": "usa_election_poll_release_reviews/2026/AK-primary-20261009.json",
+        "primary_review_scope": "Quantus PDF and Cygnal memo checked; AARP primary publisher text checked, full questionnaire inaccessible; all RCV questions reference only",
+        "governor_source_checked_at": "2026-10-09T04:53:55.597272+00:00",
+        "federal_finance_recollected": false,
+        "federal_identity_reviewed_on": "2026-10-09"
+      },
+      "source_review_receipts": [
+        {
+          "kind": "release",
+          "url": "https://www.dataforprogress.org/blog/2026/10/20/every-statewide-race-in-alaska-is-close-as-7-in-10-voters-worry-about-affording-gas-and-food",
+          "captured_at": "2026-10-20T23:05:14.244825+00:00",
+          "sha256": "b05a4db1c5e1df3d09f91975b6f9212fa85b3ea3dbb9d3b7f604ca9b253013b7",
+          "bytes": 379425,
+          "status": "ok"
+        },
+        {
+          "kind": "crosstabs",
+          "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+          "captured_at": "2026-10-20T23:05:14.582932+00:00",
+          "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4",
+          "bytes": 591332,
+          "status": "ok"
+        },
+        {
+          "kind": "ballot",
+          "url": "https://www.elections.alaska.gov/election/2026/General/SampleBallots/HD1-JD1.pdf",
+          "attempted_at": "2026-10-20T23:05:15.381019+00:00",
+          "status": "unavailable",
+          "error_type": "URLError"
+        }
+      ],
+      "candidate_roster_recheck": "source_unavailable_existing_2026-10-09_review_preserved"
     },
     "provider_records": [
       {
-        "id": "us-202fabecd2ecd9",
+        "id": "us-202pub53b72052",
         "poll_type": "us-senator",
-        "sample_size": 800,
-        "population": "lv",
-        "url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
-        "created_at": "2026-09-17",
-        "start_date": "2026-09-08",
-        "end_date": "2026-09-11",
-        "pollster": "Fabrizio, Lee & Associates/Impact Research",
+        "sample_size": 578,
+        "population": "rv",
+        "url": "https://x.com/AndrewSolender/status/2110867168892014803",
+        "created_at": "2026-10-16",
+        "start_date": "2026-10-14",
+        "end_date": "2026-10-15",
+        "pollster": "Public Policy Polling",
         "answers": [
           {
             "choice": "Mary Peltola",
-            "pct": 53.0
+            "pct": 48.0
           },
           {
             "choice": "Dan Sullivan",
@@ -1880,127 +3675,9 @@
           }
         ],
         "seat_name": null,
-        "sponsors": [
-          "AARP"
-        ],
-        "internal": false,
-        "partisan": null,
-        "subject": "2026 Alaska"
-      },
-      {
-        "id": "gov202fab5e9d8b1c",
-        "poll_type": "governor",
-        "sample_size": 800,
-        "population": "lv",
-        "url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
-        "created_at": "2026-09-17",
-        "start_date": "2026-09-08",
-        "end_date": "2026-09-11",
-        "pollster": "Fabrizio, Lee & Associates/Impact Research",
-        "answers": [
-          {
-            "choice": "Jonathan Kreiss-Tomkins",
-            "pct": 55.0
-          },
-          {
-            "choice": "Bernadette Wilson",
-            "pct": 45.0
-          }
-        ],
-        "seat_name": null,
-        "sponsors": [
-          "AARP"
-        ],
-        "internal": false,
-        "partisan": null,
-        "subject": "2026 Alaska"
-      },
-      {
-        "id": "us-202fab0388654c",
-        "poll_type": "us-representative",
-        "sample_size": 800,
-        "population": "lv",
-        "url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
-        "created_at": "2026-09-17",
-        "start_date": "2026-09-08",
-        "end_date": "2026-09-11",
-        "pollster": "Fabrizio, Lee & Associates/Impact Research",
-        "answers": [
-          {
-            "choice": "Nick Begich",
-            "pct": 57.0
-          },
-          {
-            "choice": "Bill Hill",
-            "pct": 43.0
-          }
-        ],
-        "seat_name": "AK-01",
-        "sponsors": [
-          "AARP"
-        ],
-        "internal": false,
-        "partisan": null,
-        "subject": "2026 AK-01"
-      },
-      {
-        "id": "gov202cyg016be6c7",
-        "poll_type": "governor",
-        "sample_size": 502,
-        "population": "lv",
-        "url": "https://www.cygn.al/wp-content/uploads/2026/10/AK_GOV_Memo.pdf",
-        "created_at": "2026-10-02",
-        "start_date": "2026-09-24",
-        "end_date": "2026-09-27",
-        "pollster": "Cygnal",
-        "answers": [
-          {
-            "choice": "Jonathan Kreiss-Tomkins",
-            "pct": 44.0
-          },
-          {
-            "choice": "Bernadette Wilson",
-            "pct": 24.0
-          },
-          {
-            "choice": "David Bronson",
-            "pct": 8.0
-          },
-          {
-            "choice": "Treg Taylor",
-            "pct": 9.0
-          }
-        ],
-        "seat_name": null,
         "sponsors": [],
         "internal": false,
-        "partisan": "REP",
-        "subject": "2026 Alaska"
-      },
-      {
-        "id": "us-202qua198b0338",
-        "poll_type": "us-senator",
-        "sample_size": 758,
-        "population": "lv",
-        "url": "https://quantusinsights.org/polling/f/quantus-insights-survey-sullivan-peltola-deadlocked-in-alaska",
-        "created_at": "2026-10-02",
-        "start_date": "2026-09-28",
-        "end_date": "2026-09-30",
-        "pollster": "Quantus Insights",
-        "answers": [
-          {
-            "choice": "Mary Peltola",
-            "pct": 47.2
-          },
-          {
-            "choice": "Dan Sullivan",
-            "pct": 47.8
-          }
-        ],
-        "seat_name": null,
-        "sponsors": [],
-        "internal": false,
-        "partisan": null,
+        "partisan": "DEM",
         "subject": "2026 Alaska"
       },
       {
@@ -2792,6 +4469,90 @@
         "subject": "2026 Alaska"
       },
       {
+        "id": "us-202fabecd2ecd9",
+        "poll_type": "us-senator",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+        "created_at": "2026-09-17",
+        "start_date": "2026-09-08",
+        "end_date": "2026-09-11",
+        "pollster": "Fabrizio, Lee & Associates/Impact Research",
+        "answers": [
+          {
+            "choice": "Mary Peltola",
+            "pct": 53.0
+          },
+          {
+            "choice": "Dan Sullivan",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "AARP"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alaska"
+      },
+      {
+        "id": "gov202fab5e9d8b1c",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+        "created_at": "2026-09-17",
+        "start_date": "2026-09-08",
+        "end_date": "2026-09-11",
+        "pollster": "Fabrizio, Lee & Associates/Impact Research",
+        "answers": [
+          {
+            "choice": "Jonathan Kreiss-Tomkins",
+            "pct": 55.0
+          },
+          {
+            "choice": "Bernadette Wilson",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "AARP"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alaska"
+      },
+      {
+        "id": "us-202fab0388654c",
+        "poll_type": "us-representative",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.aarp.org/pri/topics/voter-research/politics/2026-midterm-election-poll-alaska/",
+        "created_at": "2026-09-17",
+        "start_date": "2026-09-08",
+        "end_date": "2026-09-11",
+        "pollster": "Fabrizio, Lee & Associates/Impact Research",
+        "answers": [
+          {
+            "choice": "Nick Begich",
+            "pct": 57.0
+          },
+          {
+            "choice": "Bill Hill",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": "AK-01",
+        "sponsors": [
+          "AARP"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 AK-01"
+      },
+      {
         "id": "us-202co/0acc5699",
         "poll_type": "us-senator",
         "sample_size": 799,
@@ -2847,6 +4608,66 @@
         "subject": "2026 AK-01"
       },
       {
+        "id": "gov202cyg016be6c7",
+        "poll_type": "governor",
+        "sample_size": 502,
+        "population": "lv",
+        "url": "https://www.cygn.al/wp-content/uploads/2026/10/AK_GOV_Memo.pdf",
+        "created_at": "2026-10-02",
+        "start_date": "2026-09-24",
+        "end_date": "2026-09-27",
+        "pollster": "Cygnal",
+        "answers": [
+          {
+            "choice": "Jonathan Kreiss-Tomkins",
+            "pct": 44.0
+          },
+          {
+            "choice": "Bernadette Wilson",
+            "pct": 24.0
+          },
+          {
+            "choice": "David Bronson",
+            "pct": 8.0
+          },
+          {
+            "choice": "Treg Taylor",
+            "pct": 9.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Alaska"
+      },
+      {
+        "id": "us-202qua198b0338",
+        "poll_type": "us-senator",
+        "sample_size": 758,
+        "population": "lv",
+        "url": "https://quantusinsights.org/polling/f/quantus-insights-survey-sullivan-peltola-deadlocked-in-alaska",
+        "created_at": "2026-10-02",
+        "start_date": "2026-09-28",
+        "end_date": "2026-09-30",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Mary Peltola",
+            "pct": 47.2
+          },
+          {
+            "choice": "Dan Sullivan",
+            "pct": 47.8
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alaska"
+      },
+      {
         "id": "us-202the4bdf33e1",
         "poll_type": "us-representative",
         "sample_size": 820,
@@ -2899,9 +4720,35 @@
         "internal": false,
         "partisan": null,
         "subject": "2026 Alaska"
+      },
+      {
+        "id": "gov202ala7c90a5de",
+        "poll_type": "governor",
+        "sample_size": 1568,
+        "population": "lv",
+        "url": "https://x.com/The_Real_ASR/status/2112415183226429942",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-15",
+        "end_date": "2026-10-18",
+        "pollster": "Alaska Survey Research",
+        "answers": [
+          {
+            "choice": "Jonathan Kreiss-Tomkins",
+            "pct": 55.0
+          },
+          {
+            "choice": "Bernadette Wilson",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alaska"
       }
     ],
-    "provider_records_sha256": "177e75d9965055cf593f0e88f1163b1ddfef15302b0059ee9a544f9666a79478",
+    "provider_records_sha256": "3dc7323ab913fd696210c81ef3c3433fb4e565fac61bae24367f254b9df7f116",
     "primary_records": [
       {
         "id": "primary-ak-quantus-20260930-first-choice",
@@ -2939,7 +4786,7 @@
         "primary_source_capture": {
           "status": "primary_documents_rechecked",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T04:59:27.376454+00:00",
+          "checked_at": "2026-10-20T23:07:05.171635+00:00",
           "documents": [
             {
               "url": "https://drive.usercontent.google.com/download?id=1nCtCrSwufcL_hlLEVQiN-xsM4f_6c-6C&export=download",
@@ -2951,6 +4798,414 @@
           "reviewed_replaced_provider_ids": [],
           "separate_question_provider_ids": [
             "us-202qua198b0338"
+          ]
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q10",
+        "poll_type": "governor",
+        "subject": "2026 Alaska",
+        "seat_name": null,
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 694,
+        "answers": [
+          {
+            "choice": "Jonathan S. \"JKT\" Kreiss-Tomkins",
+            "pct": 46
+          },
+          {
+            "choice": "Bernadette M. Wilson",
+            "pct": 28
+          },
+          {
+            "choice": "Dave Bronson",
+            "pct": 12
+          },
+          {
+            "choice": "Treg Taylor",
+            "pct": 9
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:05.538840+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q13",
+        "poll_type": "governor",
+        "subject": "2026 Alaska",
+        "seat_name": null,
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 629,
+        "answers": [
+          {
+            "choice": "Jonathan S. \"JKT\" Kreiss-Tomkins",
+            "pct": 53
+          },
+          {
+            "choice": "Bernadette M. Wilson",
+            "pct": 47
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:05.949482+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q10"
+          ]
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q14",
+        "poll_type": "governor",
+        "subject": "2026 Alaska",
+        "seat_name": null,
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 660,
+        "answers": [
+          {
+            "choice": "Jonathan S. \"JKT\" Kreiss-Tomkins",
+            "pct": 50
+          },
+          {
+            "choice": "Bernadette M. Wilson",
+            "pct": 50
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:06.272494+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q10",
+            "primary-ak-dfp-20261016-q13"
+          ]
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q15",
+        "poll_type": "us-senator",
+        "subject": "2026 Alaska",
+        "seat_name": null,
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 694,
+        "answers": [
+          {
+            "choice": "Mary Peltola",
+            "pct": 47
+          },
+          {
+            "choice": "Dan S. Sullivan",
+            "pct": 44
+          },
+          {
+            "choice": "Daniel J. Sullivan Jr.",
+            "pct": 4
+          },
+          {
+            "choice": "Gerald L. Heikes",
+            "pct": 1
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:06.621298+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q18",
+        "poll_type": "us-senator",
+        "subject": "2026 Alaska",
+        "seat_name": null,
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 671,
+        "answers": [
+          {
+            "choice": "Mary Peltola",
+            "pct": 51
+          },
+          {
+            "choice": "Dan S. Sullivan",
+            "pct": 49
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:07.008138+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q15"
+          ]
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q19",
+        "poll_type": "us-senator",
+        "subject": "2026 Alaska",
+        "seat_name": null,
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 675,
+        "answers": [
+          {
+            "choice": "Mary Peltola",
+            "pct": 50
+          },
+          {
+            "choice": "Dan S. Sullivan",
+            "pct": 50
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:07.369940+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q15",
+            "primary-ak-dfp-20261016-q18"
+          ]
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q20",
+        "poll_type": "us-representative",
+        "subject": "2026 AK-01",
+        "seat_name": "AK-01",
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 694,
+        "answers": [
+          {
+            "choice": "Nick Begich",
+            "pct": 48
+          },
+          {
+            "choice": "Bill Hill",
+            "pct": 42
+          },
+          {
+            "choice": "Eric Hafner",
+            "pct": 5
+          },
+          {
+            "choice": "James C. \"Jim\" McDermott",
+            "pct": 1
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:07.729755+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q23",
+        "poll_type": "us-representative",
+        "subject": "2026 AK-01",
+        "seat_name": "AK-01",
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 659,
+        "answers": [
+          {
+            "choice": "Nick Begich",
+            "pct": 51
+          },
+          {
+            "choice": "Bill Hill",
+            "pct": 49
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:08.074965+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q20"
+          ]
+        }
+      },
+      {
+        "id": "primary-ak-dfp-20261016-q24",
+        "poll_type": "us-representative",
+        "subject": "2026 AK-01",
+        "seat_name": "AK-01",
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+        "start_date": "2026-10-08",
+        "end_date": "2026-10-16",
+        "created_at": "2026-10-20",
+        "population": "lv",
+        "sample_size": 668,
+        "answers": [
+          {
+            "choice": "Nick Begich",
+            "pct": 50
+          },
+          {
+            "choice": "Bill Hill",
+            "pct": 50
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-20",
+          "checked_at": "2026-10-20T23:07:08.421811+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/10/dfp_alaska_oct_2026.pdf",
+              "status": "unchanged",
+              "sha256": "c7a753b09705ff2a44ae5c95b942a80b10a5a4e059cbe0b7f4fcc3a3c0c2d8b4"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "primary-ak-dfp-20261016-q20",
+            "primary-ak-dfp-20261016-q23"
           ]
         }
       }
