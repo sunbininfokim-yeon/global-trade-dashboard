@@ -116,6 +116,12 @@ def source_home(src: Dict[str, Any]) -> Optional[str]:
 
 
 def horizon_days(src: Optional[Dict[str, Any]]) -> int:
+    # A news feed's rolling headlines go stale in days, and every item kept is
+    # parsed by the Worker on each /api/commodity-reports request, so a source
+    # may ask for a shorter window than the archive's (retention_days).
+    keep = int((src or {}).get("retention_days") or 0)
+    if keep > 0:
+        return keep
     return max(CARRY_OVER_DAYS, int(((src or {}).get("html") or {}).get("max_age_days") or 0))
 
 
@@ -159,10 +165,14 @@ def previous_raws(
         seen = news_time(published, item.get("published_precision"), item.get("first_seen_at"), now)
         if (now - seen).days > horizon_days(src):
             continue
+        # An aggregator source credits the outlet each item names; the
+        # snapshot kept that, the source config does not have it.
+        own = bool(src.get("item_publisher")) and bool(item.get("agency"))
         r = RawReport(
             source_id=src["id"],
-            agency=src.get("agency", src["id"]),
-            agency_ko=src.get("agency_ko", src.get("agency", src["id"])),
+            agency=item["agency"] if own else src.get("agency", src["id"]),
+            agency_ko=(item.get("agency_ko") or item["agency"]) if own
+            else src.get("agency_ko", src.get("agency", src["id"])),
             url=item.get("url") or "",
             title=(item.get("title") or {}).get("original") or "",
             summary=item.get("summary") or "",

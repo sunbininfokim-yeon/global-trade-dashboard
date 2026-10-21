@@ -1281,6 +1281,15 @@ class NewProducerCountryTests(unittest.TestCase):
         )
         self.assertEqual(self.tagger.tag(strip("Urenco USA expansion in New Mexico")), ["USA"])
 
+    def test_us_dollar_sign_is_not_the_united_states(self):
+        from commodity_reports.tag import _strip_false_country_collocations as strip
+        for text in ("Govt targets up to US$50 billion in nickel exports",
+                     "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada"):
+            self.assertEqual(self.tagger.tag(strip(text)), [], text)
+        # The country is still found when it is named as one.
+        self.assertEqual(self.tagger.tag(strip("US tariffs hit nickel; US$50 billion at stake")), ["USA"])
+        self.assertEqual(self.tagger.tag(strip("U.S. sanctions cut US$2 billion of exports")), ["USA"])
+
     def test_niger_is_not_nigeria(self):
         self.assertEqual(self.tagger.tag("Nigeria crude exports in the Niger Delta"), ["NGA"])
         self.assertEqual(self.tagger.tag("Nigerian output rises"), ["NGA"])
@@ -1402,6 +1411,39 @@ class AggregatorFeedTests(unittest.TestCase):
         from commodity_reports import build as build_mod
         self.assertIsNone(build_mod.source_home(self.SRC))
         self.assertEqual(build_mod.source_home({"id": "x", "url": "https://a.example/feed"}), "https://a.example/")
+
+    def test_a_news_source_can_keep_a_shorter_window(self):
+        from commodity_reports import build as build_mod
+        now = datetime(2026, 10, 21, tzinfo=timezone.utc)
+        previous = {"items": [
+            {"source_id": "news", "url": "https://n.example/1", "title": {"original": "Last week"},
+             "summary": "", "published_at": "2026-10-14T00:00:00+00:00"},
+            {"source_id": "news", "url": "https://n.example/2", "title": {"original": "Last month"},
+             "summary": "", "published_at": "2026-09-14T00:00:00+00:00"},
+        ]}
+        base = {"id": "news", "agency": "N", "kind": "rss", "url": "https://n.example/feed"}
+        self.assertEqual(len(build_mod.previous_raws(previous, [base], now)["news"]), 2)   # archive: 84 days
+        short = dict(base, retention_days=14)
+        self.assertEqual([r.title for r in build_mod.previous_raws(previous, [short], now)["news"]], ["Last week"])
+        self.assertEqual(build_mod.horizon_days(short), 14)
+        self.assertEqual(build_mod.horizon_days(base), build_mod.ARCHIVE_DAYS)
+
+    def test_a_carried_aggregator_item_keeps_its_outlet(self):
+        from commodity_reports import build as build_mod
+        now = datetime(2026, 10, 21, tzinfo=timezone.utc)
+        src = {"id": "gn", "agency": "Google News", "agency_ko": "구글 뉴스 경유", "kind": "rss",
+               "url": "https://news.google.com/rss/search?q=x", "item_publisher": True}
+        previous = {"items": [
+            {"source_id": "gn", "url": "https://news.google.com/rss/articles/A", "title": {"original": "Nickel quota cut"},
+             "summary": "", "published_at": "2026-10-20T00:00:00+00:00",
+             "agency": "Reuters · Google News", "agency_ko": "Reuters (구글 뉴스 경유)"},
+        ]}
+        got = build_mod.previous_raws(previous, [src], now)["gn"][0]
+        self.assertEqual(got.agency, "Reuters · Google News")
+        self.assertEqual(got.agency_ko, "Reuters (구글 뉴스 경유)")
+        # A source that is not an aggregator keeps the source's own name.
+        plain = dict(src, item_publisher=False)
+        self.assertEqual(build_mod.previous_raws(previous, [plain], now)["gn"][0].agency, "Google News")
 
     def test_per_source_item_cap(self):
         from unittest import mock
