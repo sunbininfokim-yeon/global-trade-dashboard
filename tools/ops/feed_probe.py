@@ -174,8 +174,21 @@ def discover(url: str, html: str, limit: int = MAX_DISCOVERED) -> List[str]:
 _ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
 
+def page_context(text: str, patterns: List[str], width: int = 200, limit: int = 3) -> List[str]:
+    """Snippets of the page's visible text around each pattern (a regex)."""
+    visible = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", text)
+    visible = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", visible)))
+    out: List[str] = []
+    for pat in patterns:
+        for i, m in enumerate(re.finditer(pat, visible)):
+            if i >= limit:
+                break
+            out.append(f"[{pat}] ..." + visible[max(0, m.start() - width): m.end() + width] + "...")
+    return out
+
+
 def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 4, show_body: int = 0,
-             link_text: bool = False) -> Dict[str, Any]:
+             link_text: bool = False, context: Optional[List[str]] = None, context_width: int = 200) -> Dict[str, Any]:
     out: Dict[str, Any] = {"status": res.get("status")}
     if res.get("error"):
         out["error"] = res["error"]
@@ -215,6 +228,8 @@ def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 
             out["link_samples"] = links[:samples]
         if show_body:
             out["body_head"] = re.sub(r"\s+", " ", text)[:show_body]
+        if context:
+            out["context"] = page_context(text, context, context_width)
     return out
 
 
@@ -270,7 +285,8 @@ def probe(target: Dict[str, Any]) -> Dict[str, Any]:
     report: Dict[str, Any] = {"id": target["id"], "group": target.get("group", ""), "url": url}
     for key, res in raw.items():
         res["url"] = url
-        report[key] = describe(res, link_re, samples, show_body, bool(target.get("link_text")))
+        report[key] = describe(res, link_re, samples, show_body, bool(target.get("link_text")),
+                                  target.get("context"), int(target.get("context_width", 200)))
         if target.get("find"):
             # Smoke checks: is each string in the body? (a deployed menu item,
             # a cache-busting version, a config key)
@@ -316,6 +332,8 @@ def line(r: Dict[str, Any]) -> str:
                 s += f" links={d['links']} {d.get('link_samples', [])}"
             if d.get("body_head"):
                 s += f" body={d['body_head']!r}"
+            for c in d.get("context", []):
+                s += f"\n      ctx {c}"
             if d.get("block_hint") is not None and (d.get("status") or 0) >= 400:
                 s += f" server={d.get('server', '')!r} hint={d.get('block_hint')!r}"
         if d.get("found"):
