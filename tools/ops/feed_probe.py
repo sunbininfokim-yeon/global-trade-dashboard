@@ -182,7 +182,7 @@ def pdf_text(body: bytes, chars: int = 900) -> str:
         import io
         from pypdf import PdfReader
         reader = PdfReader(io.BytesIO(body))
-        text = " ".join((page.extract_text() or "") for page in reader.pages[:3])
+        text = " ".join((page.extract_text() or "") for page in reader.pages[:10])
         return f"[{len(reader.pages)} pages] " + re.sub(r"\s+", " ", text)[:chars]
     except Exception as exc:  # noqa: BLE001
         return f"pdf read failed: {exc}"

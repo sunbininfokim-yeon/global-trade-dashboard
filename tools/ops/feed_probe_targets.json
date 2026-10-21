@@ -5,29 +5,29 @@
   "targets": [
     {
       "group": "coalprice",
-      "id": "jdih_home",
-      "url": "https://jdih.esdm.go.id/",
+      "id": "jdih_list_hba",
+      "url": "https://jdih.esdm.go.id/dokumen/peraturan?DokumenSearch%5Bjenis_peraturan%5D=176&DokumenSearch%5Bjudul%5D=Harga+Batubara+Acuan&sort=-tanggal",
       "link_text": true,
-      "link_re": "jdih\\.esdm\\.go\\.id",
-      "samples": 40
+      "link_re": "dokumen/(view|detail|download|peraturan/)",
+      "samples": 20,
+      "context": [
+        "(?i)harga mineral logam acuan"
+      ],
+      "context_width": 220
     },
     {
       "group": "coalprice",
-      "id": "jdih_pdf_401",
-      "url": "https://jdih.esdm.go.id/dokumen/download?id=2026kmesdm401k.pdf",
-      "pdf_text": 1500
+      "id": "jdih_list_plain",
+      "url": "https://jdih.esdm.go.id/dokumen/peraturan?DokumenSearch%5Bjenis_peraturan%5D=176",
+      "link_text": true,
+      "link_re": "dokumen/(view|detail|download)",
+      "samples": 8
     },
     {
       "group": "coalprice",
-      "id": "jdih_pdf_384",
-      "url": "https://jdih.esdm.go.id/dokumen/download?id=2026kmesdm384k.pdf",
-      "pdf_text": 900
-    },
-    {
-      "group": "coalprice",
-      "id": "jdih_pdf_179",
+      "id": "jdih_pdf_179_full",
       "url": "https://jdih.esdm.go.id/dokumen/download?id=2026kmesdm179k.pdf",
-      "pdf_text": 900
+      "pdf_text": 7000
     }
   ]
 }
