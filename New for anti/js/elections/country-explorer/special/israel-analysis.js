@@ -2,6 +2,8 @@ import { escapeHtml } from '../../ui.js';
 import { canCalculate, dayAge, koreaToday, seatPolls, selectedSeatSum, sourceHref } from '../../data/israel-analysis.js';
 import { koreanText, partyProfile, personProfile, groupingGroups, groupSeatSummary, presetSeatSum, selectionRelationships } from '../../data/israel-context.js?v=2';
 
+import { weeklySeatRows } from '../../data/israel-trend.js';
+
 const e = escapeHtml;
 const reviewLabel = (state) => ({ accepted: '원문 채택', partial: '부분 자료', held: '보류' }[state] || '미확인');
 const questionLabel = (scenario) => ({ eisenkot_vs_netanyahu: '아이젠콧과 네타냐후',
@@ -29,6 +31,26 @@ const sourceLinks = (board, ids) => (ids || []).map((id) => {
     return s ? safeLink(s.url, `${s.publisher} · ${s.revised_on || s.published_on || s.reviewed_on || '날짜 미확인'}`) : '';
 }).join(' · ');
 const sectionHeading = (eyebrow, title, note = '') => `<header class="israel-section-heading"><span>${eyebrow}</span><h5>${title}</h5>${note ? `<p>${note}</p>` : ''}</header>`;
+
+const weeklyTrend = (board, today) => {
+    const rows = weeklySeatRows(board, today);
+    const legend = rows[0]?.groups || [];
+    return `<section class="israel-weekly" aria-labelledby="israel-weekly-title">
+        <header><h5 id="israel-weekly-title">최근 7일 · 진영별 의석</h5><span>발표일 기준 · 최신순</span></header>
+        ${rows.length ? `<div class="israel-weekly-legend">${legend.map((g) => `<span><i style="background:${g.color}" aria-hidden="true"></i>${g.label}</span>`).join('')}</div>
+        <div class="israel-weekly-axis" aria-hidden="true"><span>0석</span><span>61석</span><span>120석</span></div>
+        <div class="israel-weekly-rows">${rows.map(({poll, publishedDay, groups}, index) => {
+            const publisher = koreanText(board, poll.publisher, '발표 매체 미확인');
+            const description = groups.map((g) => `${g.label} ${g.total === null ? '미발표' : `${g.total}석`}`).join(' · ');
+            const notes = groups.filter((g) => g.total === null || g.total < 8).map((g) => `${g.label} ${g.total === null ? '미발표' : `${g.total}석`}`).join(' · ');
+            return `<div class="israel-weekly-row" data-israel-weekly-poll="${e(poll.poll_id)}">
+                <div class="israel-weekly-label"><time datetime="${e(publishedDay)}">${e(publishedDay.slice(5).replace('-', '.'))}</time>${index === 0 ? '<small>최신</small>' : ''}<span>${e(publisher)}</span></div>
+                <div class="israel-weekly-plot"><div class="israel-weekly-bar" role="img" aria-label="${e(`${publishedDay} ${publisher} · ${description}`)}">${groups.filter((g) => g.total !== null && g.total > 0).map((g) => `<span style="width:${g.total / 120 * 100}%;background:${g.color}" title="${e(`${g.label} ${g.total}석`)}">${g.total >= 8 ? g.total : ''}</span>`).join('')}<i class="israel-weekly-majority" aria-hidden="true"></i></div>
+                <div class="israel-weekly-source"><span>조사 ${e(poll.field_end)}${notes ? ` · ${e(notes)}` : ''}</span>${safeLink(poll.source_url)}</div></div></div>`;
+        }).join('')}</div>` : '<p class="israel-empty">최근 7일에 발표된 채택 조사가 없습니다.</p>'}
+        <p class="israel-data-note">개별 조사별 발표 의석 · 아랍계 별도 분류 · 조사 없는 날은 생략 · 61석은 산술 과반이며 정부 구성 확정이 아닙니다.</p>
+    </section>`;
+};
 
 const groupCards = (board, poll, grouping, selected, canSelect) => groupingGroups(board, grouping).map((g) => {
     const s = groupSeatSummary(board, poll, g.id, grouping);
@@ -79,6 +101,7 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
             <p>누가 같은 편이고, 정치색은 얼마나 비슷할까요? 협력 관계와 정치 성향을 나눠 살펴보세요.</p>
             <div class="israel-status-line"><span>의석 자료 ${e(board.evidence_as_of)}${age > 0 ? ` · ${age}일 경과` : ''}</span><span>관계 검토 ${e(context.reviewed_on || '미확인')}</span><span>자동 갱신 미설치</span></div>
         </header>
+        ${weeklyTrend(board, today)}
         <nav class="israel-section-nav" aria-label="분석 바로가기"><a href="#israel-seats">정당·의석</a><a href="#israel-relations">연정 관계</a><a href="#israel-threshold">봉쇄선 지지율</a><a href="#israel-people">총리 적합도</a></nav>
         <div class="israel-controls"><label>조사 기간<select data-israel-window>${[[null, '전체 검토 기록'], [7, '최근 7일'], [14, '최근 14일']].map(([value, label]) => `<option value="${value ?? ''}" ${days === value ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
             <label>발표 조사<select data-israel-poll ${polls.length ? '' : 'disabled'}>${polls.length ? polls.map((row) => `<option value="${e(row.poll_id)}" ${row.poll_id === poll?.poll_id ? 'selected' : ''}>${e(pollLabel(board, row))}</option>`).join('') : '<option>기간 내 검토 조사 없음</option>'}</select></label></div>

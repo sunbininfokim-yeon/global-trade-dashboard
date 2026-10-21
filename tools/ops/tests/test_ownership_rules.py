@@ -3,6 +3,15 @@ from tools.ops.ownership_rules import scoped_paths
 
 
 class PollingScopeTests(unittest.TestCase):
+    def test_israel_ci_allows_only_its_independent_validation_workflow(self):
+        branch = 'codex/israel-weekly-bars-20261021'
+        self.assertEqual(scoped_paths(branch), {'.github/workflows/israel_analysis_validation.yml'})
+        self.assertFalse(scoped_paths(branch + '-extra'))
+        for path in ('.github/workflows/us_election_polls_refresh.yml',
+                     '.github/workflows/deploy.yml', '.github/workflows/ownership_guard.yml',
+                     '_worker.js', 'New for anti/app.js', 'New for anti/style.css'):
+            self.assertNotIn(path, scoped_paths(branch))
+
     def test_indonesia_search_allows_worker_connection_without_deployment(self):
         branch = 'codex/policy-indonesia-20261017'
         self.assertEqual(scoped_paths(branch), {'_worker.js'})

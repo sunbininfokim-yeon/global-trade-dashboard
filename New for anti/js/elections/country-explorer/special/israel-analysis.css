@@ -202,3 +202,33 @@
  .israel-grouping-control small { font-size:9px; }
  .israel-axis-tag { font-size:10px; }
 }
+
+/* Weekly snapshot uses the existing cooperation colours and quiet section chrome. */
+.israel-weekly { border-top:1px solid var(--isr-border); padding:16px 0; }
+.israel-weekly > header { display:flex; align-items:baseline; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+.israel-weekly h5 { font-size:14px; font-weight:600; }
+.israel-weekly > header > span { color:var(--isr-muted); font-size:11px; }
+.israel-weekly-legend { display:flex; flex-wrap:wrap; gap:7px 16px; margin:12px 0 14px; font-size:11px; color:var(--isr-muted); }
+.israel-weekly-legend > span { display:inline-flex; align-items:center; gap:5px; }
+.israel-weekly-legend i { width:7px; height:7px; border-radius:2px; }
+.israel-weekly-axis { position:relative; height:23px; margin-left:125px; font-size:11px; color:var(--isr-muted); }
+.israel-weekly-axis > span { position:absolute; }
+.israel-weekly-axis > span:nth-child(2) { left:50.833333%; transform:translateX(-50%); }
+.israel-weekly-axis > span:last-child { right:0; }
+.israel-weekly-row { display:grid; grid-template-columns:111px minmax(0,1fr); gap:14px; margin-bottom:13px; }
+.israel-weekly-label { display:flex; flex-wrap:wrap; gap:2px 6px; align-content:start; font-size:12px; font-variant-numeric:tabular-nums; }
+.israel-weekly-label small { color:#91a2ba; font-size:10px; }
+.israel-weekly-label > span { flex-basis:100%; font-size:11px; color:var(--isr-muted); overflow-wrap:anywhere; }
+.israel-weekly-plot { min-width:0; }
+.israel-weekly-bar { display:flex; position:relative; height:29px; font-size:12px; font-variant-numeric:tabular-nums; }
+.israel-weekly-bar > span { display:flex; align-items:center; justify-content:center; min-width:0; color:#101b2e; font-weight:600; }
+.israel-weekly-majority { position:absolute; left:50.833333%; top:-3px; bottom:-3px; border-left:1px dashed #e2e9f3; opacity:.65; pointer-events:none; }
+.israel-weekly-source { display:flex; flex-wrap:wrap; justify-content:space-between; gap:2px 8px; color:var(--isr-muted); font-size:11px; margin-top:4px; }
+.israel-weekly > .israel-data-note { margin-bottom:0; }
+@media (max-width:520px) {
+    .israel-weekly-row { grid-template-columns:minmax(0,1fr); gap:6px; margin-bottom:16px; }
+    .israel-weekly-label { align-items:baseline; }
+    .israel-weekly-label > span { flex-basis:auto; }
+    .israel-weekly-axis { margin-left:0; }
+    .israel-weekly-bar { height:30px; }
+}
