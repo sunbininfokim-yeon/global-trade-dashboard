@@ -90,7 +90,7 @@ def primary_html_fingerprint(body):
     return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
 
 
-def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen, reviewed_entries=()):
+def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen, reviewed_entries=(), isolate_conflicts=False):
     require(snapshot['schema']=='usa_reviewed_primary_poll_supplements_v1'
             and snapshot['cycle']==2026, 'primary supplement schema/cycle')
     output=deepcopy(rows);receipts=[];seen=set()
@@ -146,10 +146,10 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
             and answer_correction_fingerprint(r) == q['provider_snapshot_sha256'] for q in separate)]
         duplicates = [r for r in duplicates if r not in distinct]
         values=lambda r:sorted((a['choice'],a['pct']) for a in r['answers'])
-        require(all(r['sample_size']==raw['sample_size'] and values(r)==values(raw)
+        conflict = not all(r['sample_size']==raw['sample_size'] and values(r)==values(raw)
                     and r.get('internal')==raw.get('internal') and r.get('partisan')==raw.get('partisan')
-                    and (r.get('sponsors') or [])==(raw.get('sponsors') or []) for r in duplicates),
-                'primary_and_provider_wave_conflict')
+                    and (r.get('sponsors') or [])==(raw.get('sponsors') or []) for r in duplicates)
+        require(not conflict or isolate_conflicts, 'primary_and_provider_wave_conflict')
         checks=[]
         for document in documents:
             try:
@@ -174,11 +174,15 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
             except (OSError,ValueError) as error:
                 checks.append({'url':document['url'],'status':'unavailable','error_type':type(error).__name__})
         current=all(c['status']=='unchanged' for c in checks)
-        capture={'status':'primary_documents_rechecked' if current else 'carried_forward_reference_only',
+        capture={'status':('primary_provider_conflict_reference_only' if conflict else
+                    'primary_documents_rechecked' if current else 'carried_forward_reference_only'),
                  'original_reviewed_on':entry['reviewed_on'],'checked_at':datetime.now(timezone.utc).isoformat(),
                  'documents':checks,'provider_duplicate_ids':[r['id'] for r in duplicates],
                  'reviewed_replaced_provider_ids':replaced,
                  'separate_question_provider_ids':[r['id'] for r in distinct]}
+        if conflict:
+            capture['conflict_reason']='primary_and_provider_wave_conflict'
+            capture['conflicting_provider_records']=deepcopy(duplicates)
         raw['primary_source_capture']=capture
         output=[r for r in output if r not in duplicates];output.append(raw)
         receipts.append({'id':raw['id'],'state':entry['state'],**capture})

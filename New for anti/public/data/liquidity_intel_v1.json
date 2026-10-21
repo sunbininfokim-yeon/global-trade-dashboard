@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-10-20T04:46:05.205301+00:00",
+  "generated_at": "2026-10-20T21:35:19.660508+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -148,8 +148,16 @@
       {
         "author": "양영빈",
         "articles_scanned": 8,
-        "articles_with_hits": 1,
+        "articles_with_hits": 2,
         "top_indicators": [
+          {
+            "id": "usd_jpy",
+            "score": 1.8,
+            "label_ko": "달러/엔",
+            "evidence": [
+              "[이코노미21 양영빈] 7월말 전세계 금융시장의 뜨거운 관심을 모았던던 달러엔 환율은 일본 재무성의 개입과 미국 베센트 재무장관이 언론에 고의로 흘린 메모(50억~100억달러치 엔화매입"
+            ]
+          },
           {
             "id": "fomc_liquidity",
             "score": 0.85,
@@ -160,14 +168,34 @@
           }
         ],
         "themes_ko": [
+          "달러/엔 (점수 1.8)",
           "FOMC·금리 유동성 (점수 0.85)"
         ],
         "hint_weights": {
+          "fx_pair": 1.8,
           "policy": 0.85
         },
         "reporter_signals": [],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: 달러/엔 · 외 1개 테마",
         "per_article": [
+          {
+            "title": "베센트와 일본 재무성의 환율 공조에 대해",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017306",
+            "published": "2026-10-20 16:52",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "usd_jpy",
+                "label_ko": "달러/엔",
+                "mentions": 2,
+                "hint": "fx_pair",
+                "evidence": [
+                  "[이코노미21 양영빈] 7월말 전세계 금융시장의 뜨거운 관심을 모았던던 달러엔 환율은 일본 재무성의 개입과 미국 베센트 재무장관이 언론에 고의로 흘린 메모(50억~100억달러치 엔화매입",
+                  "매입)로 달러당 165원을 눈앞에 두고 크게 하락했다.다음은 5월 이후 달러엔 환율의 움직임과 중요 사건을 보여준다.최근 발표된 미국 재무부 외환 운용자료를 보면 미국 재무부가 7월말에"
+                ]
+              }
+            ]
+          },
           {
             "title": "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까",
             "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017236",
@@ -187,13 +215,14 @@
           }
         ],
         "finance_panel_fields": {
-          "reporter_liquidity_primary": "fomc_liquidity",
-          "reporter_liquidity_primary_ko": "FOMC·금리 유동성",
+          "reporter_liquidity_primary": "usd_jpy",
+          "reporter_liquidity_primary_ko": "달러/엔",
           "reporter_liquidity_themes": [
+            "달러/엔 (점수 1.8)",
             "FOMC·금리 유동성 (점수 0.85)"
           ],
           "reporter_liquidity_signals": [],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: 달러/엔 · 외 1개 테마"
         }
       }
     ],
@@ -204,18 +233,19 @@
       "liquidity_bias": "tightening",
       "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음",
       "beige_tone": null,
-      "reporter_liquidity_primary": "fomc_liquidity",
-      "reporter_liquidity_primary_ko": "FOMC·금리 유동성",
+      "reporter_liquidity_primary": "usd_jpy",
+      "reporter_liquidity_primary_ko": "달러/엔",
       "reporter_liquidity_themes": [
+        "달러/엔 (점수 1.8)",
         "FOMC·금리 유동성 (점수 0.85)"
       ],
       "reporter_liquidity_signals": [],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: 달러/엔 · 외 1개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-239601625760",
+      "id": "qra-741423899457",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -248,7 +278,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-821549456132",
+      "id": "fed-579246733397",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -279,7 +309,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-303075010604",
+      "id": "fed-117772727059",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -310,7 +340,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-520668519202",
+      "id": "fed-41206724919",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -341,7 +371,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-262224383028",
+      "id": "fed-215167055023",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -372,7 +402,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-829785142668",
+      "id": "fed-297509460676",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -403,7 +433,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-680862561105",
+      "id": "fed-65867658837",
       "published_at": "Wed, 29 Apr 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -434,7 +464,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-577996717021",
+      "id": "fed-253044574973",
       "published_at": "Tue, 13 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -465,7 +495,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-284689367495",
+      "id": "fed-54789693578",
       "published_at": "Thu, 8 Oct 2026 20:30:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -496,7 +526,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-484198770866",
+      "id": "fed-963104169903",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -527,7 +557,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-135271509826",
+      "id": "fed-367465298619",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -558,7 +588,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-813255739716",
+      "id": "fed-752860901427",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -589,7 +619,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-672568826171",
+      "id": "liq-ind-583150133301",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -597,15 +627,15 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017236",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017306",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "FOMC·금리 유동성",
+        "original": "달러/엔 · FOMC·금리 유동성",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] FOMC·금리 유동성"
+        "ko": "[유동성지표·양영빈] 달러/엔 · FOMC·금리 유동성"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FOMC·금리 유동성",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: 달러/엔 · 외 1개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -614,11 +644,19 @@
         "final": 7.5
       },
       "rank_reasons": [
-        "indicator:fomc_liquidity"
+        "indicator:usd_jpy"
       ],
       "translation_status": "ok",
       "event_type": "liquidity_indicator",
       "indicators": [
+        {
+          "id": "usd_jpy",
+          "score": 1.8,
+          "label_ko": "달러/엔",
+          "evidence": [
+            "[이코노미21 양영빈] 7월말 전세계 금융시장의 뜨거운 관심을 모았던던 달러엔 환율은 일본 재무성의 개입과 미국 베센트 재무장관이 언론에 고의로 흘린 메모(50억~100억달러치 엔화매입"
+          ]
+        },
         {
           "id": "fomc_liquidity",
           "score": 0.85,
@@ -666,7 +704,7 @@
     "ticker_items": 13,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 1,
+    "reporter_indicator_hits": 2,
     "sources_ok": 5,
     "sources_failed": 0
   }
