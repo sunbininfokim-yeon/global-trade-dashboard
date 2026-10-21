@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readIsraelFixture } from './fixtures/israel-snapshot.mjs';
 import { weeklySeatRows } from '../data/israel-trend.js';
 import { israelAnalysisHtml } from '../country-explorer/special/israel-analysis.js';
-const original = JSON.parse(readFileSync(new URL('../../../public/data/israel_election_analysis_v1.json', import.meta.url)));
+const original = JSON.parse(readIsraelFixture('israel_election_analysis_v1.json'));
 const makeBoard = () => {
     const board = structuredClone(original);
     const poll = board.observations.find(r => r.question_id === 'reported_seats' && r.review_status === 'accepted');

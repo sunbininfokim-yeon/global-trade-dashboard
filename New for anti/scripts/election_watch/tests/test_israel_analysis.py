@@ -10,7 +10,7 @@ from pathlib import Path
 from election_watch.israel_analysis import build, health, read_inputs
 
 ROOT = Path(__file__).resolve().parents[1]
-INPUT = ROOT / 'config/israel/2026'
+INPUT = ROOT / 'tests/fixtures/israel/2026-10-20'
 BUILT = '2026-10-20T12:00:00+00:00'
 
 
@@ -52,7 +52,7 @@ class IsraelAnalysisTests(unittest.TestCase):
 
     def test_rebuild_cannot_advance_evidence_date(self):
         with self.assertRaisesRegex(ValueError, 'advance research'):
-            build(self.inputs, '2026-10-15', BUILT)
+            build(self.inputs, '2026-10-21', BUILT)
 
     def test_sum_failure_is_rejected(self):
         self.seat()['values'][0]['seats'] += 1
@@ -117,13 +117,23 @@ class IsraelAnalysisTests(unittest.TestCase):
         body = json.dumps(board, ensure_ascii=False, indent=2) + '\n'
         self.assertEqual(health(board)['board_sha256'], hashlib.sha256(body.encode()).hexdigest())
 
+    def test_unnamed_maariv_stays_partial_and_cannot_be_promoted(self):
+        row = next(row for row in self.inputs['poll_observations.jsonl']
+                   if row.get('poll_id') == 'maariv-panel4all-2026-10-15'
+                   and row.get('question_id') == 'reported_seats')
+        self.assertIsNone(row['pollster'])
+        self.assertEqual(row['review_status'], 'partial')
+        row['review_status'] = 'accepted'
+        with self.assertRaisesRegex(ValueError, 'requires methodology and field date'):
+            self.board()
+
     def test_failed_cli_replay_preserves_last_good_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp) / 'israel_election_analysis_v1.json'
-            cmd = [sys.executable, str(ROOT/'build_israel_analysis.py'), '--output', str(out), '--built-at', BUILT]
+            cmd = [sys.executable, str(ROOT/'build_israel_analysis.py'), '--input-dir', str(INPUT), '--as-of', '2026-10-20', '--output', str(out), '--built-at', BUILT]
             subprocess.run(cmd, check=True, capture_output=True)
             before = {p.name: p.read_bytes() for p in Path(tmp).iterdir()}
-            failed = subprocess.run(cmd + ['--as-of', '2026-10-15'], capture_output=True)
+            failed = subprocess.run(cmd + ['--as-of', '2026-10-21'], capture_output=True)
             self.assertNotEqual(failed.returncode, 0)
             self.assertEqual(before, {p.name: p.read_bytes() for p in Path(tmp).iterdir()})
 

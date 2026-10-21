@@ -8,7 +8,7 @@ from urllib.error import HTTPError
 from election_watch.israel_analysis import build, read_inputs
 from election_watch.israel_translation import collect_input_texts, input_digest, text_id, translate, validate_translations
 
-INPUT = Path(__file__).resolve().parents[1] / 'config/israel/2026'
+INPUT = Path(__file__).resolve().parent / 'fixtures/israel/2026-10-20'
 
 
 class IsraelPresentationTests(unittest.TestCase):
