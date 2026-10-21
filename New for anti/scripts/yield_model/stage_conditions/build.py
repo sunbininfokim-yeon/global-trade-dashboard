@@ -44,7 +44,7 @@ POWER_PARAMS = "PRECTOTCORR,T2M_MAX,T2M_MIN,GWETROOT"
 FIRST_DAY = date(1983, 1, 1)
 FILL = -900
 
-Z = 0.75            # |z| that counts as a signal; fixed, not tuned
+Z = 1.0             # |z| that counts as a signal: a one-sigma anomaly
 WET_SOW_Z = 1.5     # sowing rain this far above normal is waterlogging / delay
 NORMAL_SEASONS = 30
 MIN_SEASONS = 10
