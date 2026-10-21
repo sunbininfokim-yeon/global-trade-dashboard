@@ -50,8 +50,10 @@ NORMAL_SEASONS = 30
 MIN_SEASONS = 10
 DRY_MM = 1.0
 WINTERKILL_C = -15.0
+# Maturity and harvest weather changes quality and harvest pace more than the
+# yield the label records, so those stages are shown but not scored.
 WEIGHTS = {"sow": 1.0, "veg": 1.0, "repro": 2.0, "fill": 2.0,
-           "mature": 0.5, "harvest": 0.5, "dormant": 1.0}
+           "mature": 0.0, "harvest": 0.0, "dormant": 1.0}
 VERDICT_AT = 2.0
 
 # Daily maximum above which a day counts as heat stress for the crop.
@@ -444,8 +446,10 @@ def crop_entry(key, crop, daily, today, folder):
         item["status_ko"] = LABEL_KO[item["status"]]
         out_stages.append(item)
     judged = [s for s in out_stages if s["status"] != "upcoming"]
-    bad = [s["name_ko"] for s in judged if s["status"] == "unfavorable"]
-    good = [s["name_ko"] for s in judged if s["status"] == "favorable"]
+    scored = [s for s in judged if WEIGHTS.get(s["kind"], 1.0) > 0]
+    bad = [s["name_ko"] for s in scored if s["status"] == "unfavorable"]
+    good = [s["name_ko"] for s in scored if s["status"] == "favorable"]
+    late = [s for s in judged if WEIGHTS.get(s["kind"], 1.0) == 0 and s["status"] != "neutral"]
     if not judged:
         reason = "아직 시작한 단계가 없다"
     else:
@@ -454,7 +458,9 @@ def crop_entry(key, crop, daily, today, folder):
             bits.append("불리: " + ", ".join(bad))
         if good:
             bits.append("유리: " + ", ".join(good))
-        reason = " · ".join(bits) if bits else "지난 단계 모두 평년 수준"
+        reason = " · ".join(bits) if bits else "판정 단계 모두 평년 수준"
+        if late:
+            reason += " · " + ", ".join(f"{s['name_ko']} {s['status_ko']}" for s in late) + "(품질·수확 진도, 판정 제외)"
     labels = label_series(key, crop["crop"], folder)
     history = None
     if labels is not None:
@@ -494,7 +500,7 @@ def build(today=None):
                "mature": "비가 많으면 불리, 건조하면 유리",
                "harvest": "비가 많으면 불리, 건조하면 유리",
                "dormant": "혹한일(최저 -15°C 이하)이 평년보다 많으면 불리",
-               "overall": "개화·비대 단계 가중 2배, 합계 -2 이하 불리 · +2 이상 유리",
+               "overall": "개화·비대 단계 가중 2배, 성숙·수확 단계는 표시만(수량보다 품질·수확 진도에 영향), 합계 -2 이하 불리 · +2 이상 유리",
            },
            "regions": {}, "skipped": {}}
     through = []
