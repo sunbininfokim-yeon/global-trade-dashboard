@@ -1,0 +1,87 @@
+name: Coal reference prices
+
+# Indonesia's HBA (ministry press releases, twice a month) and the World Bank
+# Pink Sheet's monthly Newcastle / Richards Bay averages. Neither moves daily,
+# so one run a day is plenty; the ministry's firewall rejects bursts, which is
+# why the collector pages its archive one request at a time.
+
+on:
+  push:
+    # TEMP: claude/coal-reference-prices so a new workflow file can be exercised before it exists on main.
+    branches: [main, claude/coal-reference-prices]
+    paths:
+      - 'New for anti/scripts/coal_prices/**'
+      - '.github/workflows/coal_prices_refresh.yml'
+  schedule:
+    - cron: '23 1 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/coal_prices/**'
+      - '.github/workflows/coal_prices_refresh.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coal-prices-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s 'New for anti/scripts/coal_prices/tests' -v
+
+  update:
+    needs: validate
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Collect
+        id: collect
+        continue-on-error: true
+        run: python 'New for anti/scripts/coal_prices/collect.py' --require-all
+      - name: Show the result
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          d = json.load(open('New for anti/public/data/coal_prices_v1.json'))
+          for k in ('hba', 'worldbank'):
+              v = d[k]
+              print(k, v.get('status'), v.get('error', ''), v.get('skipped', ''))
+          print(json.dumps({'hba_last': (d['hba'].get('periods') or [None])[-1],
+                            'wb_last': {s['id']: s['points'][-3:] for s in d['worldbank'].get('series', [])}},
+                           ensure_ascii=False))
+          PY
+      - name: Commit
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f 'New for anti/public/data/coal_prices_v1.json'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/coal_prices_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh coal reference prices'
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase --autostash
+          done
+          exit 1
+      - name: Surface a failed source after the snapshot is saved
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
