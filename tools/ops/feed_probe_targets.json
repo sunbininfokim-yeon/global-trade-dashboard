@@ -1,87 +1,117 @@
 {
  "notes": [
-  "probe: user-supplied feed list 2026-10-21"
+  "probe round 3 of user-supplied list"
  ],
  "targets": [
   {
-   "group": "userfeeds",
-   "id": "mining_all",
-   "url": "https://www.mining.com/feed/",
+   "group": "userfeeds3",
+   "id": "mining_commodity_nickel",
+   "url": "https://www.mining.com/commodity/nickel/feed/",
    "variants": true,
-   "samples": 3,
-   "list_feeds": true
+   "samples": 3
   },
   {
-   "group": "userfeeds",
-   "id": "mining_nickel",
-   "url": "https://www.mining.com/tag/nickel/feed/",
+   "group": "userfeeds3",
+   "id": "mining_commodity_coal",
+   "url": "https://www.mining.com/commodity/coal/feed/",
    "variants": true,
-   "samples": 3,
-   "list_feeds": true
+   "samples": 3
   },
   {
-   "group": "userfeeds",
-   "id": "mining_coal",
-   "url": "https://www.mining.com/tag/coal/feed/",
+   "group": "userfeeds3",
+   "id": "mining_commodity_copper",
+   "url": "https://www.mining.com/commodity/copper/feed/",
    "variants": true,
-   "samples": 3,
-   "list_feeds": true
+   "samples": 3
   },
   {
-   "group": "userfeeds",
-   "id": "mining_battery",
+   "group": "userfeeds3",
+   "id": "mining_commodity_lithium",
+   "url": "https://www.mining.com/commodity/lithium/feed/",
+   "variants": true,
+   "samples": 3
+  },
+  {
+   "group": "userfeeds3",
+   "id": "mining_commodity_battery-metals",
    "url": "https://www.mining.com/commodity/battery-metals/feed/",
    "variants": true,
-   "samples": 3,
-   "list_feeds": true
+   "samples": 3
   },
   {
-   "group": "userfeeds",
-   "id": "mining_asia",
-   "url": "https://www.mining.com/region/asia/feed/",
+   "group": "userfeeds3",
+   "id": "mining_commodity_uranium",
+   "url": "https://www.mining.com/commodity/uranium/feed/",
    "variants": true,
-   "samples": 3,
-   "list_feeds": true
+   "samples": 3
   },
   {
-   "group": "userfeeds",
-   "id": "mining_africa",
-   "url": "https://www.mining.com/region/africa/feed/",
+   "group": "userfeeds3",
+   "id": "mining_search_nickel",
+   "url": "https://www.mining.com/?s=nickel&feed=rss2",
    "variants": true,
-   "samples": 3,
-   "list_feeds": true
+   "samples": 3
   },
   {
-   "group": "userfeeds",
-   "id": "investing_commod",
-   "url": "https://www.investing.com/rss/news_11.rss",
+   "group": "userfeeds3",
+   "id": "mining_search_coal",
+   "url": "https://www.mining.com/?s=coal&feed=rss2",
    "variants": true,
-   "samples": 3,
-   "list_feeds": true
+   "samples": 3
   },
   {
-   "group": "userfeeds",
-   "id": "gapki_id",
-   "url": "https://gapki.id/feed/",
+   "group": "userfeeds3",
+   "id": "mining_tag_nickel_plain",
+   "url": "https://www.mining.com/tag/nickel/feed",
    "variants": true,
-   "samples": 3,
-   "list_feeds": true
+   "samples": 3
   },
   {
-   "group": "userfeeds",
-   "id": "gapki_en",
-   "url": "https://gapki.id/en/feed/",
-   "variants": true,
-   "samples": 3,
-   "list_feeds": true
-  },
-  {
-   "group": "userfeeds",
-   "id": "kontan",
+   "group": "userfeeds3",
+   "id": "kontan_index",
    "url": "https://www.kontan.co.id/feed",
    "variants": true,
+   "samples": 25,
+   "link_re": "[^\"' ]*(?:rss|feed|xml)[^\"' ]*",
+   "list_feeds": true
+  },
+  {
+   "group": "userfeeds3",
+   "id": "cpopc_home",
+   "url": "https://cpopc.org/",
+   "variants": true,
    "samples": 3,
    "list_feeds": true
+  },
+  {
+   "group": "userfeeds3",
+   "id": "cpopc_en",
+   "url": "https://www.cpopc.org/feed/",
+   "variants": true,
+   "samples": 3
+  },
+  {
+   "group": "userfeeds3",
+   "id": "usgs_rss_page",
+   "url": "https://www.usgs.gov/connect/rss-feeds",
+   "variants": true,
+   "samples": 20,
+   "link_re": "[^\"' ]*(?:rss|feed)[^\"' ]*",
+   "list_feeds": true
+  },
+  {
+   "group": "userfeeds3",
+   "id": "bisnis_feed_alt",
+   "url": "https://www.bisnis.com/feed",
+   "variants": true,
+   "samples": 3
+  },
+  {
+   "group": "userfeeds3",
+   "id": "cnbc_id_alt",
+   "url": "https://www.cnbcindonesia.com/rss",
+   "variants": true,
+   "samples": 3
   }
  ]
 }
