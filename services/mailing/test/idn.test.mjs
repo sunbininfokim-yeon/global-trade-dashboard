@@ -14,6 +14,7 @@ const preserve='20261020215056_indonesia_preserve_source_text.sql';
 const serialize='20261020230106_indonesia_ingest_serialization.sql';
 const lease='20261020231311_indonesia_sync_lease.sql';
 const completeSource='20261020231617_indonesia_mail_complete_source_gate.sql';
+const multiScope='20261021040724_indonesia_multi_scope_subscriptions.sql';
 const sql=name=>readFileSync(new URL('../../../supabase/migrations/'+name,import.meta.url),'utf8');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const body='Ketentuan batubara dan perlindungan lingkungan untuk usaha pertambangan. '.repeat(8);
@@ -45,6 +46,7 @@ async function fixture(fn){
   await db.exec(sql(serialize));
   await db.exec(sql(lease));
   await db.exec(sql(completeSource));
+  await db.exec(sql(multiScope));
   const acting=async(id,fn)=>{
    await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');
    try{return await fn();}finally{await db.exec('reset role');}
@@ -59,6 +61,56 @@ async function fixture(fn){
   await fn({db,rpc,save,acting,sub,change,review});
  }finally{await db.close();}
 }
+test('multi-scope subscriptions expose nationwide plus 38 BPS provinces, preserve coverage gaps, and save combinations atomically',()=>fixture(async({db,rpc,acting})=>{
+ const list=()=>acting(U,()=>rpc('idn_my_mail_subscriptions'));
+ const options=(await list()).region_options;assert.equal(options.length,39);
+ assert.equal(options[0].value,'__all__');assert.equal(options.find(r=>r.value==='Aceh').has_local_documents,false);
+ assert.equal(options.find(r=>r.value==='Kalimantan Timur').has_local_documents,true);
+ const batch=(topics,regions,enabled=true)=>acting(U,()=>rpc('idn_set_my_mail_subscriptions',[topics,regions,enabled]));
+ assert.equal((await batch(['coal','nickel_mining'],['Kalimantan Timur','Sulawesi Tengah'])).affected,4);
+ assert.equal((await list()).subscriptions.length,4);
+ await assert.rejects(batch(['coal','us_bills'],['Aceh']));await assert.rejects(batch(['coal'],['not-a-region']));
+ await assert.rejects(batch(['coal'],['__all__','Aceh']));await assert.rejects(batch([],['__all__']));
+ assert.equal((await list()).subscriptions.length,4);
+ assert.equal((await acting(V,()=>rpc('idn_my_mail_subscriptions'))).subscriptions.length,0);
+ await db.exec(sql(multiScope));assert.equal((await list()).region_options.length,39);
+ const source=JSON.parse(readFileSync(new URL('../../../scripts/indonesia_policy/mail-regions.json',import.meta.url),'utf8'));
+ assert.equal(source.provinces.length,38);assert.equal(new Set(source.provinces.map(p=>p[0])).size,38);
+ assert.deepEqual(options.filter(r=>r.level==='provincial').map(r=>r.value).sort(),source.provinces.map(p=>p[1]).sort());
+ for(const role of ['anon','authenticated'])assert.equal((await db.query("select has_table_privilege($1,'policy_idn.mail_regions','select') allowed",[role])).rows[0].allowed,false);
+ assert.equal((await db.query("select has_function_privilege('anon','public.idn_set_my_mail_subscriptions(text[],text[],boolean)','execute') allowed")).rows[0].allowed,false);
+ assert.equal((await db.query("select prosecdef from pg_proc where oid='public.idn_set_my_mail_subscriptions(text[],text[],boolean)'::regprocedure")).rows[0].prosecdef,false);
+}));
+test('nationwide matches multiple products and every reviewed region, deduplicates overlap, and rechecks opt-out/generation before delivery',()=>fixture(async({db,rpc,acting,sub,change,save,review})=>{
+ await acting(U,()=>rpc('idn_set_my_mail_subscriptions',[['coal','nickel_mining'],['__all__'],true]));
+ await sub();await sub(V,'nickel_mining','Kalimantan Barat');await rpc('idn_set_mail_delivery_enabled',[true]);
+ const east=await change('idn-east');await review(east,{scope:'regions',regions:['Kalimantan Timur']});
+ const west=await change('idn-west');await review(west,{scope:'regions',regions:['Kalimantan Barat']});
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,2);
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox where user_id=$1',[V])).rows[0].n,0);
+ const d={...document('idn-nickel','provincial','Sulawesi Tengah'),topics:['nickel_mining']};await save(d);
+ const c=(await rpc('idn_mail_review_queue')).pending.find(x=>x.document_id===d.document_id);
+ await review(c,{scope:'regions',regions:['Sulawesi Tengah'],topics:['nickel_mining']});
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,3);
+ const national=await change();await assert.rejects(review(national,{scope:'regions',regions:['__all__']}));
+ await review(national,{scope:'regions',regions:['Aceh']});
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,4);
+ const active=()=>db.query("select public.mail_item_active(o) active from mailing_outbox o where o.content->>'change_id'=$1",[west.change_id]);
+ assert.equal((await active()).rows[0].active,true);
+ await sub(U,'coal','__all__',false);assert.equal((await active()).rows[0].active,false);
+ await sub(U,'coal','__all__',true);assert.equal((await active()).rows[0].active,false);
+ const context=(await db.query("select content from mailing_outbox where content->>'change_id'=$1",[west.change_id])).rows[0].content;
+ assert.equal(context.scope,'regions');assert.deepEqual(context.regions,['Kalimantan Barat']);
+}));
+test('bulk subscription limits are atomic, count active combinations, and reuse disabled slots',()=>fixture(async({db,rpc,acting})=>{
+ const batch=(topics,regions,enabled=true)=>acting(U,()=>rpc('idn_set_my_mail_subscriptions',[topics,regions,enabled]));
+ const regions=(await acting(U,()=>rpc('idn_my_mail_subscriptions'))).region_options.filter(r=>r.value!=='__all__').map(r=>r.value);
+ assert.equal((await batch(['coal','nickel_mining','palm_oil'],regions.slice(0,33))).active_combinations,99);
+ assert.equal((await batch(['biofuel'],['__all__'])).active_combinations,100);
+ await assert.rejects(batch(['gold_silver'],['__all__']),/limit/);
+ assert.equal((await db.query('select count(*)::int n from policy_idn.mail_subscriptions where enabled')).rows[0].n,100);
+ await batch(['biofuel'],['__all__'],false);assert.equal((await batch(['gold_silver'],['__all__'])).active_combinations,100);
+}));
 test('metadata/truncated changes stay auditable and held; only a new complete-text version enters review',()=>fixture(async({db,rpc,save,review})=>{
  for(const [id,kind,truncated] of [['idn-metadata','official_metadata',false],['idn-truncated','official_text',true]]){
   const d={...document(id),content_kind:kind,text_truncated:truncated};await save(d);

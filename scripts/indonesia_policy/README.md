@@ -1,5 +1,7 @@
 # 인도네시아 정책 시범 수집기
 
+[여러 상품·지역·전국 메일 구독](../../docs/indonesia-policy-multi-scope-mailing-20261021.md)
+
 [호스트 간 잠금·실행 상태·불완전 원문 메일 보류](../../docs/indonesia-policy-collector-coordination-20261021.md)
 
 [수집·재개·원문 보존 보강](../../docs/indonesia-policy-refresh-hardening-20261021.md): `sync_reviewed.py`가 검토 출처 103개(석탄 단계42개)를 제한된 배치로 받아 DB에 저장한다. 잠금·파일 체크포인트·호스트 보류·DB 실패 재개·STOP을 지원한다. 운영 원문 보존/저장 직렬화 guard를 적용했고 공식 출처2건으로 실제 수집/저장을 점검했다. 반복 예약·임베딩·메일 발송을 켜지 않았다.
