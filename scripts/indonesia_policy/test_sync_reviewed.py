@@ -3,10 +3,11 @@ import hashlib
 import json
 import tempfile
 import unittest
+import uuid
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch
 
-from sync_reviewed import run, Gateway, load_manifest
+from sync_reviewed import run, Gateway, load_manifest, DatabaseLease, main
 
 
 def entry(name="idn-a", host="test.go.id"):
@@ -21,6 +22,71 @@ def doc(e):
 
 
 class SyncTests(unittest.TestCase):
+    def test_cli_requires_database_lease_and_busy_runner_never_fetches(self):
+        rpc = Mock(return_value={"acquired": False})
+        with tempfile.TemporaryDirectory() as root, patch("sync_reviewed.Gateway", return_value=rpc), patch("sync_reviewed.run") as refresh:
+            with patch("sys.argv", ["sync_reviewed.py", "--write", "--state-dir", root]):
+                with self.assertRaisesRegex(RuntimeError, "busy on another runner"):
+                    main()
+            refresh.assert_not_called()
+            self.assertEqual(rpc.call_args.args[0], "idn_acquire_sync_lease")
+
+    def test_database_lease_fences_writes_and_release_failure_does_not_mask_original(self):
+        token = str(uuid.uuid4())
+        rpc = Mock(side_effect=[{"acquired": True, "lease_token": token}, True, False, False, RuntimeError("DB down")])
+        with patch("sys.stderr") as stderr:
+            with self.assertRaisesRegex(RuntimeError, "lease lost"):
+                with DatabaseLease(rpc, "mac:1") as lease:
+                    self.assertIs(lease("idn_store_document", {"p_document": {}}), False)
+                    lease("idn_store_source_check", {"p_check": {}})
+            self.assertTrue(stderr.write.called)
+        self.assertEqual(rpc.call_args_list[2].args, ("idn_sync_store_document", {"p_document": {}, "p_lease_token": token}))
+        self.assertFalse(any(c.args[0] == "idn_sync_store_source_check" for c in rpc.call_args_list))
+        self.assertEqual(rpc.call_args.args, ("idn_release_sync_lease", {"p_lease_token": token}))
+
+    def test_cli_status_and_stop_do_not_acquire_lease_or_request_sources(self):
+        with tempfile.TemporaryDirectory() as root, patch("sync_reviewed.Gateway") as gateway, patch("sync_reviewed.run") as refresh, patch("builtins.print"):
+            (Path(root)/"STOP").touch()
+            with patch("sys.argv", ["sync_reviewed.py", "--write", "--state-dir", root]):
+                self.assertEqual(main(), 0)
+            gateway.assert_not_called(); refresh.assert_not_called()
+            gateway.return_value.return_value = {"country": "IDN", "lease": {"active": False}}
+            with patch("sys.argv", ["sync_reviewed.py", "--status"]):
+                self.assertEqual(main(), 0)
+            gateway.return_value.assert_called_once_with("idn_sync_status", {})
+
+    def test_failed_deferred_partial_and_complete_batches_are_distinct(self):
+        with tempfile.TemporaryDirectory() as root:
+            manifest = [entry(), entry("idn-b")]
+            first = run(manifest, root, lambda *_: True, limit=1, collect_fn=Mock(side_effect=ValueError("blocked")), pause=lambda _: None)
+            self.assertEqual(first["state"], "unavailable")
+            second = run(manifest, root, lambda *_: True, limit=1, collect_fn=Mock(), pause=lambda _: None)
+            self.assertEqual(second["state"], "deferred")
+            self.assertEqual(json.loads((Path(root)/"status.json").read_text())["last_batch"]["state"], "deferred")
+        with tempfile.TemporaryDirectory() as root:
+            metadata = {**doc(entry()), "content_kind": "official_metadata"}
+            result = run([entry(), entry("idn-b", "other.go.id")], root, lambda *_: True,
+                         collect_fn=Mock(side_effect=[metadata, doc(entry("idn-b", "other.go.id"))]), pause=lambda _: None)
+            self.assertEqual(result["state"], "partial"); self.assertEqual(result["complete_text_checks"], 1)
+        with tempfile.TemporaryDirectory() as root:
+            result = run([entry()], root, lambda *_: True, collect_fn=lambda e, *_: doc(e), pause=lambda _: None)
+            self.assertEqual(result["state"], "ok")
+
+    def test_lost_heartbeat_keeps_source_and_cursor_for_retry(self):
+        with tempfile.TemporaryDirectory() as root:
+            heartbeat = Mock(side_effect=RuntimeError("lease lost")); collect = Mock()
+            with self.assertRaisesRegex(RuntimeError, "lease lost"):
+                run([entry()], root, Mock(), collect_fn=collect, heartbeat=heartbeat)
+            collect.assert_not_called()
+
+    def test_unknown_audit_acknowledgment_never_advances_checkpoint(self):
+        with tempfile.TemporaryDirectory() as root:
+            rpc = lambda name, _: True if name == "idn_store_document" else None
+            with self.assertRaisesRegex(RuntimeError, "invalid IDN audit response"):
+                run([entry(), entry("idn-b")], root, rpc, limit=1, collect_fn=lambda e, *_: doc(e), pause=lambda _: None)
+            state = json.loads((Path(root)/"status.json").read_text())
+            self.assertEqual(state["cursor"], 0);self.assertIsNotNone(state["active"])
+
     def test_active_registry_includes_later_reviewed_coal_sources(self):
         ids = {e["document_id"] for e in load_manifest()}
         self.assertTrue({"idn-kemendag-permendag-15-2026", "idn-pmk-51-2025", "idn-esdm-permen-6-2026"} <= ids)

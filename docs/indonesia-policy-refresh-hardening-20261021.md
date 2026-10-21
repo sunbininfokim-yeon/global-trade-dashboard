@@ -10,7 +10,7 @@
 
 403/429·점검·차단은 호스트를 24시간, 기타 수집 실패는 1시간 쉬게 한다. PDF 첨부 호스트가 막혔을 때도 같은 실행/다음 실행에서 그 호스트로 다시 PDF를 요청하지 않는다. 만료 시 재시도한다. 한 번 실행은 기본 5개, 최대 20개이며 종료한다. 원본/상태는 저장소 밖에 보관한다. 같은 상태 경로를 유지해야 순서와 차단 이력이 이어진다. manifest/검토 태그가 바뀌면 중단하고 기존 상태를 보존한 새 디렉터리에서 검토한 구성을 시작한다.
 
-**파일 잠금은 같은 상태 경로를 사용하는 한 호스트 범위다.** Mac과 GitHub를 동시에 돌리지 않는다. 다른 국가의 수집기 잠금/설정은 변경하지 않았다. GitHub 전환 시 Mac 중단, 단일 concurrency 그룹, 체크포인트 영속 보관을 별도로 구성해야 한다. 이번 작업에서 예약을 켜지 않았다.
+파일 잠금은 같은 상태 경로를 사용하는 한 호스트 범위다. 후속 [수집 실행·메일 근거 통제](indonesia-policy-collector-coordination-20261021.md)에서 새 실행기에 호스트 간 DB lease와 저장 토큰 검사를 추가했다. GitHub 전환 시 단일 concurrency 그룹, 체크포인트 영속 보관은 여전히 필요하다. 다른 국가 설정과 반복 예약은 변경하지 않았다.
 
 ## DB의 기존 원문 보호
 
@@ -46,6 +46,6 @@ caffeinate -i /Users/yeoninair/Documents/policy-runtimes/idn-sync/bin/python scr
   --env-file /Users/yeoninair/Documents/global-trade-dashboard-local/.env.local
 ```
 
-모든 단계는 `--stage all`, 또는 coal/nickel_mining/palm_oil/biofuel/mineral_mining을 선택한다. 단계별로 다른 상태 경로를 사용한다. 모든 요청이 실패/보류된 경우에도 커서가 진행할 수 있으므로 `attempted`, `source_failures`, `metadata_only`, `cooldown_skips`를 함께 본다. 커서 완료나 상태 갱신 시각은 최신 법령 전수 확인 성공의 증거가 아니다.
+모든 단계는 `--stage all`, 또는 coal/nickel_mining/palm_oil/biofuel/mineral_mining을 선택한다. 단계별로 다른 상태 경로를 사용한다. 후속 실행기는 `ok/partial/unavailable/deferred/stopped`와 `complete_text_checks`를 구분하고 원문 확인 0건/전체 대기는 종료 코드 2를 반환한다. 실패/보류 때도 커서는 진행할 수 있다. 커서 완료나 상태 갱신 시각은 최신 법령 전수 확인 성공의 증거가 아니다.
 
-현재 IDN 발송 게이트는 꺼져 있고, 구독 0건·알림 0건이다. Claude의 UI/메일 Worker 배포, 수집 예약의 주기/담당 결정, 실제 로그인 계정 구독과 신규 변화 수신 검증은 계속 남는다. 자동 수집으로 아직 등록하지 않은 법령의 누락이 모두 해소되는 것은 아니다.
+최신 운영 수치·추가 migration·실제 석탄 10개 출처 재확인은 후속 문서에 기록했다. IDN 발송 게이트는 꺼져 있다. Claude의 UI/메일 Worker 배포, 수집 예약의 주기/담당 결정, 실제 로그인 계정 구독과 신규 변화 수신 검증은 계속 남는다. 자동 수집으로 아직 등록하지 않은 법령의 누락이 모두 해소되는 것은 아니다.

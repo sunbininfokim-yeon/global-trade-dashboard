@@ -12,6 +12,8 @@ const gateway='20261020213953_indonesia_mail_auth_gateways.sql';
 const release='20261020214317_indonesia_mail_review_enqueue.sql';
 const preserve='20261020215056_indonesia_preserve_source_text.sql';
 const serialize='20261020230106_indonesia_ingest_serialization.sql';
+const lease='20261020231311_indonesia_sync_lease.sql';
+const completeSource='20261020231617_indonesia_mail_complete_source_gate.sql';
 const sql=name=>readFileSync(new URL('../../../supabase/migrations/'+name,import.meta.url),'utf8');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const body='Ketentuan batubara dan perlindungan lingkungan untuk usaha pertambangan. '.repeat(8);
@@ -41,6 +43,8 @@ async function fixture(fn){
   await db.exec(sql(release));
   await db.exec(sql(preserve));
   await db.exec(sql(serialize));
+  await db.exec(sql(lease));
+  await db.exec(sql(completeSource));
   const acting=async(id,fn)=>{
    await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');
    try{return await fn();}finally{await db.exec('reset role');}
@@ -55,6 +59,70 @@ async function fixture(fn){
   await fn({db,rpc,save,acting,sub,change,review});
  }finally{await db.close();}
 }
+test('metadata/truncated changes stay auditable and held; only a new complete-text version enters review',()=>fixture(async({db,rpc,save,review})=>{
+ for(const [id,kind,truncated] of [['idn-metadata','official_metadata',false],['idn-truncated','official_text',true]]){
+  const d={...document(id),content_kind:kind,text_truncated:truncated};await save(d);
+  const held=(await db.query('select * from policy_idn.mail_changes where document_id=$1',[id])).rows[0];
+  assert.equal(held.state,'held');assert.equal(held.hold_reason,'incomplete_official_text');assert.ok(held.held_at);
+  await assert.rejects(review(held),/not pending/);
+  await db.query("update policy_idn.mail_changes set state='pending' where change_id=$1",[held.change_id]);
+  assert.equal((await db.query('select state from policy_idn.mail_changes where change_id=$1',[held.change_id])).rows[0].state,'held');
+  await assert.rejects(db.query("update policy_idn.mail_changes set state='reviewed' where change_id=$1",[held.change_id]),/complete official text/);
+  const full={...document(id),text_content:body+' Full recovered official text.'};full.content_hash=hash(full.text_content);full.observed_at=new Date().toISOString();
+  await save(full);
+  const pending=(await rpc('idn_mail_review_queue')).pending.find(c=>c.document_id===id);
+  assert.equal(pending.content_kind,'official_text');assert.equal(pending.text_truncated,false);
+  assert.equal(await review(pending),true);
+ }
+ await db.exec(sql(completeSource));
+ const q=await rpc('idn_mail_review_queue');assert.equal(q.states.held,2);assert.equal(q.states.reviewed,2);assert.equal(q.held.length,2);
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,0);
+}));
+test('source gate migration holds existing incomplete candidates without deleting versions or reopening held events',()=>fixture(async({db,rpc,save})=>{
+ await db.exec('drop trigger idn_guard_mail_source on policy_idn.mail_changes');
+ for(const id of ['idn-legacy-pending','idn-legacy-reviewed'])await save({...document(id),content_kind:'official_metadata'});
+ await db.exec("update policy_idn.mail_changes set state='reviewed' where document_id='idn-legacy-reviewed'");
+ const before=(await db.query('select count(*)::int n from policy_idn.versions')).rows[0].n;
+ await db.exec(sql(completeSource));
+ const q=await rpc('idn_mail_review_queue');assert.equal(q.states.held,2);assert.equal(q.pending.length,0);
+ assert.equal((await db.query('select count(*)::int n from policy_idn.versions')).rows[0].n,before);
+ const heldAt=q.held.map(c=>c.held_at);await db.exec(sql(completeSource));
+ assert.deepEqual((await rpc('idn_mail_review_queue')).held.map(c=>c.held_at),heldAt);
+}));
+test('IDN cross-host lease excludes a second runner and expires without allowing stale writes or unlocks',()=>fixture(async({db,rpc})=>{
+ await db.exec(sql(lease));
+ const a=await rpc('idn_acquire_sync_lease',['mac:123',900]);assert.equal(a.acquired,true);
+ const busy=await rpc('idn_acquire_sync_lease',['github:456',900]);assert.equal(busy.acquired,false);assert.equal(busy.lease_token,undefined);
+ assert.equal(await rpc('idn_renew_sync_lease',[a.lease_token,900]),true);
+ assert.equal(await rpc('idn_sync_store_document',[JSON.stringify(document('idn-lease')),a.lease_token]),true);
+ await db.exec("update policy_idn.sync_lease set expires_at=clock_timestamp()-interval '1 second'");
+ assert.equal(await rpc('idn_renew_sync_lease',[a.lease_token,900]),false);
+ await assert.rejects(rpc('idn_sync_store_document',[JSON.stringify(document('idn-stale')),a.lease_token]),/lease lost/);
+ const b=await rpc('idn_acquire_sync_lease',['github:456',900]);assert.equal(b.acquired,true);assert.notEqual(a.lease_token,b.lease_token);
+ assert.equal(await rpc('idn_release_sync_lease',[a.lease_token]),false);
+ await assert.rejects(rpc('idn_sync_store_source_check',[JSON.stringify({}),a.lease_token]),/lease lost/);
+ const c={document_id:'idn-lease',checked_at:new Date().toISOString(),source_url:'https://test.go.id/idn-lease',outcome:'collected',detail:'official_text'};
+ assert.equal(await rpc('idn_sync_store_source_check',[JSON.stringify(c),b.lease_token]),true);
+ assert.equal(await rpc('idn_sync_store_source_check',[JSON.stringify(c),b.lease_token]),false);
+ const health=await rpc('idn_sync_status');assert.equal(health.lease.active,true);assert.equal(health.lease.lease_token,undefined);assert.equal(health.delivery_enabled,false);
+ assert.equal(health.documents,4);assert.equal(health.source_checks_24h.collected,1);
+ assert.equal((await db.query("select count(*)::int n from policy_idn.documents where document_id='idn-stale'")).rows[0].n,0);
+ assert.equal(await rpc('idn_release_sync_lease',[b.lease_token]),true);assert.equal((await rpc('idn_sync_status')).lease.active,false);
+ await assert.rejects(rpc('idn_acquire_sync_lease',['private@example.test',900]));
+ await assert.rejects(rpc('idn_acquire_sync_lease',['mac:123',null]));
+ await assert.rejects(rpc('idn_acquire_sync_lease',['mac:123',1]));
+}));
+test('IDN sync coordination/status are service-only and never expose private lease rows to users',()=>fixture(async({db,rpc,acting})=>{
+ for(const role of ['anon','authenticated']){
+  const allowed=(await db.query(`select count(*)::int n from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public'
+   and p.proname in ('idn_acquire_sync_lease','idn_renew_sync_lease','idn_release_sync_lease','idn_sync_store_document','idn_sync_store_source_check','idn_sync_status')
+   and (has_function_privilege($1,p.oid,'execute') or p.prosecdef)`,[role])).rows[0].n;
+  assert.equal(allowed,0);
+ }
+ await acting(U,async()=>{await assert.rejects(rpc('idn_sync_status'));await assert.rejects(db.query('select * from policy_idn.sync_lease'));});
+ await db.exec('set role service_role');
+ try{const a=await rpc('idn_acquire_sync_lease',['mac:123',900]);assert.equal(a.acquired,true);assert.equal(await rpc('idn_release_sync_lease',[a.lease_token]),true);}finally{await db.exec('reset role');}
+}));
 test('IDN install/replay establishes a quiet baseline and captures only newer version candidates',()=>fixture(async({db,rpc,change,save})=>{
  await db.exec(sql(migration));await db.exec(sql(gateway));await db.exec(sql(gateway));await db.exec(sql(release));assert.equal((await rpc('idn_mail_review_queue')).pending.length,0);
  const c=await change();assert.equal(c.candidate_kind,'content_changed');

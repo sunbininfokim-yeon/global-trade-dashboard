@@ -8,7 +8,9 @@ import fcntl
 import hashlib
 import json
 import os
+import sys
 import time
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -47,7 +49,9 @@ def atomic_json(path, value):
 
 
 class Gateway:
-    ROUTES = {"idn_store_document", "idn_store_source_check", "idn_mail_review_queue"}
+    ROUTES = {"idn_store_document", "idn_store_source_check", "idn_mail_review_queue",
+              "idn_acquire_sync_lease", "idn_renew_sync_lease", "idn_release_sync_lease",
+              "idn_sync_store_document", "idn_sync_store_source_check", "idn_sync_status"}
 
     def __init__(self, env_file=None):
         values = dict(os.environ)
@@ -86,7 +90,58 @@ class Gateway:
             raise RuntimeError("IDN database network error; checkpoint retained") from None
 
 
-def run(manifest, state_dir, rpc, *, limit=5, collect_fn=collect, now=time.time, pause=time.sleep):
+class DatabaseLease:
+    """Mandatory for CLI writes, shared across IDN hosts and stages.
+
+    Never persist or print the token. Expiry recovers from a killed process;
+    fenced DB writes refuse a runner whose lease expired during a download.
+    """
+    def __init__(self, rpc, owner):
+        self.rpc, self.owner, self.token = rpc, owner, None
+
+    def __enter__(self):
+        result = self.rpc("idn_acquire_sync_lease", {"p_owner": self.owner, "p_ttl_seconds": 900})
+        if not isinstance(result, dict) or result.get("acquired") is not True:
+            raise RuntimeError("IDN refresh busy on another runner; no source requests made")
+        try:
+            self.token = str(uuid.UUID(result["lease_token"]))
+        except (KeyError, ValueError, TypeError, AttributeError):
+            raise RuntimeError("invalid IDN lease response") from None
+        return self
+
+    def heartbeat(self):
+        if self.rpc("idn_renew_sync_lease", {"p_lease_token": self.token, "p_ttl_seconds": 900}) is not True:
+            raise RuntimeError("IDN refresh lease lost; checkpoint retained")
+
+    def __call__(self, name, args):
+        if name not in ("idn_store_document", "idn_store_source_check"):
+            raise ValueError("not an IDN source write")
+        self.heartbeat()
+        return self.rpc(name.replace("idn_store_", "idn_sync_store_"), {**args, "p_lease_token": self.token})
+
+    def __exit__(self, *_):
+        try:
+            released = self.rpc("idn_release_sync_lease", {"p_lease_token": self.token})
+            if released is not True:
+                print("IDN lease release not confirmed; no further writes", file=sys.stderr)
+        except Exception:
+            # Preserve the collection error/checkpoint. No forced unlock of another owner.
+            print("IDN lease release unavailable; expiry will recover it", file=sys.stderr)
+
+
+def batch_state(stats):
+    if stats["stopped"]:
+        return "stopped"
+    if stats["attempted"] == 0:
+        return "deferred"
+    if stats["complete_text_checks"] == 0:
+        return "unavailable"
+    if stats["complete_text_checks"] < stats["attempted"] or stats["cooldown_skips"]:
+        return "partial"
+    return "ok"
+
+
+def run(manifest, state_dir, rpc, *, limit=5, collect_fn=collect, now=time.time, pause=time.sleep, heartbeat=lambda: None):
     if not 1 <= limit <= 20 or not manifest:
         raise ValueError("nonempty manifest and limit 1..20 required")
     ids = [e["document_id"] for e in manifest]
@@ -110,11 +165,12 @@ def run(manifest, state_dir, rpc, *, limit=5, collect_fn=collect, now=time.time,
             "version": 1, "manifest_hash": digest, "cursor": 0, "cycle": 0, "active": None, "cooldowns": {}}
         if state.get("version") != 1 or state.get("manifest_hash") != digest:
             raise ValueError("manifest changed; preserve checkpoint and use a new state directory")
-        stats = dict(attempted=0, new_versions=0, source_failures=0, metadata_only=0, cooldown_skips=0, stopped=False)
+        stats = dict(attempted=0, new_versions=0, source_failures=0, metadata_only=0, complete_text_checks=0, cooldown_skips=0, stopped=False)
         for _ in range(min(limit, len(manifest))):
             if (root / "STOP").exists():
                 stats["stopped"] = True
                 break
+            heartbeat()
             index = state["cursor"]
             if type(index) is not int or not 0 <= index < len(manifest):
                 raise ValueError("invalid cursor")
@@ -164,10 +220,13 @@ def run(manifest, state_dir, rpc, *, limit=5, collect_fn=collect, now=time.time,
                     check = dict(document_id=doc["document_id"], checked_at=doc["observed_at"], source_url=doc["source_url"], outcome="failed" if body_failure else "collected", detail=doc.get("body_status", doc["content_kind"])[:1000])
                     stats["source_failures"] += int(body_failure)
                     stats["metadata_only"] += int(doc["content_kind"] != "official_text")
+                    stats["complete_text_checks"] += int(not body_failure and doc["content_kind"] == "official_text" and not doc.get("text_truncated", False))
                 else:
                     check = dict(document_id=entry["document_id"], checked_at=item["checked_at"], source_url=entry["url"], outcome="failed", detail=item["error"])
                     stats["source_failures"] += 1
-                rpc("idn_store_source_check", {"p_check": check})
+                audited = rpc("idn_store_source_check", {"p_check": check})
+                if type(audited) is not bool:
+                    raise RuntimeError("invalid IDN audit response; checkpoint retained")
                 stats["attempted"] += 1
                 state["active"] = None
             # Only complete source + DB audit writes advance the cursor.
@@ -176,7 +235,10 @@ def run(manifest, state_dir, rpc, *, limit=5, collect_fn=collect, now=time.time,
             state["last_completed_at"] = datetime.fromtimestamp(now(), timezone.utc).isoformat()
             atomic_json(state_path, state)
             pause(2)
-        return {"country": "IDN", **stats, "cursor": state["cursor"], "cycle": state["cycle"]}
+        result = {"country": "IDN", "state": batch_state(stats), **stats, "cursor": state["cursor"], "cycle": state["cycle"]}
+        state["last_batch"] = {**result, "finished_at": datetime.fromtimestamp(now(), timezone.utc).isoformat()}
+        atomic_json(state_path, state)
+        return result
     finally:
         os.close(fd)
 
@@ -185,11 +247,19 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--manifest", type=Path, help="Explicit subset; defaults to the active reviewed manifest registry")
     p.add_argument("--stage", choices=[*ORDER, "all"], default="coal")
-    p.add_argument("--state-dir", required=True)
+    p.add_argument("--state-dir")
     p.add_argument("--env-file")
     p.add_argument("--limit", type=int, default=5)
     p.add_argument("--write", action="store_true")
+    p.add_argument("--status", action="store_true", help="Read service-only DB health; no source request or write")
     args = p.parse_args()
+    if args.status:
+        if args.write:
+            p.error("--status cannot be combined with --write")
+        print(json.dumps(Gateway(args.env_file)("idn_sync_status", {})))
+        return 0
+    if not args.state_dir:
+        p.error("--state-dir is required for preview/refresh")
     if not 1 <= args.limit <= 20:
         p.error("limit must be 1..20")
     entries = [e for e in load_manifest(args.manifest) if args.stage == "all" or e["primary_stage"] == args.stage]
@@ -197,12 +267,19 @@ def main():
     if not args.write:
         print(json.dumps(dict(mode="preview", country="IDN", curated_sources=len(entries), limit=args.limit, network=False, database_writes=False)))
         return
-    result = run(entries, args.state_dir, Gateway(args.env_file), limit=args.limit)
+    root = Path(args.state_dir)
+    if (root / "STOP").exists():
+        print(json.dumps(dict(country="IDN", state="stopped", stopped=True, source_requests=0)))
+        return 0
+    owner = "github:" + os.environ["GITHUB_RUN_ID"] if os.environ.get("GITHUB_RUN_ID") else "mac:" + str(os.getpid())
+    with DatabaseLease(Gateway(args.env_file), owner) as lease:
+        result = run(entries, root, lease, limit=args.limit, heartbeat=lease.heartbeat)
     print(json.dumps(result))
+    return 2 if result["state"] in ("unavailable", "deferred") else 0
 
 
 if __name__ == "__main__":
     try:
-        main()
+        sys.exit(main())
     except (ValueError, RuntimeError, OSError) as exc:
         raise SystemExit(str(exc))
