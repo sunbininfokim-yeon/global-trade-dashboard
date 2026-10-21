@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-10-21T05:41:07.592423+00:00",
+ "generated_at": "2026-10-21T05:45:20.501765+00:00",
  "weather_through": "2026-10-18",
  "method_ko": "단계별 기상(NASA POWER, 산지 대표 지점)을 직전 30개 시즌의 같은 구간과 비교해 유리·불리·중립으로 판정한다. 진행 중인 단계는 같은 일수끼리 비교한다. 예측치에는 반영하지 않는다.",
  "rules_ko": {
@@ -11,7 +11,7 @@
   "mature": "비가 많으면 불리, 건조하면 유리",
   "harvest": "비가 많으면 불리, 건조하면 유리",
   "dormant": "혹한일(최저 -15°C 이하)이 평년보다 많으면 불리",
-  "overall": "개화·비대 단계 가중 2배, 합계 -2 이하 불리 · +2 이상 유리"
+  "overall": "개화·비대 단계 가중 2배, 성숙·수확 단계는 표시만(수량보다 품질·수확 진도에 영향), 합계 -2 이하 불리 · +2 이상 유리"
  },
  "regions": {
   "great_plains": [
@@ -160,29 +160,29 @@
      "n": 26,
      "classes": {
       "favorable": {
-       "n": 4,
+       "n": 5,
        "years": [
         2003,
+        2005,
         2007,
         2015,
         2019
        ],
-       "mean_residual_pct": 10.2,
-       "below_trend_share": 0.25
+       "mean_residual_pct": 7.5,
+       "below_trend_share": 0.4
       },
       "neutral": {
-       "n": 7,
+       "n": 6,
        "years": [
         2000,
         2001,
-        2005,
         2008,
         2009,
         2010,
         2017
        ],
-       "mean_residual_pct": 0.9,
-       "below_trend_share": 0.43
+       "mean_residual_pct": 1.5,
+       "below_trend_share": 0.33
       },
       "unfavorable": {
        "n": 15,
@@ -207,9 +207,9 @@
        "below_trend_share": 0.73
       }
      },
-     "score_residual_corr": 0.5
+     "score_residual_corr": 0.51
     },
-    "history_ko": "2000~2025년 추세 대비 수확량: 불리 15번 평균 -6.7%, 중립 7번 평균 +0.9%, 유리 4번 평균 +10.2% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2000~2025년 추세 대비 수확량: 불리 15번 평균 -6.7%, 중립 6번 평균 +1.5%, 유리 5번 평균 +7.5% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "northern_plains": [
@@ -427,31 +427,31 @@
      "n": 26,
      "classes": {
       "favorable": {
-       "n": 4,
+       "n": 6,
        "years": [
         2009,
         2010,
         2011,
+        2013,
+        2014,
         2022
        ],
-       "mean_residual_pct": 3.1,
-       "below_trend_share": 0.25
+       "mean_residual_pct": 5.4,
+       "below_trend_share": 0.17
       },
       "neutral": {
-       "n": 10,
+       "n": 8,
        "years": [
         2000,
         2003,
         2004,
         2008,
-        2013,
-        2014,
         2018,
         2019,
         2023,
         2025
        ],
-       "mean_residual_pct": 11.7,
+       "mean_residual_pct": 12.1,
        "below_trend_share": 0.0
       },
       "unfavorable": {
@@ -474,9 +474,9 @@
        "below_trend_share": 0.75
       }
      },
-     "score_residual_corr": 0.45
+     "score_residual_corr": 0.42
     },
-    "history_ko": "2000~2025년 추세 대비 수확량: 불리 12번 평균 -7.4%, 중립 10번 평균 +11.7%, 유리 4번 평균 +3.1% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2000~2025년 추세 대비 수확량: 불리 12번 평균 -7.4%, 중립 8번 평균 +12.1%, 유리 6번 평균 +5.4% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "corn_belt": [
@@ -717,10 +717,10 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -2.0,
-     "reason_ko": "불리: 파종, 생리적 성숙·건조, 수확",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": -1.0,
+     "reason_ko": "불리: 파종 · 생리적 성숙·건조 불리, 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 6,
      "total_stages": 6
     },
@@ -732,36 +732,35 @@
      "n": 26,
      "classes": {
       "favorable": {
-       "n": 4,
+       "n": 6,
        "years": [
         2008,
+        2009,
         2010,
         2016,
+        2019,
         2025
        ],
-       "mean_residual_pct": 1.7,
+       "mean_residual_pct": 0.5,
        "below_trend_share": 0.5
       },
       "neutral": {
-       "n": 11,
+       "n": 8,
        "years": [
         2001,
         2004,
-        2009,
         2011,
         2013,
         2015,
         2017,
-        2019,
-        2021,
         2022,
         2024
        ],
-       "mean_residual_pct": 1.6,
-       "below_trend_share": 0.45
+       "mean_residual_pct": 3.4,
+       "below_trend_share": 0.38
       },
       "unfavorable": {
-       "n": 11,
+       "n": 12,
        "years": [
         2000,
         2002,
@@ -773,15 +772,16 @@
         2014,
         2018,
         2020,
+        2021,
         2023
        ],
-       "mean_residual_pct": -3.2,
-       "below_trend_share": 0.73
+       "mean_residual_pct": -3.4,
+       "below_trend_share": 0.75
       }
      },
-     "score_residual_corr": 0.26
+     "score_residual_corr": 0.27
     },
-    "history_ko": "2000~2025년 추세 대비 수확량: 불리 11번 평균 -3.2%, 중립 11번 평균 +1.6%, 유리 4번 평균 +1.7% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2000~2025년 추세 대비 수확량: 불리 12번 평균 -3.4%, 중립 8번 평균 +3.4%, 유리 6번 평균 +0.5% · 불리 판정이 실제 감수와 맞았다"
    },
    {
     "crop": "soybeans",
@@ -1020,10 +1020,10 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -2.0,
-     "reason_ko": "불리: 파종, 낙엽·성숙, 수확",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": -1.0,
+     "reason_ko": "불리: 파종 · 낙엽·성숙 불리, 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 6,
      "total_stages": 6
     },
@@ -1035,36 +1035,35 @@
      "n": 26,
      "classes": {
       "favorable": {
-       "n": 5,
+       "n": 6,
        "years": [
         2008,
+        2009,
         2010,
         2016,
         2019,
         2025
        ],
-       "mean_residual_pct": 0.6,
-       "below_trend_share": 0.4
+       "mean_residual_pct": 0.9,
+       "below_trend_share": 0.33
       },
       "neutral": {
-       "n": 10,
+       "n": 8,
        "years": [
         2001,
         2004,
         2007,
-        2009,
         2011,
         2013,
         2014,
         2015,
-        2021,
-        2022
+        2021
        ],
-       "mean_residual_pct": 2.7,
+       "mean_residual_pct": 4.3,
        "below_trend_share": 0.5
       },
       "unfavorable": {
-       "n": 11,
+       "n": 12,
        "years": [
         2000,
         2002,
@@ -1075,16 +1074,17 @@
         2017,
         2018,
         2020,
+        2022,
         2023,
         2024
        ],
-       "mean_residual_pct": -3.1,
-       "below_trend_share": 0.73
+       "mean_residual_pct": -3.6,
+       "below_trend_share": 0.75
       }
      },
-     "score_residual_corr": 0.21
+     "score_residual_corr": 0.19
     },
-    "history_ko": "2000~2025년 추세 대비 수확량: 불리 11번 평균 -3.1%, 중립 10번 평균 +2.7%, 유리 5번 평균 +0.6% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2000~2025년 추세 대비 수확량: 불리 12번 평균 -3.6%, 중립 8번 평균 +4.3%, 유리 6번 평균 +0.9% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "cotton_belt": [
@@ -1327,8 +1327,8 @@
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -6.5,
-     "reason_ko": "불리: 파종, 출아·꽃봉오리(스퀘어), 개화·다래 형성, 다래 성숙, 수확",
+     "score": -6.0,
+     "reason_ko": "불리: 파종, 출아·꽃봉오리(스퀘어), 개화·다래 형성, 다래 성숙 · 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 6,
      "total_stages": 6
     },
@@ -1340,18 +1340,17 @@
      "n": 26,
      "classes": {
       "favorable": {
-       "n": 4,
+       "n": 3,
        "years": [
         2004,
         2005,
-        2010,
-        2021
+        2010
        ],
-       "mean_residual_pct": 17.1,
+       "mean_residual_pct": 21.8,
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 7,
+       "n": 8,
        "years": [
         2007,
         2009,
@@ -1359,10 +1358,11 @@
         2015,
         2016,
         2017,
+        2021,
         2025
        ],
-       "mean_residual_pct": 13.9,
-       "below_trend_share": 0.14
+       "mean_residual_pct": 12.5,
+       "below_trend_share": 0.12
       },
       "unfavorable": {
        "n": 15,
@@ -1387,9 +1387,9 @@
        "below_trend_share": 0.67
       }
      },
-     "score_residual_corr": 0.58
+     "score_residual_corr": 0.61
     },
-    "history_ko": "2000~2025년 추세 대비 수확량: 불리 15번 평균 -10.7%, 중립 7번 평균 +13.9%, 유리 4번 평균 +17.1% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2000~2025년 추세 대비 수확량: 불리 15번 평균 -10.7%, 중립 8번 평균 +12.5%, 유리 3번 평균 +21.8% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "mato_grosso_soja": [
@@ -1532,24 +1532,23 @@
        "below_trend_share": 0.6
       },
       "neutral": {
-       "n": 7,
+       "n": 4,
        "years": [
-        1996,
-        1999,
         2000,
         2002,
         2005,
-        2014,
         2023
        ],
-       "mean_residual_pct": -0.9,
-       "below_trend_share": 0.71
+       "mean_residual_pct": -0.4,
+       "below_trend_share": 0.5
       },
       "unfavorable": {
-       "n": 18,
+       "n": 21,
        "years": [
+        1996,
         1997,
         1998,
+        1999,
         2001,
         2003,
         2006,
@@ -1558,6 +1557,7 @@
         2011,
         2012,
         2013,
+        2014,
         2015,
         2016,
         2017,
@@ -1567,13 +1567,13 @@
         2021,
         2024
        ],
-       "mean_residual_pct": -0.7,
-       "below_trend_share": 0.5
+       "mean_residual_pct": -0.8,
+       "below_trend_share": 0.57
       }
      },
-     "score_residual_corr": 0.04
+     "score_residual_corr": 0.03
     },
-    "history_ko": "1995~2024년 추세 대비 수확량: 불리 18번 평균 -0.7%, 중립 7번 평균 -0.9%, 유리 5번 평균 -2.1% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1995~2024년 추세 대비 수확량: 불리 21번 평균 -0.8%, 중립 4번 평균 -0.4%, 유리 5번 평균 -2.1% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    },
    {
     "crop": "corn_safrinha",
@@ -1789,22 +1789,22 @@
      "n": 31,
      "classes": {
       "favorable": {
-       "n": 4,
+       "n": 5,
        "years": [
         1994,
         1995,
+        2004,
         2008,
         2018
        ],
-       "mean_residual_pct": -4.7,
-       "below_trend_share": 0.75
+       "mean_residual_pct": -1.8,
+       "below_trend_share": 0.6
       },
       "neutral": {
-       "n": 10,
+       "n": 9,
        "years": [
         2000,
         2003,
-        2004,
         2005,
         2006,
         2010,
@@ -1813,8 +1813,8 @@
         2023,
         2024
        ],
-       "mean_residual_pct": 5.9,
-       "below_trend_share": 0.2
+       "mean_residual_pct": 5.5,
+       "below_trend_share": 0.22
       },
       "unfavorable": {
        "n": 17,
@@ -1841,9 +1841,9 @@
        "below_trend_share": 0.65
       }
      },
-     "score_residual_corr": 0.14
+     "score_residual_corr": 0.13
     },
-    "history_ko": "1994~2024년 추세 대비 수확량: 불리 17번 평균 -4.0%, 중립 10번 평균 +5.9%, 유리 4번 평균 -4.7% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1994~2024년 추세 대비 수확량: 불리 17번 평균 -4.0%, 중립 9번 평균 +5.5%, 유리 5번 평균 -1.8% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "parana_soja": [
@@ -1988,25 +1988,25 @@
        "below_trend_share": 0.29
       },
       "neutral": {
-       "n": 7,
+       "n": 5,
        "years": [
         1999,
         2001,
-        2002,
         2004,
-        2006,
         2017,
         2024
        ],
-       "mean_residual_pct": 0.5,
-       "below_trend_share": 0.43
+       "mean_residual_pct": 0.0,
+       "below_trend_share": 0.4
       },
       "unfavorable": {
-       "n": 16,
+       "n": 18,
        "years": [
         1998,
         2000,
+        2002,
         2005,
+        2006,
         2007,
         2008,
         2009,
@@ -2021,13 +2021,13 @@
         2022,
         2023
        ],
-       "mean_residual_pct": -8.7,
-       "below_trend_share": 0.62
+       "mean_residual_pct": -7.6,
+       "below_trend_share": 0.61
       }
      },
      "score_residual_corr": 0.41
     },
-    "history_ko": "1995~2024년 추세 대비 수확량: 불리 16번 평균 -8.7%, 중립 7번 평균 +0.5%, 유리 7번 평균 +10.3% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1995~2024년 추세 대비 수확량: 불리 18번 평균 -7.6%, 중립 5번 평균 +0.0%, 유리 7번 평균 +10.3% · 불리 판정이 실제 감수와 맞았다"
    },
    {
     "crop": "corn",
@@ -2207,7 +2207,7 @@
        "below_trend_share": 0.67
       }
      },
-     "score_residual_corr": 0.46
+     "score_residual_corr": 0.48
     },
     "history_ko": "1995~2024년 추세 대비 수확량: 불리 15번 평균 -8.4%, 중립 9번 평균 +1.5%, 유리 6번 평균 +6.5% · 불리 판정이 실제 감수와 맞았다"
    },
@@ -2412,8 +2412,8 @@
     "overall": {
      "verdict": "neutral",
      "verdict_ko": "중립",
-     "score": -0.5,
-     "reason_ko": "불리: 파종, 출아·분얼·마디신장, 수확 · 유리: 등숙",
+     "score": 0.0,
+     "reason_ko": "불리: 파종, 출아·분얼·마디신장 · 유리: 등숙 · 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -2425,8 +2425,9 @@
      "n": 31,
      "classes": {
       "favorable": {
-       "n": 6,
+       "n": 7,
        "years": [
+        1997,
         1998,
         2001,
         2005,
@@ -2434,27 +2435,25 @@
         2011,
         2014
        ],
-       "mean_residual_pct": 0.1,
-       "below_trend_share": 0.5
+       "mean_residual_pct": 0.4,
+       "below_trend_share": 0.43
       },
       "neutral": {
-       "n": 9,
+       "n": 7,
        "years": [
         1996,
-        1997,
         1999,
         2000,
         2002,
         2009,
-        2016,
         2022,
         2024
        ],
-       "mean_residual_pct": 1.6,
-       "below_trend_share": 0.44
+       "mean_residual_pct": -1.3,
+       "below_trend_share": 0.57
       },
       "unfavorable": {
-       "n": 16,
+       "n": 17,
        "years": [
         1994,
         1995,
@@ -2466,6 +2465,7 @@
         2012,
         2013,
         2015,
+        2016,
         2017,
         2018,
         2019,
@@ -2473,13 +2473,13 @@
         2021,
         2023
        ],
-       "mean_residual_pct": -0.2,
-       "below_trend_share": 0.31
+       "mean_residual_pct": 1.1,
+       "below_trend_share": 0.29
       }
      },
-     "score_residual_corr": 0.05
+     "score_residual_corr": 0.04
     },
-    "history_ko": "1994~2024년 추세 대비 수확량: 불리 16번 평균 -0.2%, 중립 9번 평균 +1.6%, 유리 6번 평균 +0.1% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1994~2024년 추세 대비 수확량: 불리 17번 평균 +1.1%, 중립 7번 평균 -1.3%, 유리 7번 평균 +0.4% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "matopiba_soja": [
@@ -2543,7 +2543,7 @@
      "verdict": "neutral",
      "verdict_ko": "중립",
      "score": 0.0,
-     "reason_ko": "지난 단계 모두 평년 수준",
+     "reason_ko": "판정 단계 모두 평년 수준",
      "judged_stages": 1,
      "total_stages": 5
     },
@@ -2555,30 +2555,29 @@
      "n": 30,
      "classes": {
       "favorable": {
-       "n": 3,
+       "n": 4,
        "years": [
         1999,
         2000,
+        2004,
         2022
        ],
-       "mean_residual_pct": -4.1,
-       "below_trend_share": 0.67
+       "mean_residual_pct": 1.5,
+       "below_trend_share": 0.5
       },
       "neutral": {
-       "n": 6,
+       "n": 4,
        "years": [
         1997,
         2002,
-        2004,
         2011,
-        2013,
-        2023
+        2013
        ],
-       "mean_residual_pct": -7.9,
-       "below_trend_share": 0.67
+       "mean_residual_pct": -15.1,
+       "below_trend_share": 0.75
       },
       "unfavorable": {
-       "n": 21,
+       "n": 22,
        "years": [
         1995,
         1996,
@@ -2600,15 +2599,16 @@
         2019,
         2020,
         2021,
+        2023,
         2024
        ],
-       "mean_residual_pct": 1.3,
-       "below_trend_share": 0.48
+       "mean_residual_pct": 1.0,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": -0.15
+     "score_residual_corr": -0.11
     },
-    "history_ko": "1995~2024년 추세 대비 수확량: 불리 21번 평균 +1.3%, 중립 6번 평균 -7.9%, 유리 3번 평균 -4.1% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1995~2024년 추세 대비 수확량: 불리 22번 평균 +1.0%, 중립 4번 평균 -15.1%, 유리 4번 평균 +1.5% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
    },
    {
     "crop": "cotton",
@@ -2849,8 +2849,8 @@
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -3.5,
-     "reason_ko": "불리: 파종, 출아·꽃봉오리, 다래 성숙 · 유리: 다래 터짐",
+     "score": -4.0,
+     "reason_ko": "불리: 파종, 출아·꽃봉오리, 다래 성숙 · 다래 터짐 유리(품질·수확 진도, 판정 제외)",
      "judged_stages": 6,
      "total_stages": 6
     },
@@ -2862,27 +2862,27 @@
      "n": 30,
      "classes": {
       "favorable": {
-       "n": 3,
+       "n": 4,
        "years": [
         1995,
         1997,
-        2006
+        2006,
+        2013
        ],
-       "mean_residual_pct": -27.8,
+       "mean_residual_pct": -23.4,
        "below_trend_share": 1.0
       },
       "neutral": {
-       "n": 6,
+       "n": 5,
        "years": [
         2000,
         2003,
         2004,
-        2013,
         2021,
         2022
        ],
-       "mean_residual_pct": 15.2,
-       "below_trend_share": 0.67
+       "mean_residual_pct": 20.3,
+       "below_trend_share": 0.6
       },
       "unfavorable": {
        "n": 21,
@@ -2913,9 +2913,9 @@
        "below_trend_share": 0.57
       }
      },
-     "score_residual_corr": -0.01
+     "score_residual_corr": 0.0
     },
-    "history_ko": "1995~2024년 추세 대비 수확량: 불리 21번 평균 -2.0%, 중립 6번 평균 +15.2%, 유리 3번 평균 -27.8% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1995~2024년 추세 대비 수확량: 불리 21번 평균 -2.0%, 중립 5번 평균 +20.3%, 유리 4번 평균 -23.4% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "sp_cana": [
@@ -3056,24 +3056,17 @@
      ],
      "n": 30,
      "classes": {
-      "favorable": {
-       "n": 3,
+      "neutral": {
+       "n": 30,
        "years": [
         1995,
-        1999,
-        2002
-       ],
-       "mean_residual_pct": -0.6,
-       "below_trend_share": 0.67
-      },
-      "neutral": {
-       "n": 27,
-       "years": [
         1996,
         1997,
         1998,
+        1999,
         2000,
         2001,
+        2002,
         2003,
         2004,
         2005,
@@ -3098,12 +3091,12 @@
         2024
        ],
        "mean_residual_pct": -0.4,
-       "below_trend_share": 0.48
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.13
+     "score_residual_corr": 0.21
     },
-    "history_ko": "1995~2024년 추세 대비 수확량: 중립 27번 평균 -0.4%, 유리 3번 평균 -0.6%"
+    "history_ko": "1995~2024년 추세 대비 수확량: 중립 30번 평균 -0.4%"
    },
    {
     "crop": "coffee",
@@ -3215,60 +3208,60 @@
      "n": 30,
      "classes": {
       "favorable": {
-       "n": 4,
+       "n": 3,
        "years": [
         1999,
         2002,
-        2010,
         2023
        ],
-       "mean_residual_pct": -2.7,
-       "below_trend_share": 0.5
+       "mean_residual_pct": -15.5,
+       "below_trend_share": 0.67
       },
       "neutral": {
-       "n": 12,
+       "n": 9,
        "years": [
         1995,
-        1996,
         1997,
         2000,
-        2001,
         2003,
-        2006,
         2007,
+        2010,
         2011,
-        2016,
         2019,
         2022
        ],
-       "mean_residual_pct": -3.9,
-       "below_trend_share": 0.42
+       "mean_residual_pct": -7.3,
+       "below_trend_share": 0.44
       },
       "unfavorable": {
-       "n": 14,
+       "n": 18,
        "years": [
+        1996,
         1998,
+        2001,
         2004,
         2005,
+        2006,
         2008,
         2009,
         2012,
         2013,
         2014,
         2015,
+        2016,
         2017,
         2018,
         2020,
         2021,
         2024
        ],
-       "mean_residual_pct": 2.4,
-       "below_trend_share": 0.57
+       "mean_residual_pct": 4.8,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": -0.12
+     "score_residual_corr": -0.17
     },
-    "history_ko": "1995~2024년 추세 대비 수확량: 불리 14번 평균 +2.4%, 중립 12번 평균 -3.9%, 유리 4번 평균 -2.7% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1995~2024년 추세 대비 수확량: 불리 18번 평균 +4.8%, 중립 9번 평균 -7.3%, 유리 3번 평균 -15.5% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    },
    {
     "crop": "orange",
@@ -3350,7 +3343,7 @@
      "n": 30,
      "classes": {
       "neutral": {
-       "n": 18,
+       "n": 16,
        "years": [
         1995,
         1997,
@@ -3365,17 +3358,15 @@
         2012,
         2013,
         2014,
-        2016,
         2017,
         2019,
-        2022,
-        2023
+        2022
        ],
-       "mean_residual_pct": -7.2,
-       "below_trend_share": 0.39
+       "mean_residual_pct": -8.3,
+       "below_trend_share": 0.38
       },
       "unfavorable": {
-       "n": 12,
+       "n": 14,
        "years": [
         1996,
         1998,
@@ -3385,18 +3376,20 @@
         2008,
         2009,
         2015,
+        2016,
         2018,
         2020,
         2021,
+        2023,
         2024
        ],
-       "mean_residual_pct": 10.5,
-       "below_trend_share": 0.33
+       "mean_residual_pct": 9.2,
+       "below_trend_share": 0.36
       }
      },
-     "score_residual_corr": 0.01
+     "score_residual_corr": -0.09
     },
-    "history_ko": "1995~2024년 추세 대비 수확량: 불리 12번 평균 +10.5%, 중립 18번 평균 -7.2% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
+    "history_ko": "1995~2024년 추세 대비 수확량: 불리 14번 평균 +9.2%, 중립 16번 평균 -8.3% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
    }
   ],
   "pampas_soja": [
@@ -3460,7 +3453,7 @@
      "verdict": "neutral",
      "verdict_ko": "중립",
      "score": 0.0,
-     "reason_ko": "지난 단계 모두 평년 수준",
+     "reason_ko": "판정 단계 모두 평년 수준",
      "judged_stages": 1,
      "total_stages": 5
     },
@@ -3472,46 +3465,46 @@
      "n": 31,
      "classes": {
       "favorable": {
-       "n": 6,
+       "n": 7,
        "years": [
         1998,
         2001,
         2002,
+        2007,
         2015,
         2016,
         2019
        ],
-       "mean_residual_pct": 16.2,
+       "mean_residual_pct": 14.3,
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 11,
+       "n": 8,
        "years": [
         1997,
         1999,
         2003,
         2005,
-        2007,
-        2008,
         2010,
-        2012,
         2013,
         2014,
         2017
        ],
-       "mean_residual_pct": 2.3,
-       "below_trend_share": 0.18
+       "mean_residual_pct": 3.7,
+       "below_trend_share": 0.12
       },
       "unfavorable": {
-       "n": 14,
+       "n": 16,
        "years": [
         1995,
         1996,
         2000,
         2004,
         2006,
+        2008,
         2009,
         2011,
+        2012,
         2018,
         2020,
         2021,
@@ -3520,13 +3513,13 @@
         2024,
         2025
        ],
-       "mean_residual_pct": -10.2,
-       "below_trend_share": 0.71
+       "mean_residual_pct": -9.4,
+       "below_trend_share": 0.69
       }
      },
-     "score_residual_corr": 0.53
+     "score_residual_corr": 0.55
     },
-    "history_ko": "1995~2025년 추세 대비 수확량: 불리 14번 평균 -10.2%, 중립 11번 평균 +2.3%, 유리 6번 평균 +16.2% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1995~2025년 추세 대비 수확량: 불리 16번 평균 -9.4%, 중립 8번 평균 +3.7%, 유리 7번 평균 +14.3% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "norte_soja": [
@@ -3731,8 +3724,8 @@
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -2.5,
-     "reason_ko": "불리: 개화·꼬투리 형성, 수확",
+     "score": -2.0,
+     "reason_ko": "불리: 개화·꼬투리 형성 · 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -3753,28 +3746,28 @@
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 9,
+       "n": 8,
        "years": [
         1995,
         1996,
         1997,
         1998,
         1999,
-        2004,
         2011,
         2016,
         2021
        ],
-       "mean_residual_pct": -0.2,
-       "below_trend_share": 0.44
+       "mean_residual_pct": 4.9,
+       "below_trend_share": 0.38
       },
       "unfavorable": {
-       "n": 20,
+       "n": 21,
        "years": [
         2000,
         2001,
         2002,
         2003,
+        2004,
         2005,
         2006,
         2007,
@@ -3792,13 +3785,13 @@
         2024,
         2025
        ],
-       "mean_residual_pct": -6.2,
-       "below_trend_share": 0.5
+       "mean_residual_pct": -7.8,
+       "below_trend_share": 0.52
       }
      },
-     "score_residual_corr": 0.48
+     "score_residual_corr": 0.5
     },
-    "history_ko": "1995~2025년 추세 대비 수확량: 불리 20번 평균 -6.2%, 중립 9번 평균 -0.2%, 유리 2번 평균 +40.1% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1995~2025년 추세 대비 수확량: 불리 21번 평균 -7.8%, 중립 8번 평균 +4.9%, 유리 2번 평균 +40.1% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "pampas_maiz": [
@@ -3929,28 +3922,28 @@
      "n": 31,
      "classes": {
       "favorable": {
-       "n": 4,
+       "n": 5,
        "years": [
         1998,
         2003,
+        2007,
         2010,
         2015
        ],
-       "mean_residual_pct": 14.0,
+       "mean_residual_pct": 13.4,
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 7,
+       "n": 6,
        "years": [
         1995,
         2000,
         2002,
         2005,
-        2007,
         2017,
         2020
        ],
-       "mean_residual_pct": 5.4,
+       "mean_residual_pct": 4.4,
        "below_trend_share": 0.0
       },
       "unfavorable": {
@@ -3981,9 +3974,9 @@
        "below_trend_share": 0.7
       }
      },
-     "score_residual_corr": 0.66
+     "score_residual_corr": 0.68
     },
-    "history_ko": "1995~2025년 추세 대비 수확량: 불리 20번 평균 -7.5%, 중립 7번 평균 +5.4%, 유리 4번 평균 +14.0% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1995~2025년 추세 대비 수확량: 불리 20번 평균 -7.5%, 중립 6번 평균 +4.4%, 유리 5번 평균 +13.4% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "pampas_trigo": [
@@ -4183,24 +4176,21 @@
        "below_trend_share": 0.75
       },
       "neutral": {
-       "n": 10,
+       "n": 7,
        "years": [
         1994,
         1997,
         2000,
-        2007,
-        2013,
         2015,
-        2016,
         2017,
         2020,
         2023
        ],
-       "mean_residual_pct": 1.4,
-       "below_trend_share": 0.4
+       "mean_residual_pct": 2.3,
+       "below_trend_share": 0.43
       },
       "unfavorable": {
-       "n": 17,
+       "n": 20,
        "years": [
         1995,
         1996,
@@ -4210,23 +4200,26 @@
         2004,
         2005,
         2006,
+        2007,
         2008,
         2009,
         2011,
         2012,
+        2013,
         2014,
+        2016,
         2019,
         2021,
         2022,
         2024
        ],
-       "mean_residual_pct": -3.8,
-       "below_trend_share": 0.47
+       "mean_residual_pct": -3.4,
+       "below_trend_share": 0.45
       }
      },
-     "score_residual_corr": 0.08
+     "score_residual_corr": 0.09
     },
-    "history_ko": "1994~2024년 추세 대비 수확량: 불리 17번 평균 -3.8%, 중립 10번 평균 +1.4%, 유리 4번 평균 +0.7% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1994~2024년 추세 대비 수확량: 불리 20번 평균 -3.4%, 중립 7번 평균 +2.3%, 유리 4번 평균 +0.7% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "chaco_algodon": [
@@ -4328,47 +4321,47 @@
      "n": 31,
      "classes": {
       "favorable": {
-       "n": 2,
+       "n": 1,
        "years": [
-        1997,
         2001
        ],
-       "mean_residual_pct": -4.7,
-       "below_trend_share": 0.5
+       "mean_residual_pct": 18.8,
+       "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 15,
+       "n": 12,
        "years": [
         1995,
         1996,
-        2003,
-        2004,
+        1997,
         2005,
         2007,
         2008,
         2009,
         2010,
-        2011,
         2015,
         2016,
         2017,
-        2018,
         2020
        ],
-       "mean_residual_pct": 5.6,
-       "below_trend_share": 0.47
+       "mean_residual_pct": -0.2,
+       "below_trend_share": 0.67
       },
       "unfavorable": {
-       "n": 14,
+       "n": 18,
        "years": [
         1998,
         1999,
         2000,
         2002,
+        2003,
+        2004,
         2006,
+        2011,
         2012,
         2013,
         2014,
+        2018,
         2019,
         2021,
         2022,
@@ -4376,13 +4369,13 @@
         2024,
         2025
        ],
-       "mean_residual_pct": -10.0,
-       "below_trend_share": 0.64
+       "mean_residual_pct": -4.5,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.19
+     "score_residual_corr": 0.24
     },
-    "history_ko": "1995~2025년 추세 대비 수확량: 불리 14번 평균 -10.0%, 중립 15번 평균 +5.6%, 유리 2번 평균 -4.7% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1995~2025년 추세 대비 수확량: 불리 18번 평균 -4.5%, 중립 12번 평균 -0.2%, 유리 1번 평균 +18.8% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "tucuman_cana": [
@@ -4428,7 +4421,7 @@
      "verdict": "neutral",
      "verdict_ko": "중립",
      "score": 0.0,
-     "reason_ko": "지난 단계 모두 평년 수준",
+     "reason_ko": "판정 단계 모두 평년 수준",
      "judged_stages": 1,
      "total_stages": 3
     },
@@ -4593,17 +4586,16 @@
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 3,
+       "n": 2,
        "years": [
         2011,
-        2022,
-        2024
+        2022
        ],
-       "mean_residual_pct": -0.2,
-       "below_trend_share": 0.33
+       "mean_residual_pct": 5.6,
+       "below_trend_share": 0.0
       },
       "unfavorable": {
-       "n": 10,
+       "n": 11,
        "years": [
         2008,
         2009,
@@ -4614,15 +4606,16 @@
         2015,
         2018,
         2019,
-        2020
+        2020,
+        2024
        ],
-       "mean_residual_pct": -5.0,
-       "below_trend_share": 0.7
+       "mean_residual_pct": -5.6,
+       "below_trend_share": 0.73
       }
      },
-     "score_residual_corr": 0.27
+     "score_residual_corr": 0.3
     },
-    "history_ko": "2008~2024년 추세 대비 수확량: 불리 10번 평균 -5.0%, 중립 3번 평균 -0.2%, 유리 4번 평균 +7.7% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2008~2024년 추세 대비 수확량: 불리 11번 평균 -5.6%, 중립 2번 평균 +5.6%, 유리 4번 평균 +7.7% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "cbe_winter_wheat": [
@@ -4759,7 +4752,7 @@
      "verdict": "neutral",
      "verdict_ko": "중립",
      "score": 0.0,
-     "reason_ko": "지난 단계 모두 평년 수준",
+     "reason_ko": "판정 단계 모두 평년 수준",
      "judged_stages": 2,
      "total_stages": 7
     },
@@ -4782,19 +4775,17 @@
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 5,
+       "n": 3,
        "years": [
         2008,
         2018,
-        2020,
-        2022,
-        2024
+        2022
        ],
-       "mean_residual_pct": 0.2,
-       "below_trend_share": 0.6
+       "mean_residual_pct": 12.7,
+       "below_trend_share": 0.33
       },
       "unfavorable": {
-       "n": 8,
+       "n": 10,
        "years": [
         2009,
         2010,
@@ -4803,15 +4794,17 @@
         2014,
         2015,
         2019,
-        2021
+        2020,
+        2021,
+        2024
        ],
-       "mean_residual_pct": -6.7,
-       "below_trend_share": 0.38
+       "mean_residual_pct": -9.1,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.45
+     "score_residual_corr": 0.48
     },
-    "history_ko": "2008~2024년 추세 대비 수확량: 불리 8번 평균 -6.7%, 중립 5번 평균 +0.2%, 유리 4번 평균 +12.9% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2008~2024년 추세 대비 수확량: 불리 10번 평균 -9.1%, 중립 3번 평균 +12.7%, 유리 4번 평균 +12.9% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "volga_winter_wheat": [
@@ -4948,7 +4941,7 @@
      "verdict": "neutral",
      "verdict_ko": "중립",
      "score": 0.0,
-     "reason_ko": "지난 단계 모두 평년 수준",
+     "reason_ko": "판정 단계 모두 평년 수준",
      "judged_stages": 2,
      "total_stages": 7
     },
@@ -4971,20 +4964,20 @@
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 3,
+       "n": 2,
        "years": [
-        2010,
         2014,
         2020
        ],
-       "mean_residual_pct": -6.2,
-       "below_trend_share": 0.33
+       "mean_residual_pct": 18.2,
+       "below_trend_share": 0.0
       },
       "unfavorable": {
-       "n": 10,
+       "n": 11,
        "years": [
         2008,
         2009,
+        2010,
         2011,
         2012,
         2013,
@@ -4994,13 +4987,13 @@
         2021,
         2024
        ],
-       "mean_residual_pct": -7.5,
-       "below_trend_share": 0.7
+       "mean_residual_pct": -11.8,
+       "below_trend_share": 0.73
       }
      },
-     "score_residual_corr": 0.54
+     "score_residual_corr": 0.56
     },
-    "history_ko": "2008~2024년 추세 대비 수확량: 불리 10번 평균 -7.5%, 중립 3번 평균 -6.2%, 유리 4번 평균 +26.6% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2008~2024년 추세 대비 수확량: 불리 11번 평균 -11.8%, 중립 2번 평균 +18.2%, 유리 4번 평균 +26.6% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "russia_winter_wheat": [
@@ -5137,7 +5130,7 @@
      "verdict": "neutral",
      "verdict_ko": "중립",
      "score": 0.0,
-     "reason_ko": "지난 단계 모두 평년 수준",
+     "reason_ko": "판정 단계 모두 평년 수준",
      "judged_stages": 2,
      "total_stages": 7
     },
@@ -5149,26 +5142,26 @@
      "n": 17,
      "classes": {
       "favorable": {
-       "n": 2,
+       "n": 3,
        "years": [
+        2011,
         2021,
         2023
        ],
-       "mean_residual_pct": -1.9,
-       "below_trend_share": 0.5
+       "mean_residual_pct": 1.1,
+       "below_trend_share": 0.33
       },
       "neutral": {
-       "n": 6,
+       "n": 5,
        "years": [
         2008,
-        2011,
         2016,
         2017,
         2019,
         2022
        ],
-       "mean_residual_pct": 8.3,
-       "below_trend_share": 0.17
+       "mean_residual_pct": 8.6,
+       "below_trend_share": 0.2
       },
       "unfavorable": {
        "n": 9,
@@ -5187,9 +5180,9 @@
        "below_trend_share": 0.67
       }
      },
-     "score_residual_corr": 0.35
+     "score_residual_corr": 0.37
     },
-    "history_ko": "2008~2024년 추세 대비 수확량: 불리 9번 평균 -6.7%, 중립 6번 평균 +8.3%, 유리 2번 평균 -1.9% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2008~2024년 추세 대비 수확량: 불리 9번 평균 -6.7%, 중립 5번 평균 +8.6%, 유리 3번 평균 +1.1% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "southern_sunflower": [
@@ -5407,47 +5400,47 @@
      "n": 17,
      "classes": {
       "favorable": {
-       "n": 1,
+       "n": 2,
        "years": [
-        2011
+        2011,
+        2022
        ],
-       "mean_residual_pct": 4.4,
-       "below_trend_share": 0.0
+       "mean_residual_pct": 0.1,
+       "below_trend_share": 0.5
       },
       "neutral": {
-       "n": 8,
+       "n": 4,
        "years": [
         2008,
-        2012,
         2016,
-        2017,
         2019,
-        2020,
-        2022,
-        2023
+        2020
        ],
-       "mean_residual_pct": 0.5,
-       "below_trend_share": 0.62
+       "mean_residual_pct": -4.3,
+       "below_trend_share": 0.75
       },
       "unfavorable": {
-       "n": 8,
+       "n": 11,
        "years": [
         2009,
         2010,
+        2012,
         2013,
         2014,
         2015,
+        2017,
         2018,
         2021,
+        2023,
         2024
        ],
-       "mean_residual_pct": -7.1,
-       "below_trend_share": 0.62
+       "mean_residual_pct": -2.8,
+       "below_trend_share": 0.55
       }
      },
-     "score_residual_corr": 0.12
+     "score_residual_corr": 0.13
     },
-    "history_ko": "2008~2024년 추세 대비 수확량: 불리 8번 평균 -7.1%, 중립 8번 평균 +0.5%, 유리 1번 평균 +4.4% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "2008~2024년 추세 대비 수확량: 불리 11번 평균 -2.8%, 중립 4번 평균 -4.3%, 유리 2번 평균 +0.1% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
    }
   ],
   "cbe_sunflower": [
@@ -5665,25 +5658,25 @@
      "n": 17,
      "classes": {
       "favorable": {
-       "n": 1,
+       "n": 2,
        "years": [
+        2022,
         2023
        ],
-       "mean_residual_pct": -9.9,
+       "mean_residual_pct": -8.2,
        "below_trend_share": 1.0
       },
       "neutral": {
-       "n": 6,
+       "n": 5,
        "years": [
         2011,
         2012,
         2018,
         2019,
-        2021,
-        2022
+        2021
        ],
-       "mean_residual_pct": 5.7,
-       "below_trend_share": 0.33
+       "mean_residual_pct": 8.2,
+       "below_trend_share": 0.2
       },
       "unfavorable": {
        "n": 10,
@@ -5703,9 +5696,9 @@
        "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.2
+     "score_residual_corr": 0.18
     },
-    "history_ko": "2008~2024년 추세 대비 수확량: 불리 10번 평균 -8.4%, 중립 6번 평균 +5.7%, 유리 1번 평균 -9.9% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "2008~2024년 추세 대비 수확량: 불리 10번 평균 -8.4%, 중립 5번 평균 +8.2%, 유리 2번 평균 -8.2% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "volga_sunflower": [
@@ -5923,28 +5916,27 @@
      "n": 17,
      "classes": {
       "favorable": {
-       "n": 1,
+       "n": 2,
        "years": [
+        2022,
         2023
        ],
-       "mean_residual_pct": -1.3,
-       "below_trend_share": 1.0
+       "mean_residual_pct": 2.3,
+       "below_trend_share": 0.5
       },
       "neutral": {
-       "n": 6,
+       "n": 4,
        "years": [
         2009,
         2017,
         2019,
-        2020,
-        2022,
         2024
        ],
-       "mean_residual_pct": -5.4,
-       "below_trend_share": 0.67
+       "mean_residual_pct": -4.1,
+       "below_trend_share": 0.75
       },
       "unfavorable": {
-       "n": 10,
+       "n": 11,
        "years": [
         2008,
         2010,
@@ -5955,15 +5947,16 @@
         2015,
         2016,
         2018,
+        2020,
         2021
        ],
-       "mean_residual_pct": -0.1,
-       "below_trend_share": 0.4
+       "mean_residual_pct": -2.0,
+       "below_trend_share": 0.45
       }
      },
-     "score_residual_corr": 0.13
+     "score_residual_corr": 0.14
     },
-    "history_ko": "2008~2024년 추세 대비 수확량: 불리 10번 평균 -0.1%, 중립 6번 평균 -5.4%, 유리 1번 평균 -1.3% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "2008~2024년 추세 대비 수확량: 불리 11번 평균 -2.0%, 중립 4번 평균 -4.1%, 유리 2번 평균 +2.3% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
    }
   ],
   "russia_sunflower": [
@@ -6168,8 +6161,8 @@
     "overall": {
      "verdict": "neutral",
      "verdict_ko": "중립",
-     "score": 0.5,
-     "reason_ko": "유리: 수확",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준 · 수확 유리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -6219,7 +6212,7 @@
        "below_trend_share": 0.54
       }
      },
-     "score_residual_corr": 0.17
+     "score_residual_corr": 0.18
     },
     "history_ko": "2008~2024년 추세 대비 수확량: 불리 13번 평균 -5.0%, 중립 2번 평균 +6.8%, 유리 2번 평균 +6.1% · 불리 판정이 실제 감수와 맞았다"
    }
@@ -6424,10 +6417,10 @@
      }
     ],
     "overall": {
-     "verdict": "neutral",
-     "verdict_ko": "중립",
-     "score": 1.5,
-     "reason_ko": "불리: 수확 · 유리: 파종, 출아·분얼·마디신장",
+     "verdict": "favorable",
+     "verdict_ko": "유리",
+     "score": 2.0,
+     "reason_ko": "유리: 파종, 출아·분얼·마디신장 · 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -6439,7 +6432,7 @@
      "n": 27,
      "classes": {
       "favorable": {
-       "n": 11,
+       "n": 12,
        "years": [
         1998,
         2005,
@@ -6451,29 +6444,29 @@
         2017,
         2019,
         2022,
+        2023,
         2024
        ],
-       "mean_residual_pct": 1.0,
-       "below_trend_share": 0.45
+       "mean_residual_pct": 1.2,
+       "below_trend_share": 0.42
       },
       "neutral": {
-       "n": 8,
+       "n": 6,
        "years": [
-        1999,
         2003,
         2006,
         2012,
         2014,
         2018,
-        2020,
-        2023
+        2020
        ],
-       "mean_residual_pct": -2.0,
-       "below_trend_share": 0.5
+       "mean_residual_pct": -4.7,
+       "below_trend_share": 0.67
       },
       "unfavorable": {
-       "n": 8,
+       "n": 9,
        "years": [
+        1999,
         2000,
         2001,
         2002,
@@ -6483,13 +6476,13 @@
         2016,
         2021
        ],
-       "mean_residual_pct": -0.5,
-       "below_trend_share": 0.5
+       "mean_residual_pct": 0.5,
+       "below_trend_share": 0.44
       }
      },
-     "score_residual_corr": -0.03
+     "score_residual_corr": -0.04
     },
-    "history_ko": "1998~2024년 추세 대비 수확량: 불리 8번 평균 -0.5%, 중립 8번 평균 -2.0%, 유리 11번 평균 +1.0% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
+    "history_ko": "1998~2024년 추세 대비 수확량: 불리 9번 평균 +0.5%, 중립 6번 평균 -4.7%, 유리 12번 평균 +1.2% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
    }
   ],
   "mp_soybean": [
@@ -6694,8 +6687,8 @@
     "overall": {
      "verdict": "neutral",
      "verdict_ko": "중립",
-     "score": 0.5,
-     "reason_ko": "유리: 수확",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준 · 수확 유리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -6728,19 +6721,17 @@
        "below_trend_share": 0.43
       },
       "neutral": {
-       "n": 5,
+       "n": 3,
        "years": [
         2000,
         2010,
-        2016,
-        2017,
-        2018
+        2016
        ],
-       "mean_residual_pct": 2.1,
-       "below_trend_share": 0.4
+       "mean_residual_pct": -2.6,
+       "below_trend_share": 0.67
       },
       "unfavorable": {
-       "n": 8,
+       "n": 10,
        "years": [
         1999,
         2001,
@@ -6749,15 +6740,17 @@
         2008,
         2009,
         2014,
+        2017,
+        2018,
         2021
        ],
-       "mean_residual_pct": 1.3,
-       "below_trend_share": 0.38
+       "mean_residual_pct": 2.8,
+       "below_trend_share": 0.3
       }
      },
-     "score_residual_corr": -0.04
+     "score_residual_corr": -0.01
     },
-    "history_ko": "1998~2024년 추세 대비 수확량: 불리 8번 평균 +1.3%, 중립 5번 평균 +2.1%, 유리 14번 평균 -2.7% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1998~2024년 추세 대비 수확량: 불리 10번 평균 +2.8%, 중립 3번 평균 -2.6%, 유리 14번 평균 -2.7% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "vidarbha_cotton": [
@@ -6934,10 +6927,10 @@
      }
     ],
     "overall": {
-     "verdict": "neutral",
-     "verdict_ko": "중립",
-     "score": -1.5,
-     "reason_ko": "불리: 개화·다래 형성 · 유리: 다래 성숙·터짐",
+     "verdict": "unfavorable",
+     "verdict_ko": "불리",
+     "score": -2.0,
+     "reason_ko": "불리: 개화·다래 형성 · 다래 성숙·터짐 유리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -6966,35 +6959,35 @@
        "below_trend_share": 0.2
       },
       "neutral": {
-       "n": 10,
+       "n": 7,
        "years": [
         1999,
         2000,
         2001,
-        2002,
-        2007,
-        2008,
         2009,
         2012,
         2015,
         2018
        ],
-       "mean_residual_pct": -23.5,
-       "below_trend_share": 0.8
+       "mean_residual_pct": -34.7,
+       "below_trend_share": 1.0
       },
       "unfavorable": {
-       "n": 2,
+       "n": 5,
        "years": [
+        2002,
         2004,
+        2007,
+        2008,
         2014
        ],
-       "mean_residual_pct": 5.6,
-       "below_trend_share": 0.5
+       "mean_residual_pct": 3.8,
+       "below_trend_share": 0.4
       }
      },
-     "score_residual_corr": 0.29
+     "score_residual_corr": 0.27
     },
-    "history_ko": "1998~2019년 추세 대비 수확량: 불리 2번 평균 +5.6%, 중립 10번 평균 -23.5%, 유리 10번 평균 +19.1% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
+    "history_ko": "1998~2019년 추세 대비 수확량: 불리 5번 평균 +3.8%, 중립 7번 평균 -34.7%, 유리 10번 평균 +19.1% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
    }
   ],
   "wa_wheat": [
@@ -7236,7 +7229,7 @@
        "below_trend_share": 0.6
       }
      },
-     "score_residual_corr": 0.6
+     "score_residual_corr": 0.62
     },
     "history_ko": "1997~2025년 추세 대비 수확량: 불리 15번 평균 -16.2%, 중립 6번 평균 +16.9%, 유리 8번 평균 +20.8% · 불리 판정이 실제 감수와 맞았다"
    }
@@ -7427,31 +7420,28 @@
      "n": 29,
      "classes": {
       "favorable": {
-       "n": 2,
+       "n": 3,
        "years": [
         2011,
-        2013
+        2013,
+        2022
        ],
-       "mean_residual_pct": 21.9,
+       "mean_residual_pct": 30.8,
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 8,
+       "n": 4,
        "years": [
         2000,
         2001,
         2003,
-        2009,
-        2012,
-        2014,
-        2020,
-        2022
+        2009
        ],
-       "mean_residual_pct": 21.5,
-       "below_trend_share": 0.25
+       "mean_residual_pct": 29.6,
+       "below_trend_share": 0.0
       },
       "unfavorable": {
-       "n": 19,
+       "n": 22,
        "years": [
         1997,
         1998,
@@ -7463,23 +7453,26 @@
         2007,
         2008,
         2010,
+        2012,
+        2014,
         2015,
         2016,
         2017,
         2018,
         2019,
+        2020,
         2021,
         2023,
         2024,
         2025
        ],
-       "mean_residual_pct": -12.0,
-       "below_trend_share": 0.58
+       "mean_residual_pct": -10.2,
+       "below_trend_share": 0.59
       }
      },
-     "score_residual_corr": 0.42
+     "score_residual_corr": 0.47
     },
-    "history_ko": "1997~2025년 추세 대비 수확량: 불리 19번 평균 -12.0%, 중립 8번 평균 +21.5%, 유리 2번 평균 +21.9% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1997~2025년 추세 대비 수확량: 불리 22번 평균 -10.2%, 중립 4번 평균 +29.6%, 유리 3번 평균 +30.8% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "vic_wheat": [
@@ -7681,22 +7674,21 @@
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 8,
+       "n": 7,
        "years": [
         2004,
         2005,
-        2012,
         2013,
         2017,
         2018,
         2019,
         2025
        ],
-       "mean_residual_pct": -1.4,
-       "below_trend_share": 0.38
+       "mean_residual_pct": -1.9,
+       "below_trend_share": 0.43
       },
       "unfavorable": {
-       "n": 15,
+       "n": 16,
        "years": [
         1997,
         1998,
@@ -7709,18 +7701,19 @@
         2008,
         2009,
         2011,
+        2012,
         2014,
         2015,
         2023,
         2024
        ],
-       "mean_residual_pct": -13.9,
-       "below_trend_share": 0.53
+       "mean_residual_pct": -13.0,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.51
+     "score_residual_corr": 0.53
     },
-    "history_ko": "1997~2025년 추세 대비 수확량: 불리 15번 평균 -13.9%, 중립 8번 평균 -1.4%, 유리 6번 평균 +36.4% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1997~2025년 추세 대비 수확량: 불리 16번 평균 -13.0%, 중립 7번 평균 -1.9%, 유리 6번 평균 +36.4% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "sad_sk_canola_palliser": [
@@ -7925,8 +7918,8 @@
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.5,
-     "reason_ko": "불리: 개화, 꼬투리 충실, 수확(베어 말리기 포함)",
+     "score": -4.0,
+     "reason_ko": "불리: 개화, 꼬투리 충실 · 수확(베어 말리기 포함) 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -7938,44 +7931,42 @@
      "n": 32,
      "classes": {
       "favorable": {
-       "n": 6,
+       "n": 7,
        "years": [
         1994,
         1995,
         1996,
         2000,
         2004,
+        2010,
         2025
        ],
-       "mean_residual_pct": 9.4,
-       "below_trend_share": 0.5
+       "mean_residual_pct": 8.8,
+       "below_trend_share": 0.43
       },
       "neutral": {
-       "n": 15,
+       "n": 11,
        "years": [
         1997,
         1999,
-        2001,
         2002,
         2005,
         2007,
         2008,
         2009,
-        2010,
         2013,
         2014,
         2015,
-        2016,
-        2020,
-        2022
+        2016
        ],
-       "mean_residual_pct": 3.7,
-       "below_trend_share": 0.4
+       "mean_residual_pct": 6.0,
+       "below_trend_share": 0.36
       },
       "unfavorable": {
-       "n": 11,
+       "n": 14,
        "years": [
         1998,
+        2001,
         2003,
         2006,
         2011,
@@ -7983,17 +7974,19 @@
         2017,
         2018,
         2019,
+        2020,
         2021,
+        2022,
         2023,
         2024
        ],
-       "mean_residual_pct": -28.0,
-       "below_trend_share": 0.73
+       "mean_residual_pct": -23.1,
+       "below_trend_share": 0.71
       }
      },
-     "score_residual_corr": 0.4
+     "score_residual_corr": 0.41
     },
-    "history_ko": "1994~2025년 추세 대비 수확량: 불리 11번 평균 -28.0%, 중립 15번 평균 +3.7%, 유리 6번 평균 +9.4% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1994~2025년 추세 대비 수확량: 불리 14번 평균 -23.1%, 중립 11번 평균 +6.0%, 유리 7번 평균 +8.8% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "sad_ab_canola_south": [
@@ -8198,8 +8191,8 @@
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -2.5,
-     "reason_ko": "불리: 개화, 수확(베어 말리기 포함)",
+     "score": -2.0,
+     "reason_ko": "불리: 개화 · 수확(베어 말리기 포함) 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -8221,17 +8214,15 @@
        "below_trend_share": 0.33
       },
       "neutral": {
-       "n": 15,
+       "n": 13,
        "years": [
         1994,
         1995,
         1997,
-        1999,
         2002,
         2004,
         2006,
         2008,
-        2009,
         2011,
         2013,
         2014,
@@ -8239,18 +8230,20 @@
         2019,
         2020
        ],
-       "mean_residual_pct": 4.8,
-       "below_trend_share": 0.4
+       "mean_residual_pct": 6.0,
+       "below_trend_share": 0.38
       },
       "unfavorable": {
-       "n": 14,
+       "n": 16,
        "years": [
         1996,
         1998,
+        1999,
         2000,
         2001,
         2003,
         2007,
+        2009,
         2012,
         2015,
         2017,
@@ -8260,13 +8253,13 @@
         2023,
         2024
        ],
-       "mean_residual_pct": -11.3,
-       "below_trend_share": 0.57
+       "mean_residual_pct": -10.2,
+       "below_trend_share": 0.56
       }
      },
-     "score_residual_corr": 0.52
+     "score_residual_corr": 0.54
     },
-    "history_ko": "1994~2025년 추세 대비 수확량: 불리 14번 평균 -11.3%, 중립 15번 평균 +4.8%, 유리 3번 평균 +30.3% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1994~2025년 추세 대비 수확량: 불리 16번 평균 -10.2%, 중립 13번 평균 +6.0%, 유리 3번 평균 +30.3% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "sad_ab_canola_central": [
@@ -8484,44 +8477,44 @@
      "n": 32,
      "classes": {
       "favorable": {
-       "n": 5,
+       "n": 6,
        "years": [
         1996,
         1997,
         2011,
+        2016,
         2019,
         2020
        ],
-       "mean_residual_pct": -4.6,
-       "below_trend_share": 0.6
+       "mean_residual_pct": -3.3,
+       "below_trend_share": 0.5
       },
       "neutral": {
-       "n": 11,
+       "n": 7,
        "years": [
-        1995,
         2000,
-        2001,
         2004,
         2005,
-        2007,
         2010,
         2013,
-        2016,
         2017,
         2022
        ],
-       "mean_residual_pct": 4.2,
-       "below_trend_share": 0.36
+       "mean_residual_pct": 7.6,
+       "below_trend_share": 0.29
       },
       "unfavorable": {
-       "n": 16,
+       "n": 19,
        "years": [
         1994,
+        1995,
         1998,
         1999,
+        2001,
         2002,
         2003,
         2006,
+        2007,
         2008,
         2009,
         2012,
@@ -8533,13 +8526,13 @@
         2024,
         2025
        ],
-       "mean_residual_pct": -2.6,
-       "below_trend_share": 0.56
+       "mean_residual_pct": -2.7,
+       "below_trend_share": 0.58
       }
      },
-     "score_residual_corr": 0.12
+     "score_residual_corr": 0.13
     },
-    "history_ko": "1994~2025년 추세 대비 수확량: 불리 16번 평균 -2.6%, 중립 11번 평균 +4.2%, 유리 5번 평균 -4.6% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1994~2025년 추세 대비 수확량: 불리 19번 평균 -2.7%, 중립 7번 평균 +7.6%, 유리 6번 평균 -3.3% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "sad_ab_canola_peace": [
@@ -8757,44 +8750,44 @@
      "n": 32,
      "classes": {
       "favorable": {
-       "n": 5,
+       "n": 6,
        "years": [
         1996,
         1997,
         2011,
+        2016,
         2019,
         2020
        ],
-       "mean_residual_pct": -11.3,
-       "below_trend_share": 0.8
+       "mean_residual_pct": -7.1,
+       "below_trend_share": 0.67
       },
       "neutral": {
-       "n": 11,
+       "n": 7,
        "years": [
-        1995,
         2000,
-        2001,
         2004,
         2005,
-        2007,
         2010,
         2013,
-        2016,
         2017,
         2022
        ],
-       "mean_residual_pct": 6.5,
-       "below_trend_share": 0.27
+       "mean_residual_pct": 7.5,
+       "below_trend_share": 0.29
       },
       "unfavorable": {
-       "n": 16,
+       "n": 19,
        "years": [
         1994,
+        1995,
         1998,
         1999,
+        2001,
         2002,
         2003,
         2006,
+        2007,
         2008,
         2009,
         2012,
@@ -8806,13 +8799,13 @@
         2024,
         2025
        ],
-       "mean_residual_pct": -2.7,
-       "below_trend_share": 0.62
+       "mean_residual_pct": -1.9,
+       "below_trend_share": 0.58
       }
      },
-     "score_residual_corr": -0.03
+     "score_residual_corr": -0.06
     },
-    "history_ko": "1994~2025년 추세 대비 수확량: 불리 16번 평균 -2.7%, 중립 11번 평균 +6.5%, 유리 5번 평균 -11.3% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1994~2025년 추세 대비 수확량: 불리 19번 평균 -1.9%, 중립 7번 평균 +7.5%, 유리 6번 평균 -7.1% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "sad_mb_canola_central": [
@@ -9030,7 +9023,7 @@
      "n": 32,
      "classes": {
       "favorable": {
-       "n": 10,
+       "n": 11,
        "years": [
         1998,
         2000,
@@ -9040,27 +9033,27 @@
         2009,
         2010,
         2011,
+        2014,
         2022,
         2024
        ],
-       "mean_residual_pct": -5.8,
-       "below_trend_share": 0.7
+       "mean_residual_pct": -5.0,
+       "below_trend_share": 0.64
       },
       "neutral": {
-       "n": 9,
+       "n": 8,
        "years": [
         1995,
         1996,
         1997,
         2007,
         2013,
-        2014,
         2015,
         2016,
         2017
        ],
-       "mean_residual_pct": 1.3,
-       "below_trend_share": 0.44
+       "mean_residual_pct": 1.0,
+       "below_trend_share": 0.5
       },
       "unfavorable": {
        "n": 13,
@@ -9083,9 +9076,9 @@
        "below_trend_share": 0.54
       }
      },
-     "score_residual_corr": -0.15
+     "score_residual_corr": -0.13
     },
-    "history_ko": "1994~2025년 추세 대비 수확량: 불리 13번 평균 +2.4%, 중립 9번 평균 +1.3%, 유리 10번 평균 -5.8% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1994~2025년 추세 대비 수확량: 불리 13번 평균 +2.4%, 중립 8번 평균 +1.0%, 유리 11번 평균 -5.0% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "sad_on_corn_southern": [
@@ -9290,8 +9283,8 @@
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -6.5,
-     "reason_ko": "불리: 파종, 출아·영양생장, 출사·수분, 등숙, 수확",
+     "score": -6.0,
+     "reason_ko": "불리: 파종, 출아·영양생장, 출사·수분, 등숙 · 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -9317,31 +9310,30 @@
        "below_trend_share": 0.71
       },
       "neutral": {
-       "n": 9,
+       "n": 5,
        "years": [
-        1994,
-        1996,
         1997,
         2001,
         2003,
         2004,
-        2008,
-        2012,
-        2023
+        2012
        ],
-       "mean_residual_pct": 3.7,
-       "below_trend_share": 0.44
+       "mean_residual_pct": 1.0,
+       "below_trend_share": 0.6
       },
       "unfavorable": {
-       "n": 16,
+       "n": 20,
        "years": [
+        1994,
         1995,
+        1996,
         1998,
         1999,
         2002,
         2005,
         2006,
         2007,
+        2008,
         2009,
         2010,
         2011,
@@ -9349,16 +9341,17 @@
         2020,
         2021,
         2022,
+        2023,
         2024,
         2025
        ],
-       "mean_residual_pct": -0.5,
-       "below_trend_share": 0.62
+       "mean_residual_pct": 1.0,
+       "below_trend_share": 0.55
       }
      },
-     "score_residual_corr": -0.07
+     "score_residual_corr": -0.1
     },
-    "history_ko": "1994~2025년 추세 대비 수확량: 불리 16번 평균 -0.5%, 중립 9번 평균 +3.7%, 유리 7번 평균 -2.7% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1994~2025년 추세 대비 수확량: 불리 20번 평균 +1.0%, 중립 5번 평균 +1.0%, 유리 7번 평균 -2.7% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "sad_sk_wheat_palliser": [
@@ -9563,8 +9556,8 @@
     "overall": {
      "verdict": "neutral",
      "verdict_ko": "중립",
-     "score": -1.5,
-     "reason_ko": "불리: 출아·분얼·마디신장, 등숙, 수확 · 유리: 출수·개화",
+     "score": -1.0,
+     "reason_ko": "불리: 출아·분얼·마디신장, 등숙 · 유리: 출수·개화 · 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -9576,44 +9569,44 @@
      "n": 31,
      "classes": {
       "favorable": {
-       "n": 8,
+       "n": 10,
        "years": [
         1994,
+        1995,
         1996,
         1997,
         1999,
         2000,
         2004,
+        2010,
         2011,
         2016
        ],
-       "mean_residual_pct": -11.1,
-       "below_trend_share": 0.5
+       "mean_residual_pct": -11.3,
+       "below_trend_share": 0.6
       },
       "neutral": {
-       "n": 11,
+       "n": 7,
        "years": [
-        1995,
-        2001,
         2003,
         2005,
-        2007,
         2008,
         2009,
-        2010,
         2013,
         2020,
         2025
        ],
-       "mean_residual_pct": 7.8,
-       "below_trend_share": 0.36
+       "mean_residual_pct": 16.6,
+       "below_trend_share": 0.14
       },
       "unfavorable": {
-       "n": 12,
+       "n": 14,
        "years": [
         1998,
+        2001,
         2002,
         2006,
+        2007,
         2012,
         2014,
         2015,
@@ -9624,13 +9617,13 @@
         2022,
         2023
        ],
-       "mean_residual_pct": -7.3,
-       "below_trend_share": 0.42
+       "mean_residual_pct": -6.6,
+       "below_trend_share": 0.43
       }
      },
-     "score_residual_corr": 0.17
+     "score_residual_corr": 0.2
     },
-    "history_ko": "1994~2025년 추세 대비 수확량: 불리 12번 평균 -7.3%, 중립 11번 평균 +7.8%, 유리 8번 평균 -11.1% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1994~2025년 추세 대비 수확량: 불리 14번 평균 -6.6%, 중립 7번 평균 +16.6%, 유리 10번 평균 -11.3% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "sad_on_corn_western": [
@@ -9835,8 +9828,8 @@
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -6.5,
-     "reason_ko": "불리: 파종, 출아·영양생장, 출사·수분, 등숙, 수확",
+     "score": -6.0,
+     "reason_ko": "불리: 파종, 출아·영양생장, 출사·수분, 등숙 · 수확 불리(품질·수확 진도, 판정 제외)",
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -9862,31 +9855,30 @@
        "below_trend_share": 0.57
       },
       "neutral": {
-       "n": 9,
+       "n": 5,
        "years": [
-        1994,
-        1996,
         1997,
         2001,
         2003,
         2004,
-        2008,
-        2012,
-        2023
+        2012
        ],
-       "mean_residual_pct": 0.4,
-       "below_trend_share": 0.56
+       "mean_residual_pct": -1.4,
+       "below_trend_share": 0.8
       },
       "unfavorable": {
-       "n": 16,
+       "n": 20,
        "years": [
+        1994,
         1995,
+        1996,
         1998,
         1999,
         2002,
         2005,
         2006,
         2007,
+        2008,
         2009,
         2010,
         2011,
@@ -9894,16 +9886,17 @@
         2020,
         2021,
         2022,
+        2023,
         2024,
         2025
        ],
-       "mean_residual_pct": 2.3,
-       "below_trend_share": 0.44
+       "mean_residual_pct": 2.4,
+       "below_trend_share": 0.4
       }
      },
      "score_residual_corr": -0.33
     },
-    "history_ko": "1994~2025년 추세 대비 수확량: 불리 16번 평균 +2.3%, 중립 9번 평균 +0.4%, 유리 7번 평균 -4.5% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
+    "history_ko": "1994~2025년 추세 대비 수확량: 불리 20번 평균 +2.4%, 중립 5번 평균 -1.4%, 유리 7번 평균 -4.5% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만) · 유리 판정은 증수로 이어지지 않았다"
    }
   ],
   "sad_mb_soy_redriver": [
@@ -10356,7 +10349,7 @@
        "below_trend_share": 0.67
       }
      },
-     "score_residual_corr": 0.6
+     "score_residual_corr": 0.62
     },
     "history_ko": "1997~2025년 추세 대비 수확량: 불리 15번 평균 -11.4%, 중립 6번 평균 +13.0%, 유리 8번 평균 +16.3% · 불리 판정이 실제 감수와 맞았다"
    }
@@ -10600,7 +10593,7 @@
        "below_trend_share": 0.6
       }
      },
-     "score_residual_corr": 0.62
+     "score_residual_corr": 0.64
     },
     "history_ko": "1997~2025년 추세 대비 수확량: 불리 15번 평균 -13.4%, 중립 6번 평균 +10.9%, 유리 8번 평균 +24.6% · 불리 판정이 실제 감수와 맞았다"
    }
@@ -10791,31 +10784,28 @@
      "n": 29,
      "classes": {
       "favorable": {
-       "n": 2,
+       "n": 3,
        "years": [
         2011,
-        2013
+        2013,
+        2022
        ],
-       "mean_residual_pct": 12.2,
+       "mean_residual_pct": 24.9,
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 8,
+       "n": 4,
        "years": [
         2000,
         2001,
         2003,
-        2009,
-        2012,
-        2014,
-        2020,
-        2022
+        2009
        ],
-       "mean_residual_pct": 19.6,
-       "below_trend_share": 0.25
+       "mean_residual_pct": 25.6,
+       "below_trend_share": 0.0
       },
       "unfavorable": {
-       "n": 19,
+       "n": 22,
        "years": [
         1997,
         1998,
@@ -10827,23 +10817,26 @@
         2007,
         2008,
         2010,
+        2012,
+        2014,
         2015,
         2016,
         2017,
         2018,
         2019,
+        2020,
         2021,
         2023,
         2024,
         2025
        ],
-       "mean_residual_pct": -9.4,
-       "below_trend_share": 0.47
+       "mean_residual_pct": -7.9,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.43
+     "score_residual_corr": 0.49
     },
-    "history_ko": "1997~2025년 추세 대비 수확량: 불리 19번 평균 -9.4%, 중립 8번 평균 +19.6%, 유리 2번 평균 +12.2% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1997~2025년 추세 대비 수확량: 불리 22번 평균 -7.9%, 중립 4번 평균 +25.6%, 유리 3번 평균 +24.9% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "sa_canola": [
@@ -11032,31 +11025,28 @@
      "n": 29,
      "classes": {
       "favorable": {
-       "n": 2,
+       "n": 3,
        "years": [
         2011,
-        2013
+        2013,
+        2022
        ],
-       "mean_residual_pct": 12.9,
+       "mean_residual_pct": 18.3,
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 8,
+       "n": 4,
        "years": [
         2000,
         2001,
         2003,
-        2009,
-        2012,
-        2014,
-        2020,
-        2022
+        2009
        ],
-       "mean_residual_pct": 12.7,
-       "below_trend_share": 0.25
+       "mean_residual_pct": 24.6,
+       "below_trend_share": 0.0
       },
       "unfavorable": {
-       "n": 19,
+       "n": 22,
        "years": [
         1997,
         1998,
@@ -11068,23 +11058,26 @@
         2007,
         2008,
         2010,
+        2012,
+        2014,
         2015,
         2016,
         2017,
         2018,
         2019,
+        2020,
         2021,
         2023,
         2024,
         2025
        ],
-       "mean_residual_pct": -5.0,
-       "below_trend_share": 0.47
+       "mean_residual_pct": -5.5,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.31
+     "score_residual_corr": 0.35
     },
-    "history_ko": "1997~2025년 추세 대비 수확량: 불리 19번 평균 -5.0%, 중립 8번 평균 +12.7%, 유리 2번 평균 +12.9% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1997~2025년 추세 대비 수확량: 불리 22번 평균 -5.5%, 중립 4번 평균 +24.6%, 유리 3번 평균 +18.3% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "vic_barley": [
@@ -11286,22 +11279,21 @@
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 8,
+       "n": 7,
        "years": [
         2004,
         2005,
-        2012,
         2013,
         2017,
         2018,
         2019,
         2025
        ],
-       "mean_residual_pct": 3.3,
-       "below_trend_share": 0.38
+       "mean_residual_pct": 4.2,
+       "below_trend_share": 0.29
       },
       "unfavorable": {
-       "n": 15,
+       "n": 16,
        "years": [
         1997,
         1998,
@@ -11314,18 +11306,19 @@
         2008,
         2009,
         2011,
+        2012,
         2014,
         2015,
         2023,
         2024
        ],
-       "mean_residual_pct": -12.8,
-       "below_trend_share": 0.47
+       "mean_residual_pct": -12.1,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.49
+     "score_residual_corr": 0.51
     },
-    "history_ko": "1997~2025년 추세 대비 수확량: 불리 15번 평균 -12.8%, 중립 8번 평균 +3.3%, 유리 6번 평균 +32.3% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1997~2025년 추세 대비 수확량: 불리 16번 평균 -12.1%, 중립 7번 평균 +4.2%, 유리 6번 평균 +32.3% · 불리 판정이 실제 감수와 맞았다"
    }
   ],
   "vic_canola": [
@@ -11527,22 +11520,21 @@
        "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 8,
+       "n": 7,
        "years": [
         2004,
         2005,
-        2012,
         2013,
         2017,
         2018,
         2019,
         2025
        ],
-       "mean_residual_pct": 3.3,
-       "below_trend_share": 0.38
+       "mean_residual_pct": 1.7,
+       "below_trend_share": 0.43
       },
       "unfavorable": {
-       "n": 15,
+       "n": 16,
        "years": [
         1997,
         1998,
@@ -11555,18 +11547,19 @@
         2008,
         2009,
         2011,
+        2012,
         2014,
         2015,
         2023,
         2024
        ],
-       "mean_residual_pct": -10.5,
-       "below_trend_share": 0.53
+       "mean_residual_pct": -8.9,
+       "below_trend_share": 0.5
       }
      },
-     "score_residual_corr": 0.39
+     "score_residual_corr": 0.43
     },
-    "history_ko": "1997~2025년 추세 대비 수확량: 불리 15번 평균 -10.5%, 중립 8번 평균 +3.3%, 유리 6번 평균 +23.8% · 불리 판정이 실제 감수와 맞았다"
+    "history_ko": "1997~2025년 추세 대비 수확량: 불리 16번 평균 -8.9%, 중립 7번 평균 +1.7%, 유리 6번 평균 +23.8% · 불리 판정이 실제 감수와 맞았다"
    }
   ]
  },
