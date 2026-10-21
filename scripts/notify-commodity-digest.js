@@ -27,6 +27,9 @@ const FROM_EMAIL = process.env.NOTIFY_FROM_EMAIL || 'alerts@chokemonitor.com';
 const REPORTS_JSON = path.join(__dirname, '..', 'New for anti', 'public', 'data', 'commodity_reports_v1.json');
 const WINDOW_DAYS = 8; // a little over a week, so a cadence slip never silently drops a report
 const MAX_PER_COMMODITY = 8; // newest first; keeps one busy board from swamping the mail
+// News-outlet headlines (publisher_type "news": Mining.com, Google News...) ride along
+// but may not take more than this many of a commodity's 8 slots; the rest stay for agency reports.
+const MAX_NEWS_PER_COMMODITY = 2;
 const SITE_URL = 'https://chokemonitor.com/';
 
 function esc(value) {
@@ -90,6 +93,31 @@ function digestIdempotencyKey(userId, groups) {
   return 'commodity-legacy/' + crypto.createHash('sha256').update(JSON.stringify([userId, ids])).digest('hex');
 }
 
+// One user's picks: commodity key -> items, newest first, at most
+// MAX_PER_COMMODITY per commodity and MAX_NEWS_PER_COMMODITY of those from news outlets.
+function pickDigestItems(items, commodityKeys, disabledSources, sentIds, userId) {
+  const byCommodity = new Map();
+  const newsCount = new Map();
+  const seenItemIds = new Set(); // an item tagged with 2 favorited commodities lists once
+  for (const item of items) {
+    if (disabledSources && disabledSources.has(item.source_id)) continue;
+    const matchedKey = item.commodities.find((c) => commodityKeys.has(c));
+    if (!matchedKey || seenItemIds.has(item.id)) continue;
+    if (sentIds.has(`${userId}:${item.id}`)) continue;
+    seenItemIds.add(item.id);
+    const picked = byCommodity.get(matchedKey) || [];
+    if (picked.length >= MAX_PER_COMMODITY) continue;
+    if (item.publisher_type === 'news') {
+      const n = newsCount.get(matchedKey) || 0;
+      if (n >= MAX_NEWS_PER_COMMODITY) continue;
+      newsCount.set(matchedKey, n + 1);
+    }
+    picked.push(item);
+    byCommodity.set(matchedKey, picked);
+  }
+  return byCommodity;
+}
+
 async function sendDigestEmail(email, groups, userId) {
   const sections = groups.map(({ label, items }) => `
     <h3 style="margin:20px 0 8px;font-size:15px;">${esc(label)}</h3>
@@ -98,6 +126,7 @@ async function sendDigestEmail(email, groups, userId) {
         <li style="margin-bottom:10px;">
           <a href="${esc(item.url)}" style="color:#1c2b33;font-weight:600;">${esc(item.title?.original)}</a><br>
           <span style="color:#4a5a61;font-size:13px;">${esc((item.summary || '').slice(0, 240))}</span>
+          ${item.publisher_type === 'news' ? `<span style="color:#7a8a91;font-size:12px;">뉴스 매체 · ${esc(item.agency_ko || item.agency || '')}</span>` : ''}
         </li>`).join('')}
     </ul>`).join('');
   const html = `
@@ -150,20 +179,8 @@ async function run() {
   const digestByUser = new Map(); // user_id -> Map(commodityKey -> [item])
 
   for (const [userId, commodityKeys] of favoritesByUser) {
-    const disabledSources = disabledSourcesByUser.get(userId);
-    const seenItemIds = new Set(); // an item tagged with 2 favorited commodities lists once
-    for (const item of items) {
-      if (disabledSources && disabledSources.has(item.source_id)) continue;
-      const matchedKey = item.commodities.find((c) => commodityKeys.has(c));
-      if (!matchedKey || seenItemIds.has(item.id)) continue;
-      if (sentIds.has(`${userId}:${item.id}`)) continue;
-      seenItemIds.add(item.id);
-      if (!digestByUser.has(userId)) digestByUser.set(userId, new Map());
-      const byCommodity = digestByUser.get(userId);
-      if (!byCommodity.has(matchedKey)) byCommodity.set(matchedKey, []);
-      if (byCommodity.get(matchedKey).length >= MAX_PER_COMMODITY) continue;
-      byCommodity.get(matchedKey).push(item);
-    }
+    const byCommodity = pickDigestItems(items, commodityKeys, disabledSourcesByUser.get(userId), sentIds, userId);
+    if (byCommodity.size) digestByUser.set(userId, byCommodity);
   }
 
   if (DRY_RUN) {
@@ -217,5 +234,5 @@ async function run() {
 
 }
 
-module.exports = { digestIdempotencyKey, sendDigestEmail, run };
+module.exports = { digestIdempotencyKey, sendDigestEmail, pickDigestItems, run };
 if (require.main === module) run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });

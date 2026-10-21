@@ -1445,6 +1445,27 @@ class AggregatorFeedTests(unittest.TestCase):
         plain = dict(src, item_publisher=False)
         self.assertEqual(build_mod.previous_raws(previous, [plain], now)["gn"][0].agency, "Google News")
 
+    def test_items_carry_the_source_facts_consumers_need(self):
+        from commodity_reports import build as build_mod
+        sources = [
+            {"id": "gn", "agency": "Google News", "agency_ko": "구글 뉴스 경유", "item_publisher": True, "publisher_type": "news"},
+            {"id": "mining", "agency": "MINING.COM", "agency_ko": "마이닝닷컴", "publisher_type": "news"},
+            {"id": "eia", "agency": "EIA", "agency_ko": "미국 에너지정보청"},
+        ]
+        items = [{"source_id": "gn", "agency": "Reuters · Google News"}, {"source_id": "mining", "agency": "MINING.COM"},
+                 {"source_id": "eia", "agency": "EIA"}, {"source_id": "unknown"}]
+        build_mod.stamp_source_fields(items, sources)
+        # An aggregator's items keep the outlet in agency, and the source's own name apart from it.
+        self.assertEqual(items[0]["publisher_type"], "news")
+        self.assertEqual(items[0]["source_agency"], "Google News")
+        self.assertEqual(items[0]["source_agency_ko"], "구글 뉴스 경유")
+        # A plain news source needs no second name; an agency source gets neither field.
+        self.assertEqual(items[1]["publisher_type"], "news")
+        self.assertNotIn("source_agency", items[1])
+        self.assertNotIn("publisher_type", items[2])
+        self.assertNotIn("source_agency", items[2])
+        self.assertEqual(items[3], {"source_id": "unknown"})
+
     def test_per_source_item_cap(self):
         from unittest import mock
         from commodity_reports import feeds as feeds_mod

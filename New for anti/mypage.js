@@ -232,7 +232,13 @@
                 }
                 const sources = byCommodity.get(key);
                 if (!sources.has(item.source_id)) {
-                    sources.set(item.source_id, { agency: item.agency, agency_ko: item.agency_ko });
+                    // An aggregator source (Google News) names the outlet per
+                    // item; the checkbox is for the source, so it carries the
+                    // source's own name when the pipeline provides one.
+                    sources.set(item.source_id, {
+                        agency: item.source_agency || item.agency,
+                        agency_ko: item.source_agency_ko || item.agency_ko,
+                    });
                 }
             });
         });

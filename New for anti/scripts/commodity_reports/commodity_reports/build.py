@@ -115,6 +115,27 @@ def source_home(src: Dict[str, Any]) -> Optional[str]:
     return f"{parts.scheme}://{parts.netloc}/" if parts.scheme in ("http", "https") and parts.netloc else None
 
 
+def stamp_source_fields(items: List[Dict[str, Any]], sources: List[Dict[str, Any]]) -> None:
+    """Source-level facts the consumers need on each item.
+
+    publisher_type "news": a news outlet, not an agency. The weekly digest
+    caps these so wire headlines do not crowd out agency reports.
+    source_agency[_ko]: the SOURCE's own name. An aggregator source's items
+    carry the outlet each one names in agency, so the mypage source filter --
+    one checkbox per source_id, stored in commodity_digest_source_prefs --
+    needs a stable label of its own or it would be named after whichever
+    outlet happened to come first.
+    """
+    by_id = {s["id"]: s for s in sources}
+    for it in items:
+        src = by_id.get(it.get("source_id")) or {}
+        if src.get("publisher_type"):
+            it["publisher_type"] = src["publisher_type"]
+        if src.get("item_publisher"):
+            it["source_agency"] = src.get("agency")
+            it["source_agency_ko"] = src.get("agency_ko") or src.get("agency")
+
+
 def horizon_days(src: Optional[Dict[str, Any]]) -> int:
     # A news feed's rolling headlines go stale in days, and every item kept is
     # parsed by the Worker on each /api/commodity-reports request, so a source
@@ -515,6 +536,7 @@ def build_commodity_reports(
     for it in items:
         if homes.get(it["source_id"]):
             it["agency_url"] = homes[it["source_id"]]
+    stamp_source_fields(items, sources)
     # When this build first saw each report. List-page sources publish no
     # date, and the weekly favorites digest mails what is new in the last
     # week -- without this those reports (ANRPC, VRA, CONAB, USGS...) could
