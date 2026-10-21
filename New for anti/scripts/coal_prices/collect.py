@@ -64,6 +64,11 @@ HBA_STALE_DAYS = 24
 WB_STALE_DAYS = 80
 
 
+def note(msg: str) -> None:
+    """Diagnostics for the CI log only; never written to the public snapshot."""
+    print(msg, file=sys.stderr)
+
+
 class SourceError(Exception):
     """Only short, categorical reasons are written to the public output."""
 
@@ -135,6 +140,7 @@ def read_xlsx_sheet(blob: bytes, sheet_name: str) -> List[List[Any]]:
             rid = sh.get(f"{{{_NS['r']}}}id")
             break
     if rid is None:
+        note("xlsx sheets: " + repr([sh.get("name") for sh in wb.find("m:sheets", _NS) or []]))
         raise SourceError("sheet_missing")
     target = None
     for rel in parse("xl/_rels/workbook.xml.rels").findall("rel:Relationship", _NS):
@@ -214,6 +220,13 @@ def parse_worldbank_monthly(rows: List[List[Any]]) -> Dict[str, Any]:
             header_at = i
             break
     if header_at is None:
+        note(f"monthly sheet: {len(rows)} rows")
+        for i, row in enumerate(rows[:12]):
+            note(f"  row {i}: {[c for c in row if c is not None][:8]!r}")
+        for i, row in enumerate(rows[:40]):
+            for j, c in enumerate(row):
+                if isinstance(c, str) and "coal" in c.lower():
+                    note(f"  coal cell r{i} c{j}: {c!r}")
         raise SourceError("coal_columns_missing")
     header = rows[header_at]
     cols = {}
@@ -336,6 +349,15 @@ def parse_hba_announcement(text: str, url: str, title: str = "") -> Dict[str, An
 _ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
 
+def _article_links(html: str, base: str) -> List[Tuple[str, str]]:
+    out: List[Tuple[str, str]] = []
+    for href, inner in _ANCHOR_RE.findall(html):
+        url = urljoin(base, unescape(href))
+        if "/arsip-berita/" in url:
+            out.append((url, re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", inner))).strip()[:70]))
+    return out
+
+
 def hba_links(html: str, base: str) -> List[Tuple[str, str]]:
     """(url, title) of the ministry's HBA announcements on a list page."""
     out: List[Tuple[str, str]] = []
@@ -377,12 +399,15 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
             time.sleep(pause)
         page = ESDM_LIST if n == 1 else f"{ESDM_LIST}?page={n}"
         try:
-            page_links = hba_links(get(page).decode("utf-8", "replace"), page)
+            html = get(page).decode("utf-8", "replace")
+            page_links = hba_links(html, page)
         except SourceError as exc:
             if n == 1:
                 raise
             errors.append(f"page{n}:{exc}")
             break
+        every = [t for _, t in _article_links(html, page)]
+        note(f"esdm page {n}: {len(every)} articles, {len(page_links)} HBA; first={every[:1]} last={every[-1:]}")
         links += [l for l in page_links if l[0] not in {u for u, _ in links}]
         if any(u in known for u, _ in page_links):
             break
