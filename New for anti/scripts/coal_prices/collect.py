@@ -111,8 +111,10 @@ def _col_index(ref: str) -> int:
     return n - 1
 
 
-def read_xlsx_sheet(blob: bytes, sheet_name: str) -> List[List[Any]]:
-    """Rows of one sheet as lists (None for blanks). Numbers come back as float."""
+def read_xlsx_sheet(blob: bytes, sheet_name: str, prefix: bool = False) -> List[List[Any]]:
+    """Rows of one sheet as lists (None for blanks). Numbers come back as float.
+
+    `prefix` matches a sheet whose name merely starts with `sheet_name`."""
     try:
         zf = zipfile.ZipFile(io.BytesIO(blob))
     except zipfile.BadZipFile:
@@ -135,12 +137,14 @@ def read_xlsx_sheet(blob: bytes, sheet_name: str) -> List[List[Any]]:
 
     wb = parse("xl/workbook.xml")
     rid = None
-    for sh in wb.find("m:sheets", _NS) or []:
-        if (sh.get("name") or "").strip().lower() == sheet_name.lower():
+    sheets_el = wb.find("m:sheets", _NS)
+    for sh in (sheets_el if sheets_el is not None else []):
+        name = (sh.get("name") or "").strip().lower()
+        if name == sheet_name.lower() or (prefix and name.startswith(sheet_name.lower())):
             rid = sh.get(f"{{{_NS['r']}}}id")
             break
     if rid is None:
-        note("xlsx sheets: " + repr([sh.get("name") for sh in wb.find("m:sheets", _NS) or []]))
+        note("xlsx sheets: " + repr([sh.get("name") for sh in (sheets_el if sheets_el is not None else [])]))
         raise SourceError("sheet_missing")
     target = None
     for rel in parse("xl/_rels/workbook.xml.rels").findall("rel:Relationship", _NS):
@@ -189,6 +193,11 @@ def read_xlsx_sheet(blob: bytes, sheet_name: str) -> List[List[Any]]:
 
 # ---- World Bank ------------------------------------------------------------------------------
 
+def header_name(cell: Any) -> str:
+    """A column title without its footnote marks: 'Coal, South African **' -> 'coal, south african'."""
+    return re.sub(r"[\s*\u2020\u2021\u00b9\u00b2\u00b3]+$", "", str(cell)).strip().lower() if isinstance(cell, str) else ""
+
+
 def finite(value: Any) -> Optional[float]:
     if isinstance(value, bool):
         return None
@@ -215,7 +224,7 @@ def parse_worldbank_monthly(rows: List[List[Any]]) -> Dict[str, Any]:
     """
     header_at = None
     for i, row in enumerate(rows[:30]):
-        names = {str(c).strip().lower() for c in row if isinstance(c, str)}
+        names = {header_name(c) for c in row}
         if all(col.lower() in names for _, col, _ in WB_SERIES):
             header_at = i
             break
@@ -231,7 +240,7 @@ def parse_worldbank_monthly(rows: List[List[Any]]) -> Dict[str, Any]:
     header = rows[header_at]
     cols = {}
     for sid, col, _ in WB_SERIES:
-        cols[sid] = next(j for j, c in enumerate(header) if isinstance(c, str) and c.strip().lower() == col.lower())
+        cols[sid] = next(j for j, c in enumerate(header) if header_name(c) == col.lower())
     units_row = rows[header_at + 1] if header_at + 1 < len(rows) else []
     for sid, j in cols.items():
         unit = str(units_row[j]).strip() if j < len(units_row) and units_row[j] is not None else ""
@@ -257,13 +266,36 @@ def parse_worldbank_monthly(rows: List[List[Any]]) -> Dict[str, Any]:
     return {"series": out}
 
 
+def worldbank_definitions(blob: bytes) -> Dict[str, str]:
+    """The workbook's own wording for each coal series, if its Description sheet has one.
+
+    Shown verbatim next to the price; nothing is written here from memory."""
+    try:
+        rows = read_xlsx_sheet(blob, "Description", prefix=True)
+    except SourceError:
+        return {}
+    out: Dict[str, str] = {}
+    for row in rows:
+        texts = [c.strip() for c in row if isinstance(c, str) and c.strip()]
+        for sid, col, _ in WB_SERIES:
+            if texts and header_name(texts[0]).startswith(col.lower()) and len(texts) > 1:
+                out[sid] = " ".join(texts[1:])[:400]
+    note(f"worldbank definitions: {out!r}")
+    return out
+
+
 def fetch_worldbank(get: Callable[[str], bytes] = get_bytes) -> Dict[str, Any]:
     page = get(WB_PAGE).decode("utf-8", "replace")
     m = WB_FILE_RE.search(page)
     if not m:
         raise SourceError("workbook_link_missing")
     file_url = m.group(0)
-    parsed = parse_worldbank_monthly(read_xlsx_sheet(get(file_url), WB_SHEET))
+    blob = get(file_url)
+    parsed = parse_worldbank_monthly(read_xlsx_sheet(blob, WB_SHEET))
+    defs = worldbank_definitions(blob)
+    for series in parsed["series"]:
+        if series["id"] in defs:
+            series["definition"] = defs[series["id"]]
     latest = max(s["points"][-1][0] for s in parsed["series"])
     return {"status": "ok", "source": "World Bank Commodity Price Data (The Pink Sheet)", "license": "CC BY 4.0",
             "source_url": WB_PAGE, "file_url": file_url, "latest_period": latest, **parsed}

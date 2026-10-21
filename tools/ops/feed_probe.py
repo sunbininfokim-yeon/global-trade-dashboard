@@ -174,6 +174,20 @@ def discover(url: str, html: str, limit: int = MAX_DISCOVERED) -> List[str]:
 _ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
 
+def pdf_text(body: bytes, chars: int = 900) -> str:
+    """First characters of a PDF's text (needs pypdf; empty when it is not installed or not a PDF)."""
+    if not body.startswith(b"%PDF"):
+        return ""
+    try:
+        import io
+        from pypdf import PdfReader
+        reader = PdfReader(io.BytesIO(body))
+        text = " ".join((page.extract_text() or "") for page in reader.pages[:3])
+        return f"[{len(reader.pages)} pages] " + re.sub(r"\s+", " ", text)[:chars]
+    except Exception as exc:  # noqa: BLE001
+        return f"pdf read failed: {exc}"
+
+
 def page_context(text: str, patterns: List[str], width: int = 200, limit: int = 3) -> List[str]:
     """Snippets of the page's visible text around each pattern (a regex)."""
     visible = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", text)
@@ -188,7 +202,8 @@ def page_context(text: str, patterns: List[str], width: int = 200, limit: int = 
 
 
 def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 4, show_body: int = 0,
-             link_text: bool = False, context: Optional[List[str]] = None, context_width: int = 200) -> Dict[str, Any]:
+             link_text: bool = False, context: Optional[List[str]] = None, context_width: int = 200,
+             pdf_chars: int = 0) -> Dict[str, Any]:
     out: Dict[str, Any] = {"status": res.get("status")}
     if res.get("error"):
         out["error"] = res["error"]
@@ -230,6 +245,9 @@ def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 
             out["body_head"] = re.sub(r"\s+", " ", text)[:show_body]
         if context:
             out["context"] = page_context(text, context, context_width)
+    if pdf_chars and body.startswith(b"%PDF"):
+        out["pdf"] = pdf_text(body, pdf_chars)
+        out.setdefault("html_bytes", len(body))
     return out
 
 
@@ -286,7 +304,8 @@ def probe(target: Dict[str, Any]) -> Dict[str, Any]:
     for key, res in raw.items():
         res["url"] = url
         report[key] = describe(res, link_re, samples, show_body, bool(target.get("link_text")),
-                                  target.get("context"), int(target.get("context_width", 200)))
+                                  target.get("context"), int(target.get("context_width", 200)),
+                                  int(target.get("pdf_text", 0)))
         if target.get("find"):
             # Smoke checks: is each string in the body? (a deployed menu item,
             # a cache-busting version, a config key)
@@ -334,6 +353,8 @@ def line(r: Dict[str, Any]) -> str:
                 s += f" body={d['body_head']!r}"
             for c in d.get("context", []):
                 s += f"\n      ctx {c}"
+            if d.get("pdf"):
+                s += f"\n      pdf {d['pdf']}"
             if d.get("block_hint") is not None and (d.get("status") or 0) >= 400:
                 s += f" server={d.get('server', '')!r} hint={d.get('block_hint')!r}"
         if d.get("found"):

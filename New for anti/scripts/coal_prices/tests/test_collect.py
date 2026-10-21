@@ -226,6 +226,14 @@ class WorldBankTests(unittest.TestCase):
         self.assertEqual(rows[6][2], 138.5)
         self.assertEqual(rows[2], [])
 
+    def test_footnote_marks_on_a_column_title_are_ignored(self):
+        sheets = pink_sheet()
+        sheets["Monthly Prices"][3] = ["", "Crude oil, average", "Coal, Australian *", "Coal, South African **"]
+        sheets["Description"] = [["Coal, South African **", "f.o.b. Richards Bay"]]
+        got = m.parse_worldbank_monthly(m.read_xlsx_sheet(make_xlsx(sheets), "Monthly Prices"))
+        self.assertEqual([s["id"] for s in got["series"]], ["coal_australian", "coal_south_african"])
+        self.assertEqual(m.worldbank_definitions(make_xlsx(sheets)), {"coal_south_african": "f.o.b. Richards Bay"})
+
     def test_coal_series(self):
         got = m.parse_worldbank_monthly(m.read_xlsx_sheet(make_xlsx(pink_sheet()), "Monthly Prices"))
         aus = next(s for s in got["series"] if s["id"] == "coal_australian")
@@ -234,6 +242,13 @@ class WorldBankTests(unittest.TestCase):
         self.assertEqual(sa["points"][-1], ["2026-08", 98.0])
         self.assertEqual(aus["source_name"], "Coal, Australian")
         self.assertEqual(aus["unit"], "$/mt")
+
+    def test_the_workbooks_own_definition_is_kept_verbatim(self):
+        sheets = pink_sheet()
+        sheets["Description"] = [["Commodity", "Definition"], ["Coal, Australian", "Thermal, f.o.b. Newcastle"], ["Coal, South African", None, "f.o.b. Richards Bay"], ["Crude oil", "x"]]
+        defs = m.worldbank_definitions(make_xlsx(sheets))
+        self.assertEqual(defs, {"coal_australian": "Thermal, f.o.b. Newcastle", "coal_south_african": "f.o.b. Richards Bay"})
+        self.assertEqual(m.worldbank_definitions(make_xlsx(pink_sheet())), {})     # no sheet, no definition invented
 
     def test_a_changed_unit_is_refused(self):
         with self.assertRaises(m.SourceError) as e:
