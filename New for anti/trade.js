@@ -749,38 +749,53 @@ const reportsFromSnapshot = (doc, commodity, iso3) => {
 // chunk when the reader pages past the last one it has.
 const REPORTS_CHUNK = 60;
 
-/** One chunk of a window: { items, label, total } (total = the whole window). */
-const fetchReportsChunk = async (commodity, iso3, offset, limit = REPORTS_CHUNK) => {
+// A window holds two lists: the agencies' own reports, and news headlines
+// (pipeline publisher_type "news": a headline and a link, nothing else).
+const reportIsNews = (it) => it?.publisher_type === 'news';
+
+/**
+ * One chunk of one kind of a window: { items, label, total, counts }.
+ * `total` is that kind's whole window; `counts` is the split of both kinds,
+ * so the toggle can label itself.
+ */
+const fetchReportsChunk = async (commodity, iso3, offset, limit = REPORTS_CHUNK, kind = 'official') => {
     try {
-        const q = new URLSearchParams({ commodity, limit: String(limit), offset: String(offset) });
+        const q = new URLSearchParams({ commodity, limit: String(limit), offset: String(offset), kind });
         if (iso3) q.set('country', iso3);
         const res = await fetch(`/api/commodity-reports?${q}`);
         if (res.ok) {
             const doc = await res.json();
-            const items = doc.items || [];
-            // A Worker from before `total` existed answers one capped page.
-            const total = Number.isFinite(doc.total) ? doc.total : offset + items.length;
-            return { items, label: doc.commodity_label || commodity, total };
+            // A Worker from before `kind` answers every row with no split; the
+            // snapshot below can make the split, so it takes over.
+            if (doc.kind_counts) {
+                const items = doc.items || [];
+                const total = Number.isFinite(doc.total) ? doc.total : offset + items.length;
+                return { items, label: doc.commodity_label || commodity, total, counts: doc.kind_counts };
+            }
         }
     } catch (err) {
         console.warn('[commodity-reports] api unavailable, falling back to snapshot', err);
     }
     const doc = await loadCommodityReportSnapshot();
-    const all = reportsFromSnapshot(doc, commodity, iso3);
+    const everything = reportsFromSnapshot(doc, commodity, iso3);
+    const news = everything.filter(reportIsNews);
+    const official = everything.filter((it) => !reportIsNews(it));
+    const all = kind === 'news' ? news : official;
     return {
         items: all.slice(offset, offset + limit),
         label: doc?.commodity_labels?.[commodity] || commodity,
         total: all.length,
+        counts: { official: official.length, news: news.length },
     };
 };
 
-const loadCommodityReports = async (commodity, iso3) => {
-    const key = `${commodity}|${iso3 || ''}`;
+const loadCommodityReports = async (commodity, iso3, kind = 'official') => {
+    const key = `${commodity}|${iso3 || ''}|${kind}`;
     if (commodityReportCache.has(key)) return commodityReportCache.get(key);
-    const first = await fetchReportsChunk(commodity, iso3, 0);
+    const first = await fetchReportsChunk(commodity, iso3, 0, REPORTS_CHUNK, kind);
     // `breaks`: where each later chunk starts. Pages never straddle one, so
     // fetching a chunk adds pages after the last instead of re-cutting it.
-    const window_ = { commodity, iso3, ...first, breaks: [], loading: null };
+    const window_ = { commodity, iso3, kind, ...first, breaks: [], loading: null };
     commodityReportCache.set(key, window_);
     return window_;
 };
@@ -789,7 +804,7 @@ const loadCommodityReports = async (commodity, iso3) => {
 const loadMoreReports = (window_) => {
     if (window_.items.length >= window_.total) return Promise.resolve();
     if (!window_.loading) {
-        window_.loading = fetchReportsChunk(window_.commodity, window_.iso3, window_.items.length)
+        window_.loading = fetchReportsChunk(window_.commodity, window_.iso3, window_.items.length, REPORTS_CHUNK, window_.kind)
             .then((next) => {
                 const seen = new Set(window_.items.map((it) => it.id));
                 const fresh = next.items.filter((it) => !seen.has(it.id));
@@ -860,6 +875,53 @@ const bindSubProducts = (host) => {
     });
 };
 
+const loadWholeReportWindow = async (win) => {
+    while (win.items.length < win.total) {
+        const before = win.items.length;
+        try { await loadMoreReports(win); } catch (_) { break; }
+        if (win.items.length === before) break;
+    }
+};
+
+// 공식 보고서 | 뉴스 헤드라인. The reader's pick sticks across countries; a
+// kind with nothing in the window on screen gives way (renderCommodityReports).
+let reportsKind = 'official';
+const REPORT_KINDS = [
+    { id: 'official', label: '공식 보고서' },
+    { id: 'news', label: '뉴스 헤드라인' },
+];
+
+const reportKindToggleHtml = (pager) => {
+    const counts = pager.counts;
+    // No headlines in this window: nothing to switch to, the panel is what it always was.
+    if (!counts || !counts.news) return '';
+    return `<div class="rpt-kind" role="group" aria-label="보고서 종류">${REPORT_KINDS.map(({ id, label }) => {
+        const n = counts[id] || 0;
+        const on = pager.kind === id;
+        return `<button type="button" class="rpt-kind-btn${on ? ' is-on' : ''}" data-kind="${id}" aria-pressed="${on}"${n || on ? '' : ' disabled'}>${label}<em>${n}</em></button>`;
+    }).join('')}</div>`;
+};
+
+const bindReportKind = (host) => {
+    host?.querySelectorAll('.rpt-kind-btn[data-kind]').forEach((btn) => {
+        btn.addEventListener('click', () => setReportsKind(btn.dataset.kind));
+    });
+};
+
+const setReportsKind = async (kind) => {
+    const pager = reportsPager;
+    if (!pager || pager.kind === kind) return;
+    const { commodity, iso3 } = pager.win;
+    reportsKind = kind;
+    const win = await loadCommodityReports(commodity, iso3, kind);
+    if (activeSubFilter()) await loadWholeReportWindow(win);
+    if (reportsPager !== pager || currentCommodity !== commodity) return;
+    pager.win = win;
+    pager.kind = kind;
+    pager.firstShown = 0;
+    paintReportsPage();
+};
+
 const setReportsSubFilter = async (id) => {
     const commodity = currentCommodity;
     reportsSubFilter = activeSubFilter() === id ? null : { commodity, id };
@@ -870,14 +932,8 @@ const setReportsSubFilter = async (id) => {
     });
     const pager = reportsPager;
     if (!pager) return;
-    if (on) {
-        // A filter reads the whole window, not just the chunks paged so far.
-        while (pager.win.items.length < pager.win.total) {
-            const before = pager.win.items.length;
-            try { await loadMoreReports(pager.win); } catch (_) { break; }
-            if (pager.win.items.length === before) break;
-        }
-    }
+    // A filter reads the whole window, not just the chunks paged so far.
+    if (on) await loadWholeReportWindow(pager.win);
     if (reportsPager !== pager || currentCommodity !== commodity) return;
     pager.firstShown = 0;
     paintReportsPage();
@@ -902,6 +958,10 @@ const reportRowHtml = (item) => {
     const series = item.series_label_ko
         ? `<span class="rpt-series">${escapeFeedText(item.series_label_ko)}</span>`
         : '';
+    // A headline folded together with other outlets' coverage of the same story.
+    const also = reportIsNews(item) && item.also > 0
+        ? `<span class="rpt-also" title="같은 내용을 보도한 다른 매체">외 ${Number(item.also)}곳 보도</span>`
+        : '';
     const head = href
         ? `<a class="rpt-title" href="${escapeFeedText(href)}" target="_blank" rel="noopener noreferrer">${title}</a>`
         : `<span class="rpt-title">${title}</span>`;
@@ -911,11 +971,11 @@ const reportRowHtml = (item) => {
               ? '<button type="button" class="rpt-more" aria-expanded="false">요약 더보기</button>'
               : '')
         : '';
-    return `<li class="rpt-item">
+    return `<li class="rpt-item${reportIsNews(item) ? ' rpt-news' : ''}">
         <div class="rpt-meta">
             ${agencyHref
                 ? `<a class="rpt-agency" href="${escapeFeedText(agencyHref)}" target="_blank" rel="noopener noreferrer" title="발간처 사이트로 이동">${agency}</a>`
-                : `<span class="rpt-agency">${agency}</span>`}${series}${subTag}${scopeTag}
+                : `<span class="rpt-agency">${agency}</span>`}${also}${series}${subTag}${scopeTag}
             ${date ? `<span class="rpt-date">${date}</span>` : ''}
         </div>
         ${head}
@@ -941,6 +1001,7 @@ let reportsPager = null;
 const REPORTS_CHROME_PX = 96;
 const REPORTS_MIN_LIST_PX = 220;
 const REPORTS_MAX_PER_PAGE = 10;
+const REPORTS_KIND_PX = 30;   // the 공식 | 뉴스 toggle row
 
 /**
  * Split the rows into pages that fit the panel as the reader's screen has it.
@@ -950,11 +1011,11 @@ const REPORTS_MAX_PER_PAGE = 10;
  * fold. The rows are laid out once, off screen, at the panel's real width,
  * and each page takes as many as fit the height left in the right pane.
  */
-const paginateReports = (slot, items, breaks = []) => {
+const paginateReports = (slot, items, breaks = [], extraChrome = 0) => {
     const pane = document.getElementById('right-pane');
     const top = pane ? slot.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop : 0;
     const paneH = pane ? pane.clientHeight : window.innerHeight;
-    const avail = Math.max(REPORTS_MIN_LIST_PX, paneH - top - REPORTS_CHROME_PX);
+    const avail = Math.max(REPORTS_MIN_LIST_PX, paneH - top - REPORTS_CHROME_PX - extraChrome);
 
     const probe = document.createElement('ul');
     probe.className = 'rpt-list';
@@ -1011,8 +1072,11 @@ const reportsPagerHtml = (count, current, hasMore = false) => {
 const paintReportsPage = () => {
     const live = document.getElementById('reports-slot');
     if (!live || !reportsPager) return;
-    const { win, label, who } = reportsPager;
+    const { win, label, who, kind } = reportsPager;
     const { total } = win;
+    const isNewsKind = kind === 'news';
+    const heading = isNewsKind ? '뉴스 헤드라인' : '주요 보고서';
+    const toggle = reportKindToggleHtml(reportsPager);
     const subId = activeSubFilter();
     const subLabel = subId ? subProductsOf(currentCommodity).find((sp) => sp.id === subId)?.label : null;
     // A sub-product filter narrows the rows; paging then runs over those.
@@ -1020,12 +1084,14 @@ const paintReportsPage = () => {
     const hasMore = !subId && items.length < total;
     if (!items.length) {
         live.innerHTML = `<div class="rpt-card">
-            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} 주요 보고서</p>
-            <p class="empty-state">최근 12주 ${escapeFeedText(subLabel || '')} 관련 보고서가 없습니다 · 「세부 품목」에서 다시 누르면 전체 보기</p>
+            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} ${heading}</p>
+            ${toggle}
+            <p class="empty-state">최근 ${isNewsKind ? '2주' : '12주'} ${escapeFeedText(subLabel || '')} 관련 ${isNewsKind ? '뉴스 헤드라인이' : '보고서가'} 없습니다 · 「세부 품목」에서 다시 누르면 전체 보기</p>
         </div>`;
+        bindReportKind(live);
         return;
     }
-    const pages = paginateReports(live, items, subId ? [] : win.breaks);
+    const pages = paginateReports(live, items, subId ? [] : win.breaks, toggle ? REPORTS_KIND_PX : 0);
     // Keep the reader on the same reports after a resize re-cuts the pages.
     const anchor = reportsPager.firstShown ?? 0;
     let page = pages.findIndex((idx) => idx.includes(anchor));
@@ -1035,11 +1101,15 @@ const paintReportsPage = () => {
     const rows = pages[page].map((i) => reportRowHtml(items[i])).join('');
     live.innerHTML = `
         <div class="rpt-card">
-            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} 주요 보고서</p>
+            <p class="section-title" style="margin:0 0 6px;">${escapeFeedText(who)}${escapeFeedText(label)} ${heading}</p>
+            ${toggle}
             <ul class="rpt-list">${rows}</ul>
             ${reportsPagerHtml(pages.length, page, hasMore)}
-            <p class="rpt-note">공식 기관 발표 · 최근 12주 ${subLabel ? `${escapeFeedText(subLabel)} ${items.length}건 (전체 ${total}건)` : `총 ${total}건`} · 제목을 누르면 발간처 원문으로 이동</p>
+            <p class="rpt-note">${isNewsKind
+                ? `언론 보도 헤드라인 · 최근 2주 ${subLabel ? `${escapeFeedText(subLabel)} ${items.length}건 (전체 ${total}건)` : `총 ${total}건`} · 제목과 링크만 보관하며, 누르면 해당 매체의 기사로 이동 · 공식 발표가 아닌 참고용`
+                : `공식 기관 발표 · 최근 12주 ${subLabel ? `${escapeFeedText(subLabel)} ${items.length}건 (전체 ${total}건)` : `총 ${total}건`} · 제목을 누르면 발간처 원문으로 이동`}</p>
         </div>`;
+    bindReportKind(live);
 
     live.querySelectorAll('.rpt-more').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -1106,10 +1176,18 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     // export-control notices moved to the 수출통제 모니터, the only place
     // export controls are shown.
     const boardSpec = REPORT_BOARDS_BY_COUNTRY[iso3] || null;
-    const [win, board] = await Promise.all([
-        loadCommodityReports(commodity, iso3),
+    let [win, board] = await Promise.all([
+        loadCommodityReports(commodity, iso3, reportsKind),
         boardSpec ? loadReportBoard(boardSpec) : Promise.resolve(null),
     ]);
+    // The reader's pick sticks from country to country, but a kind with
+    // nothing in this window gives way to the other one rather than an empty panel.
+    let kind = reportsKind;
+    const otherKind = kind === 'news' ? 'official' : 'news';
+    if (!win.items.length && win.counts?.[otherKind] > 0) {
+        kind = otherKind;
+        win = await loadCommodityReports(commodity, iso3, kind);
+    }
     const { items, label } = win;
 
     // The panel may have been rebuilt, the commodity switched, or the focus
@@ -1144,7 +1222,7 @@ const renderCommodityReports = async (commodity, countryName = null) => {
     if (countryName) setRightDashboardVisible(true);
     panelShow(commodityReportsPanelEl);
     const who = countryName ? `${resolveCountry(countryName)?.label || countryName} · ` : '';
-    reportsPager = { win, label, who, page: 0, firstShown: 0 };
+    reportsPager = { win, label, who, kind, counts: win.counts, page: 0, firstShown: 0 };
     paintReportsPage();
 };
 

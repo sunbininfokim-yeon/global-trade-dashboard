@@ -1478,6 +1478,8 @@ class AggregatorFeedTests(unittest.TestCase):
         self.assertEqual(items[0]["publisher_type"], "news")
         self.assertEqual(items[0]["source_agency"], "Google News")
         self.assertEqual(items[0]["source_agency_ko"], "구글 뉴스 경유")
+        # The link now opens the outlet's own article: the credit is the outlet alone.
+        self.assertEqual(items[0]["agency"], "Reuters")
         # A plain news source needs no second name; an agency source gets neither field.
         self.assertEqual(items[1]["publisher_type"], "news")
         self.assertNotIn("source_agency", items[1])
@@ -1665,6 +1667,7 @@ class NewsHeadlineBuildTests(unittest.TestCase):
             self.assertIsNone(r["summary"])                  # a headline and a link, nothing else
             self.assertNotIn("reasons", r)
             self.assertIn("nickel", r["commodities"])
+            self.assertNotIn("Google News", r["agency"])     # credited to the outlet alone
         freeze = next(r for r in rows if "freeze" in r["url"])
         self.assertEqual(freeze.get("also"), 1)              # "+1 outlet" on the survivor
         news = doc["news"]

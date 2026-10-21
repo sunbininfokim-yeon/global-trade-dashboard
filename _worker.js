@@ -677,7 +677,17 @@ async function handleCommodityReports(request, env) {
         }
     }
 
-    const known = ids.filter((id) => byId.has(id));
+    // Official reports and news headlines are two lists in one window: the
+    // panel shows official first and a toggle for the headlines. `kind` picks
+    // one (unset = both, as before); `kind_counts` is always the whole
+    // window's split, so the toggle can label itself without a second call.
+    const kind = (url.searchParams.get('kind') || '').trim();
+    const inWindow = ids.filter((id) => byId.has(id));
+    const isNews = (id) => byId.get(id).publisher_type === 'news';
+    const newsCount = inWindow.filter(isNews).length;
+    const known = kind === 'news' ? inWindow.filter(isNews)
+        : kind === 'official' ? inWindow.filter((id) => !isNews(id))
+            : inWindow;
     const items = known.slice(offset, offset + limit).map((id) => byId.get(id));
     return jsonWithCache({
         generated_at: doc.generated_at,
@@ -685,6 +695,8 @@ async function handleCommodityReports(request, env) {
         commodity_label: (doc.commodity_labels || {})[commodity] || commodity,
         country: country || null,
         country_name: country ? (doc.country_names || {})[country] || null : null,
+        kind: kind === 'news' || kind === 'official' ? kind : null,
+        kind_counts: { official: inWindow.length - newsCount, news: newsCount },
         total: known.length,
         offset,
         count: items.length,

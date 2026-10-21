@@ -225,6 +225,14 @@ def stamp_source_fields(items: List[Dict[str, Any]], sources: List[Dict[str, Any
             it["source_agency"] = src.get("agency")
             it["source_agency_ko"] = src.get("agency_ko") or src.get("agency")
         if src.get("publisher_type") == "news":
+            if src.get("item_publisher"):
+                # The link now opens the outlet's own article, so the credit is
+                # the outlet alone; "via Google News" would only mislead.
+                for key, tail in (("agency", f" · {src.get('agency', 'Google News')}"),
+                                  ("agency_ko", f" ({src.get('agency_ko', '구글 뉴스 경유')})")):
+                    value = it.get(key)
+                    if value and value.endswith(tail) and len(value) > len(tail):
+                        it[key] = value[: -len(tail)]
             # A headline and a link, nothing more: no summary, no scoring notes.
             it["summary"] = None
             for key in ("reasons", "series_id", "series_label_ko"):
