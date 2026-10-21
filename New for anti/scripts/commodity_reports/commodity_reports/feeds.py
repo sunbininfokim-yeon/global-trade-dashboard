@@ -228,10 +228,15 @@ def _raw_from(source: Dict[str, Any], **kw: Any) -> RawReport:
     # A feed whose item titles say nothing ("Data For 10/05/26") gets a label.
     if source.get("title_prefix") and kw.get("title"):
         kw["title"] = f"{source['title_prefix']}{kw['title']}"
+    base = {
+        "agency": source.get("agency", source["id"]),
+        "agency_ko": source.get("agency_ko", source.get("agency", source["id"])),
+    }
+    base.update({k: kw.pop(k) for k in ("agency", "agency_ko") if k in kw})
     return RawReport(
         source_id=source["id"],
-        agency=source.get("agency", source["id"]),
-        agency_ko=source.get("agency_ko", source.get("agency", source["id"])),
+        agency=base["agency"],
+        agency_ko=base["agency_ko"],
         lang=source.get("lang", "en"),
         weight=float(source.get("weight", 1.0)),
         default_country=source.get("default_country") or None,
@@ -268,7 +273,7 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
     title_keep = re.compile(source["title_re"]) if source.get("title_re") else None
     items: List[RawReport] = []
     for el in entries[:max_items]:
-        title = link = pub = ""
+        title = link = pub = publisher = ""
         bodies: List[str] = []
         for child in list(el):
             name = _local(child.tag)
@@ -286,6 +291,8 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
                 link = child.attrib.get("href") or text or link
             elif name in {"pubDate", "published", "updated", "date"} and not pub:
                 pub = text
+            elif name == "source" and text and not publisher:
+                publisher = text
         title = strip_html(title)
         summary = strip_html(max(bodies, key=len) if bodies else "")
         if not title or not link:
@@ -304,6 +311,26 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
         # actually relative to, since it lives on the same site as the pages
         # it points at.
         absolute_url = urljoin(source.get("url", ""), link.strip())
+        names: Dict[str, str] = {}
+        if source.get("item_publisher") and publisher:
+            # An aggregator feed (Google News): the feed's owner is not the
+            # author. Credit the outlet the item names, say it came through
+            # the aggregator, and drop the " - Outlet" tail it appends to
+            # every headline.
+            for tail in (f" - {publisher}", f" | {publisher}", f" — {publisher}"):
+                if title.endswith(tail) and len(title) > len(tail) + 8:
+                    title = title[: -len(tail)].rstrip()
+                    break
+            if summary.lower().startswith(title.lower()):
+                summary = summary[len(title):].strip(" -–—:·")
+            # The body is the aggregator's list of related headlines; once the
+            # headline and outlet are removed nothing of the item is left.
+            if summary.strip().lower() == publisher.lower():
+                summary = ""
+            names = {
+                "agency": f"{publisher} · {source.get('agency', 'Google News')}",
+                "agency_ko": f"{publisher} ({source.get('agency_ko', '구글 뉴스 경유')})",
+            }
         items.append(
             _raw_from(
                 source,
@@ -311,6 +338,7 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
                 url=absolute_url,
                 summary=clip(summary),
                 published_at=parse_date(pub),
+                **names,
             )
         )
     return items
@@ -716,6 +744,7 @@ def fetch_source(
     known: Optional[List[RawReport]] = None,
 ) -> Dict[str, Any]:
     sid = source["id"]
+    max_items = int(source.get("max_items") or max_items)
     if source.get("kind") == "fas_gain_pages":
         delay = float((source.get("html") or {}).get("delay_sec", 1.0))
         res = fetch_fas_gain_pages(

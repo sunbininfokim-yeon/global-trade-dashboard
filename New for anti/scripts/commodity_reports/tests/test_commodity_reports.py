@@ -1367,5 +1367,56 @@ class BareDateIsUtcTests(unittest.TestCase):
             time.tzset()
 
 
+class AggregatorFeedTests(unittest.TestCase):
+    """Google News style feeds: the outlet is in <source>, not the feed owner."""
+
+    FEED = """<?xml version="1.0"?><rss version="2.0"><channel><title>x</title>
+    <item><title>Indonesia weighs nickel smelter freeze - Reuters</title>
+      <link>https://news.google.com/rss/articles/AAA</link><pubDate>Tue, 20 Oct 2026 08:00:00 GMT</pubDate>
+      <description>&lt;a href="x"&gt;Indonesia weighs nickel smelter freeze&lt;/a&gt;&amp;nbsp;&amp;nbsp;&lt;font&gt;Reuters&lt;/font&gt;</description>
+      <source url="https://www.reuters.com">Reuters</source></item>
+    <item><title>Coal output rises</title>
+      <link>https://news.google.com/rss/articles/BBB</link><pubDate>Tue, 20 Oct 2026 09:00:00 GMT</pubDate></item>
+    </channel></rss>"""
+    SRC = {"id": "gn_test", "agency": "Google News", "agency_ko": "구글 뉴스 경유", "kind": "rss",
+           "url": "https://news.google.com/rss/search?q=x", "item_publisher": True}
+
+    def test_outlet_is_credited_and_the_headline_tail_is_dropped(self):
+        a, b = parse_feed(self.FEED, self.SRC)
+        self.assertEqual(a.title, "Indonesia weighs nickel smelter freeze")
+        self.assertEqual(a.agency, "Reuters · Google News")
+        self.assertEqual(a.agency_ko, "Reuters (구글 뉴스 경유)")
+        self.assertEqual(a.summary, "")
+        # An item that names no outlet keeps the feed's own credit.
+        self.assertEqual(b.agency, "Google News")
+        self.assertEqual(b.title, "Coal output rises")
+
+    def test_without_the_option_nothing_changes(self):
+        plain = dict(self.SRC)
+        plain.pop("item_publisher")
+        a, _ = parse_feed(self.FEED, plain)
+        self.assertEqual(a.agency, "Google News")
+        self.assertTrue(a.title.endswith("- Reuters"))
+
+    def test_an_aggregator_has_no_home_link(self):
+        from commodity_reports import build as build_mod
+        self.assertIsNone(build_mod.source_home(self.SRC))
+        self.assertEqual(build_mod.source_home({"id": "x", "url": "https://a.example/feed"}), "https://a.example/")
+
+    def test_per_source_item_cap(self):
+        from unittest import mock
+        from commodity_reports import feeds as feeds_mod
+        many = "<rss><channel>" + "".join(
+            f"<item><title>Nickel report number {i}</title><link>https://a.example/{i}</link></item>" for i in range(30)
+        ) + "</channel></rss>"
+        with mock.patch.object(feeds_mod, "fetch_text", return_value=many):
+            capped = feeds_mod.fetch_source({"id": "cap", "kind": "rss", "url": "https://a.example/f", "max_items": 7},
+                                            user_agent="t", timeout=1, max_items=40)
+            plain = feeds_mod.fetch_source({"id": "cap", "kind": "rss", "url": "https://a.example/f"},
+                                           user_agent="t", timeout=1, max_items=12)
+        self.assertEqual(capped["count"], 7)   # the source's own cap wins
+        self.assertEqual(plain["count"], 12)   # else the build-wide cap
+
+
 if __name__ == "__main__":
     unittest.main()

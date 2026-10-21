@@ -109,6 +109,8 @@ CARRY_OVER_DAYS = ARCHIVE_DAYS  # kept for callers that tune it (tests)
 def source_home(src: Dict[str, Any]) -> Optional[str]:
     if src.get("home"):
         return src["home"]
+    if src.get("item_publisher"):
+        return None  # an aggregator's host is not the outlet that wrote the item
     parts = urlsplit(src.get("url") or "")
     return f"{parts.scheme}://{parts.netloc}/" if parts.scheme in ("http", "https") and parts.netloc else None
 
