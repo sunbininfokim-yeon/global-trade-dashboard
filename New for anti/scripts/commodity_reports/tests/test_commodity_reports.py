@@ -1290,6 +1290,18 @@ class NewProducerCountryTests(unittest.TestCase):
         self.assertEqual(self.tagger.tag(strip("US tariffs hit nickel; US$50 billion at stake")), ["USA"])
         self.assertEqual(self.tagger.tag(strip("U.S. sanctions cut US$2 billion of exports")), ["USA"])
 
+    def test_congo_means_the_drc_unless_it_says_otherwise(self):
+        self.assertEqual(self.tagger.tag("Congo cobalt export quota extended"), ["COD"])
+        self.assertEqual(set(self.tagger.tag("Congo's Tshisekedi meets Zambia on the Lobito corridor")), {"COD", "ZMB"})
+        self.assertEqual(self.tagger.tag("Republic of the Congo oil output"), ["COG"])
+        self.assertEqual(set(self.tagger.tag("Congo-Brazzaville signs a deal; Democratic Republic of the Congo objects")), {"COD", "COG"})
+
+    def test_more_african_producers_are_clickable(self):
+        for text, iso in [("Botswana copper output", "BWA"), ("Madagascar graphite exports", "MDG"),
+                          ("Mauritania's first uranium mine", "MRT"), ("Rwanda tin and tantalum", "RWA"),
+                          ("Sudan gold smuggling", "SDN"), ("Malawi rare earths", "MWI")]:
+            self.assertEqual(self.tagger.tag(text), [iso], text)
+
     def test_niger_is_not_nigeria(self):
         self.assertEqual(self.tagger.tag("Nigeria crude exports in the Niger Delta"), ["NGA"])
         self.assertEqual(self.tagger.tag("Nigerian output rises"), ["NGA"])
