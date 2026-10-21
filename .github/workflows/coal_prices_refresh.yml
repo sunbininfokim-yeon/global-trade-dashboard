@@ -49,6 +49,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install pypdf (HBA decisions are PDFs)
+        run: pip install --quiet pypdf
       - name: Collect
         id: collect
         continue-on-error: true

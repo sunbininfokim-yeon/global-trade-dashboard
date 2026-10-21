@@ -53,7 +53,10 @@
         }
         const last = periods[periods.length - 1];
         const stale = days(last.end) > staleAfter;
-        const head = `<div class="stock-note" style="margin:4px 0 2px">${esc(halfMonth(last.start, last.end))} 고시${staleNote(stale || hba.status === 'error')}</div>`;
+        // A decision reaches the legal portal a few days after it takes effect, so the
+        // newest half-month can be missing: say so rather than let an ended period read as today's.
+        const ended = days(last.end) > 0;
+        const head = `<div class="stock-note" style="margin:4px 0 2px">${esc(halfMonth(last.start, last.end))} 고시${staleNote(stale || hba.status === 'error')}${ended && !stale ? ' · 적용 기간이 끝났습니다 — 다음 고시는 아직 공개 문서에 올라오지 않았습니다' : ''}</div>`;
         const rows = last.grades.map((g) => {
             const series = periods
                 .map((p) => ({ label: `${p.start}`, value: p.grades.find((x) => x.name === g.name)?.usd_per_t }))
@@ -67,7 +70,7 @@
         }).join('');
         return `${head}${rows}
             <div class="stock-note">인도네시아 에너지광물자원부가 한 달에 두 번 고시하는 정책 기준가격(수출 기준). GAR는 열량 등급입니다 ·
-            <a style="color:#7dd3fc" href="${esc(last.url)}" target="_blank" rel="noopener noreferrer">고시 보도자료</a></div>`;
+            <a style="color:#7dd3fc" href="${esc(last.url)}" target="_blank" rel="noopener noreferrer">${last.decree ? `장관결정문 ${esc(last.decree)}` : '고시 원문'}</a></div>`;
     }
 
     function worldBankRow(series, staleAfter, status) {

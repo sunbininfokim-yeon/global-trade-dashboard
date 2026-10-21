@@ -10,16 +10,22 @@ from xml.sax.saxutils import escape
 spec = importlib.util.spec_from_file_location("collect", Path(__file__).resolve().parents[1] / "collect.py")
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
+m.note = lambda msg: None   # CI-log diagnostics, not test output
 
-# The paragraph of the ministry's press release for 1-14 August 2026 (esdm.go.id,
-# read from a GitHub runner on 2026-10-21), with the page furniture around it.
-AUG_1 = (
-    "ESDM Tetapkan HBA Periode Pertama Agustus 2026 USD 124,44 per Ton, Turun 5,62 Persen Jakarta - ... "
-    "Untuk masa berlaku 1-14 Agustus 2026, Kementerian ESDM menetapkan empat kategori harga acuan sebagai berikut: "
-    "HBA untuk 6.322 GAR sebesar USD 124,44 per ton, turun 5,62 persen dibandingkan periode kedua Juli 2026. "
-    "HBA I untuk 5.300 GAR sebesar USD 93,27 per ton, naik 3,75 persen. "
-    "HBA II untuk 4.100 GAR sebesar USD 65,48 per ton, naik 3,53 persen. "
-    "HBA III untuk 3.400 GAR sebesar USD 45,27 per ton, naik 0,42 persen. Bagikan Ini! Berita Terkini ..."
+# Annex II of decision 384.K/MB.01/MEM.B/2026 (HBA, first period of October 2026), the text
+# layer of the PDF on jdih.esdm.go.id as a GitHub runner read it on 2026-10-21 -- OCR noise
+# ("rNo.", "12 26%", stray pipes) included. The "mulai berlaku" clause is worded as in the
+# May decision (179.K), whose body was read the same day.
+ANNEX_OCT_1 = (
+    "KELIMA : Keputusan Menteri ini mulai berlaku pada tanggal 1 Oktober 2026 , dengan ketentuan apabila di kemudian hari "
+    "terdapat kekeliruan ... LAMPIRAN II KEPUTUSAN MENTERI ENERGI DAN SUMBER DAYA MINERAL REPUBLIK INDONESIA NOMOR :384.K/MB.01/MEM.B/2026 "
+    "TANGGAL :30 September 2026 TENTANG HARGA MINERAL LOGAM ACUAN DAN HARGA BATUBARA ACUAN UNTUK PERIODE PERTAMA BULAN OKTOBER TAHUN 2026 "
+    "BESARAN HARGA BATUBARA ACUAN PERIODE PERTAMA BULAN OKTOBER TAHUN 2026 rNo. Komoditas Satuan Nilai Keterangan "
+    ". HBA dalam kesetaraan nilai kalor 6.322 kcal/kg GAR, Total Moisture 1. | Batubara (6.322 GAR) USD/ton 122,52 | 12 26%, Total Sulphur 0,66%, dan Ash 7,94% "
+    "HBA I dalam kesetaraan nilai kalor 5.300 kcal/kg GAR, Total Moisture 2. | Batubara I (5.300 GAR) USD/ton 90,60 21,32%, Total Sulphur 0,75%, dan Ash 6,04% | . "
+    "HBA II dalam kesetaraan nilai kalor 4.100 kcal/kg GAR, Total Moisture 3. | Batubara II (4.100 GAR) USD/ton 63,45 35,73%, Total Sulphur 0,23%, dan Ash 3,90% "
+    "HBA III dalam kesetaraan nilai kalor 3.400 kcal/kg GAR, Total Moisture | 4 | Batubara III (3.400 GAR) USD/ton 43,84 44.30%, Total Sulphur 0,24%, dan Ash 3,88% "
+    ": ...7 MARAS BEESY MENTERI ENERGI DAN SUMBER DAYA MINERAL REPUBLIK INDONESIA, ttd. BAHLIL LAHADALIA"
 )
 
 
@@ -96,37 +102,37 @@ def pink_sheet(unit="($/mt)", coal=True):
 
 
 class HbaParseTests(unittest.TestCase):
-    def test_august_announcement(self):
-        got = m.parse_hba_announcement(AUG_1, "https://x/hba", "ESDM Tetapkan HBA Periode Pertama Agustus 2026")
-        self.assertEqual((got["start"], got["end"]), ("2026-08-01", "2026-08-14"))
-        by = {g["name"]: g for g in got["grades"]}
-        self.assertEqual([g["name"] for g in got["grades"]], ["HBA", "HBA I", "HBA II", "HBA III"])
-        self.assertEqual((by["HBA II"]["gar"], by["HBA II"]["usd_per_t"], by["HBA II"]["change_pct"]), (4100, 65.48, 3.53))
-        self.assertEqual((by["HBA"]["gar"], by["HBA"]["usd_per_t"], by["HBA"]["change_pct"]), (6322, 124.44, -5.62))
-        self.assertEqual(by["HBA III"]["usd_per_t"], 45.27)
+    def test_first_period_of_october(self):
+        got = m.parse_hba_decree(ANNEX_OCT_1, "https://jdih/384.pdf")
+        self.assertEqual((got["start"], got["end"], got["decree"]), ("2026-10-01", "2026-10-14", "384.K/MB.01/MEM.B/2026"))
+        self.assertEqual([(g["name"], g["gar"], g["usd_per_t"]) for g in got["grades"]],
+                         [("HBA", 6322, 122.52), ("HBA I", 5300, 90.60), ("HBA II", 4100, 63.45), ("HBA III", 3400, 43.84)])
 
-    def test_second_half_period_from_the_title_when_the_text_has_no_dates(self):
-        text = AUG_1.replace("Untuk masa berlaku 1-14 Agustus 2026,", "Untuk periode ini,")
-        got = m.parse_hba_announcement(text, "u", "ESDM Tetapkan HBA Periode Kedua Oktober 2026")
+    def test_second_half_runs_to_the_last_day_of_the_month(self):
+        text = (ANNEX_OCT_1.replace("PERIODE PERTAMA BULAN OKTOBER", "PERIODE KEDUA BULAN OKTOBER")
+                .replace("tanggal 1 Oktober 2026", "tanggal 15 Oktober 2026"))
+        got = m.parse_hba_decree(text, "u")
         self.assertEqual((got["start"], got["end"]), ("2026-10-15", "2026-10-31"))
-
-    def test_an_en_dash_in_the_period(self):
-        got = m.parse_hba_announcement(AUG_1.replace("1-14 Agustus", "15–31 Agustus"), "u")
-        self.assertEqual((got["start"], got["end"]), ("2026-08-15", "2026-08-31"))
+        feb = (ANNEX_OCT_1.replace("PERIODE PERTAMA BULAN OKTOBER", "PERIODE KEDUA BULAN FEBRUARI")
+               .replace("tanggal 1 Oktober 2026", "tanggal 15 Februari 2026").replace("TAHUN 2026", "TAHUN 2026"))
+        self.assertEqual(m.parse_hba_decree(feb, "u")["end"], "2026-02-28")
 
     def test_never_guesses(self):
-        # a grade missing
-        with self.assertRaises(m.SourceError) as e:
-            m.parse_hba_announcement(AUG_1.replace("HBA III untuk 3.400 GAR sebesar USD 45,27 per ton", ""), "u")
-        self.assertEqual(str(e.exception), "grades_missing")
-        # grades out of order (a typo in the release would show as a price)
-        with self.assertRaises(m.SourceError) as e:
-            m.parse_hba_announcement(AUG_1.replace("USD 65,48", "USD 165,48"), "u")
-        self.assertEqual(str(e.exception), "grades_inconsistent")
-        # no period anywhere
-        with self.assertRaises(m.SourceError) as e:
-            m.parse_hba_announcement(AUG_1.replace("masa berlaku 1-14 Agustus 2026", "masa berlaku segera").replace("Periode Pertama Agustus 2026", ""), "u")
-        self.assertEqual(str(e.exception), "period_unreadable")
+        def refused(text):
+            with self.assertRaises(m.SourceError) as e:
+                m.parse_hba_decree(text, "u")
+            return str(e.exception)
+
+        # a grade missing (a row the OCR lost)
+        self.assertEqual(refused(ANNEX_OCT_1.replace("Batubara III (3.400 GAR) USD/ton 43,84", "")), "grades_missing")
+        # a digit misread so the prices no longer fall with calorific value
+        self.assertEqual(refused(ANNEX_OCT_1.replace("USD/ton 63,45", "USD/ton 163,45")), "grades_inconsistent")
+        # a calorific class the dashboard does not know: the ministry changed the scheme
+        self.assertEqual(refused(ANNEX_OCT_1.replace("(4.100 GAR)", "(4.200 GAR)")), "grades_changed")
+        # no period in the annex heading
+        self.assertEqual(refused(ANNEX_OCT_1.replace("BESARAN HARGA BATUBARA ACUAN PERIODE PERTAMA", "BESARAN HARGA")), "period_unreadable")
+        # the decision's own effective date disagrees with the heading
+        self.assertEqual(refused(ANNEX_OCT_1.replace("tanggal 1 Oktober 2026", "tanggal 15 Oktober 2026")), "period_mismatch")
 
     def test_indonesian_numbers(self):
         self.assertEqual(m.id_number("124,44", True), 124.44)
@@ -135,88 +141,103 @@ class HbaParseTests(unittest.TestCase):
         with self.assertRaises(m.SourceError):
             m.id_number("abc", True)
 
-    def test_list_page_links_keep_only_hba_announcements(self):
-        html = (
-            '<a href="/id/media-center/arsip-berita/esdm-tetapkan-hba-periode-kedua-oktober-2026-usd-12681-per-ton">ESDM Tetapkan HBA</a>'
-            '<a href="/id/media-center/arsip-berita/bahlil-pastikan-stok-bbm-aman">BBM</a>'
-            '<a href="/id/media-center/arsip-berita/harga-batu-bara-acuan-hba-september-2026">HBA Sept</a>'
-            '<a href="/id/media-center/arsip-berita/jangan-tunggu-sakit">hbahaha</a>'
-            '<a href="/id/other/hba-page">not news</a>'
-        )
-        got = m.hba_links(html, "https://www.esdm.go.id/id/media-center/arsip-berita")
-        self.assertEqual([u.rsplit("/", 1)[-1] for u, _ in got],
-                         ["esdm-tetapkan-hba-periode-kedua-oktober-2026-usd-12681-per-ton", "harga-batu-bara-acuan-hba-september-2026"])
+    def test_list_rows_pair_a_title_with_its_pdf(self):
+        row = lambda vid, title, pdf: (f'<tr><td><a href="/dokumen/view?id={vid}">{title}</a></td>'
+                                       f'<td><a href="/dokumen/download?id={pdf}">Dokumen</a></td></tr>')
+        html = (row(2829, "Keputusan Menteri ESDM Nomor 381.K/KP.01/MEM.H/2026 tentang Pelimpahan Kewenangan", "2026kmesdm381k.pdf")
+                + row(2827, "Keputusan Menteri ESDM Nomor 384.K/MB.01/MEM.B/2026 tentang Harga Mineral Logam Acuan dan Harga Batubara Acuan Untuk Periode Pertama", "2026kmesdm384k.pdf")
+                + row(2826, "Keputusan Menteri ESDM Nomor 365.K/MB.01/MEM.B/2026 tentang Pedoman Teknis", "2026kmesdm365k.pdf"))
+        got = m.hba_decree_links(html, "https://jdih.esdm.go.id/dokumen/peraturan")
+        self.assertEqual([u for u, _ in got], ["https://jdih.esdm.go.id/dokumen/download?id=2026kmesdm384k.pdf"])
+
+    def test_change_since_the_previous_half_month_is_computed_not_copied(self):
+        def period(start, end, prices):
+            return {"start": start, "end": end, "grades": [{"name": n, "gar": g, "usd_per_t": v} for (n, g), v in zip(
+                [("HBA", 6322), ("HBA I", 5300), ("HBA II", 4100), ("HBA III", 3400)], prices)]}
+
+        got = m.with_changes([period("2026-10-01", "2026-10-14", [122.52, 90.60, 63.45, 43.84]),
+                              period("2026-10-15", "2026-10-31", [126.81, 93.62, 66.10, 54.53])])
+        self.assertNotIn("change_pct", got[0]["grades"][0])
+        self.assertEqual([g["change_pct"] for g in got[1]["grades"]], [3.5, 3.33, 4.18, 24.38])
+        # a gap in the history is not a change
+        gap = m.with_changes([period("2026-08-01", "2026-08-14", [124.44, 93.27, 65.48, 45.27]),
+                              period("2026-10-01", "2026-10-14", [122.52, 90.60, 63.45, 43.84])])
+        self.assertNotIn("change_pct", gap[1]["grades"][0])
 
 
 class HbaFetchTests(unittest.TestCase):
-    BASE = "https://www.esdm.go.id/id/media-center/arsip-berita"
+    LIST = m.JDIH_LIST
 
-    def site(self, hits):
-        """pages: {1: [slug...], 2: [...]}; articles: slug -> text."""
-        pages = {}
-        for n, slugs in hits["pages"].items():
-            url = self.BASE if n == 1 else f"{self.BASE}?page={n}"
-            pages[url] = "".join(f'<a href="/id/media-center/arsip-berita/{s}">t</a>' for s in slugs).encode()
-        for slug, text in hits["articles"].items():
-            pages[f"{self.BASE}/{slug}"] = f"<html><body><p>{text}</p></body></html>".encode()
+    def site(self, pages):
+        """pages: {1: [(slug, title)...]}; each slug's PDF text is TEXTS[slug]."""
+        html = {}
+        for n, rows in pages.items():
+            url = self.LIST if n == 1 else f"{self.LIST}&page={n}"
+            html[url] = "".join(
+                f'<a href="/dokumen/view?id={i}">{title}</a><a href="/dokumen/download?id={slug}.pdf">Dokumen</a>'
+                for i, (slug, title) in enumerate(rows)).encode()
         calls = []
 
         def get(url):
             calls.append(url)
-            if url not in pages:
-                raise m.SourceError("http_404")
-            return pages[url]
+            if url in html:
+                return html[url]
+            if "/dokumen/download" in url:
+                return url.encode()
+            raise m.SourceError("http_404")
         return get, calls
 
-    def text(self, first, last, month, w=(124.44, 93.27, 65.48, 45.27)):
-        return (f"Untuk masa berlaku {first}-{last} {month} 2026, Kementerian ESDM ... HBA untuk 6.322 GAR sebesar USD {str(w[0]).replace('.', ',')} per ton, "
-                f"naik 1,0 persen. HBA I untuk 5.300 GAR sebesar USD {str(w[1]).replace('.', ',')} per ton, naik 1,0 persen. "
-                f"HBA II untuk 4.100 GAR sebesar USD {str(w[2]).replace('.', ',')} per ton, turun 1,0 persen. "
-                f"HBA III untuk 3.400 GAR sebesar USD {str(w[3]).replace('.', ',')} per ton, naik 0,5 persen.")
+    def annex(self, half, month, day, prices):
+        names = ["Batubara", "Batubara I", "Batubara II", "Batubara III"]
+        gars = ["6.322", "5.300", "4.100", "3.400"]
+        rows = " ".join(f"{n} ({g} GAR) USD/ton {str(v).replace('.', ',')}" for n, g, v in zip(names, gars, prices))
+        return (f"mulai berlaku pada tanggal {day} {month.title()} 2026 , ... BESARAN HARGA BATUBARA ACUAN PERIODE {half} BULAN {month} TAHUN 2026 {rows}")
 
-    def test_first_run_pages_down_to_the_announcements(self):
-        get, calls = self.site({
-            "pages": {1: ["a-news", "b-news"], 2: ["c-news", "esdm-tetapkan-hba-kedua-oktober"], 3: ["d-news", "esdm-tetapkan-hba-pertama-oktober"]},
-            "articles": {"esdm-tetapkan-hba-kedua-oktober": self.text(15, 31, "Oktober", (126.81, 94.0, 66.1, 46.0)),
-                         "esdm-tetapkan-hba-pertama-oktober": self.text(1, 14, "Oktober", (122.52, 90.0, 63.45, 44.0))},
-        })
-        got = m.fetch_hba(None, get=get, pause=0, max_pages=6)
-        self.assertEqual([p["start"] for p in got["periods"]], ["2026-10-01", "2026-10-15"])
-        self.assertEqual(got["latest_end"], "2026-10-31")
-        self.assertEqual(got["periods"][-1]["grades"][2]["usd_per_t"], 66.1)
+    def setUp(self):
+        hba = "Keputusan Menteri ESDM Nomor 1.K/MB.01/MEM.B/2026 tentang Harga Mineral Logam Acuan dan Harga Batubara Acuan Untuk Periode"
+        self.hba = hba
+        self.texts = {
+            "2026kmesdm401k.pdf": self.annex("KEDUA", "OKTOBER", 15, [126.81, 93.62, 66.1, 54.53]),
+            "2026kmesdm384k.pdf": self.annex("PERTAMA", "OKTOBER", 1, [122.52, 90.60, 63.45, 43.84]),
+            "2026kmesdm364k.pdf": self.annex("KEDUA", "SEPTEMBER", 15, [126.87, 91.0, 64.0, 44.0]),
+        }
+        self.extract = lambda blob: self.texts[blob.decode().rsplit("=", 1)[-1]]
 
-    def test_a_later_run_stops_at_the_announcement_it_already_has(self):
-        get, calls = self.site({
-            "pages": {1: ["x"], 2: ["esdm-tetapkan-hba-kedua-oktober", "y"], 3: ["esdm-tetapkan-hba-pertama-oktober"], 4: ["z"]},
-            "articles": {"esdm-tetapkan-hba-kedua-oktober": self.text(15, 31, "Oktober"),
-                         "esdm-tetapkan-hba-pertama-oktober": self.text(1, 14, "Oktober")},
-        })
-        first = m.fetch_hba(None, get=get, pause=0)
+    def test_first_run_reads_the_newest_decisions(self):
+        get, calls = self.site({1: [("other", "Keputusan Menteri tentang Peta Jabatan"), ("2026kmesdm384k", self.hba)],
+                                2: [("2026kmesdm364k", self.hba)]})
+        got = m.fetch_hba(None, get=get, extract=self.extract, pause=0, max_pages=4)
+        self.assertEqual([p["start"] for p in got["periods"]], ["2026-09-15", "2026-10-01"])
+        self.assertEqual(got["latest_end"], "2026-10-14")
+        self.assertEqual(got["periods"][1]["grades"][2]["usd_per_t"], 63.45)
+        self.assertEqual(got["periods"][1]["grades"][2]["change_pct"], round((63.45 / 64.0 - 1) * 100, 2))
+
+    def test_a_later_run_stops_at_the_decision_it_already_has(self):
+        get, calls = self.site({1: [("2026kmesdm401k", self.hba), ("2026kmesdm384k", self.hba)], 2: [("2026kmesdm364k", self.hba)]})
+        first = m.fetch_hba(None, get=get, extract=self.extract, pause=0, max_pages=4)
         calls.clear()
-        again = m.fetch_hba(first, get=get, pause=0)
-        # page 1 (nothing new), page 2 (the known announcement): stop. No article is fetched twice.
-        self.assertEqual(calls, [self.BASE, f"{self.BASE}?page=2"])
+        again = m.fetch_hba(first, get=get, extract=self.extract, pause=0, max_pages=4)
+        self.assertEqual(calls, [self.LIST])           # nothing new on page 1 -> one request, no PDF
         self.assertEqual(again["periods"], first["periods"])
 
-    def test_history_accumulates_beyond_what_the_archive_still_shows(self):
-        old = {"periods": [{"start": "2026-07-15", "end": "2026-07-31", "url": "old", "grades": []}]}
-        get, _ = self.site({"pages": {1: ["esdm-tetapkan-hba-agustus"]}, "articles": {"esdm-tetapkan-hba-agustus": self.text(1, 14, "Agustus")}})
-        got = m.fetch_hba(old, get=get, pause=0, max_pages=1)
-        self.assertEqual([p["start"] for p in got["periods"]], ["2026-07-15", "2026-08-01"])
+    def test_history_accumulates_beyond_what_the_list_still_shows(self):
+        old = {"periods": [{"start": "2026-08-01", "end": "2026-08-14", "url": "press", "grades": []}]}
+        get, _ = self.site({1: [("2026kmesdm384k", self.hba)]})
+        got = m.fetch_hba(old, get=get, extract=self.extract, pause=0, max_pages=1)
+        self.assertEqual([p["start"] for p in got["periods"]], ["2026-08-01", "2026-10-01"])
 
-    def test_an_unreadable_announcement_is_skipped_and_named(self):
-        get, _ = self.site({"pages": {1: ["esdm-tetapkan-hba-ok", "esdm-tetapkan-hba-broken"]},
-                            "articles": {"esdm-tetapkan-hba-ok": self.text(1, 14, "Agustus"),
-                                         "esdm-tetapkan-hba-broken": "Pengumuman HBA tanpa angka"}})
-        got = m.fetch_hba(None, get=get, pause=0, max_pages=1)
+    def test_an_unreadable_decision_is_skipped_and_named(self):
+        self.texts["2026kmesdm364k.pdf"] = "scan without a text layer"
+        get, _ = self.site({1: [("2026kmesdm384k", self.hba), ("2026kmesdm364k", self.hba)]})
+        got = m.fetch_hba(None, get=get, extract=self.extract, pause=0, max_pages=1)
         self.assertEqual(len(got["periods"]), 1)
-        self.assertTrue(any("esdm-tetapkan-hba-broken" in s for s in got["skipped"]))
+        self.assertTrue(any("2026kmesdm364k" in s for s in got["skipped"]))
 
     def test_nothing_found_is_an_error_not_an_empty_success(self):
-        get, _ = self.site({"pages": {1: ["a-news"]}, "articles": {}})
+        get, _ = self.site({1: [("other", "Keputusan Menteri tentang Peta Jabatan")]})
         with self.assertRaises(m.SourceError) as e:
-            m.fetch_hba(None, get=get, pause=0, max_pages=1)
-        self.assertEqual(str(e.exception), "no_announcements_found")
+            m.fetch_hba(None, get=get, extract=self.extract, pause=0, max_pages=1)
+        self.assertEqual(str(e.exception), "no_decisions_found")
 
 
 class WorldBankTests(unittest.TestCase):

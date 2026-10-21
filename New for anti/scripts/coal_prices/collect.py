@@ -4,9 +4,11 @@
 Two official, free series, kept apart because they are different things:
 
   HBA     Indonesia's government reference price (Harga Batubara Acuan), set by
-          a ministerial decision twice a month. The ministry's press release
-          carries the four grades (HBA 6,322 GAR; HBA I 5,300; HBA II 4,100;
-          HBA III 3,400) in one paragraph; that paragraph is what is read here.
+          a ministerial decision twice a month. The decision itself (a PDF on
+          the ministry's legal portal, JDIH) carries the four grades (HBA 6,322
+          GAR; HBA I 5,300; HBA II 4,100; HBA III 3,400) in its annex II, which
+          is what is read here. The ministry's news archive was tried first: it
+          has no search or feed and carried only some announcements.
           It is a policy price for Indonesian exports, not a market quote.
   WB      The World Bank's Pink Sheet: monthly average Australian (Newcastle)
           and South African (Richards Bay) thermal coal, $/mt, from the
@@ -53,11 +55,12 @@ WB_SERIES = (
 )
 WB_KEEP_MONTHS = 120   # ten years: a long series is what this source is for
 
-ESDM_LIST = "https://www.esdm.go.id/id/media-center/arsip-berita"
-HBA_KEEP_PERIODS = 48  # two years of half-months
-HBA_PAUSE = 2.0        # the ministry's firewall rejects bursts; go one page at a time
-HBA_MAX_PAGES = 14     # ~15 items a page, ~7 a day: two weeks back reaches the previous announcement
-HBA_FIRST_RUN_LINKS = 3
+# The ministry's legal portal: its decisions (Keputusan Menteri), newest first, 5 a page.
+JDIH_LIST = "https://jdih.esdm.go.id/dokumen/peraturan?DokumenSearch%5Bjenis_peraturan%5D=176"
+HBA_KEEP_PERIODS = 48   # two years of half-months
+HBA_PAUSE = 1.0
+HBA_MAX_PAGES = 8       # 5 decisions a page, an HBA decision about every two weeks
+HBA_FIRST_RUN_DECREES = 4
 
 # Stale thresholds the panel applies (days since the data's own end date).
 HBA_STALE_DAYS = 24
@@ -301,16 +304,18 @@ def fetch_worldbank(get: Callable[[str], bytes] = get_bytes) -> Dict[str, Any]:
             "source_url": WB_PAGE, "file_url": file_url, "latest_period": latest, **parsed}
 
 
-# ---- Indonesia HBA --------------------------------------------------------------------------------
+# ---- Indonesia HBA (ministerial decision, annex II) ------------------------------------
 
 _MONTHS_ID = {"januari": 1, "februari": 2, "maret": 3, "april": 4, "mei": 5, "juni": 6, "juli": 7,
               "agustus": 8, "september": 9, "oktober": 10, "november": 11, "desember": 12}
-_PERIOD_RE = re.compile(r"masa\s+berlaku\s+(\d{1,2})\s*[-–—]\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})", re.I)
-_TITLE_PERIOD_RE = re.compile(r"periode\s+(pertama|kedua|i{1,2})\s+([A-Za-z]+)\s+(\d{4})", re.I)
-_PRICE_RE = re.compile(
-    r"\b(HBA(?:\s+(?:III|II|I))?)\s+untuk\s+([\d.]+)\s*GAR\s+sebesar\s+(?:USD|US\$)\s*([\d.,]+)\s+per\s+ton"
-    r"(?:,\s*(naik|turun)\s+([\d.,]+)\s+persen)?", re.I)
 _HBA_ORDER = ("HBA", "HBA I", "HBA II", "HBA III")
+_HBA_GARS = {"HBA": 6322, "HBA I": 5300, "HBA II": 4100, "HBA III": 3400}
+# The annex heading names the period; the decision's own "mulai berlaku" date confirms it.
+_DECREE_PERIOD_RE = re.compile(r"HARGA\s+BATUBARA\s+ACUAN\s+PERIODE\s+(PERTAMA|KEDUA)\s+BULAN\s+([A-Z]+)\s+TAHUN\s+(\d{4})", re.I)
+_DECREE_NUMBER_RE = re.compile(r"NOMOR\s*:?\s*(\d+\.K/MB\.\d+/MEM\.B/\d{4})", re.I)
+_EFFECTIVE_RE = re.compile(r"mulai\s+berlaku\s+pada\s+tanggal\s+(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})", re.I)
+_DECREE_GRADE_RE = re.compile(r"Batubara(?:\s+(III|II|I))?\s*\(\s*([\d.]+)\s*GAR\s*\)\s*USD\s*/\s*ton\s*([\d.,]+)", re.I)
+_ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
 
 def id_number(text: str, decimals: bool) -> float:
@@ -323,105 +328,112 @@ def id_number(text: str, decimals: bool) -> float:
         raise SourceError("bad_number") from None
 
 
-def visible_text(html: str) -> str:
-    html = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", html)
-    return re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", html))).strip()
-
-
 def _last_day(year: int, month: int) -> int:
     return (date(year + (month == 12), month % 12 + 1, 1) - date(year, month, 1)).days
 
 
-def parse_hba_announcement(text: str, url: str, title: str = "") -> Dict[str, Any]:
-    """One half-month's HBA grades from a ministry press release's text."""
-    start = end = None
-    m = _PERIOD_RE.search(text)
-    if m and m.group(3).lower() in _MONTHS_ID:
-        d1, d2, month, year = int(m.group(1)), int(m.group(2)), _MONTHS_ID[m.group(3).lower()], int(m.group(4))
-        try:
-            start, end = date(year, month, d1), date(year, month, d2)
-        except ValueError:
-            raise SourceError("bad_period") from None
-    else:
-        # Only the headline names this release's own period; the body also says
-        # "compared with the second period of July", which is not it.
-        t = _TITLE_PERIOD_RE.search(title or "")
-        if t and t.group(2).lower() in _MONTHS_ID:
-            month, year = _MONTHS_ID[t.group(2).lower()], int(t.group(3))
-            first_half = t.group(1).lower() in ("pertama", "i")
-            start = date(year, month, 1 if first_half else 15)
-            end = date(year, month, 14 if first_half else _last_day(year, month))
-    if start is None or end is None or end < start or (end - start).days > 20:
+def parse_hba_decree(text: str, url: str) -> Dict[str, Any]:
+    """One half-month's HBA grades from the text of a decision's annex II.
+
+    Strict by design: the four grades must be the four known calorific classes,
+    in falling order of price. The PDF is a scan with a text layer, and a
+    misread digit is far worse than a missing row, so anything that does not
+    look exactly like the annex is refused and named."""
+    m = _DECREE_PERIOD_RE.search(text)
+    if not m or m.group(2).lower() not in _MONTHS_ID:
         raise SourceError("period_unreadable")
+    month, year = _MONTHS_ID[m.group(2).lower()], int(m.group(3))
+    first_half = m.group(1).lower() == "pertama"
+    start = date(year, month, 1 if first_half else 15)
+    end = date(year, month, 14 if first_half else _last_day(year, month))
+    eff = _EFFECTIVE_RE.search(text)
+    if eff and eff.group(2).lower() in _MONTHS_ID:
+        if (int(eff.group(3)), _MONTHS_ID[eff.group(2).lower()], int(eff.group(1))) != (start.year, start.month, start.day):
+            raise SourceError("period_mismatch")
 
     grades: Dict[str, Dict[str, Any]] = {}
-    for g in _PRICE_RE.finditer(text):
-        name = re.sub(r"\s+", " ", g.group(1).upper())
+    for g in _DECREE_GRADE_RE.finditer(text):
+        name = "HBA" + (f" {g.group(1).upper()}" if g.group(1) else "")
         if name in grades:
             continue
-        grades[name] = {
-            "name": name,
-            "gar": int(id_number(g.group(2), False)),
-            "usd_per_t": id_number(g.group(3), True),
-        }
-        if g.group(4) and g.group(5):
-            pct = id_number(g.group(5), True)
-            grades[name]["change_pct"] = round(-pct if g.group(4).lower() == "turun" else pct, 2)
+        grades[name] = {"name": name, "gar": int(id_number(g.group(2), False)), "usd_per_t": id_number(g.group(3), True)}
     if set(grades) != set(_HBA_ORDER):
         raise SourceError("grades_missing")
     ordered = [grades[n] for n in _HBA_ORDER]
     prices = [g["usd_per_t"] for g in ordered]
-    gars = [g["gar"] for g in ordered]
-    # A thinner coal sells for less: the grades must fall with calorific value.
-    if not (all(5 < p < 600 for p in prices) and prices == sorted(prices, reverse=True) and gars == sorted(gars, reverse=True)):
+    if any(g["gar"] != _HBA_GARS[g["name"]] for g in ordered):
+        raise SourceError("grades_changed")
+    if not (all(5 < p < 600 for p in prices) and prices == sorted(prices, reverse=True)):
         raise SourceError("grades_inconsistent")
-    return {"start": start.isoformat(), "end": end.isoformat(), "grades": ordered, "url": url}
-
-
-_ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
-
-
-def _article_links(html: str, base: str) -> List[Tuple[str, str]]:
-    out: List[Tuple[str, str]] = []
-    for href, inner in _ANCHOR_RE.findall(html):
-        url = urljoin(base, unescape(href))
-        if "/arsip-berita/" in url:
-            out.append((url, re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", inner))).strip()[:70]))
+    out = {"start": start.isoformat(), "end": end.isoformat(), "grades": ordered, "url": url}
+    num = _DECREE_NUMBER_RE.search(text)
+    if num:
+        out["decree"] = num.group(1)
     return out
 
 
-def hba_links(html: str, base: str) -> List[Tuple[str, str]]:
-    """(url, title) of the ministry's HBA announcements on a list page."""
+def pdf_text(blob: bytes) -> str:
+    """The text layer of a PDF (needs pypdf, which the workflow installs)."""
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        raise SourceError("pypdf_missing") from None
+    try:
+        reader = PdfReader(io.BytesIO(blob))
+        return " ".join((page.extract_text() or "") for page in reader.pages)
+    except Exception:  # noqa: BLE001 -- a broken PDF is an unreadable decision, nothing more
+        raise SourceError("pdf_unreadable") from None
+
+
+def hba_decree_links(html: str, base: str) -> List[Tuple[str, str]]:
+    """(pdf url, title) of the HBA decisions on one list page.
+
+    Each row is a title link (dokumen/view) followed by a 'Dokumen' link
+    (dokumen/download); the pair is what identifies a decision's PDF."""
     out: List[Tuple[str, str]] = []
-    seen = set()
+    title = ""
     for href, inner in _ANCHOR_RE.findall(html):
-        title = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", inner))).strip()
         url = urljoin(base, unescape(href))
-        slug = url.rsplit("/", 1)[-1].lower()
-        if "/arsip-berita/" in url and re.search(r"(^|-)hba(-|$)", slug) and url not in seen:
-            seen.add(url)
-            out.append((url, title))
+        text = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", inner))).strip()
+        if "/dokumen/view" in url:
+            title = text
+        elif "/dokumen/download" in url and title:
+            if re.search(r"harga\s+batubara\s+acuan", title, re.I):
+                out.append((url, title))
+            title = ""
     return out
 
 
 def merge_periods(old: List[Dict[str, Any]], new: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """History accumulates: the list page only reaches back a few weeks."""
+    """History accumulates: the portal's list only reaches back a few weeks."""
     by_start = {p["start"]: p for p in old}
     for p in new:
         by_start[p["start"]] = p
     return [by_start[k] for k in sorted(by_start)][-HBA_KEEP_PERIODS:]
 
 
-def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], bytes] = get_bytes,
-              pause: float = HBA_PAUSE, max_pages: int = HBA_MAX_PAGES) -> Dict[str, Any]:
-    """New HBA announcements, found by paging the ministry's news archive.
+def with_changes(periods: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Each grade's move since the previous half-month, computed here from two
+    published values (never copied from a news article)."""
+    prev = None
+    for p in periods:
+        if prev is not None and (date.fromisoformat(p["start"]) - date.fromisoformat(prev["end"])).days <= 3:
+            before = {g["name"]: g["usd_per_t"] for g in prev["grades"]}
+            for g in p["grades"]:
+                if "change_pct" not in g and before.get(g["name"]):
+                    g["change_pct"] = round((g["usd_per_t"] / before[g["name"]] - 1) * 100, 2)
+        prev = p
+    return periods
 
-    The archive has no search and no feed; it lists ~15 items a page, newest
-    first, and an announcement comes only twice a month, so the newest one can
-    be a few pages down. Paging stops at the first announcement already held
-    (everything below it is older). The firewall in front of the site rejects
-    bursts, so this is strictly one request at a time with a pause.
-    """
+
+def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], bytes] = get_bytes,
+              extract: Callable[[bytes], str] = pdf_text, pause: float = HBA_PAUSE,
+              max_pages: int = HBA_MAX_PAGES) -> Dict[str, Any]:
+    """New HBA decisions, found by paging the ministry's decision list.
+
+    Newest first; paging stops at the first decision already held. A decision
+    appears on the portal a few days after it takes effect, so the newest
+    half-month can be missing for a while -- the panel says so."""
     prior = (previous or {}).get("periods", [])
     known = {p["url"] for p in prior}
     links: List[Tuple[str, str]] = []
@@ -429,21 +441,18 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
     for n in range(1, max_pages + 1):
         if n > 1:
             time.sleep(pause)
-        page = ESDM_LIST if n == 1 else f"{ESDM_LIST}?page={n}"
+        page = JDIH_LIST if n == 1 else f"{JDIH_LIST}&page={n}"
         try:
-            html = get(page).decode("utf-8", "replace")
-            page_links = hba_links(html, page)
+            page_links = hba_decree_links(get(page).decode("utf-8", "replace"), page)
         except SourceError as exc:
             if n == 1:
                 raise
             errors.append(f"page{n}:{exc}")
             break
-        every = [t for _, t in _article_links(html, page)]
-        note(f"esdm page {n}: {len(every)} articles, {len(page_links)} HBA; first={every[:1]} last={every[-1:]}")
         links += [l for l in page_links if l[0] not in {u for u, _ in links}]
         if any(u in known for u, _ in page_links):
             break
-        if not known and len(links) >= HBA_FIRST_RUN_LINKS:
+        if not known and len(links) >= HBA_FIRST_RUN_DECREES:
             break
 
     found: List[Dict[str, Any]] = []
@@ -452,14 +461,13 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
             continue
         time.sleep(pause)
         try:
-            found.append(parse_hba_announcement(visible_text(get(url).decode("utf-8", "replace")), url, title))
+            found.append(parse_hba_decree(extract(get(url)), url))
         except SourceError as exc:
-            # One unreadable announcement is skipped and named; it never becomes a guess.
-            errors.append(f"{url.rsplit('/', 1)[-1][:60]}:{exc}")
-    periods = merge_periods(prior, found)
+            errors.append(f"{url.rsplit('=', 1)[-1][:40]}:{exc}")
+    periods = with_changes(merge_periods(prior, found))
     if not periods:
-        raise SourceError(errors[-1].split(":")[-1] if errors else "no_announcements_found")
-    out = {"status": "ok", "source": "인도네시아 에너지광물자원부(ESDM) 보도자료 · HBA 고시", "source_url": ESDM_LIST,
+        raise SourceError(errors[-1].split(":")[-1] if errors else "no_decisions_found")
+    out = {"status": "ok", "source": "인도네시아 에너지광물자원부(ESDM) 장관결정문 · JDIH", "source_url": JDIH_LIST,
            "periods": periods, "latest_end": periods[-1]["end"]}
     if errors:
         out["skipped"] = errors[:6]
