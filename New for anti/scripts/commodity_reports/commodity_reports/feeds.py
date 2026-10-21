@@ -318,7 +318,8 @@ def parse_feed(body: str, source: Dict[str, Any], max_items: int = 40) -> List[R
             # the aggregator, and drop the " - Outlet" tail it appends to
             # every headline.
             for tail in (f" - {publisher}", f" | {publisher}", f" — {publisher}"):
-                if title.endswith(tail) and len(title) > len(tail) + 8:
+                # Case-insensitive: the tail says "CHOSUNBIZ" where <source> says "Chosunbiz".
+                if title.lower().endswith(tail.lower()) and len(title) > len(tail) + 8:
                     title = title[: -len(tail)].rstrip()
                     break
             if summary.lower().startswith(title.lower()):

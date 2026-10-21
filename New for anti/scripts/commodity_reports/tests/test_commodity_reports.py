@@ -1400,6 +1400,13 @@ class AggregatorFeedTests(unittest.TestCase):
         self.assertEqual(b.agency, "Google News")
         self.assertEqual(b.title, "Coal output rises")
 
+    def test_the_headline_tail_matches_the_outlet_ignoring_case(self):
+        feed = ("<rss><channel><item><title>EcoPro BM tops rights issue, funds Indonesia nickel chain - CHOSUNBIZ</title>"
+                "<link>https://news.google.com/rss/articles/C</link><source url='https://biz.chosun.com'>Chosunbiz</source></item></channel></rss>")
+        got = parse_feed(feed, self.SRC)[0]
+        self.assertEqual(got.title, "EcoPro BM tops rights issue, funds Indonesia nickel chain")
+        self.assertEqual(got.agency, "Chosunbiz · Google News")
+
     def test_without_the_option_nothing_changes(self):
         plain = dict(self.SRC)
         plain.pop("item_publisher")
