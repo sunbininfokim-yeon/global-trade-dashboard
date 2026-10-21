@@ -3,6 +3,7 @@
   "user_agent": "GlobalTradeDashboard-CommodityReports/1.0 (+research; official sources only)",
   "fetch_timeout_sec": 22,
   "max_items_per_source": 40,
+  "news_title_exclude": "\\b(tickets?|webinars?|early[- ]bird|register (now|today)|sponsorship|exhibitors?|call for (papers|speakers)|save the date)\\b",
   "notes": [
     "Official publishers only -- statistical agencies, ministries, and the intergovernmental bodies that publish commodity balance sheets. No aggregators, no paywalled trade press. EXCEPTION (2026-09-02, operator decision): S&P Global's own RSS feeds are allowed even though the full articles sit behind a paywall -- the feed itself (headline + short excerpt) is free, the standard shape for RSS on paywalled trade press. This is a deliberate one-off, not an opening for aggregators generally; an unverifiable site with zero independent footprint (checked and rejected the same day) stayed out specifically because this exception is not a general license.",
     "default_country is a fallback for releases that name no country (CONAB's safra bulletins never write 'Brazil'). Any country the text does name wins over it -- a USDA release on Brazilian wheat is a Brazil report.",

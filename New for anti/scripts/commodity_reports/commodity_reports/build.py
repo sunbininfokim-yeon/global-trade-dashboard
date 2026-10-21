@@ -554,8 +554,14 @@ def build_commodity_reports(
     # an unrelated reason (a feed additive, brake drums) must not survive
     # because an earlier build once collected it.
     exclusions = {sid: re.compile(s["title_exclude"], re.I) for sid, s in by_src.items() if s.get("title_exclude")}
-    if exclusions:
-        raw = [r for r in raw if not (r.source_id in exclusions and exclusions[r.source_id].search(r.title))]
+    # Event and ticket pages that trade-press feeds carry ("Bauxite & Alumina
+    # 2027 Tickets & Pricing") are marketing, not news: dropped from every news source.
+    news_noise = re.compile(sources_cfg["news_title_exclude"], re.I) if sources_cfg.get("news_title_exclude") else None
+    noise_ids = {sid for sid, s in by_src.items() if s.get("publisher_type") == "news"} if news_noise else set()
+    if exclusions or noise_ids:
+        raw = [r for r in raw if not (
+            (r.source_id in exclusions and exclusions[r.source_id].search(r.title))
+            or (r.source_id in noise_ids and news_noise.search(r.title)))]
     # News outlets: an aggregator item from an outlet we do not list is dropped
     # before anything is spent on it (config/news_outlets.json).
     raw, untrusted_n, untrusted_domains = drop_untrusted_outlets(raw, by_src, load_trusted_outlets())
@@ -761,7 +767,7 @@ def build_commodity_reports(
             "rows": sum(1 for it in items if it.get("publisher_type") == "news"),
             "folded_same_story": len(folded),
             "dropped_untrusted_outlet": untrusted_n,
-            "untrusted_outlets": dict(untrusted_domains.most_common(12)),
+            "untrusted_outlets": dict(untrusted_domains.most_common(30)),
             "skip_refs": sorted(new_skip),
             **news_stats,
         },

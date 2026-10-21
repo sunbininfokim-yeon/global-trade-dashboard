@@ -1616,6 +1616,8 @@ class NewsHeadlineBuildTests(unittest.TestCase):
             self._item("TOK_LOST", "Indonesia nickel royalty change draws pushback from smelters", "Reuters", "https://www.reuters.com"),
             # Nothing we track.
             self._item("TOK_FOOTBALL", "Jakarta football derby ends in a draw", "Reuters", "https://www.reuters.com"),
+            # A trade-press events page: marketing, not news.
+            self._item("TOK_TICKETS", "Indonesia Nickel Conference 2027 Tickets &amp; Pricing", "Reuters", "https://www.reuters.com"),
         ]
         return "<?xml version='1.0'?><rss><channel><title>x</title>" + "".join(items) + "</channel></rss>"
 
@@ -1678,6 +1680,7 @@ class NewsHeadlineBuildTests(unittest.TestCase):
         self.assertEqual(news["unresolved"], 1)
         # The football item was never worth a request; the untrusted outlet neither.
         self.assertNotIn("TOK_FOOTBALL", calls)
+        self.assertNotIn("TOK_TICKETS", calls)       # an events page is dropped before anything is spent on it
         self.assertNotIn("TOK_BLOG", calls)
 
     def test_a_link_is_asked_for_once_then_remembered(self):
