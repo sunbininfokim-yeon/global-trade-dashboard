@@ -18,8 +18,8 @@ Worker는 10분마다 실행한다. 06시대에는 정책 메일에 전체 처�
 ## 상태와 중복 방지
 
 - DB의 법안 업데이트와 알림 생성은 한 트랜잭션이다. 같은 날 두 번 바뀌어도 두 사건을 보존한다. 즐겨찾기 등록 자체는 알리지 않는다.
-- `mailing_outbox(user_id,event_key)`가 사건 중복을 막는다. 보고서는 `mailing_reports.report_id`가 기본키다. 기존 `commodity_report_notifications`는 적재 시점뿐 아니라 큐 선점과 발송 직전에도 읽는다. 새 큐에 쌓인 뒤 기존 발송기가 보낸 보고서도 전환 후 재발송하지 않는다. 두 발송기의 동시 운영을 허용한다는 뜻은 아니다.
-- 첫 RSS 적재는 설치 시점 기준 8일 안의 보고서만 알림 후보로 만든다. 이후 큐에 들어간 항목은 8일이 지나도 소실되지 않는다. 원문 전문/PDF 대신 제목·600자 요약·URL·태그만 저장한다.
+- `mailing_outbox(user_id,event_key)`가 사건 중복을 막는다. 보고서의 최신 행은 `mailing_reports.report_id`가 기본키이며, 20261021 migration 이후 발행본은 공식 `report_id + published_at`으로 구별한다. 적재·선점·발송 직전에는 판별 receipt와 legacy 접수 기록을 대조한다. 두 발송기의 동시 운영을 허용하는 것은 아니다.
+- 신규 RSS 적재는 설치 cutoff와 현재 기준 8일 범위를 모두 만족한 보고서만 알림 후보로 만든다. 이미 큐에 들어간 항목은 8일이 지나도 소실되지 않는다. 원문 전문/PDF 대신 제목·600자 요약·URL·태그만 저장한다.
 - `mail_claim`은 `FOR UPDATE SKIP LOCKED`, 5분 lease, 매번 새 token을 쓴다. 한 delivery는 최대 20개 사건이다. Worker 한 번에 최대 5 deliveries, 현재 06시대 최대 30 deliveries다. 이용자/변경량 증가 시 이 용량과 실제 무료 플랜 한도를 재검토해야 한다.
 - 수신자는 `auth.users.email_confirmed_at`이 있는 계정 이메일만 쓴다. 사용자가 자유롭게 수정하는 `profiles.email`은 수신 주소가 아니다.
 - 발송 직전에도 즐겨찾기·수신 설정·현재 인증 이메일을 재확인한다. 채널별 설정은 DB와 Auth API에서 독립 저장하며 원자재의 기존 기관 필터를 유지한다. 최신 main의 계정 일시정지·항목별 알림·기관 필터 UI를 보존하며, 채널별 새 스위치 UI는 이번 배포 준비 범위에서 제외한다.
@@ -77,6 +77,34 @@ archiveReports({file: '/path/to/commodity_reports_v1.json'}).then(console.log);
 ```
 
 ## 검증
+
+### 2026-10-21 같은 URL의 새 발행본
+
+`20261021042059_mailing_report_editions.sql`은 20261002 구독 migration 다음에 적용한다.
+`schema.sql`은 정책 전용이므로 이 메일 모듈 DDL을 포함하지 않는다.
+
+- 공식 `report_id + published_at`을 판별 키로 쓴다. 영구 URL의 다음 발행본도
+  저장하고 주간 메일 후보로 만든다. 제목/요약/상품 태그 수정은 새 발행으로 취급하지 않는다.
+- `mailing_report_editions`는 관측한 판의 메타데이터를 보관한다. 같은 입력에 ID가
+  겹치면 importer는 최신 발행시각을 선택한다. 뒤늦은 과거 snapshot은 DB의 최신 판을 덮어쓰지 않는다.
+- `mailing_report_edition_receipts`는 판별 공급자 접수 기록이다. 기존 `mail_complete`
+  트랜잭션의 상태 변경 trigger로 기록하며, Resend 접수와 실제 수신함 도착은 구분한다.
+  payload를 정리하더라도 이 최소 중복 방지 기록은 보존한다. 계정 삭제 시에는 함께 삭제한다.
+- 기존 legacy report-ID-only 기록은 판을 확정할 수 없으면 그 접수일 이전 판을
+  보수적으로 차단한다. 판별 접수 이력이 확보되면 판 키로 판단한다. 기존 sender는 계속 꺼 둔다.
+- 최초 설치는 현재 메타데이터와 확인된 접수만 기준점으로 복사한다. 과거 보고서나
+  누락분을 자동 재발송하지 않는다. 신규 적재 시 8일보다 오래된 자료는 보관만 한다.
+  이미 큐에 들어간 자료를 8일 후 자동 폐기하는 정책은 아니다.
+- 늦게 수집한 자료도 다음 월요일 08:00 KST에 예약한다. 기존 정책 다음날 06:00 KST는 유지한다.
+- 신규 두 표는 service-role 전용이다. RLS 활성 + browser grant 없음으로 보호하며,
+  browser policy가 없다는 advisory INFO는 의도된 설계다.
+
+발행일이 없거나, 원문 파일이 바뀌어도 발행일을 갱신하지 않는 기관의 개정은 이 키만으로
+확정할 수 없다. 별도 공식 판 번호/파일 지문 계약이 필요하며 수집 시각으로 발행일을 만들지 않는다.
+기관별 수집·분류 범위 및 PDF 첨부 전달은 별도 기능이다.
+
+이번 변경은 Worker/발송 설정/화면/워크플로 변경이 필요 없는 DB·importer 보강이다.
+운영 적용 전후 확인 및 Claude 인계는 `docs/ops/handoff/2026-10-21-codex-rss-report-editions.md`를 따른다.
 
 ```bash
 cd services/mailing

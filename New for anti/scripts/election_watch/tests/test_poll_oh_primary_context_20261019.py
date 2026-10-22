@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """Primary vote support is not the separately asked expected-winner question."""
 from pathlib import Path
 from copy import deepcopy
@@ -12,7 +13,7 @@ C=Path(__file__).resolve().parents[1]/'config';DAY='2026-10-19'
 class OhioPrimaryContextTests(unittest.TestCase):
  def setUp(self):
   self.packet=read(C/'state_evidence/2026/OH.json');self.audit=read(C.parents[2]/'public/data/usa_election_poll_release_reviews/2026/OH-context-20261019.json');self.raw=[x['provider_record']for x in self.audit['records']]
-  self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
+  self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
  def test_two_primary_major_toplines_join_14_days_but_not_7(self):
   rows,held=normalize(self.raw,self.policy,DAY);self.assertFalse(held);self.assertEqual(len(rows),2)
   for row in rows:

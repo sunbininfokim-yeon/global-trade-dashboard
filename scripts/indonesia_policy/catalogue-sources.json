@@ -34,12 +34,18 @@
     "adapter": "unverified",
     "url": "https://jdih.esdm.go.id/",
     "publisher": "Kementerian ESDM",
-    "scope": "Original ministry catalogue; no verified enumeration adapter. dns_failed; official web reader separately returned maintenance. Do not report zero laws or catalogue completeness.",
+    "scope": "Original ministry catalogue. Latest availability check: maintenance. Enumeration unverified; not zero laws.",
     "verification": {
-      "checked_at": "2026-10-19T14:31:59.775120+00:00",
-      "outcome": "dns_failed; official web reader separately returned maintenance",
+      "checked_at": "2026-10-20T06:50:59.938475+00:00",
+      "outcome": "maintenance",
       "enumeration_verified": false,
-      "observed_listing_url": "https://jdih.esdm.go.id/dokumen/index"
+      "observed_listing_url": "https://jdih.esdm.go.id/dokumen/index",
+      "url": "https://jdih.esdm.go.id/dokumen/index",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "actual_url": "https://jdih.esdm.go.id/dokumen/index",
+      "raw_sha256": "1e936011e5404a9059f6db54b452f7cb70ba7aa8a6cdb2b42e77481f4852eba7",
+      "title": "ESDM-MAINTENANCE",
+      "observed_links": []
     }
   },
   {
@@ -59,11 +65,15 @@
     "adapter": "unverified",
     "url": "https://jdih.pertanian.go.id/",
     "publisher": "Kementerian Pertanian",
-    "scope": "Original ministry catalogue; no verified enumeration adapter. http_403. Do not report zero laws or catalogue completeness.",
+    "scope": "Original ministry catalogue. Latest availability check: http_403. Enumeration unverified; not zero laws.",
     "verification": {
-      "checked_at": "2026-10-19T14:31:59.775120+00:00",
+      "checked_at": "2026-10-20T06:50:59.938986+00:00",
       "outcome": "http_403",
-      "enumeration_verified": false
+      "enumeration_verified": false,
+      "url": "https://jdih.pertanian.go.id/",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "error_type": "HTTPError",
+      "http_status": 403
     }
   },
   {
@@ -71,11 +81,15 @@
     "adapter": "unverified",
     "url": "https://jdih.kemenperin.go.id/",
     "publisher": "Kementerian Perindustrian",
-    "scope": "Original ministry catalogue; no verified enumeration adapter. connect_timeout. Do not report zero laws or catalogue completeness.",
+    "scope": "Original ministry catalogue. Latest availability check: connection_timeout. Enumeration unverified; not zero laws.",
     "verification": {
-      "checked_at": "2026-10-19T14:31:59.775120+00:00",
-      "outcome": "connect_timeout",
-      "enumeration_verified": false
+      "checked_at": "2026-10-20T06:50:59.939104+00:00",
+      "outcome": "connection_timeout",
+      "enumeration_verified": false,
+      "url": "https://jdih.kemenperin.go.id/",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "error_type": "ConnectTimeout",
+      "http_status": null
     }
   },
   {
@@ -83,12 +97,28 @@
     "adapter": "unverified",
     "url": "https://jdih.kemenkeu.go.id/",
     "publisher": "Kementerian Keuangan",
-    "scope": "Original ministry catalogue; no verified enumeration adapter. homepage_read_timeout; observed /search listing also read_timeout. Do not report zero laws or catalogue completeness.",
+    "scope": "Original ministry catalogue. Latest availability check: read_timeout. Enumeration unverified; not zero laws.",
     "verification": {
-      "checked_at": "2026-10-19T14:31:59.775120+00:00",
-      "outcome": "homepage_read_timeout; observed /search listing also read_timeout",
+      "checked_at": "2026-10-20T06:50:59.939273+00:00",
+      "outcome": "read_timeout",
       "enumeration_verified": false,
-      "observed_listing_url": "https://jdih.kemenkeu.go.id/search?bentuk=Peraturan+Menteri&order=desc&teu=Kementerian+Keuangan"
+      "observed_listing_url": "https://jdih.kemenkeu.go.id/search?bentuk=Peraturan+Menteri&order=desc&teu=Kementerian+Keuangan",
+      "url": "https://jdih.kemenkeu.go.id/search?bentuk=Peraturan+Menteri&order=desc&teu=Kementerian+Keuangan",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "error_type": "ReadTimeout",
+      "http_status": null,
+      "additional_transport_check": "curl HTTPS connection: SSL connection timeout; no HTTP response"
     }
+  },
+  {
+    "source_id": "djbc-kemenkeu",
+    "adapter": "djbc_pages",
+    "url": "https://peraturan.beacukai.go.id/regulasi/index.html?page=penerbit/8/menteri-keuangan/1.html",
+    "publisher": "Direktorat Jenderal Bea dan Cukai",
+    "scope": "Menteri Keuangan category republished by DJBC. Only the customs-directory scope, not the original ministry or all fiscal law. Publisher category and listing status do not prove current legal effect.",
+    "require_reported_total": true,
+    "original_source_id": "kemenkeu-original",
+    "source_role": "official_republication",
+    "discovered_from": "https://peraturan.beacukai.go.id/regulasi/index.html"
   }
 ]

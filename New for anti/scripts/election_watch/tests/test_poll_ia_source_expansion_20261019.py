@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """Exact university-linked sheet admission; both questions have n=650."""
 from copy import deepcopy
 from pathlib import Path
@@ -11,7 +12,7 @@ class IAEmersonSourceTests(unittest.TestCase):
     def setUp(self):
         self.audit=read(ROOT.parent.parent/'public/data/usa_election_poll_release_reviews/2026/IA-source-expansion-20261019.json')
         self.rows=[r['provider_record']for r in self.audit['records'] if r['provider_record']['id'].startswith(('gov202eme','us-202eme'))]
-        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY)
+        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
     def test_both_primary_questions_eligible_and_precise_values_retained(self):
         obs,held=normalize(self.rows,self.policy,DAY);self.assertFalse(held);self.assertEqual(len(obs),2)
