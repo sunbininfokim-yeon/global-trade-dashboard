@@ -34,15 +34,17 @@ def replace_json_value(text: str, key: str, start: int, new_obj: object, key_ind
     idx = text.find(needle, start)
     if idx < 0:
         raise SystemExit(f"missing {key} after offset {start}")
-    brace = text.find("{", idx)
+    opener = "{" if isinstance(new_obj, dict) else "["
+    closer = "}" if opener == "{" else "]"
+    brace = text.find(opener, idx)
     if brace < 0 or brace > idx + len(needle) + 5:
-        raise SystemExit(f"{key} is not an object")
+        raise SystemExit(f"{key} is not a {opener}")
     depth = 0
     end = None
     for i, ch in enumerate(text[brace:], brace):
-        if ch == "{":
+        if ch == opener:
             depth += 1
-        elif ch == "}":
+        elif ch == closer:
             depth -= 1
             if depth == 0:
                 end = i + 1
@@ -134,6 +136,7 @@ def main() -> None:
     if "cmc" in party_state:
         raise SystemExit("party_state unexpectedly has a cmc key; cmc splice would hit it")
     board_text = replace_json_value(board_text, "cmc", leadership, extract["cmc"], 8)
+    board_text = replace_json_value(board_text, "theater_commands", leadership, extract["theater_commands"], 8)
     BOARD.write_text(board_text, encoding="utf-8")
 
     chart = json.loads(CHART.read_text(encoding="utf-8"))
