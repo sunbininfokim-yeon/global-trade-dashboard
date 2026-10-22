@@ -76,7 +76,7 @@ def _get(url: str, headers: Dict[str, str]) -> Dict[str, Any]:
     req = urllib.request.Request(url, headers=headers, method="GET")
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT, context=ssl.create_default_context()) as resp:
-            body = resp.read(3_000_000)
+            body = resp.read(12_000_000)
             return {"status": resp.status, "ctype": resp.headers.get("Content-Type", ""),
                     "final": resp.geturl(), "body": body, "server": resp.headers.get("Server", "")}
     except urllib.error.HTTPError as exc:
@@ -95,7 +95,7 @@ def _get_impersonated(url: str) -> Dict[str, Any]:
     try:
         r = creq.get(url, impersonate="chrome", timeout=TIMEOUT, allow_redirects=True)
         return {"status": r.status_code, "ctype": r.headers.get("Content-Type", ""), "final": str(r.url),
-                "body": r.content[:3_000_000], "server": r.headers.get("Server", "")}
+                "body": r.content[:12_000_000], "server": r.headers.get("Server", "")}
     except Exception as exc:  # noqa: BLE001
         return {"status": None, "error": f"{type(exc).__name__}: {exc}"[:160], "body": b"", "ctype": "", "final": url}
 
@@ -174,8 +174,37 @@ def discover(url: str, html: str, limit: int = MAX_DISCOVERED) -> List[str]:
 _ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
 
+def pdf_text(body: bytes, chars: int = 900, tail: bool = False) -> str:
+    """First characters of a PDF's text (needs pypdf; empty when it is not installed or not a PDF)."""
+    if not body.startswith(b"%PDF"):
+        return ""
+    try:
+        import io
+        from pypdf import PdfReader
+        reader = PdfReader(io.BytesIO(body))
+        text = " ".join((page.extract_text() or "") for page in reader.pages[:10])
+        flat = re.sub(r"\s+", " ", text)
+        return f"[{len(reader.pages)} pages, {len(flat)} chars] " + (flat[-chars:] if tail else flat[:chars])
+    except Exception as exc:  # noqa: BLE001
+        return f"pdf read failed: {exc}"
+
+
+def page_context(text: str, patterns: List[str], width: int = 200, limit: int = 3) -> List[str]:
+    """Snippets of the page's visible text around each pattern (a regex)."""
+    visible = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", text)
+    visible = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", visible)))
+    out: List[str] = []
+    for pat in patterns:
+        for i, m in enumerate(re.finditer(pat, visible)):
+            if i >= limit:
+                break
+            out.append(f"[{pat}] ..." + visible[max(0, m.start() - width): m.end() + width] + "...")
+    return out
+
+
 def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 4, show_body: int = 0,
-             link_text: bool = False) -> Dict[str, Any]:
+             link_text: bool = False, context: Optional[List[str]] = None, context_width: int = 200,
+             pdf_chars: int = 0, pdf_tail: bool = False) -> Dict[str, Any]:
     out: Dict[str, Any] = {"status": res.get("status")}
     if res.get("error"):
         out["error"] = res["error"]
@@ -205,7 +234,7 @@ def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 
                     if re.search(link_re, full) and full not in seen:
                         seen.add(full)
                         label = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", inner))).strip()
-                        links.append(f"{full} | {label[:90]}")
+                        links.append(f"{full} | {label[:150]}")
             else:
                 for href in _HREF_RE.findall(text):
                     full = urljoin(res.get("final") or "", unescape(href))
@@ -215,6 +244,11 @@ def describe(res: Dict[str, Any], link_re: Optional[str] = None, samples: int = 
             out["link_samples"] = links[:samples]
         if show_body:
             out["body_head"] = re.sub(r"\s+", " ", text)[:show_body]
+        if context:
+            out["context"] = page_context(text, context, context_width)
+    if pdf_chars and body.startswith(b"%PDF"):
+        out["pdf"] = pdf_text(body, pdf_chars, pdf_tail)
+        out.setdefault("html_bytes", len(body))
     return out
 
 
@@ -302,7 +336,9 @@ def probe(target: Dict[str, Any]) -> Dict[str, Any]:
     report: Dict[str, Any] = {"id": target["id"], "group": target.get("group", ""), "url": url}
     for key, res in raw.items():
         res["url"] = url
-        report[key] = describe(res, link_re, samples, show_body, bool(target.get("link_text")))
+        report[key] = describe(res, link_re, samples, show_body, bool(target.get("link_text")),
+                                  target.get("context"), int(target.get("context_width", 200)),
+                                  int(target.get("pdf_text", 0)), bool(target.get("pdf_tail")))
         if target.get("find"):
             # Smoke checks: is each string in the body? (a deployed menu item,
             # a cache-busting version, a config key)
@@ -350,6 +386,10 @@ def line(r: Dict[str, Any]) -> str:
                 s += f" links={d['links']} {d.get('link_samples', [])}"
             if d.get("body_head"):
                 s += f" body={d['body_head']!r}"
+            for c in d.get("context", []):
+                s += f"\n      ctx {c}"
+            if d.get("pdf"):
+                s += f"\n      pdf {d['pdf']}"
             if d.get("block_hint") is not None and (d.get("status") or 0) >= 400:
                 s += f" server={d.get('server', '')!r} hint={d.get('block_hint')!r}"
         if d.get("found"):

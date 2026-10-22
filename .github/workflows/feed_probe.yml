@@ -35,7 +35,7 @@ jobs:
       # playwright drives the runner's preinstalled Chrome (channel=chrome), so
       # a target marked render=true runs the page's own JavaScript -- the one
       # client a JS-challenge bot manager expects. No browser download.
-      - run: pip install --quiet curl_cffi playwright
+      - run: pip install --quiet curl_cffi playwright pypdf
       - run: python tools/ops/feed_probe.py --json-out feed_probe.json
       - uses: actions/upload-artifact@v4
         with:
