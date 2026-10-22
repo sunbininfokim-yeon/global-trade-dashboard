@@ -25,7 +25,11 @@ def contracts(snapshot, as_of, states=None):
     seen=set(); selected=[]
     for entry in snapshot['records']:
         require(entry['id'] not in seen, 'duplicate HTML source contract');seen.add(entry['id'])
-        require(entry['adapter']==ADAPTER and entry['state']=='VA' and
+        if entry['adapter']=='coefficient_public_html_v1':
+            from .poll_coefficient_html import validate_contract
+            validate_contract(entry)
+        else:
+            require(entry['adapter']==ADAPTER and entry['state']=='VA' and
                 re.fullmatch(r'USA:VA:house:\d{2}',entry['race_id']) and
                 entry['index_url']=='https://cnu.edu/wason/surveys/' and
                 entry['pollster']=='Christopher Newport University' and
@@ -149,6 +153,9 @@ def question(text, race):
 
 
 def collect_entry(entry, policy, as_of, opener=urlopen):
+    if entry['adapter']=='coefficient_public_html_v1':
+        from .poll_coefficient_html import collect_entry as coefficient_entry
+        return coefficient_entry(entry,policy,as_of,opener)
     race=policy['races'][entry['race_id']]
     index,index_doc=document(entry['index_url'],opener);records=[];failures=[]
     for url in article_links(index,entry,as_of):
@@ -221,6 +228,14 @@ def merge_html_tables(rows, snapshot, policy, as_of, previous_receipts=(), state
         previous=deepcopy(list(old.values()))
         try:
             current,failures=collect_entry(entry,policy,as_of,opener)
+            for i,item in enumerate(current):
+                previous_item=old.get(item['id'])
+                if previous_item and answer_correction_fingerprint(previous_item['record'])!=answer_correction_fingerprint(item['record']):
+                    retained=deepcopy(previous_item)
+                    retained['record']['primary_source_capture']['status']='carried_forward_reference_only'
+                    retained['status']='same_wave_changed_review_required'
+                    failures.append({'reason':'same_wave_changed_review_required','id':item['id']})
+                    current[i]=retained
             seen={r['id']for r in current}
             for old in previous:
                 if old['id'] not in seen:
@@ -258,6 +273,12 @@ def merge_html_tables(rows, snapshot, policy, as_of, previous_receipts=(), state
             output=[r for r in output if r not in same and r.get('id')!=raw['id']]
             item['record']['primary_source_capture']['provider_duplicate_ids']=[r['id']for r in same]
             output.append(deepcopy(item['record']));receipts.append(item)
+        if entry['adapter']=='coefficient_public_html_v1':
+            carried=sum(r['record']['primary_source_capture']['status']=='carried_forward_reference_only' for r in current)
+            receipts.append({'kind':'html_table_health','state':entry['state'],'contract_id':entry['id'],
+                'status':'partial_last_good_preserved' if failures or carried else 'ok_reference_only',
+                'parsed_observations':len(current)-carried,'carried_forward_observations':carried,
+                'signal_eligible_observations':0,'failures':deepcopy(failures)})
     return output,receipts
 
 
