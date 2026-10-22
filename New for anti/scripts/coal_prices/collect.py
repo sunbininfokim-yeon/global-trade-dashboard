@@ -310,8 +310,12 @@ _MONTHS_ID = {"januari": 1, "februari": 2, "maret": 3, "april": 4, "mei": 5, "ju
               "agustus": 8, "september": 9, "oktober": 10, "november": 11, "desember": 12}
 _HBA_ORDER = ("HBA", "HBA I", "HBA II", "HBA III")
 _HBA_GARS = {"HBA": 6322, "HBA I": 5300, "HBA II": 4100, "HBA III": 3400}
-# The annex heading names the period; the decision's own "mulai berlaku" date confirms it.
-_DECREE_PERIOD_RE = re.compile(r"HARGA\s+BATUBARA\s+ACUAN\s+PERIODE\s+(PERTAMA|KEDUA)\s+BULAN\s+([A-Z]+)\s+TAHUN\s+(\d{4})", re.I)
+# Every decision names its period in the title, the annex headings and the body, in
+# slightly different words ("...ACUAN UNTUK PERIODE KEDUA BULAN SEPTEMBER TAHUN 2026",
+# "BESARAN HARGA BATUBARA ACUAN PERIODE ...", "HBA UNTUK PERIODE ..."), so the period is
+# whatever "PERIODE <pertama|kedua> BULAN <month> TAHUN <year>" says -- when all the
+# mentions agree. The decision's own "mulai berlaku" date confirms it.
+_DECREE_PERIOD_RE = re.compile(r"PERIODE\s+(PERTAMA|KEDUA)\s+BULAN\s+([A-Z]+)\s+TAHUN\s+(\d{4})", re.I)
 _DECREE_NUMBER_RE = re.compile(r"NOMOR\s*:?\s*(\d+\.K/MB\.\d+/MEM\.B/\d{4})", re.I)
 _EFFECTIVE_RE = re.compile(r"mulai\s+berlaku\s+pada\s+tanggal\s+(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})", re.I)
 _DECREE_GRADE_RE = re.compile(r"Batubara(?:\s+(III|II|I))?\s*\(\s*([\d.]+)\s*GAR\s*\)\s*USD\s*/\s*ton\s*([\d.,]+)", re.I)
@@ -339,11 +343,14 @@ def parse_hba_decree(text: str, url: str) -> Dict[str, Any]:
     in falling order of price. The PDF is a scan with a text layer, and a
     misread digit is far worse than a missing row, so anything that does not
     look exactly like the annex is refused and named."""
-    m = _DECREE_PERIOD_RE.search(text)
-    if not m or m.group(2).lower() not in _MONTHS_ID:
+    mentions = {(m.group(1).lower(), _MONTHS_ID[m.group(2).lower()], int(m.group(3)))
+                for m in _DECREE_PERIOD_RE.finditer(text) if m.group(2).lower() in _MONTHS_ID}
+    if not mentions:
         raise SourceError("period_unreadable")
-    month, year = _MONTHS_ID[m.group(2).lower()], int(m.group(3))
-    first_half = m.group(1).lower() == "pertama"
+    if len(mentions) > 1:
+        raise SourceError("period_ambiguous")   # e.g. a correction that quotes an earlier period
+    half, month, year = next(iter(mentions))
+    first_half = half == "pertama"
     start = date(year, month, 1 if first_half else 15)
     end = date(year, month, 14 if first_half else _last_day(year, month))
     eff = _EFFECTIVE_RE.search(text)
@@ -460,10 +467,17 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
         if url in known:
             continue
         time.sleep(pause)
+        text = ""
         try:
-            found.append(parse_hba_decree(extract(get(url)), url))
+            text = extract(get(url))
+            found.append(parse_hba_decree(text, url))
         except SourceError as exc:
             errors.append(f"{url.rsplit('=', 1)[-1][:40]}:{exc}")
+            if text:   # what the refused decision's text looked like, for the CI log
+                i = max(text.find("GAR"), 0)
+                note(f"decision {url.rsplit('=', 1)[-1]} refused ({exc}); {len(text)} chars; "
+                     f"periods={sorted(set(m.group(0) for m in _DECREE_PERIOD_RE.finditer(text)))[:4]}; "
+                     f"around GAR: {text[max(0, i - 250):i + 450]!r}")
     periods = with_changes(merge_periods(prior, found))
     if not periods:
         raise SourceError(errors[-1].split(":")[-1] if errors else "no_decisions_found")

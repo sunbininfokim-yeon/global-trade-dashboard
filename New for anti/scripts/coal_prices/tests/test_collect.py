@@ -108,6 +108,16 @@ class HbaParseTests(unittest.TestCase):
         self.assertEqual([(g["name"], g["gar"], g["usd_per_t"]) for g in got["grades"]],
                          [("HBA", 6322, 122.52), ("HBA I", 5300, 90.60), ("HBA II", 4100, 63.45), ("HBA III", 3400, 43.84)])
 
+    def test_the_period_is_found_whatever_the_annex_heading_says(self):
+        # the born-digital decisions head the annex "HBA UNTUK PERIODE ...", the scans "BESARAN HARGA BATUBARA ACUAN PERIODE ..."
+        text = (ANNEX_OCT_1.replace("BESARAN HARGA BATUBARA ACUAN PERIODE PERTAMA BULAN OKTOBER TAHUN 2026",
+                                    "HBA UNTUK PERIODE PERTAMA BULAN OKTOBER TAHUN 2026"))
+        self.assertEqual(m.parse_hba_decree(text, "u")["start"], "2026-10-01")
+        # an OCR-garbled mention is simply not a mention
+        noisy = ANNEX_OCT_1.replace("BESARAN HARGA BATUBARA ACUAN PERIODE PERTAMA BULAN OKTOBER TAHUN 2026",
+                                    "BESARAN HARGA BATUBARA ACUAN PERIODE PERTAMA BULAN OKT0BER TAHUN 2026")
+        self.assertEqual(m.parse_hba_decree(noisy, "u")["start"], "2026-10-01")
+
     def test_second_half_runs_to_the_last_day_of_the_month(self):
         text = (ANNEX_OCT_1.replace("PERIODE PERTAMA BULAN OKTOBER", "PERIODE KEDUA BULAN OKTOBER")
                 .replace("tanggal 1 Oktober 2026", "tanggal 15 Oktober 2026"))
@@ -129,8 +139,10 @@ class HbaParseTests(unittest.TestCase):
         self.assertEqual(refused(ANNEX_OCT_1.replace("USD/ton 63,45", "USD/ton 163,45")), "grades_inconsistent")
         # a calorific class the dashboard does not know: the ministry changed the scheme
         self.assertEqual(refused(ANNEX_OCT_1.replace("(4.100 GAR)", "(4.200 GAR)")), "grades_changed")
-        # no period in the annex heading
-        self.assertEqual(refused(ANNEX_OCT_1.replace("BESARAN HARGA BATUBARA ACUAN PERIODE PERTAMA", "BESARAN HARGA")), "period_unreadable")
+        # no period anywhere
+        self.assertEqual(refused(ANNEX_OCT_1.replace("PERIODE PERTAMA BULAN OKTOBER TAHUN 2026", "")), "period_unreadable")
+        # a decision that also names another period (a correction quoting an earlier one) is not guessed at
+        self.assertEqual(refused(ANNEX_OCT_1 + " sebagaimana ditetapkan untuk Periode Kedua Bulan September Tahun 2026"), "period_ambiguous")
         # the decision's own effective date disagrees with the heading
         self.assertEqual(refused(ANNEX_OCT_1.replace("tanggal 1 Oktober 2026", "tanggal 15 Oktober 2026")), "period_mismatch")
 
