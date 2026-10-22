@@ -1,4 +1,4 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY
+from tests.poll_config_fixture import SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
 """NH question samples, reference variants and exact nominee joins."""
 from election_watch.polls import read as effective_read
 import copy
@@ -170,7 +170,7 @@ class NewHampshireEvidenceTests(unittest.TestCase):
         state = build_state('NH', 'B', read(CONFIG/'state_evidence_plan_2026.json'),
             read(CONFIG/'targets_2026.json'), read(ROOT/'config/federal_matchups/2026.json'),
             read(ROOT/'config/governor_matchups/2026.json'), polls,
-            load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026),
+            load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL),
             read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), max(DAY, polls['as_of']),
             read(CONFIG/'state_finance_identities_2026.json'), governor_access={'NH':access})
         self.assertEqual(state['live_capture_receipt']['governor_source_checked_at'], access['checked_at'])

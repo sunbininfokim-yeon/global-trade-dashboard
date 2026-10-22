@@ -26,3 +26,10 @@ def published_snapshot_day(board, catalog_day):
 # never advances the board, receipt or historical normalization scenario dates.
 PUBLIC_SNAPSHOT_DAY=published_snapshot_day(json.loads(
     (ROOT.parent.parent/'public/data/usa_election_live_polls_v1.json').read_text()), SNAPSHOT_DAY)
+
+
+# Finance regression tests read one fixed, content-addressed publication.
+# Each weekly FEC refresh writes a new national file and leaves this one in
+# place, so new filings (a renamed FEC report, larger IE totals) cannot turn
+# reviewed-identity tests red on main and block the nightly poll publish.
+PINNED_FINANCE_NATIONAL='usa_election_finance/2026/national-0dd0601ceec60b9f.json'

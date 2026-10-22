@@ -237,14 +237,15 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
             '후보 이름 변경으로 대진이 맞지 않는 조사는 새 후보에게 넘기지 않습니다.']}
 
 
-def load_finance(index_path, cycle):
+def load_finance(index_path, cycle, national_file=None):
+    """national_file pins an earlier content-addressed publication (tests)."""
     root = index_path.parent.resolve(); index = read(index_path)
     require(index['schema'] == 'usa_election_finance_index_v1', 'finance index schema')
     def asset(relative):
         target = (root / relative).resolve()
         require(target.is_relative_to(root) and target.suffix == '.json', 'unsafe finance path')
         return read(target)
-    meta = index['cycles'][str(cycle)]; national = asset(meta['national_file'])
+    meta = index['cycles'][str(cycle)]; national = asset(national_file or meta['national_file'])
     require(national['schema'] == 'usa_election_finance_national_v1' and national['cycle'] == cycle, 'finance national cycle')
     races = {}
     for state, entry in national['states'].items():
