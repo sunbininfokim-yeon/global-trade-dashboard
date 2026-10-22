@@ -11,7 +11,7 @@ import { jpnLegislature } from './special/jpn-legislature.js';
 import { jpnFactions } from './special/jpn-factions.js';
 import { jpnSubnational } from './special/jpn-subnational.js';
 import { iranSections } from './special/iran.js';
-import { raceProgressContent } from './special/race-progress.js';
+import { raceProgressContent } from './special/race-progress.js?v=2';
 import { israelAnalysisPlaceholder, mountIsraelAnalysis } from './special/israel-analysis.js?v=3';
 
 const RACE_PROGRESS_TAB = ['선거 진행 상황', 'race_progress'];
@@ -22,7 +22,9 @@ const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'e
 const sectionsFor = (iso3) => iso3 === 'USA' ? usaSections
     : iso3 === 'ISR' ? [['선거 분석', 'election_analysis'], ...genericSections]
     : iso3 === 'JPN' ? jpnSections
-    : iso3 === 'CHN' ? [...chinaSections, RACE_PROGRESS_TAB]
+    // 중국은 경쟁 선거가 없어 같은 race_progress 자리에 당 전체회의 일정을 싣는다
+    // -- 탭 이름부터 '선거'가 아니다 (사용자 지시 2026-10-22).
+    : iso3 === 'CHN' ? [...chinaSections, ['공산당 회의', 'race_progress']]
     : iso3 === 'IRN' ? [...iranSections, RACE_PROGRESS_TAB]
     : genericSections;
 

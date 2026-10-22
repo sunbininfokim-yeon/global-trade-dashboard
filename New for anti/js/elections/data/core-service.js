@@ -24,6 +24,14 @@ export const loadElectionBundle = () => {
             // 브리핑이 붙는 일정이 하나도 없을 뿐 나머지 화면은 그대로 선다.
             const contests = await loadJson('elections_contests_index_v1.json').catch(() => null);
             const countries = new Map((board.countries || []).map((country) => [country.iso3, country]));
+            // 중국 당 회의 일정은 보드 생성기 밖의 검토 파일이다. 보드가 이미
+            // race_progress 를 싣고 오면 그쪽이 우선이고, 파일이 없으면 "선거 진행
+            // 상황"이 예전처럼 수집 예정으로 남을 뿐이다.
+            const china = countries.get('CHN');
+            if (china && !china.race_progress) {
+                const plenums = await loadJson('race_progress_chn_v1.json').catch(() => null);
+                if (plenums?.schema === 'race_progress_v1' && plenums.iso3 === 'CHN') china.race_progress = plenums;
+            }
             return { manifest, board, calendar, countries, contests };
         })();
     }
