@@ -56,3 +56,10 @@ test('news headlines are never archived for mailing, only official reports', asy
   assert.deepEqual(saved.map(r => r.report_id), ['official']);
   assert.equal(result.reports, 1); assert.equal(result.skipped_news, 1);
 });
+test('a malformed news item never blocks the official archive', async () => {
+  let saved = [];
+  const bare = { id: 'bare-news', publisher_type: 'news' };
+  const result = await archiveReports({ document: { items: [report('official'), bare] }, upsert: async (_table, rows) => saved = rows });
+  assert.deepEqual(saved.map(r => r.report_id), ['official']);
+  assert.equal(result.skipped_news, 1); assert.equal(result.partial, false);
+});

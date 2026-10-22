@@ -1241,6 +1241,28 @@ class NuclearAndBauxiteWindowTests(unittest.TestCase):
     def test_reactor_news_without_the_metal_is_not_uranium(self):
         self.assertEqual(self.tagger.tag("BWXT microreactor selected for Canadian project"), [])
 
+    def test_enrichment_and_nuclear_fuel_land_in_the_uranium_windows(self):
+        # User decision 2026-10-22: the uranium windows carry enrichment and
+        # fuel-cycle news too, even when the headline never says "uranium".
+        for title in ("Urenco to expand enrichment capacity in New Mexico",
+                      "Centrus signs SWU supply contract with US utility",
+                      "Kazatomprom and partners sign nuclear fuel supply deal",
+                      "Orano UF6 conversion output rises",
+                      "Westinghouse opens fuel fabrication line in Sweden",
+                      "한수원, 핵연료 장기 공급 계약 체결",
+                      "中核集团核燃料产能扩张"):
+            hits = self.tagger.tag(title)
+            self.assertIn("uranium", hits, title)
+            self.assertIn("uranium_ore", hits, title)
+
+    def test_enrichment_without_fuel_context_is_not_uranium(self):
+        for title in ("Data enrichment startup raises Series A",
+                      "Nutrient enrichment of flour mandated",
+                      "Fuel prices rise at the pump"):
+            hits = self.tagger.tag(title)
+            self.assertNotIn("uranium", hits, title)
+            self.assertNotIn("uranium_ore", hits, title)
+
     def test_manganese_ore_still_lands_in_manganese(self):
         self.assertIn("manganese", self.tagger.tag("Gabon manganese ore exports to China"))
         self.assertIn("manganese", self.tagger.tag("加蓬锰矿出口"))
