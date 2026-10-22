@@ -141,7 +141,7 @@ export function mountSubscriptions(root,connect,{staticRegions=[]}={}){
 if(typeof document!=='undefined'){
  const root=document.querySelector('#mail-subscriptions');
  if(root){
-  const staticRegions=await fetch('./mail-regions.json').then(r=>r.ok?r.json():{provinces:[]}).then(d=>d.provinces.map(([,value,label])=>({value,label}))).catch(()=>[]);
+  const staticRegions=await fetch(new URL('./mail-regions.json',import.meta.url)).then(r=>r.ok?r.json():{provinces:[]}).then(d=>d.provinces.map(([,value,label])=>({value,label}))).catch(()=>[]);
   mountSubscriptions(root,async()=>{
    const {createClient}=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm');
    if(!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY)throw Error('즐겨찾기 연결 설정을 확인하지 못했습니다.');
