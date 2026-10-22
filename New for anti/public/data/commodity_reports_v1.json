@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-22T14:03:37.437832+00:00",
+  "generated_at": "2026-10-22T14:17:06.104282+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,15 +17,15 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 42,
-    "sources_failed": 5,
-    "raw_items": 788,
-    "scored": 217,
-    "unclassified": 491,
-    "rejected": 47,
-    "published": 203,
-    "commodities": 29,
-    "buckets": 114
+    "sources_ok": 77,
+    "sources_failed": 3,
+    "raw_items": 1625,
+    "scored": 380,
+    "unclassified": 895,
+    "rejected": 78,
+    "published": 333,
+    "commodities": 31,
+    "buckets": 158
   },
   "feed_status": [
     {
@@ -37,24 +37,24 @@
     },
     {
       "source_id": "us_nass_todays_reports",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 1,
+      "error": null,
       "mode": "live",
-      "carried_over": 4
+      "archived": 4
     },
     {
       "source_id": "us_nass_asb",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 40,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "us_nass_news",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 40,
+      "error": null,
       "mode": "live"
     },
     {
@@ -121,7 +121,7 @@
       "count": 36,
       "error": null,
       "mode": "live",
-      "note": "45 list pages, 49 reports linked, 14 read, 22 already known",
+      "note": "45 list pages, 49 reports linked, 11 read, 25 already known",
       "archived": 22
     },
     {
@@ -374,15 +374,295 @@
       "count": 10,
       "error": null,
       "mode": "live"
+    },
+    {
+      "source_id": "int_mining_all",
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_mining_asia",
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_mining_africa",
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_mining_nickel",
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_mining_coal",
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_mining_lithium",
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_mining_uranium",
+      "ok": true,
+      "count": 36,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_investing_commodities",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "my_mpoc_news",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_gapki_en",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_antara_en",
+      "ok": true,
+      "count": 40,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "id_antara_ekonomi",
+      "ok": true,
+      "count": 8,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_idn_nickel_coal_en",
+      "ok": true,
+      "count": 40,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_idn_esdm_id",
+      "ok": true,
+      "count": 40,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_palm_oil_en",
+      "ok": true,
+      "count": 40,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_africa_minerals",
+      "ok": true,
+      "count": 40,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_reuters_africa",
+      "ok": true,
+      "count": 40,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_argus",
+      "ok": true,
+      "count": 40,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_fastmarkets",
+      "ok": true,
+      "count": 40,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gh_mincom",
+      "ok": false,
+      "count": 0,
+      "error": "URLError: <urlopen error timed out>",
+      "mode": "live"
+    },
+    {
+      "source_id": "int_uneca",
+      "ok": true,
+      "count": 0,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "za_govza",
+      "ok": true,
+      "count": 0,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cd_gecamines",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "zw_zimplats",
+      "ok": true,
+      "count": 10,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_allafrica_mining",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "int_allafrica_energy",
+      "ok": true,
+      "count": 30,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_drc_cobalt_copper",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_zambia_zimbabwe",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_guinea_bauxite",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_sahel_uranium",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_west_africa_gold",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "gn_east_africa_graphite",
+      "ok": true,
+      "count": 25,
+      "error": null,
+      "mode": "live"
     }
   ],
   "translation": {
     "enabled": true,
     "model": "gemini-flash-lite-latest",
-    "calls": 1,
-    "annotated": 1,
+    "calls": 3,
+    "annotated": 53,
     "reused": 57,
     "error": null
+  },
+  "news": {
+    "rows": 115,
+    "folded_same_story": 4,
+    "dropped_untrusted_outlet": 101,
+    "untrusted_outlets": {
+      "cruxinvestor.com": 7,
+      "yahoo.com": 6,
+      "commodity-board.com": 5,
+      "tradingview.com": 3,
+      "miningmx.com": 3,
+      "indexbox.io": 3,
+      "investingnews.com": 2,
+      "demokratis.co.id": 2,
+      "briefs.co": 2,
+      "sunsirs.com": 2,
+      "ua.news": 2,
+      "africanminingmarket.com": 2,
+      "energy-news-network.com": 2,
+      "africa-energy.com": 2,
+      "atlanticcouncil.org": 2,
+      "instagram.com": 2,
+      "modernghana.com": 2,
+      "chemnet.com": 1,
+      "listrikindonesia.com": 1,
+      "wartaekonomi.co.id": 1,
+      "rri.co.id": 1,
+      "bukamata.co": 1,
+      "investortrust.id": 1,
+      "sei.org": 1,
+      "theedgesingapore.com": 1,
+      "dailyexcelsior.com": 1,
+      "toyota-tsusho.com": 1,
+      "or.jp": 1,
+      "gapki.id": 1,
+      "eia-international.org": 1
+    },
+    "skip_refs": [
+      "0c80498a4e5e",
+      "a89857e9211f",
+      "b00953366cd4",
+      "c90b7fc98d9d"
+    ],
+    "resolved_new": 150,
+    "resolved_cached": 0,
+    "unresolved": 0,
+    "outlet_mismatch": 0,
+    "skipped_known": 0,
+    "deferred": 87
   },
   "boards": {
     "export_controls": [
@@ -865,11 +1145,42 @@
     "GNB": {
       "name": "Guinea-Bissau",
       "name_ko": "기니비사우"
+    },
+    "BWA": {
+      "name": "Botswana",
+      "name_ko": "보츠와나"
+    },
+    "MDG": {
+      "name": "Madagascar",
+      "name_ko": "마다가스카르"
+    },
+    "MRT": {
+      "name": "Mauritania",
+      "name_ko": "모리타니"
+    },
+    "RWA": {
+      "name": "Rwanda",
+      "name_ko": "르완다"
+    },
+    "SDN": {
+      "name": "Sudan",
+      "name_ko": "수단"
+    },
+    "MWI": {
+      "name": "Malawi",
+      "name_ko": "말라위"
+    },
+    "CMR": {
+      "name": "Cameroon",
+      "name_ko": "카메룬"
     }
   },
   "index": {
     "copper": {
       "CHL": [
+        "b1609c9909ad99bc",
+        "7162ca376cc8e2ec",
+        "05c8e37402151896",
         "0cc889de9eed1bf0",
         "755265be684d892e",
         "333bf7304a6961c5",
@@ -877,46 +1188,53 @@
         "b8e0e19f0f00a266",
         "b87baa2603ba1ba3"
       ],
-      "USA": [
-        "0cc889de9eed1bf0",
+      "CHN": [
+        "4b65fd53eecc730c",
+        "3a55343654c7fe18",
         "9307f930910dd12d"
       ],
-      "CHN": [
-        "9307f930910dd12d"
+      "COD": [
+        "5b4bac00634da00d",
+        "4b65fd53eecc730c",
+        "3a55343654c7fe18",
+        "f67926fadcc1ef47"
+      ],
+      "USA": [
+        "5b4bac00634da00d",
+        "4b65fd53eecc730c",
+        "2471fd3ff48cbdc7",
+        "6180f55f2fa69250",
+        "f67926fadcc1ef47"
+      ],
+      "_global": [
+        "019a9956508c94f9",
+        "70566b70a21c456c",
+        "6aec164b2be6923b",
+        "49ee619960302b86",
+        "b9319e8e88ffe8b7",
+        "728de57a85a31e79",
+        "e62d50eaa244470a",
+        "462260558e52182a",
+        "523dd37428427086",
+        "adfe4486a50cd2b6",
+        "325de2847d816842",
+        "9931db39512deddb"
+      ],
+      "PER": [
+        "154c30b8c72eee8f"
       ],
       "CAN": [
         "929e1ee5c8475871"
-      ]
-    },
-    "soybeans": {
-      "_global": [
-        "fea1697202557590",
-        "976dad99c36e6871"
       ],
-      "VNM": [
-        "2147f5407a8ae8de"
-      ],
-      "ARG": [
-        "e36e7155dc085ab6",
-        "21c3dd4f0cf93fd0"
-      ],
-      "CHN": [
-        "6e3880b1a989890a"
-      ],
-      "USA": [
-        "0466c9487c9388ef",
-        "44b8a849491ef3dc"
-      ],
-      "IND": [
-        "6269fa1eda293c5a"
+      "ZMB": [
+        "81796c67cd49dc1a",
+        "25c02417fe22c84a",
+        "481164408d25d6c9"
       ]
     },
     "rice": {
       "KHM": [
         "b9464782992065f8"
-      ],
-      "VNM": [
-        "a14ff3afe55392ed"
       ],
       "VEN": [
         "bf540915870c3b2a"
@@ -982,6 +1300,50 @@
         "bc1b254ab4d76ecb"
       ]
     },
+    "palm_oil": {
+      "MYS": [
+        "ac34b3462f00b867",
+        "a4496b7b251f04a2",
+        "343024eb92232df6",
+        "68ab79726443234d",
+        "a7ed02083b121438",
+        "298f9b3832111d21",
+        "73bfdb4d1769aba9",
+        "3f0e222f1c16950b",
+        "cd9065dc0821bdba",
+        "fccec0b56e73020d",
+        "9d9f80da68b1c67d",
+        "b943c0fc3784b342",
+        "56567b6beb88ef14",
+        "e987d102eaca20ca",
+        "229809ad43dc4b0b"
+      ],
+      "IDN": [
+        "b19497cea2ad94b8",
+        "68ab79726443234d",
+        "65952370828832e5",
+        "ea5a8785526c8d44",
+        "aa5f9a45f58e16cf",
+        "20c121ad1f9ec2c8",
+        "59e92887faa59207",
+        "cd9065dc0821bdba",
+        "7a317150b44f8349",
+        "c15a313674037476",
+        "2469120340370df4",
+        "3038b0ed9276919c"
+      ],
+      "IND": [
+        "27aa1bf96424667f",
+        "a4496b7b251f04a2",
+        "cd9065dc0821bdba"
+      ],
+      "_global": [
+        "d80f1363251abe9f",
+        "7e5bda0c23759ab4",
+        "2ea72052d374b241",
+        "9f86cbe207def562"
+      ]
+    },
     "wheat": {
       "EGY": [
         "2d296d85261a767b"
@@ -992,9 +1354,6 @@
       "USA": [
         "29ee4e32a01f13fd",
         "44b8a849491ef3dc"
-      ],
-      "VNM": [
-        "a14ff3afe55392ed"
       ],
       "PAK": [
         "598ef301ee60a6fd"
@@ -1046,10 +1405,33 @@
         "6269fa1eda293c5a"
       ]
     },
-    "corn": {
+    "soybeans": {
       "VNM": [
-        "a14ff3afe55392ed"
+        "2147f5407a8ae8de"
       ],
+      "CHN": [
+        "6e3880b1a989890a"
+      ],
+      "USA": [
+        "0466c9487c9388ef",
+        "44b8a849491ef3dc"
+      ],
+      "IND": [
+        "a4496b7b251f04a2",
+        "6269fa1eda293c5a"
+      ],
+      "MYS": [
+        "a4496b7b251f04a2"
+      ],
+      "_global": [
+        "9f86cbe207def562",
+        "976dad99c36e6871"
+      ],
+      "ARG": [
+        "21c3dd4f0cf93fd0"
+      ]
+    },
+    "corn": {
       "VEN": [
         "bf540915870c3b2a"
       ],
@@ -1096,6 +1478,10 @@
       "CAN": [
         "25541b98e1af190a",
         "1a5e5c6b232458f1"
+      ],
+      "_global": [
+        "4424bb725ad56042",
+        "674d2b77f20dbea6"
       ]
     },
     "oil": {
@@ -1106,16 +1492,40 @@
         "0466c9487c9388ef"
       ],
       "_global": [
+        "0634afed9e22420c",
+        "57f3e43c0b62b4bb",
         "0260f9aa0131b0b8",
         "735b13587e14b5a5"
       ]
     },
     "thermal_coal": {
       "USA": [
+        "399f975573ed26cf",
         "7376f1ff6d49470e",
         "4dc6df4935897046",
         "98845f2fb8d7060a",
         "f8aa4f64781b6480"
+      ],
+      "AUS": [
+        "13329e4ef4a76edf",
+        "9921016d704bd4fc"
+      ],
+      "IND": [
+        "9593e1a8acc94c7b",
+        "77c32ad74f107c4a"
+      ],
+      "CHN": [
+        "47023876b16dfec2"
+      ],
+      "IDN": [
+        "34590ee977f8094c",
+        "d8ce54cfffc10b22",
+        "573a0f57081d10ef",
+        "e945385bdb50460d",
+        "44b05052fa27b086"
+      ],
+      "KAZ": [
+        "f61397541109dd8c"
       ]
     },
     "light_oils": {
@@ -1124,17 +1534,6 @@
       ],
       "USA": [
         "00abaa8d059c1ade"
-      ]
-    },
-    "palm_oil": {
-      "MYS": [
-        "229809ad43dc4b0b"
-      ],
-      "IDN": [
-        "59e92887faa59207",
-        "c15a313674037476",
-        "2469120340370df4",
-        "3038b0ed9276919c"
       ]
     },
     "rubber": {
@@ -1146,35 +1545,6 @@
       "IDN": [
         "0c63536d04e4f037",
         "c15a313674037476"
-      ]
-    },
-    "tin": {
-      "USA": [
-        "29b98a2907b78c50",
-        "9fc6c0f2f5e3568a"
-      ],
-      "AUS": [
-        "ab5d7c1e7e1f1c44",
-        "91c5d4fabdf7e01f"
-      ],
-      "CHN": [
-        "1b171ff4ac638164"
-      ],
-      "MYS": [
-        "9fc6c0f2f5e3568a"
-      ],
-      "_global": [
-        "1bce389d49273d38",
-        "feec825500717296",
-        "b8100702b4d10bff",
-        "022ee0b6016f3dd5"
-      ],
-      "GBR": [
-        "91c5d4fabdf7e01f"
-      ],
-      "IDN": [
-        "3cac3e995aa9e757",
-        "16f99349c6e2ef80"
       ]
     },
     "uranium": {
@@ -1189,10 +1559,27 @@
         "e7ca75b7fa34ccf4",
         "3756023f1ecf08de",
         "7c01bc88c3ee5cf9",
+        "8c2a616e93a942c4",
         "b9dbe511d03f6801"
       ],
+      "FIN": [
+        "f8d1972d651d549e"
+      ],
+      "IND": [
+        "feea0e8f9db10f63"
+      ],
+      "NOR": [
+        "48dcb474c8e5d81b"
+      ],
+      "SWE": [
+        "48dcb474c8e5d81b"
+      ],
       "FRA": [
+        "bafa4acd0c82c71b",
         "3712a39225da7475"
+      ],
+      "MRT": [
+        "b945e519fa260d49"
       ],
       "KOR": [
         "e7ca75b7fa34ccf4"
@@ -1203,6 +1590,7 @@
         "590f35bc8f666732"
       ],
       "_global": [
+        "b0d9827004892116",
         "8f2b164b5e4ab3cf"
       ]
     },
@@ -1218,10 +1606,27 @@
         "e7ca75b7fa34ccf4",
         "3756023f1ecf08de",
         "7c01bc88c3ee5cf9",
+        "8c2a616e93a942c4",
         "b9dbe511d03f6801"
       ],
+      "FIN": [
+        "f8d1972d651d549e"
+      ],
+      "IND": [
+        "feea0e8f9db10f63"
+      ],
+      "NOR": [
+        "48dcb474c8e5d81b"
+      ],
+      "SWE": [
+        "48dcb474c8e5d81b"
+      ],
       "FRA": [
+        "bafa4acd0c82c71b",
         "3712a39225da7475"
+      ],
+      "MRT": [
+        "b945e519fa260d49"
       ],
       "KOR": [
         "e7ca75b7fa34ccf4"
@@ -1232,27 +1637,84 @@
         "590f35bc8f666732"
       ],
       "_global": [
+        "b0d9827004892116",
         "8f2b164b5e4ab3cf"
+      ]
+    },
+    "tin": {
+      "_global": [
+        "1bce389d49273d38",
+        "29b98a2907b78c50",
+        "feec825500717296",
+        "b8100702b4d10bff",
+        "022ee0b6016f3dd5"
+      ],
+      "AUS": [
+        "ab5d7c1e7e1f1c44",
+        "91c5d4fabdf7e01f"
+      ],
+      "CHN": [
+        "1b171ff4ac638164"
+      ],
+      "MYS": [
+        "9fc6c0f2f5e3568a"
+      ],
+      "GBR": [
+        "91c5d4fabdf7e01f"
+      ],
+      "IDN": [
+        "3cac3e995aa9e757",
+        "16f99349c6e2ef80"
       ]
     },
     "gold": {
       "IDN": [
         "4e37ad6d9815d7ba",
+        "20c121ad1f9ec2c8",
         "dd2a786692b8c5a8",
+        "45b970c626da923e",
         "6d3e7543b7514565"
       ],
-      "USA": [
-        "45b970c626da923e"
+      "ZWE": [
+        "b5927186d51d1b08"
+      ],
+      "IND": [
+        "7e1e9d9498680b41",
+        "f227e85d337c73b8"
       ],
       "_global": [
+        "0634afed9e22420c",
+        "829909a0f8df3c71",
+        "91bdd149ba24679d",
+        "b4f67009a9bb607d",
+        "8eb41c7252f683a5",
+        "e3f7d6a1686a3c4d",
+        "c03b7d5f7b899736",
         "7aa1d9ea8f7acd29"
+      ],
+      "SDN": [
+        "f056109d6519c066"
+      ],
+      "ETH": [
+        "9bb5774b8de8434c"
+      ],
+      "CHN": [
+        "f227e85d337c73b8"
       ],
       "CAN": [
         "929e1ee5c8475871"
+      ],
+      "COL": [
+        "949853b2a379dc15"
       ]
     },
     "iron_ore": {
       "_global": [
+        "a4e8daab27a95c97",
+        "b0d9827004892116",
+        "8a011dcde476ca6a",
+        "ebbffd3439a728d1",
+        "c0032fac200696b1",
         "5576156cceda0a41",
         "5f087a520744649c"
       ]
@@ -1289,16 +1751,9 @@
         "62ac4be598c099c2"
       ]
     },
-    "lithium": {
-      "USA": [
-        "44e05f03eab98000"
-      ],
-      "ARG": [
-        "64c0cc4a2c480eea"
-      ]
-    },
     "zinc": {
       "_global": [
+        "9da962e89f566290",
         "35492c5d5adb7531",
         "959d91c46a9a7514"
       ],
@@ -1313,6 +1768,7 @@
     },
     "graphite": {
       "CHN": [
+        "22df7a9b8113d8c0",
         "7c2c4d1c8844ab36",
         "8c808c791d878054",
         "01399109dc789f34",
@@ -1331,12 +1787,95 @@
         "3cbc48c76fcf7031",
         "d293c0b8e58bb026",
         "75fbe378785e717c"
+      ],
+      "TZA": [
+        "22df7a9b8113d8c0"
       ]
     },
     "nickel": {
       "CAN": [
+        "611132e2ba14ab2c",
         "2b01032e6309c950",
         "9a22d2cdf0982434"
+      ],
+      "_global": [
+        "019a9956508c94f9",
+        "386fd62f137c2bf0",
+        "257b27e525138712",
+        "8d5f284ca5e72442",
+        "c86d82da1f6b1b7b",
+        "9931db39512deddb"
+      ],
+      "IDN": [
+        "8d50c3395df2accd",
+        "34590ee977f8094c",
+        "3979a3e00676a44c",
+        "a79a7b8eb985bb35",
+        "a5ef5a54c6b17024",
+        "28818a2c30c1e9cf",
+        "573a0f57081d10ef",
+        "4dfc0cbee6d7f128",
+        "07c782bc3f1e7eda",
+        "e945385bdb50460d",
+        "be7be03cd9a81e53",
+        "44b05052fa27b086",
+        "948bd3df7dab284a",
+        "eee8524fefe1af6e"
+      ],
+      "BRA": [
+        "1fa3cdaf1596dc51"
+      ],
+      "USA": [
+        "1fa3cdaf1596dc51"
+      ],
+      "CHN": [
+        "948bd3df7dab284a"
+      ]
+    },
+    "lithium": {
+      "CHL": [
+        "216e13da16246de3",
+        "44e05f03eab98000"
+      ],
+      "_global": [
+        "7394588ad4aac166",
+        "354da6c0ae014c04",
+        "7ea146bf0b894de7",
+        "7854227a2e6feb0d",
+        "55b7a64545e54a64",
+        "19bfd629c8b6f251",
+        "7dd5ac32ea51efe7"
+      ],
+      "ZWE": [
+        "a7a358b8b2596e31",
+        "0071828f6fdcd3dc"
+      ],
+      "ARG": [
+        "563b0bb98cc3a350",
+        "64c0cc4a2c480eea"
+      ],
+      "CHN": [
+        "0960a258e30be791"
+      ],
+      "KOR": [
+        "7b9bf735447fe7fa"
+      ],
+      "GBR": [
+        "b6bff44878f7d852"
+      ]
+    },
+    "aluminum": {
+      "RUS": [
+        "315c375ca222dc9d"
+      ],
+      "_global": [
+        "728de57a85a31e79",
+        "007150bc551332bb",
+        "c4debe37366d175b"
+      ],
+      "IDN": [
+        "443f194ea7130c50",
+        "b68b0e58b09e2836"
       ]
     },
     "chromium": {
@@ -1353,15 +1892,39 @@
         "bc829361bcef186f"
       ]
     },
+    "rare_earths": {
+      "MYS": [
+        "f79031a41821b87e",
+        "9cecde2549d691eb"
+      ],
+      "CHN": [
+        "f79031a41821b87e"
+      ],
+      "USA": [
+        "f79031a41821b87e"
+      ],
+      "CHL": [
+        "c80abfd55f1480bb"
+      ],
+      "_global": [
+        "2828f36e2222dc99",
+        "df38cd5d67596094",
+        "0cebb9ebd73959f2",
+        "f2554f242a710bdc"
+      ]
+    },
+    "silver": {
+      "_global": [
+        "c03b7d5f7b899736"
+      ],
+      "IND": [
+        "3c59b0bf1bd0a933"
+      ]
+    },
     "cobalt": {
       "_global": [
         "3663a7d940e42f4f",
         "7671b1c780a2ff75"
-      ]
-    },
-    "aluminum": {
-      "_global": [
-        "c4debe37366d175b"
       ]
     }
   },
@@ -1383,14 +1946,13 @@
         "copper"
       ],
       "countries": [
-        "CHL",
-        "USA"
+        "CHL"
       ],
       "scope": "country",
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 5.258,
+      "importance": 5.257,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -1399,36 +1961,6 @@
       ],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "fea1697202557590",
-      "title": {
-        "original": "European Union: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Post raises its EU oilseed area planted forecast by 2 percent for MY 2026/27 from its Spring report. MY 2026/27 production is lowered after heat and drought cut...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/10/european-union-oilseeds-and-products-update",
-      "published_at": "2026-10-16T14:24:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.248,
-      "reasons": [
-        "series:USDA_GAIN",
-        "has_figure",
-        "revision_language"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-22T14:03:37.437832+00:00"
     },
     {
       "id": "b9464782992065f8",
@@ -1453,7 +1985,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 5.012,
+      "importance": 5.011,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1485,7 +2017,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.953,
+      "importance": 4.952,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1494,6 +2026,40 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-07T15:50:50.281353+00:00"
+    },
+    {
+      "id": "68ab79726443234d",
+      "title": {
+        "original": "Malaysia mulls CPO tax waiver as palm oil stocks hit record 3.5mil tonnes",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "KUALA LUMPUR: Malaysia is considering waiving the crude palm oil (CPO) export tax to help clear record-high stockpiles and narrow the pricing gap with Indonesia. The move aims to make Malaysian exports more competitive and help producers regain lost market share. The proposal comes as Malaysia’s palm oil inventories climbed to 3.5 million tonnes last month, putting growing pressure on exporters because Indonesian palm oil continues to enjoy a significant price advantage. According to a wire report, the government is considering the waiver. The Plantation and Commodities Ministry is expected…",
+      "url": "https://www.mpoc.org.my/malaysia-mulls-cpo-tax-waiver-as-palm-oil-stocks-hit-record-3-5mil-tonnes/",
+      "published_at": "2026-10-21T02:22:09+00:00",
+      "agency": "Malaysian Palm Oil Council",
+      "agency_ko": "말레이시아팜유위원회(MPOC)",
+      "source_id": "my_mpoc_news",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS",
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "MPOB_SUPPLY_DEMAND",
+      "series_label_ko": "MPOB 팜유 수급",
+      "importance": 4.601,
+      "reasons": [
+        "series:MPOB_SUPPLY_DEMAND",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://mpoc.org.my/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "0139795789ee9c69",
@@ -1550,7 +2116,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.352,
+      "importance": 4.351,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1615,7 +2181,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.09,
+      "importance": 4.089,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1623,6 +2189,39 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-06T18:41:39.172320+00:00"
+    },
+    {
+      "id": "b943c0fc3784b342",
+      "title": {
+        "original": "Malaysia’s total palm oil stocks surge 24.54% to 3.51mil tonnes in Sept",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "KUALA LUMPUR: Malaysia’s total palm oil stocks rose by 691,835 tonnes, or 24.54 per cent, to 3.51 million tonnes in September this year from 2.8 million tonnes a month earlier, according to the Malaysian Palm Oil Board (MPOB). MPOB said crude palm oil (CPO) stocks increased 31.88 per cent, or 522,905 tonnes, to 2.16 million tonnes in September from 1.64 million tonnes in August. “Processed palm oil stockpile jumped 14.33 per cent, or 168,930 tonnes, to 1.34 million tonnes from 1.17 million tonnes in August,” it said in its Malaysian Palm Oil Industry, August 2026, performance report. On…",
+      "url": "https://www.mpoc.org.my/malaysias-total-palm-oil-stocks-surge-24-54-to-3-51mil-tonnes-in-sept/",
+      "published_at": "2026-10-14T08:34:15+00:00",
+      "agency": "Malaysian Palm Oil Council",
+      "agency_ko": "말레이시아팜유위원회(MPOC)",
+      "source_id": "my_mpoc_news",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "MPOB_SUPPLY_DEMAND",
+      "series_label_ko": "MPOB 팜유 수급",
+      "importance": 4.015,
+      "reasons": [
+        "series:MPOB_SUPPLY_DEMAND",
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://mpoc.org.my/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "29ee4e32a01f13fd",
@@ -1648,7 +2247,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.83,
+      "importance": 3.829,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -1656,39 +2255,6 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-02T20:56:24.054037+00:00"
-    },
-    {
-      "id": "a14ff3afe55392ed",
-      "title": {
-        "original": "Vietnam: Grain and Feed Quarterly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Vietnam's economy posted strong growth in the first nine months of 2026, and the livestock and aquaculture sectors grew steadily. Rising food and feed demand is...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/10/vietnam-grain-and-feed-quarterly",
-      "published_at": "2026-10-19T15:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "wheat",
-        "corn",
-        "rice"
-      ],
-      "countries": [
-        "VNM"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.805,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-22T14:03:37.437832+00:00"
     },
     {
       "id": "2147f5407a8ae8de",
@@ -1745,7 +2311,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.701,
+      "importance": 3.7,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -1778,7 +2344,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.701,
+      "importance": 3.7,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2032,8 +2598,7 @@
         "copper"
       ],
       "countries": [
-        "CHN",
-        "USA"
+        "CHN"
       ],
       "scope": "country",
       "country_source": "text",
@@ -2080,37 +2645,6 @@
       "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
     },
     {
-      "id": "e36e7155dc085ab6",
-      "title": {
-        "original": "Argentina: Oilseeds and Products Update",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Argentina’s oilseed sector enters MY2026/27 with a positive outlook, supported by strong prices, favorable producer margins, and expectations for abundant...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/10/argentina-oilseeds-and-products-update",
-      "published_at": "2026-10-07T12:00:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "soybeans"
-      ],
-      "countries": [
-        "ARG"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": "USDA_GAIN",
-      "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.017,
-      "reasons": [
-        "series:USDA_GAIN",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-10-22T14:03:37.437832+00:00"
-    },
-    {
       "id": "80352747ac8a00ff",
       "title": {
         "original": "Pakistan: Sugar Semi-annual",
@@ -2133,7 +2667,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.972,
+      "importance": 2.971,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2164,7 +2698,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.922,
+      "importance": 2.921,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2195,7 +2729,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.922,
+      "importance": 2.921,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2259,7 +2793,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.875,
+      "importance": 2.874,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2418,7 +2952,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.723,
+      "importance": 2.722,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -2481,7 +3015,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.693,
+      "importance": 2.692,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2695,7 +3229,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.43,
+      "importance": 2.429,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2727,45 +3261,13 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.43,
+      "importance": 2.429,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "29b98a2907b78c50",
-      "title": {
-        "original": "Alphamin focuses on exploration as Q3 output steady",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Tin miner Alphamin Resources (TSXV: AFM; JSE: APH) announced third-quarter production of 5,030 tonnes tin-in-concentrate, almost identical to the previous quarter, supported by steady grades and mining rates. In line with the 0.3% quarter-on-quarter change in production, the company’s tin sales were steady at 5,046 tonnes. EBITDA increased 2.2% from Q2 to US$171 million with the company benefitting from stronger tin prices… Read the full article for free by registering on Tin Desk The post Alphamin focuses on exploration as Q3 output steady appeared first on International Tin Association .",
-      "url": "https://www.internationaltin.org/alphamin-focuses-on-exploration-as-q3-output-steady/?utm_source=rss&utm_medium=rss&utm_campaign=alphamin-focuses-on-exploration-as-q3-output-steady",
-      "published_at": "2026-10-07T13:27:29+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 2.424,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-10-07T15:50:50.281353+00:00"
     },
     {
       "id": "74451ed83aa3b37f",
@@ -2788,7 +3290,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.378,
+      "importance": 2.377,
       "reasons": [
         "series:USDA_GAIN"
       ],
@@ -2893,6 +3395,69 @@
       "first_seen_at": "2026-10-19T21:13:37.500372+00:00"
     },
     {
+      "id": "65952370828832e5",
+      "title": {
+        "original": "IPOC 2026 To Discuss B50 Challenges, Karhutla, And Export Governance",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "JAKARTA – The Indonesian Palm Oil Association (GAPKI) emphasizes that the international event, The 22nd Indonesian Palm Oil Conference (IPOC) and 2027 Price Outlook (IPOC 2026), will serve as more than just a forum for discussion. All conclusions and expert insights gathered during the conference will be compiled and submitted to the government as concrete proposals for improving national policies on palm oil industry. Suryanto Bun, Chairman of the IPOC 2026 Organizing Committee, and Mona Surya, Treasurer of GAPKI, shared this information during an IPOC 2026 press conference held at the GAPKI…",
+      "url": "https://gapki.id/en/news/2026/10/20/ipoc-2026-to-discuss-b50-challenges-karhutla-and-export-governance/",
+      "published_at": "2026-10-20T06:24:06+00:00",
+      "agency": "GAPKI (Indonesian Palm Oil Association)",
+      "agency_ko": "인도네시아팜유협회(GAPKI)",
+      "source_id": "id_gapki_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": "USDA_OUTLOOK",
+      "series_label_ko": "USDA 품목별 아웃룩",
+      "importance": 2.285,
+      "reasons": [
+        "series:USDA_OUTLOOK",
+        "country_in_text"
+      ],
+      "agency_url": "https://gapki.id/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "ea5a8785526c8d44",
+      "title": {
+        "original": "Palm Exports 2027 Likely Drop 5m Tons, Export Levy Rise Could Cut FFB Price",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "JAKARTA – The Indonesian Palm Oil Association (GAPKI) has projected that Indonesia’s palm oil exports in 2027 are potential to decline by around 5.0 million tons to around 26.5 million tons. The export decline is caused by the decrease of production as a result of El Nino, while the national demand for biodiesel will be surging along with the full implementation of mandatory biodiesel 50 percent (B50). GAPKI also reminded that the government’s step to cover the financial shortage of biodiesel program by raising the palm export levy risks to reduce the price of fresh fruit bunches (FFB) from…",
+      "url": "https://gapki.id/en/news/2026/10/18/palm-exports-2027-likely-drop-5m-tons-export-levy-rise-could-cut-ffb-price/",
+      "published_at": "2026-10-18T04:43:15+00:00",
+      "agency": "GAPKI (Indonesian Palm Oil Association)",
+      "agency_ko": "인도네시아팜유협회(GAPKI)",
+      "source_id": "id_gapki_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.28,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://gapki.id/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "3038b0ed9276919c",
       "title": {
         "original": "Indonesia: Oilseeds and Products Update",
@@ -2948,7 +3513,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.197,
+      "importance": 2.196,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2956,6 +3521,40 @@
       ],
       "agency_url": "https://www.nucnet.org/",
       "first_seen_at": "2026-10-21T14:05:35.973562+00:00"
+    },
+    {
+      "id": "cd9065dc0821bdba",
+      "title": {
+        "original": "India turns to palm oil as sunflower oil imports hit four-year low in September",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "MUMBAI (Oct 15): India’s sunflower oil imports slumped to their lowest in more than four years in September as war-related disruptions curbed supplies from Russia and Ukraine, prompting refiners to ramp up palm oil purchases to a seven-month high, a leading industry body said on Thursday. Higher palm oil buying by the world’s biggest importer of vegetable oils could help top producers Indonesia and Malaysia bring down stocks and support benchmark palm oil futures. India’s sunflower oil imports in September fell 32% from a month ago to 108,837 tonnes, the lowest since April 2022, the Solvent…",
+      "url": "https://www.mpoc.org.my/india-turns-to-palm-oil-as-sunflower-oil-imports-hit-four-year-low-in-september/",
+      "published_at": "2026-10-16T07:33:17+00:00",
+      "agency": "Malaysian Palm Oil Council",
+      "agency_ko": "말레이시아팜유위원회(MPOC)",
+      "source_id": "my_mpoc_news",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IND",
+        "IDN",
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.196,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://mpoc.org.my/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "851c70c5fe7695f3",
@@ -2988,6 +3587,67 @@
       "first_seen_at": "2026-10-20T13:49:49.389931+00:00"
     },
     {
+      "id": "29b98a2907b78c50",
+      "title": {
+        "original": "Alphamin focuses on exploration as Q3 output steady",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Tin miner Alphamin Resources (TSXV: AFM; JSE: APH) announced third-quarter production of 5,030 tonnes tin-in-concentrate, almost identical to the previous quarter, supported by steady grades and mining rates. In line with the 0.3% quarter-on-quarter change in production, the company’s tin sales were steady at 5,046 tonnes. EBITDA increased 2.2% from Q2 to US$171 million with the company benefitting from stronger tin prices… Read the full article for free by registering on Tin Desk The post Alphamin focuses on exploration as Q3 output steady appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/alphamin-focuses-on-exploration-as-q3-output-steady/?utm_source=rss&utm_medium=rss&utm_campaign=alphamin-focuses-on-exploration-as-q3-output-steady",
+      "published_at": "2026-10-07T13:27:29+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.133,
+      "reasons": [
+        "has_figure",
+        "revision_language"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-10-07T15:50:50.281353+00:00"
+    },
+    {
+      "id": "9d9f80da68b1c67d",
+      "title": {
+        "original": "Plantation outlook remains neutral amid record-high inventories",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "KUCHING (Oct 14): Malaysia’s plantation sector outlook remains neutral as palm oil inventories reached a more than 10-year high in September 2026, while rising input costs pose risks to profit margins, according to Kenanga Research. The research house said Malaysian Palm Oil Board (MPOB) data showed crude palm oil (CPO) production rose 16 per cent month-on-month and 15 per cent year-on-year to 2.117 million tonnes in September. Cumulative production for the first nine months of 2026 reached 14.751 million tonnes, up two per cent year-on-year and six per cent above the 10-year average of…",
+      "url": "https://www.mpoc.org.my/plantation-outlook-remains-neutral-amid-record-high-inventories/",
+      "published_at": "2026-10-14T08:36:29+00:00",
+      "agency": "Malaysian Palm Oil Council",
+      "agency_ko": "말레이시아팜유위원회(MPOC)",
+      "source_id": "my_mpoc_news",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 2.113,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://mpoc.org.my/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "ab5d7c1e7e1f1c44",
       "title": {
         "original": "Metals X targets full takeover of First Tin",
@@ -3010,7 +3670,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.112,
+      "importance": 2.111,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3105,7 +3765,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.941,
+      "importance": 1.94,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3174,6 +3834,67 @@
       ],
       "agency_url": "https://worldsteel.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "a4496b7b251f04a2",
+      "title": {
+        "original": "CPO prices to stay above RM4,600 in November as output dips, biodiesel demand holds",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "KUALA LUMPUR: Crude palm oil prices are expected to remain firm above RM4,600 per tonne in November, supported by seasonal production declines, resilient biodiesel demand and tighter global supplies of competing vegetable oils, the Malaysian Palm Oil Council (MPOC) said. The council said India’s recent reduction in vegetable oil import duties was also expected to support a recovery in palm oil imports in the coming months, while lower availability of sunflower and soybean oils could strengthen demand for palm oil. However, the outlook remains subject to downside risks, including easing energy…",
+      "url": "https://www.mpoc.org.my/cpo-prices-to-stay-above-rm4600-in-november-as-output-dips-biodiesel-demand-holds/",
+      "published_at": "2026-10-22T07:34:20+00:00",
+      "agency": "Malaysian Palm Oil Council",
+      "agency_ko": "말레이시아팜유위원회(MPOC)",
+      "source_id": "my_mpoc_news",
+      "commodities": [
+        "soybeans",
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS",
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.889,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://mpoc.org.my/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "a7ed02083b121438",
+      "title": {
+        "original": "Malaysia mulls CPO tax waiver as palm oil stocks hit record 3.5mil tonnes [WATCH]",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.nst.com.my/business/economy/2026/10/1560190/malaysia-mulls-cpo-tax-waiver-palm-oil-stocks-hit-record-35mil",
+      "published_at": "2026-10-21T00:00:25+00:00",
+      "agency": "NST Online",
+      "agency_ko": "NST Online",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.873,
+      "src_ref": "9e602c39898d",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "ad1c1ef90835d9ab",
@@ -3291,7 +4012,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.739,
+      "importance": 1.738,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3329,37 +4050,6 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
-    },
-    {
-      "id": "45b970c626da923e",
-      "title": {
-        "original": "HPE dan HR Emas Turun 3,5% Periode I Oktober 2026, Ini Penyebabnya",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": "Kemendag menetapkan HPE dan HR emas turun 3,5% di awal Oktober 2026, dipengaruhi pasar global dan nilai tukar. Berlaku 1-14 Oktober 2026.Logam mulia Emasku yang diproduksi oleh PT Hartadinata Abadi Tbk. (HRTA)./dok. HRTABisnis.com, JAKARTA — Kementerian Perdagangan (Kemendag) telah menetapkan Harga Patokan Ekspor (HPE) dan Harga Referensi (HR) komoditas emas untuk periode pertama Oktober 2026. Pada periode ini, HPE emas turun 3,5% menjadi US$139.409,07 per kilogram dari US$144.469,49 per kilogram pada periode kedua September 2026. Selain itu, HR emas juga turun menjadi US$4.336,11 per troy…",
-      "url": "https://www.kemendag.go.id/berita/pojok-media/hpe-dan-hr-emas-turun-35-periode-i-oktober-2026-ini-penyebabnya",
-      "published_at": "2026-10-01T05:56:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.692,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
       "id": "dd5c47496ef59166",
@@ -3503,6 +4193,37 @@
       "first_seen_at": "2026-10-18T12:46:56.905767+00:00"
     },
     {
+      "id": "7a317150b44f8349",
+      "title": {
+        "original": "Govt Reveals 3 Strategic Steps To Push Palm Down-streaming",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "BANGKOK – Finance Minister Suahasil Nazara is encouraging the mobilization of private investment in the Indonesian palm oil sector to boost productivity, strengthen downstream processing, and create higher-quality jobs. Investments need to be directed not only toward increasing production but also toward developing the entire industry value chain, including strengthening the capacity of smallholders and creating sustainable value-added products. The Finance Minister made the statement during the “Plantation360: Mobilizing Private Capital for More and Better Jobs” event, organized by EDS16 and…",
+      "url": "https://gapki.id/en/news/2026/10/15/govt-reveals-3-strategic-steps-to-push-palm-down-streaming/",
+      "published_at": "2026-10-15T10:00:28+00:00",
+      "agency": "GAPKI (Indonesian Palm Oil Association)",
+      "agency_ko": "인도네시아팜유협회(GAPKI)",
+      "source_id": "id_gapki_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.639,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://gapki.id/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "51f7850f5e34ba32",
       "title": {
         "original": "Maritime Nuclear Startup Bluecore Buys First Uranium For Nuclear Plants On Barges",
@@ -3533,37 +4254,6 @@
       ],
       "agency_url": "https://www.nucnet.org/",
       "first_seen_at": "2026-10-16T05:25:12.584037+00:00"
-    },
-    {
-      "id": "44e05f03eab98000",
-      "title": {
-        "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "El mercado pasó de una recuperación, impulsada por restricciones de oferta, a una corrección moderada desde mediados de mayo. El precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada el 19 de agosto: 12,2% bajo el valor del 13 de mayo, pero 106% sobre el promedio de 2025. La caída en los precio[...] La entrada Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/precio-spot-del-carbonato-de-litio-alcanzo-us-19-525-por-tonelada-en-agosto/",
-      "published_at": "2026-09-17T12:58:25+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.63,
-      "reasons": [
-        "has_figure",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.cochilco.cl/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "f433172aceb1ffed",
@@ -3618,7 +4308,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.593,
+      "importance": 1.592,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3798,7 +4488,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.538,
+      "importance": 1.537,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -3906,7 +4596,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.483,
+      "importance": 1.482,
       "reasons": [
         "country_in_text"
       ],
@@ -4114,6 +4804,36 @@
       "first_seen_at": "2026-10-16T13:10:29.687929+00:00"
     },
     {
+      "id": "45b970c626da923e",
+      "title": {
+        "original": "HPE dan HR Emas Turun 3,5% Periode I Oktober 2026, Ini Penyebabnya",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": "Kemendag menetapkan HPE dan HR emas turun 3,5% di awal Oktober 2026, dipengaruhi pasar global dan nilai tukar. Berlaku 1-14 Oktober 2026.Logam mulia Emasku yang diproduksi oleh PT Hartadinata Abadi Tbk. (HRTA)./dok. HRTABisnis.com, JAKARTA — Kementerian Perdagangan (Kemendag) telah menetapkan Harga Patokan Ekspor (HPE) dan Harga Referensi (HR) komoditas emas untuk periode pertama Oktober 2026. Pada periode ini, HPE emas turun 3,5% menjadi US$139.409,07 per kilogram dari US$144.469,49 per kilogram pada periode kedua September 2026. Selain itu, HR emas juga turun menjadi US$4.336,11 per troy…",
+      "url": "https://www.kemendag.go.id/berita/pojok-media/hpe-dan-hr-emas-turun-35-periode-i-oktober-2026-ini-penyebabnya",
+      "published_at": "2026-10-01T05:56:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.45,
+      "reasons": [
+        "has_figure"
+      ],
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
       "id": "1d6852fde7a7bff0",
       "title": {
         "original": "Protecting American Intellectual Property Act of 2022 (PAIPA) Designations; Issuance of Associated General Licenses",
@@ -4251,6 +4971,36 @@
       "first_seen_at": "2026-10-17T12:22:50.861121+00:00"
     },
     {
+      "id": "44e05f03eab98000",
+      "title": {
+        "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "El mercado pasó de una recuperación, impulsada por restricciones de oferta, a una corrección moderada desde mediados de mayo. El precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada el 19 de agosto: 12,2% bajo el valor del 13 de mayo, pero 106% sobre el promedio de 2025. La caída en los precio[...] La entrada Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/precio-spot-del-carbonato-de-litio-alcanzo-us-19-525-por-tonelada-en-agosto/",
+      "published_at": "2026-09-17T12:58:25+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.397,
+      "reasons": [
+        "has_figure"
+      ],
+      "agency_url": "https://www.cochilco.cl/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "9fc6c0f2f5e3568a",
       "title": {
         "original": "Higher tin prices and output lift MSC Q2 revenue",
@@ -4267,8 +5017,7 @@
         "tin"
       ],
       "countries": [
-        "MYS",
-        "USA"
+        "MYS"
       ],
       "scope": "country",
       "country_source": "text",
@@ -4482,6 +5231,93 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "f8d1972d651d549e",
+      "title": {
+        "original": "Finland Grants Operating Licence To World’s First Deep Geologic Nuclear Repository",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Finland has granted an operating licence to Posiva for its spent nuclear fuel encapsulation and final disposal facility at Olkiluoto, marking the first time a deep geological repository for spent nuclear fuel has received an operating licence anywhere in the world. Posiva said the licence allows it to move towards the operational phase of the facility, but does not authorise the immediate start of disposal activities.",
+      "url": "https://www.nucnet.org/news/finland-grants-operating-licence-to-world-s-first-deep-geologic-nuclear-repository-10-4-2026",
+      "published_at": "2026-10-22T12:11:35+00:00",
+      "agency": "NucNet",
+      "agency_ko": "NucNet(독립 원자력 뉴스)",
+      "source_id": "int_nucnet",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "FIN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.347,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.nucnet.org/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "aa5f9a45f58e16cf",
+      "title": {
+        "original": "Government Vows To Tackle Forest Fires Within A Month",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "JAKARTA – Indonesia expects to extinguish its forest and land fires (Karhutla) within one month, Environment Minister Jumhur Hidayat said on Tuesday (13/10/2026), as the government weighs offers of firefighting assistance from neighbouring countries before deciding whether to accept them. “Based on my conversation with BNPB, (the fires will be extinguished) in the next few weeks,” he said, referring to the National Disaster Mitigation Agency. “The intensity is already starting to decrease. It should (be extinguished) within a month,” Jumhur said at the Prasasti Indonesia Policy Forum 2026 in…",
+      "url": "https://gapki.id/en/news/2026/10/17/government-vows-to-tackle-forest-fires-within-a-month/",
+      "published_at": "2026-10-17T04:36:17+00:00",
+      "agency": "GAPKI (Indonesian Palm Oil Association)",
+      "agency_ko": "인도네시아팜유협회(GAPKI)",
+      "source_id": "id_gapki_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.341,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://gapki.id/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "b5927186d51d1b08",
+      "title": {
+        "original": "Zimbabwe: Zimbabwe Set to Surpass 50 Tonnes Gold Delivery Target",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://allafrica.com/stories/202610160153.html",
+      "published_at": "2026-10-16T09:36:46+00:00",
+      "agency": "allAfrica (광업)",
+      "agency_ko": "올아프리카 광업 뉴스",
+      "source_id": "int_allafrica_mining",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "ZWE"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.337,
+      "agency_url": "https://allafrica.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "24c8417da3bfacf6",
       "title": {
         "original": "Iran-related Designations; Cuba Designation; Issuance of New and Amended General Licenses and Frequently Asked Questions",
@@ -4522,6 +5358,66 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-15T20:00:47.021398+00:00"
+    },
+    {
+      "id": "20c121ad1f9ec2c8",
+      "title": {
+        "original": "Outlook of the National Palm Oil Sector in 2027",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The government should put an end to the various rules that stifle investment and instead focus on building a healthy, competitive business climate that ensures legal certainty. As the year draws to a close and we welcome 2027, Indonesia’s palm oil sector stands on a foundation of extraordinary resilience. Over the past few decades, this “green gold” commodity has weathered a relentless wave of challenges, ranging from the relentless negative campaigns, increasingly stringent international market standards, to the uncertain dynamics of the domestic business climate. The industry has also…",
+      "url": "https://gapki.id/en/news/2026/10/16/outlook-national-palm-oil-sector-2027/",
+      "published_at": "2026-10-16T15:14:48+00:00",
+      "agency": "GAPKI (Indonesian Palm Oil Association)",
+      "agency_ko": "인도네시아팜유협회(GAPKI)",
+      "source_id": "id_gapki_en",
+      "commodities": [
+        "gold",
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.326,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://gapki.id/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "f67926fadcc1ef47",
+      "title": {
+        "original": "Mercuria delivers 12,000 tons of DRC copper to US Project Vault",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/mercuria-delivers-12000-tons-of-drc-copper-to-us-project-vault/",
+      "published_at": "2026-10-15T14:46:28+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "COD",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.317,
+      "src_ref": "8069701365af",
+      "also": 1,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "58852feb849a95c0",
@@ -4596,6 +5492,32 @@
       "first_seen_at": "2026-10-14T20:19:11.063502+00:00"
     },
     {
+      "id": "b1609c9909ad99bc",
+      "title": {
+        "original": "Codelco sets 2027 Europe copper premium at record $350 a metric ton, sources say",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/codelco-sets-2027-europe-copper-premium-at-record-350-a-metric-ton-sources-say/",
+      "published_at": "2026-10-20T17:11:37+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.307,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "1bce389d49273d38",
       "title": {
         "original": "Tin’s growing role in future hydrogen production",
@@ -4616,10 +5538,66 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.298,
+      "importance": 1.297,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
+    },
+    {
+      "id": "fccec0b56e73020d",
+      "title": {
+        "original": "MPOC x BFM",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The Malaysian Palm Oil Council (MPOC) collaborates with BFM 89.9 , Malaysia’s premier business radio station, on an insight-led podcast and radio series exploring key issues shaping the palm oil industry. Through conversations with industry leaders, experts and thought leaders, the series examines topics ranging from sustainability and health and nutrition to market developments and the economic significance of palm oil. Designed to inform audiences in Malaysia and across the Asia-Pacific region, the collaboration brings evidence-based perspectives and industry insights to discussions on the…",
+      "url": "https://www.mpoc.org.my/mpoc-x-bfm/",
+      "published_at": "2026-10-15T08:35:56+00:00",
+      "agency": "Malaysian Palm Oil Council",
+      "agency_ko": "말레이시아팜유위원회(MPOC)",
+      "source_id": "my_mpoc_news",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.293,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://mpoc.org.my/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "315c375ca222dc9d",
+      "title": {
+        "original": "Russian aluminium’s share of available LME stocks almost 100% in September",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/russian-aluminiums-share-of-available-lme-stocks-almost-100-in-september/",
+      "published_at": "2026-10-14T15:42:51+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "RUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.292,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "cb4772b719675aed",
@@ -4991,6 +5969,30 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "386fd62f137c2bf0",
+      "title": {
+        "original": "Westwin Elements, Traxys eye $3.9 billion, 22 year nickel offtake extension",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/westwin-elements-traxys-eye-3-9-billion-22-year-nickel-offtake-extension/",
+      "published_at": "2026-10-19T23:38:46+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 1.211,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "93896897c8293795",
       "title": {
         "original": "商务部新闻发言人就盾构机等物项实施出口管制、优化调整挖泥船相关物项出口管制措施答记者问",
@@ -5012,7 +6014,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.206,
+      "importance": 1.205,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5049,7 +6051,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.206,
+      "importance": 1.205,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5063,6 +6065,32 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-19T15:50:55.048765+00:00"
+    },
+    {
+      "id": "7e1e9d9498680b41",
+      "title": {
+        "original": "India gold swings to premium as lower prices lift jewellery demand",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/india-gold-swings-to-premium-as-lower-prices-lift-jewellery-demand/",
+      "published_at": "2026-10-16T14:50:23+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.202,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "38b8b7f9ad0f103f",
@@ -5086,7 +6114,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.194,
+      "importance": 1.193,
       "reasons": [
         "country_in_text"
       ],
@@ -5104,6 +6132,69 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-09T21:12:42.574098+00:00"
+    },
+    {
+      "id": "feea0e8f9db10f63",
+      "title": {
+        "original": "Multiple milestones for India's nuclear projects",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Technical studies have begun onsite for Kakrapar units 5 and 6, two 700 MWe reactors planned for construction in Gujarat; India's Nuclear Fuels Complex is making steam generator tubes to support the fleet mode construction project; and India's small modular reactor project has reached a design milestone.",
+      "url": "https://www.world-nuclear-news.org/articles/multiple-milestones-for-indias-nuclear-projects",
+      "published_at": "2026-10-16T14:43:40+00:00",
+      "agency": "World Nuclear News",
+      "agency_ko": "월드 뉴클리어 뉴스(WNN)",
+      "source_id": "int_wnn",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.193,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.world-nuclear-news.org/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "48dcb474c8e5d81b",
+      "title": {
+        "original": "Sweden’s Studsvik Signs ‘Landmark’ Spent Nuclear Fuel Agreement With Norway",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Sweden-based nuclear services company Studsvik has signed what it called a “landmark” agreement to manage Norway’s legacy spent nuclear fuel. The agreement with Norwegian Nuclear Decommissioning (NND), the Norwegian state agency responsible for decommissioning the country’s nuclear facilities, runs until 2055 and has an estimated contractual minimum value of about SEK 875m (€78m, $88m) and a potential total value for Studsvik of SEK 3-4bn. It covers transport, treatment of waste to meet long-term storage requirements and the interim storage of spent fuel from Norway’s former research reactors…",
+      "url": "https://www.nucnet.org/news/studsvik-signs-landmark-spent-nuclear-fuel-agreement-with-norway-10-5-2026",
+      "published_at": "2026-10-16T12:40:53+00:00",
+      "agency": "NucNet",
+      "agency_ko": "NucNet(독립 원자력 뉴스)",
+      "source_id": "int_nucnet",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "NOR",
+        "SWE"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.191,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.nucnet.org/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "add281ec9d9fcd56",
@@ -5128,7 +6219,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.173,
+      "importance": 1.172,
       "reasons": [
         "country_in_text"
       ],
@@ -5179,6 +6270,65 @@
       ],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "bafa4acd0c82c71b",
+      "title": {
+        "original": "Newcleo opens MOX fuel development centre",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Innovative nuclear energy company Newcleo has inaugurated its EUR10 million (USD11 million) advanced nuclear fuel engineering, testing and training centre located in Chusclan, in the Gard department in southern France.",
+      "url": "https://www.world-nuclear-news.org/articles/newcleo-opens-mox-fuel-development-centre",
+      "published_at": "2026-10-15T11:55:28+00:00",
+      "agency": "World Nuclear News",
+      "agency_ko": "월드 뉴클리어 뉴스(WNN)",
+      "source_id": "int_wnn",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "FRA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.167,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.world-nuclear-news.org/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "f79031a41821b87e",
+      "title": {
+        "original": "US firms eye Malaysia rare earths in push to cut China reliance",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/us-firms-eye-malaysia-rare-earths-in-push-to-cut-china-reliance/",
+      "published_at": "2026-10-14T21:50:12+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [
+        "MYS",
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.162,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "636939b535053039",
@@ -5396,6 +6546,30 @@
       "first_seen_at": "2026-10-16T05:25:12.584037+00:00"
     },
     {
+      "id": "8a011dcde476ca6a",
+      "title": {
+        "original": "Vale says soaring costs put 10% of iron ore in the red",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/vale-says-soaring-costs-put-10-of-iron-ore-in-the-red/",
+      "published_at": "2026-10-16T11:08:00+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "iron_ore"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 1.128,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "181e4ee82214496a",
       "title": {
         "original": "EIA expects highest natural gas inventories in a decade heading into winter",
@@ -5425,6 +6599,30 @@
       ],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "7854227a2e6feb0d",
+      "title": {
+        "original": "PLS Group greenlights $1.3 billion expansion to lift Pilgangoora lithium output",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/pls-group-greenlights-1-3-billion-expansion-to-lift-pilgangoora-lithium-output/",
+      "published_at": "2026-10-15T23:28:06+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 1.117,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "75055bab5a49bc0a",
@@ -5591,6 +6789,30 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "6aec164b2be6923b",
+      "title": {
+        "original": "Copper surplus masks looming $332B mine shortfall",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/copper-surplus-masks-looming-332b-mine-shortfall/",
+      "published_at": "2026-10-20T13:09:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 1.072,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "86f680f62484ba7d",
       "title": {
         "original": "关于《民用航空领域相关两用物项出口凭证管理办法》公开征求意见的通知",
@@ -5626,6 +6848,34 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-13T02:13:32.410529+00:00"
+    },
+    {
+      "id": "07c782bc3f1e7eda",
+      "title": {
+        "original": "Ecopro BM's rights offering draws 103.25% subscription rate as funds target Indonesia nickel smelter",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://mbiz.heraldcorp.com/article/10907435",
+      "published_at": "2026-10-19T06:16:11+00:00",
+      "agency": "헤럴드경제",
+      "agency_ko": "헤럴드경제",
+      "source_id": "gn_idn_nickel_coal_en",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.063,
+      "src_ref": "ab80a71771fe",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "022ee0b6016f3dd5",
@@ -5682,6 +6932,79 @@
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-10-16T13:10:29.687929+00:00"
+    },
+    {
+      "id": "49ee619960302b86",
+      "title": {
+        "original": "Copper price falls as LME stocks edge higher and mine supply concerns ease",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/copper-price-falls-as-lme-stocks-edge-higher-and-mine-supply-concerns-ease/",
+      "published_at": "2026-10-19T18:23:45+00:00",
+      "agency": "MINING.COM (니켈)",
+      "agency_ko": "마이닝닷컴 니켈",
+      "source_id": "int_mining_nickel",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 1.055,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "b9319e8e88ffe8b7",
+      "title": {
+        "original": "LS considers cut to copper processing capacity",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/ls-considers-cut-to-copper-processing-capacity/",
+      "published_at": "2026-10-19T16:47:18+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 1.054,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "c03b7d5f7b899736",
+      "title": {
+        "original": "Americas Gold’s record silver output misses forecasts",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/americas-golds-record-silver-output-misses-forecasts/",
+      "published_at": "2026-10-19T14:59:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "gold",
+        "silver"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 1.052,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "8566a0485af28101",
@@ -5767,7 +7090,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.046,
+      "importance": 1.045,
       "reasons": [
         "country_in_text"
       ],
@@ -6496,6 +7819,32 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "3c59b0bf1bd0a933",
+      "title": {
+        "original": "India permits large silver imports despite weak domestic demand",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/india-permits-large-silver-imports-despite-weak-domestic-demand/",
+      "published_at": "2026-10-22T11:00:00+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "silver"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.037,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "40c416f81351d284",
       "title": {
         "original": "Правительство продлило временный запрет на вывоз отдельных видов топлива производителями",
@@ -6608,6 +7957,111 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "0071828f6fdcd3dc",
+      "title": {
+        "original": "Zimbabwe’s lithium export earnings surge on higher spodumene prices",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/zimbabwes-lithium-export-earnings-surge-on-higher-spodumene-prices/",
+      "published_at": "2026-10-07T19:56:02+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ZWE"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.019,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "216e13da16246de3",
+      "title": {
+        "original": "Chile plans five new lithium tenders in push to double output",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/chile-plans-five-new-lithium-tenders-in-push-to-double-output/",
+      "published_at": "2026-10-21T14:04:36+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.018,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "22df7a9b8113d8c0",
+      "title": {
+        "original": "Tanzania: Can Tanzania Set Its Sights On China's Graphite Crown?",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://allafrica.com/stories/202610210439.html",
+      "published_at": "2026-10-21T11:25:12+00:00",
+      "agency": "allAfrica (광업)",
+      "agency_ko": "올아프리카 광업 뉴스",
+      "source_id": "int_allafrica_mining",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "TZA",
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.015,
+      "agency_url": "https://allafrica.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "c80abfd55f1480bb",
+      "title": {
+        "original": "Chile’s rare earth ambitions hit refining bottleneck",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/chiles-rare-earth-ambitions-hit-refining-bottleneck/",
+      "published_at": "2026-10-21T11:23:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.015,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "59d7681e3c02b816",
       "title": {
         "original": "Counter Narcotics, Counter Terrorism, Iran-related, and Non-Proliferation Designations",
@@ -6629,7 +8083,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.012,
+      "importance": 1.011,
       "reasons": [
         "country_in_text"
       ],
@@ -6680,6 +8134,33 @@
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
     },
     {
+      "id": "b945e519fa260d49",
+      "title": {
+        "original": "Mauritania’s first uranium mine comes into view despite funding, security issues",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/mauritanias-first-uranium-mine-comes-into-view-despite-funding-security-issues/",
+      "published_at": "2026-10-20T22:20:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "MRT"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.004,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "feec825500717296",
       "title": {
         "original": "Yunnan Tin announces 2026 maintenance",
@@ -6704,6 +8185,32 @@
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
+    },
+    {
+      "id": "154c30b8c72eee8f",
+      "title": {
+        "original": "Glencore clears key hurdle for Peru copper expansion",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/glencore-clears-key-hurdle-for-peru-copper-expansion/",
+      "published_at": "2026-10-20T16:18:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "PER"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.999,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "846a4ec9ba0dc965",
@@ -6747,6 +8254,34 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "56567b6beb88ef14",
+      "title": {
+        "original": "European Commission Updates EUDR Information System User Guide",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The European Commission (EC) has published the European Union Deforestation Regulation (EUDR) Information System User Guide for Economic Operators (Version 3.0) 1 . The guide, updated on 16 September 2026 provides further practical guidance for operators utilising the system to meet EUDR requirements. The EUDR Information System is an online platform for the submission and management of Due Diligence Statements (DDS) and Simplified Declarations. It allows operators to provide the information required under the EUDR, including product details and information on the origin of relevant…",
+      "url": "https://www.mpoc.org.my/european-commission-updates-eudr-information-system-user-guide/",
+      "published_at": "2026-10-13T08:24:35+00:00",
+      "agency": "Malaysian Palm Oil Council",
+      "agency_ko": "말레이시아팜유위원회(MPOC)",
+      "source_id": "my_mpoc_news",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.995,
+      "reasons": [],
+      "agency_url": "https://mpoc.org.my/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "01399109dc789f34",
       "title": {
         "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Critical Circumstances Determination in Countervailing Duty Investigation",
@@ -6776,6 +8311,58 @@
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
+    },
+    {
+      "id": "e987d102eaca20ca",
+      "title": {
+        "original": "EU Updates EUDR Product Scope: Additional Palm Oil Derivatives to Be Covered from December 2027",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The European Union (EU) has formally updated the product scope of the EU Deforestation Regulation (EUDR), following the conclusion of the public consultation on the draft Delegated Act proposing changes to Annex I of the Regulation. Commission Delegated Regulation (EU) 2026/2102 was published in the Official Journal of the European Union on 17 September 2026 and entered into force on 18 September 2026 1,2 . This update forms part of the simplification package intended to provide greater clarity for businesses and authorities ahead of the EUDR implementation in December 2026. Additional…",
+      "url": "https://www.mpoc.org.my/eu-updates-eudr-product-scope-additional-palm-oil-derivatives-to-be-covered-from-december-2027/",
+      "published_at": "2026-10-13T06:29:57+00:00",
+      "agency": "Malaysian Palm Oil Council",
+      "agency_ko": "말레이시아팜유위원회(MPOC)",
+      "source_id": "my_mpoc_news",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.993,
+      "reasons": [],
+      "agency_url": "https://mpoc.org.my/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "007150bc551332bb",
+      "title": {
+        "original": "Aluminum heads for surplus in 2027 as supply shock fades",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/aluminum-heads-for-surplus-in-2027-as-supply-shock-fades/",
+      "published_at": "2026-10-16T15:46:25+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.99,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "d56da6f00c4a616a",
@@ -6813,6 +8400,58 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
+    },
+    {
+      "id": "f056109d6519c066",
+      "title": {
+        "original": "Sudan gold rush leaves toxic legacy as war drives mining",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/sudan-gold-rush-leaves-toxic-legacy-as-war-drives-mining/",
+      "published_at": "2026-10-19T15:45:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "SDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.978,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "2471fd3ff48cbdc7",
+      "title": {
+        "original": "Copper-hungry US buyers circle Ivanhoe Electric mine",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/copper-hungry-us-buyers-circle-ivanhoe-electric-mine/",
+      "published_at": "2026-10-19T12:03:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.974,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "c15a313674037476",
@@ -6871,6 +8510,34 @@
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
+    },
+    {
+      "id": "3f0e222f1c16950b",
+      "title": {
+        "original": "Palm Output in Malaysia to Hit Record Before Drop, Growers Say",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.bloomberg.com/news/articles/2026-10-19/palm-output-in-malaysia-to-hit-record-before-drop-growers-say",
+      "published_at": "2026-10-19T08:42:58+00:00",
+      "agency": "Bloomberg.com",
+      "agency_ko": "Bloomberg.com",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.953,
+      "src_ref": "3430511cd960",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "7aa1d9ea8f7acd29",
@@ -6957,6 +8624,54 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "523dd37428427086",
+      "title": {
+        "original": "Glencore shares trade higher on ASX debut as investors eye copper",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/glencore-shares-trade-higher-on-asx-debut-as-investors-eye-copper/",
+      "published_at": "2026-10-14T14:32:53+00:00",
+      "agency": "MINING.COM (니켈)",
+      "agency_ko": "마이닝닷컴 니켈",
+      "source_id": "int_mining_nickel",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.951,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "adfe4486a50cd2b6",
+      "title": {
+        "original": "Global copper surplus to more than triple by 2027: ICSG",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/global-copper-surplus-to-more-than-triple-by-2027-icsg/",
+      "published_at": "2026-10-14T14:26:34+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.951,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "62ac4be598c099c2",
       "title": {
         "original": "China: ATO Beijing Supports Hawaii Specialty Coffee to Expand Commercial Opportunities in Premium Coffee Market",
@@ -6985,6 +8700,30 @@
       ],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "8d5f284ca5e72442",
+      "title": {
+        "original": "Global nickel market set for surplus this year and next, INSG says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/global-nickel-market-set-for-surplus-this-year-and-next-insg-says/",
+      "published_at": "2026-10-13T17:31:11+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.935,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "f65c47c507570e77",
@@ -7028,6 +8767,59 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "3a55343654c7fe18",
+      "title": {
+        "original": "Congo arrests hundreds of Chinese miners in copper heartland",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/congo-arrests-hundreds-of-chinese-miners-in-copper-heartland/",
+      "published_at": "2026-10-16T21:00:58+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHN",
+        "COD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.924,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "611132e2ba14ab2c",
+      "title": {
+        "original": "Exiro-led group takes control of Vale’s Manitoba nickel complex",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/exiro-led-group-takes-control-of-vales-manitoba-nickel-complex/",
+      "published_at": "2026-10-16T15:06:00+00:00",
+      "agency": "MINING.COM (니켈)",
+      "agency_ko": "마이닝닷컴 니켈",
+      "source_id": "int_mining_nickel",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.919,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "0260f9aa0131b0b8",
       "title": {
         "original": "Petroleum Supply Monthly",
@@ -7048,7 +8840,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.912,
+      "importance": 0.911,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -7076,12 +8868,66 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.911,
+      "importance": 0.91,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.eramet.com/",
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
+    },
+    {
+      "id": "6180f55f2fa69250",
+      "title": {
+        "original": "Tech giants come knocking for a piece of Anglo American as copper scarcity bites, Wanblad tells FT",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/tech-giants-come-knocking-for-a-piece-of-anglo-american-as-copper-scarcity-bites-wanblad-tells-ft/",
+      "published_at": "2026-10-15T17:55:45+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.903,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "28818a2c30c1e9cf",
+      "title": {
+        "original": "Govt targets up to US$50 billion in nickel exports by 2026",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://en.antaranews.com/news/436557/govt-targets-up-to-us50-billion-in-nickel-exports-by-2026",
+      "published_at": "2026-10-19T13:31:46+00:00",
+      "agency": "ANTARA News",
+      "agency_ko": "ANTARA News",
+      "source_id": "gn_idn_nickel_coal_en",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.901,
+      "src_ref": "42b00c8adf5e",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "e7ca75b7fa34ccf4",
@@ -7115,6 +8961,32 @@
       ],
       "agency_url": "https://www.cameco.com/",
       "first_seen_at": "2026-10-21T20:20:33.760513+00:00"
+    },
+    {
+      "id": "13329e4ef4a76edf",
+      "title": {
+        "original": "Sojitz agrees to sell stake in Australia’s Gregory Crinum coal mine",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/sojitz-agrees-to-sell-stake-in-australias-gregory-crinum-coal-mine/",
+      "published_at": "2026-10-14T14:44:12+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "AUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.883,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "755265be684d892e",
@@ -7188,6 +9060,58 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "9cecde2549d691eb",
+      "title": {
+        "original": "Malaysia’s king buys stake in Southern Alliance Mining as firm expands rare earths push",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/malaysias-king-buys-stake-in-southern-alliance-mining-as-firm-expands-rare-earths-push/",
+      "published_at": "2026-10-13T16:51:22+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.868,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "77c32ad74f107c4a",
+      "title": {
+        "original": "India may need to raise coal power capacity as demand surges, official says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/india-may-need-to-raise-coal-power-capacity-as-demand-surges-official-says/",
+      "published_at": "2026-10-13T14:51:05+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.867,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "de8f050cc8e8f84d",
       "title": {
         "original": "Iran-related Designations; Cuba Designations; Belarus-related Designations Removals",
@@ -7229,6 +9153,84 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "47023876b16dfec2",
+      "title": {
+        "original": "China coal prices at three-year high with little relief in sight",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/china-coal-prices-at-three-year-high-with-little-relief-in-sight/",
+      "published_at": "2026-10-12T20:06:25+00:00",
+      "agency": "MINING.COM (석탄)",
+      "agency_ko": "마이닝닷컴 석탄",
+      "source_id": "int_mining_coal",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.854,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "9bb5774b8de8434c",
+      "title": {
+        "original": "Ethiopia launches its first gold refinery, Prime Minister says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/ethiopia-launches-its-first-gold-refinery-prime-minister-says/",
+      "published_at": "2026-10-12T15:29:32+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "ETH"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.851,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "0960a258e30be791",
+      "title": {
+        "original": "Chinese lithium prices tumble to nearly 10-month low on demand concerns",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/chinese-lithium-prices-tumble-to-nearly-10-month-low-on-demand-concerns/",
+      "published_at": "2026-10-12T15:14:11+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.851,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "e2977ea6c39eb0c0",
@@ -7522,6 +9524,212 @@
       "first_seen_at": "2026-10-02T20:56:24.054037+00:00"
     },
     {
+      "id": "a7a358b8b2596e31",
+      "title": {
+        "original": "Zimbabwe says no justification to delay lithium export ban",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/zimbabwe-says-no-justification-to-delay-lithium-export-ban/",
+      "published_at": "2026-10-09T22:47:37+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ZWE"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.809,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "f227e85d337c73b8",
+      "title": {
+        "original": "India gold demand slows as prices rebound; China emerges from holiday lull",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/india-gold-demand-slows-as-prices-rebound-china-emerges-from-holiday-lull/",
+      "published_at": "2026-10-09T13:40:46+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "CHN",
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.804,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "7394588ad4aac166",
+      "title": {
+        "original": "Lithium’s $100B question: Who will build 134 new mines?",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/lithiums-100b-question-who-will-build-134-new-mines/",
+      "published_at": "2026-10-22T09:01:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.796,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "b68b0e58b09e2836",
+      "title": {
+        "original": "Indonesia vows to protect investment at launch of battery, solar, aluminium plants",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/indonesia-vows-to-protect-investment-at-launch-of-battery-solar-aluminium-plants/",
+      "published_at": "2026-10-08T17:56:00+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.792,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "7b9bf735447fe7fa",
+      "title": {
+        "original": "Elevra signs spodumene supply deal with South Korea’s LG Energy Solution",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/elevra-signs-spodumene-supply-deal-with-south-koreas-lg-energy-solution/",
+      "published_at": "2026-10-08T17:34:00+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "KOR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.792,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "b6bff44878f7d852",
+      "title": {
+        "original": "UK scientists turn to biology to unlock cleaner lithium",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/uk-scientists-turn-to-biology-to-unlock-cleaner-lithium/",
+      "published_at": "2026-10-08T12:49:00+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "GBR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.789,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "563b0bb98cc3a350",
+      "title": {
+        "original": "CleanTech Lithium expands foothold in Argentina",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/cleantech-lithium-expands-foothold-in-argentina/",
+      "published_at": "2026-10-08T12:03:00+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.789,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "019a9956508c94f9",
+      "title": {
+        "original": "Copper price falls as inventories rise, supply worries ease; nickel climbs",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/copper-price-falls-as-inventories-rise-supply-worries-ease-nickel-climbs/",
+      "published_at": "2026-10-21T17:20:21+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "copper",
+        "nickel"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.785,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "929e1ee5c8475871",
       "title": {
         "original": "Canada celebrates progress on the McIlvenna Bay mine: production underway, jobs created, supply chains strengthened",
@@ -7552,6 +9760,57 @@
       ],
       "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "70566b70a21c456c",
+      "title": {
+        "original": "Hudbay, Mitsubishi approve Copper World construction",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/hudbay-mitsubishi-approve-copper-world-construction/",
+      "published_at": "2026-10-21T14:23:33+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.783,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "1fa3cdaf1596dc51",
+      "title": {
+        "original": "Anglo American threatens to close Brazilian nickel operation if EU blocks sale to MMG",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/anglo-american-threatens-to-close-brazilian-nickel-operation-if-eu-blocks-sale-to-mmg/",
+      "published_at": "2026-10-07T19:38:52+00:00",
+      "agency": "MINING.COM (니켈)",
+      "agency_ko": "마이닝닷컴 니켈",
+      "source_id": "int_mining_nickel",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "BRA",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.779,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "92a445d0e0c3f58b",
@@ -7593,6 +9852,220 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "ac34b3462f00b867",
+      "title": {
+        "original": "Crude palm oil prices in Malaysia to stay above $1,128/t in November — MPOC",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://ukragroconsult.com/en/news/crude-palm-oil-prices-in-malaysia-to-stay-above-1128-t-in-november-mpoc/",
+      "published_at": "2026-10-22T10:08:24+00:00",
+      "agency": "UkrAgroConsult",
+      "agency_ko": "UkrAgroConsult",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.777,
+      "src_ref": "d0f29f593365",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "27aa1bf96424667f",
+      "title": {
+        "original": "Palm Oil Glut Lures Indian Buyers as Price Gap to Rivals Widens",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.bloomberg.com/news/articles/2026-10-22/palm-oil-glut-lures-indian-buyers-as-price-gap-to-rivals-widens?srnd=homepage-americas",
+      "published_at": "2026-10-22T08:32:26+00:00",
+      "agency": "Bloomberg.com",
+      "agency_ko": "Bloomberg.com",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.776,
+      "src_ref": "97ba15e73142",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "9593e1a8acc94c7b",
+      "title": {
+        "original": "Coal supply to power plants to normalise soon, Indian official says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.reuters.com/world/india/coal-supply-power-plants-normalise-soon-indian-official-says-2026-10-22/",
+      "published_at": "2026-10-22T04:52:00+00:00",
+      "agency": "Reuters",
+      "agency_ko": "Reuters",
+      "source_id": "gn_reuters_africa",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "IND"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.773,
+      "src_ref": "932e2381772d",
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "2828f36e2222dc99",
+      "title": {
+        "original": "Vulcan Elements teams up with North Carolina researchers to advance rare earth magnets tech",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/vulcan-elements-teams-up-with-north-carolina-researchers-to-advance-rare-earth-magnets-tech/",
+      "published_at": "2026-10-20T23:45:22+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.773,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "81796c67cd49dc1a",
+      "title": {
+        "original": "First Quantum’s S3 expansion at the Kansanshi copper mine in Zambia is",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.metal.com/newscontent/104171845-first-quantums-kansanshi-s3-targets-27-million-tonnes-of-ore-in-2026-8-above-design-capacity",
+      "published_at": "2026-10-22T02:01:00+00:00",
+      "agency": "Shanghai Metals Market",
+      "agency_ko": "Shanghai Metals Market",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "ZMB"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.772,
+      "src_ref": "a09fdfa84bf7",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "df38cd5d67596094",
+      "title": {
+        "original": "Phoenix Tailings to build $375M rare earth plant in New York",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/phoenix-tailings-to-build-375m-rare-earth-plant-in-new-york/",
+      "published_at": "2026-10-20T16:56:43+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.769,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "354da6c0ae014c04",
+      "title": {
+        "original": "Lithium Africa weighs $60M offer for Springbok lithium project",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/lithium-africa-weighs-60m-offer-for-springbok-lithium-project/",
+      "published_at": "2026-10-20T16:37:18+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.768,
+      "src_ref": "ebe0447fec64",
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "343024eb92232df6",
+      "title": {
+        "original": "Palm oil prices in Malaysia decline after reaching four-week high",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://ukragroconsult.com/en/news/palm-oil-prices-in-malaysia-decline-after-reaching-four-week-high/",
+      "published_at": "2026-10-21T13:34:02+00:00",
+      "agency": "UkrAgroConsult",
+      "agency_ko": "UkrAgroConsult",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.763,
+      "src_ref": "851548551147",
+      "also": 1,
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "882a7745e1a1f1d0",
       "title": {
         "original": "商务部等5部门关于调整《向特定国家（地区）出口易制毒化学品管理目录》的公告",
@@ -7628,6 +10101,490 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "25c02417fe22c84a",
+      "title": {
+        "original": "First Quantum's expanded Zambia copper mine on track to exceed processing target",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.miningweekly.com/article/first-quantums-expanded-zambia-copper-mine-on-track-to-exceed-processing-target-2026-10-21",
+      "published_at": "2026-10-21T09:46:00+00:00",
+      "agency": "Mining Weekly",
+      "agency_ko": "Mining Weekly",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "ZMB"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.76,
+      "src_ref": "6319968bba5c",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "b19497cea2ad94b8",
+      "title": {
+        "original": "Indonesian haze threatens tiny bugs that power palm oil output",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://theedgemalaysia.com/node/822643",
+      "published_at": "2026-10-21T04:46:59+00:00",
+      "agency": "The Edge Malaysia",
+      "agency_ko": "The Edge Malaysia",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.757,
+      "src_ref": "20f7aeaa077b",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "0cebb9ebd73959f2",
+      "title": {
+        "original": "Study nearly doubles value, lifts resource for Aclara’s Penco rare earths project",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/study-nearly-doubles-value-lifts-resource-for-aclaras-penco-rare-earths-project/",
+      "published_at": "2026-10-19T21:45:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.756,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "e3f7d6a1686a3c4d",
+      "title": {
+        "original": "Digital gold could triple by 2031, WGC estimates",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/digital-gold-could-triple-by-2031-wgc-estimates/",
+      "published_at": "2026-10-19T17:45:50+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.753,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "9da962e89f566290",
+      "title": {
+        "original": "Hindustan Zinc records two-fold profit jump, cuts annual production cost forecast",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/hindustan-zinc-records-two-fold-profit-jump-cuts-annual-production-cost-forecast/",
+      "published_at": "2026-10-19T14:33:03+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "zinc"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.751,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "257b27e525138712",
+      "title": {
+        "original": "NMDC puts nickel foray on hold on global oversupply concerns, sources say",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/nmdc-puts-nickel-foray-on-hold-on-global-oversupply-concerns-sources-say/",
+      "published_at": "2026-10-19T14:15:32+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.751,
+      "also": 1,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "e62d50eaa244470a",
+      "title": {
+        "original": "Freeport bets on chemical solution to reach copper leaching target",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/freeport-bets-on-chemical-solution-to-reach-copper-leaching-target/",
+      "published_at": "2026-10-19T11:02:00+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.749,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "f2554f242a710bdc",
+      "title": {
+        "original": "Volta doubles Springer rare earths resource, eyes 2027 study",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/volta-doubles-springer-rare-earths-eyes-2027-study/",
+      "published_at": "2026-10-19T10:49:00+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.749,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "5b4bac00634da00d",
+      "title": {
+        "original": "First DRC copper enters US Project Vault stockpile, Mercuria says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.fastmarkets.com/insights/first-drc-copper-enters-us-project-vault-stockpile-mercuria-says/",
+      "published_at": "2026-10-20T13:40:55+00:00",
+      "agency": "Fastmarkets",
+      "agency_ko": "Fastmarkets",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "COD",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.747,
+      "src_ref": "eed226e0f1f5",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "298f9b3832111d21",
+      "title": {
+        "original": "Malaysia boosts palm oil production despite labor shortages and weather risks",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://ukragroconsult.com/en/news/malaysia-boosts-palm-oil-production-despite-labor-shortages-and-weather-risks/",
+      "published_at": "2026-10-20T06:37:37+00:00",
+      "agency": "UkrAgroConsult",
+      "agency_ko": "UkrAgroConsult",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.743,
+      "src_ref": "61a5b883cf66",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "7162ca376cc8e2ec",
+      "title": {
+        "original": "Anglo sticks to copper forecast after snow in Chile hits quarter",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.reuters.com/business/anglo-american-posts-5-drop-q3-copper-output-chile-weather-disruptions-2026-10-20/",
+      "published_at": "2026-10-20T06:17:00+00:00",
+      "agency": "Reuters",
+      "agency_ko": "Reuters",
+      "source_id": "gn_reuters_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.742,
+      "src_ref": "0addc28b69eb",
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "d8ce54cfffc10b22",
+      "title": {
+        "original": "Indonesia to allow ‘limited’ coal quota relaxation as prices surge",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.thejakartapost.com/business/2026/10/20/indonesia-to-allow-limited-coal-quota-relaxation-as-prices-surge",
+      "published_at": "2026-10-20T06:06:05+00:00",
+      "agency": "The Jakarta Post",
+      "agency_ko": "The Jakarta Post",
+      "source_id": "gn_idn_nickel_coal_en",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.742,
+      "src_ref": "ea2dfb02f17f",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "73bfdb4d1769aba9",
+      "title": {
+        "original": "Palm oil export tax waiver could help Malaysia regain market share, says analyst",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://theedgemalaysia.com/node/822469",
+      "published_at": "2026-10-20T05:41:56+00:00",
+      "agency": "The Edge Malaysia",
+      "agency_ko": "The Edge Malaysia",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.742,
+      "src_ref": "1b2a4b2f55ea",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "949853b2a379dc15",
+      "title": {
+        "original": "14 dead, 7 injured in Colombia illegal gold mine collapse",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.reuters.com/world/americas/14-dead-7-injured-colombia-illegal-gold-mine-collapse-2026-10-19/",
+      "published_at": "2026-10-19T23:34:47+00:00",
+      "agency": "Reuters",
+      "agency_ko": "Reuters",
+      "source_id": "gn_reuters_africa",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "COL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.738,
+      "src_ref": "a08ceb9c69f6",
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "f61397541109dd8c",
+      "title": {
+        "original": "Kazakh coal output extends declines in September",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2892778-kazakh-coal-output-extends-declines-in-september",
+      "published_at": "2026-10-19T16:17:07+00:00",
+      "agency": "Argus Media",
+      "agency_ko": "Argus Media",
+      "source_id": "gn_argus",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "KAZ"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.733,
+      "src_ref": "677d6a2a0979",
+      "publisher_type": "news",
+      "source_agency": "Google News (Argus Media)",
+      "source_agency_ko": "구글 뉴스 경유(아거스)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "4b65fd53eecc730c",
+      "title": {
+        "original": "China pulls ahead of the US in Africa’s copper race as Congo arrests 300 Chinese nationals over illegal mining",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://africa.businessinsider.com/local/markets/china-beats-the-us-in-africas-critical-minerals-race-but-congo-arrests-300-chinese/h72g29b",
+      "published_at": "2026-10-19T13:51:55+00:00",
+      "agency": "Business Insider Africa",
+      "agency_ko": "Business Insider Africa",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHN",
+        "COD",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.732,
+      "src_ref": "0e5be5f5b7a8",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "4dfc0cbee6d7f128",
+      "title": {
+        "original": "EcoPro BM tops rights issue, channels funds to Indonesia nickel supply chain - CHOSUNBIZ",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://biz.chosun.com/en/en-industry/2026/10/19/HGPAMPJWJBECLFGTU4ZSCKGD74/",
+      "published_at": "2026-10-19T07:19:00+00:00",
+      "agency": "Chosunbiz",
+      "agency_ko": "Chosunbiz",
+      "source_id": "gn_idn_nickel_coal_en",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.728,
+      "src_ref": "e75b591ae35c",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "481164408d25d6c9",
+      "title": {
+        "original": "Jubilee provides Zambia copper expansion update",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://globalminingreview.com/mining/09022024/jubilee-provides-zambia-copper-expansion-update/",
+      "published_at": "2026-10-19T06:32:51+00:00",
+      "agency": "Global Mining Review",
+      "agency_ko": "Global Mining Review",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "ZMB"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.727,
+      "src_ref": "606c884585c1",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "f7562e94f83254d4",
@@ -7667,6 +10624,106 @@
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
     },
     {
+      "id": "a4e8daab27a95c97",
+      "title": {
+        "original": "Iron ore price rebounds from two-year low on dip buying, improving steel margins",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/iron-ore-price-rebounds-from-two-year-low-on-dip-buying-improving-steel-margins/",
+      "published_at": "2026-10-16T15:16:46+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "iron_ore"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.707,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "b0d9827004892116",
+      "title": {
+        "original": "AFC eyes iron ore and uranium investments in Africa",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/afc-eyes-iron-ore-and-uranium-investments-in-africa/",
+      "published_at": "2026-10-16T14:42:46+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "iron_ore",
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.707,
+      "also": 1,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "0634afed9e22420c",
+      "title": {
+        "original": "Gold slides as Middle East tensions fuel oil price jump, inflation fears",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.investing.com/news/commodities-news/gold-falls-near-4115-as-saudi-attacks-fuel-inflation-fed-outlook-in-focus-4964496",
+      "published_at": "2026-10-22T13:08:39+00:00",
+      "agency": "Investing.com",
+      "agency_ko": "인베스팅닷컴 원자재 뉴스",
+      "source_id": "int_investing_commodities",
+      "commodities": [
+        "oil",
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.699,
+      "agency_url": "https://www.investing.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "57f3e43c0b62b4bb",
+      "title": {
+        "original": "Oil prices rise as Mideast tensions fuel supply disruption fears",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.investing.com/news/commodities-news/oil-prices-rise-as-meast-tensions-fuel-fears-of-supply-disruptions-4964479",
+      "published_at": "2026-10-22T12:59:25+00:00",
+      "agency": "Investing.com",
+      "agency_ko": "인베스팅닷컴 원자재 뉴스",
+      "source_id": "int_investing_commodities",
+      "commodities": [
+        "oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.699,
+      "agency_url": "https://www.investing.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "b87baa2603ba1ba3",
       "title": {
         "original": "Informe Salud Mental en la Industria Minera Nacional",
@@ -7693,6 +10750,106 @@
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
+    },
+    {
+      "id": "05c8e37402151896",
+      "title": {
+        "original": "Striking unions at Antofagasta's Centinela copper mine reach preliminary deal, ending strike",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.reuters.com/business/world-at-work/striking-unions-antofagastas-centinela-copper-mine-reach-preliminary-deal-ending-2026-10-17/",
+      "published_at": "2026-10-17T02:42:00+00:00",
+      "agency": "Reuters",
+      "agency_ko": "Reuters",
+      "source_id": "gn_reuters_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.696,
+      "src_ref": "9362f893b162",
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "4424bb725ad56042",
+      "title": {
+        "original": "Natural Gas clings to support at $2.765 in steep downtrend: Live",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.investing.com/news/commodities-news/natural-gas-breaks-cloud-support-at-3104-live-levels-93CH-4956492",
+      "published_at": "2026-10-22T07:10:52+00:00",
+      "agency": "Investing.com",
+      "agency_ko": "인베스팅닷컴 원자재 뉴스",
+      "source_id": "int_investing_commodities",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.696,
+      "agency_url": "https://www.investing.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "462260558e52182a",
+      "title": {
+        "original": "Copper squeeze breathes new life into old mines",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/copper-squeeze-breathes-new-life-into-old-mines/",
+      "published_at": "2026-10-15T15:11:33+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.693,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "ebbffd3439a728d1",
+      "title": {
+        "original": "Iron ore price slips to two-year low on concerns over weak demand, rising supply",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/iron-ore-slips-to-two-year-low-on-concerns-over-weak-demand-rising-supply/",
+      "published_at": "2026-10-15T15:02:22+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "iron_ore"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.693,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "b9dbe511d03f6801",
@@ -7768,6 +10925,78 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "325de2847d816842",
+      "title": {
+        "original": "Op-Ed: AI will not just add copper demand. It could change who sets the price",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/op-ed-ai-will-not-just-add-copper-demand-it-could-change-who-sets-the-price/",
+      "published_at": "2026-10-13T13:50:08+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.666,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "55b7a64545e54a64",
+      "title": {
+        "original": "EnergyX inks 10-year, $2B lithium offtake deal with Trafigura",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/energyx-inks-10-year-2b-lithium-offtake-deal-with-trafigura/",
+      "published_at": "2026-10-12T17:40:02+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.656,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "c0032fac200696b1",
+      "title": {
+        "original": "Iron ore prices seesaw as restocking hopes counter rising supply",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/iron-ore-prices-seesaw-as-restocking-hopes-counter-rising-supply/",
+      "published_at": "2026-10-12T15:24:51+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "iron_ore"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.654,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "735b13587e14b5a5",
       "title": {
         "original": "Petroleum Supply Annual",
@@ -7792,6 +11021,34 @@
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "399f975573ed26cf",
+      "title": {
+        "original": "High diesel prices weigh on US coal producers",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2890318-high-diesel-prices-weigh-on-us-coal-producers",
+      "published_at": "2026-10-13T07:00:00+00:00",
+      "agency": "Argus Media",
+      "agency_ko": "Argus Media",
+      "source_id": "gn_argus",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.646,
+      "src_ref": "9af294543905",
+      "publisher_type": "news",
+      "source_agency": "Google News (Argus Media)",
+      "source_agency_ko": "구글 뉴스 경유(아거스)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "7048269299edaac8",
@@ -7856,6 +11113,30 @@
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
     },
     {
+      "id": "19bfd629c8b6f251",
+      "title": {
+        "original": "Lithium Triangle’s vast resources face unsolved extraction hurdles",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/lithium-triangles-vast-resources-face-unsolved-extraction-hurdles/",
+      "published_at": "2026-10-09T13:53:00+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.618,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "12b1ebd663809d68",
       "title": {
         "original": "商务部新闻发言人就对日相关出口管制措施答记者问",
@@ -7897,6 +11178,35 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "948bd3df7dab284a",
+      "title": {
+        "original": "Indonesia weighs nickel smelter freeze: what it means for Chinese investors",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.scmp.com/economy/global-economy/article/3370344/chinese-nickel-investors-brace-headwinds-indonesia-weighs-smelter-freeze",
+      "published_at": "2026-10-10T07:00:00+00:00",
+      "agency": "South China Morning Post",
+      "agency_ko": "South China Morning Post",
+      "source_id": "gn_idn_nickel_coal_en",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN",
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.611,
+      "src_ref": "34b1be9e7f25",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "05101536483c310c",
       "title": {
         "original": "商务部新闻发言人就将10家美国实体列入出口管制管控名单答记者问",
@@ -7936,6 +11246,354 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "c86d82da1f6b1b7b",
+      "title": {
+        "original": "Anglo-Teck merger, nickel sale are test cases for navigating geopolitical complexities, CEO says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/anglo-teck-merger-nickel-sale-are-test-cases-for-navigating-geopolitical-complexities-ceo-says/",
+      "published_at": "2026-10-07T19:35:18+00:00",
+      "agency": "MINING.COM (니켈)",
+      "agency_ko": "마이닝닷컴 니켈",
+      "source_id": "int_mining_nickel",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.599,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "7dd5ac32ea51efe7",
+      "title": {
+        "original": "Savannah Resources close to second offtake deal for Portugal lithium project",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/savannah-resource-close-to-second-offtake-deal-for-portugal-lithium-project/",
+      "published_at": "2026-10-07T19:21:40+00:00",
+      "agency": "MINING.COM (리튬)",
+      "agency_ko": "마이닝닷컴 리튬",
+      "source_id": "int_mining_lithium",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.599,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "443f194ea7130c50",
+      "title": {
+        "original": "ESDM perhatikan keseimbangan smelter alumina dengan permintaan global",
+        "original_lang": "id",
+        "ko": "에너지광물자원부는 알루미나 제련소와 글로벌 수요의 균형에 주목하고 있습니다.",
+        "en": "MEMR pays attention to the balance of alumina smelters with global demand"
+      },
+      "summary": null,
+      "url": "https://www.antaranews.com/berita/5805571/esdm-perhatikan-keseimbangan-smelter-alumina-dengan-permintaan-global",
+      "published_at": "2026-10-22T12:38:46+00:00",
+      "agency": "ANTARA News",
+      "agency_ko": "ANTARA News",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "aluminum"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.599,
+      "src_ref": "dbf0ae0e7b0d",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "8c2a616e93a942c4",
+      "title": {
+        "original": "Global Laser Enrichment, llc; Paducah Laser Enrichment Facility; Commissioners: Ho. K. Nieh, Chairman; David A. Wright; Bradley R. Crowell; Matthew J. Marzano; Douglas W. Weaver; Order",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Nuclear Regulatory Commission",
+      "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17590/global-laser-enrichment-llc-paducah-laser-enrichment-facility-commissioners-ho-k-nieh-chairman-david",
+      "published_at": "2026-08-28T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.599,
+      "reasons": [],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "8d50c3395df2accd",
+      "title": {
+        "original": "Yosafat Leonard: Konservasi dan Lingkungan Penting dalam Tata Kelola Produksi Nikel",
+        "original_lang": "id",
+        "ko": "요사파트 레오나르드: 니켈 생산 거버넌스에서 보존과 환경이 중요합니다.",
+        "en": "Yosafat Leonard: Conservation and Environment Are Important in Nickel Production Governance"
+      },
+      "summary": null,
+      "url": "https://nikel.co.id/2026/10/22/yosafat-leonard-konservasi-dan-lingkungan-penting-dalam-tata-kelola-produksi-nikel/",
+      "published_at": "2026-10-22T11:09:18+00:00",
+      "agency": "Media Nikel Indonesia",
+      "agency_ko": "Media Nikel Indonesia",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.598,
+      "src_ref": "4ee8a2b47bcf",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "9931db39512deddb",
+      "title": {
+        "original": "Copper, nickel prices could double by 2035: report",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/copper-nickel-prices-could-double-by-2035-report/",
+      "published_at": "2026-10-07T14:22:16+00:00",
+      "agency": "MINING.COM (니켈)",
+      "agency_ko": "마이닝닷컴 니켈",
+      "source_id": "int_mining_nickel",
+      "commodities": [
+        "copper",
+        "nickel"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.597,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "829909a0f8df3c71",
+      "title": {
+        "original": "Gold Fields' South Deep aligning mining with education to strengthen job pathways",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.miningweekly.com/article/gold-fields-south-deep-aligning-mining-with-education-to-strengthen-job-pathways-2026-10-22",
+      "published_at": "2026-10-22T08:12:00+00:00",
+      "agency": "Mining Weekly",
+      "agency_ko": "Mining Weekly",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.597,
+      "src_ref": "9d24584234d8",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "91bdd149ba24679d",
+      "title": {
+        "original": "Illegal gold mining: Who profits from Africa’s gold smuggling? [Business Africa]",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.africanews.com/2026/10/22/illegal-gold-mining-who-profits-from-africas-gold-smuggling-business-africa/",
+      "published_at": "2026-10-22T07:30:34+00:00",
+      "agency": "Africanews",
+      "agency_ko": "Africanews",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.596,
+      "src_ref": "f29ae3f8aa6e",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "d80f1363251abe9f",
+      "title": {
+        "original": "CPO prices seen staying above RM4,600 in November, says MPOC",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.thestar.com.my/business/business-news/2026/10/22/malaysia-crude-palm-oil-prices-to-stay-above-rm4600-per-ton-in-november-mpoc-says",
+      "published_at": "2026-10-22T02:08:00+00:00",
+      "agency": "The Star",
+      "agency_ko": "The Star",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.594,
+      "src_ref": "c06f28791212",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "7e5bda0c23759ab4",
+      "title": {
+        "original": "Palm oil to stay above RM4,600 in November on stronger export, output decline — MPOC",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://theedgemalaysia.com/node/822783",
+      "published_at": "2026-10-22T01:56:22+00:00",
+      "agency": "The Edge Malaysia",
+      "agency_ko": "The Edge Malaysia",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.593,
+      "src_ref": "4cab4725b774",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "2ea72052d374b241",
+      "title": {
+        "original": "Palm oil prices to stay high next year on Southeast Asia drought",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://asia.nikkei.com/business/markets/commodities/palm-oil-prices-to-stay-high-next-year-on-southeast-asia-drought",
+      "published_at": "2026-10-22T01:45:00+00:00",
+      "agency": "Nikkei Asia",
+      "agency_ko": "Nikkei Asia",
+      "source_id": "gn_palm_oil_en",
+      "commodities": [
+        "palm_oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.593,
+      "src_ref": "fe041ad66b9d",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "34590ee977f8094c",
+      "title": {
+        "original": "Pembatasan Kuota Bisa Menekan Laba Emiten Nikel dan Batubara",
+        "original_lang": "id",
+        "ko": "할당량 제한은 니켈 및 석탄 발행사의 수익을 압박할 수 있습니다.",
+        "en": "Quota Restrictions Can Press Profits of Nickel and Coal Issuers"
+      },
+      "summary": null,
+      "url": "https://insight.kontan.co.id/news/pembatasan-kuota-bisa-menekan-laba-emiten-nikel-dan-batubara",
+      "published_at": "2026-10-22T00:47:14+00:00",
+      "agency": "KONTAN",
+      "agency_ko": "KONTAN",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "thermal_coal",
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.593,
+      "src_ref": "6e5f9ac380bb",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "eee8524fefe1af6e",
+      "title": {
+        "original": "Indonesia mulls nickel smelter moratorium as global supply swells",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.thejakartapost.com/business/2026/10/08/indonesia-mulls-nickel-smelter-moratorium-as-global-supply-swells",
+      "published_at": "2026-10-08T05:10:25+00:00",
+      "agency": "The Jakarta Post",
+      "agency_ko": "The Jakarta Post",
+      "source_id": "gn_idn_nickel_coal_en",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.588,
+      "src_ref": "90f34f1e217c",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "2c767cd546c0994a",
@@ -8000,6 +11658,312 @@
       "first_seen_at": "2026-10-21T20:20:33.760513+00:00"
     },
     {
+      "id": "3979a3e00676a44c",
+      "title": {
+        "original": "Revisi RKAB 2026 Berdampak ke Emiten Nikel dan Batubara, Simak Rekomendasi Sahamnya",
+        "original_lang": "id",
+        "ko": "2026년 RKAB 개정은 니켈 및 석탄 발행사에 영향, 주식 추천 종목 확인",
+        "en": "2026 RKAB Revision Impacts Nickel and Coal Issuers, Check Out the Stock Recommendations"
+      },
+      "summary": null,
+      "url": "https://investasi.kontan.co.id/news/revisi-rkab-2026-berdampak-ke-emiten-nikel-dan-batubara-simak-rekomendasi-sahamnya",
+      "published_at": "2026-10-21T10:52:53+00:00",
+      "agency": "kontan.co.id",
+      "agency_ko": "kontan.co.id",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.586,
+      "src_ref": "f64eeb68ec2d",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "a79a7b8eb985bb35",
+      "title": {
+        "original": "Efek Smelter Baru, Kebutuhan Nikel Limonit Diramal Naik pada 2027",
+        "original_lang": "id",
+        "ko": "신규 제련소 효과로 2027년 갈바니켈(리모나이트) 수요 증가 전망",
+        "en": "Effect of New Smelters, Limonite Nickel Demand Projected to Rise in 2027"
+      },
+      "summary": null,
+      "url": "https://www.bloombergtechnoz.com/detail-news/125314/efek-smelter-baru-kebutuhan-nikel-limonit-diramal-naik-pada-2027",
+      "published_at": "2026-10-21T10:30:00+00:00",
+      "agency": "Bloomberg Technoz",
+      "agency_ko": "Bloomberg Technoz",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.585,
+      "src_ref": "a0fbe3234852",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "9921016d704bd4fc",
+      "title": {
+        "original": "Australia’s high court blocks NSW coal mine expansion",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2887496-australia-s-high-court-blocks-nsw-coal-mine-expansion",
+      "published_at": "2026-10-07T17:18:33+00:00",
+      "agency": "Argus Media",
+      "agency_ko": "Argus Media",
+      "source_id": "gn_argus",
+      "commodities": [
+        "thermal_coal"
+      ],
+      "countries": [
+        "AUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.583,
+      "src_ref": "baeb2cd62784",
+      "publisher_type": "news",
+      "source_agency": "Google News (Argus Media)",
+      "source_agency_ko": "구글 뉴스 경유(아거스)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "b4f67009a9bb607d",
+      "title": {
+        "original": "President of Africa's biggest gold-producing nation vows to end raw mineral exports within four years",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://africa.businessinsider.com/local/markets/president-of-africas-biggest-gold-producing-nation-vows-to-end-raw-mineral-exports/x6cfqhx",
+      "published_at": "2026-10-20T11:58:50+00:00",
+      "agency": "Business Insider Africa",
+      "agency_ko": "Business Insider Africa",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.574,
+      "src_ref": "54615f4d9455",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "7ea146bf0b894de7",
+      "title": {
+        "original": "Lithium Africa receives sizable funding offers for Northern Cape project",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.miningweekly.com/article/lithium-africa-receives-sizable-funding-offers-for-northern-cape-project-2026-10-20",
+      "published_at": "2026-10-20T10:23:00+00:00",
+      "agency": "Mining Weekly",
+      "agency_ko": "Mining Weekly",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.573,
+      "src_ref": "5032a04d2fc1",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "a5ef5a54c6b17024",
+      "title": {
+        "original": "Revisi RKAB 2026 Disetujui 290 Juta Ton, Pasokan Bijih Nikel Berpotensi Defisit",
+        "original_lang": "id",
+        "ko": "2026년 RKAB 개정안 2억 9천만 톤으로 승인, 니켈 광석 공급 부족 잠재적 우려",
+        "en": "2026 RKAB Revision Approved at 290 Million Tons, Nickel Ore Supply Potentially Deficit"
+      },
+      "summary": null,
+      "url": "https://nikel.co.id/2026/10/20/revisi-rkab-2026-disetujui-290-juta-ton-pasokan-bijih-nikel-berpotensi-defisit/",
+      "published_at": "2026-10-20T03:49:28+00:00",
+      "agency": "Media Nikel Indonesia",
+      "agency_ko": "Media Nikel Indonesia",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.57,
+      "src_ref": "4724c1c9321e",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "674d2b77f20dbea6",
+      "title": {
+        "original": "Asian spot LNG prices hit almost four-year high in Oct",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2892563-asian-spot-lng-prices-hit-almost-four-year-high-in-oct",
+      "published_at": "2026-10-19T23:41:14+00:00",
+      "agency": "Argus Media",
+      "agency_ko": "Argus Media",
+      "source_id": "gn_argus",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.568,
+      "src_ref": "f888229726c4",
+      "publisher_type": "news",
+      "source_agency": "Google News (Argus Media)",
+      "source_agency_ko": "구글 뉴스 경유(아거스)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "8eb41c7252f683a5",
+      "title": {
+        "original": "The New Wild West of Gold Mining Is West Africa",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.wsj.com/world/africa/the-new-wild-west-of-gold-mining-is-west-africa-8b4886c4",
+      "published_at": "2026-10-19T19:18:00+00:00",
+      "agency": "WSJ",
+      "agency_ko": "WSJ",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.566,
+      "src_ref": "2bc28ab5f5e7",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "728de57a85a31e79",
+      "title": {
+        "original": "Low-carbon copper and aluminium products",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.reuters.com/business/energy/low-carbon-copper-aluminium-products-2026-10-19/",
+      "published_at": "2026-10-19T12:10:13+00:00",
+      "agency": "Reuters",
+      "agency_ko": "Reuters",
+      "source_id": "gn_reuters_africa",
+      "commodities": [
+        "copper",
+        "aluminum"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.562,
+      "src_ref": "4622a55fd694",
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "573a0f57081d10ef",
+      "title": {
+        "original": "Revisi RKAB 2026: Pasokan Nikel Berpotensi Defisit, Ekspor Batubara Menyusut",
+        "original_lang": "id",
+        "ko": "2026년 RKAB 개정: 니켈 공급 부족 가능성 및 석탄 수출 감소",
+        "en": "2026 RKAB Revision: Nickel Supply Potentially Deficit, Coal Exports Shrink"
+      },
+      "summary": null,
+      "url": "https://industri.kontan.co.id/news/revisi-rkab-2026-pasokan-nikel-berpotensi-defisit-ekspor-batubara-menyusut",
+      "published_at": "2026-10-19T07:37:08+00:00",
+      "agency": "kontan.co.id",
+      "agency_ko": "kontan.co.id",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "thermal_coal",
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.56,
+      "src_ref": "104d2be08fbf",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "e945385bdb50460d",
+      "title": {
+        "original": "Revisi RKAB 2026 Disetujui, Segini Kuota Produksi Batubara dan Nikel",
+        "original_lang": "id",
+        "ko": "2026년 RKAB 개정안 승인, 석탄 및 니켈 생산 할당량은 다음과 같습니다.",
+        "en": "2026 RKAB Revision Approved, Here Are the Coal and Nickel Production Quotas"
+      },
+      "summary": null,
+      "url": "https://industri.kontan.co.id/news/revisi-rkab-2026-disetujui-segini-kuota-produksi-batubara-dan-nikel",
+      "published_at": "2026-10-18T04:01:54+00:00",
+      "agency": "kontan.co.id",
+      "agency_ko": "kontan.co.id",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "thermal_coal",
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.547,
+      "src_ref": "252073134f4a",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "2469120340370df4",
       "title": {
         "original": "Lidi Sawit Tembus Pasar Tiongkok, Kolaborasi BPDP dan Petani Sawit Jadi Kunci Penguatan Ekspor Produk UMKM Perkebunan",
@@ -8026,6 +11990,92 @@
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-09-26T13:46:05.920517+00:00"
+    },
+    {
+      "id": "be7be03cd9a81e53",
+      "title": {
+        "original": "RKAB Nikel 2027 Masih Dievaluasi",
+        "original_lang": "id",
+        "ko": "2027년 니켈 RKAB 여전히 평가 중",
+        "en": "2027 Nickel RKAB Still Being Evaluated"
+      },
+      "summary": null,
+      "url": "https://nikel.co.id/2026/10/16/rkab-nikel-2027-masih-dievaluasi/",
+      "published_at": "2026-10-16T08:39:06+00:00",
+      "agency": "Media Nikel Indonesia",
+      "agency_ko": "Media Nikel Indonesia",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.527,
+      "src_ref": "6618a511006b",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "44b05052fa27b086",
+      "title": {
+        "original": "ESDM Setujui Revisi RKAB 2026 Produksi Batu Bara-Nikel, Ini Jumlahnya",
+        "original_lang": "id",
+        "ko": "에너지광물자원부, 2026년 석탄·니켈 생산 RKAB 개정 승인, 그 수량은 다음과 같습니다.",
+        "en": "MEMR Approves 2026 Coal-Nickel Production RKAB Revision, This Is the Amount"
+      },
+      "summary": null,
+      "url": "https://www.cnbcindonesia.com/news/20261016142213-4-776894/esdm-setujui-revisi-rkab-2026-produksi-batu-bara-nikel-ini-jumlahnya",
+      "published_at": "2026-10-16T08:15:15+00:00",
+      "agency": "CNBC Indonesia",
+      "agency_ko": "CNBC Indonesia",
+      "source_id": "gn_idn_esdm_id",
+      "commodities": [
+        "thermal_coal",
+        "nickel"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "importance": 0.527,
+      "src_ref": "823a212fe727",
+      "publisher_type": "news",
+      "source_agency": "Google News (인니어)",
+      "source_agency_ko": "구글 뉴스 경유(인니어)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "9f86cbe207def562",
+      "title": {
+        "original": "Does Diwali actually move palm oil and soyoil demand? What the data shows",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.fastmarkets.com/insights/does-diwali-actually-move-cpo-and-soyoil-demand-what-the-data-shows/",
+      "published_at": "2026-10-13T11:10:02+00:00",
+      "agency": "Fastmarkets",
+      "agency_ko": "Fastmarkets",
+      "source_id": "gn_fastmarkets",
+      "commodities": [
+        "soybeans",
+        "palm_oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.499,
+      "src_ref": "9a8240b6049a",
+      "publisher_type": "news",
+      "source_agency": "Google News (Fastmarkets)",
+      "source_agency_ko": "구글 뉴스 경유(패스트마켓)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "51fd0b97a38800e4",
