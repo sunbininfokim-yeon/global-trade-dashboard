@@ -3,6 +3,8 @@ import { electionMatchup, pollMatchesMatchup } from './election-matchups.js';
 
 export const ELECTION_OFFICES = [['governor', '주지사'], ['senate', '연방 상원'], ['house', '연방 하원']];
 const DAY = 86400000;
+export const FRESH_RATING_DAYS = 21;
+export const MAX_RATING_AGE_DAYS = 45;
 const partyKey = (value) => normalizeParty(value) === 'REP' ? 'GOP' : normalizeParty(value);
 const countMembers = (members) => {
     if (!Array.isArray(members)) return null;
@@ -91,7 +93,11 @@ export const electionRatingSummary = (ratings, office, country = null, stateId =
     // After election day, an old reviewed universe may reconcile certified
     // results, but cannot supply stale Cook-based assumptions or rating tiles.
     const afterElection = raceClosedByDate({ election_date: '2026-11-03' }, now);
-    if (!Number.isFinite(date) || now < date || (now - date > 21 * DAY && !(resultsOnly && afterElection)) || !Array.isArray(row?.races)
+    // 21일이 지나도 새 검토본이 없으면 화면이 통째로 "—"가 됐다 (사용자 지시
+    // 2026-10-22: Cook 등급으로 붙일 것). 45일까지는 마지막 검토 등급을 쓰되
+    // stale 로 표시하고, 그 뒤에는 예전처럼 끊는다.
+    const ageDays = Math.floor((now - date) / DAY);
+    if (!Number.isFinite(date) || now < date || (now - date > (afterElection ? FRESH_RATING_DAYS : MAX_RATING_AGE_DAYS) * DAY && !(resultsOnly && afterElection)) || !Array.isArray(row?.races)
         || row.races.length !== expected || row.total_contests !== expected
         || new Set(row.races.map((r) => r.race_id)).size !== expected
         || row.races.some((r) => !RATINGS.has(r.rating) || !/^USA:[A-Z]{2}:(?:house:\d{2}|senate|governor)$/.test(r.race_id)
@@ -104,7 +110,8 @@ export const electionRatingSummary = (ratings, office, country = null, stateId =
         cookBlue: races.filter((r) => stableParty(r.rating) === 'DEM').length,
         cookRed: races.filter((r) => stableParty(r.rating) === 'GOP').length,
         cookToss: races.filter((r) => r.rating === 'toss_up').length, additional: races.filter((r) => r.additional),
-        contested: races.length, races, asOf: row.as_of, sourceUrl: row.source_url, afterElection };
+        contested: races.length, races, asOf: row.as_of, sourceUrl: row.source_url, afterElection,
+        ageDays, stale: ageDays > FRESH_RATING_DAYS };
 };
 
 const retainedMembers = (country, office, rating, state) => {

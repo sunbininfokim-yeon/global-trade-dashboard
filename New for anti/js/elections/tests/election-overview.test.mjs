@@ -120,7 +120,13 @@ test('state totals preserve vacancies and delegates; missing or malformed inputs
     assert.equal(rows.house.total,3);assert.equal(rows.house.vacancies,1);
     assert.equal(currentElectionSeats(null).house.counts,null);
     assert.equal(currentElectionSeats(null,{id:'XX',federal_delegation:{house_members:[]}}).house.total,null);
-    assert.equal(summary('house',null,ratings,country,Date.parse('2026-11-01')),null);
+    // Past 21 days the last review is still shown, flagged stale; past 45 it stops.
+    const late=summary('house',null,ratings,country,Date.parse('2026-11-01'));
+    assert.equal(late.stale,true);assert.ok(late.ageDays>21);
+    assert.equal(summary('house',null,ratings,country,now).stale,false);
+    const old=structuredClone(ratings);old.offices.house.as_of='2026-09-01';
+    assert.equal(summary('house',null,old,country,Date.parse('2026-10-20')),null);
+    assert.match(electionOverviewHtml(country,ratings,{now:Date.parse('2026-11-01')}),/일 경과 · 새 검토본 대기/);
     assert.equal(summary('governor',null,null),null);
     const incomplete=structuredClone(ratings);incomplete.offices.house.races.pop();
     assert.equal(summary('house',null,incomplete),null);
