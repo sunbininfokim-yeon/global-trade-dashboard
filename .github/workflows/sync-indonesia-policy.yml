@@ -1,0 +1,35 @@
+name: Sync Indonesia Policy Data
+on:
+  schedule:
+    - cron: '43 */4 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: indonesia-policy-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      # Reviewed collector from PR #652. UI/mail changes are not merged or deployed.
+      - uses: actions/checkout@v4
+        with:
+          ref: 7cdbb19868426bcd82e0f5a263d260fadf181e8b
+          path: collector
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned collector dependencies
+        run: python -m pip install -r collector/scripts/indonesia_policy/requirements.txt
+      - name: Collect official documents into Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PYTHONUNBUFFERED: '1'
+        run: python tools/idn_sync/run_cloud.py --collector collector --state-dir "${RUNNER_TEMP}/idn-state"

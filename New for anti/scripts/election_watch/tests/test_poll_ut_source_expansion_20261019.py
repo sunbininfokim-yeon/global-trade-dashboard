@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """UT-02 candidate alias and primary RV metadata; old polls never become fresh."""
 from copy import deepcopy
 from pathlib import Path
@@ -10,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1];C=ROOT/'config';DAY='2026-10-18'
 class UTPrimaryImageTests(unittest.TestCase):
     def setUp(self):
         self.audit=read(ROOT.parent.parent/'public/data/usa_election_poll_release_reviews/2026/UT-source-expansion-20261019.json');self.raw=self.audit['records'][0]['provider_record']
-        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
+        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
     def test_population_corrected_to_rv_with_original_lv_preserved(self):
         rows,held=normalize([self.raw],self.policy,DAY);self.assertFalse(held);r=rows[0]
         self.assertEqual(r['population'],'rv');self.assertEqual(r['provider_metadata_correction']['provider_values'],{'population':'lv'})

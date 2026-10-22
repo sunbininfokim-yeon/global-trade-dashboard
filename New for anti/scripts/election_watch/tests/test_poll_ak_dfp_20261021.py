@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """One Alaska study, separate RCV questions, no manufactured ordinary winner."""
 from copy import deepcopy
 import hashlib
@@ -26,8 +27,8 @@ class AlaskaDFPTests(unittest.TestCase):
         self.audit = read(PUBLIC/'usa_election_poll_release_reviews/2026/AK-dfp-20261021.json')
         self.rows = [r for r in self.packet['capture']['primary_records'] if r['id'].startswith(PREFIX)]
         self.policy = apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),
-            read(C/'governor_matchups/2026.json'), DAY), read(C/'usa_polls/targets_2026.json'),
-            read(C/'usa_polls/ballot_reviews_2026.json'), DAY)
+            read(C/'governor_matchups/2026.json'), SNAPSHOT_DAY), read(C/'usa_polls/targets_2026.json'),
+            read(C/'usa_polls/ballot_reviews_2026.json'), SNAPSHOT_DAY)
         self.policy['quality_reviews'] = read(C/'usa_polls/quality_reviews_2026.json')['reviews']
         self.snapshot = {'schema':'usa_reviewed_primary_poll_supplements_v1','cycle':2026,
             'records':[o['value'] for o in self.packet['config_operations']

@@ -115,3 +115,22 @@ Both views partition published observations without altering numbers. Missing
 profiled lists appear under an explicitly labeled unpublished-seat disclosure;
 no zero is inserted. Source links and per-party explanations are available in
 ideology cards. The polling evidence date remains 2026-10-14.
+
+## Snapshot refresh and CI
+
+When adopting a new reviewed snapshot, update both
+`review_receipts.json.evidence_as_of` and `build_israel_analysis.py`'s `--as-of`
+default. The current-snapshot integration test checks that the documented default
+command succeeds and that the public board/status reproduce the reviewed inputs.
+
+Historical Python and JS regressions use the immutable
+`tests/fixtures/israel/2026-10-20/` snapshot. Do not replace that fixture when
+updating current inputs. Its original input and board hashes remain intact.
+
+`israel_analysis_validation.yml` runs all `test_israel_*.py`, translation/cache
+and builder `--check`, and Israel JS contracts on relevant PRs and main pushes.
+It is independent of US polling capture/publication and has read-only permissions;
+it performs no source collection, translation API call, publication or deployment.
+
+The unnamed Panel4All/Maariv 2026-10-15 poll remains `partial`. A named pollster
+is still required for `accepted`; the regression suite enforces this rule.

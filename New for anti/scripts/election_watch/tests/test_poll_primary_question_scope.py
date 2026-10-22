@@ -72,3 +72,34 @@ class InitialQuestionScopeTests(unittest.TestCase):
         self.assertEqual(len(rows),1)
         self.assertEqual(receipts[0]['status'],'primary_provider_conflict_reference_only')
         self.assertEqual(receipts[0]['conflicting_provider_records'],[api])
+
+class HTMLSummaryHealthTests(unittest.TestCase):
+    def test_never_collected_source_remains_unavailable(self):
+        h=self.health({'kind':'html_table_health','contract_id':'synthetic-source',
+            'status':'unavailable_no_previous_data'})
+        self.assertEqual(h['status'],'review_required')
+        self.assertEqual(h['unavailable_contract_ids'],['synthetic-source'])
+        self.assertEqual(h['unknown_receipt_count'],0)
+    def health(self,summary):
+        from election_watch.poll_run_capture import primary_capture_health
+        return primary_capture_health([{'id':'synthetic-row','status':'primary_documents_rechecked'},summary])
+    def summary(self,**patch):
+        return {'kind':'html_table_health','state':'XX','contract_id':'synthetic-source',
+            'status':'ok_reference_only','parsed_observations':1,'carried_forward_observations':0,
+            'signal_eligible_observations':0,'failures':[],**patch}
+    def test_successful_reference_parser_is_not_unknown_or_quality_approval(self):
+        h=self.health(self.summary());self.assertEqual(h['status'],'ok');self.assertEqual(h['unknown_receipt_count'],0)
+        self.assertEqual(h['receipt_count'],2);self.assertEqual(h['partial_contract_ids'],[])
+    def test_partial_discovery_failure_is_known_but_review_required(self):
+        h=self.health(self.summary(status='partial_last_good_preserved',failures=[{'error_type':'OSError'}]))
+        self.assertEqual(h['status'],'review_required');self.assertEqual(h['unknown_receipt_count'],0)
+        self.assertEqual(h['partial_contract_ids'],['synthetic-source'])
+    def test_carried_rows_do_not_disappear_from_capture_health(self):
+        h=self.health(self.summary(status='partial_last_good_preserved',parsed_observations=0,carried_forward_observations=1))
+        self.assertEqual(h['status'],'review_required');self.assertEqual(h['partial_contract_ids'],['synthetic-source'])
+    def test_malformed_or_inconsistent_ok_summary_stays_unknown(self):
+        for patch in ({'contract_id':None},{'parsed_observations':True},{'parsed_observations':0},
+          {'signal_eligible_observations':1},{'carried_forward_observations':1},{'failures':['failure']},
+          {'failures':None},{'status':'new_unreviewed_status'},{'kind':'new_summary_kind'}):
+            with self.subTest(patch=patch):
+                h=self.health(self.summary(**patch));self.assertEqual(h['status'],'review_required');self.assertEqual(h['unknown_receipt_count'],1)
