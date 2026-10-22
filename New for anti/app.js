@@ -4622,6 +4622,35 @@ const loadCropStages = () => {
     return cropStagesPromise;
 };
 
+// Per-stage favourable/unfavourable/neutral weather calls, written twice a
+// week by stage_conditions/build.py from the same calendar. Optional: the
+// stages card and the region card render unchanged without it.
+const STAGE_CONDITIONS_URL = '/public/data/stage_conditions_v1.json';
+let stageConditionsPromise = null;
+const loadStageConditions = () => {
+    if (!stageConditionsPromise) {
+        stageConditionsPromise = fetch(STAGE_CONDITIONS_URL)
+            .then((r) => (r.ok ? r.json() : null))
+            .catch(() => null);
+    }
+    return stageConditionsPromise;
+};
+
+// The calendar entry and its condition entry share region key, crop and
+// label; a forecast crop card only knows region key and crop identity.
+const stageConditionFor = (data, key, crop, labelKo = null) => {
+    const entries = data?.regions?.[key] || [];
+    if (labelKo) {
+        const exact = entries.find((e) => e.crop === crop && e.label_ko === labelKo);
+        if (exact) return exact;
+    }
+    if (entries.length === 1) return entries[0];
+    const want = CROP_CANON[crop] || crop;
+    return entries.find((e) => (CROP_CANON[e.crop] || e.crop) === want) || null;
+};
+
+const STAGE_STATUS_PILL = { unfavorable: 'red', favorable: 'green', neutral: 'blue', upcoming: 'gray' };
+
 const STAGE_MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 const stageDoy = (mmdd) => {
     const [m, d] = String(mmdd).split('-').map(Number);
@@ -4634,8 +4663,9 @@ const stageDateKo = (mmdd) => {
     return `${m}월 ${d}일`;
 };
 
-const renderCropStagesCrop = (c) => {
+const renderCropStagesCrop = (c, cond = null) => {
     const stages = c.stages || [];
+    const calls = cond?.stages?.length === stages.length ? cond.stages : null;
     if (!stages.length) return '';
     const origin = stageDoy(stages[0].start);
     const off = (doy) => (doy - origin + 365) % 365;
@@ -4646,7 +4676,8 @@ const renderCropStagesCrop = (c) => {
     const startMonth = Number(stages[0].start.split('-')[0]);
     const axis = Array.from({ length: 12 }, (_, i) => ((startMonth - 1 + i) % 12) + 1);
     const current = [];
-    const rows = stages.map((st) => {
+    const rows = stages.map((st, i) => {
+        const call = calls && calls[i].kind === st.kind ? calls[i] : null;
         const a = off(stageDoy(st.start));
         const len = ((stageDoy(st.end) - stageDoy(st.start) + 365) % 365) + 1;
         const width = Math.min(len, 365 - a);
@@ -4654,7 +4685,8 @@ const renderCropStagesCrop = (c) => {
         if (isNow) current.push(st.name_ko);
         return `<div class="stage-row${isNow ? ' is-now' : ''}">
             <div class="stage-line">
-                <span class="stage-name">${isNow ? '▶ ' : ''}${st.name_ko}</span>
+                <span class="stage-name">${isNow ? '▶ ' : ''}${st.name_ko}${call && call.status !== 'upcoming'
+                    ? ` <span class="climate-status-pill ${STAGE_STATUS_PILL[call.status]}" style="font-size:10px;padding:0 6px;">${call.status_ko}${call.state === 'in_progress' ? '·진행 중' : ''}</span>` : ''}</span>
                 <span class="stage-dates">${stageDateKo(st.start)} ~ ${stageDateKo(st.end)}</span>
             </div>
             <div class="stage-track">
@@ -4662,6 +4694,8 @@ const renderCropStagesCrop = (c) => {
                 <span class="stage-today" style="left:${pct(today)}%"></span>
             </div>
             <div class="stage-what">${st.what_ko || ''}</div>
+            ${call && call.status !== 'upcoming' && call.reason_ko
+                ? `<div class="stage-what stage-call ${call.status}">${cond.season} 기상: ${call.reason_ko}</div>` : ''}
         </div>`;
     }).join('');
     return `<div class="stage-crop">
@@ -4673,11 +4707,12 @@ const renderCropStagesCrop = (c) => {
         ${rows}
         ${c.critical_ko ? `<div class="stage-critical">단수를 가장 좌우하는 시기: <strong>${c.critical_ko}</strong></div>` : ''}
         ${c.source_ko ? `<div class="stage-source">평년 일정 · ${c.source_ko}</div>` : ''}
+        ${cond ? `<div class="stage-source">단계별 판정 · ${cond.season} 시즌 기상(NASA POWER)을 직전 30개 시즌 같은 구간과 비교</div>` : ''}
     </div>`;
 };
 
 const renderCropStagesCard = async (countryName, keys) => {
-    const data = await loadCropStages();
+    const [data, conds] = await Promise.all([loadCropStages(), loadStageConditions()]);
     const seen = new Set();
     const crops = [];
     for (const k of keys || []) {
@@ -4685,13 +4720,13 @@ const renderCropStagesCard = async (countryName, keys) => {
             const id = `${c.crop}|${c.label_ko}`;
             if (seen.has(id)) continue;
             seen.add(id);
-            crops.push(c);
+            crops.push({ c, cond: stageConditionFor(conds, k, c.crop, c.label_ko) });
         }
     }
     if (crops.length) {
         return `<div class="climate-card">
             <h3>생육 일정 · 파종부터 수확까지</h3>
-            ${crops.map(renderCropStagesCrop).join('')}
+            ${crops.map(({ c, cond }) => renderCropStagesCrop(c, cond)).join('')}
             <div class="climate-sub" style="margin-top:6px;">평년 기준이며 해마다 날씨에 따라 1~3주 앞뒤로 움직입니다. 흰 세로선이 오늘입니다.</div>
         </div>`;
     }
@@ -4823,6 +4858,33 @@ const renderWeatherConditions = (wc) => {
         </div>`;
 };
 
+// Same read-out as the palm card, built from the stage calls: overall call,
+// which stages drove it, and how such calls matched past yields.
+const renderStageConditionSummary = (sc) => {
+    if (!sc || !Array.isArray(sc.stages)) return '';
+    const judged = sc.stages.filter((s) => s.status !== 'upcoming');
+    const upcoming = sc.stages.length - judged.length;
+    const rows = judged.map((s) => `
+        <div class="climate-metric-row">
+            <span class="nm">${s.name_ko}${s.state === 'in_progress' ? ' <span style="color:#64748b;">(진행 중)</span>' : ''}</span>
+            <span class="climate-status-pill ${STAGE_STATUS_PILL[s.status]}">${s.status_ko}</span>
+        </div>
+        ${s.reason_ko && s.status !== 'neutral' ? `<div class="climate-sub" style="margin:-2px 0 4px;">${s.reason_ko}</div>` : ''}`).join('');
+    const o = sc.overall || {};
+    return `
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
+            <div class="climate-metric-row" style="border:none;">
+                <span class="nm" style="font-weight:600;color:#e2e8f0;">${sc.season} 기상 조건 (단계별)</span>
+                <span class="climate-status-pill ${STAGE_STATUS_PILL[o.verdict] || 'blue'}">${o.verdict_ko || '—'}</span>
+            </div>
+            <div class="climate-sub">${o.reason_ko || ''}</div>
+            ${rows}
+            ${upcoming ? `<div class="climate-sub">남은 단계 ${upcoming}개는 아직 시작 전</div>` : ''}
+            ${sc.history_ko ? `<div class="climate-sub" style="margin-top:4px;">과거 검증: ${sc.history_ko}</div>` : ''}
+            <div class="climate-sub">판정은 참고용이며 예측치에는 반영하지 않습니다.</div>
+        </div>`;
+};
+
 // Region yield numbers stay on the right; left holds model provenance.
 const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = null) => {
     fc = fc || await loadClimateForecast(cfg);
@@ -4830,6 +4892,7 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
         || (regionCfg.regionKey ? [regionCfg.regionKey] : null);
     const crops = keys?.length ? normalizeForecast(fc, keys) : [];
     const p = (points || []).find((x) => x.name === regionCfg.name);
+    const stageConds = await loadStageConditions();
 
     if (climateRightTitleEl) climateRightTitleEl.textContent = regionCfg.label;
     if (climateRightDescEl) {
@@ -4865,7 +4928,9 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
                     </div>
                     ${c.pct != null ? `<div class="climate-sub">기상 효과(추세 대비) ${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%</div>` : ''}
                     ${c.reason ? `<div class="climate-sub">${c.reason}</div>` : ''}`}
-                ${renderWeatherConditions(c.weatherConditions)}
+                ${c.weatherConditions
+                    ? renderWeatherConditions(c.weatherConditions)
+                    : renderStageConditionSummary(stageConditionFor(stageConds, c.regionKey, c.cropKey || cropIdentity(c)))}
             </div>`;
         }).join('')
         : `<div class="climate-card"><div class="climate-sub">이 산지의 작물 슬롯 없음</div></div>`;
