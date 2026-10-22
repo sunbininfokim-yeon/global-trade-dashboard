@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """MI primary decimals, separate partisan tracking waves and censored holds."""
 from copy import deepcopy
 from pathlib import Path
@@ -10,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1];C=ROOT/'config';DAY='2026-10-18'
 class MIPrimaryExpansionTests(unittest.TestCase):
     def setUp(self):
         self.audit=read(ROOT.parent.parent/'public/data/usa_election_poll_release_reviews/2026/MI-source-expansion-20261019.json');self.rows=[r['provider_record']for r in self.audit['records']]
-        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
+        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
     def test_party_references_never_vote_in_leads(self):
         obs,held=normalize(self.rows,self.policy,DAY);self.assertFalse(held);self.assertEqual(len(obs),3)
         self.assertTrue(all(not o['aggregation_eligibility']['eligible']for o in obs))

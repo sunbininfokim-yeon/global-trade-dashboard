@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """Reviewed KY source admission; incomplete evidence is never a fresh win."""
 from copy import deepcopy
 from pathlib import Path
@@ -11,7 +12,7 @@ C=Path(__file__).resolve().parents[1]/'config';DAY='2026-10-18'
 class KYSourceExpansionTests(unittest.TestCase):
  def setUp(self):
   self.audit=read(C.parents[2]/'public/data/usa_election_poll_release_reviews/2026/KY-source-expansion-20261019.json');self.raw=self.audit['records'][0]['provider_record'];self.packet=read(C/'state_evidence/2026/KY.json')
-  self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
+  self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
  def test_reviewed_source_values_and_metadata_remain_exact(self):
   obs,held=normalize([self.raw],self.policy,DAY);self.assertFalse(held);self.assertEqual(len(obs),1)
   self.assertEqual(obs[0]['sample_n'],self.raw['sample_size']);self.assertEqual({a['name']:a['pct']for a in obs[0]['answers']},{a['choice']:a['pct']for a in self.raw['answers']})

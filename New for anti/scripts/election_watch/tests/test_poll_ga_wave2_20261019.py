@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 from copy import deepcopy
 from pathlib import Path
 import unittest
@@ -9,7 +10,7 @@ C=Path(__file__).resolve().parents[1]/'config';DAY='2026-10-18'
 class GAWaveTwoTests(unittest.TestCase):
  def setUp(self):
   self.audit=read(C.parents[2]/'public/data/usa_election_poll_release_reviews/2026/GA-wave2-20261019.json');self.rows=[r['provider_record']for r in self.audit['records']];self.packet=read(C/'state_evidence/2026/GA.json')
-  self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
+  self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY);self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
  def test_original_pollster_owned_publication_is_individually_reviewed(self):
   obs,held=normalize(self.rows,self.policy,DAY);self.assertFalse(held);o=obs[0];self.assertTrue(o['aggregation_eligibility']['eligible']);self.assertEqual([a['pct']for a in o['answers']],[49,47])
   self.assertEqual(o['source_quality']['disclosure_review']['weighting'],'age_race_gender_political_affiliation')
