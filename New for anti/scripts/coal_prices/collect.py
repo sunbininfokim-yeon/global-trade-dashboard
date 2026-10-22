@@ -439,6 +439,20 @@ def with_changes(periods: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return periods
 
 
+def press_reported(path: Optional[Path] = None) -> List[Dict[str, Any]]:
+    """HBA II as the press reported it, for decisions that are image-only scans."""
+    path = path or Path(__file__).with_name("hba_press_reported.json")
+    if not path.exists():
+        return []
+    out = []
+    for p in json.loads(path.read_text(encoding="utf-8")).get("periods", []):
+        out.append({"start": p["start"], "end": p["end"], "source_kind": "press",
+                    "url": (p.get("sources") or [None])[0], "sources": p.get("sources") or [],
+                    **({"decree": p["decree"]} if p.get("decree") else {}),
+                    "grades": [{"name": "HBA II", "gar": 4100, "usd_per_t": float(p["usd_per_t"])}]})
+    return out
+
+
 def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], bytes] = get_bytes,
               extract: Callable[[bytes], str] = pdf_text, pause: float = HBA_PAUSE,
               max_pages: int = HBA_MAX_PAGES) -> Dict[str, Any]:
@@ -514,7 +528,12 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
                 p["decree"] = num.group(1)
             else:
                 p.pop("decree", None)
-    periods = with_changes(merge_periods(prior, found))
+    # Half-months whose decision is an image-only scan: the press-reported HBA II
+    # (hba_press_reported.json) fills the hole until a decision can be read.
+    held = {p["start"] for p in prior if p.get("source_kind") != "press"} | {p["start"] for p in found}
+    press = [p for p in press_reported() if p["start"] not in held]
+    prior = [p for p in prior if p.get("source_kind") != "press"]
+    periods = with_changes(merge_periods(press + prior, found))
     if not periods:
         raise SourceError(errors[-1].split(":")[-1] if errors else "no_decisions_found")
     out = {"status": "ok", "source": "인도네시아 에너지광물자원부(ESDM) 장관결정문 · JDIH", "source_url": JDIH_LIST,
