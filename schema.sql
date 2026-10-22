@@ -7,6 +7,8 @@
 -- install profiles or user_favorites. After their 20260904 migrations, install
 -- supabase/migrations/20260911010000_mailing_outbox.sql, then its lifecycle and
 -- 20261002 event/subscription migrations in order (see mailing README).
+-- Then apply 20261021042059_mailing_report_editions.sql for report editions;
+-- this policy-only schema intentionally does not duplicate mailing DDL.
 -- See services/mailing/README.md for the existing-production cutover order.
 --
 -- Design rules:
