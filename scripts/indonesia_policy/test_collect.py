@@ -160,6 +160,18 @@ class SourceEvidenceTests(unittest.TestCase):
         self.assertEqual(metadata_only['content_kind'],'official_metadata')
         self.assertEqual(metadata_only['body_status'],'metadata_requested')
 
+    def test_body_host_cooldown_avoids_another_attachment_request(self):
+        entry=dict(document_id='idn-cooldown',title='Environment',title_ko='환경',issuer_name='Government',
+                   issuer_level='national',jurisdiction='Indonesia',document_type='PP',document_number='4',
+                   document_year=2021,topics=['coal'],primary_stage='coal',scope_note='Test',
+                   url='https://catalogue.go.id/law',identity_phrases=['4 TAHUN 2021'])
+        metadata=b'<main>PERATURAN 4 TAHUN 2021 '+b'Catalogue '*20+b'<a href="https://files.go.id/Download/text.pdf">Download</a></main>'
+        with patch('collect.fetch',return_value=(metadata,entry['url'],'a'*64)) as fetcher:
+            result=collect(entry,Path('/tmp'),{'files.go.id'})
+        fetcher.assert_called_once()
+        self.assertEqual(result['content_kind'],'official_metadata')
+        self.assertIn('body_host_in_cooldown',result['body_status'])
+
 
 if __name__ == "__main__":
     unittest.main()
