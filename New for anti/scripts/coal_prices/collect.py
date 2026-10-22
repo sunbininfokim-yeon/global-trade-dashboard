@@ -61,6 +61,9 @@ HBA_KEEP_PERIODS = 48   # two years of half-months
 HBA_PAUSE = 1.0
 HBA_MAX_PAGES = 8       # 5 decisions a page, an HBA decision about every two weeks
 HBA_FIRST_RUN_DECREES = 4
+HBA_BACKFILL_PERIODS = 6   # while fewer half-months than this are held, page back as far as the cap allows
+# Bumped whenever the decision reader changes: a decision refused by an older reader is tried again.
+HBA_PARSER_VERSION = 2
 
 # Stale thresholds the panel applies (days since the data's own end date).
 HBA_STALE_DAYS = 24
@@ -440,9 +443,21 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
 
     Newest first; paging stops at the first decision already held. A decision
     appears on the portal a few days after it takes effect, so the newest
-    half-month can be missing for a while -- the panel says so."""
+    half-month can be missing for a while -- the panel says so.
+
+    A decision the reader refused is remembered with the reader's version and
+    left alone until the reader changes; when it has, paging goes on past the
+    held decisions until those older ones have been seen again. A short history
+    (fewer than HBA_BACKFILL_PERIODS half-months) is read back as far as the
+    page cap allows, which is how a new install gets its first months.
+    """
     prior = (previous or {}).get("periods", [])
     known = {p["url"] for p in prior}
+    refused: Dict[str, Dict[str, Any]] = {u: r for u, r in ((previous or {}).get("refused") or {}).items()
+                                           if u not in known}
+    retry = {u for u, r in refused.items() if r.get("parser") != HBA_PARSER_VERSION}
+    settled = known | (set(refused) - retry)
+    backfill = len(prior) < HBA_BACKFILL_PERIODS
     links: List[Tuple[str, str]] = []
     errors: List[str] = []
     for n in range(1, max_pages + 1):
@@ -457,22 +472,30 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
             errors.append(f"page{n}:{exc}")
             break
         links += [l for l in page_links if l[0] not in {u for u, _ in links}]
-        if any(u in known for u, _ in page_links):
+        seen = {u for u, _ in links}
+        if backfill:
+            pass                    # a short history: read as far back as the cap allows
+        elif retry:
+            if retry <= seen:
+                break               # every decision worth a second look has come round again
+        elif any(u in settled for u, _ in page_links):
             break
-        if not known and len(links) >= HBA_FIRST_RUN_DECREES:
+        if not known and not refused and len(links) >= HBA_FIRST_RUN_DECREES:
             break
 
     found: List[Dict[str, Any]] = []
     for url, title in links:
-        if url in known:
+        if url in settled:
             continue
         time.sleep(pause)
         text = ""
         try:
             text = extract(get(url))
             found.append(parse_hba_decree(text, url))
+            refused.pop(url, None)
         except SourceError as exc:
             errors.append(f"{url.rsplit('=', 1)[-1][:40]}:{exc}")
+            refused[url] = {"reason": str(exc), "parser": HBA_PARSER_VERSION}
             if text:   # what the refused decision's text looked like, for the CI log
                 i = max(text.find("GAR"), 0)
                 note(f"decision {url.rsplit('=', 1)[-1]} refused ({exc}); {len(text)} chars; "
@@ -483,6 +506,8 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
         raise SourceError(errors[-1].split(":")[-1] if errors else "no_decisions_found")
     out = {"status": "ok", "source": "인도네시아 에너지광물자원부(ESDM) 장관결정문 · JDIH", "source_url": JDIH_LIST,
            "periods": periods, "latest_end": periods[-1]["end"]}
+    if refused:
+        out["refused"] = refused
     if errors:
         out["skipped"] = errors[:6]
     return out

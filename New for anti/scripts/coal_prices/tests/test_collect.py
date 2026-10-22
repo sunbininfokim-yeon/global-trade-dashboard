@@ -206,6 +206,9 @@ class HbaFetchTests(unittest.TestCase):
         return (f"mulai berlaku pada tanggal {day} {month.title()} 2026 , ... BESARAN HARGA BATUBARA ACUAN PERIODE {half} BULAN {month} TAHUN 2026 {rows}")
 
     def setUp(self):
+        self._backfill = m.HBA_BACKFILL_PERIODS
+        m.HBA_BACKFILL_PERIODS = 2          # the tests hold two or three half-months; backfill has its own test
+        self.addCleanup(setattr, m, "HBA_BACKFILL_PERIODS", self._backfill)
         hba = "Keputusan Menteri ESDM Nomor 1.K/MB.01/MEM.B/2026 tentang Harga Mineral Logam Acuan dan Harga Batubara Acuan Untuk Periode"
         self.hba = hba
         self.texts = {
@@ -232,6 +235,17 @@ class HbaFetchTests(unittest.TestCase):
         self.assertEqual(calls, [self.LIST])           # nothing new on page 1 -> one request, no PDF
         self.assertEqual(again["periods"], first["periods"])
 
+    def test_a_short_history_is_read_back_past_the_decisions_already_held(self):
+        m.HBA_BACKFILL_PERIODS = 4
+        held = {"periods": [{"start": "2026-10-01", "end": "2026-10-14", "decree": "x", "grades": [
+            {"name": n, "gar": g, "usd_per_t": v} for n, g, v in
+            [("HBA", 6322, 122.52), ("HBA I", 5300, 90.6), ("HBA II", 4100, 63.45), ("HBA III", 3400, 43.84)]],
+            "url": "https://jdih.esdm.go.id/dokumen/download?id=2026kmesdm384k.pdf"}]}
+        get, calls = self.site({1: [("2026kmesdm384k", self.hba)], 2: [("2026kmesdm364k", self.hba)]})
+        got = m.fetch_hba(held, get=get, extract=self.extract, pause=0, max_pages=3)
+        self.assertEqual([p["start"] for p in got["periods"]], ["2026-09-15", "2026-10-01"])
+        self.assertIn(f"{self.LIST}&page=2", calls)
+
     def test_history_accumulates_beyond_what_the_list_still_shows(self):
         old = {"periods": [{"start": "2026-08-01", "end": "2026-08-14", "url": "press", "grades": []}]}
         get, _ = self.site({1: [("2026kmesdm384k", self.hba)]})
@@ -244,6 +258,26 @@ class HbaFetchTests(unittest.TestCase):
         got = m.fetch_hba(None, get=get, extract=self.extract, pause=0, max_pages=1)
         self.assertEqual(len(got["periods"]), 1)
         self.assertTrue(any("2026kmesdm364k" in s for s in got["skipped"]))
+
+    def test_a_refused_decision_is_left_alone_until_the_reader_changes(self):
+        self.texts["2026kmesdm364k.pdf"] = "scan without a text layer"
+        get, calls = self.site({1: [("2026kmesdm401k", self.hba), ("2026kmesdm384k", self.hba)], 2: [("2026kmesdm364k", self.hba)]})
+        first = m.fetch_hba(None, get=get, extract=self.extract, pause=0, max_pages=4)
+        self.assertEqual(first["refused"]["https://jdih.esdm.go.id/dokumen/download?id=2026kmesdm364k.pdf"],
+                         {"reason": "period_unreadable", "parser": m.HBA_PARSER_VERSION})
+        calls.clear()
+        again = m.fetch_hba(first, get=get, extract=self.extract, pause=0, max_pages=4)
+        self.assertEqual(calls, [self.LIST])                      # same reader: no second look, no PDF
+        self.assertEqual(again["refused"], first["refused"])
+
+        # the reader improves (version bump): the old decision is fetched again, past the held ones
+        old_reader = {**first, "refused": {u: {**r, "parser": m.HBA_PARSER_VERSION - 1} for u, r in first["refused"].items()}}
+        self.texts["2026kmesdm364k.pdf"] = self.annex("KEDUA", "SEPTEMBER", 15, [126.87, 91.0, 64.0, 44.0])
+        calls.clear()
+        fixed = m.fetch_hba(old_reader, get=get, extract=self.extract, pause=0, max_pages=4)
+        self.assertEqual([p["start"] for p in fixed["periods"]], ["2026-09-15", "2026-10-01", "2026-10-15"])
+        self.assertNotIn("refused", fixed)
+        self.assertIn(f"{self.LIST}&page=2", calls)
 
     def test_nothing_found_is_an_error_not_an_empty_success(self):
         get, _ = self.site({1: [("other", "Keputusan Menteri tentang Peta Jabatan")]})

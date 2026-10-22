@@ -36,6 +36,16 @@
         coal_south_african: '남아공산 석탄 · 세계은행 월평균',
     };
 
+    // A line drawn across a hole in the history would invent the values in between,
+    // so a chart only covers the unbroken stretch that ends at the latest reading.
+    const trailingRun = (items, follows) => {
+        let from = items.length - 1;
+        while (from > 0 && follows(items[from - 1], items[from])) from -= 1;
+        return items.slice(Math.max(from, 0));
+    };
+    const nextMonth = (a, b) => (Number(b.label.slice(0, 4)) * 12 + Number(b.label.slice(5, 7))) - (Number(a.label.slice(0, 4)) * 12 + Number(a.label.slice(5, 7))) === 1;
+    const nextHalf = (a, b) => (new Date(`${b.label}T00:00:00Z`) - new Date(`${a.end}T00:00:00Z`)) / dayMs <= 3 && b.label > a.end;
+
     const monthLabel = (period) => `${period.slice(0, 4)}년 ${Number(period.slice(5, 7))}월`;
     const halfMonth = (start, end) => {
         const m = Number(start.slice(5, 7));
@@ -58,9 +68,9 @@
         const ended = days(last.end) > 0;
         const head = `<div class="stock-note" style="margin:4px 0 2px">${esc(halfMonth(last.start, last.end))} 고시${staleNote(stale || hba.status === 'error')}${ended && !stale ? ' · 적용 기간이 끝났습니다 — 다음 고시는 아직 공개 문서에 올라오지 않았습니다' : ''}</div>`;
         const rows = last.grades.map((g) => {
-            const series = periods
-                .map((p) => ({ label: `${p.start}`, value: p.grades.find((x) => x.name === g.name)?.usd_per_t }))
-                .filter((pt) => Number.isFinite(pt.value));
+            const series = trailingRun(periods
+                .map((p) => ({ label: `${p.start}`, end: p.end, value: p.grades.find((x) => x.name === g.name)?.usd_per_t }))
+                .filter((pt) => Number.isFinite(pt.value)), nextHalf);
             const up = (g.change_pct ?? 0) >= 0;
             const chg = g.change_pct == null ? '' : ` · 직전 고시 대비 <span class="${up ? 'up' : 'down'}">${up ? '+' : ''}${fmt(g.change_pct)}%</span>`;
             return `<details class="stock-item"><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(g.name)} · ${fmt(g.gar, 0)} GAR</span><span class="vl">$${fmt(g.usd_per_t)}<em>/톤</em></span></span>
@@ -81,7 +91,7 @@
         const stale = days(`${period}-28`) > staleAfter;
         const pct = prev ? Math.round(((value - prev) / prev) * 1000) / 10 : null;
         const up = (pct ?? 0) >= 0;
-        const history = pts.slice(-60).map(([label, v]) => ({ label, value: v }));
+        const history = trailingRun(pts.slice(-60).map(([label, v]) => ({ label, value: v })), nextMonth);
         return `<details class="stock-item"><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(WB_LABEL[series.id] || series.label_ko)}</span><span class="vl">$${fmt(value)}<em>/톤</em></span></span>
             <span class="stock-note" style="display:block">${esc(monthLabel(period))} 평균${pct == null ? '' : ` · 전월 대비 <span class="${up ? 'up' : 'down'}">${up ? '+' : ''}${fmt(pct, 1)}%</span>`}${staleNote(stale || status === 'error')}</span></summary>
             <div class="stock-note">원자료 ‘${esc(series.source_name)}’${series.definition ? ` — ${esc(series.definition)}` : ''}</div>
