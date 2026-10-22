@@ -45,9 +45,12 @@ class CaliforniaReleaseTests(unittest.TestCase):
   for key in ('as_of','fetched_at'):self.assertEqual(new[key],old[key])
   for rid,race in old['house_poll_focus']['races'].items():
    if race['state']!='CA':self.assertEqual(new['house_poll_focus']['races'][rid],race,rid)
-  for rid,race in old['races'].items():
-   if race['state']=='CA':
-    self.assertTrue({r['id'] for r in race['observations']} <= {r['id'] for r in new['races'][rid]['observations']},rid)
+  # This finite packet cannot contain releases added by the daily API later.
+  # Pin historical same-state expectations; continue checking current other states above.
+  expected=read(ROOT/'tests/fixtures/ca_primary_replay_expected_ids_20261016.json')
+  self.assertEqual(expected['state'],'CA')
+  for rid,ids in expected['race_observation_ids'].items():
+   self.assertTrue(set(ids) <= {r['id'] for r in new['races'][rid]['observations']},rid)
   self.assertEqual(new['house_poll_focus']['race_count'],104)
   self.assertEqual(new['state_captures']['CA']['captured_at'],self.packet['capture']['fetched_at'])
   self.assertEqual(new['state_packet_replays']['CA']['new_collection'],False)
