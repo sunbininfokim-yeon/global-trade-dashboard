@@ -1,3 +1,4 @@
+from tests.poll_config_fixture import SNAPSHOT_DAY
 """AR exact-release evidence; original rounded API value remains auditable."""
 from copy import deepcopy
 from pathlib import Path
@@ -11,7 +12,7 @@ class ARHendrixReleaseTests(unittest.TestCase):
     def setUp(self):
         self.audit=read(ROOT.parent.parent/'public/data/usa_election_poll_release_reviews/2026/AR-hendrix-20261019.json')
         self.raw=self.audit['records'][0]['provider_record']
-        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),DAY)
+        self.policy=apply_targets(apply_matchups(read(C/'usa_polls/live_2026.json'),read(C/'governor_matchups/2026.json'),SNAPSHOT_DAY),read(C/'usa_polls/targets_2026.json'),read(C/'usa_polls/ballot_reviews_2026.json'),SNAPSHOT_DAY)
         self.policy['quality_reviews']=read(C/'usa_polls/quality_reviews_2026.json')['reviews']
     def test_primary_values_n_and_both_windows(self):
         obs,held=normalize([self.raw],self.policy,DAY);self.assertFalse(held);o=obs[0]
