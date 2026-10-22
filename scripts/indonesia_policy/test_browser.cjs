@@ -180,6 +180,7 @@ test('favourite stars: visible signed out, a star asks for login, then stars bec
   await page.goto('http://127.0.0.1:4317/indonesia-policy/?q=석탄');
   await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('건 검색됨'));
   const root=page.locator('#mail-subscriptions'),star=name=>root.getByRole('button',{name,exact:true});
+  assert.equal(await root.evaluate(d=>d.open),false);await root.locator(':scope > summary').click();
   assert.equal(await root.locator('[data-topic-stars] .fav-chip').count(),13);assert.equal(await root.locator('[data-region-stars] .fav-chip').count(),38);
   assert.equal(await page.evaluate(()=>window.__idnMailCalls.length),0);
   await star('석탄 즐겨찾기').click();assert.equal(await page.locator('#login-dialog').evaluate(d=>d.open),true);

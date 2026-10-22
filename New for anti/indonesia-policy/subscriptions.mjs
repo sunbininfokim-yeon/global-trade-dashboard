@@ -11,7 +11,7 @@ export function mountSubscriptions(root,connect,{staticRegions=[]}={}){
  let regions=new Map([[ALL,{value:ALL,label:allLabel}],...staticRegions.map(r=>[r.value,r])]);
  const pendingTopics=new Set(),pendingRegions=new Set();
  const status=root.querySelector('[data-mail-status]'),list=root.querySelector('ul'),saved=root.querySelector('.fav-saved'),savedSummary=root.querySelector('[data-saved-summary]');
- const topicBox=root.querySelector('[data-topic-stars]'),regionMain=root.querySelector('[data-region-stars-main]'),regionBox=root.querySelector('[data-region-stars]'),filter=root.querySelector('[name=region_filter]');
+ const topicBox=root.querySelector('[data-topic-stars]'),regionMain=root.querySelector('[data-region-stars-main]'),regionBox=root.querySelector('[data-region-stars]'),filter=root.querySelector('[name=region_filter]'),count=root.querySelector('[data-fav-count]');
  const account=root.querySelector('[data-account]'),accountEmail=root.querySelector('[data-account-email]');
  const dialog=document.querySelector('#login-dialog'),loginForm=dialog?.querySelector('form[data-login-form]'),loginStatus=dialog?.querySelector('[data-login-status]');
  const enabled=()=>subs.filter(s=>s.enabled);
@@ -41,6 +41,7 @@ export function mountSubscriptions(root,connect,{staticRegions=[]}={}){
    b.type='button';b.disabled=busy;b.addEventListener('click',()=>void run(()=>api.set(s.topic,s.region,!s.enabled)));row.append(label,b);return row;
   }));
   saved.hidden=!user||!subs.length;
+  if(count)count.textContent=t.size||r.size?`품목 ${t.size} · 지역 ${r.size}`:'';
   savedSummary.textContent=`저장된 알림 조합 ${enabled().length}개`;
  }
  function filterRegions(){
