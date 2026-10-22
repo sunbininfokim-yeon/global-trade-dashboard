@@ -74,10 +74,13 @@
         const chg = g.change_pct == null ? '' : ` · 직전 고시 대비 <span class="${up ? 'up' : 'down'}">${up ? '+' : ''}${fmt(g.change_pct)}%</span>`;
         return `<details class="stock-item" open><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">인도네시아 HBA II · 4,100 GAR</span><span class="vl">$${fmt(g.usd_per_t)}<em>/톤</em></span></span>
             <span class="stock-note" style="display:block">${esc(halfMonth(last.start, last.end))} 고시${chg}${staleNote(stale)}${ended && !stale ? ' · 다음 고시는 아직 공개 문서에 없음' : ''}</span></summary>
-            <div class="stock-note">ICI4(약 4,200 GAR, 유료 지수) 대신 열량이 가장 가까운 정부 기준가격입니다 ·
-            <a style="color:#7dd3fc" href="${esc(last.url)}" target="_blank" rel="noopener noreferrer">${last.decree ? `장관결정문 ${esc(last.decree)}` : '고시 원문'}</a></div>
+            <div class="stock-note">※ ICI4(인도네시아 석탄지수 4, 약 4,200 GAR)와 가장 유사한 인도네시아 정부 기준가격입니다 ·
+            <a style="color:#7dd3fc" href="${esc(last.url)}" target="_blank" rel="noopener noreferrer">${last.source_kind === 'press'
+                ? `언론 보도${last.decree ? `(장관결정문 ${esc(last.decree)} 인용)` : ''}`
+                : (last.decree ? `장관결정문 ${esc(last.decree)}` : '고시 원문')}</a></div>
             ${chartFor(series, ' $/톤', 'HBA II 고시 추이') || '<div class="stock-note">고시 이력이 쌓이는 중입니다.</div>'}
-            ${gaps ? '<div class="stock-note">일부 반월은 결정문이 스캔본이라 빠져 있습니다 — 선은 읽은 고시끼리 이은 것입니다.</div>' : ''}
+            ${periods.some((p) => p.source_kind === 'press') ? '<div class="stock-note">결정문이 스캔본인 반월은 결정문을 인용한 언론 보도 값으로 채웠습니다.</div>' : ''}
+            ${gaps ? '<div class="stock-note">빠진 반월이 있어 선은 확인된 고시끼리 이은 것입니다.</div>' : ''}
         </details>`;
     }
 
