@@ -25,8 +25,6 @@
 - Worker는 요청마다 스냅샷 전체를 파싱한다(2MB ≈ 18~34ms). 스냅샷이 더 커지면 모듈 수준 캐시를 고려.
 - 뉴스 비중이 큰 창(니켈·팜유·석탄·구리·리튬)은 이제 기본이 공식이라 덜 눈에 띈다. 공식이 0건이면 뉴스가 자동으로 열린다.
 - 못 붙인 곳: Mining Weekly·Engineering News·Mining Review·The Herald(Cloudflare 403), African Mining Brief(도메인이 도박 사이트로 넘어감), TLS 체인이 깨졌거나 DNS가 없는 정부 사이트(DRC·잠비아·탄자니아·나미비아·짐바브웨).
-- 우라늄 창에 농축·연료 기사가 들어오는 문제는 사용자 결정 대기(범위를 천연우라늄으로 좁힐지).
-- 병합·배포는 하지 않았다(사용자 확인 대기).
 
 ## 2026-10-22 검토 — 메일 보관 사고와 조치
 
@@ -34,3 +32,11 @@
 - 사용자 확인 후 운영에서 47건 `suppressed_at` 차단 + 381행(및 editions) 삭제. 발송 이력 0건.
 - 재발 방지: 보관 단계는 main에서만, `archive-mailing-reports.js`는 뉴스(`publisher_type: news`) 제외.
 - 교훈: 보고서 파이프라인을 브랜치에서 dispatch하면 Supabase까지 닿는 단계가 있는지 먼저 확인할 것.
+
+## 2026-10-22 사용자 결정 반영
+
+- **뉴스는 메일에서 뺀다.** `archive-mailing-reports.js`가 `publisher_type: news`를 `mailing_reports`에 넣지 않으므로 운영 메일 큐에 오르지 않는다. 구형 다이제스트도 뉴스를 버리고, 마이페이지 메일 출처 체크박스에도 뉴스 소스는 안 뜬다. 화면 토글은 그대로.
+- **우라늄 창에 농축·연료 기사를 넣는다.** 두 우라늄 창 별칭에 nuclear fuel·UF6·SWU·Urenco·Centrus·핵연료·核燃料 등을 추가. `enrichment` 단독은 넣지 않아 데이터/식품 enrichment는 안 걸린다.
+- **신뢰 매체 밖 도메인 중 유효한 15곳을 살렸다**(Business Insider, UPI, France 24, Mongabay, Nature, Asia Times, 아시아경제, Benchmark Minerals, 디일렉, PERHAPI, nikel.co.id, Indonesia Business Post, China Global South, ING, mining.com.au). 재게시·집계(Yahoo, MarketScreener 등), 시세/SEO 보고서 사이트, 소형 광산주 홍보(Investing News, Crux), SNS는 계속 제외.
+- 뉴스 메일 제외 코드 자체와 '메일 보관은 main에서만'은 원래 세션의 faf25056. 이 세션은 그 위에 구형 다이제스트·마이페이지·우라늄·매체 목록만 얹었다.
+- 스냅샷은 291b8a63 머지에서 이 브랜치 것을 유지했다. 머지 후 다음 Commodity Reports Intel 실행에서 새 설정(우라늄 별칭·매체 목록)으로 다시 생성된다.
