@@ -1,9 +1,10 @@
-import {subscriptionClient} from './subscription-client.mjs';
+import {subscriptionClient} from './subscription-client.mjs?v=2';
 const topicNames={coal:'석탄',nickel_mining:'니켈',palm_oil:'팜유',biofuel:'바이오연료',bauxite:'보크사이트·알루미늄',copper:'구리',tin:'주석',cobalt:'코발트',manganese:'망간',iron_steel:'철광석·철강',silica:'실리카·석영',gold_silver:'금·은',rare_earths:'희토류'};
 const el=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
 export function mountSubscriptions(root,connect){
- let api,started=false,serial=0,busy=false,limit=100,regions=new Map();
- const status=root.querySelector('[role=status]'),form=root.querySelector('form'),list=root.querySelector('ul'),selection=root.querySelector('[data-selection-status]'),saved=root.querySelector('[data-save-status]');
+ let api,serial=0,busy=false,limit=100,regions=new Map();
+ const status=root.querySelector('[data-mail-status]'),form=root.querySelector('form[data-subscription-form]'),list=root.querySelector('ul'),selection=root.querySelector('[data-selection-status]'),saved=root.querySelector('[data-save-status]');
+ const loginForm=root.querySelector('form[data-login-form]'),loginStatus=root.querySelector('[data-login-status]'),account=root.querySelector('[data-account]'),accountEmail=root.querySelector('[data-account-email]');
  const checked=name=>[...form.querySelectorAll(`input[name="${name}"]:checked`)].map(e=>e.value);
  const chosen=()=>({topics:checked('topic'),regions:checked('region').includes('__all__')?['__all__']:checked('region')});
  function controls(){
@@ -23,9 +24,17 @@ export function mountSubscriptions(root,connect){
   const q=form.elements.region_filter.value.trim().toLocaleLowerCase();
   for(const row of form.querySelectorAll('[data-region-options] label'))row.hidden=!row.textContent.toLocaleLowerCase().includes(q);
  }
+ // Signed out: the login form. Signed in: who, a logout button and the subscription form.
+ function showAccount(user){
+  loginForm.hidden=!!user;account.hidden=!user;
+  accountEmail.textContent=user?`${user.email||'로그인한 계정'}으로 로그인됨`:'';
+ }
  async function refresh(){
   const token=++serial;list.replaceChildren();form.hidden=true;
-  if(!await api.user()){if(token===serial)status.textContent='로그인한 계정으로 구독을 저장합니다. 마이페이지에서 로그인 후 이 화면으로 돌아오세요.';return;}
+  const user=await api.user();if(token!==serial)return;
+  showAccount(user);
+  if(!user){status.textContent='로그인하면 바로 구독할 수 있습니다. 메인 사이트와 같은 계정입니다.';return;}
+  status.textContent='구독 정보를 불러오는 중입니다.';
   const data=await api.list();if(token!==serial)return;
   const selected=new Set(checked('region'));regions=new Map(data.region_options.map(r=>[r.value,r]));limit=data.max_active_combinations||100;
   form.querySelector('[data-region-options]').replaceChildren(...data.region_options.filter(r=>r.value!=='__all__').map(r=>choice('region',r.value,r.label===r.value?r.value:`${r.label} (${r.value})`,selected.has(r.value),r.has_local_documents===false?'지방 자료 미확보 · 전국 적용 규정 포함':'')));
@@ -38,21 +47,35 @@ export function mountSubscriptions(root,connect){
   }
   controls();
  }
+ const reload=()=>void refresh().catch(e=>{status.textContent=e.message;form.hidden=true;});
  async function save(topics,areas,enabled,single=false){
   if(busy)return;busy=true;controls();
   try{if(single)await api.set(topics[0],areas[0],enabled);else await api.setMany(topics,areas,enabled);await refresh();saved.textContent=enabled?`${topics.length*areas.length}개 조합의 구독을 저장했습니다.`:'구독을 해제했습니다.';}catch(e){saved.textContent=e.message;}finally{busy=false;controls();}
  }
- root.addEventListener('toggle',async()=>{
-  if(!root.open||started)return;started=true;status.textContent='로그인·구독 정보를 확인하는 중입니다.';
-  try{if(!api){api=subscriptionClient(await connect());api.onChange(()=>{void refresh().catch(e=>{status.textContent=e.message;form.hidden=true;});});}await refresh();}catch(e){status.textContent=e.message||'구독 연결을 확인하지 못했습니다.';started=false;}
+ loginForm.addEventListener('submit',async e=>{
+  e.preventDefault();if(!api)return;
+  const button=loginForm.querySelector('[type=submit]');button.disabled=true;loginStatus.textContent='로그인 중입니다.';
+  try{await api.signIn(loginForm.elements.email.value,loginForm.elements.password.value);loginForm.elements.password.value='';loginStatus.textContent='';await refresh();}
+  catch(err){loginStatus.textContent=err.message;}finally{button.disabled=false;}
  });
+ root.querySelector('[data-logout]').addEventListener('click',async()=>{if(!api)return;try{await api.signOut();}finally{await refresh().catch(()=>{});}});
  form.addEventListener('change',controls);
  form.elements.region_filter.addEventListener('input',filterRegions);
  for(const button of form.querySelectorAll('[data-topics]'))button.addEventListener('click',()=>{for(const input of form.querySelectorAll('[name=topic]'))input.checked=button.dataset.topics==='all';controls();});
  form.querySelector('[data-regions]').addEventListener('click',()=>{for(const input of form.querySelectorAll('[name=region]'))input.checked=false;controls();});
  form.addEventListener('submit',e=>{e.preventDefault();const p=chosen();if(p.topics.length&&p.regions.length&&p.topics.length*p.regions.length<=limit)void save(p.topics,p.regions,true);});
  controls();
- return {refresh:async()=>{if(api)await refresh();}};
+ // Checked on load, not when a panel is opened, so a signed-in reader sees the form at once.
+ const ready=(async()=>{
+  status.textContent='로그인 상태를 확인하는 중입니다.';
+  try{
+   api=subscriptionClient(await connect());api.onChange(reload);
+   // A login in another tab of the site shows up when the reader comes back here.
+   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reload();});
+   await refresh();
+  }catch(e){status.textContent=e.message||'구독 연결을 확인하지 못했습니다.';}
+ })();
+ return {ready,refresh:async()=>{if(api)await refresh();}};
 }
 if(typeof document!=='undefined'){
  const root=document.querySelector('#mail-subscriptions');

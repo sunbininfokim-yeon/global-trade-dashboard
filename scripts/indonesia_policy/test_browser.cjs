@@ -178,7 +178,7 @@ test('mail subscriptions support multiple products/regions and nationwide withou
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm',r=>r.fulfill({contentType:'text/javascript',body:'export function createClient(){return window.__idnMockClient}'}));
   await page.goto('http://127.0.0.1:4317/indonesia-policy/?q=석탄');
   await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('건 검색됨'));
-  const root=page.locator('#mail-subscriptions');await root.locator(':scope > summary').click();
+  const root=page.locator('#mail-subscriptions');
   await root.getByText('메일 구독 저장',{exact:true}).waitFor();
   assert.equal(await root.getByRole('button',{name:'메일 구독 저장',exact:true}).isDisabled(),true);
   await root.locator('[name=topic][value=coal]').check();await root.locator('[name=topic][value=nickel_mining]').check();
