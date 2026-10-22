@@ -49,3 +49,10 @@ test('duplicate stable IDs keep the newest official edition in either feed order
     assert.equal(saved[0].published_at, '2026-10-08T10:00:00.000Z');
   }
 });
+test('news headlines are never archived for mailing, only official reports', async () => {
+  let saved = [];
+  const headline = { ...report('news-1'), source_id: 'gn_idn_nickel_coal_en', publisher_type: 'news', summary: null, url: 'https://www.reuters.com/a' };
+  const result = await archiveReports({ document: { items: [report('official'), headline] }, upsert: async (_table, rows) => saved = rows });
+  assert.deepEqual(saved.map(r => r.report_id), ['official']);
+  assert.equal(result.reports, 1); assert.equal(result.skipped_news, 1);
+});

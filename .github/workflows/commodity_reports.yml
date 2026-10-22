@@ -45,8 +45,12 @@ jobs:
           node-version: '22'
       # Archiving is for the mailing queue; a Supabase outage must not stop
       # the 4h report refresh itself, so the commit below still runs.
+      # Only main feeds the production mailing queue. A run dispatched on a
+      # work branch (to see what a change collects) must not archive its rows:
+      # on 2026-10-21 a branch run put 381 unmerged rows into mailing_reports.
       - name: Archive report metadata for mailing
         id: archive
+        if: github.ref == 'refs/heads/main'
         continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
