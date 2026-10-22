@@ -23,6 +23,23 @@ class CatalogueTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    state=run([s],d,set(),1,fetcher=lambda u,_:(data,u,'a'*64),delay=0)['sources'][0]
    self.assertEqual(state['visited_urls'],[]);self.assertIn('reported_count_mismatch',state['failures'][0]['error'])
+ def test_djbc_reported_total_requires_all_pages_and_known_finance_identity(self):
+  s=self.source('djbc_pages');s.update(url='https://example.go.id/index.html?page=penerbit/8/menteri-keuangan/1.html',require_reported_total=True)
+  row=b'<tr><td><a href="?page=detail/penerbit/8/1/law">Keputusan Menteri Keuangan Nomor 31/MK/BC/2026 Tentang Batubara</a></td></tr>'
+  data=b'<p>Of 2 Row Page</p><table>'+row+b'</table>'
+  rows,_,total=parse_page(data,s['url'],s);self.assertEqual(total,2);self.assertEqual(rows[0]['issuer_key'],'kemenkeu');self.assertEqual(rows[0]['document_type'],'Keputusan');self.assertEqual(rows[0]['document_number'],'31/MK/BC/2026')
+  with self.assertRaisesRegex(ValueError,'count_missing'):parse_page(b'<table>'+row+b'</table>',s['url'],s)
+  with tempfile.TemporaryDirectory() as d:
+   state=run([s],d,set(),1,fetcher=lambda u,_:(data,u,'a'*64),delay=0)['sources'][0]
+   self.assertEqual(state['records'],[]);self.assertIn('reported_count_mismatch',state['failures'][0]['error'])
+ def test_changed_djbc_total_holds_the_unprocessed_page(self):
+  s=self.source('djbc_pages');s.update(url='https://example.go.id/index.html?page=penerbit/8/minister/1.html',require_reported_total=True)
+  first=b'Of 2 Row<table><tr><td><a href="?page=detail/penerbit/8/1/law">Law 1</a></td></tr></table><a href="?page=penerbit/8/minister/2.html">2</a>'
+  second=b'Of 3 Row<table><tr><td><a href="?page=detail/penerbit/8/2/law">Law 2</a></td></tr></table>'
+  with tempfile.TemporaryDirectory() as d:
+   result=run([s],d,set(),2,fetcher=lambda u,_:(first if '/1.html' in u else second,u,'a'*64),delay=0)['sources'][0]
+   self.assertEqual(result['status'],'failed');self.assertEqual(len(result['records']),1);self.assertEqual(len(result['visited_urls']),1)
+   self.assertIn('total_changed',result['failures'][0]['error']);self.assertIn('/2.html',result['pending_urls'][0])
  def source(self,adapter='jateng_table'):
   return dict(source_id='test',adapter=adapter,url='https://example.go.id/list',scope='All rows of one explicitly bounded published listing')
  def test_inventory_keeps_every_row_without_following_external_attachments(self):

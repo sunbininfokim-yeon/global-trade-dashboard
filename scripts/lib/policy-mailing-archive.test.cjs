@@ -38,3 +38,14 @@ test('GitHub snapshot pins the blob identity and fails closed on source failure'
   assert.deepEqual(githubSnapshot({ run }), { document, sha: 'blob-id' });
   assert.throws(() => githubSnapshot({ run: () => ({ status: 1 }) }), /report_snapshot_unavailable/);
 });
+test('duplicate stable IDs keep the newest official edition in either feed order', async () => {
+  const older = { ...report('permanent'), published_at: '2026-10-01T10:00:00Z', title: { original: 'Old release' } };
+  const newer = { ...report('permanent'), published_at: '2026-10-08T10:00:00Z', title: { original: 'New release' } };
+  for (const items of [[newer, older], [older, newer]]) {
+    let saved;
+    await archiveReports({ document: { items }, upsert: async (_table, rows) => saved = rows });
+    assert.equal(saved.length, 1);
+    assert.equal(saved[0].title, 'New release');
+    assert.equal(saved[0].published_at, '2026-10-08T10:00:00.000Z');
+  }
+});
