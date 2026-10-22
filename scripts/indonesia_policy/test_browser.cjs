@@ -161,47 +161,44 @@ test('reviewed passages and business scope distinguish document matches, clause 
   assert.ok((await page.locator('#detail pre').innerText()).length>1000);assert.deepEqual(errors,[]);
  }finally{await browser.close();}
 });
-test('mail subscriptions support multiple products/regions and nationwide without changing search or sending mail',async()=>{
+test('favourite stars: visible signed out, a star asks for login, then stars become product × region mail alerts without changing search',async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.IDN_BROWSER_EXECUTABLE||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
  try{
   const page=await browser.newPage({viewport:{width:1024,height:950}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   const provinces=require('./mail-regions.json').provinces;
   await page.addInitScript(provinces=>{
-   window.__idnMailCalls=[];window.__idnSubscriptions=[];
-   window.__idnMockClient={auth:{getUser:async()=>({data:{user:{id:'fixture-self'}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},
+   window.__idnMailCalls=[];window.__idnSubscriptions=[];let session=null;const listeners=new Set();
+   window.__idnMockClient={auth:{getSession:async()=>({data:{session},error:null}),getUser:async()=>({data:{user:session?.user||null},error:session?null:{message:'signed out'}}),onAuthStateChange:f=>{listeners.add(f);return {data:{subscription:{unsubscribe(){}}}};},
+     signInWithPassword:async({email})=>{session={user:{id:'fixture-self',email}};listeners.forEach(f=>f());return {error:null};},signOut:async()=>{session=null;listeners.forEach(f=>f());return {error:null};}},
     rpc:async(name,args)=>{window.__idnMailCalls.push({name,args});
      if(name==='idn_my_mail_subscriptions')return {data:{country:'IDN',delivery_enabled:false,max_active_combinations:100,region_options:[{value:'__all__',label:'인도네시아 전국 · 중앙·모든 지방',level:'all'},...provinces.map(([,value,label])=>({value,label,level:'provincial',has_local_documents:value==='Kalimantan Timur'}))],subscriptions:window.__idnSubscriptions},error:null};
      if(name==='idn_set_my_mail_subscriptions'){for(const topic of args.p_topics)for(const region of args.p_regions){let s=window.__idnSubscriptions.find(s=>s.topic===topic&&s.region===region);if(!s){s={id:topic+':'+region,topic,region};window.__idnSubscriptions.push(s);}s.enabled=args.p_enabled;}return {data:{country:'IDN',affected:args.p_topics.length*args.p_regions.length},error:null};}
-     if(name==='idn_set_my_mail_subscription'){let s=window.__idnSubscriptions.find(s=>s.topic===args.p_topic&&s.region===args.p_region);if(!s){s={id:'fixture-sub',topic:args.p_topic,region:args.p_region};window.__idnSubscriptions.push(s);}s.enabled=args.p_enabled;return {data:s.id,error:null};}
+     if(name==='idn_set_my_mail_subscription'){let s=window.__idnSubscriptions.find(s=>s.topic===args.p_topic&&s.region===args.p_region);s.enabled=args.p_enabled;return {data:s.id,error:null};}
      throw Error('unexpected RPC');}};
   },provinces);
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm',r=>r.fulfill({contentType:'text/javascript',body:'export function createClient(){return window.__idnMockClient}'}));
   await page.goto('http://127.0.0.1:4317/indonesia-policy/?q=석탄');
   await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('건 검색됨'));
-  const root=page.locator('#mail-subscriptions');
-  await root.getByText('메일 구독 저장',{exact:true}).waitFor();
-  assert.equal(await root.getByRole('button',{name:'메일 구독 저장',exact:true}).isDisabled(),true);
-  await root.locator('[name=topic][value=coal]').check();await root.locator('[name=topic][value=nickel_mining]').check();
-  await root.getByText('지역 직접 선택',{exact:true}).click();
-  assert.equal(await root.locator('[data-region-options] input').count(),38);
-  assert.ok((await root.innerText()).includes('지방 자료 미확보'));
-  await root.locator('[name=region_filter]').fill('북칼리만탄');assert.equal(await root.locator('[data-region-options] label:visible').count(),1);await root.locator('[name=region_filter]').fill('');
-  await root.locator('[name=region][value="Kalimantan Timur"]').check();await root.locator('[name=region][value="Sulawesi Tengah"]').check();
-  await root.getByRole('button',{name:'메일 구독 저장',exact:true}).click();
-  await root.getByText('석탄 · 동칼리만탄 · 구독 중',{exact:true}).waitFor();
-  await root.getByText('니켈 · 중앙술라웨시 · 구독 중',{exact:true}).waitFor();
-  assert.equal(await root.locator('[name=region][value="Sulawesi Tengah"]').isChecked(),true);
-  assert.equal(new URL(page.url()).searchParams.get('q'),'석탄');assert.equal(await page.locator('#search-form [name=topic]').inputValue(),'');
-  await root.locator('li').filter({hasText:'석탄 · 동칼리만탄 · 구독 중'}).getByRole('button',{name:'구독 해제',exact:true}).click();await root.getByText('석탄 · 동칼리만탄 · 해제됨',{exact:true}).waitFor();
+  const root=page.locator('#mail-subscriptions'),star=name=>root.getByRole('button',{name,exact:true});
+  assert.equal(await root.evaluate(d=>d.open),false);await root.locator(':scope > summary').click();
+  assert.equal(await root.locator('[data-topic-stars] .fav-chip').count(),13);assert.equal(await root.locator('[data-region-stars] .fav-chip').count(),38);
+  assert.equal(await page.evaluate(()=>window.__idnMailCalls.length),0);
+  await star('석탄 즐겨찾기').click();assert.equal(await page.locator('#login-dialog').evaluate(d=>d.open),true);
+  await page.fill('#login-dialog [name=email]','fixture@example.test');await page.fill('#login-dialog [name=password]','pw');await page.click('#login-dialog [type=submit]');
+  await star('석탄 즐겨찾기 해제').waitFor();
+  assert.deepEqual(await page.evaluate(()=>window.__idnSubscriptions.map(s=>[s.topic,s.region,s.enabled])),[['coal','__all__',true]]);
+  await root.locator('.fav-more summary').click();await root.locator('[name=region_filter]').fill('동칼리만탄');
+  assert.equal(await root.locator('[data-region-stars] .fav-chip:visible').count(),1);
+  await root.locator('[data-region-stars]').getByRole('button',{name:'동칼리만탄 즐겨찾기',exact:true}).click();
+  await star('니켈 즐겨찾기').waitFor();await star('니켈 즐겨찾기').click();
+  await root.getByText('2개 품목 × 2개 지역',{exact:false}).waitFor();
   assert.ok((await root.innerText()).includes('자동 발송은 아직 준비 중'));
-  await root.getByRole('button',{name:'전체 품목 선택',exact:true}).click();await root.locator('[name=region][value=__all__]').check();
-  assert.equal(await root.locator('[name=topic]:checked').count(),13);assert.equal(await root.locator('[name=region][value="Sulawesi Tengah"]').isDisabled(),true);
-  await root.getByRole('button',{name:'메일 구독 저장',exact:true}).click();await root.getByText('팜유 · 인도네시아 전국 · 중앙·모든 지방 · 구독 중',{exact:true}).waitFor();
-  const calls=await page.evaluate(()=>window.__idnMailCalls),batches=calls.filter(c=>c.name==='idn_set_my_mail_subscriptions');
-  assert.equal(batches.length,2);assert.equal(calls.filter(c=>c.name==='idn_set_my_mail_subscription').length,1);
-  assert.deepEqual(batches[0].args.p_topics,['coal','nickel_mining']);assert.equal(batches[0].args.p_regions.length,2);
-  assert.deepEqual(batches[1].args.p_regions,['__all__']);assert.equal(batches[1].args.p_topics.length,13);
+  await star('석탄 즐겨찾기 해제').click();await root.getByText('1개 품목 × 2개 지역',{exact:false}).waitFor();
+  assert.deepEqual(await page.evaluate(()=>window.__idnSubscriptions.filter(s=>s.enabled).map(s=>[s.topic,s.region]).sort()),[['nickel_mining','Kalimantan Timur'],['nickel_mining','__all__']]);
+  assert.equal(new URL(page.url()).searchParams.get('q'),'석탄');assert.equal(await page.locator('#search-form [name=topic]').inputValue(),'');
+  const calls=await page.evaluate(()=>window.__idnMailCalls);
   assert.ok(calls.every(c=>['idn_my_mail_subscriptions','idn_set_my_mail_subscription','idn_set_my_mail_subscriptions'].includes(c.name)));
+  assert.ok(calls.filter(c=>c.name==='idn_set_my_mail_subscriptions').every(c=>!(c.args.p_regions.includes('__all__')&&c.args.p_regions.length>1)));
   await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261021/mailing/multiscope-subscriptions-desktop.png'});
   await page.setViewportSize({width:390,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   await root.scrollIntoViewIfNeeded();await page.screenshot({path:'/Users/yeoninair/Documents/policy-downloads/indonesia-20261021/mailing/multiscope-subscriptions-mobile.png'});

@@ -1,20 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>인도네시아 정책 검색 · ChokeMonitor</title><link rel="stylesheet" href="../site-nav.css?v=1"><link rel="stylesheet" href="./search.css?v=4"></head>
+<title>인도네시아 정책 검색 · ChokeMonitor</title><link rel="stylesheet" href="/site-nav.css?v=1"><link rel="stylesheet" href="/indonesia-policy/search.css?v=6"></head>
 <body><header data-site-nav class="site-nav-fallback"><a href="/">ChokeMonitor</a></header>
-<div class="idn-bar"><span>정책 / 인도네시아</span><a class="translate-link" href="https://38cfe31b.id-ko-interpreter.pages.dev/" target="_blank" rel="noopener noreferrer">한-인니 통번역 ↗</a></div>
-<main><section class="intro"><p class="eyebrow">INDONESIA POLICY</p><h1>인도네시아 정책 검색</h1>
-<p>자원개발·트레이딩의 업종 규제와 공통 사업법규를 찾습니다.</p></section>
-<section id="mail-subscriptions" class="mail-subscriptions" aria-labelledby="mail-subscriptions-title"><h2 id="mail-subscriptions-title">상품·사업지역 규제 메일 구독</h2>
-<p class="search-help">선택한 품목 중 하나와 적용 지역이 함께 맞는 변경을 알립니다. 전국은 중앙정부·모든 지방의 검토된 변경을 포함합니다. 특정 지역은 해당 지역 변경과 전국에 적용되는 중앙정부 법률·규정을 포함합니다.</p>
-<p role="status" aria-live="polite" data-mail-status></p><form data-login-form class="mail-login" hidden><label>이메일 <input type="email" name="email" autocomplete="email" required maxlength="254"></label><label>비밀번호 <input type="password" name="password" autocomplete="current-password" required maxlength="200"></label><button type="submit">로그인</button><p class="search-help">계정이 없으면 <a href="/mypage">메인 사이트에서 회원가입</a></p><p data-login-status role="status" aria-live="polite"></p></form><p data-account class="mail-account" hidden><span data-account-email></span> <button type="button" data-logout>로그아웃</button></p>
-<form data-subscription-form hidden>
-<fieldset><legend>메일 품목 · 여러 개 선택</legend><div class="mail-actions"><button type="button" data-topics="all">전체 품목 선택</button><button type="button" data-topics="none">품목 선택 해제</button></div><div class="mail-checks" data-topic-options></div></fieldset>
-<fieldset><legend>메일 지역 · 여러 개 선택</legend><label class="mail-choice mail-nationwide"><input type="checkbox" name="region" value="__all__">인도네시아 전국 · 중앙·모든 지방</label>
-<details class="mail-region-details"><summary>지역 직접 선택</summary><label class="mail-region-filter">지역 찾기 <input type="search" name="region_filter" placeholder="예: 칼리만탄, Sulawesi" maxlength="120"></label><div class="mail-actions"><button type="button" data-regions="none">지역 선택 해제</button></div><div class="mail-checks mail-region-options" data-region-options></div></details>
-<p class="search-help">지방 자료 미확보 지역도 구독할 수 있으며 전국 적용 규정은 포함됩니다. 지역 선택 가능 여부가 지방 규정 수집 완료를 뜻하지 않습니다. 군·시와 주의 관계는 추정하지 않습니다.</p></fieldset>
-<p class="search-help" data-selection-status aria-live="polite"></p><div class="mail-actions"><button type="submit">메일 구독 저장</button></div><p data-save-status role="status" aria-live="polite"></p>
-</form><ul aria-label="저장한 인도네시아 메일 구독"></ul></section>
+<main><header class="idn-head"><div class="idn-modes"><span class="idn-country">인도네시아</span><span class="idn-beta">beta</span><span class="idn-mode-btn active" aria-current="page">정책 검색</span><a class="idn-mode-btn translate-link" href="https://38cfe31b.id-ko-interpreter.pages.dev/" target="_blank" rel="noopener noreferrer">한-인니 통번역 ↗</a></div>
+<nav class="idn-crumb" aria-label="현재 위치"><span class="idn-crumb-root">정책</span><span class="idn-crumb-sep">›</span><span class="idn-crumb-current">인도네시아</span><span class="idn-crumb-note">자원개발·트레이딩의 업종 규제와 공통 사업법규</span></nav></header>
+<h1 class="sr-only">인도네시아 정책 검색</h1>
 <form id="search-form" role="search"><label class="sr-only" for="query">정책 검색어</label>
 <div class="search-bar"><input id="query" name="q" type="search" maxlength="240" placeholder="예: 보크사이트, 제련 · 니켈, 투자 · 팜유, 인증" autocomplete="off"><button type="submit">검색</button></div>
 <div class="filters"><label>품목 <select name="topic"><option value="">전체</option><option value="coal">석탄</option><option value="nickel_mining">니켈</option><option value="palm_oil">팜유</option><option value="biofuel">바이오연료</option><option value="bauxite">보크사이트·알루미늄</option><option value="copper">구리</option><option value="tin">주석</option><option value="cobalt">코발트</option><option value="manganese">망간</option><option value="iron_steel">철광석·철강</option><option value="silica">실리카·석영</option><option value="gold_silver">금·은</option><option value="rare_earths">희토류</option></select></label>
@@ -25,10 +15,19 @@
 <label>정렬 <select name="sort"><option value="relevance">관련도 → 연도</option><option value="year">문서 연도</option></select></label>
 </div><label>문서 유형 <select name="type"><option value="">전체</option><option value="UU">법률</option><option value="PP">정부 시행령</option><option value="Perpres">대통령령</option><option value="Inpres">대통령 지시</option><option value="Permen">부처 규정</option><option value="PMK">재무부 규정</option><option value="Permentan">농업부 규정</option><option value="Permenperin">산업부 규정</option><option value="Perda">지방 조례</option><option value="Pergub">주지사 규정</option></select></label><p id="filter-help" class="search-help" aria-live="polite"></p></details><div class="search-options"><label class="checkbox"><input type="checkbox" name="match" value="all">모든 키워드 조건 일치</label><label class="checkbox"><input type="checkbox" name="mode" value="hybrid">문서개요 의미검색 · 시범</label><button type="button" id="reset-filters">검색 초기화</button></div>
 <p class="search-help">쉼표로 조건을 구분하세요. 의미검색은 문서 개요, 모든 조건 일치는 키워드 기준입니다.</p><div class="examples" aria-label="검색 예시"><button type="button" data-query="보크사이트, 제련">보크사이트 · 제련</button><button type="button" data-query="니켈, 보조금">니켈 · 지원</button><button type="button" data-query="팜유, 인증">팜유 · 인증</button><button type="button" data-query="석탄, 파산">석탄 · 파산</button></div></form>
+<details id="mail-subscriptions" class="favorites"><summary class="fav-toggle"><span class="fav-title"><span class="fav-title-star" aria-hidden="true">★</span> 즐겨찾기 · 규제 메일 알림</span><span class="fav-count" data-fav-count></span><span class="fav-chevron" aria-hidden="true">▾</span></summary>
+<div class="fav-body"><p data-account class="mail-account" hidden><span data-account-email></span> <button type="button" data-logout>로그아웃</button></p>
+<p class="search-help">☆를 누르면 즐겨찾기에 담기고, 별표한 품목과 지역이 함께 맞는 규제 변경을 메일로 알립니다. 전국은 중앙정부·모든 지방을 포함합니다. 이름을 누르면 그 품목으로 검색합니다.</p>
+<div class="fav-row"><span class="fav-label">품목</span><div class="fav-chips" data-topic-stars></div></div>
+<div class="fav-row"><span class="fav-label">지역</span><div class="fav-chips" data-region-stars-main></div></div>
+<details class="fav-more"><summary>지역 더보기 · 38개 주</summary><label class="mail-region-filter">지역 찾기 <input type="search" name="region_filter" placeholder="예: 칼리만탄, Sulawesi" maxlength="120"></label><div class="fav-chips" data-region-stars></div><p class="search-help">지방 자료 미확보 지역도 별표할 수 있으며 전국 적용 규정은 포함됩니다. 군·시와 주의 관계는 추정하지 않습니다.</p></details>
+<p role="status" aria-live="polite" data-mail-status class="fav-status"></p>
+<details class="fav-saved" hidden><summary data-saved-summary>저장된 알림 조합</summary><ul aria-label="저장한 인도네시아 메일 구독"></ul></details></div></details>
 <details class="coverage"><summary>수집 범위·검색 방식 확인</summary><p id="coverage"></p><p>품목·단계 태그는 관련 검토 범위입니다. 검색 결과는 법적 적용성·지원 자격 확정이 아닙니다. 의미검색은 문서 개요 기반이며 전체 조문 검색이 아닙니다. 희토류 등은 탐사·사업화 근거를 별도로 확인해야 합니다.</p></details><p id="status" role="status" aria-live="polite"></p><div id="results"></div>
 <nav id="pagination" aria-label="검색 결과 페이지"></nav>
 
 <aside>공식 출처를 확보한 시범 자료입니다. 검색 결과가 없다고 규제가 없는 것은 아닙니다. 현재 법적 효력과 개정·폐지는 별도 확인이 필요합니다.</aside>
 </main>
 <dialog id="detail"><button id="close-detail" class="close" aria-label="상세 닫기">닫기</button><div id="detail-content"></div></dialog>
-<script src="../auth-config.js?v=1"></script><script src="../site-nav.js?v=1" defer></script><script type="module" src="./search.mjs?v=2"></script><script type="module" src="./subscriptions.mjs?v=2"></script></body></html>
+<dialog id="login-dialog" class="login-dialog" aria-labelledby="login-title"><form data-login-form class="mail-login"><h2 id="login-title">로그인하고 즐겨찾기 저장</h2><p class="search-help">메인 사이트와 같은 계정입니다.</p><label>이메일 <input type="email" name="email" autocomplete="email" required maxlength="254"></label><label>비밀번호 <input type="password" name="password" autocomplete="current-password" required maxlength="200"></label><p data-login-status role="status" aria-live="polite"></p><div class="mail-actions"><button type="submit">로그인</button><button type="button" data-login-cancel>취소</button></div><p class="search-help">계정이 없으면 <a href="/mypage">메인 사이트에서 회원가입</a></p></form></dialog>
+<script src="/auth-config.js?v=1"></script><script src="/site-nav.js?v=2" defer></script><script type="module" src="/indonesia-policy/search.mjs?v=2"></script><script type="module" src="/indonesia-policy/subscriptions.mjs?v=5"></script></body></html>

@@ -113,6 +113,17 @@ export default {
             return await handleNightTile(request, url);
         }
 
+        // 정책 > 인도네시아 lives at /policy/indonesia, next to /policy/us. The
+        // page itself stays in indonesia-policy/ (its assets use absolute
+        // paths); the old address and a trailing slash redirect here.
+        if (url.pathname === '/policy/indonesia') {
+            const page = new URL('/indonesia-policy/', url.origin);
+            return serveAsset(new Request(page.toString(), request), env);
+        }
+        if (['/policy/indonesia/', '/indonesia-policy', '/indonesia-policy/', '/indonesia-policy/index.html'].includes(url.pathname)) {
+            return Response.redirect(new URL(`/policy/indonesia${url.search}`, url.origin).toString(), 301);
+        }
+
         // Default: Serve Static Assets
         return serveAsset(request, env);
     },
