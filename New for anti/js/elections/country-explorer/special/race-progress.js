@@ -135,10 +135,81 @@ const renderKorRace = (race) => {
     `;
 };
 
-export const raceProgressContent = (country) => {
+// A plenum's phase comes from its dates against today in Beijing, not from a
+// stored status: the file is written before the meeting opens and must not
+// keep saying 예정 while it runs, or 진행 중 after it closes. Closed without a
+// communique in the file reads as 공보 반영 대기 -- never as a settled outcome.
+const beijingToday = (now) => new Date(now + 8 * 3600 * 1000).toISOString().slice(0, 10);
+const plenumPhase = (plenum, today) => {
+    if (today < plenum.start) return { status: 'scheduled', label: '예정' };
+    if (today <= plenum.end) return { status: 'ongoing', label: '진행 중' };
+    return plenum.outcome_ko ? { status: 'completed', label: '완료' } : { status: 'ongoing', label: '폐막 · 공보 반영 대기' };
+};
+const sourceLink = (url, label = '원문 ↗') => /^https:\/\//.test(url || '')
+    ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>` : '';
+// Plenums span five years, so the year has to stay on every row (formatDate
+// drops it, which turned 2022's 1중전회 into "10월 23일").
+const ymd = (iso) => { const [y, m, d] = String(iso).split('-'); return `${y}.${Number(m)}.${Number(d)}`; };
+const dateRange = (start, end) => start === end ? ymd(start)
+    : start.slice(0, 7) === end.slice(0, 7) ? `${ymd(start)}~${Number(end.slice(8))}` : `${ymd(start)}~${ymd(end).slice(5)}`;
+
+const chnPlenum = (plenum, today) => {
+    const phase = plenumPhase(plenum, today);
+    return `
+        <details class="elections-race-unit is-${phase.status}"${phase.status === 'completed' ? '' : ' open'}>
+            <summary>
+                <span class="elections-race-unit-date">${escapeHtml(dateRange(plenum.start, plenum.end))}</span>
+                <span class="elections-race-unit-label">${escapeHtml(plenum.label_ko)}</span>
+                <span class="elections-race-unit-headline">${escapeHtml(phase.label)}</span>
+            </summary>
+            <p class="elections-panel-note"><b>의제</b> ${escapeHtml(plenum.agenda_ko)}</p>
+            <p class="elections-panel-note"><b>결과</b> ${escapeHtml(plenum.outcome_ko || '공보 전 · 미확정')}</p>
+            ${plenum.note_ko ? `<p class="elections-panel-note">${escapeHtml(plenum.note_ko)}</p>` : ''}
+            ${plenum.source_url ? `<p class="elections-panel-note elections-origin-links">${sourceLink(plenum.source_url)}</p>` : ''}
+        </details>`;
+};
+
+const renderChnPlenums = (race, now = Date.now()) => {
+    const today = beijingToday(now);
+    const plenums = [...(race.plenums || [])].sort((a, b) => a.start.localeCompare(b.start));
+    const next = plenums.find((p) => plenumPhase(p, today).status !== 'completed');
+    const done = plenums.filter((p) => plenumPhase(p, today).status === 'completed').length;
+    const pending = race.pending_confirmations || [];
+    return `
+        ${race.race?.note_ko ? `<p class="elections-panel-note">${escapeHtml(race.race.note_ko)}</p>` : ''}
+        <div class="elections-card-grid">
+            ${statCard('다음 전회', next ? next.label_ko : '없음', next ? `${dateRange(next.start, next.end)} · ${plenumPhase(next, today).label}` : '')}
+            ${statCard('20기 전회 진행', `${done}회 완료`, `기준 ${race.as_of}`)}
+            ${statCard('추인 대기 제명', `${pending.length}건`, '전회 공보로 확정')}
+            ${statCard('다음 당대회', '21차', race.race?.congress_ko ? '관례상 2027년 · 공식 일정 미발표' : '')}
+        </div>
+        <p class="section-title">20기 중앙위원회 전체회의 · 눌러서 의제와 결과를 펼칩니다</p>
+        <div class="elections-race-unit-list">${plenums.slice().reverse().map((p) => chnPlenum(p, today)).join('')}</div>
+        ${(race.politburo_meetings || []).length ? `
+        <p class="section-title">전회 준비 정치국 회의</p>
+        <div class="elections-screen-list">${race.politburo_meetings.map((m) => `<article class="elections-event"><div class="elections-event-title">${escapeHtml(m.summary_ko)}</div><div class="elections-event-meta">${escapeHtml(ymd(m.date))} · 정치국 회의 <span class="elections-origin-links">${sourceLink(m.source_url)}</span></div></article>`).join('')}</div>` : ''}
+        ${pending.length ? `
+        <p class="section-title">전회 추인을 기다리는 인사</p>
+        <table class="elections-race-table">
+            <thead><tr><th>인물</th><th>상태</th><th>근거</th></tr></thead>
+            <tbody>${pending.map((p) => `<tr><td>${escapeHtml(p.name_ko)}</td><td>${escapeHtml(p.status_ko)}</td><td>${escapeHtml(`${p.basis_ko} · ${p.source_ko}`)}</td></tr>`).join('')}</tbody>
+        </table>` : ''}
+        ${(race.communique_checks_ko || []).length || (race.watch_words || []).length ? `
+        <details class="elections-disclosure">
+            <summary>공보가 나오면 대조할 항목</summary>
+            ${(race.communique_checks_ko || []).length ? `${race.communique_checks_ko.map((c, i) => `<p class="elections-panel-note"><b>인사 ${i + 1}</b> ${escapeHtml(c)}</p>`).join('')}` : ''}
+            ${(race.watch_words || []).length ? `<p class="elections-panel-note">${escapeHtml(race.watch_words_note_ko || '')} ${race.watch_words.map((w) => `<code>${escapeHtml(w)}</code>`).join(' ')}</p>` : ''}
+        </details>` : ''}
+        ${race.outside_slots_ko ? `<p class="elections-panel-note">${escapeHtml(race.outside_slots_ko)}</p>` : ''}
+        ${race.race?.congress_ko ? `<p class="elections-panel-note">${escapeHtml(race.race.congress_ko)}</p>` : ''}
+    `;
+};
+
+export const raceProgressContent = (country, now = Date.now()) => {
     const race = country.race_progress;
     if (!race) return null;
     if (race.mode === 'rolling_state_primary_midterms') return renderUsaRace(race);
     if (race.mode === 'party_leadership_tour_interim') return renderKorRace(race);
+    if (race.mode === 'party_plenum_cycle') return renderChnPlenums(race, now);
     return '<p class="elections-muted">이 국가의 선거 진행 형식은 아직 대시보드에 연결되지 않았습니다.</p>';
 };
