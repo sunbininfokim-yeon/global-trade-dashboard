@@ -114,7 +114,7 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                          or document.get('format') == 'reviewed_surveyusa_report_v1'
                             and document['url'] in PRIMARY_SURVEYUSA_RELEASES
                          or state_review and (parsed.path.endswith(('.pdf','.xlsx'))
-                            or document.get('format') == HTML_REGION_FORMAT
+                            or document.get('format') in (HTML_REGION_FORMAT, 'reviewed_html_document_v1')
                             or document.get('format') == 'reviewed_pdf_v1'
                             or document.get('format') == 'reviewed_html_article_v1'
                             or document.get('format') == 'reviewed_surveyusa_report_v1'
@@ -157,7 +157,10 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                     require(response.status==200 and response.geturl()==document['url'], 'primary document redirect/response')
                     body=response.read(3*1024*1024+1)
                 require(len(body)<=3*1024*1024, 'primary document size changed')
-                if document.get('format') == HTML_REGION_FORMAT:
+                if document.get('format') == 'reviewed_html_document_v1':
+                    require(body.lstrip().lower().startswith((b'<!doctype html', b'<html', b'<nav')), 'primary HTML document format changed')
+                    digest = hashlib.sha256(body).hexdigest()
+                elif document.get('format') == HTML_REGION_FORMAT:
                     digest = html_region_fingerprint(body, document)
                 elif document.get('format') == 'reviewed_html_article_v1':
                     digest = primary_html_fingerprint(body)

@@ -1,5 +1,15 @@
 # 인도네시아 정책 시범 수집기
 
+[여러 상품·지역·전국 메일 구독](../../docs/indonesia-policy-multi-scope-mailing-20261021.md)
+
+[호스트 간 잠금·실행 상태·불완전 원문 메일 보류](../../docs/indonesia-policy-collector-coordination-20261021.md)
+
+[수집·재개·원문 보존 보강](../../docs/indonesia-policy-refresh-hardening-20261021.md): `sync_reviewed.py`가 검토 출처 103개(석탄 단계42개)를 제한된 배치로 받아 DB에 저장한다. 잠금·파일 체크포인트·호스트 보류·DB 실패 재개·STOP을 지원한다. 운영 원문 보존/저장 직렬화 guard를 적용했고 공식 출처2건으로 실제 수집/저장을 점검했다. 반복 예약·임베딩·메일 발송을 켜지 않았다.
+
+[2026-10-21 메일 연결](../../docs/indonesia-policy-mailing-20261021.md): 상품·지역 구독, 저장 시 변경 후보, 검토 및 공통 발송 대기열 연결을 운영 DB에 적용했다. 현재 IDN 발송은 꺼져 있다. 자동 수집 예약·사이트/메일 Worker 배포와 실제 수신 검증은 별도다.
+
+[검색 분류·상품/지역 메일 조건](../../docs/indonesia-policy-search-and-mailing-scope-20261020.md): 데스크톱 네 열·태블릿/모바일 한 목록, 석탄/동칼리만탄 메일 검토 후보를 준비했다. IDN 구독·변경 알림·자동 수집 예약은 아직 연결되지 않았다.
+
 미국과 분리된 policy_idn 전용 수집·저장·검색 경로다. [분리 계약](../../docs/indonesia-policy-isolation-contract.md)과 [검색 계약](../../docs/indonesia-policy-search.md)을 따른다. 수집/import는 검색 UI, 미국 검색, 메일, Gemini 호출, 반복 스케줄을 실행하지 않는다.
 
 [2026-10-20 석탄 보강 결과](../../docs/indonesia-policy-coal-core-20261020.md): 원문 2건·효력 근거 16건·관계/적용범위/조문 12건을 운영 DB에 추가했다. `sources-coal-core-20261020.json`, `coal-review-pack-20261020.json`, `coal-legal-effect-pack-20261020.json`에 수집·재적용 입력을 보관한다. 스캔 PDF 1건과 신규 임베딩은 미완료이며 법령 전체의 현행성을 확정한 것은 아니다.

@@ -6,8 +6,28 @@
 - branch: `codex/rss-report-editions-20261021`
 - base: `96af0fca` (작업 시작 때 갱신한 origin/main)
 - TASKS: `RSS-EDITIONS-20261021`
-- 상태: 코드·로컬 SQL 검증 완료 후 PR 검토용. 운영 SQL, merge, Worker/사이트 배포,
-  workflow dispatch, 실제 메일 발송은 이 작업에서 수행하지 않는다.
+- 최초 상태: 코드·로컬 SQL 검증 완료 후 PR 검토용. 최신 완료 상태는 아래를 따른다.
+
+## 운영 복구 및 적용 이력 기록 완료
+
+PR #661의 부분 적용 인수 후, 문제의 trigger 생성은 로그인된 Dashboard SQL Editor에서
+성공했다. 남은 함수·trigger·권한·commodity 중복 판별 패치를 제한 트랜잭션으로 적용했다.
+
+- trigger 3종과 판별 접수 기록이 운영에 반영됐다. 법안/인도네시아 gateway 및 기존
+  completion 함수는 보존했다. 보조 함수의 browser EXECUTE와 신규 표 browser SELECT는 차단됐다.
+- 실제 DB에서 새 발행본/중복 방지/접수 trigger/과거 판 덮어쓰기 방지/월요일 08:00을
+  검사하고 전체 ROLLBACK했다. 검증용 보고서/큐 잔존은 없고 실제 메일은 보내지 않았다.
+- 사용자 승인 후 `20261021042059` 적용 완료 이력을 기록했다. 운영 SQL을 다시 실행한 것이 아니다.
+- 복구 중 먼저 적용했던 권한 제한 이력 `20261021114711`도 동일 버전 SQL로 저장소에
+  보존한다. 신규 DB 설치 및 순서대로 재적용하는 검증에도 포함한다.
+- PR #657은 이미 병합됐다. 후속 변경은 기록/설치 재현용이며 운영에 본 migration을
+  다시 적용하거나 발송기를 다시 켤 필요가 없다. 다음 정상 주간 발송의 실제 수신은 별도 확인한다.
+- 원래 MCP 타임아웃의 근본 원인은 미확정이다. Dashboard도 공식적으로 60초 제한이
+  있으므로 "Dashboard에는 제한이 없다"는 해석은 맞지 않는다.
+  참고: https://supabase.com/docs/guides/database/postgres/timeouts
+
+복구 백업·화면·원시 검증 자료는 비공개로 보관하며 이 PR에는 포함하지 않는다.
+아래 최초 적용 절차는 새 환경용 참고이며, 완료된 운영에 반복 실행하지 않는다.
 
 ## 문제와 변경
 
