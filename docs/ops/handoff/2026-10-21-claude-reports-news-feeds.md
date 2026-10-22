@@ -27,3 +27,10 @@
 - 못 붙인 곳: Mining Weekly·Engineering News·Mining Review·The Herald(Cloudflare 403), African Mining Brief(도메인이 도박 사이트로 넘어감), TLS 체인이 깨졌거나 DNS가 없는 정부 사이트(DRC·잠비아·탄자니아·나미비아·짐바브웨).
 - 우라늄 창에 농축·연료 기사가 들어오는 문제는 사용자 결정 대기(범위를 천연우라늄으로 좁힐지).
 - 병합·배포는 하지 않았다(사용자 확인 대기).
+
+## 2026-10-22 검토 — 메일 보관 사고와 조치
+
+- `commodity_reports.yml`의 메일 보관 단계가 작업 브랜치 수동 실행에서도 돌아, 이 브랜치의 미병합 소스 381행(구글 리다이렉트 157행)이 운영 `mailing_reports`에 들어가고 47건이 10/26 08:00 KST 발송 예정이 됐다.
+- 사용자 확인 후 운영에서 47건 `suppressed_at` 차단 + 381행(및 editions) 삭제. 발송 이력 0건.
+- 재발 방지: 보관 단계는 main에서만, `archive-mailing-reports.js`는 뉴스(`publisher_type: news`) 제외.
+- 교훈: 보고서 파이프라인을 브랜치에서 dispatch하면 Supabase까지 닿는 단계가 있는지 먼저 확인할 것.
