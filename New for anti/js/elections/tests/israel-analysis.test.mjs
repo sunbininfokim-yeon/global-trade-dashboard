@@ -1,11 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readIsraelFixture } from './fixtures/israel-snapshot.mjs';
 import { koreaToday, dayAge, listSeats, seatPolls, selectedSeatSum, sourceHref, validateIsraelBoard } from '../data/israel-analysis.js';
 import { israelAnalysisHtml } from '../country-explorer/special/israel-analysis.js';
-const data = new URL('../../../public/data/', import.meta.url);
-const board = JSON.parse(readFileSync(new URL('israel_election_analysis_v1.json', data)));
-const health = JSON.parse(readFileSync(new URL('israel_election_analysis_status_v1.json', data)));
+const board = JSON.parse(readIsraelFixture('israel_election_analysis_v1.json'));
+const health = JSON.parse(readIsraelFixture('israel_election_analysis_status_v1.json'));
 const today = '2026-10-20';
 const latest = seatPolls(board, { today }).find(r => r.review_status === 'accepted');
 

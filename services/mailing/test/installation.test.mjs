@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { PGlite } from '@electric-sql/pglite';
-const files = ['20260911010000_mailing_outbox.sql','20260919_bill_notification_pause.sql','20260919_favorite_notify_enabled.sql','20260920020000_mailing_bill_lifecycle.sql','20261002010000_mailing_bill_event_identity.sql','20261002020000_mailing_subscription_preferences.sql'];
+const files = ['20260911010000_mailing_outbox.sql','20260919_bill_notification_pause.sql','20260919_favorite_notify_enabled.sql','20260920020000_mailing_bill_lifecycle.sql','20261002010000_mailing_bill_event_identity.sql','20261002020000_mailing_subscription_preferences.sql','20261021042059_mailing_report_editions.sql'];
 const sql = name => readFileSync(new URL(`../../../supabase/migrations/${name}`, import.meta.url), 'utf8');
 const U = '00000000-0000-0000-0000-000000000001';
 async function fixture(fn) {
