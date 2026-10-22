@@ -71,11 +71,15 @@ async function archiveReports({ file, document, upsert, dryRun = false, skipUnda
   const data = document || JSON.parse(fs.readFileSync(source, "utf8"));
   if (!Array.isArray(data.items)) throw new Error("invalid_reports_document");
   const normalized = data.items.map(normalizeReport);
-  const rows = [
-    ...new Map(
-      normalized.filter(Boolean).map((row) => [row.report_id, row]),
-    ).values(),
-  ];
+  // A feed can contain several releases at the same permanent URL. Input
+  // ordering must not replace the newest release with an older duplicate.
+  const latest = new Map();
+  for (const row of normalized.filter(Boolean)) {
+    const previous = latest.get(row.report_id);
+    if (!previous || Date.parse(row.published_at) >= Date.parse(previous.published_at))
+      latest.set(row.report_id, row);
+  }
+  const rows = [...latest.values()];
   const omissions = data.items.map(reportOmission);
   const undated = omissions.filter(x => x?.undated).length;
   const unclassified = omissions.filter(x => x?.unclassified).length;

@@ -8,6 +8,7 @@ import fcntl
 import hashlib
 import json
 import re
+import shutil
 import time
 import uuid
 from datetime import datetime, timezone
@@ -39,6 +40,7 @@ def identity(title):
         ('peraturan menteri perindustrian', 'Permenperin', 'kemenperin'),
         ('peraturan menteri pertanian', 'Permentan', 'pertanian'),
         ('peraturan menteri keuangan', 'PMK', 'kemenkeu'),
+        ('keputusan menteri keuangan', 'Keputusan', 'kemenkeu'),
         ('peraturan menteri energi', 'Permen', 'esdm'), ('peraturan menteri esdm', 'Permen', 'esdm'),
         ('peraturan daerah', 'Perda', None), ('peraturan gubernur', 'Pergub', None),
         ('peraturan bupati', 'Perbup', None)]:
@@ -142,6 +144,10 @@ def parse_page(data, url, source):
                 # The canonical entry already represents page one.
                 if parsed.query!='page=1':links.append(target)
         elif adapter == 'djbc_pages':
+            total = re.search(r'\bof\s+([\d,.]+)\s+row\b',text)
+            expected = int(re.sub(r'\D','',total.group(1))) if total else None
+            if source.get('require_reported_total') and expected is None:
+                raise ValueError('catalogue_count_missing')
             scope = re.fullmatch(r'(penerbit/\d+/[^/]+/)(\d+)\.html',parse_qs(urlparse(source['url']).query).get('page',[''])[0])
             if not scope:
                 raise ValueError('invalid_djbc_scope')
@@ -163,7 +169,7 @@ def parse_page(data, url, source):
         if key in unique and unique[key] != r:
             raise ValueError('conflicting_record_id')
         unique[key]=r
-    if expected is not None and adapter!='kemendag_pages' and expected != len(unique):
+    if expected is not None and adapter not in ('kemendag_pages','djbc_pages') and expected != len(unique):
         raise ValueError('reported_count_mismatch')
     return list(unique.values()), sorted(set(links)), expected
 
@@ -194,7 +200,7 @@ def advance(snapshot, raw_dir, fetcher=fetch):
             if not official_url(target) or urlparse(target).hostname != urlparse(snapshot['source_config']['url']).hostname:
                 raise ValueError('pagination_left_registered_host')
             pending.append(target)
-    if snapshot['source_config']['adapter']=='kemendag_pages':
+    if snapshot['source_config']['adapter'] in ('kemendag_pages','djbc_pages') and expected is not None:
         previous={p['reported_total'] for p in snapshot['pages']}
         if previous and previous!={expected}:
             raise ValueError('catalogue_total_changed_restart_review')
@@ -238,11 +244,22 @@ def run(registry, out, selected, max_pages=20, resume=False, fetcher=fetch, dela
             while snapshot['pending_urls'] and used<max_pages:
                 if (out/'STOP').exists():
                     snapshot.update(status='partial',stop_reason='operator_stop',finished_at=now());save(path,state);return state
+                if shutil.disk_usage(out).free<64*1024*1024:
+                    snapshot.update(status='partial',stop_reason='local_disk_space',finished_at=now());save(path,state);return state
                 if host in blocked:
                     snapshot.update(status='held',stop_reason='host_blocked_earlier_in_run',finished_at=now());save(path,state);break
                 used+=1
                 try:advance(snapshot,raw,fetcher)
                 except Exception as exc:
+                    if isinstance(exc,OSError) and exc.errno==28:
+                        snapshot.update(status='partial',stop_reason='local_disk_space',finished_at=now())
+                        # Atomic save retains the last completed page even if
+                        # there is no room to persist this local stop reason.
+                        try:save(path,state)
+                        except OSError as disk_error:
+                            if disk_error.errno!=28:raise
+                        print(json.dumps(dict(source=snapshot['source_id'],status='partial',stop_reason='local_disk_space')),flush=True)
+                        return state
                     detail=str(exc)[:500];status=getattr(getattr(exc,'response',None),'status_code',None)
                     if status in (403,429) or 'blocked_or_maintenance' in detail:blocked.add(host)
                     snapshot['failures'].append(dict(url=snapshot['pending_urls'][0],error=detail,observed_at=now()))

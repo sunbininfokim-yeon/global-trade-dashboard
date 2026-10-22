@@ -1,0 +1,59 @@
+# Independent validation: Israel failures must not gate daily US publication.
+name: Israel election analysis validation
+
+on:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/election_watch/config/israel/**'
+      - 'New for anti/scripts/election_watch/*israel*.py'
+      - 'New for anti/scripts/election_watch/election_watch/israel_*.py'
+      - 'New for anti/scripts/election_watch/tests/test_israel_*.py'
+      - 'New for anti/scripts/election_watch/tests/fixtures/israel/**'
+      - 'New for anti/public/data/israel_election_analysis*.json'
+      - 'New for anti/js/elections/data/israel*.js'
+      - 'New for anti/js/elections/country-explorer/special/israel-analysis.*'
+      - 'New for anti/js/elections/tests/israel*.test.mjs'
+      - 'New for anti/js/elections/tests/fixtures/israel-snapshot.mjs'
+      - '.github/workflows/israel_analysis_validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'New for anti/scripts/election_watch/config/israel/**'
+      - 'New for anti/scripts/election_watch/*israel*.py'
+      - 'New for anti/scripts/election_watch/election_watch/israel_*.py'
+      - 'New for anti/scripts/election_watch/tests/test_israel_*.py'
+      - 'New for anti/scripts/election_watch/tests/fixtures/israel/**'
+      - 'New for anti/public/data/israel_election_analysis*.json'
+      - 'New for anti/js/elections/data/israel*.js'
+      - 'New for anti/js/elections/country-explorer/special/israel-analysis.*'
+      - 'New for anti/js/elections/tests/israel*.test.mjs'
+      - 'New for anti/js/elections/tests/fixtures/israel-snapshot.mjs'
+      - '.github/workflows/israel_analysis_validation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: israel-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Israel contracts offline
+        working-directory: New for anti/scripts/election_watch
+        run: |
+          python3 -m unittest discover -s tests -p 'test_israel_*.py' -v
+          python3 translate_israel_ko.py --check
+          python3 build_israel_analysis.py --check
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Israel UI contracts
+        run: node --experimental-default-type=module --test 'New for anti/js/elections/tests/israel'*.test.mjs
