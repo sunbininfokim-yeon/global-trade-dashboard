@@ -12,6 +12,7 @@ const regionNames={Banten:'반텐','Jawa Tengah':'중앙자바','Kalimantan Timu
 const regionSelect=document.querySelector('#jurisdictions'),levelSelect=form.elements.namedItem('level');
 let controller,detailController,serial=0;
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
+const spinner=()=>node('span',undefined,'spinner');
 function sourceLink(url,label){const href=officialUrl(url);if(!href)return node('span','원문 링크 확인 필요');const a=node('a',label);a.href=href;a.target='_blank';a.rel='noopener noreferrer';return a;}
 function appendSources(target,item){
  const links=documentLinks(item);for(const link of links){const a=sourceLink(link.url,link.label);a.dataset.sourceType=link.type;target.append(a);}
@@ -91,7 +92,7 @@ function card(item){
 }
 async function showDetail(id){
  detailController?.abort();detailController=new AbortController();const signal=detailController.signal;
- detail.replaceChildren(node('p','문서를 불러오는 중입니다.'));if(!dialog.open)dialog.showModal();
+ detail.replaceChildren(node('p','문서를 불러오는 중입니다.'));detail.firstChild.append(spinner());if(!dialog.open)dialog.showModal();
  try{
   const r=await fetch(`/api/idn/documents/${encodeURIComponent(id)}`,{signal}),d=await r.json();
   if(!r.ok)throw Error(d.error||'문서를 불러오지 못했습니다.');
@@ -112,7 +113,7 @@ function parameters(offset=0){const p=new URLSearchParams();for(const [key,value
 async function search(offset=0,writeHistory=true){
  controller?.abort();controller=new AbortController();const token=++serial;
  const p=parameters(offset);if(writeHistory)history.replaceState(null,'',`${location.pathname}?${p}`);
- status.textContent='검색 중입니다.';results.replaceChildren();pages.replaceChildren();
+ status.replaceChildren('검색 중입니다.',spinner());results.replaceChildren();pages.replaceChildren();
  try{
   const r=await fetch(`/api/idn/search?${p}`,{signal:controller.signal}),data=await r.json();
   if(!r.ok)throw Error(data.error||'검색하지 못했습니다.');if(data.country!=='IDN')throw Error('국가별 데이터 검증에 실패했습니다.');if(token!==serial)return;
