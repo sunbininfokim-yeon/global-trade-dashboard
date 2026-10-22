@@ -1,0 +1,825 @@
+{
+  "schema": "israel_coalition_context_v1",
+  "reviewed_on": "2026-10-15",
+  "basis": "Reviewed source statements and published poll blocs, not predicted coalition compatibility.",
+  "groups": [
+    {
+      "id": "likud",
+      "label_ko": "리쿠드 중심",
+      "color": "#f6b85a",
+      "description_ko": "같은 블록으로 보도 · 통합토라유다는 조건부",
+      "badge_ko": "보도상 블록 · 조건부"
+    },
+    {
+      "id": "change",
+      "label_ko": "정권 교체 추진",
+      "color": "#73b7ff",
+      "description_ko": "공동 원칙 발표 · 총리·최종 구성은 미정",
+      "badge_ko": "공동 원칙 발표"
+    },
+    {
+      "id": "arab",
+      "label_ko": "아랍계 선거 협력",
+      "color": "#5bd8b3",
+      "description_ko": "공동명부·라암 잉여표 협약 · 정부 참여 입장은 별도",
+      "badge_ko": "잉여표 선거 협약"
+    },
+    {
+      "id": "independent",
+      "label_ko": "독자·입장 미확인",
+      "color": "#ba9bf7",
+      "description_ko": "어느 연정에도 자동 편입하지 않음",
+      "badge_ko": "협력 입장 미확인"
+    }
+  ],
+  "parties": [
+    {
+      "list_id": "k26:מחל",
+      "group": "likud",
+      "leader": "בנימין נתניהו",
+      "description": "Leader of Likud and incumbent prime minister.",
+      "coalition_note": "The central party in the Netanyahu bloc reported by N12. Not a completed coalition agreement.",
+      "source_ids": [
+        "poll12"
+      ],
+      "ideology_group": "right",
+      "ideology_note": "Nationalist and liberal traditions; a broad right-wing family, distinct from a coalition commitment.",
+      "ideology_source_ids": [
+        "idi-likud"
+      ]
+    },
+    {
+      "list_id": "k26:ט",
+      "group": "likud",
+      "leader": "בצלאל סמוטריץ'",
+      "description": "Leads the Religious Zionism–Zehut election list.",
+      "coalition_note": "A surplus-vote agreement with Likud was announced; this is separate from a government coalition agreement.",
+      "source_ids": [
+        "likud-rz-surplus"
+      ],
+      "ideology_group": "religious-right",
+      "ideology_note": "Religious Zionism is on the far right. Its 2026 partner Zehut adds libertarian economic positions; the joint list is not ideologically uniform.",
+      "ideology_source_ids": [
+        "idi-rz",
+        "idi-zehut"
+      ]
+    },
+    {
+      "list_id": "k26:שס",
+      "group": "likud",
+      "leader": "אריה דרעי",
+      "description": "Leader of Shas.",
+      "coalition_note": "Counted in the Netanyahu bloc in the N12 poll; this alone does not confirm participation after the election.",
+      "source_ids": [
+        "poll12"
+      ],
+      "ideology_group": "haredi",
+      "ideology_note": "Sephardic ultra-Orthodox representation. Religious community identity does not imply identical security or economic policy to other religious parties.",
+      "ideology_source_ids": [
+        "idi-shas"
+      ]
+    },
+    {
+      "list_id": "k26:ב",
+      "group": "likud",
+      "leader": "איתמר בן גביר",
+      "description": "Leader of Otzma Yehudit.",
+      "coalition_note": "Counted in the Netanyahu bloc in the N12 poll, but a surplus agreement with Likud was not signed in the reviewed report.",
+      "source_ids": [
+        "likud-rz-surplus"
+      ],
+      "ideology_group": "religious-right",
+      "ideology_note": "A hard-line nationalist party advocating expanded Israeli sovereignty and a greater role for Jewish law.",
+      "ideology_source_ids": [
+        "idi-otzma"
+      ]
+    },
+    {
+      "list_id": "k26:ג",
+      "group": "likud",
+      "leader": "יעקב אשר",
+      "description": "Yaakov Asher is named in the reported joint leadership statement for United Torah Judaism.",
+      "coalition_note": "No prime minister nomination was promised in the reviewed Pindros interview. Resolving the Torah-student issue is a condition. Not a final joint party decision.",
+      "source_ids": [
+        "surplus-map",
+        "utj-condition",
+        "poll12"
+      ],
+      "ideology_group": "haredi",
+      "ideology_note": "An Ashkenazi ultra-Orthodox alliance of Agudat Yisrael and Degel HaTorah.",
+      "ideology_source_ids": [
+        "idi-agudat"
+      ]
+    },
+    {
+      "list_id": "k26:דרך",
+      "group": "change",
+      "leader": "גדי איזנקוט",
+      "description": "Leader of Yashar.",
+      "coalition_note": "A signatory to the reported common principles for forming a replacement government. Rejected Netanyahu serving as a minister.",
+      "source_ids": [
+        "change-platform",
+        "netanyahu-refusals"
+      ],
+      "ideology_group": "center",
+      "ideology_note": "Placed in a broad centrist and national-integration family from its platform on security, civic service and democratic institutions. This is an editorial summary, not a numeric ideology score.",
+      "ideology_source_ids": [
+        "idi-yashar"
+      ]
+    },
+    {
+      "list_id": "k26:רק",
+      "group": "change",
+      "leader": "נפתלי בנט",
+      "description": "Former prime minister and leader of Together, allied with Yair Lapid in this election.",
+      "coalition_note": "After an initial conditional remark, Bennett clarified that he would not sit with Netanyahu. Preserve that correction.",
+      "source_ids": [
+        "change-platform",
+        "netanyahu-refusals"
+      ],
+      "ideology_group": "mixed",
+      "ideology_note": "A joint list of Bennett 2026 and Yesh Atid, bringing together Bennett and Lapid. It contains different political traditions rather than one uniform ideology.",
+      "ideology_source_ids": [
+        "idi-together"
+      ]
+    },
+    {
+      "list_id": "k26:ל",
+      "group": "change",
+      "leader": "אביגדור ליברמן",
+      "description": "Leader of Yisrael Beiteinu.",
+      "coalition_note": "Joined the reported replacement-government principles; publicly rejected sitting with Netanyahu.",
+      "source_ids": [
+        "change-platform",
+        "netanyahu-refusals"
+      ],
+      "ideology_group": "right",
+      "ideology_note": "Hawkish on security and secular on religion and state. Similar right-wing positions to Likud do not mean the same coalition alignment.",
+      "ideology_source_ids": [
+        "idi-yb"
+      ]
+    },
+    {
+      "list_id": "k26:אמת",
+      "group": "change",
+      "leader": "יאיר גולן",
+      "description": "Leader of the Democrats.",
+      "coalition_note": "Joined the reported replacement-government principles; rejected a government with Netanyahu and his partners.",
+      "source_ids": [
+        "change-platform",
+        "netanyahu-refusals"
+      ],
+      "ideology_group": "progressive",
+      "ideology_note": "Formed by Labor and Meretz, combining social-democratic and Zionist-left traditions.",
+      "ideology_source_ids": [
+        "idi-democrats",
+        "idi-meretz"
+      ]
+    },
+    {
+      "list_id": "k26:ודם",
+      "group": "arab",
+      "leader": "יוסף ג'בארין",
+      "description": "Leader of the Joint List.",
+      "coalition_note": "Offered negotiated support from outside a replacement government, subject to conditions. This is not joining the cabinet or proof that the other parties accept the offer.",
+      "source_ids": [
+        "joint-external"
+      ],
+      "ideology_group": "arab-plural",
+      "ideology_note": "Hadash, Ta’al and Balad form a joint list with different left-wing and Arab nationalist traditions. Ra’am is a separate list in this election.",
+      "ideology_source_ids": [
+        "idi-joint",
+        "toi-arab"
+      ]
+    },
+    {
+      "list_id": "k26:עם",
+      "group": "arab",
+      "leader": "מנסור עבאס",
+      "description": "Leader of Ra’am.",
+      "coalition_note": "A separate Arab party. The reviewed Joint List external-support statement must not be treated as a commitment by Ra’am.",
+      "source_ids": [
+        "poll12"
+      ],
+      "ideology_group": "arab-civic",
+      "ideology_note": "Rooted in the Southern Islamic Movement. Abbas announced a move toward a broader civic party and separation from the religious advisory council. This does not establish that the organizational transition is complete.",
+      "ideology_source_ids": [
+        "idi-raam",
+        "toi-arab"
+      ]
+    },
+    {
+      "list_id": "k26:די",
+      "group": "independent",
+      "leader": "יועז הנדל, ירון זליכה",
+      "description": "Leaders of the Reservists–New Economic Party list.",
+      "coalition_note": "N12 counts this list in a third bloc. No reviewed coalition participation commitment.",
+      "source_ids": [
+        "poll12"
+      ],
+      "ideology_group": "unclassified",
+      "ideology_note": "The reviewed poll identifies a separate list but does not establish a sufficiently clear shared ideology for this grouping.",
+      "ideology_source_ids": [
+        "poll12"
+      ]
+    },
+    {
+      "list_id": "k26:ך",
+      "group": "independent",
+      "leader": "עופר וינטר",
+      "description": "Reserve brigadier general and founder of the right-wing Amcha Yisrael party.",
+      "coalition_note": "A Likud figure quoted by Ynet expressed distrust about which side Winter would join. The reviewed evidence does not settle his coalition alignment.",
+      "source_ids": [
+        "likud-rz-surplus",
+        "winter-profile"
+      ],
+      "ideology_group": "right",
+      "ideology_note": "The party launch report describes Amcha as right-wing. Its final coalition partner is not established.",
+      "ideology_source_ids": [
+        "winter-profile"
+      ]
+    },
+    {
+      "list_id": "k26:כן",
+      "group": "independent",
+      "leader": "בני גנץ",
+      "description": "Leader of Blue and White and a former defense minister.",
+      "coalition_note": "Gantz says he belongs to neither bloc and advocates unity. This does not establish a coalition deal with either side.",
+      "source_ids": [
+        "gantz-independent",
+        "gantz-profile"
+      ],
+      "ideology_group": "center",
+      "ideology_note": "A broad centrist lineage from Blue and White. The historical alliance composition must not be read as the composition of its 2026 list.",
+      "ideology_source_ids": [
+        "idi-bluewhite"
+      ]
+    },
+    {
+      "list_id": "k26:זך",
+      "group": "independent",
+      "leader": "מוטי לייטנר",
+      "description": "Leader of the Haredi Public list. His party biography describes him as a Beit Shemesh municipal politician.",
+      "coalition_note": "Coalition participation not established in the reviewed evidence.",
+      "source_ids": [
+        "poll12",
+        "leitner-profile"
+      ],
+      "ideology_group": "haredi",
+      "ideology_note": "The party identifies with the Haredi public. This community grouping does not imply identical conscription policy or a shared coalition commitment with Shas or United Torah Judaism.",
+      "ideology_source_ids": [
+        "leitner-profile"
+      ]
+    },
+    {
+      "list_id": "k26:ני",
+      "group": "independent",
+      "leader": "אבי מעוז",
+      "description": "Leader of Noam who has served as a deputy minister in the Prime Minister’s Office. This is a past role, not confirmation of a current office.",
+      "coalition_note": "Coalition participation not established in the reviewed evidence.",
+      "source_ids": [
+        "poll12",
+        "maoz-profile"
+      ],
+      "ideology_group": "religious-right",
+      "ideology_note": "National-Haredi religious-conservative roots. This ideological grouping does not recreate the joint list used in the 2022 election.",
+      "ideology_source_ids": [
+        "idi-noam"
+      ]
+    },
+    {
+      "list_id": "k26:י",
+      "group": "independent",
+      "leader": "שרן השכל",
+      "description": "Leader named for Israel First in the reported list.",
+      "coalition_note": "Coalition participation not established in the reviewed evidence.",
+      "source_ids": [
+        "reported-lists"
+      ],
+      "ideology_group": "unclassified",
+      "ideology_note": "The reported list identifies its leader. A current shared ideology has not been verified in the reviewed evidence.",
+      "ideology_source_ids": [
+        "reported-lists"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "likud-rz",
+      "parties": [
+        "k26:מחל",
+        "k26:ט"
+      ],
+      "kind": "electoral_cooperation",
+      "label_ko": "선거 협력 보도",
+      "summary": "Likud and Religious Zionism announced a surplus-vote agreement. This does not itself establish a coalition agreement.",
+      "condition": "Official CEC filing was not retrieved.",
+      "source_ids": [
+        "likud-rz-surplus"
+      ],
+      "event_date": "2026-10-06"
+    },
+    {
+      "id": "likud-shas-otzma",
+      "parties": [
+        "k26:מחל",
+        "k26:שס",
+        "k26:ב"
+      ],
+      "kind": "reported_bloc",
+      "label_ko": "같은 보도 블록",
+      "summary": "N12 groups Likud, Shas and Otzma Yehudit in the Netanyahu bloc. This is a poll classification, not an unconditional government commitment.",
+      "condition": "The source does not establish each party’s final post-election decision.",
+      "source_ids": [
+        "poll12"
+      ],
+      "event_date": "2026-10-12"
+    },
+    {
+      "id": "likud-utj-conditional",
+      "parties": [
+        "k26:מחל",
+        "k26:ג"
+      ],
+      "kind": "conditional",
+      "label_ko": "추천·참여 조건부",
+      "summary": "Pindros did not commit to a prime minister nominee. United Torah Judaism links government participation to resolving the Torah-student issue.",
+      "condition": "This is an MK interview; the two components must make their joint decision.",
+      "source_ids": [
+        "utj-condition"
+      ],
+      "event_date": "2026-10-10"
+    },
+    {
+      "id": "change-joint-platform",
+      "parties": [
+        "k26:דרך",
+        "k26:רק",
+        "k26:ל",
+        "k26:אמת"
+      ],
+      "kind": "joint_platform",
+      "label_ko": "공동 정부 구성 추진",
+      "summary": "Eisenkot, Bennett, Lapid, Lieberman and Golan published common principles and committed to work together toward a replacement government.",
+      "condition": "Prime minister selection and the final governing arrangement remain unresolved.",
+      "source_ids": [
+        "change-platform"
+      ],
+      "event_date": "2026-09-26"
+    },
+    {
+      "id": "netanyahu-rejected",
+      "parties": [
+        "k26:מחל",
+        "k26:דרך",
+        "k26:רק",
+        "k26:ל",
+        "k26:אמת"
+      ],
+      "anchor": "k26:מחל",
+      "targets": [
+        "k26:דרך",
+        "k26:רק",
+        "k26:ל",
+        "k26:אמת"
+      ],
+      "target_person": "Benjamin Netanyahu",
+      "kind": "refusal",
+      "label_ko": "네타냐후와 참여 거부",
+      "summary": "Eisenkot, Lieberman and Golan rejected sitting with Netanyahu; Bennett clarified the same after his initial conditional remark.",
+      "condition": "These statements concern Netanyahu personally. Their position on a Likud government led by someone else is not established.",
+      "source_ids": [
+        "netanyahu-refusals"
+      ],
+      "event_date": "2026-10-11"
+    },
+    {
+      "id": "joint-conditional-support",
+      "parties": [
+        "k26:ודם"
+      ],
+      "target_group": "change",
+      "kind": "external_support",
+      "label_ko": "조건부 외부 지지 제안",
+      "summary": "The Joint List offers support from outside a government replacing Netanyahu, subject to negotiations and four demands.",
+      "condition": "Crime and security, Arab-locality development, youth programs and a negotiated political horizon. Recipient parties’ acceptance is not established. Ra’am has not made this same commitment in the reviewed text.",
+      "source_ids": [
+        "joint-external"
+      ],
+      "event_date": "2026-10-11"
+    },
+    {
+      "id": "gantz-independent",
+      "parties": [
+        "k26:כן"
+      ],
+      "kind": "unknown",
+      "label_ko": "독자 노선 · 합의 미확인",
+      "summary": "Gantz says Blue and White is outside both blocs and supports unity.",
+      "condition": "No concrete coalition partner is confirmed by that statement.",
+      "source_ids": [
+        "gantz-independent"
+      ],
+      "event_date": "2026-10-10"
+    },
+    {
+      "id": "winter-uncertain",
+      "parties": [
+        "k26:ך",
+        "k26:מחל"
+      ],
+      "kind": "unknown",
+      "label_ko": "협력 대상 불확실",
+      "summary": "A Likud figure quoted by Ynet says Winter had expressed support for Netanyahu, but also expresses uncertainty about whether that support is exclusive.",
+      "condition": "Which coalition Amcha would support is not confirmed by this report.",
+      "source_ids": [
+        "likud-rz-surplus"
+      ],
+      "event_date": "2026-10-06"
+    },
+    {
+      "id": "ben-gvir-winter",
+      "parties": [
+        "k26:ב",
+        "k26:ך"
+      ],
+      "kind": "electoral_refusal",
+      "label_ko": "잉여표 협약 거부 보도",
+      "summary": "Otzma will not sign a surplus agreement with Amcha. Ynet says agreements can be filed until the coming Friday, 11 days before election day.",
+      "condition": "The post is quoted by Ynet. The post itself was not opened.",
+      "source_ids": [
+        "surplus-map"
+      ],
+      "event_date": "2026-10-13"
+    }
+  ],
+  "sources": {
+    "poll12": {
+      "url": "https://www.mako.co.il/news-israel-elections/2026/Article-cc91389788031a1026.htm",
+      "publisher": "N12",
+      "published_on": "2026-10-12",
+      "note": "Published bloc counts, not negotiated coalition membership."
+    },
+    "change-platform": {
+      "url": "https://www.mako.co.il/news-israel-elections/2026/Article-2234d5d24aed0a1027.htm",
+      "publisher": "N12",
+      "published_on": "2026-09-26",
+      "note": "Published common principles, leaders agreed to work together toward a government."
+    },
+    "netanyahu-refusals": {
+      "url": "https://www.mako.co.il/news-israel-elections/2026/Article-3271a14f84c21a1027.htm",
+      "publisher": "N12",
+      "published_on": "2026-10-11",
+      "revised_on": "2026-10-12",
+      "note": "Bennett clarification, Eisenkot, Lieberman and Golan reactions. Target is Netanyahu personally."
+    },
+    "utj-condition": {
+      "url": "https://www.mako.co.il/news-israel-elections/2026/Article-7d107b212b221a1026.htm",
+      "publisher": "N12",
+      "published_on": "2026-10-11",
+      "note": "Pindros, an MK rather than final joint party decision, gives conditions and no PM nomination commitment."
+    },
+    "joint-external": {
+      "url": "https://www.mako.co.il/news-israel-elections/2026/Article-b20b4b0c0da21a1026.htm",
+      "publisher": "N12",
+      "published_on": "2026-10-11",
+      "note": "Joint List offers negotiated external support with four conditions. Recipient acceptance not established."
+    },
+    "gantz-independent": {
+      "url": "https://www.mako.co.il/news-israel-elections/2026/Article-affa3a9807621a1026.htm",
+      "publisher": "N12",
+      "published_on": "2026-10-10",
+      "note": "Gantz says he is outside both blocs."
+    },
+    "likud-rz-surplus": {
+      "url": "https://www.ynet.co.il/news/elections2026/article/skpacqgjfe",
+      "publisher": "Ynet",
+      "published_on": "2026-10-06",
+      "note": "Surplus-vote agreement announcement; CEC filing not retrieved. Includes quoted mistrust of Winter."
+    },
+    "reported-lists": {
+      "url": "https://www.ynet.co.il/news/article/s1ibdii5fe",
+      "publisher": "Ynet",
+      "published_on": "2026-09-27",
+      "note": "Reported list and leader names, official candidate rank remains held."
+    },
+    "surplus-map": {
+      "url": "https://www.ynet.co.il/news/elections2026/article/hkhvccojge",
+      "publisher": "Ynet",
+      "published_on": "2026-10-13",
+      "note": "Report quotes Ben Gvir refusing a surplus agreement with Winter. Original post not opened."
+    },
+    "winter-profile": {
+      "url": "https://www.mako.co.il/news-israel-elections/2026/Article-6a69100062930a1026.htm",
+      "publisher": "N12",
+      "published_on": "2026-08-25",
+      "note": "Original launch report identifies Winter as a reserve brigadier general and his new party as right-wing. Biography only; August poll scenario not admitted."
+    },
+    "gantz-profile": {
+      "url": "https://www.mako.co.il/news-politics/2025_q2/Article-9c87ff0a29a4691027.htm",
+      "publisher": "N12",
+      "published_on": "2025-04-19",
+      "note": "Original interview identifies Gantz as a former defense minister. Historical role, no current-office inference."
+    },
+    "maoz-profile": {
+      "url": "https://www.mako.co.il/news-politics/2025_q1/Article-e76547727c8d591027.htm",
+      "publisher": "N12",
+      "published_on": "2025-03-28",
+      "note": "Historical report identifies Noam leader Maoz as having served as a deputy minister. Does not establish his current office."
+    },
+    "leitner-profile": {
+      "url": "https://hatzibur-haharedi.org/שליחי-הציבור/moti-leitner",
+      "publisher": "하레디 공중 공식 소개",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "party_self_description",
+      "note": "Party biography identifies Leitner as its leader and a Beit Shemesh municipal politician. Attribution retained; no independent endorsement."
+    },
+    "idi-likud": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/likud/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Nationalist and liberal traditions."
+    },
+    "idi-rz": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/religious-zionist-party/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Far-right placement and religious-nationalist policies; historical joint lists are distinct from 2026."
+    },
+    "idi-shas": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/shas/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Sephardic ultra-Orthodox representation."
+    },
+    "idi-otzma": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/otzma-yehudit/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Greater Israel, sovereignty and Jewish-law proposals."
+    },
+    "idi-agudat": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/agudat-israel/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Ultra-Orthodox Agudat Yisrael, joint UTJ list with Degel HaTorah since 1992."
+    },
+    "idi-yashar": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/yashar/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Platform on security, national service and democratic institutions. Broad family is an editorial synthesis."
+    },
+    "idi-together": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/together/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "2026 joint list of Bennett 2026 and Yesh Atid."
+    },
+    "idi-yb": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/yisrael-beitenu/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Hawkish right-wing security, secular religion-state policy."
+    },
+    "idi-democrats": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/the-democrats/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Labor-Meretz merger and social-service policy."
+    },
+    "idi-meretz": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/meretz/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Zionist-left tradition and equality policies."
+    },
+    "idi-joint": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/the-joint-list/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Current page heading Hadash-Ta’al-Balad. Historical four-party composition is not projected into 2026."
+    },
+    "idi-raam": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/raam/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Arab rights and civic policy; historical coalition participation is not current membership."
+    },
+    "idi-bluewhite": {
+      "url": "https://en.idi.org.il/israeli-elections-and-parties/parties/blue-and-white/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "source_type": "research_institute_party_profile",
+      "note": "Centrist lineage; 2019 alliance composition is historical."
+    },
+    "idi-zehut": {
+      "url": "https://www.idi.org.il/policy/parties-and-elections/parties/zehut/",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "note": "Libertarian economics and 2026 joint run with Religious Zionism. No official candidate rank claim."
+    },
+    "idi-noam": {
+      "url": "https://en.idi.org.il/articles/46496",
+      "publisher": "이스라엘 민주주의연구소",
+      "published_on": null,
+      "reviewed_on": "2026-10-15",
+      "note": "Historical national-Haredi roots; not proof of a current joint electoral list."
+    },
+    "toi-arab": {
+      "url": "https://www.timesofisrael.com/as-arab-parties-answer-call-for-unity-raam-seeks-to-retain-role-as-coalition-kingmaker/",
+      "publisher": "타임스 오브 이스라엘",
+      "published_on": "2026-01-27",
+      "reviewed_on": "2026-10-15",
+      "note": "Original reporting on distinct Arab political traditions and Abbas announcing civic transition. Does not prove transition completion or a current coalition deal."
+    }
+  },
+  "presets": [
+    {
+      "id": "likud",
+      "label_ko": "리쿠드 중심 조합",
+      "list_ids": [
+        "k26:מחל",
+        "k26:ט",
+        "k26:שס",
+        "k26:ב",
+        "k26:ג"
+      ],
+      "note_ko": "보도상 블록 합계 · 통합토라유다 참여 조건 남음"
+    },
+    {
+      "id": "change",
+      "label_ko": "교체 추진 4개 명부",
+      "list_ids": [
+        "k26:דרך",
+        "k26:רק",
+        "k26:ל",
+        "k26:אמת"
+      ],
+      "note_ko": "공동 원칙 참여 정당의 의석 합계"
+    },
+    {
+      "id": "change-external",
+      "label_ko": "교체축 + 공동명부 외부 지지 가정",
+      "list_ids": [
+        "k26:דרך",
+        "k26:רק",
+        "k26:ל",
+        "k26:אמת",
+        "k26:ודם"
+      ],
+      "note_ko": "조건부 제안을 검토하는 산술 가정 · 상대 정당 수용 미확인"
+    }
+  ],
+  "ideology_basis_ko": "정당 소개·강령을 읽기 쉽게 요약한 분류입니다. 안보·경제·종교 축이 겹치며, 같은 성향도 서로 다른 협력 진영에 속할 수 있습니다.",
+  "ideology_groups": [
+    {
+      "id": "progressive",
+      "label_ko": "진보·사회민주",
+      "color": "#ed8db0",
+      "description_ko": "노동당·메레츠 계열 · 사회서비스와 시민권"
+    },
+    {
+      "id": "center",
+      "label_ko": "중도·국가통합",
+      "color": "#83c9ef",
+      "description_ko": "국가통합·안보·민주적 제도를 강조"
+    },
+    {
+      "id": "mixed",
+      "label_ko": "중도·우파 연합명부",
+      "color": "#af9df1",
+      "description_ko": "베넷 계열과 라피드 계열이 함께 출마"
+    },
+    {
+      "id": "right",
+      "label_ko": "우파·민족주의",
+      "color": "#f3bd78",
+      "description_ko": "국가·안보 중심 · 종교정책은 정당별 차이"
+    },
+    {
+      "id": "religious-right",
+      "label_ko": "종교·강경 우파",
+      "color": "#f4937e",
+      "description_ko": "종교적 정체성과 강경 안보 · 내부 차이 있음"
+    },
+    {
+      "id": "haredi",
+      "label_ko": "초정통 유대교계",
+      "color": "#d6cb8b",
+      "description_ko": "하레디 공동체 대표 · 병역·경제 입장은 다름"
+    },
+    {
+      "id": "arab-plural",
+      "label_ko": "아랍계 복합 연합",
+      "color": "#71d5bc",
+      "description_ko": "좌파·민족주의 등 여러 흐름이 함께한 명부"
+    },
+    {
+      "id": "arab-civic",
+      "label_ko": "아랍계 시민정치",
+      "color": "#72c5a3",
+      "description_ko": "이슬람운동계 기원 · 시민정당 전환 표방"
+    },
+    {
+      "id": "unclassified",
+      "label_ko": "성향 분류 보류",
+      "color": "#a6b3c8",
+      "description_ko": "확인한 자료만으로 하나의 성향을 부여하지 않음"
+    }
+  ],
+  "cooperation_pairs": [
+    {
+      "id": "surplus-likud",
+      "group": "likud",
+      "parties": [
+        "k26:מחל",
+        "k26:ט"
+      ],
+      "label_ko": "잉여표 협약 발표",
+      "event_date": "2026-10-06",
+      "source_ids": [
+        "likud-rz-surplus"
+      ]
+    },
+    {
+      "id": "surplus-haredi",
+      "group": "likud",
+      "parties": [
+        "k26:שס",
+        "k26:ג"
+      ],
+      "label_ko": "잉여표 협약 발표",
+      "event_date": "2026-10-13",
+      "source_ids": [
+        "surplus-map"
+      ]
+    },
+    {
+      "id": "surplus-together",
+      "group": "change",
+      "parties": [
+        "k26:רק",
+        "k26:ל"
+      ],
+      "label_ko": "잉여표 협약 발표",
+      "event_date": "2026-10-13",
+      "source_ids": [
+        "surplus-map"
+      ]
+    },
+    {
+      "id": "surplus-yashar",
+      "group": "change",
+      "parties": [
+        "k26:דרך",
+        "k26:אמת"
+      ],
+      "label_ko": "잉여표 협약 발표",
+      "event_date": "2026-10-13",
+      "source_ids": [
+        "surplus-map"
+      ]
+    },
+    {
+      "id": "surplus-arab",
+      "group": "arab",
+      "parties": [
+        "k26:ודם",
+        "k26:עם"
+      ],
+      "label_ko": "잉여표 협약 발표",
+      "event_date": "2026-10-13",
+      "source_ids": [
+        "surplus-map"
+      ]
+    }
+  ]
+}

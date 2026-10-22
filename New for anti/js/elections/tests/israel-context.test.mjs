@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readIsraelFixture } from './fixtures/israel-snapshot.mjs';
 import { koreanText, partyProfile, personProfile, groupingGroups, groupSeatSummary, presetSeatSum, selectionRelationships } from '../data/israel-context.js';
 import { seatPolls } from '../data/israel-analysis.js';
 import { israelAnalysisHtml } from '../country-explorer/special/israel-analysis.js';
-const board = JSON.parse(readFileSync(new URL('../../../public/data/israel_election_analysis_v1.json', import.meta.url)));
+const board = JSON.parse(readIsraelFixture('israel_election_analysis_v1.json'));
 const latest = seatPolls(board, {today:'2026-10-15'}).find(r=>r.review_status==='accepted');
 
 test('four stable colors separate reported blocs from unknown alignment',()=>{
