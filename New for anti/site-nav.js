@@ -37,17 +37,16 @@
             span.textContent = email;
             box.append(span);
         } else {
-            // A page with its own login form (the mail subscription card) signs
-            // in right here; otherwise the main site's login.
-            const local = document.querySelector('form[data-login-form]');
+            // A page with its own login dialog (indonesia-policy/) signs in right
+            // here; otherwise the main site's login.
+            const local = document.querySelector('dialog#login-dialog');
             const btn = document.createElement('a');
             btn.className = 'auth-btn';
             btn.textContent = '로그인';
-            btn.href = local ? '#mail-subscriptions' : '/mypage';
+            btn.href = '/mypage';
             if (local) btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                local.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                local.elements.email?.focus();
+                if (!local.open) local.showModal();
             });
             box.append(btn);
         }

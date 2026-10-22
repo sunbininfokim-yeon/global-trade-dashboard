@@ -21,3 +21,8 @@ test('multiple topics and regions use one own-user atomic RPC and nationwide nor
  await assert.rejects(api.setMany([],['__all__']));await assert.rejects(api.setMany(['coal'],[]));assert.equal(calls.length,2);
  assert.ok(calls.every(c=>!('p_user_id' in c.args)));
 });
+test('the page region list is the reviewed mail-regions.json',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const read=p=>JSON.parse(readFileSync(new URL(p,import.meta.url),'utf8'));
+ assert.deepEqual(read('../../New for anti/indonesia-policy/mail-regions.json'),read('./mail-regions.json'));
+});

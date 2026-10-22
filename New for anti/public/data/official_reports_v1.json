@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-22T13:50:34.234349+00:00",
+  "generated_at": "2026-10-22T20:11:12.089438+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,19 +15,19 @@
     }
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 1,
-    "raw_items": 148,
-    "scored": 148,
+    "sources_ok": 10,
+    "sources_failed": 0,
+    "raw_items": 168,
+    "scored": 168,
     "selected": 40,
     "indicators": 16
   },
   "feed_status": [
     {
       "source_id": "us_fed_all",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 404: Not Found",
+      "ok": true,
+      "count": 20,
+      "error": null,
       "mode": "live"
     },
     {
@@ -101,26 +101,28 @@
       "label_ko": "FOMC 성명·의사록",
       "country": "USA",
       "domains": [
-        "finance"
+        "finance",
+        "economy"
       ],
       "title": "Federal Reserve issues FOMC statement",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
       "published_at": "2026-09-16T18:00:00+00:00",
       "site_slot": "finance.policy",
-      "significance": 2.842
+      "significance": 3.445
     },
     {
       "series_id": "US_FED_FOMC",
       "label_ko": "FOMC 성명·의사록",
       "country": "USA",
       "domains": [
-        "finance"
+        "finance",
+        "economy"
       ],
       "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
       "published_at": "2026-09-16T18:00:00+00:00",
       "site_slot": "finance.policy",
-      "significance": 2.842
+      "significance": 3.445
     },
     {
       "series_id": "US_FED_FOMC",
@@ -212,7 +214,7 @@
         "finance"
       ],
       "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
       "published_at": "2026-10-22T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -226,7 +228,7 @@
         "finance"
       ],
       "title": "Bank of Japan Accounts (October 20)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
       "published_at": "2026-10-22T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -240,7 +242,7 @@
         "finance"
       ],
       "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
       "published_at": "2026-10-14T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -254,7 +256,7 @@
         "finance"
       ],
       "title": "Bank of Japan Accounts (October 10)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
       "published_at": "2026-10-14T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -268,7 +270,7 @@
         "finance"
       ],
       "title": "Bank of Japan Accounts (September 30)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260930.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260930.htm",
       "published_at": "2026-10-07T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -282,7 +284,7 @@
         "finance"
       ],
       "title": "Monetary Base and the Bank of Japan's Transactions (Sept.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
       "published_at": "2026-10-06T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -296,7 +298,7 @@
         "finance"
       ],
       "title": "Bank of Japan's Transactions with the Government (Sept.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
       "published_at": "2026-10-06T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -310,7 +312,7 @@
         "finance"
       ],
       "title": "Market Operations by the Bank of Japan (Sept.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
       "published_at": "2026-10-06T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -352,10 +354,10 @@
       "site_slot": null
     },
     {
-      "id": "3cca32bae0b4604e",
+      "id": "ccdd25279440b2c3",
       "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
-        "id": "us_fed_monetary",
+        "id": "us_fed_all",
         "name": "Federal Reserve",
         "region": "usa",
         "slant": null
@@ -364,7 +366,8 @@
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance"
+        "finance",
+        "economy"
       ],
       "series_id": "US_FED_FOMC",
       "title": {
@@ -374,11 +377,11 @@
       },
       "summary": "Federal Reserve issues FOMC statement",
       "scores": {
-        "significance": 2.842,
-        "final": 2.842
+        "significance": 3.445,
+        "final": 3.445
       },
       "rank_reasons": [
-        "domains:finance",
+        "domains:economy,finance",
         "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
@@ -386,10 +389,10 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "2c34cfffcee1a9b4",
+      "id": "c077487460d9d3d6",
       "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
-        "id": "us_fed_monetary",
+        "id": "us_fed_all",
         "name": "Federal Reserve",
         "region": "usa",
         "slant": null
@@ -398,7 +401,8 @@
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance"
+        "finance",
+        "economy"
       ],
       "series_id": "US_FED_FOMC",
       "title": {
@@ -408,11 +412,11 @@
       },
       "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
       "scores": {
-        "significance": 2.842,
-        "final": 2.842
+        "significance": 3.445,
+        "final": 3.445
       },
       "rank_reasons": [
-        "domains:finance",
+        "domains:economy,finance",
         "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
@@ -730,6 +734,76 @@
       "site_slot": null
     },
     {
+      "id": "b20f8f2fbcf613bb",
+      "published_at": "2026-10-22T19:32:11+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/10/adjusting-imports-of-wind-turbines-and-their-parts-and-components-into-the-united-states/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Adjusting Imports of Wind Turbines and Their Parts and Components into the United States",
+        "original_lang": "en",
+        "ko": "[USA·안보] Adjusting Imports of Wind Turbines and Their Parts and Components into the United States"
+      },
+      "summary": "1. Within the past 90 days, the Secretary of Commerce (Secretary) transmitted to me a report on his investigation into the effects of imports of wind turbines and their parts and components on the national security of the United States under section 232 of the Trade Expansion Act",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "62d3c8568976a75a",
+      "published_at": "2026-10-22T17:51:54+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/10/new-analysis-president-trumps-pro-growth-policies-ignite-manufacturing-resurgence/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "New Analysis: President Trump’s Pro-Growth Policies Ignite Manufacturing Resurgence",
+        "original_lang": "en",
+        "ko": "[USA·경제] New Analysis: President Trump’s Pro-Growth Policies Ignite Manufacturing Resurgence"
+      },
+      "summary": "New Analysis Confirms President Trump’s Pro-Growth Policies Are Driving American Manufacturing Resurgence President Donald J. Trump’s America First agenda is revitalizing American manufacturing, delivering historic investments, driving up wages, and igniting a blue-collar BOOM. A",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "44dc89713926880a",
       "published_at": "2026-10-21T18:26:45+00:00",
       "source": {
@@ -835,76 +909,6 @@
       "site_slot": null
     },
     {
-      "id": "ed482280b2999588",
-      "published_at": "2026-10-09T18:46:08+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/remarks/2026/10/remarks-by-director-michael-kratsios-at-the-science-a-new-golden-age-summit/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit",
-        "original_lang": "en",
-        "ko": "[USA·외교] Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit"
-      },
-      "summary": "Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit Remarks as prepared for delivery Oct. 8, 2026 Good morning, and thank you all for being here. It has been so encouraging to see “Science: A New Golden Age” receive such a warm reception, and thrilling to",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "6430e9cf8916e1b3",
-      "published_at": "2026-10-08T18:32:51+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-presents-national-medals-of-science-and-national-medals-of-technology-and-innovation/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "President Trump Presents National Medals of Science and National Medals of Technology and Innovation",
-        "original_lang": "en",
-        "ko": "[USA·외교] President Trump Presents National Medals of Science and National Medals of Technology and Innovation"
-      },
-      "summary": "FOR IMMEDIATE RELEASE Today at the Science: A New Golden Age Summit, President Donald J. Trump presented National Medals of Science and National Medals of Technology and Innovation, our nation’s highest honors for exemplary achievement and leadership in science and technology, to",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "cc44b028b9d9b6f1",
       "published_at": "2026-09-10T14:00:00+00:00",
       "source": {
@@ -942,7 +946,7 @@
       "site_slot": "ticker"
     },
     {
-      "id": "d659df7854f87540",
+      "id": "bbef4eb77440c5eb",
       "published_at": "2026-10-15T01:30:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -950,7 +954,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko261015a.htm",
+      "url": "https://www.boj.or.jp/en/about/press/koen_2026/ko261015a.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -976,7 +980,7 @@
       "site_slot": null
     },
     {
-      "id": "eeaa46bc5d3129fb",
+      "id": "e4e42655f332067b",
       "published_at": "2026-10-05T05:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -984,7 +988,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/research/research_data/gap/index.htm",
+      "url": "https://www.boj.or.jp/en/research/research_data/gap/index.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1010,7 +1014,357 @@
       "site_slot": null
     },
     {
-      "id": "9151e2346fa707e2",
+      "id": "9a5276e7be02ed50",
+      "published_at": "2026-10-16T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261016a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank"
+      },
+      "summary": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "84cc3b6aaffb1d3e",
+      "published_at": "2026-10-13T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      "summary": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "7911313d2f0de3b5",
+      "published_at": "2026-10-08T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering"
+      },
+      "summary": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "21527694fe3d6a0d",
+      "published_at": "2026-10-07T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, September 15-16, 2026"
+      },
+      "summary": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "1333cf6b2f7f6b4c",
+      "published_at": "2026-10-05T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Isabella Bank Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "c036c6d5adac248a",
+      "published_at": "2026-10-02T20:45:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f79897500058f3bb",
+      "published_at": "2026-10-02T20:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O"
+      },
+      "summary": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "151d87614848cd23",
+      "published_at": "2026-09-25T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260925a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Peoples Bancorp Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "02c906844fc903d0",
+      "published_at": "2026-09-22T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260922a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by BancFirst Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "afcd050f27db0d35",
+      "published_at": "2026-09-18T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula"
+      },
+      "summary": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "936f18f0fee8531f",
       "published_at": "2026-10-22T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -1018,7 +1372,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1045,7 +1399,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "34ef2dd56ae93a89",
+      "id": "eafbac29b02ad24e",
       "published_at": "2026-10-22T01:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -1053,7 +1407,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1080,7 +1434,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "6f49a6abf07d895d",
+      "id": "7e62dfaeda8dd510",
       "published_at": "2026-10-14T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -1088,7 +1442,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1115,7 +1469,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "c3cb82874b9fd8f1",
+      "id": "233f1e690c8fbe88",
       "published_at": "2026-10-14T01:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -1123,7 +1477,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1150,7 +1504,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "8e92bd1bba00af32",
+      "id": "888c956e24c6f5a6",
       "published_at": "2026-10-07T01:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -1158,7 +1512,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260930.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260930.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1185,7 +1539,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "4e5f05957b8f6b0e",
+      "id": "ed38f16b66b6bfe0",
       "published_at": "2026-10-06T23:50:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -1193,7 +1547,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1220,7 +1574,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "4034f0bfee12ba8e",
+      "id": "66147eef87632f52",
       "published_at": "2026-10-06T23:50:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -1228,7 +1582,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1255,7 +1609,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "a4b0d3661a2ae6aa",
+      "id": "4e53e05a8999a586",
       "published_at": "2026-10-06T23:50:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -1263,7 +1617,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1324,382 +1678,34 @@
       "site_slot": null
     },
     {
-      "id": "2db987deca47c697",
-      "published_at": "2026-10-15T09:52:41+00:00",
+      "id": "10d00ea699f8e321",
+      "published_at": "2026-10-22T20:00:00+00:00",
       "source": {
         "id": "uk_boe_news",
         "name": "Bank of England",
         "region": "gbr",
         "slant": null
       },
-      "url": "https://www.bankofengland.co.uk/news/2026/october/david-roberts-tsc-reappointment",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/regulators-unveil-plans-to-simplify-senior-manager-and-certification-regime",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "finance"
       ],
       "series_id": null,
       "title": {
-        "original": "David Roberts CV and questionnaire for the Treasury Select Committee",
+        "original": "Regulators unveil plans to simplify Senior Manager and Certification Regime",
         "original_lang": "en",
-        "ko": "[GBR·금융] David Roberts CV and questionnaire for the Treasury Select Committee"
+        "ko": "[GBR·경제] Regulators unveil plans to simplify Senior Manager and Certification Regime"
       },
-      "summary": "Published for the Treasury Select Committee",
+      "summary": "The number of financial services roles required to face enhanced checks from regulators will fall significantly under proposals that will support growth.",
       "scores": {
         "significance": 2.024,
         "final": 2.024
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f75bd04025be67dd",
-      "published_at": "2026-09-17T13:30:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Monetary Policy Committee dates for 2027",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Monetary Policy Committee dates for 2027"
-      },
-      "summary": "2027 confirmed dates",
-      "scores": {
-        "significance": 2.024,
-        "final": 2.024
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "b49793652fcea6ed",
-      "published_at": "2026-09-17T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026"
-      },
-      "summary": "This Market Notice outlines the Bank Executive’s approach to implementing the Monetary Policy Committee’s (MPC) decision to unwind the gilts held for monetary policy purposes in the Asset Purchase Facility (APF). As part of this, Bank APF auctions will be paused while the Bank re",
-      "scores": {
-        "significance": 2.024,
-        "final": 2.024
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "7a7a5b531d410bda",
-      "published_at": "2026-10-16T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Banknote imagery advisory group minutes – 15 July 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Banknote imagery advisory group minutes – 15 July 2026"
-      },
-      "summary": "Meeting held 15 July 2026",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "118d96c8acbc989d",
-      "published_at": "2026-10-15T08:27:59+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/sonia-stakeholder-advisory-group-25-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the SONIA Stakeholder Advisory Group - 25 September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the SONIA Stakeholder Advisory Group - 25 September 2026"
-      },
-      "summary": "The SONIA Stakeholder Advisory Group supports the Bank’s administration of SONIA by providing advice and technical input to the Bank and the SONIA Oversight Committee",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "3092543a0b5febe0",
-      "published_at": "2026-10-13T15:04:27+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Money Market Committee meeting – September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the Money Market Committee meeting – September 2026"
-      },
-      "summary": "The Money Markets Committee is a forum for market participants and authorities to discuss the UK unsecured deposits and funding market and securities lending and repo markets.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "9795323d180c6a10",
-      "published_at": "2026-10-07T23:01:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Bank of England announces the four animals that will feature on our next series of banknotes",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Bank of England announces the four animals that will feature on our next series of banknotes"
-      },
-      "summary": "The Atlantic puffin, barn owl, buff-tailed bumblebee and European hedgehog will represent UK wildlife and feature as the central images on our next series of banknotes.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "ec0bb753513c7baa",
-      "published_at": "2026-10-07T13:36:25+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-legal-sub-committee-meeting-16-june-26",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the London FXJSC Legal Sub Committee Meeting – 16 June 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the London FXJSC Legal Sub Committee Meeting – 16 June 2026"
-      },
-      "summary": "The Bank of England provides the Secretariat to the London Foreign Exchange Joint Standing Committee (FXJSC) Legal Sub-Committee. The FXJSC is made up of market participants, infrastructure providers and the UK financial regulators.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "ec7d85a75b7277db",
-      "published_at": "2026-10-07T09:49:25+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-operations-sub-committee-meeting-16-june-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the London FXJSC Operations Sub-Committee Meeting – 16 June 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the London FXJSC Operations Sub-Committee Meeting – 16 June 2026"
-      },
-      "summary": "The Bank of England chairs the London Foreign Exchange Joint Standing Committee (FXJSC) Operations and Legal Sub-Committees. The FXJSC is made up of market participants, infrastructure providers and the UK financial regulators.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "60100d49d8b6959a",
-      "published_at": "2026-10-07T09:08:40+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-main-committee-meeting-24-june-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the London FXJSC Main Committee Meeting – 24 June 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the London FXJSC Main Committee Meeting – 24 June 2026"
-      },
-      "summary": "The Bank of England chairs the London Foreign Exchange Joint Standing Committee (FXJSC), which is a forum for discussion of the wholesale foreign exchange market. The FXJSC is made up of market participants, infrastructure providers and the UK financial regulators.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "5d7450a9c2eff931",
-      "published_at": "2026-10-06T13:07:03+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/uk-money-markets-committee-minutes-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the UK Money Markets Code Sub-Committee – September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the UK Money Markets Code Sub-Committee – September 2026"
-      },
-      "summary": "The Money Markets Committee is a forum for market participants and authorities to discuss the UK unsecured deposits and funding market and securities lending and repo markets.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1707,6 +1713,127 @@
     }
   ],
   "pending_review": [
+    {
+      "title": "David Roberts CV and questionnaire for the Treasury Select Committee",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/david-roberts-tsc-reappointment",
+      "country": "GBR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Monetary Policy Committee dates for 2027",
+      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
+      "country": "GBR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
+      "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
+      "country": "GBR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Banknote imagery advisory group minutes – 15 July 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the SONIA Stakeholder Advisory Group - 25 September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/sonia-stakeholder-advisory-group-25-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Money Market Committee meeting – September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Bank of England announces the four animals that will feature on our next series of banknotes",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the London FXJSC Legal Sub Committee Meeting – 16 June 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-legal-sub-committee-meeting-16-june-26",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the London FXJSC Operations Sub-Committee Meeting – 16 June 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-operations-sub-committee-meeting-16-june-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the London FXJSC Main Committee Meeting – 24 June 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-main-committee-meeting-24-june-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the UK Money Markets Code Sub-Committee – September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/uk-money-markets-committee-minutes-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "Minutes of the Meeting of the Court of Directors held on 16 July 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/july/court-minutes-16-july-2026",
@@ -1750,109 +1877,6 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Securities Lending Committee meeting – March 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/march/minutes-of-the-securities-lending-committee-meeting-march-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Board's discount rate meeting on April 20 and 29, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260526a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Federal Open Market Committee, April 28-29, 2026",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260520a.htm",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "significance": 1.904,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Congressional Bills H.R. 227, H.R. 837, H.R. 1721, H.R. 2388, H.R. 2481, H.R. 3620, H.R. 4307, H.R. 4467, H.R. 6380, and H.R. 7831 Signed into Law",
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/congressional-bills-h-r-227-h-r-837-h-r-1721-h-r-2388-h-r-2481-h-r-3620-h-r-4307-h-r-4467-h-r-6380-and-h-r-7831-signed-into-law/",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "significance": 1.817,
-      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
@@ -1891,10 +1915,10 @@
       "site_slot": null
     },
     {
-      "id": "3cca32bae0b4604e",
+      "id": "ccdd25279440b2c3",
       "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
-        "id": "us_fed_monetary",
+        "id": "us_fed_all",
         "name": "Federal Reserve",
         "region": "usa",
         "slant": null
@@ -1903,7 +1927,8 @@
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance"
+        "finance",
+        "economy"
       ],
       "series_id": "US_FED_FOMC",
       "title": {
@@ -1913,11 +1938,11 @@
       },
       "summary": "Federal Reserve issues FOMC statement",
       "scores": {
-        "significance": 2.842,
-        "final": 2.842
+        "significance": 3.445,
+        "final": 3.445
       },
       "rank_reasons": [
-        "domains:finance",
+        "domains:economy,finance",
         "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
@@ -1925,10 +1950,10 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "2c34cfffcee1a9b4",
+      "id": "c077487460d9d3d6",
       "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
-        "id": "us_fed_monetary",
+        "id": "us_fed_all",
         "name": "Federal Reserve",
         "region": "usa",
         "slant": null
@@ -1937,7 +1962,8 @@
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance"
+        "finance",
+        "economy"
       ],
       "series_id": "US_FED_FOMC",
       "title": {
@@ -1947,11 +1973,11 @@
       },
       "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
       "scores": {
-        "significance": 2.842,
-        "final": 2.842
+        "significance": 3.445,
+        "final": 3.445
       },
       "rank_reasons": [
-        "domains:finance",
+        "domains:economy,finance",
         "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
@@ -2269,6 +2295,76 @@
       "site_slot": null
     },
     {
+      "id": "b20f8f2fbcf613bb",
+      "published_at": "2026-10-22T19:32:11+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/presidential-actions/2026/10/adjusting-imports-of-wind-turbines-and-their-parts-and-components-into-the-united-states/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Adjusting Imports of Wind Turbines and Their Parts and Components into the United States",
+        "original_lang": "en",
+        "ko": "[USA·안보] Adjusting Imports of Wind Turbines and Their Parts and Components into the United States"
+      },
+      "summary": "1. Within the past 90 days, the Secretary of Commerce (Secretary) transmitted to me a report on his investigation into the effects of imports of wind turbines and their parts and components on the national security of the United States under section 232 of the Trade Expansion Act",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "62d3c8568976a75a",
+      "published_at": "2026-10-22T17:51:54+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/10/new-analysis-president-trumps-pro-growth-policies-ignite-manufacturing-resurgence/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "New Analysis: President Trump’s Pro-Growth Policies Ignite Manufacturing Resurgence",
+        "original_lang": "en",
+        "ko": "[USA·경제] New Analysis: President Trump’s Pro-Growth Policies Ignite Manufacturing Resurgence"
+      },
+      "summary": "New Analysis Confirms President Trump’s Pro-Growth Policies Are Driving American Manufacturing Resurgence President Donald J. Trump’s America First agenda is revitalizing American manufacturing, delivering historic investments, driving up wages, and igniting a blue-collar BOOM. A",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "44dc89713926880a",
       "published_at": "2026-10-21T18:26:45+00:00",
       "source": {
@@ -2374,76 +2470,6 @@
       "site_slot": null
     },
     {
-      "id": "ed482280b2999588",
-      "published_at": "2026-10-09T18:46:08+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/remarks/2026/10/remarks-by-director-michael-kratsios-at-the-science-a-new-golden-age-summit/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit",
-        "original_lang": "en",
-        "ko": "[USA·외교] Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit"
-      },
-      "summary": "Remarks by Director Michael Kratsios at the Science: A New Golden Age Summit Remarks as prepared for delivery Oct. 8, 2026 Good morning, and thank you all for being here. It has been so encouraging to see “Science: A New Golden Age” receive such a warm reception, and thrilling to",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "6430e9cf8916e1b3",
-      "published_at": "2026-10-08T18:32:51+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-presents-national-medals-of-science-and-national-medals-of-technology-and-innovation/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "President Trump Presents National Medals of Science and National Medals of Technology and Innovation",
-        "original_lang": "en",
-        "ko": "[USA·외교] President Trump Presents National Medals of Science and National Medals of Technology and Innovation"
-      },
-      "summary": "FOR IMMEDIATE RELEASE Today at the Science: A New Golden Age Summit, President Donald J. Trump presented National Medals of Science and National Medals of Technology and Innovation, our nation’s highest honors for exemplary achievement and leadership in science and technology, to",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "cc44b028b9d9b6f1",
       "published_at": "2026-09-10T14:00:00+00:00",
       "source": {
@@ -2481,7 +2507,7 @@
       "site_slot": "ticker"
     },
     {
-      "id": "d659df7854f87540",
+      "id": "bbef4eb77440c5eb",
       "published_at": "2026-10-15T01:30:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2489,7 +2515,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko261015a.htm",
+      "url": "https://www.boj.or.jp/en/about/press/koen_2026/ko261015a.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2515,7 +2541,7 @@
       "site_slot": null
     },
     {
-      "id": "eeaa46bc5d3129fb",
+      "id": "e4e42655f332067b",
       "published_at": "2026-10-05T05:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2523,7 +2549,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/research/research_data/gap/index.htm",
+      "url": "https://www.boj.or.jp/en/research/research_data/gap/index.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2549,7 +2575,357 @@
       "site_slot": null
     },
     {
-      "id": "9151e2346fa707e2",
+      "id": "9a5276e7be02ed50",
+      "published_at": "2026-10-16T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261016a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank"
+      },
+      "summary": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "84cc3b6aaffb1d3e",
+      "published_at": "2026-10-13T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      "summary": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "7911313d2f0de3b5",
+      "published_at": "2026-10-08T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering"
+      },
+      "summary": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "21527694fe3d6a0d",
+      "published_at": "2026-10-07T18:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+        "original_lang": "en",
+        "ko": "[USA·경제] Minutes of the Federal Open Market Committee, September 15-16, 2026"
+      },
+      "summary": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "1333cf6b2f7f6b4c",
+      "published_at": "2026-10-05T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Isabella Bank Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "c036c6d5adac248a",
+      "published_at": "2026-10-02T20:45:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "f79897500058f3bb",
+      "published_at": "2026-10-02T20:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O"
+      },
+      "summary": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "151d87614848cd23",
+      "published_at": "2026-09-25T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260925a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Peoples Bancorp Inc."
+      },
+      "summary": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "02c906844fc903d0",
+      "published_at": "2026-09-22T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260922a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by BancFirst Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "afcd050f27db0d35",
+      "published_at": "2026-09-18T15:00:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula"
+      },
+      "summary": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "936f18f0fee8531f",
       "published_at": "2026-10-22T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2557,7 +2933,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2584,7 +2960,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "34ef2dd56ae93a89",
+      "id": "eafbac29b02ad24e",
       "published_at": "2026-10-22T01:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2592,7 +2968,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2619,7 +2995,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "6f49a6abf07d895d",
+      "id": "7e62dfaeda8dd510",
       "published_at": "2026-10-14T08:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2627,7 +3003,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2654,7 +3030,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "c3cb82874b9fd8f1",
+      "id": "233f1e690c8fbe88",
       "published_at": "2026-10-14T01:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2662,7 +3038,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261010.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2689,7 +3065,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "8e92bd1bba00af32",
+      "id": "888c956e24c6f5a6",
       "published_at": "2026-10-07T01:00:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2697,7 +3073,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260930.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac260930.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2724,7 +3100,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "4e5f05957b8f6b0e",
+      "id": "ed38f16b66b6bfe0",
       "published_at": "2026-10-06T23:50:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2732,7 +3108,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2609.pdf",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2759,7 +3135,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "4034f0bfee12ba8e",
+      "id": "66147eef87632f52",
       "published_at": "2026-10-06T23:50:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2767,7 +3143,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2609.pdf",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2794,7 +3170,7 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "a4b0d3661a2ae6aa",
+      "id": "4e53e05a8999a586",
       "published_at": "2026-10-06T23:50:00+00:00",
       "source": {
         "id": "jp_boj_whatsnew",
@@ -2802,7 +3178,7 @@
         "region": "jpn",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
+      "url": "https://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2863,382 +3239,34 @@
       "site_slot": null
     },
     {
-      "id": "2db987deca47c697",
-      "published_at": "2026-10-15T09:52:41+00:00",
+      "id": "10d00ea699f8e321",
+      "published_at": "2026-10-22T20:00:00+00:00",
       "source": {
         "id": "uk_boe_news",
         "name": "Bank of England",
         "region": "gbr",
         "slant": null
       },
-      "url": "https://www.bankofengland.co.uk/news/2026/october/david-roberts-tsc-reappointment",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/regulators-unveil-plans-to-simplify-senior-manager-and-certification-regime",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "finance"
       ],
       "series_id": null,
       "title": {
-        "original": "David Roberts CV and questionnaire for the Treasury Select Committee",
+        "original": "Regulators unveil plans to simplify Senior Manager and Certification Regime",
         "original_lang": "en",
-        "ko": "[GBR·금융] David Roberts CV and questionnaire for the Treasury Select Committee"
+        "ko": "[GBR·경제] Regulators unveil plans to simplify Senior Manager and Certification Regime"
       },
-      "summary": "Published for the Treasury Select Committee",
+      "summary": "The number of financial services roles required to face enhanced checks from regulators will fall significantly under proposals that will support growth.",
       "scores": {
         "significance": 2.024,
         "final": 2.024
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f75bd04025be67dd",
-      "published_at": "2026-09-17T13:30:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Monetary Policy Committee dates for 2027",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Monetary Policy Committee dates for 2027"
-      },
-      "summary": "2027 confirmed dates",
-      "scores": {
-        "significance": 2.024,
-        "final": 2.024
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "b49793652fcea6ed",
-      "published_at": "2026-09-17T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026"
-      },
-      "summary": "This Market Notice outlines the Bank Executive’s approach to implementing the Monetary Policy Committee’s (MPC) decision to unwind the gilts held for monetary policy purposes in the Asset Purchase Facility (APF). As part of this, Bank APF auctions will be paused while the Bank re",
-      "scores": {
-        "significance": 2.024,
-        "final": 2.024
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "7a7a5b531d410bda",
-      "published_at": "2026-10-16T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Banknote imagery advisory group minutes – 15 July 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Banknote imagery advisory group minutes – 15 July 2026"
-      },
-      "summary": "Meeting held 15 July 2026",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "118d96c8acbc989d",
-      "published_at": "2026-10-15T08:27:59+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/sonia-stakeholder-advisory-group-25-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the SONIA Stakeholder Advisory Group - 25 September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the SONIA Stakeholder Advisory Group - 25 September 2026"
-      },
-      "summary": "The SONIA Stakeholder Advisory Group supports the Bank’s administration of SONIA by providing advice and technical input to the Bank and the SONIA Oversight Committee",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "3092543a0b5febe0",
-      "published_at": "2026-10-13T15:04:27+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Money Market Committee meeting – September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the Money Market Committee meeting – September 2026"
-      },
-      "summary": "The Money Markets Committee is a forum for market participants and authorities to discuss the UK unsecured deposits and funding market and securities lending and repo markets.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "9795323d180c6a10",
-      "published_at": "2026-10-07T23:01:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Bank of England announces the four animals that will feature on our next series of banknotes",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Bank of England announces the four animals that will feature on our next series of banknotes"
-      },
-      "summary": "The Atlantic puffin, barn owl, buff-tailed bumblebee and European hedgehog will represent UK wildlife and feature as the central images on our next series of banknotes.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "ec0bb753513c7baa",
-      "published_at": "2026-10-07T13:36:25+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-legal-sub-committee-meeting-16-june-26",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the London FXJSC Legal Sub Committee Meeting – 16 June 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the London FXJSC Legal Sub Committee Meeting – 16 June 2026"
-      },
-      "summary": "The Bank of England provides the Secretariat to the London Foreign Exchange Joint Standing Committee (FXJSC) Legal Sub-Committee. The FXJSC is made up of market participants, infrastructure providers and the UK financial regulators.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "ec7d85a75b7277db",
-      "published_at": "2026-10-07T09:49:25+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-operations-sub-committee-meeting-16-june-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the London FXJSC Operations Sub-Committee Meeting – 16 June 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the London FXJSC Operations Sub-Committee Meeting – 16 June 2026"
-      },
-      "summary": "The Bank of England chairs the London Foreign Exchange Joint Standing Committee (FXJSC) Operations and Legal Sub-Committees. The FXJSC is made up of market participants, infrastructure providers and the UK financial regulators.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "60100d49d8b6959a",
-      "published_at": "2026-10-07T09:08:40+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-main-committee-meeting-24-june-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the London FXJSC Main Committee Meeting – 24 June 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the London FXJSC Main Committee Meeting – 24 June 2026"
-      },
-      "summary": "The Bank of England chairs the London Foreign Exchange Joint Standing Committee (FXJSC), which is a forum for discussion of the wholesale foreign exchange market. The FXJSC is made up of market participants, infrastructure providers and the UK financial regulators.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "5d7450a9c2eff931",
-      "published_at": "2026-10-06T13:07:03+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/uk-money-markets-committee-minutes-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the UK Money Markets Code Sub-Committee – September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Minutes of the UK Money Markets Code Sub-Committee – September 2026"
-      },
-      "summary": "The Money Markets Committee is a forum for market participants and authorities to discuss the UK unsecured deposits and funding market and securities lending and repo markets.",
-      "scores": {
-        "significance": 1.978,
-        "final": 1.978
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",

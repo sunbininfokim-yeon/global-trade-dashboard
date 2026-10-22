@@ -214,6 +214,9 @@ class HbaFetchTests(unittest.TestCase):
         self._backfill = m.HBA_BACKFILL_PERIODS
         m.HBA_BACKFILL_PERIODS = 2          # the tests hold two or three half-months; backfill has its own test
         self.addCleanup(setattr, m, "HBA_BACKFILL_PERIODS", self._backfill)
+        self._press = m.press_reported
+        m.press_reported = lambda path=None: []      # the reported file has its own test
+        self.addCleanup(setattr, m, "press_reported", self._press)
         hba = "Keputusan Menteri ESDM Nomor 1.K/MB.01/MEM.B/2026 tentang Harga Mineral Logam Acuan dan Harga Batubara Acuan Untuk Periode"
         self.hba = hba
         self.texts = {
@@ -289,6 +292,28 @@ class HbaFetchTests(unittest.TestCase):
         with self.assertRaises(m.SourceError) as e:
             m.fetch_hba(None, get=get, extract=self.extract, pause=0, max_pages=1)
         self.assertEqual(str(e.exception), "no_decisions_found")
+
+
+class PressReportedTests(unittest.TestCase):
+    def test_reported_values_fill_holes_and_a_read_decision_wins(self):
+        rows = m.press_reported()
+        self.assertTrue(rows and all(r["source_kind"] == "press" and r["grades"][0]["name"] == "HBA II" for r in rows))
+        self.assertTrue(all(r["sources"] and r["sources"][0].startswith("https://") for r in rows))
+        read = {"start": "2026-09-15", "end": "2026-09-30", "url": "https://jdih/364.pdf",
+                "grades": [{"name": "HBA II", "gar": 4100, "usd_per_t": 63.0}]}
+        orig = m.press_reported
+        m.press_reported = lambda path=None: [{"start": "2026-09-15", "end": "2026-09-30", "source_kind": "press", "url": "x",
+                                               "grades": [{"name": "HBA II", "gar": 4100, "usd_per_t": 63.17}]},
+                                              {"start": "2026-09-01", "end": "2026-09-14", "source_kind": "press", "url": "y",
+                                               "grades": [{"name": "HBA II", "gar": 4100, "usd_per_t": 65.06}]}]
+        try:
+            got = m.fetch_hba({"periods": [read]}, get=lambda u: b"", extract=lambda b: "", pause=0, max_pages=1)
+        finally:
+            m.press_reported = orig
+        by = {p["start"]: p for p in got["periods"]}
+        self.assertEqual(by["2026-09-15"]["grades"][0]["usd_per_t"], 63.0)    # the decision, not the press
+        self.assertEqual(by["2026-09-01"]["source_kind"], "press")
+        self.assertEqual(by["2026-09-15"]["grades"][0]["change_pct"], round((63.0 / 65.06 - 1) * 100, 2))
 
 
 class WorldBankTests(unittest.TestCase):
