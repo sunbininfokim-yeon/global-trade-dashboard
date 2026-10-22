@@ -216,6 +216,10 @@ _FALSE_COUNTRY_COLLOCATIONS = [
     # country alias of its own and must survive, hence the lookbehind.
     re.compile(r"gulf\s+of\s+guinea", re.I),
     re.compile(r"(?<!papua\s)new\s+guinea", re.I),
+    # The dollar sign, not the country: "US$50 billion" matched the cased
+    # alias "US" (8 reports on 2026-10-21, from Cochilco to a nickel export
+    # target). Case-sensitive on purpose -- "us$" is not a word anyone writes.
+    re.compile(r"\bUS\s?\$"),
 ]
 
 

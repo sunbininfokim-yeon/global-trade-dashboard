@@ -90,6 +90,27 @@ function digestIdempotencyKey(userId, groups) {
   return 'commodity-legacy/' + crypto.createHash('sha256').update(JSON.stringify([userId, ids])).digest('hex');
 }
 
+// One user's picks: commodity key -> items, newest first, at most
+// MAX_PER_COMMODITY per commodity. News headlines (publisher_type "news")
+// are shown on the site only and never mailed.
+function pickDigestItems(items, commodityKeys, disabledSources, sentIds, userId) {
+  const byCommodity = new Map();
+  const seenItemIds = new Set(); // an item tagged with 2 favorited commodities lists once
+  for (const item of items) {
+    if (item.publisher_type === 'news') continue;
+    if (disabledSources && disabledSources.has(item.source_id)) continue;
+    const matchedKey = item.commodities.find((c) => commodityKeys.has(c));
+    if (!matchedKey || seenItemIds.has(item.id)) continue;
+    if (sentIds.has(`${userId}:${item.id}`)) continue;
+    seenItemIds.add(item.id);
+    const picked = byCommodity.get(matchedKey) || [];
+    if (picked.length >= MAX_PER_COMMODITY) continue;
+    picked.push(item);
+    byCommodity.set(matchedKey, picked);
+  }
+  return byCommodity;
+}
+
 async function sendDigestEmail(email, groups, userId) {
   const sections = groups.map(({ label, items }) => `
     <h3 style="margin:20px 0 8px;font-size:15px;">${esc(label)}</h3>
@@ -150,20 +171,8 @@ async function run() {
   const digestByUser = new Map(); // user_id -> Map(commodityKey -> [item])
 
   for (const [userId, commodityKeys] of favoritesByUser) {
-    const disabledSources = disabledSourcesByUser.get(userId);
-    const seenItemIds = new Set(); // an item tagged with 2 favorited commodities lists once
-    for (const item of items) {
-      if (disabledSources && disabledSources.has(item.source_id)) continue;
-      const matchedKey = item.commodities.find((c) => commodityKeys.has(c));
-      if (!matchedKey || seenItemIds.has(item.id)) continue;
-      if (sentIds.has(`${userId}:${item.id}`)) continue;
-      seenItemIds.add(item.id);
-      if (!digestByUser.has(userId)) digestByUser.set(userId, new Map());
-      const byCommodity = digestByUser.get(userId);
-      if (!byCommodity.has(matchedKey)) byCommodity.set(matchedKey, []);
-      if (byCommodity.get(matchedKey).length >= MAX_PER_COMMODITY) continue;
-      byCommodity.get(matchedKey).push(item);
-    }
+    const byCommodity = pickDigestItems(items, commodityKeys, disabledSourcesByUser.get(userId), sentIds, userId);
+    if (byCommodity.size) digestByUser.set(userId, byCommodity);
   }
 
   if (DRY_RUN) {
@@ -217,5 +226,5 @@ async function run() {
 
 }
 
-module.exports = { digestIdempotencyKey, sendDigestEmail, run };
+module.exports = { digestIdempotencyKey, sendDigestEmail, pickDigestItems, run };
 if (require.main === module) run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });

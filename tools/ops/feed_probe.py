@@ -257,6 +257,38 @@ def rendered(url: str, link_re: Optional[str]) -> Dict[str, Any]:
         return {"status": None, "error": f"{type(exc).__name__}: {exc}"[:200]}
 
 
+def gnews_resolve_check(body: bytes, limit: int) -> List[str]:
+    """Try the pipeline's own Google News resolver on the first items of a
+    Google News feed and say what came back (resolved address, whether it sits
+    on the outlet's own domain). Needs the commodity_reports package."""
+    import time as _time
+    sys.path.insert(0, str(HERE.parent.parent / "New for anti" / "scripts" / "commodity_reports"))
+    from commodity_reports.newsfilter import resolve_google_news_url, same_outlet  # type: ignore
+
+    def get(u: str) -> str:
+        r = _get(u, BROWSER_HEADERS)
+        return _text(r.get("body") or b"")
+
+    def post(u: str, data: str) -> str:
+        req = urllib.request.Request(u, data=data.encode(), method="POST", headers={
+            **BROWSER_HEADERS, "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"})
+        with urllib.request.urlopen(req, timeout=25, context=ssl.create_default_context()) as resp:
+            return resp.read().decode("utf-8", "replace")
+
+    out: List[str] = []
+    items = re.findall(r"<item>(.*?)</item>", _text(body), re.S)[:limit]
+    for item in items:
+        link = (re.search(r"<link>(.*?)</link>", item, re.S) or [None, ""])[1].strip()
+        src = re.search(r'<source url="([^"]*)">(.*?)</source>', item, re.S)
+        title = re.sub(r"<[^>]+>", "", (re.search(r"<title>(.*?)</title>", item, re.S) or [None, ""])[1])[:60]
+        t0 = _time.time()
+        resolved = resolve_google_news_url(link, get=get, post=post)
+        out.append(f"  gnews {'OK ' if resolved else 'NONE'} {round(_time.time()-t0,1)}s outlet_match={same_outlet(resolved or '', src.group(1) if src else None)} "
+                   f"| {title} | {(resolved or '')[:90]} | source={(src.group(1) if src else '')}")
+        _time.sleep(1.0)
+    return out
+
+
 def probe(target: Dict[str, Any]) -> Dict[str, Any]:
     url = target["url"]
     link_re = target.get("link_re")
@@ -276,6 +308,8 @@ def probe(target: Dict[str, Any]) -> Dict[str, Any]:
             # a cache-busting version, a config key)
             body_text = _text(res.get("body") or b"")
             report[key]["found"] = {f: (f in body_text) for f in target["find"]}
+    if target.get("gnews_resolve"):
+        report["gnews"] = gnews_resolve_check(raw["pipeline"].get("body") or b"", int(target["gnews_resolve"]))
     if target.get("render"):
         report["render"] = rendered(url, link_re)
     # Feed discovery from the first variant that got a readable page.
@@ -334,6 +368,7 @@ def line(r: Dict[str, Any]) -> str:
         out.append(f"  endpoints: {r['endpoints']}")
     for d in r.get("discovered", []):
         out.append(f"  found {d['url']}: {fmt(d)}")
+    out.extend(r.get("gnews", []))
     return "\n".join(out)
 
 
