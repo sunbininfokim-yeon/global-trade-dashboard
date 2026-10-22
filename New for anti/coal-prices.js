@@ -56,31 +56,29 @@
     const chartFor = (points, unit, label) => (typeof sparkChartHtml === 'function' && points.length > 1
         ? sparkChartHtml({ points, unit, formatValue: (v) => fmt(v), ariaLabel: label }) : '');
 
+    // Indonesia's row. ICI4 (Argus/Coalindo, ~4,200 GAR) is a paid index with no
+    // free source, so the row is the nearest official price, HBA II (4,100 GAR),
+    // and says so rather than wearing the ICI4 name.
     function hbaRows(hba, staleAfter) {
-        const periods = (hba?.periods || []).filter((p) => Array.isArray(p.grades) && p.grades.length);
+        const periods = (hba?.periods || []).filter((p) => p.grades?.some((g) => g.name === 'HBA II'));
         if (!periods.length) {
-            return `<div class="stock-item"><div class="stock-note">인도네시아 HBA를 아직 읽지 못했습니다${hba?.error ? ` (${esc(hba.error)})` : ''}.</div></div>`;
+            return `<div class="stock-item"><div class="stock-note">인도네시아 HBA II를 아직 읽지 못했습니다${hba?.error ? ` (${esc(hba.error)})` : ''}.</div></div>`;
         }
         const last = periods[periods.length - 1];
-        const stale = days(last.end) > staleAfter;
-        // A decision reaches the legal portal a few days after it takes effect, so the
-        // newest half-month can be missing: say so rather than let an ended period read as today's.
+        const g = last.grades.find((x) => x.name === 'HBA II');
+        const stale = days(last.end) > staleAfter || hba.status === 'error';
         const ended = days(last.end) > 0;
-        const head = `<div class="stock-note" style="margin:4px 0 2px">${esc(halfMonth(last.start, last.end))} 고시${staleNote(stale || hba.status === 'error')}${ended && !stale ? ' · 적용 기간이 끝났습니다 — 다음 고시는 아직 공개 문서에 올라오지 않았습니다' : ''}</div>`;
-        const rows = last.grades.map((g) => {
-            const series = trailingRun(periods
-                .map((p) => ({ label: `${p.start}`, end: p.end, value: p.grades.find((x) => x.name === g.name)?.usd_per_t }))
-                .filter((pt) => Number.isFinite(pt.value)), nextHalf);
-            const up = (g.change_pct ?? 0) >= 0;
-            const chg = g.change_pct == null ? '' : ` · 직전 고시 대비 <span class="${up ? 'up' : 'down'}">${up ? '+' : ''}${fmt(g.change_pct)}%</span>`;
-            return `<details class="stock-item"><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(g.name)} · ${fmt(g.gar, 0)} GAR</span><span class="vl">$${fmt(g.usd_per_t)}<em>/톤</em></span></span>
-                <span class="stock-note" style="display:block">${esc(halfMonth(last.start, last.end))}${chg}</span></summary>
-                ${chartFor(series, ' $/톤', `${g.name} 고시 추이`) || '<div class="stock-note">고시 이력이 쌓이는 중입니다.</div>'}
-            </details>`;
-        }).join('');
-        return `${head}${rows}
-            <div class="stock-note">인도네시아 에너지광물자원부가 한 달에 두 번 고시하는 정책 기준가격(수출 기준). GAR는 열량 등급입니다 ·
-            <a style="color:#7dd3fc" href="${esc(last.url)}" target="_blank" rel="noopener noreferrer">${last.decree ? `장관결정문 ${esc(last.decree)}` : '고시 원문'}</a></div>`;
+        const series = periods.map((p) => ({ label: p.start, end: p.end, value: p.grades.find((x) => x.name === 'HBA II').usd_per_t }));
+        const gaps = series.some((pt, i) => i && !nextHalf(series[i - 1], pt));
+        const up = (g.change_pct ?? 0) >= 0;
+        const chg = g.change_pct == null ? '' : ` · 직전 고시 대비 <span class="${up ? 'up' : 'down'}">${up ? '+' : ''}${fmt(g.change_pct)}%</span>`;
+        return `<details class="stock-item" open><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">인도네시아 HBA II · 4,100 GAR</span><span class="vl">$${fmt(g.usd_per_t)}<em>/톤</em></span></span>
+            <span class="stock-note" style="display:block">${esc(halfMonth(last.start, last.end))} 고시${chg}${staleNote(stale)}${ended && !stale ? ' · 다음 고시는 아직 공개 문서에 없음' : ''}</span></summary>
+            <div class="stock-note">ICI4(약 4,200 GAR, 유료 지수) 대신 열량이 가장 가까운 정부 기준가격입니다 ·
+            <a style="color:#7dd3fc" href="${esc(last.url)}" target="_blank" rel="noopener noreferrer">${last.decree ? `장관결정문 ${esc(last.decree)}` : '고시 원문'}</a></div>
+            ${chartFor(series, ' $/톤', 'HBA II 고시 추이') || '<div class="stock-note">고시 이력이 쌓이는 중입니다.</div>'}
+            ${gaps ? '<div class="stock-note">일부 반월은 결정문이 스캔본이라 빠져 있습니다 — 선은 읽은 고시끼리 이은 것입니다.</div>' : ''}
+        </details>`;
     }
 
     function worldBankRow(series, staleAfter, status) {
@@ -92,7 +90,7 @@
         const pct = prev ? Math.round(((value - prev) / prev) * 1000) / 10 : null;
         const up = (pct ?? 0) >= 0;
         const history = trailingRun(pts.slice(-60).map(([label, v]) => ({ label, value: v })), nextMonth);
-        return `<details class="stock-item"><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(WB_LABEL[series.id] || series.label_ko)}</span><span class="vl">$${fmt(value)}<em>/톤</em></span></span>
+        return `<details class="stock-item" open><summary style="cursor:pointer;padding:6px 0"><span class="stock-row" style="display:inline-grid;width:calc(100% - 14px);grid-template-columns:minmax(0,1fr) auto"><span class="nm">${esc(WB_LABEL[series.id] || series.label_ko)}</span><span class="vl">$${fmt(value)}<em>/톤</em></span></span>
             <span class="stock-note" style="display:block">${esc(monthLabel(period))} 평균${pct == null ? '' : ` · 전월 대비 <span class="${up ? 'up' : 'down'}">${up ? '+' : ''}${fmt(pct, 1)}%</span>`}${staleNote(stale || status === 'error')}</span></summary>
             <div class="stock-note">원자료 ‘${esc(series.source_name)}’${series.definition ? ` — ${esc(series.definition)}` : ''}</div>
             ${chartFor(history, ' $/톤', `${series.label_ko} 월평균 최근 ${history.length}개월`)}
