@@ -1,5 +1,6 @@
 import {officialUrl,documentLinks} from './source-links.mjs';
 import {effectLabel,findingLabels} from './legal-effect.mjs';
+import {groupedResults,resultGroup} from './result-groups.mjs';
 const form=document.querySelector('#search-form'),results=document.querySelector('#results');
 const status=document.querySelector('#status'),coverage=document.querySelector('#coverage'),pages=document.querySelector('#pagination');
 const dialog=document.querySelector('#detail'),detail=document.querySelector('#detail-content');
@@ -11,6 +12,7 @@ const regionNames={Banten:'반텐','Jawa Tengah':'중앙자바','Kalimantan Timu
 const regionSelect=document.querySelector('#jurisdictions'),levelSelect=form.elements.namedItem('level');
 let controller,detailController,serial=0;
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
+const spinner=()=>node('span',undefined,'spinner');
 function sourceLink(url,label){const href=officialUrl(url);if(!href)return node('span','원문 링크 확인 필요');const a=node('a',label);a.href=href;a.target='_blank';a.rel='noopener noreferrer';return a;}
 function appendSources(target,item){
  const links=documentLinks(item);for(const link of links){const a=sourceLink(link.url,link.label);a.dataset.sourceType=link.type;target.append(a);}
@@ -80,7 +82,7 @@ async function appendContext(id,signal,target){
  }catch(e){if(e.name!=='AbortError'&&!signal.aborted)target.replaceChildren(node('p','관계·사업 검토 근거를 불러오지 못했습니다. 원문 자료는 아래에서 확인하세요.','meta'));}
 }
 function card(item){
- const e=node('article');e.append(badges(item),node('h2',item.title_ko),node('p',item.title,'original'),node('p',`${ref(item)} · ${item.issuer_name}`,'meta'));
+ const e=node('article');e.dataset.documentId=item.document_id;e.append(badges(item),node('h2',item.title_ko),node('p',item.title,'original'),node('p',`${ref(item)} · ${item.issuer_name}`,'meta'));
  if(item.semantic_similarity>=0.60)e.append(node('p','문서개요 의미 연관 후보 · 적용성 판단 아님','matches'));
  if(item.total_condition_count){e.append(node('p',`${item.total_condition_count}개 조건 중 ${item.matched_condition_count}개 일치${item.matched_condition_count<item.total_condition_count?' · 일부 조건만 일치':''}`,'matches'),matchEvidence(item));}
  e.append(node('p',item.content_kind==='official_metadata'?'공식 카탈로그를 확보했습니다. 원문 본문·부속서는 별도 확인이 필요합니다.':item.excerpt,'excerpt'));
@@ -90,7 +92,7 @@ function card(item){
 }
 async function showDetail(id){
  detailController?.abort();detailController=new AbortController();const signal=detailController.signal;
- detail.replaceChildren(node('p','문서를 불러오는 중입니다.'));if(!dialog.open)dialog.showModal();
+ detail.replaceChildren(node('p','문서를 불러오는 중입니다.'));detail.firstChild.append(spinner());if(!dialog.open)dialog.showModal();
  try{
   const r=await fetch(`/api/idn/documents/${encodeURIComponent(id)}`,{signal}),d=await r.json();
   if(!r.ok)throw Error(d.error||'문서를 불러오지 못했습니다.');
@@ -111,7 +113,7 @@ function parameters(offset=0){const p=new URLSearchParams();for(const [key,value
 async function search(offset=0,writeHistory=true){
  controller?.abort();controller=new AbortController();const token=++serial;
  const p=parameters(offset);if(writeHistory)history.replaceState(null,'',`${location.pathname}?${p}`);
- status.textContent='검색 중입니다.';results.replaceChildren();pages.replaceChildren();
+ status.replaceChildren('검색 중입니다.',spinner());results.replaceChildren();pages.replaceChildren();
  try{
   const r=await fetch(`/api/idn/search?${p}`,{signal:controller.signal}),data=await r.json();
   if(!r.ok)throw Error(data.error||'검색하지 못했습니다.');if(data.country!=='IDN')throw Error('국가별 데이터 검증에 실패했습니다.');if(token!==serial)return;
@@ -122,7 +124,18 @@ async function search(offset=0,writeHistory=true){
   regionSelect.replaceChildren(new Option('전체',''),...data.jurisdictions.map(j=>new Option(regionNames[j]?`${regionNames[j]} (${j})`:j,j)));
   if(chosen&&!data.jurisdictions.includes(chosen))regionSelect.append(new Option(`${chosen} · 현재 자료 없음`,chosen));regionSelect.value=chosen;
   status.textContent=data.total?`${data.total}건 검색됨 · ${data.search_mode==='hybrid_overview'?'키워드 + 문서개요 의미검색':'키워드·동의어 검색'}`:'저장된 자료에서 일치하는 문서를 찾지 못했습니다. 조건을 줄이거나 품목을 선택해 보세요.';
-  results.replaceChildren(...data.items.map(card));
+  // Compact list keeps the server order; desktop sections reuse the same cards.
+  const desktop=node('div',undefined,'grouped-results');
+  for(const group of groupedResults(data.items)){
+   const section=node('section',undefined,'result-group');section.dataset.group=group.key;
+   section.append(node('h2',`${group.label} · 현재 페이지 ${group.items.length}건`,'group-heading'));
+   section.append(...group.items.map(card));
+   if(!group.items.length)section.append(node('p','현재 페이지에 해당 유형이 없습니다.','meta'));
+   desktop.append(section);
+  }
+  const compact=node('div',undefined,'compact-results');
+  compact.append(...data.items.map(item=>{const e=card(item);e.dataset.group=resultGroup(item);return e;}));
+  results.replaceChildren(desktop,compact);
   for(const [label,next,enabled] of [['이전',offset-20,offset>0],['다음',offset+20,offset+20<data.total]])if(enabled){const b=node('button',label);b.type='button';b.addEventListener('click',()=>search(next));pages.append(b);}
  }catch(e){if(e.name!=='AbortError'&&token===serial){status.textContent=e.message;coverage.textContent='연결 오류로 결과를 확인하지 못했습니다.';}}
 }

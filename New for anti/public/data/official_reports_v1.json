@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-21T23:24:29.334641+00:00",
+  "generated_at": "2026-10-22T13:50:34.234349+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,8 +17,8 @@
   "stats": {
     "sources_ok": 9,
     "sources_failed": 1,
-    "raw_items": 147,
-    "scored": 147,
+    "raw_items": 148,
+    "scored": 148,
     "selected": 40,
     "indicators": 16
   },
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 19,
+      "count": 20,
       "error": null,
       "mode": "live"
     },
@@ -212,6 +212,34 @@
         "finance"
       ],
       "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "published_at": "2026-10-22T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (October 20)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "published_at": "2026-10-22T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261009.xlsx",
       "published_at": "2026-10-14T08:00:00+00:00",
       "site_slot": "finance.policy",
@@ -284,34 +312,6 @@
       "title": "Market Operations by the Bank of Japan (Sept.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2609.xlsx",
       "published_at": "2026-10-06T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx",
-      "published_at": "2026-10-02T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Collateral Accepted by the Bank of Japan (End of Sept.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
-      "published_at": "2026-10-02T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -1010,6 +1010,76 @@
       "site_slot": null
     },
     {
+      "id": "9151e2346fa707e2",
+      "published_at": "2026-10-22T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "34ef2dd56ae93a89",
+      "published_at": "2026-10-22T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (October 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (October 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "6f49a6abf07d895d",
       "published_at": "2026-10-14T08:00:00+00:00",
       "source": {
@@ -1205,76 +1275,6 @@
         "original": "Market Operations by the Bank of Japan (Sept.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Market Operations by the Bank of Japan (Sept.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "0b6fc03efe6dd90e",
-      "published_at": "2026-10-02T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "5f1c41b57a7020e0",
-      "published_at": "2026-10-02T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Collateral Accepted by the Bank of Japan (End of Sept.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Sept.)"
       },
       "summary": "",
       "scores": {
@@ -2549,6 +2549,76 @@
       "site_slot": null
     },
     {
+      "id": "9151e2346fa707e2",
+      "published_at": "2026-10-22T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "34ef2dd56ae93a89",
+      "published_at": "2026-10-22T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (October 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (October 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "6f49a6abf07d895d",
       "published_at": "2026-10-14T08:00:00+00:00",
       "source": {
@@ -2744,76 +2814,6 @@
         "original": "Market Operations by the Bank of Japan (Sept.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Market Operations by the Bank of Japan (Sept.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "0b6fc03efe6dd90e",
-      "published_at": "2026-10-02T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei260930.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "5f1c41b57a7020e0",
-      "published_at": "2026-10-02T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2609.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Collateral Accepted by the Bank of Japan (End of Sept.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Sept.)"
       },
       "summary": "",
       "scores": {

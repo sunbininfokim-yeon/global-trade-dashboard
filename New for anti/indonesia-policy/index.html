@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>인도네시아 정책 검색 · ChokeMonitor</title><link rel="stylesheet" href="./search.css"></head>
+<title>인도네시아 정책 검색 · ChokeMonitor</title><link rel="stylesheet" href="./search.css?v=2"></head>
 <body><header><a href="/">ChokeMonitor</a><span>정책 / 인도네시아</span><a class="translate-link" href="https://38cfe31b.id-ko-interpreter.pages.dev/" target="_blank" rel="noopener noreferrer">한-인니 통번역 ↗</a></header>
 <main><section class="intro"><p class="eyebrow">INDONESIA POLICY</p><h1>인도네시아 정책 검색</h1>
 <p>자원개발·트레이딩의 업종 규제와 공통 사업법규를 찾습니다.</p></section>
@@ -16,7 +16,17 @@
 <p class="search-help">쉼표로 조건을 구분하세요. 의미검색은 문서 개요, 모든 조건 일치는 키워드 기준입니다.</p><div class="examples" aria-label="검색 예시"><button type="button" data-query="보크사이트, 제련">보크사이트 · 제련</button><button type="button" data-query="니켈, 보조금">니켈 · 지원</button><button type="button" data-query="팜유, 인증">팜유 · 인증</button><button type="button" data-query="석탄, 파산">석탄 · 파산</button></div></form>
 <details class="coverage"><summary>수집 범위·검색 방식 확인</summary><p id="coverage"></p><p>품목·단계 태그는 관련 검토 범위입니다. 검색 결과는 법적 적용성·지원 자격 확정이 아닙니다. 의미검색은 문서 개요 기반이며 전체 조문 검색이 아닙니다. 희토류 등은 탐사·사업화 근거를 별도로 확인해야 합니다.</p></details><p id="status" role="status" aria-live="polite"></p><div id="results"></div>
 <nav id="pagination" aria-label="검색 결과 페이지"></nav>
+<details id="mail-subscriptions" class="mail-subscriptions"><summary>상품·사업지역 규제 메일 구독</summary>
+<p class="search-help">선택한 품목 중 하나와 적용 지역이 함께 맞는 변경을 알립니다. 전국은 중앙정부·모든 지방의 검토된 변경을 포함합니다. 특정 지역은 해당 지역 변경과 전국에 적용되는 중앙정부 법률·규정을 포함합니다.</p>
+<p role="status" aria-live="polite"></p><a href="/mypage">로그인·마이페이지</a>
+<form hidden>
+<fieldset><legend>메일 품목 · 여러 개 선택</legend><div class="mail-actions"><button type="button" data-topics="all">전체 품목 선택</button><button type="button" data-topics="none">품목 선택 해제</button></div><div class="mail-checks" data-topic-options></div></fieldset>
+<fieldset><legend>메일 지역 · 여러 개 선택</legend><label class="mail-choice mail-nationwide"><input type="checkbox" name="region" value="__all__">인도네시아 전국 · 중앙·모든 지방</label>
+<details class="mail-region-details"><summary>지역 직접 선택</summary><label class="mail-region-filter">지역 찾기 <input type="search" name="region_filter" placeholder="예: 칼리만탄, Sulawesi" maxlength="120"></label><div class="mail-actions"><button type="button" data-regions="none">지역 선택 해제</button></div><div class="mail-checks mail-region-options" data-region-options></div></details>
+<p class="search-help">지방 자료 미확보 지역도 구독할 수 있으며 전국 적용 규정은 포함됩니다. 지역 선택 가능 여부가 지방 규정 수집 완료를 뜻하지 않습니다. 군·시와 주의 관계는 추정하지 않습니다.</p></fieldset>
+<p class="search-help" data-selection-status aria-live="polite"></p><div class="mail-actions"><button type="submit">메일 구독 저장</button></div><p data-save-status role="status" aria-live="polite"></p>
+</form><ul aria-label="저장한 인도네시아 메일 구독"></ul></details>
 <aside>공식 출처를 확보한 시범 자료입니다. 검색 결과가 없다고 규제가 없는 것은 아닙니다. 현재 법적 효력과 개정·폐지는 별도 확인이 필요합니다.</aside>
 </main>
 <dialog id="detail"><button id="close-detail" class="close" aria-label="상세 닫기">닫기</button><div id="detail-content"></div></dialog>
-<script type="module" src="./search.mjs"></script></body></html>
+<script src="../auth-config.js?v=1"></script><script type="module" src="./search.mjs?v=2"></script><script type="module" src="./subscriptions.mjs"></script></body></html>

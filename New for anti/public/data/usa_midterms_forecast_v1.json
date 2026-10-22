@@ -1,8 +1,8 @@
 {
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
-  "as_of": "2026-10-21",
-  "generated_at": "2026-10-21T23:59:06.300120+00:00",
+  "as_of": "2026-10-22",
+  "generated_at": "2026-10-22T09:33:24.524627+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.",
@@ -7538,7 +7538,7 @@
                       "historical_accuracy_rating"
                     ],
                     "review_method": "structured_primary_html_table_v1",
-                    "reviewed_on": "2026-10-21",
+                    "reviewed_on": "2026-10-22",
                     "review_sources": [
                       "https://cnu.edu/wason/surveys/archive/2026-10-14.html",
                       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6yTXYQshPUHpmeBqlQQigmgvRW7MNHBBKFtR8y-l6ZQhpPXT4AuoNxlOMdRmKo88iu6KGXBLQF0JW/pubhtml/sheet?headers=false&gid=392840542"
@@ -8839,9 +8839,9 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 3,
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 0.6666666666666666,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -8937,75 +8937,11 @@
                   },
                   "leading_margin_pp": 0.5,
                   "significance": "not_evaluated"
-                },
-                {
-                  "id": "us-202recc152b3f7",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "historical_accuracy_rating",
-                      "precision_model_specification",
-                      "confidence_level_pct"
-                    ],
-                    "review_method": "manual_primary_review",
-                    "reviewed_on": "2026-10-14",
-                    "review_sources": [
-                      "https://reconmr.com/wp-content/uploads/2026/10/TXP004-October-Press-Release.pdf"
-                    ],
-                    "primary_toplines": {
-                      "James Talarico": 48.0,
-                      "Ken Paxton": 44.0
-                    },
-                    "question_sample_n": 617,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sample_n": 617,
-                      "field_dates": [
-                        "2026-10-05",
-                        "2026-10-08"
-                      ],
-                      "sponsors": [],
-                      "sampling_method": "stratified_probability_dual_frame",
-                      "sampling_frame": "L2 landline/cell voter-file frame; 217 text-to-web responses",
-                      "weighting": "party age region race education gender",
-                      "question_wording_checked": true,
-                      "question": "Q3 Senate or Q5 Governor ordinary rotated candidate ballot",
-                      "provider_pollster_label": "ReconMR/Siena University",
-                      "primary_pollster_name": "ReconMR"
-                    },
-                    "reported_precision": {
-                      "kind": "publisher_reported_margin_of_sampling_error",
-                      "half_width_pp": 4.4,
-                      "confidence_level_pct": null,
-                      "scope": "question_LV_sample617",
-                      "model_details_verified": false
-                    },
-                    "ballot_format": "ordinary_named_candidate_ballot",
-                    "sponsor_review": {
-                      "primary_sponsors": [],
-                      "provider_partisan_flag": null,
-                      "affiliation_independently_verified": null,
-                      "primary_internal": false
-                    },
-                    "limitations_ko": "원문 기관 표기는 ReconMR. API의 ReconMR/Siena University 공동 표기에서 Siena 참여는 확인되지 않았습니다. 그룹은 reconmr이며 정확도 등급을 부여하지 않습니다. 발표 confidence level 미공개."
-                  },
-                  "commissioning": {
-                    "internal": false,
-                    "partisan": null,
-                    "sponsors": []
-                  },
-                  "leading_margin_pp": 4.0,
-                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
                 "us-202ins62d5470c",
-                "us-202quaee83ce98",
-                "us-202recc152b3f7"
+                "us-202quaee83ce98"
               ]
             },
             {
@@ -9421,14 +9357,14 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 21 · 공화 22 · 무소속 0 · 미정 7. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 21 · 공화 21 · 무소속 0 · 미정 8. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
             "DEM": 21,
-            "GOP": 22,
+            "GOP": 21,
             "IND": 0
           },
-          "unresolved_seats": 7,
+          "unresolved_seats": 8,
           "buckets": {
             "retained": {
               "DEM": 6,
@@ -9443,13 +9379,13 @@
               "GOP": 1
             },
             "single_poll_lead": {
-              "GOP": 2
+              "GOP": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
             "DEM": 0,
-            "GOP": 2,
+            "GOP": 1,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
@@ -9461,15 +9397,15 @@
           "conditional_bounds": {
             "DEM": {
               "min": 21,
-              "max": 28
+              "max": 29
             },
             "GOP": {
-              "min": 22,
+              "min": 21,
               "max": 29
             },
             "IND": {
               "min": 0,
-              "max": 7
+              "max": 8
             }
           },
           "ratings_as_of": "2026-10-01",
@@ -10233,91 +10169,25 @@
               "race_id": "USA:TX:governor",
               "rating": "lean_rep",
               "competitive": true,
-              "basis": "single_poll_lead",
-              "party_abbr": "GOP",
-              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "basis": "pending",
+              "party_abbr": "없음",
+              "conclusion_ko": "판정 보류",
+              "poll_status": "no_recent_poll",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "none",
+                "coverage_label_ko": "조사 없음",
+                "independent_pollster_count": 0,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 1.0,
+                "agreement_fraction": null,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [
-                {
-                  "id": "gov202rec101a5410",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "historical_accuracy_rating",
-                      "precision_model_specification",
-                      "confidence_level_pct"
-                    ],
-                    "review_method": "manual_primary_review",
-                    "reviewed_on": "2026-10-14",
-                    "review_sources": [
-                      "https://reconmr.com/wp-content/uploads/2026/10/TXP004-October-Press-Release.pdf"
-                    ],
-                    "primary_toplines": {
-                      "Greg Abbott": 48.0,
-                      "Gina Hinojosa": 47.0
-                    },
-                    "question_sample_n": 617,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sample_n": 617,
-                      "field_dates": [
-                        "2026-10-05",
-                        "2026-10-08"
-                      ],
-                      "sponsors": [],
-                      "sampling_method": "stratified_probability_dual_frame",
-                      "sampling_frame": "L2 landline/cell voter-file frame; 217 text-to-web responses",
-                      "weighting": "party age region race education gender",
-                      "question_wording_checked": true,
-                      "question": "Q3 Senate or Q5 Governor ordinary rotated candidate ballot",
-                      "provider_pollster_label": "ReconMR/Siena University",
-                      "primary_pollster_name": "ReconMR"
-                    },
-                    "reported_precision": {
-                      "kind": "publisher_reported_margin_of_sampling_error",
-                      "half_width_pp": 4.4,
-                      "confidence_level_pct": null,
-                      "scope": "question_LV_sample617",
-                      "model_details_verified": false
-                    },
-                    "ballot_format": "ordinary_named_candidate_ballot",
-                    "sponsor_review": {
-                      "primary_sponsors": [],
-                      "provider_partisan_flag": null,
-                      "affiliation_independently_verified": null,
-                      "primary_internal": false
-                    },
-                    "limitations_ko": "원문 기관 표기는 ReconMR. API의 ReconMR/Siena University 공동 표기에서 Siena 참여는 확인되지 않았습니다. 그룹은 reconmr이며 정확도 등급을 부여하지 않습니다. 발표 confidence level 미공개."
-                  },
-                  "commissioning": {
-                    "internal": false,
-                    "partisan": null,
-                    "sponsors": []
-                  },
-                  "leading_margin_pp": 1.0,
-                  "significance": "not_evaluated"
-                }
-              ],
-              "included_poll_ids": [
-                "gov202rec101a5410"
-              ]
+              "poll_details": [],
+              "included_poll_ids": []
             },
             {
               "race_id": "USA:NH:governor",
@@ -10945,7 +10815,7 @@
                   "historical_accuracy_rating"
                 ],
                 "review_method": "structured_primary_html_table_v1",
-                "reviewed_on": "2026-10-21",
+                "reviewed_on": "2026-10-22",
                 "review_sources": [
                   "https://cnu.edu/wason/surveys/archive/2026-10-14.html",
                   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6yTXYQshPUHpmeBqlQQigmgvRW7MNHBBKFtR8y-l6ZQhpPXT4AuoNxlOMdRmKo88iu6KGXBLQF0JW/pubhtml/sheet?headers=false&gid=392840542"
@@ -11924,9 +11794,9 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 3,
+            "independent_pollster_count": 2,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 0.6666666666666666,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -12022,75 +11892,11 @@
               },
               "leading_margin_pp": 0.5,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "us-202recc152b3f7",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "historical_accuracy_rating",
-                  "precision_model_specification",
-                  "confidence_level_pct"
-                ],
-                "review_method": "manual_primary_review",
-                "reviewed_on": "2026-10-14",
-                "review_sources": [
-                  "https://reconmr.com/wp-content/uploads/2026/10/TXP004-October-Press-Release.pdf"
-                ],
-                "primary_toplines": {
-                  "James Talarico": 48.0,
-                  "Ken Paxton": 44.0
-                },
-                "question_sample_n": 617,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 617,
-                  "field_dates": [
-                    "2026-10-05",
-                    "2026-10-08"
-                  ],
-                  "sponsors": [],
-                  "sampling_method": "stratified_probability_dual_frame",
-                  "sampling_frame": "L2 landline/cell voter-file frame; 217 text-to-web responses",
-                  "weighting": "party age region race education gender",
-                  "question_wording_checked": true,
-                  "question": "Q3 Senate or Q5 Governor ordinary rotated candidate ballot",
-                  "provider_pollster_label": "ReconMR/Siena University",
-                  "primary_pollster_name": "ReconMR"
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_sampling_error",
-                  "half_width_pp": 4.4,
-                  "confidence_level_pct": null,
-                  "scope": "question_LV_sample617",
-                  "model_details_verified": false
-                },
-                "ballot_format": "ordinary_named_candidate_ballot",
-                "sponsor_review": {
-                  "primary_sponsors": [],
-                  "provider_partisan_flag": null,
-                  "affiliation_independently_verified": null,
-                  "primary_internal": false
-                },
-                "limitations_ko": "원문 기관 표기는 ReconMR. API의 ReconMR/Siena University 공동 표기에서 Siena 참여는 확인되지 않았습니다. 그룹은 reconmr이며 정확도 등급을 부여하지 않습니다. 발표 confidence level 미공개."
-              },
-              "commissioning": {
-                "internal": false,
-                "partisan": null,
-                "sponsors": []
-              },
-              "leading_margin_pp": 4.0,
-              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "us-202ins62d5470c",
-            "us-202quaee83ce98",
-            "us-202recc152b3f7"
+            "us-202quaee83ce98"
           ]
         },
         {
@@ -12743,91 +12549,25 @@
           "race_id": "USA:TX:governor",
           "rating": "lean_rep",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "GOP",
-          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 1.0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [
-            {
-              "id": "gov202rec101a5410",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "historical_accuracy_rating",
-                  "precision_model_specification",
-                  "confidence_level_pct"
-                ],
-                "review_method": "manual_primary_review",
-                "reviewed_on": "2026-10-14",
-                "review_sources": [
-                  "https://reconmr.com/wp-content/uploads/2026/10/TXP004-October-Press-Release.pdf"
-                ],
-                "primary_toplines": {
-                  "Greg Abbott": 48.0,
-                  "Gina Hinojosa": 47.0
-                },
-                "question_sample_n": 617,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 617,
-                  "field_dates": [
-                    "2026-10-05",
-                    "2026-10-08"
-                  ],
-                  "sponsors": [],
-                  "sampling_method": "stratified_probability_dual_frame",
-                  "sampling_frame": "L2 landline/cell voter-file frame; 217 text-to-web responses",
-                  "weighting": "party age region race education gender",
-                  "question_wording_checked": true,
-                  "question": "Q3 Senate or Q5 Governor ordinary rotated candidate ballot",
-                  "provider_pollster_label": "ReconMR/Siena University",
-                  "primary_pollster_name": "ReconMR"
-                },
-                "reported_precision": {
-                  "kind": "publisher_reported_margin_of_sampling_error",
-                  "half_width_pp": 4.4,
-                  "confidence_level_pct": null,
-                  "scope": "question_LV_sample617",
-                  "model_details_verified": false
-                },
-                "ballot_format": "ordinary_named_candidate_ballot",
-                "sponsor_review": {
-                  "primary_sponsors": [],
-                  "provider_partisan_flag": null,
-                  "affiliation_independently_verified": null,
-                  "primary_internal": false
-                },
-                "limitations_ko": "원문 기관 표기는 ReconMR. API의 ReconMR/Siena University 공동 표기에서 Siena 참여는 확인되지 않았습니다. 그룹은 reconmr이며 정확도 등급을 부여하지 않습니다. 발표 confidence level 미공개."
-              },
-              "commissioning": {
-                "internal": false,
-                "partisan": null,
-                "sponsors": []
-              },
-              "leading_margin_pp": 1.0,
-              "significance": "not_evaluated"
-            }
-          ],
-          "included_poll_ids": [
-            "gov202rec101a5410"
-          ]
+          "poll_details": [],
+          "included_poll_ids": []
         }
       ]
     }
