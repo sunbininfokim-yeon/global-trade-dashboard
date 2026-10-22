@@ -7,7 +7,19 @@ export function subscriptionClient(client){
  };
  return {
   onChange(fn){client.auth.onAuthStateChange?.(()=>setTimeout(fn,0));},
-  async user(){const {data,error}=await client.auth.getUser();return error?null:data.user;},
+  // The stored session decides first: the site's own login (auth.js) writes the
+  // same Supabase session, so a reader signed in there is signed in here.
+  async user(){
+   if(client.auth.getSession){const {data,error}=await client.auth.getSession();if(!error&&data?.session?.user)return data.session.user;}
+   if(!client.auth.getUser)return null;
+   const {data,error}=await client.auth.getUser();return error?null:data.user;
+  },
+  async signIn(email,password){
+   if(typeof email!=='string'||!email.includes('@')||typeof password!=='string'||!password)throw Error('이메일과 비밀번호를 입력하세요.');
+   const {error}=await client.auth.signInWithPassword({email:email.trim(),password});
+   if(error)throw Error('로그인하지 못했습니다. 이메일과 비밀번호를 확인하세요.');
+  },
+  async signOut(){await client.auth.signOut();},
   async list(){const data=await rpc('idn_my_mail_subscriptions');if(data?.country!=='IDN'||!Array.isArray(data.subscriptions)||!Array.isArray(data.region_options)||!data.region_options.every(r=>typeof r.value==='string'&&typeof r.label==='string'))throw Error('구독 응답을 확인하지 못했습니다.');return data;},
   async set(topic,region,enabled){
    if(typeof topic!=='string'||typeof region!=='string'||!region||typeof enabled!=='boolean')throw Error('품목·사업지역을 확인하세요.');
