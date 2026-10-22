@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
-from collections import OrderedDict
+import ssl
+import time
+import urllib.request
+from collections import Counter, OrderedDict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
 from typing import Any, Dict, Iterable, List, Optional
 
-from .feeds import RawReport, _board_for, report_id, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
+from . import newsfilter
+from .feeds import BROWSER_HEADERS, RawReport, _board_for, fetch_text, report_id, fetch_fas_gain_pages, fetch_source, parse_fas_gain_cards, parse_feed, parse_html_list
 from .gemini import GeminiAnnotator
 from .score import ReportScorer, ScoredReport
 from .tag import CommodityTagger, CountryTagger, Tagged, tag_report
@@ -109,11 +114,138 @@ CARRY_OVER_DAYS = ARCHIVE_DAYS  # kept for callers that tune it (tests)
 def source_home(src: Dict[str, Any]) -> Optional[str]:
     if src.get("home"):
         return src["home"]
+    if src.get("item_publisher"):
+        return None  # an aggregator's host is not the outlet that wrote the item
     parts = urlsplit(src.get("url") or "")
     return f"{parts.scheme}://{parts.netloc}/" if parts.scheme in ("http", "https") and parts.netloc else None
 
 
+# A build asks Google about at most this many new links; the rest wait for the next one.
+RESOLVE_BUDGET = 150
+
+
+def load_trusted_outlets() -> List[str]:
+    path = CONFIG / "news_outlets.json"
+    return list(load_json(path).get("trusted_domains") or []) if path.exists() else []
+
+
+def drop_untrusted_outlets(raw: List[RawReport], by_src: Dict[str, Dict[str, Any]], trusted: List[str]):
+    """Aggregator items from an outlet we do not list never get tagged.
+
+    Only a fresh, still-unresolved aggregator link is checked; a carried item
+    was vetted when it came in. Returns (kept, dropped_count, Counter of the
+    domains dropped).
+    """
+    kept: List[RawReport] = []
+    domains: Counter = Counter()
+    for r in raw:
+        src = by_src.get(r.source_id) or {}
+        if src.get("item_publisher") and newsfilter.is_google_news_url(r.url):
+            if not newsfilter.trusted_outlet(r.publisher_url, trusted):
+                domains[newsfilter.registrable_domain(r.publisher_url or "") or "(no outlet named)"] += 1
+                continue
+        kept.append(r)
+    return kept, sum(domains.values()), domains
+
+
+def make_gnews_resolver(ua: str, timeout: float, pause: float = 0.7):
+    """Ask Google for the article address behind a Google News link."""
+    def get(url: str) -> str:
+        return fetch_text(url, user_agent=ua, timeout=timeout, browser=True)
+
+    def post(url: str, body: str) -> str:
+        req = urllib.request.Request(url, data=body.encode(), method="POST", headers={
+            **BROWSER_HEADERS, "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"})
+        with urllib.request.urlopen(req, timeout=timeout, context=ssl.create_default_context()) as resp:
+            return resp.read().decode("utf-8", "replace")
+
+    def resolve(url: str) -> Optional[str]:
+        time.sleep(pause)   # one article at a time, and politely
+        return newsfilter.resolve_google_news_url(url, get=get, post=post)
+
+    return resolve
+
+
+def _news_within(a: Optional[str], b: Optional[str], days: int = 4) -> bool:
+    """Same story only if published close together; an undated one is judged on words alone."""
+    try:
+        da, db = datetime.fromisoformat(a), datetime.fromisoformat(b)
+    except (TypeError, ValueError):
+        return True
+    return abs((da - db).total_seconds()) <= days * 86400
+
+
+def merge_stories(reports: List[ScoredReport], news_source_ids: set) -> List[ScoredReport]:
+    """Fold news headlines that tell one story into the best one (in place).
+
+    `reports` is most-important first, so the survivor is the direct outlet
+    feed over an aggregator, the heavier source over the lighter. Only news is
+    merged; an official report is never folded into a headline. Returns the
+    rows that were folded away.
+    """
+    kept: List[tuple] = []
+    out: List[ScoredReport] = []
+    folded: List[ScoredReport] = []
+    for r in reports:
+        if r.source_id not in news_source_ids:
+            out.append(r)
+            continue
+        toks = newsfilter.story_tokens(r.title) | newsfilter.story_tokens(r.title_en or "")
+        twin = next((k for k, ktoks in kept
+                     if set(k.commodities) & set(r.commodities)
+                     and _news_within(k.published_at, r.published_at)
+                     and newsfilter.same_story(toks, ktoks)), None)
+        if twin is not None:
+            twin.also += 1
+            folded.append(r)
+            continue
+        kept.append((r, toks))
+        out.append(r)
+    reports[:] = out
+    return folded
+
+
+def stamp_source_fields(items: List[Dict[str, Any]], sources: List[Dict[str, Any]]) -> None:
+    """Source-level facts the consumers need on each item.
+
+    publisher_type "news": a news outlet, not an agency. The weekly digest
+    caps these so wire headlines do not crowd out agency reports.
+    source_agency[_ko]: the SOURCE's own name. An aggregator source's items
+    carry the outlet each one names in agency, so the mypage source filter --
+    one checkbox per source_id, stored in commodity_digest_source_prefs --
+    needs a stable label of its own or it would be named after whichever
+    outlet happened to come first.
+    """
+    by_id = {s["id"]: s for s in sources}
+    for it in items:
+        src = by_id.get(it.get("source_id")) or {}
+        if src.get("publisher_type"):
+            it["publisher_type"] = src["publisher_type"]
+        if src.get("item_publisher"):
+            it["source_agency"] = src.get("agency")
+            it["source_agency_ko"] = src.get("agency_ko") or src.get("agency")
+        if src.get("publisher_type") == "news":
+            if src.get("item_publisher"):
+                # The link now opens the outlet's own article, so the credit is
+                # the outlet alone; "via Google News" would only mislead.
+                for key, tail in (("agency", f" · {src.get('agency', 'Google News')}"),
+                                  ("agency_ko", f" ({src.get('agency_ko', '구글 뉴스 경유')})")):
+                    value = it.get(key)
+                    if value and value.endswith(tail) and len(value) > len(tail):
+                        it[key] = value[: -len(tail)]
+            # A headline and a link, nothing more: no summary, no scoring notes.
+            it["summary"] = None
+            for key in ("reasons", "series_id", "series_label_ko"):
+                it.pop(key, None)
+
+
 def horizon_days(src: Optional[Dict[str, Any]]) -> int:
+    # A news feed's rolling headlines go stale in days, and every item kept is
+    # parsed by the Worker on each /api/commodity-reports request, so a source
+    # may ask for a shorter window than the archive's (retention_days).
+    keep = int((src or {}).get("retention_days") or 0)
+    if keep > 0:
+        return keep
     return max(CARRY_OVER_DAYS, int(((src or {}).get("html") or {}).get("max_age_days") or 0))
 
 
@@ -157,10 +289,14 @@ def previous_raws(
         seen = news_time(published, item.get("published_precision"), item.get("first_seen_at"), now)
         if (now - seen).days > horizon_days(src):
             continue
+        # An aggregator source credits the outlet each item names; the
+        # snapshot kept that, the source config does not have it.
+        own = bool(src.get("item_publisher")) and bool(item.get("agency"))
         r = RawReport(
             source_id=src["id"],
-            agency=src.get("agency", src["id"]),
-            agency_ko=src.get("agency_ko", src.get("agency", src["id"])),
+            agency=item["agency"] if own else src.get("agency", src["id"]),
+            agency_ko=(item.get("agency_ko") or item["agency"]) if own
+            else src.get("agency_ko", src.get("agency", src["id"])),
             url=item.get("url") or "",
             title=(item.get("title") or {}).get("original") or "",
             summary=item.get("summary") or "",
@@ -172,8 +308,10 @@ def previous_raws(
             scope_hint=src.get("scope_hint", "country"),
             date_precision=item.get("published_precision") or "day",
             market_only=bool(src.get("market_only")),
-            commodity_from=src.get("commodity_from", "text"),
+            commodity_from="title" if src.get("publisher_type") == "news" else src.get("commodity_from", "text"),
             commodity_scope=list(src.get("commodity_scope") or []),
+            src_ref=item.get("src_ref") or None,
+            also=int(item.get("also") or 0),
             # Same rule as a fresh fetch: a general ministry feed's carried-over
             # item joins the board only if its headline passes board_title_re
             # (2026-10-20: every Kemendag news item had piled onto the
@@ -237,6 +375,11 @@ def _dedupe(scored: Iterable[ScoredReport]) -> List[ScoredReport]:
         if key not in best and title_key not in titles:
             best[key] = item
             titles.add(title_key)
+        elif key in best:
+            # The same article seen twice (a fresh feed item and the carried
+            # copy): the folded-story count of either must survive.
+            best[key].also = max(best[key].also, item.also)
+            best[key].src_ref = best[key].src_ref or item.src_ref
     return list(best.values())
 
 
@@ -367,6 +510,7 @@ def build_commodity_reports(
     annotator: Optional[GeminiAnnotator] = None,
     now: Optional[datetime] = None,
     previous_path: Optional[Path] = None,
+    news_resolver=None,
 ) -> Dict[str, Any]:
     now = now or datetime.now(timezone.utc)
     sources_cfg = load_json(CONFIG / "sources.json")
@@ -384,14 +528,14 @@ def build_commodity_reports(
     sources = [s for s in sources_cfg.get("sources", []) if s.get("enabled", True)]
 
     previous = None
+    if previous_path and Path(previous_path).exists():
+        try:
+            previous = load_json(Path(previous_path))
+        except (OSError, ValueError):
+            previous = None
     if fixture_dir:
         raw, feed_status = _collect_fixtures(sources, Path(fixture_dir), max_per, now)
     elif fetch_live:
-        if previous_path and Path(previous_path).exists():
-            try:
-                previous = load_json(Path(previous_path))
-            except (OSError, ValueError):
-                previous = None
         raw, feed_status = _collect_live(
             sources, ua=ua, timeout=timeout, max_per=max_per,
             carried=previous_raws(previous, sources, now),
@@ -410,8 +554,30 @@ def build_commodity_reports(
     # an unrelated reason (a feed additive, brake drums) must not survive
     # because an earlier build once collected it.
     exclusions = {sid: re.compile(s["title_exclude"], re.I) for sid, s in by_src.items() if s.get("title_exclude")}
-    if exclusions:
-        raw = [r for r in raw if not (r.source_id in exclusions and exclusions[r.source_id].search(r.title))]
+    # Event and ticket pages that trade-press feeds carry ("Bauxite & Alumina
+    # 2027 Tickets & Pricing") are marketing, not news: dropped from every news source.
+    news_noise = re.compile(sources_cfg["news_title_exclude"], re.I) if sources_cfg.get("news_title_exclude") else None
+    noise_ids = {sid for sid, s in by_src.items() if s.get("publisher_type") == "news"} if news_noise else set()
+    if exclusions or noise_ids:
+        raw = [r for r in raw if not (
+            (r.source_id in exclusions and exclusions[r.source_id].search(r.title))
+            or (r.source_id in noise_ids and news_noise.search(r.title)))]
+    # News outlets: an aggregator item from an outlet we do not list is dropped
+    # before anything is spent on it (config/news_outlets.json).
+    raw, untrusted_n, untrusted_domains = drop_untrusted_outlets(raw, by_src, load_trusted_outlets())
+    news_stats: Dict[str, Any] = {"resolved_new": 0, "resolved_cached": 0, "unresolved": 0, "outlet_mismatch": 0,
+                                  "skipped_known": 0, "deferred": 0}
+    # Links already judged not worth showing (folded into another outlet's
+    # story, or resolving to the wrong site) are not asked about again.
+    skip_refs = set(((previous or {}).get("news") or {}).get("skip_refs") or [])
+    new_skip: set = set()
+    asked = 0
+    cached_direct = {
+        it["src_ref"]: it["url"]
+        for it in (previous or {}).get("items") or [] if it.get("src_ref") and it.get("url")
+    }
+    if news_resolver is None and fetch_live and not fixture_dir:
+        news_resolver = make_gnews_resolver(ua, timeout)
     notes = annotate_raws(raw, by_src, previous, annotator)
     gemini_status = {
         "enabled": annotator.enabled, "model": annotator.model_used, "calls": annotator.calls,
@@ -457,6 +623,40 @@ def build_commodity_reports(
         if note.get("en"):
             item.title_en = note["en"]
             item.title_ko = item.title_ko or note.get("ko")
+        item.src_ref = r.src_ref
+        if newsfilter.is_google_news_url(item.url):
+            # Only an item that survived tagging is worth a request, and it is
+            # shown only with the article's own address, on the outlet's domain.
+            ref = hashlib.sha1((newsfilter.google_news_ref(item.url) or "").encode()).hexdigest()[:12]
+            direct = cached_direct.get(ref)
+            if direct:
+                news_stats["resolved_cached"] += 1
+            elif ref in skip_refs:
+                news_stats["skipped_known"] += 1
+                new_skip.add(ref)
+                continue
+            elif news_resolver is None:
+                news_stats["unresolved"] += 1
+                continue
+            elif asked >= RESOLVE_BUDGET:
+                # A first run over a long backlog: the rest wait for the next build.
+                news_stats["deferred"] += 1
+                continue
+            else:
+                asked += 1
+                direct = news_resolver(item.url)
+                if not direct:
+                    news_stats["unresolved"] += 1
+                    continue
+                if not newsfilter.same_outlet(direct, r.publisher_url):
+                    news_stats["outlet_mismatch"] += 1
+                    new_skip.add(ref)
+                    continue
+                news_stats["resolved_new"] += 1
+            item.url = direct
+            item.id = hashlib.sha1(f"{item.source_id}|{direct}".encode()).hexdigest()[:16]
+            item.src_ref = ref
+        item.also = r.also
         if r.board:
             item.control = control_record(by_src.get(r.source_id) or {}, note)
         scored.append(item)
@@ -478,6 +678,9 @@ def build_commodity_reports(
     ]
 
     reports = _dedupe(scored)[:max_items]
+    news_ids = {s["id"] for s in sources if s.get("publisher_type") == "news"}
+    folded = merge_stories(reports, news_ids)
+    new_skip.update(f.src_ref for f in folded if f.src_ref)
 
     if translate:
         from .translate import apply_korean_titles
@@ -503,6 +706,7 @@ def build_commodity_reports(
     for it in items:
         if homes.get(it["source_id"]):
             it["agency_url"] = homes[it["source_id"]]
+    stamp_source_fields(items, sources)
     # When this build first saw each report. List-page sources publish no
     # date, and the weekly favorites digest mails what is new in the last
     # week -- without this those reports (ANRPC, VRA, CONAB, USGS...) could
@@ -558,6 +762,15 @@ def build_commodity_reports(
         },
         "feed_status": feed_status,
         "translation": gemini_status,
+        # News outlets: what was admitted and what was turned away.
+        "news": {
+            "rows": sum(1 for it in items if it.get("publisher_type") == "news"),
+            "folded_same_story": len(folded),
+            "dropped_untrusted_outlet": untrusted_n,
+            "untrusted_outlets": dict(untrusted_domains.most_common(30)),
+            "skip_refs": sorted(new_skip),
+            **news_stats,
+        },
         # Named lists fed by a source regardless of commodity: board -> ids,
         # newest first. "cn_export_controls": MOFCOM's export-control bureau.
         "boards": boards,
