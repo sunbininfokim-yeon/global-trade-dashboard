@@ -103,8 +103,13 @@ def pink_sheet(unit="($/mt)", coal=True):
 
 class HbaParseTests(unittest.TestCase):
     def test_first_period_of_october(self):
-        got = m.parse_hba_decree(ANNEX_OCT_1, "https://jdih/384.pdf")
+        title = "Keputusan Menteri Energi dan Sumber Daya Mineral Nomor 384.K/MB.01/MEM.B/2026 tentang Harga Mineral Logam Acuan dan Harga Batubara Acuan"
+        got = m.parse_hba_decree(ANNEX_OCT_1, "https://jdih/384.pdf", title)
         self.assertEqual((got["start"], got["end"], got["decree"]), ("2026-10-01", "2026-10-14", "384.K/MB.01/MEM.B/2026"))
+        # the number comes from the title, never from a decision the body cites
+        cited = ANNEX_OCT_1.replace("NOMOR :384.K/MB.01/MEM.B/2026", "Nomor 268.K/MB.01/MEM.B/2025 tentang Pedoman")
+        self.assertNotIn("decree", m.parse_hba_decree(cited, "u"))
+        self.assertEqual(m.parse_hba_decree(cited, "u", title)["decree"], "384.K/MB.01/MEM.B/2026")
         self.assertEqual([(g["name"], g["gar"], g["usd_per_t"]) for g in got["grades"]],
                          [("HBA", 6322, 122.52), ("HBA I", 5300, 90.60), ("HBA II", 4100, 63.45), ("HBA III", 3400, 43.84)])
 

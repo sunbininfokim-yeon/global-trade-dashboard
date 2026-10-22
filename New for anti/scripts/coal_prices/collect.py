@@ -63,7 +63,7 @@ HBA_MAX_PAGES = 8       # 5 decisions a page, an HBA decision about every two we
 HBA_FIRST_RUN_DECREES = 4
 HBA_BACKFILL_PERIODS = 6   # while fewer half-months than this are held, page back as far as the cap allows
 # Bumped whenever the decision reader changes: a decision refused by an older reader is tried again.
-HBA_PARSER_VERSION = 2
+HBA_PARSER_VERSION = 2   # 3 would retry the image-only scans; only an OCR step would change their outcome
 
 # Stale thresholds the panel applies (days since the data's own end date).
 HBA_STALE_DAYS = 24
@@ -319,7 +319,10 @@ _HBA_GARS = {"HBA": 6322, "HBA I": 5300, "HBA II": 4100, "HBA III": 3400}
 # whatever "PERIODE <pertama|kedua> BULAN <month> TAHUN <year>" says -- when all the
 # mentions agree. The decision's own "mulai berlaku" date confirms it.
 _DECREE_PERIOD_RE = re.compile(r"PERIODE\s+(PERTAMA|KEDUA)\s+BULAN\s+([A-Z]+)\s+TAHUN\s+(\d{4})", re.I)
-_DECREE_NUMBER_RE = re.compile(r"NOMOR\s*:?\s*(\d+\.K/MB\.\d+/MEM\.B/\d{4})", re.I)
+# The decision's own number is read from its title on the list: the body also
+# cites other decisions ("...Nomor 268.K/MB.01/MEM.B/2025 tentang Pedoman..."),
+# and a scan's text layer can lose the heading.
+_DECREE_NUMBER_RE = re.compile(r"Nomor\s*:?\s*(\d+\.K/MB\.\d+/MEM\.B/\d{4})", re.I)
 _EFFECTIVE_RE = re.compile(r"mulai\s+berlaku\s+pada\s+tanggal\s+(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})", re.I)
 _DECREE_GRADE_RE = re.compile(r"Batubara(?:\s+(III|II|I))?\s*\(\s*([\d.]+)\s*GAR\s*\)\s*USD\s*/\s*ton\s*([\d.,]+)", re.I)
 _ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
@@ -339,7 +342,7 @@ def _last_day(year: int, month: int) -> int:
     return (date(year + (month == 12), month % 12 + 1, 1) - date(year, month, 1)).days
 
 
-def parse_hba_decree(text: str, url: str) -> Dict[str, Any]:
+def parse_hba_decree(text: str, url: str, title: str = "") -> Dict[str, Any]:
     """One half-month's HBA grades from the text of a decision's annex II.
 
     Strict by design: the four grades must be the four known calorific classes,
@@ -376,7 +379,7 @@ def parse_hba_decree(text: str, url: str) -> Dict[str, Any]:
     if not (all(5 < p < 600 for p in prices) and prices == sorted(prices, reverse=True)):
         raise SourceError("grades_inconsistent")
     out = {"start": start.isoformat(), "end": end.isoformat(), "grades": ordered, "url": url}
-    num = _DECREE_NUMBER_RE.search(text)
+    num = _DECREE_NUMBER_RE.search(title)
     if num:
         out["decree"] = num.group(1)
     return out
@@ -491,7 +494,7 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
         text = ""
         try:
             text = extract(get(url))
-            found.append(parse_hba_decree(text, url))
+            found.append(parse_hba_decree(text, url, title))
             refused.pop(url, None)
         except SourceError as exc:
             errors.append(f"{url.rsplit('=', 1)[-1][:40]}:{exc}")
@@ -501,6 +504,16 @@ def fetch_hba(previous: Optional[Dict[str, Any]] = None, get: Callable[[str], by
                 note(f"decision {url.rsplit('=', 1)[-1]} refused ({exc}); {len(text)} chars; "
                      f"periods={sorted(set(m.group(0) for m in _DECREE_PERIOD_RE.finditer(text)))[:4]}; "
                      f"around GAR: {text[max(0, i - 250):i + 450]!r}")
+    # A held decision seen on the list again gets its number from the title (an
+    # earlier reader took it from the body, which cites other decisions).
+    titles = dict(links)
+    for p in prior:
+        if p["url"] in titles:
+            num = _DECREE_NUMBER_RE.search(titles[p["url"]])
+            if num:
+                p["decree"] = num.group(1)
+            else:
+                p.pop("decree", None)
     periods = with_changes(merge_periods(prior, found))
     if not periods:
         raise SourceError(errors[-1].split(":")[-1] if errors else "no_decisions_found")
