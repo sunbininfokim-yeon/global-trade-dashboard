@@ -1,0 +1,45 @@
+# NE reviewed dossier integration — 2026-10-20
+
+Owner Codex, user explicitly resumed NE on Oct20; the historical NE stop note is superseded for this work only. Checkout `/Users/yeoninair/Documents/해운 데이터/us-ne-research-integration-20261020`, branch `codex/ne-research-integration-20261020`. Latest fetched main/base 8f0883617. Packet-free prerequisite #644 (`11c74877d`); NE PR #647 bases that common branch, not any other state. No open NE PR was present on start. Source checkout was dirty and stale; it was read only, never reset or switched. No other state was started.
+
+## What changed
+
+- Cursor's NE research files and five original documents are preserved under research/2026/NE. All five file hashes match the supplied dossier. NPA Oct12 is now `memo_dated_on`, not an invented release date; total800 and NE-02 377 use interview fields rather than weighted-n labels. The source's own notes remain attributed and their original compared-to SHA is retained.
+- One NE state packet adds official Sept11 certified roster: Senate5; House01=4,02=3,03=5; governor4 tickets. Governor and running mate remain separate fields. Dan Osborn's printed By Petition ballot-access wording is preserved separately from the IND comparison label supported by the actual poll. He is not classified DEM. Exact-name/party FEC IDs already present in the baseline are retained; no ID or middle-name match is invented.
+- New public VoteHub collection: 9 NE provider rows, capture `2026-10-20T08:44:51.616945+00:00`; original selected-response hash and full provider-response hash retained. This was a local state-only collection, not a workflow dispatch or publication. NPA governor, Senate head-to-head, and NE-02 already exist in that API; they are primary-reviewed references, not additional duplicate polls. API Oct13 record dates remain distinct from the memo date.
+- Four API-absent primary questions enter the existing primary supplement path: YouGov Senate/governor and co/efficient full-ballot Senate/governor. These are a replay of Cursor's collected document bytes with original SHA/date, not a claimed new network download. Publication date remains null. Exact URLs/documents are rechecked on normal future collector runs after integration. co/efficient Q7 is a later two-candidate question and is not counted alongside its full ballot; its figures remain in the research dossier. The Lidstorm typo is retained without mapping it to Lindstrom.
+- NPA's three API records remain reference-only for incomplete questionnaire/commissioner disclosure; document/n, field dates, precision scope and per-question limitations are preserved. Statewide800 interviews do not become the600-interview margin basis. NE-02 uses377, not statewide800.
+
+## Replay and coverage
+
+Production `publish_state_packets.rebuild` replay: NE Senate3, governor3, NE-02 two accumulated observations (one is the prior SurveyUSA reference). NE-01/03 have no admitted accumulated observations; this is not a claim that no surveys exist. Added/reviewed7 observations comprise4 primary supplements +3 existing NPA API rows. All have Sept30, Oct3 or Oct5 field ends; as of Oct20 none enters either recent7/14-day lead window. All other state race payloads are byte-equivalent at the JSON value level; original NE capture timestamp is unchanged. National `house_poll_focus` is recalculated by the existing production merge, never hand-merged; non-NE race payloads are verified unchanged.
+
+No new money was collected. NADC access remains an original reported timeout; federal IE/campaign data was not refreshed with a key in this task. Existing finance assets remain unchanged. No0, winner, fake undecided share or Cook rating update was inserted. Cook latest ratings from the supplied report were not reverified or installed as live ratings by this PR.
+
+## Automation boundary
+
+After #644 and NE inputs are integrated, the existing scheduled collector reads the NE packet through the standard overlay, rechecks the finite primary documents and consumes new nationwide API records with candidate/source/date validation. A changed primary document or outage retains the original reference; a later identical API wave deduplicates, disagreement fails closed. A wholly new non-API URL/question still needs a new explicit review; this PR does not claim a general YouGov/coefficient release-discovery adapter. No entire pollster's future output is approved by this one review. These old references do not increase current lead counts.
+
+## Checks and publication
+
+NE regressions5 pass: artifact fingerprints and metadata, all official rosters, current-window exclusion, other-state preservation, future-API duplication/conflict and unavailable-source retention. Common polling/primary regressions41 pass. Finance33, election JS114, ownership14 pass; deploy-chain42 workflows pass. Broader state-input/federal/governor group ran40 cases:39 passed and1 failed to import a legacy top-level test helper. That one case passed after rerun with PYTHONPATH=.:tests; no product/test source was changed to fix the invocation. a previously started broad discover run was interrupted and is not a full-suite pass.
+
+Temporary replay reports: `/private/tmp/ne-replay-live.json`, `/private/tmp/ne-replay-history.json` (not committed). Scope check uses actual PR base11c74877d. NE packet, NE research originals (HTTP header line endings normalized only), NE-only test and this handoff are the only state-PR changes. Public JSON/UI/collector/workflow/shared catalogs/TASKS remain unchanged in the state diff. No main merge, deployment, operational workflow dispatch or reset action. Next state is not started; user/other researcher must check current ownership/order first.
+
+## Automatic release follow-up — #649
+
+New packet-free foundation #649 (`c89333dec`, includes #644) is the current PR base. NE #647 remains independent of every other state. It now opts the NE Senate race into the co/efficient public-index/HTML-table adapter. The official index gives October2 as the publication day; the standalone article had only October2026. Both actual URLs were fetched successfully with the declared production client after the initial default-client403, and the live parser matched n1113 and the five candidate values. The generic index's undated map links are excluded; no challenge bypass was used.
+
+A new live html_table receipt and raw observation were added separately from the old Cursor document replay. The new checked_at belongs to the actual two-document fetch; original provider captured_at08:44:51 and provider records/hash remain unchanged. Production duplicate matching was then replayed from the saved actual network receipt; it removes `primary-coefficient-ne-20260928-20260930-senate` from the normalized view in favor of the dynamically extracted same wave. The old input record/review remains in the packet for provenance, with the deduplicated ID in the new receipt. No extra poll vote was created. Four primary observations remain in the normalized archive: three retain null publication dates, while the dynamically extracted co/efficient observation has October2 from the index. All stay reference-only and outside current7/14-day windows.
+
+New dated fieldwork at the same reviewed state route is automatically extracted, candidate/party/method/header-checked, deduplicated and sent to the existing reference archive; new question context is not automatically admitted as a lead signal. Failed/malformed/changed same-wave releases retain old values with failure status. The NE governor contract was deliberately not enabled because the printed Lidstorm vs reviewed Lindstrom discrepancy requires explicit identity review. Other states need separate opt-ins.
+
+Follow-up NE+adapter15 tests passed, on top of shared77, JS114, ownership14 and chain42. Scope check uses current basec89333dec. No national generated assets or other-state inputs are committed. Merge/deployment and scheduled runner execution have not been performed. The existing scheduler will use the new contract only after the prerequisites and this input are integrated.
+
+## 2026-10-21 최신 main 합본 재검증
+
+- main96af0fca와 공용#644/#649/#656을 합쳤다. 후보명부를 과거 조사일로 검사하던 회귀는 주별 파일에 섞지 않고 #656으로 분리했다. co/efficient synthetic capture clock도 #649에 있다.
+- 전체 polling743(337.866초)·별도18(NE5포함)·finance77·선거JS114·ownership14·deploy-chain42 통과.
+- 타주501선거·타주history·타주state_captures·root날짜·focus104와 타주focus 값 유지. 같은입력 반복재생 board/history 동일. NE 원래수집시각10/20 08:44:51.616945UTC 유지.
+- #649를 기반으로 주별범위검사 통과. #649/#656이 아직미병합이므로 base를main으로 바꾸면 공용파일이 주별diff에 섞인다. 현재base는#649를 유지하고 기반 병합 후main으로 전환한다. 주별분리검사 예외/우회 없음.
+- 최신main내용 동기화와 main병합/배포는 구분한다. 병합·배포·운영workflow dispatch는하지않았다.

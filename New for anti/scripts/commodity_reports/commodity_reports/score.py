@@ -102,6 +102,8 @@ class ScoredReport:
     board: Optional[str] = None
     title_en: Optional[str] = None
     control: Optional[Dict[str, Any]] = None
+    src_ref: Optional[str] = None   # short hash of the aggregator link this url was resolved from
+    also: int = 0                   # other outlets' headlines on the same story, folded into this row
 
     def to_item(self) -> Dict[str, Any]:
         return {
@@ -125,6 +127,8 @@ class ScoredReport:
             "reasons": self.reasons,
             **({"board": self.board} if self.board else {}),
             **({"control": self.control} if self.control else {}),
+            **({"src_ref": self.src_ref} if self.src_ref else {}),
+            **({"also": self.also} if self.also else {}),
         }
 
 

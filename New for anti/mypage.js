@@ -224,7 +224,10 @@
         const labels = reportsRes.commodity_labels || {};
         const order = [];
         const byCommodity = new Map(); // key -> Map<source_id, {agency, agency_ko}>
-        (reportsRes.items || []).forEach((item) => {
+        // These checkboxes pick what the weekly mail carries; news headlines
+        // are never mailed, so their sources are not offered here.
+        const mailable = (reportsRes.items || []).filter((item) => item.publisher_type !== 'news');
+        mailable.forEach((item) => {
             (item.commodities || []).forEach((key) => {
                 if (!byCommodity.has(key)) {
                     byCommodity.set(key, new Map());
@@ -232,12 +235,18 @@
                 }
                 const sources = byCommodity.get(key);
                 if (!sources.has(item.source_id)) {
-                    sources.set(item.source_id, { agency: item.agency, agency_ko: item.agency_ko });
+                    // An aggregator source (Google News) names the outlet per
+                    // item; the checkbox is for the source, so it carries the
+                    // source's own name when the pipeline provides one.
+                    sources.set(item.source_id, {
+                        agency: item.source_agency || item.agency,
+                        agency_ko: item.source_agency_ko || item.agency_ko,
+                    });
                 }
             });
         });
         const allSourceIds = new Set();
-        (reportsRes.items || []).forEach((item) => allSourceIds.add(item.source_id));
+        mailable.forEach((item) => allSourceIds.add(item.source_id));
         const groups = order.map((key) => ({
             key,
             label: labels[key] || key,

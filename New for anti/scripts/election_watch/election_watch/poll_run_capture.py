@@ -40,9 +40,27 @@ def collection_failure(exc, stage):
 def primary_capture_health(receipts):
     """Summarize both finite-document and HTML routes; no receipt means unobserved."""
     conflicts, references, unavailable, documents = set(), set(), set(), set()
+    partial = set()
     unknown = 0
     for receipt in receipts:
         status = receipt.get('status')
+        if (receipt.get('kind') == 'html_table_health'
+                and status != 'unavailable_no_previous_data'):
+            # A parser summary is not another observation or a quality approval.
+            counts = [receipt.get(k) for k in ('parsed_observations',
+                'carried_forward_observations', 'signal_eligible_observations')]
+            valid = (isinstance(receipt.get('contract_id'), str) and bool(receipt['contract_id'])
+                and all(type(n) is int and n >= 0 for n in counts)
+                and counts[2] == 0 and isinstance(receipt.get('failures'), list))
+            if (valid and status == 'ok_reference_only' and counts[0] > 0
+                    and counts[1] == 0 and not receipt['failures']):
+                continue
+            if (valid and status == 'partial_last_good_preserved'
+                    and (counts[1] > 0 or receipt['failures'])):
+                partial.add(receipt['contract_id'])
+                continue
+            unknown += 1
+            continue
         rid = receipt.get('id')
         capture = receipt.get('record', {}).get('primary_source_capture', receipt)
         if (status in ('primary_provider_conflict_reference_only', 'provider_wave_conflict_reference_only')
@@ -57,12 +75,13 @@ def primary_capture_health(receipts):
             unknown += 1
         if any(d.get('status') != 'unchanged' for d in capture.get('documents', [])):
             documents.add(rid)
-    issue = bool(references or unavailable or documents or unknown)
+    issue = bool(references or unavailable or documents or partial or unknown)
     return {'status': 'review_required' if issue else 'ok' if receipts else 'not_observed',
             'receipt_count': len(receipts), 'unknown_receipt_count': unknown,
             'conflict_release_ids': sorted(r for r in conflicts if r),
             'reference_only_release_ids': sorted(r for r in references if r),
             'unavailable_contract_ids': sorted(r for r in unavailable if r),
+            'partial_contract_ids': sorted(partial),
             'document_problem_release_ids': sorted(r for r in documents if r)}
 
 

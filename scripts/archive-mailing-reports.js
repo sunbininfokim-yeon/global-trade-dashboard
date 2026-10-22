@@ -70,7 +70,11 @@ async function archiveReports({ file, document, upsert, dryRun = false, skipUnda
     );
   const data = document || JSON.parse(fs.readFileSync(source, "utf8"));
   if (!Array.isArray(data.items)) throw new Error("invalid_reports_document");
-  const normalized = data.items.map(normalizeReport);
+  // News headlines (publisher_type "news") are a link the panel shows for two
+  // weeks, not an official report: they are never archived or mailed one by one.
+  const items = data.items.filter((item) => item?.publisher_type !== "news");
+  const skippedNews = data.items.length - items.length;
+  const normalized = items.map(normalizeReport);
   // A feed can contain several releases at the same permanent URL. Input
   // ordering must not replace the newest release with an older duplicate.
   const latest = new Map();
@@ -80,7 +84,7 @@ async function archiveReports({ file, document, upsert, dryRun = false, skipUnda
       latest.set(row.report_id, row);
   }
   const rows = [...latest.values()];
-  const omissions = data.items.map(reportOmission);
+  const omissions = items.map(reportOmission);
   const undated = omissions.filter(x => x?.undated).length;
   const unclassified = omissions.filter(x => x?.unclassified).length;
   const invalid = normalized.filter((row, i) => !row && !(omissions[i] && (!omissions[i].undated || skipUndated) && (!omissions[i].unclassified || skipUnclassified))).length;
@@ -96,6 +100,7 @@ async function archiveReports({ file, document, upsert, dryRun = false, skipUnda
     skipped: normalized.filter((x) => !x).length,
     skipped_undated: undated,
     skipped_unclassified: unclassified,
+    skipped_news: skippedNews,
     partial: normalized.some(x => !x),
     source_generated_at: data.generated_at || null,
     mode: dryRun ? "preview" : "archive",

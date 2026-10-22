@@ -114,7 +114,7 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                          or document.get('format') == 'reviewed_surveyusa_report_v1'
                             and document['url'] in PRIMARY_SURVEYUSA_RELEASES
                          or state_review and (parsed.path.endswith(('.pdf','.xlsx'))
-                            or document.get('format') == HTML_REGION_FORMAT
+                            or document.get('format') in (HTML_REGION_FORMAT, 'reviewed_html_document_v1')
                             or document.get('format') == 'reviewed_pdf_v1'
                             or document.get('format') == 'reviewed_html_article_v1'
                             or document.get('format') == 'reviewed_surveyusa_report_v1'
@@ -135,15 +135,35 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
         # A later API import of this same wave must agree before deduplication.
         keys=('subject','poll_type','pollster','start_date','end_date','population')
         duplicates=[r for r in output if all(r.get(k)==raw.get(k) for k in keys)]
-        # Exact-reviewed questions from one ranked-choice wave remain distinct.
+        # Exact-reviewed questions from one wave remain distinct. An ordinary
+        # initial pair may differ from the full ballot; this transport exception
+        # never relaxes normalize's full-field or signal-eligibility checks.
         separate = entry.get('same_wave_separate_question_reviews', [])
         for question in separate:
-            require(question['reason'] == 'different_ranked_choice_question'
+            require(question['reason'] in ('different_ranked_choice_question',
+                                          'different_initial_ballot_question')
                     and question['question'] and question['id'] != raw['id']
                     and len(question['provider_snapshot_sha256']) == 64,
                     'unreviewed_same_wave_question')
+            if question['reason'] == 'different_initial_ballot_question':
+                require(question.get('primary_record_sha256') == entry['record_sha256']
+                        and question.get('primary_question')
+                        and question['primary_question'] != question['question']
+                        and question.get('wave_id')
+                        and question.get('reviewed_on')
+                        and date.fromisoformat(question['reviewed_on']) <= date.fromisoformat(as_of)
+                        and question.get('primary_ballot_format') == 'initial_named_multicandidate'
+                        and question.get('provider_ballot_format') == 'initial_named_two_candidate'
+                        and question.get('source_document') in documents,
+                        'unreviewed_initial_ballot_question_scope')
         distinct = [r for r in duplicates if any(r['id'] == q['id']
             and answer_correction_fingerprint(r) == q['provider_snapshot_sha256'] for q in separate)]
+        for r in distinct:
+            if any(q['reason'] == 'different_initial_ballot_question' and q['id'] == r['id'] for q in separate):
+                names = lambda row: {a['choice'] for a in row['answers']}
+                require(len(r['answers']) == len(names(r)) == 2
+                        and len(raw['answers']) == len(names(raw)) >= 3
+                        and names(r) < names(raw), 'initial_ballot_candidate_scope_mismatch')
         duplicates = [r for r in duplicates if r not in distinct]
         values=lambda r:sorted((a['choice'],a['pct']) for a in r['answers'])
         conflict = not all(r['sample_size']==raw['sample_size'] and values(r)==values(raw)
@@ -157,7 +177,10 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
                     require(response.status==200 and response.geturl()==document['url'], 'primary document redirect/response')
                     body=response.read(3*1024*1024+1)
                 require(len(body)<=3*1024*1024, 'primary document size changed')
-                if document.get('format') == HTML_REGION_FORMAT:
+                if document.get('format') == 'reviewed_html_document_v1':
+                    require(body.lstrip().lower().startswith((b'<!doctype html', b'<html', b'<nav')), 'primary HTML document format changed')
+                    digest = hashlib.sha256(body).hexdigest()
+                elif document.get('format') == HTML_REGION_FORMAT:
                     digest = html_region_fingerprint(body, document)
                 elif document.get('format') == 'reviewed_html_article_v1':
                     digest = primary_html_fingerprint(body)
