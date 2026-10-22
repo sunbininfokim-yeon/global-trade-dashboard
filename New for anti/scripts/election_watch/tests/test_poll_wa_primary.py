@@ -1,5 +1,5 @@
 """WA official field, initial/leaner questions and exact finance identities."""
-from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
 import copy
 import json
 from pathlib import Path
@@ -135,7 +135,7 @@ class WashingtonEvidenceTests(unittest.TestCase):
         packet = read(ROOT/'config/state_evidence/2026/WA.json')
         old = read(PUBLIC/'usa_election_live_polls_v1.json')
         board, _ = rebuild(old, read(PUBLIC/'usa_election_poll_history_2026.json'), [packet], PUBLIC)
-        finance = load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026)
+        finance = load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL)
         state = build_state('WA', 'C', read(CONFIG/'state_evidence_plan_2026.json'), self.catalog,
             self.federal, self.governors, board, finance,
             read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), PUBLIC_SNAPSHOT_DAY,

@@ -3,7 +3,7 @@ from copy import deepcopy
 from pathlib import Path
 import io,json,tempfile,unittest,zipfile
 from unittest.mock import patch
-from election_watch.candidate_fundraising import cents,rows_from_zip,normalize,for_candidate,preserve_previous,collect
+from election_watch.candidate_fundraising import cents,rows_from_zip,normalize,for_candidate,preserve_previous,collect,MIRROR
 import refresh_candidate_fundraising as cli
 C=Path(__file__).resolve().parents[1]/'config'
 
@@ -55,3 +55,26 @@ class FundraisingTests(unittest.TestCase):
    folder=Path(tmp)/'usa_election_finance/2026';folder.mkdir(parents=True);good=folder/'candidate_fundraising_v1.json';good.write_text(json.dumps(self.doc()));before=good.read_bytes()
    with patch('sys.argv',['refresh','--public',tmp]),patch.object(cli,'collect',side_effect=OSError('fixture outage')):self.assertEqual(cli.main(),1)
    self.assertEqual(good.read_bytes(),before);self.assertEqual(json.loads((folder/'candidate_fundraising_status_v1.json').read_text())['status'],'failed_last_good_preserved')
+
+ def _opener(self,final):
+  zips={}
+  for name,member,row in [('weball26.zip','weball26.txt',self.row),('cn26.zip','cn.txt',self.master)]:
+   b=io.BytesIO()
+   with zipfile.ZipFile(b,'w')as z:z.writestr(member,'|'.join(row)+'\n')
+   zips[name]=b.getvalue()
+  class R(io.BytesIO):
+   def __enter__(s):return s
+   def __exit__(s,*a):pass
+  def opener(req,timeout=None):
+   name=req.full_url.rsplit('/',1)[1];r=R(zips[name]);r.url=final(req.full_url,name);r.headers={};return r
+  return opener
+ def test_fec_bulk_redirect_only_to_fec_bucket_same_object(self):
+  doc=collect(2026,'2026-10-19','2026-10-19T00:00:00+00:00',self.catalog,opener=self._opener(lambda u,n:MIRROR.format(cycle=2026)+n))
+  self.assertEqual(doc['candidate_count'],1)
+  for bad in [lambda u,n:'https://example.com/bulk-downloads/2026/'+n, lambda u,n:MIRROR.format(cycle=2024)+n, lambda u,n:MIRROR.format(cycle=2026)+'other.zip']:
+   with self.assertRaisesRegex(ValueError,'unexpected FEC bulk redirect'):collect(2026,'2026-10-19','2026-10-19T00:00:00+00:00',self.catalog,opener=self._opener(bad))
+ def test_cli_failure_health_keeps_error_message(self):
+  with tempfile.TemporaryDirectory()as tmp:
+   with patch('sys.argv',['refresh','--public',tmp]),patch.object(cli,'collect',side_effect=ValueError('unexpected FEC bulk redirect')):self.assertEqual(cli.main(),1)
+   health=json.loads((Path(tmp)/'usa_election_finance/2026/candidate_fundraising_status_v1.json').read_text())
+   self.assertEqual(health['error'],'unexpected FEC bulk redirect')

@@ -1,4 +1,4 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
 import copy,json,unittest
 from pathlib import Path
 from urllib.error import URLError
@@ -73,7 +73,7 @@ class MichiganPrimaryTests(unittest.TestCase):
         read=lambda p:json.loads(p.read_text())
         return [read(CONFIG/'state_evidence_plan_2026.json'),read(CONFIG/'targets_2026.json'),
                 read(ROOT/'config/federal_matchups/2026.json'),read(ROOT/'config/governor_matchups/2026.json'),
-                read(PUBLIC/'usa_election_live_polls_v1.json'),load_finance(PUBLIC/'usa_election_finance_index_v1.json',2026),
+                read(PUBLIC/'usa_election_live_polls_v1.json'),load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL),
                 read(ROOT/'config/usa_state_campaign_finance_sources_v1.json')],read(CONFIG/'state_finance_identities_2026.json')
 
     def test_reviewed_nickname_links_existing_fec_records_and_keeps_primary_separate(self):

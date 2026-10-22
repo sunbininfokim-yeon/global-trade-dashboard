@@ -12,6 +12,9 @@ import zipfile
 from .polls import require
 
 BASE = 'https://www.fec.gov/files/bulk-downloads/{cycle}/'
+# www.fec.gov serves bulk files by redirecting to FEC's own GovCloud bucket.
+# Only that exact object path is accepted; any other host or path still fails.
+MIRROR = 'https://cg-519a459a-0ea3-42c2-b7bc-fa1143481f74.s3-us-gov-west-1.amazonaws.com/bulk-downloads/{cycle}/'
 DOCS = 'https://www.fec.gov/campaign-finance-data/all-candidates-file-description/'
 METRICS = {'receipts': 5, 'transfers_from_authorized': 6, 'disbursements': 7,
     'transfers_to_authorized': 8, 'beginning_cash': 9, 'cash_on_hand': 10,
@@ -132,7 +135,8 @@ def collect(cycle, as_of, captured_at, catalog, opener=urlopen):
                                       ('master', f'cn{suffix}.zip', 'cn.txt', 15)]:
         url = BASE.format(cycle=cycle) + file
         with opener(Request(url, headers={'User-Agent': 'ElectionEvidenceReview/1.0'}), timeout=45) as response:
-            require(response.url == url, 'unexpected FEC bulk redirect')
+            resolved = response.url
+            require(resolved in (url, MIRROR.format(cycle=cycle) + file), 'unexpected FEC bulk redirect')
             body = response.read(15_000_001)
             require(len(body) <= 15_000_000, 'oversized FEC response')
             modified = response.headers.get('Last-Modified')
@@ -140,7 +144,7 @@ def collect(cycle, as_of, captured_at, catalog, opener=urlopen):
             parsed[key] = rows_from_zip(body, member, width)
         except zipfile.BadZipFile:
             raise ValueError('invalid FEC ZIP; preserve last good snapshot') from None
-        receipts[key] = {'url': url, 'captured_at': captured_at,
+        receipts[key] = {'url': url, 'resolved_url': resolved, 'captured_at': captured_at,
             'sha256': hashlib.sha256(body).hexdigest(), 'last_modified': modified}
     return normalize(parsed['summary'], parsed['master'], catalog, as_of, receipts)
 

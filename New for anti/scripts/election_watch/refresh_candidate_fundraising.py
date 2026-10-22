@@ -26,7 +26,7 @@ def main():
         code = 0
     except (OSError, ValueError, KeyError, TypeError) as exc:
         health = {'status': 'failed_last_good_preserved', 'attempted_at': stamp,
-                  'error_type': type(exc).__name__, 'last_good_exists': output.exists()}
+                  'error_type': type(exc).__name__, 'error': str(exc)[:200], 'last_good_exists': output.exists()}
         code = 1
     atomic(folder/'candidate_fundraising_status_v1.json', health)
     print(health)

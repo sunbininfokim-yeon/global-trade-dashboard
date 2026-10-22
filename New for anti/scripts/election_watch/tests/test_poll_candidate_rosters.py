@@ -91,7 +91,10 @@ class CandidateRosterTests(unittest.TestCase):
         roster = next(c for c in self.board['countries'] if c['iso3'] == 'USA')['ui_ready']['state_drilldown']['states']
         michigan_state = next(s for s in roster if s['id'] == 'MI')
         attached = attach_matchups([{'id': 'MI'}], self.snapshot, SNAPSHOT_DAY, self.ballots)
-        self.assertEqual(attached[0]['election_matchups'], michigan_state['election_matchups'])
+        # The weekly finance run adds governor context to the published board;
+        # this test is about the reviewed House/Senate names only.
+        published = {k: v for k, v in michigan_state['election_matchups'].items() if not k.endswith(':governor')}
+        self.assertEqual(attached[0]['election_matchups'], published)
 
     def test_incomplete_state_or_apportionment_catalog_does_not_publish_false_coverage(self):
         broken = deepcopy(self.catalog); del broken['states']['WY']

@@ -13,7 +13,7 @@ from election_watch.poll_primary_supplements import merge_primary_supplements
 from election_watch.polls import read
 from election_watch.state_evidence import build_state, load_finance
 from publish_state_packets import rebuild
-from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / 'config/usa_polls'
@@ -139,7 +139,7 @@ class OregonEvidenceTests(unittest.TestCase):
     def test_explicit_fec_id_links_do_not_turn_missing_money_into_zero(self):
         board, _ = rebuild(read(PUBLIC / 'usa_election_live_polls_v1.json'),
             read(PUBLIC / 'usa_election_poll_history_2026.json'), [self.packet], PUBLIC)
-        finance = load_finance(PUBLIC / 'usa_election_finance_index_v1.json', 2026)
+        finance = load_finance(PUBLIC / 'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL)
         state = build_state('OR', 'C', read(CONFIG / 'state_evidence_plan_2026.json'),
             read(CONFIG / 'targets_2026.json'), read(ROOT / 'config/federal_matchups/2026.json'),
             read(ROOT / 'config/governor_matchups/2026.json'), board, finance,
