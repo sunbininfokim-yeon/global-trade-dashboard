@@ -722,19 +722,90 @@
         "limitations_ko": "518명 LV 본선 문항. 성인 685명·RV 589명과 분리합니다. credibility interval ±5.2를 sampling MOE로 바꾸지 않으며 수치상 9%p 차이를 통계적 유의·당선 확률로 해석하지 않습니다. 공식 발표일 10/08과 API 기록일 10/09를 구분합니다. 이 발표의 원문·의뢰자 검토이며 기관의 모든 미래 발표 승인이 아닙니다.",
         "snapshot_sha256": "ff4dd1e13da04f05554ef713d5534d30fc4be9f206239171b86b65e6f821ddfd"
       }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202uni65dc5b39"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T02:00:00+00:00",
+        "provider_record_sha256": "959fe8c770ee2368811537313edcd192c1dd4215b4c4290da4000ee75afa7425",
+        "sources": [
+          "https://www.thedemocracylab.com/ca11"
+        ],
+        "primary_toplines": {
+          "Scott Wiener": 51.0,
+          "Connie Chan": 44.0
+        },
+        "question_sample_n": 454,
+        "admission": {
+          "pollster": "University of Southern California Democracy and Fair Elections Lab",
+          "provider_url": "https://www.thedemocracylab.com/ca11",
+          "group": "usc-democracy-lab",
+          "methodology_url": "https://www.thedemocracylab.com/ca11",
+          "source_role": "pollster_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "named_ballot_with_leaners",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 454,
+          "field_dates": [
+            "2026-10-16",
+            "2026-10-19"
+          ],
+          "primary_release_date": "2026-10-22",
+          "provider_record_date": "2026-10-22",
+          "sponsors": [],
+          "sampling_method": "USC Democracy and Fair Elections Lab, Oct 16-19; English, Spanish, Chinese, Korean, Vietnamese",
+          "sampling_frame": "likely voters in CA-11",
+          "weighting": "per full release (not independently verified)",
+          "question_wording_checked": false,
+          "question": "CA-11 U.S. House vote intention including push on undecideds (top-two, both Democrats)",
+          "provider_pollster_label": "University of Southern California Democracy and Fair Elections Lab",
+          "primary_pollster_name": "University of Southern California Democracy and Fair Elections Lab",
+          "source_fetch_receipt": "source-fetch/house-polls-20261023-39877776048"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 4.6,
+          "confidence_level_pct": null,
+          "scope": "whole_study_454",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [],
+          "provider_sponsors": [],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "full_questionnaire"
+        ],
+        "limitations_ko": "University of Southern California Democracy and Fair Elections Lab 원문 대조: LV 454명, 2026-10-16~2026-10-19, 표본오차 ±4.6. 리너 포함 문항(51/44). 리너 미포함 문항(47/41)은 별도. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "907d7cb955dd21c84ef082f70419d9f3afd90179b1b8f2b9f537f087bcad85f2"
+      }
     }
   ],
   "capture": {
-    "as_of": "2026-10-21",
-    "fetched_at": "2026-10-21T11:38:28.935956+00:00",
+    "as_of": "2026-10-23",
+    "fetched_at": "2026-10-23T01:48:59.618515+00:00",
     "receipt": {
       "state": "CA",
       "cycle": 2026,
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-21",
-      "captured_at": "2026-10-21T11:38:28.935956+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+      "captured_at": "2026-10-23T01:48:59.618515+00:00",
       "capture_kind": "provider_transport_and_reviewed_primary_supplements",
-      "provider_records": 13,
-      "serialized_provider_response_sha256": "230c3316fa94b9083c3a99a411fb71d2b9b7a107f5bafb1a32a82ac174ecc789",
+      "provider_records": 16,
+      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
       "collection_checkpoint_sha256": "7e3c6cc471ee9a794ee91a9e608f4b4c28f892806151bb8a7a2d5d3c70954558",
       "primary_review_checked_at": "2026-10-15T16:50:07.744214+00:00",
       "review_basis": "Re-review of preserved provider transport; no new API/finance fetch",
@@ -877,7 +948,15 @@
             "separate_question_provider_ids": []
           }
         ]
-      }
+      },
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "http_status": 200,
+        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+      },
+      "primary_documents_note": "Primary document rechecks restored from the previous packet: this replay could not refetch publisher documents from the agent sandbox."
     },
     "provider_records": [
       {
@@ -1245,9 +1324,89 @@
         "internal": false,
         "partisan": null,
         "subject": "2026 CA-48"
+      },
+      {
+        "id": "gov202uni78d0c8fb",
+        "poll_type": "governor",
+        "sample_size": 909,
+        "population": "lv",
+        "url": "https://www.politico.com/newsletters/california-playbook/2026/10/21/ramans-apology-and-polling-on-newsom-01128744",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-09",
+        "end_date": "2026-10-14",
+        "pollster": "University of California Berkeley Jack Citrin Center for Public Opinion Research/Verasight/TrueDot",
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 55.0
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 35.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Politico"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 California"
+      },
+      {
+        "id": "gov202eme545ba1d8",
+        "poll_type": "governor",
+        "sample_size": 1000,
+        "population": "lv",
+        "url": "https://emersoncollegepolling.com/california-2026-poll-xavier-becerra-holds-27-point-lead-over-steve-hilton/",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-17",
+        "end_date": "2026-10-19",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Xavier Becerra",
+            "pct": 64.0
+          },
+          {
+            "choice": "Steve Hilton",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 California"
+      },
+      {
+        "id": "us-202uni65dc5b39",
+        "poll_type": "us-representative",
+        "sample_size": 454,
+        "population": "lv",
+        "url": "https://www.thedemocracylab.com/ca11",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-16",
+        "end_date": "2026-10-19",
+        "pollster": "University of Southern California Democracy and Fair Elections Lab",
+        "answers": [
+          {
+            "choice": "Scott Wiener",
+            "pct": 51.0
+          },
+          {
+            "choice": "Connie Chan",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 CA-11"
       }
     ],
-    "provider_records_sha256": "abab1495406582da1372ddd36ddfb70c05745b486d01eff5b7420d63b6e08741",
+    "provider_records_sha256": "b1ef1b069174cb17d3805aad1897da2183593134fd23989311ea1487e9ce4ad3",
     "primary_records": [
       {
         "id": "primary-ppic-ca-governor-20260910",
