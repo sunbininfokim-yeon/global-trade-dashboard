@@ -77,21 +77,107 @@
           "external_commissioner_or_funder"
         ]
       }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202uni278821c4"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T02:00:00+00:00",
+        "provider_record_sha256": "6eda560704a789063a553484c2f8fd74b28ba2af38cd58efbd789f0aa9737e87",
+        "sources": [
+          "https://www.ajc.com/politics/2026/10/ajc-poll-ossoff-leads-collins-in-georgias-us-senate-race/"
+        ],
+        "primary_toplines": {
+          "Jon Ossoff": 48.0,
+          "Mike Collins": 40.0
+        },
+        "question_sample_n": 1000,
+        "admission": {
+          "pollster": "University of Georgia School of Public and International Affairs",
+          "provider_url": "https://www.ajc.com/politics/2026/10/ajc-poll-ossoff-leads-collins-in-georgias-us-senate-race/",
+          "group": "uga-spia",
+          "methodology_url": "https://www.ajc.com/politics/2026/10/ajc-poll-ossoff-leads-collins-in-georgias-us-senate-race/",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 1000,
+          "field_dates": [
+            "2026-10-07",
+            "2026-10-15"
+          ],
+          "primary_release_date": "2026-10-21",
+          "provider_record_date": "2026-10-21",
+          "sponsors": [
+            "The Atlanta Journal-Constitution"
+          ],
+          "sampling_method": "telephone survey by UGA School of Public and International Affairs, Oct 7-15",
+          "sampling_frame": "likely voters: voted 2022/2024 general or 2026 primary, registered, definitely/probably voting",
+          "weighting": "not described in article",
+          "question_wording_checked": false,
+          "question": "Georgia U.S. Senate vote intention, Ossoff (D) vs Collins (R)",
+          "provider_pollster_label": "University of Georgia School of Public and International Affairs",
+          "primary_pollster_name": "University of Georgia School of Public and International Affairs",
+          "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 3.1,
+          "confidence_level_pct": null,
+          "scope": "whole_study_1000",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "The Atlanta Journal-Constitution"
+          ],
+          "provider_sponsors": [
+            "The Atlanta Journal-Constitution"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "weighting",
+          "full_questionnaire"
+        ],
+        "limitations_ko": "University of Georgia School of Public and International Affairs 원문 대조: LV 1000명, 2026-10-07~2026-10-15, 표본오차 ±3.1. AJC 의뢰 UGA SPIA 전화조사. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "b51165b36f700786dda78f02a9025c8806cef82a1055fca6b5fb3689ab337d33"
+      }
     }
   ],
   "capture": {
-    "as_of": "2026-10-18",
-    "fetched_at": "2026-10-18T23:03:56.165943+00:00",
+    "as_of": "2026-10-23",
+    "fetched_at": "2026-10-23T01:43:01.030928+00:00",
     "receipt": {
       "state": "GA",
       "cycle": 2026,
-      "captured_at": "2026-10-18T23:03:56.165943+00:00",
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-18",
-      "capture_kind": "new_provider_request_with_individual_source_review",
+      "captured_at": "2026-10-23T01:43:01.030928+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+      "capture_kind": "provider_transport_only",
       "new_provider_collection": true,
-      "provider_records": 34,
+      "provider_records": 40,
       "response_sha256": "892f70157b46bf040ac728d511ffa2ddf88b2be3a56c7cee8912f9d25040fedb",
-      "serialized_provider_response_sha256": "0f6396ebeb3253c4f67c849cd8dd30af2b519f6b680eaa778822d0e44e7e9937"
+      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
+      "primary_supplement_receipts": [],
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "http_status": 200,
+        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+      }
     },
     "provider_records": [
       {
@@ -1021,9 +1107,169 @@
         "internal": false,
         "partisan": null,
         "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202quae590b629",
+        "poll_type": "us-senator",
+        "sample_size": 755,
+        "population": "lv",
+        "url": "https://quantusinsights.org/polling/f/georgia-two-weeks-out-ossoff-ahead-down-ballot-near-even",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-15",
+        "end_date": "2026-10-17",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 51.8
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 44.9
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202qua2fa31d0f",
+        "poll_type": "governor",
+        "sample_size": 755,
+        "population": "lv",
+        "url": "https://quantusinsights.org/polling/f/georgia-two-weeks-out-ossoff-ahead-down-ballot-near-even",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-15",
+        "end_date": "2026-10-17",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 46.6
+          },
+          {
+            "choice": "Rick Jackson",
+            "pct": 48.2
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202gba360d6617",
+        "poll_type": "governor",
+        "sample_size": 2000,
+        "population": "rv",
+        "url": "https://www.ajc.com/politics/2026/10/rick-jackson-has-outspent-keisha-lance-bottoms-but-democratic-enthusiasm-has-the-race-knotted/",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-07",
+        "end_date": "2026-10-15",
+        "pollster": "GBAO Strategies",
+        "answers": [
+          {
+            "choice": "Rick Jackson",
+            "pct": 46.0
+          },
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Atlanta Journal-Constitution"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "gov202actab967fe7",
+        "poll_type": "governor",
+        "sample_size": 400,
+        "population": "lv",
+        "url": "https://www.activote.net/polls/2026/ga-governor/",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-06",
+        "end_date": "2026-10-20",
+        "pollster": "ActiVote",
+        "answers": [
+          {
+            "choice": "Keisha Lance Bottoms",
+            "pct": 48.5
+          },
+          {
+            "choice": "Rick Jackson",
+            "pct": 51.5
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202act204154cb",
+        "poll_type": "us-senator",
+        "sample_size": 400,
+        "population": "lv",
+        "url": "https://www.activote.net/polls/2026/ga-u-s-senate/",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-06",
+        "end_date": "2026-10-20",
+        "pollster": "ActiVote",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 54.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
+      },
+      {
+        "id": "us-202uni278821c4",
+        "poll_type": "us-senator",
+        "sample_size": 1000,
+        "population": "lv",
+        "url": "https://www.ajc.com/politics/2026/10/ajc-poll-ossoff-leads-collins-in-georgias-us-senate-race/",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-07",
+        "end_date": "2026-10-15",
+        "pollster": "University of Georgia School of Public and International Affairs",
+        "answers": [
+          {
+            "choice": "Jon Ossoff",
+            "pct": 48.0
+          },
+          {
+            "choice": "Mike Collins",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Atlanta Journal-Constitution"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Georgia"
       }
     ],
-    "provider_records_sha256": "cc7c9e7dac1510b4e8ca0a73abf7b5df3638cfa19da8d0e3fe603efd56ec2fef",
+    "provider_records_sha256": "726aedaf046c6468cc553f8a92112e8bb930a69003bb6f95bea400924b29961a",
     "primary_records": []
   },
   "source_ref": "codex/poll-national-source-coverage-20261018",
