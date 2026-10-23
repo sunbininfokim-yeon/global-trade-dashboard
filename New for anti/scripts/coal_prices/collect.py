@@ -57,7 +57,7 @@ WB_KEEP_MONTHS = 120   # ten years: a long series is what this source is for
 
 # The ministry's legal portal: its decisions (Keputusan Menteri), newest first, 5 a page.
 JDIH_LIST = "https://jdih.esdm.go.id/dokumen/peraturan?DokumenSearch%5Bjenis_peraturan%5D=176"
-HBA_KEEP_PERIODS = 48   # two years of half-months
+HBA_KEEP_PERIODS = 90   # three years of the series: monthly from 2023-10, half-monthly from 2025-03
 HBA_PAUSE = 1.0
 HBA_MAX_PAGES = 8       # 5 decisions a page, an HBA decision about every two weeks
 HBA_FIRST_RUN_DECREES = 4

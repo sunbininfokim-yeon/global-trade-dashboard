@@ -316,6 +316,25 @@ class PressReportedTests(unittest.TestCase):
         self.assertEqual(by["2026-09-15"]["grades"][0]["change_pct"], round((63.0 / 65.06 - 1) * 100, 2))
 
 
+class PressFileTests(unittest.TestCase):
+    def test_three_years_without_overlap_or_invented_dates(self):
+        from datetime import date
+        rows = m.press_reported()
+        starts = [r["start"] for r in rows]
+        self.assertEqual(starts, sorted(starts))
+        self.assertLessEqual(starts[0], "2023-10-01")
+        prev_end = None
+        for r in rows:
+            s, e = date.fromisoformat(r["start"]), date.fromisoformat(r["end"])
+            self.assertLess(s, e)
+            if prev_end:
+                self.assertGreater(s, prev_end)               # never overlapping
+            prev_end = e
+            usd = r["grades"][0]["usd_per_t"]
+            self.assertTrue(30 < usd < 80, (r["start"], usd))  # HBA II has never been outside this range
+        self.assertGreaterEqual(len(rows), 50)
+
+
 class WorldBankTests(unittest.TestCase):
     def test_xlsx_roundtrip_keeps_row_positions(self):
         rows = m.read_xlsx_sheet(make_xlsx(pink_sheet()), "monthly prices")   # sheet names match any case
