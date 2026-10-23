@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Democracy and Fair Elections Lab | USC Dornsife</title>
+
+<!-- ================= SEO: meta description ================= -->
+<meta name="description" content="The USC Democracy and Fair Elections Lab, directed by Professor Christian Grose, conducts nonpartisan, evidence-based research on redistricting, election administration, voting rights, and democratic representation.">
+<link rel="canonical" href="https://www.thedemocracylab.com/">
+
+<!-- ================= favicon (browser tab + Google search results) ================= -->
+<!-- Square crops of logo.png. Google uses a square icon whose size is a
+     multiple of 48px; the .ico at the site root covers older browsers and
+     tools that look for /favicon.ico automatically. -->
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<!-- ================= speed: open the CDN connection early ================= -->
+<!-- Starts the connection to the map-library CDN while the page is still
+     being read, so d3/topojson (needed before the site's scripts can run)
+     download sooner. -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+<!-- ================= SEO: Open Graph (social previews) ================= -->
+<meta property="og:title" content="USC Democracy and Fair Elections Lab">
+<meta property="og:description" content="Nonpartisan, evidence-based research on redistricting, election administration, voting rights, and democratic representation, led by USC Professor Christian Grose.">
+<meta property="og:url" content="https://www.thedemocracylab.com/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://www.thedemocracylab.com/pictures/dfelogo.png">
+
+<!-- ================= SEO: Twitter/X card ================= -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="USC Democracy and Fair Elections Lab">
+<meta name="twitter:description" content="Nonpartisan, evidence-based research on redistricting, election administration, voting rights, and democratic representation.">
+<meta name="twitter:image" content="https://www.thedemocracylab.com/pictures/dfelogo.png">
+
+<!-- ================= SEO: structured data ================= -->
+<!-- NOTE: confirm christian-grose faculty page URL below, and confirm
+     "employee"/jobTitle is correct rather than "founder" for his role. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.thedemocracylab.com/#organization",
+      "name": "USC Democracy and Fair Elections Lab",
+      "alternateName": "DFE Lab",
+      "url": "https://www.thedemocracylab.com/",
+      "description": "The USC Democracy and Fair Elections Lab conducts evidence-based quantitative research on elections, redistricting, representation, voting rights, and democratic institutions.",
+      "parentOrganization": {
+        "@type": "CollegeOrUniversity",
+        "name": "University of Southern California",
+        "url": "https://www.usc.edu/"
+      },
+      "employee": {
+        "@id": "https://www.thedemocracylab.com/#christian-grose"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://www.thedemocracylab.com/#christian-grose",
+      "name": "Christian R. Grose",
+      "jobTitle": "Professor of Political Science and Public Policy; Director, USC Democracy and Fair Elections Lab",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "University of Southern California"
+      },
+      "affiliation": {
+        "@id": "https://www.thedemocracylab.com/#organization"
+      },
+      "url": "https://dornsife.usc.edu/christian-grose/",
+      "sameAs": [
+        "https://dornsife.usc.edu/christian-grose/"
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+    * { box-sizing: border-box; }
+    html, body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        overflow-x: hidden;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+    button { font-family: inherit; }
+
+    /* ===== Header works before the scripts finish loading =====
+       The header's hover effects and the Projects dropdown used to be wired
+       up only by main.js, which can't run until every script on the page
+       has downloaded -- so for the first couple of seconds the dropdown
+       wouldn't open. These CSS rules do the same thing with no JavaScript,
+       so the header responds immediately. (main.js still works the same
+       once it loads.) Desktop only; mobile keeps its tap-to-open menu. */
+    @media (min-width: 901px) {
+        .dfe-nav-menu > li:hover > .dfe-submenu { display: block !important; }
+        .dfe-nav-menu > li > a:hover { background-color: #f0f0f0 !important; color: #8B0000 !important; }
+    }
+
+    /* ===== Mobile navigation ===== */
+    .dfe-hamburger { display: none; }
+
+    @media (max-width: 900px) {
+        .dfe-nav-container { flex-wrap: wrap; justify-content: center !important; padding: 10px 15px !important; }
+        /* Hamburger removed on mobile: the full pill menu shows instead. */
+        .dfe-hamburger { display: none !important; }
+        /* Logo centered on its own row above the menu. */
+        .dfe-nav-left { width: 100% !important; display: flex !important; justify-content: center !important; margin-bottom: 4px; }
+        .dfe-nav-menu {
+            display: flex !important;
+            order: 4;
+            flex: none !important;
+            width: 100%;
+            flex-wrap: wrap !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            padding: 10px 0 !important;
+        }
+        .dfe-nav-menu.dfe-open { display: flex; }
+        .dfe-nav-menu > li { width: auto !important; white-space: nowrap !important; }
+        .dfe-nav-menu > li > a {
+            padding: 8px 14px !important;
+            border: 1px solid #ddd !important;
+            border-radius: 20px !important;
+            font-size: 13px !important;
+        }
+        .dfe-submenu {
+            display: none !important;
+            position: static !important;
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            border-radius: 10px !important;
+            margin-top: 6px !important;
+            overflow: hidden;
+        }
+        .dfe-submenu.dfe-open { display: block !important; }
+        .dfe-right-logo { display: none; }
+
+        /* ===== Hero / content ===== */
+        .dfe-hero-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+        .dfe-battlegrounds-media { grid-template-columns: 1fr !important; gap: 24px !important; }
+        .dfe-page-title { font-size: 26px !important; }
+        .dfe-hero-title { font-size: 22px !important; }
+    }
+</style>
+</head>
+<body>
+
+<!-- <noscript> content is never added to the DOM at all in a browser with
+     JavaScript enabled -- not "shown then removed," but never rendered in
+     the first place -- so real visitors never see a flash of this text.
+     It still appears in the raw HTML source (View Page Source), which is
+     what non-JS crawlers and tools read, satisfying the same goal as the
+     old plain <div> version without the visible flicker. -->
+<noscript>
+    <div style="padding:60px 20px; max-width:800px; margin:0 auto; font-family:-apple-system,sans-serif; color:#333;">
+        <h1>USC Democracy and Fair Elections Lab</h1>
+        <p>The USC Democracy and Fair Elections Lab conducts evidence-based, nonpartisan quantitative research on redistricting, election administration, voting rights, and democratic representation. The Lab is housed in the USC Dornsife College of Letters, Arts and Sciences.</p>
+        <h2>Director</h2>
+        <p>Christian R. Grose is Professor of Political Science and Public Policy at the University of Southern California and Director of the USC Democracy and Fair Elections Lab.</p>
+    </div>
+</noscript>
+
+<!-- main.js builds the entire site (nav, content, footer) inside this
+     container. Critically, main.js clears/rebuilds THIS div only -- not
+     document.body -- so the <script> tags below (siblings of this div,
+     not children of it) always survive every rebuild. Wiping document.body
+     directly used to also delete these <script> tags from the live DOM,
+     which meant every prerendered page was saved with zero scripts in it,
+     silently breaking both client-side navigation and future rebuilds. -->
+<div id="app-root"></div>
+
+
+<!-- ================= third-party libraries ================= -->
+<!-- Exact versions (not "@7" / "@3"): a pinned URL never changes, so the CDN
+     and browsers can cache it long-term and return visitors skip the download. -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+
+<!-- ================= shared map module ================= -->
+<!-- Defines window.DFEMap (topology cache, color/margin helpers, seat totals)
+     and renderHomeMap. Must load before anything that uses DFEMap / draws
+     the congressional map (homepage, Redistricting, Racial Demographics). -->
+<script src="homemap.js"></script>
+
+<!-- ================= page modules ================= -->
+<!-- Order mostly doesn't matter below (each defines its own render* function
+     on window and main.js references them by name), but map-dependent pages
+     are kept near homeMap.js for clarity. -->
+<script src="redis.js"></script>
+<script src="demographics.js"></script>
+<script src="swingometer.js"></script>
+
+<script src="surprise.js"></script>
+<!-- district write-ups registered into window.SurpriseDistricts by surprise.js's
+     DISTRICT_FILES list; included explicitly too so they work even if that
+     dynamic loader isn't used. -->
+<script src="districts/mi04.js"></script>
+<script src="districts/ak.js"></script>
+<script src="districts/tx.js"></script>
+
+<script src="scandal.js"></script>
+<!-- case data generated from the master data sheet; must load after scandal.js -->
+<script src="scandals/cases.js"></script>
+
+<script src="progressive.js"></script>
+<script src="about.js"></script>
+<script src="people.js"></script>
+<script src="events.js"></script>
+<script src="publications.js"></script>
+<!-- poll pages: shared renderer first, then one file per poll -->
+<script src="pollpage.js"></script>
+<script src="polls/ca11.js"></script>
+<script src="polls/ca34.js"></script>
+<script src="polls/ca-gov-primary-2026.js"></script>
+<script src="polls/ca-statewide-2024.js"></script>
+<script src="polls/ca-house-districts-2024.js"></script>
+<script src="media.js"></script>
+<script src="projects.js"></script>
+
+<!-- ================= site controller (must load last) ================= -->
+<script src="main.js"></script>
+
+</body>
+</html>
