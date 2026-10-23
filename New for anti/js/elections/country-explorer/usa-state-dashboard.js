@@ -1,9 +1,9 @@
-import { pollOfficePanelsHtml } from './special/usa-poll-panels.js';
+import { pollOfficePanelsHtml } from './special/usa-poll-panels.js?v=3';
 import { bioguideUrl, escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 // ?v=7: 이전 슈퍼팩 모듈이 배포돼 브라우저에 캐시돼 있을 수 있다. 이 모듈은 내용이 달라졌으므로(MAPPING_* export)
 // 같은 URL 을 쓰면 옛 슈퍼팩 모듈과 새 대시보드가 섞여 로드 실패한다. index.js 와 반드시 같은 URL 이어야 한다.
 import { usaStateSuperPac, usaStateSuperPacHouse, MAPPING_PENDING, MAPPING_FAILED } from './special/usa-state-superpac.js?v=11';
-import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=6';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml } from './special/usa-election-overview.js?v=7';
 import { pollEvidenceHtml, financeEvidenceHtml } from './special/usa-election-evidence.js?v=6';
 import { candidateMatchupHtml } from './special/usa-candidate-matchup.js?v=4';
 import { electionMatchup } from '../data/election-matchups.js';

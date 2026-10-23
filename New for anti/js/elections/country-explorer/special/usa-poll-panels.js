@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../ui.js';
-import { ELECTION_OFFICES } from '../../data/election-overview.js?v=3';
+import { ELECTION_OFFICES } from '../../data/election-overview.js?v=4';
 import { summarizePollPresentation, pollRaceAssessment } from '../../data/poll-presentation.js';
 
 export const pollOfficePanelsHtml = (races, board, health, days, renderRace, { open = {}, now = Date.now() } = {}) => {
