@@ -2,7 +2,7 @@
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
   "as_of": "2026-10-23",
-  "generated_at": "2026-10-23T01:07:35.218924+00:00",
+  "generated_at": "2026-10-23T02:48:33.220074+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.",
@@ -1569,7 +1569,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "independent_pollster_count": 3,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -1622,11 +1622,88 @@
               },
               "leading_margin_pp": 4.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202vot936927b5",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-23",
+                "review_sources": [
+                  "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                ],
+                "primary_toplines": {
+                  "Sherrod Brown": 47.5,
+                  "Jon Husted": 43.6,
+                  "Bill Redpath": 1.1,
+                  "Greg Levy": 1.0
+                },
+                "question_sample_n": 531,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 531,
+                  "field_dates": [
+                    "2026-10-01",
+                    "2026-10-20"
+                  ],
+                  "primary_release_date": "2026-10-22",
+                  "provider_record_date": "2026-10-22",
+                  "sponsors": [
+                    "VoteHub"
+                  ],
+                  "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                  "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                  "weighting": "likely voter model; weights per report",
+                  "question_wording_checked": false,
+                  "question": "Ohio U.S. Senate, likely voters with leaners",
+                  "provider_pollster_label": "VoteHub/Verasight",
+                  "primary_pollster_name": "VoteHub/Verasight",
+                  "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_531",
+                  "model_details_verified": false
+                },
+                "ballot_format": "named_ballot_with_leaners",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "VoteHub"
+                ]
+              },
+              "leading_margin_pp": 3.9,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "us-202bea80ab32e9",
-            "us-202mar3b19e64d"
+            "us-202mar3b19e64d",
+            "us-202vot936927b5"
           ]
         },
         {
@@ -1781,16 +1858,16 @@
           "basis": "pending",
           "party_abbr": "없음",
           "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": null,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -1997,16 +2074,16 @@
           "basis": "pending",
           "party_abbr": "없음",
           "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": null,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -2636,7 +2713,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "independent_pollster_count": 3,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -2689,11 +2766,87 @@
               },
               "leading_margin_pp": 7.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "gov202vot834ec374",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-23",
+                "review_sources": [
+                  "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                ],
+                "primary_toplines": {
+                  "Amy Acton": 46.2,
+                  "Vivek Ramaswamy": 45.4,
+                  "Travis Kissick": 2.0
+                },
+                "question_sample_n": 531,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 531,
+                  "field_dates": [
+                    "2026-10-01",
+                    "2026-10-20"
+                  ],
+                  "primary_release_date": "2026-10-22",
+                  "provider_record_date": "2026-10-22",
+                  "sponsors": [
+                    "VoteHub"
+                  ],
+                  "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                  "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                  "weighting": "likely voter model; weights per report",
+                  "question_wording_checked": false,
+                  "question": "Ohio governor, likely voters with leaners",
+                  "provider_pollster_label": "VoteHub/Verasight",
+                  "primary_pollster_name": "VoteHub/Verasight",
+                  "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_531",
+                  "model_details_verified": false
+                },
+                "ballot_format": "named_ballot_with_leaners",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "VoteHub"
+                ]
+              },
+              "leading_margin_pp": 0.8,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "gov202beafcf8ece3",
-            "gov202mar01928469"
+            "gov202mar01928469",
+            "gov202vot834ec374"
           ]
         },
         {
@@ -4693,7 +4846,7 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "independent_pollster_count": 3,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -4746,11 +4899,88 @@
                   },
                   "leading_margin_pp": 4.0,
                   "significance": "not_evaluated"
+                },
+                {
+                  "id": "us-202vot936927b5",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-23",
+                    "review_sources": [
+                      "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Sherrod Brown": 47.5,
+                      "Jon Husted": 43.6,
+                      "Bill Redpath": 1.1,
+                      "Greg Levy": 1.0
+                    },
+                    "question_sample_n": 531,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 531,
+                      "field_dates": [
+                        "2026-10-01",
+                        "2026-10-20"
+                      ],
+                      "primary_release_date": "2026-10-22",
+                      "provider_record_date": "2026-10-22",
+                      "sponsors": [
+                        "VoteHub"
+                      ],
+                      "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                      "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                      "weighting": "likely voter model; weights per report",
+                      "question_wording_checked": false,
+                      "question": "Ohio U.S. Senate, likely voters with leaners",
+                      "provider_pollster_label": "VoteHub/Verasight",
+                      "primary_pollster_name": "VoteHub/Verasight",
+                      "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 4.2,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_531",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "named_ballot_with_leaners",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "VoteHub"
+                      ],
+                      "provider_sponsors": [
+                        "VoteHub"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "VoteHub"
+                    ]
+                  },
+                  "leading_margin_pp": 3.9,
+                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
                 "us-202bea80ab32e9",
-                "us-202mar3b19e64d"
+                "us-202mar3b19e64d",
+                "us-202vot936927b5"
               ]
             },
             {
@@ -4905,16 +5135,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -5121,16 +5351,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -5760,7 +5990,7 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "independent_pollster_count": 3,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -5813,11 +6043,87 @@
                   },
                   "leading_margin_pp": 7.0,
                   "significance": "not_evaluated"
+                },
+                {
+                  "id": "gov202vot834ec374",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-23",
+                    "review_sources": [
+                      "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Amy Acton": 46.2,
+                      "Vivek Ramaswamy": 45.4,
+                      "Travis Kissick": 2.0
+                    },
+                    "question_sample_n": 531,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 531,
+                      "field_dates": [
+                        "2026-10-01",
+                        "2026-10-20"
+                      ],
+                      "primary_release_date": "2026-10-22",
+                      "provider_record_date": "2026-10-22",
+                      "sponsors": [
+                        "VoteHub"
+                      ],
+                      "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                      "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                      "weighting": "likely voter model; weights per report",
+                      "question_wording_checked": false,
+                      "question": "Ohio governor, likely voters with leaners",
+                      "provider_pollster_label": "VoteHub/Verasight",
+                      "primary_pollster_name": "VoteHub/Verasight",
+                      "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 4.2,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_531",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "named_ballot_with_leaners",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "VoteHub"
+                      ],
+                      "provider_sponsors": [
+                        "VoteHub"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "VoteHub"
+                    ]
+                  },
+                  "leading_margin_pp": 0.8,
+                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
                 "gov202beafcf8ece3",
-                "gov202mar01928469"
+                "gov202mar01928469",
+                "gov202vot834ec374"
               ]
             },
             {
@@ -7451,7 +7757,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "independent_pollster_count": 3,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -7504,11 +7810,88 @@
               },
               "leading_margin_pp": 4.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202vot936927b5",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-23",
+                "review_sources": [
+                  "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                ],
+                "primary_toplines": {
+                  "Sherrod Brown": 47.5,
+                  "Jon Husted": 43.6,
+                  "Bill Redpath": 1.1,
+                  "Greg Levy": 1.0
+                },
+                "question_sample_n": 531,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 531,
+                  "field_dates": [
+                    "2026-10-01",
+                    "2026-10-20"
+                  ],
+                  "primary_release_date": "2026-10-22",
+                  "provider_record_date": "2026-10-22",
+                  "sponsors": [
+                    "VoteHub"
+                  ],
+                  "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                  "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                  "weighting": "likely voter model; weights per report",
+                  "question_wording_checked": false,
+                  "question": "Ohio U.S. Senate, likely voters with leaners",
+                  "provider_pollster_label": "VoteHub/Verasight",
+                  "primary_pollster_name": "VoteHub/Verasight",
+                  "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_531",
+                  "model_details_verified": false
+                },
+                "ballot_format": "named_ballot_with_leaners",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "VoteHub"
+                ]
+              },
+              "leading_margin_pp": 3.9,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "us-202bea80ab32e9",
-            "us-202mar3b19e64d"
+            "us-202mar3b19e64d",
+            "us-202vot936927b5"
           ]
         },
         {
@@ -7790,7 +8173,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "independent_pollster_count": 3,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -7843,11 +8226,87 @@
               },
               "leading_margin_pp": 7.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "gov202vot834ec374",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-23",
+                "review_sources": [
+                  "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                ],
+                "primary_toplines": {
+                  "Amy Acton": 46.2,
+                  "Vivek Ramaswamy": 45.4,
+                  "Travis Kissick": 2.0
+                },
+                "question_sample_n": 531,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 531,
+                  "field_dates": [
+                    "2026-10-01",
+                    "2026-10-20"
+                  ],
+                  "primary_release_date": "2026-10-22",
+                  "provider_record_date": "2026-10-22",
+                  "sponsors": [
+                    "VoteHub"
+                  ],
+                  "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                  "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                  "weighting": "likely voter model; weights per report",
+                  "question_wording_checked": false,
+                  "question": "Ohio governor, likely voters with leaners",
+                  "provider_pollster_label": "VoteHub/Verasight",
+                  "primary_pollster_name": "VoteHub/Verasight",
+                  "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_531",
+                  "model_details_verified": false
+                },
+                "ballot_format": "named_ballot_with_leaners",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "VoteHub"
+                ]
+              },
+              "leading_margin_pp": 0.8,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "gov202beafcf8ece3",
-            "gov202mar01928469"
+            "gov202mar01928469",
+            "gov202vot834ec374"
           ]
         },
         {
@@ -9453,16 +9912,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -9755,7 +10214,7 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "independent_pollster_count": 3,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -9808,11 +10267,88 @@
                   },
                   "leading_margin_pp": 4.0,
                   "significance": "not_evaluated"
+                },
+                {
+                  "id": "us-202vot936927b5",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-23",
+                    "review_sources": [
+                      "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Sherrod Brown": 47.5,
+                      "Jon Husted": 43.6,
+                      "Bill Redpath": 1.1,
+                      "Greg Levy": 1.0
+                    },
+                    "question_sample_n": 531,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 531,
+                      "field_dates": [
+                        "2026-10-01",
+                        "2026-10-20"
+                      ],
+                      "primary_release_date": "2026-10-22",
+                      "provider_record_date": "2026-10-22",
+                      "sponsors": [
+                        "VoteHub"
+                      ],
+                      "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                      "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                      "weighting": "likely voter model; weights per report",
+                      "question_wording_checked": false,
+                      "question": "Ohio U.S. Senate, likely voters with leaners",
+                      "provider_pollster_label": "VoteHub/Verasight",
+                      "primary_pollster_name": "VoteHub/Verasight",
+                      "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 4.2,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_531",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "named_ballot_with_leaners",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "VoteHub"
+                      ],
+                      "provider_sponsors": [
+                        "VoteHub"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "VoteHub"
+                    ]
+                  },
+                  "leading_margin_pp": 3.9,
+                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
                 "us-202bea80ab32e9",
-                "us-202mar3b19e64d"
+                "us-202mar3b19e64d",
+                "us-202vot936927b5"
               ]
             },
             {
@@ -10083,16 +10619,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -10299,14 +10835,14 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "single_poll_lead",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -11082,7 +11618,7 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "independent_pollster_count": 3,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -11135,11 +11671,87 @@
                   },
                   "leading_margin_pp": 7.0,
                   "significance": "not_evaluated"
+                },
+                {
+                  "id": "gov202vot834ec374",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-23",
+                    "review_sources": [
+                      "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Amy Acton": 46.2,
+                      "Vivek Ramaswamy": 45.4,
+                      "Travis Kissick": 2.0
+                    },
+                    "question_sample_n": 531,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 531,
+                      "field_dates": [
+                        "2026-10-01",
+                        "2026-10-20"
+                      ],
+                      "primary_release_date": "2026-10-22",
+                      "provider_record_date": "2026-10-22",
+                      "sponsors": [
+                        "VoteHub"
+                      ],
+                      "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                      "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                      "weighting": "likely voter model; weights per report",
+                      "question_wording_checked": false,
+                      "question": "Ohio governor, likely voters with leaners",
+                      "provider_pollster_label": "VoteHub/Verasight",
+                      "primary_pollster_name": "VoteHub/Verasight",
+                      "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 4.2,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_531",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "named_ballot_with_leaners",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "VoteHub"
+                      ],
+                      "provider_sponsors": [
+                        "VoteHub"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "VoteHub"
+                    ]
+                  },
+                  "leading_margin_pp": 0.8,
+                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
                 "gov202beafcf8ece3",
-                "gov202mar01928469"
+                "gov202mar01928469",
+                "gov202vot834ec374"
               ]
             },
             {
@@ -11592,16 +12204,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -13020,7 +13632,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "independent_pollster_count": 3,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -13073,11 +13685,88 @@
               },
               "leading_margin_pp": 4.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202vot936927b5",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-23",
+                "review_sources": [
+                  "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                ],
+                "primary_toplines": {
+                  "Sherrod Brown": 47.5,
+                  "Jon Husted": 43.6,
+                  "Bill Redpath": 1.1,
+                  "Greg Levy": 1.0
+                },
+                "question_sample_n": 531,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 531,
+                  "field_dates": [
+                    "2026-10-01",
+                    "2026-10-20"
+                  ],
+                  "primary_release_date": "2026-10-22",
+                  "provider_record_date": "2026-10-22",
+                  "sponsors": [
+                    "VoteHub"
+                  ],
+                  "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                  "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                  "weighting": "likely voter model; weights per report",
+                  "question_wording_checked": false,
+                  "question": "Ohio U.S. Senate, likely voters with leaners",
+                  "provider_pollster_label": "VoteHub/Verasight",
+                  "primary_pollster_name": "VoteHub/Verasight",
+                  "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_531",
+                  "model_details_verified": false
+                },
+                "ballot_format": "named_ballot_with_leaners",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "VoteHub"
+                ]
+              },
+              "leading_margin_pp": 3.9,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "us-202bea80ab32e9",
-            "us-202mar3b19e64d"
+            "us-202mar3b19e64d",
+            "us-202vot936927b5"
           ]
         },
         {
@@ -13619,7 +14308,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "independent_pollster_count": 3,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -13672,11 +14361,87 @@
               },
               "leading_margin_pp": 7.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "gov202vot834ec374",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-23",
+                "review_sources": [
+                  "https://cdn.votehub.com/pdfs/VoteHub_Verasight_Oct_2026_Ohio_Report_D1CB7735.pdf"
+                ],
+                "primary_toplines": {
+                  "Amy Acton": 46.2,
+                  "Vivek Ramaswamy": 45.4,
+                  "Travis Kissick": 2.0
+                },
+                "question_sample_n": 531,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 531,
+                  "field_dates": [
+                    "2026-10-01",
+                    "2026-10-20"
+                  ],
+                  "primary_release_date": "2026-10-22",
+                  "provider_record_date": "2026-10-22",
+                  "sponsors": [
+                    "VoteHub"
+                  ],
+                  "sampling_method": "Verasight online panel; likely voter model from 623 Ohio registered voters (Oct 1-20); design effect 1.17",
+                  "sampling_frame": "Verasight probability-recruited panel of Ohio registered voters",
+                  "weighting": "likely voter model; weights per report",
+                  "question_wording_checked": false,
+                  "question": "Ohio governor, likely voters with leaners",
+                  "provider_pollster_label": "VoteHub/Verasight",
+                  "primary_pollster_name": "VoteHub/Verasight",
+                  "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 4.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_531",
+                  "model_details_verified": false
+                },
+                "ballot_format": "named_ballot_with_leaners",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_sponsors": [
+                    "VoteHub"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "VoteHub/Verasight 원문 대조: LV 531명, 2026-10-01~2026-10-20, 표본오차 ±4.2. 유권자 623명 중 투표 가능성 모형 유효표본 531명, 리너 포함 열. 초기 응답 열과 구분. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "VoteHub"
+                ]
+              },
+              "leading_margin_pp": 0.8,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "gov202beafcf8ece3",
-            "gov202mar01928469"
+            "gov202mar01928469",
+            "gov202vot834ec374"
           ]
         },
         {
