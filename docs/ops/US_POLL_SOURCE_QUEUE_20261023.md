@@ -458,3 +458,34 @@ Actions → "Source fetch for manual review" → Run workflow
 | C 당파·의뢰(참고용) | governor | Z to A Research | 2026-10-01 | 662 | `pollster_not_selected` | Rust Belt Rising / DEM | https://x.com/rbrtraining/status/2108302504446337272 |  |
 | C 당파·의뢰(참고용) | house:01 | Impact Research | 2026-10-01 | 500 | `commissioner_primary_methodology_not_obtained` | House Majority PAC / DEM | https://bsky.app/profile/the-downballot.com/post/3mwyouhbwg22k |  |
 
+
+## 6. 2026-10-23 Claude A등급(비당파) 처리 결과
+
+병합된 주별 packet PR: SD #686 · TN #687 · OH #688 · GA #689 · MA #690 · FL #691 · AL #692 ·
+IA #693 · RI #694 · CA #695 · ME #696 · NY #697. 발행 후 채택 255 → 273건.
+
+재현 시 주의(실제로 걸린 것):
+- 기존 packet이 있는 주는 오프라인 `--packet` 재생성이 `primary_supplement_receipts`를
+  `carried_forward_reference_only`로 덮는다. 직전 packet(main)의 영수증·primary_records를
+  같은 id로 되돌린 뒤 커밋할 것(CA·AL·OH에서 발생, `test_poll_ca_source_recheck_20261021`이 잡음).
+- 주별 테스트가 capture 날짜를 고정해 둔 경우(ME, NY-21 14일 창)는 그 주 테스트만 새 capture에
+  맞춰 갱신. 검토일·과거 이력 단언은 건드리지 않는다.
+- 메인 상원·하원은 순위선택투표: Marist 선례대로 `ranked_choice_question: first_preference` +
+  `ranked_choice_separate_question_reference` 참고용. 주지사 본선은 일반 투표.
+- 의뢰자 미공개 YouGov·NPA는 참고용(`commissioner_not_disclosed`) 일관 유지.
+
+A등급 중 남은 것(Codex/브라우저 몫):
+- **원문 접근 불가(봇 차단·로그인):** x.com(AK ASR, AR Grayhouse, MO Remington, PA Z to A, Guidant),
+  pollvault Substack(Emerson 하원 9건), Cook BDP(New River 6건), DocumentCloud(CT GreatBlue),
+  utahdebatecommission.org(UT Lighthouse 2건), Express-News(TX-15 TSU), WaPo(ME·MI Schar 4건),
+  Star Tribune(MN Mason-Dixon), Politico(CA Citrin 2건·NY Beacon), al.com(AL Alabama Poll).
+- **원문은 있으나 추가 작업 필요:**
+  - MA 주지사 Suffolk(gov202suf418414b7): 원문 10/14~18, Healey 58.6·Minogue 36·James 2.
+    governor_matchups MA에 Andrea James(무소속, 인쇄 후보) 추가 근거와 `Maura Healy` 별칭이 먼저 필요.
+    원문 PDF: `source-fetch/a-src4-20261023-39893658088`.
+  - MN SurveyUSA 2건: KSTP 기사에 수치·표본·기간 없음 → SurveyUSA 원 발표 필요.
+  - AZ Equis: 메모상 현장조사 9/1~9, VoteHub는 10/1~9 → 날짜 교정 검토 필요(진보 성향 연구기관 여부도 확인).
+  - TX Pollfinity(RV/LV 불일치), NC Elon(군소 후보 분리 미확인)·Harper(표본·기간 미기재),
+    MT American Pulse(후보명 별칭·기사 수치 소수점), GA GBAO(기사 텍스트 깨짐), RI 주지사 Embold/UNH,
+    UNH NH-01·VT·MA·RI(별칭) — 개별 검토 필요.
+  - 9/1 이전 현장조사(TX AARP/Univision 등)는 `outside_reviewed_general_period`라 제외 유지.
