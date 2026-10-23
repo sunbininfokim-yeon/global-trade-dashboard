@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { senatePollChartHtml } from '../country-explorer/special/usa-senate-poll-chart.js';
+import { senatePollChartHtml, officePollSummaryHtml } from '../country-explorer/special/usa-senate-poll-chart.js';
 
 const now = Date.parse('2026-10-22T12:00:00Z');
 const obs = (id, pollster, end, answers, population = 'lv') => ({ id, pollster, pollster_group: pollster, field_end: end, population, answers });
@@ -46,4 +46,23 @@ test('independent challenger is drawn on the left in its own colour', () => {
     const ne = race('NE', [obs('n', 'N', '2026-10-05', [{ name: 'Dan Osborn', pct: 46, party: 'IND' }, { name: 'Pete Ricketts', pct: 48, party: 'REP' }]), obs('m', 'M', '2026-10-06', [{ name: 'Dan Osborn', pct: 49, party: 'IND' }, { name: 'Pete Ricketts', pct: 45, party: 'REP' }])]);
     const html = senatePollChartHtml([ne, race('TX', [obs('a', 'A', '2026-10-19', two(48, 50))]), race('OH', [obs('c', 'C', '2026-10-19', two(52, 46))])], { now });
     assert.match(html, /is-ind/); assert.match(html, /\(무소속\)/);
+});
+
+test('office card summary counts polled contests and the 14-day verdict among them', () => {
+    const gov = (state, observations, window = {}) => ({ ...race(state, observations, window), race_id: `USA:${state}:governor`, office: 'governor' });
+    const eligible = (o) => ({ ...o, aggregation_eligibility: { eligible: true } });
+    const board = { races: {
+        'USA:CT:governor': gov('CT', [eligible(obs('a', 'A', '2026-10-19', two(58, 38)))], { status: 'poll_lead', party: 'DEM', included_ids: ['a'] }),
+        'USA:FL:governor': gov('FL', [eligible(obs('b', 'B', '2026-10-19', two(47, 49)))], { status: 'single_poll_lead', party: 'REP', included_ids: ['b'] }),
+        'USA:PA:governor': gov('PA', [eligible(obs('q', 'Quinnipiac', '2026-10-05', two(59, 34))), obs('r', 'Ref', '2026-10-21', two(61, 38))], { status: 'no_recent_poll' }),
+    } };
+    const contests = ['CT', 'FL', 'PA', 'WY'].map((s) => ({ race_id: `USA:${s}:governor` }));
+    const html = officePollSummaryHtml('governor', contests, board, { now });
+    assert.match(html, /여론조사 <strong>3\/4곳/); assert.match(html, /DEM 우세 1/); assert.match(html, /GOP 우세 1/); assert.match(html, /판정 보류 1/);
+    assert.match(html, /data-overview-office="governor"/);
+    // The latest counted poll is shown as text, ahead of a newer reference-only row.
+    assert.match(html, /최근 Quinnipiac 10\/05 · Name 59 · Name 34/);
+    const one = officePollSummaryHtml('governor', [contests[2]], board, { now });
+    assert.match(one, /<small>최근 Quinnipiac 10\/05/);
+    assert.equal(officePollSummaryHtml('senate', [], board, { now }), '');
 });

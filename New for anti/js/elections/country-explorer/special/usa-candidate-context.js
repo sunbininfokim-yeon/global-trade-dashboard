@@ -1,5 +1,6 @@
 import { escapeHtml } from '../../ui.js';
 import { usaStateNameKo } from '../../data/election-matchups.js?v=2';
+import { normalizeParty } from '../../data/usa-election-context.js?v=2';
 
 export const originLink = (url, label = '원문 ↗') => {
     try {
@@ -43,10 +44,19 @@ export const governorElectionSummaryHtml = (country, now = Date.now()) => {
     if (context?.schema !== 'usa_governor_election_context_v1' || rows.length !== 50
         || !rows.every((r) => validContext(r, r.state, now)) || new Set(rows.map((r) => r.state)).size !== 50) return '';
     const contested = rows.filter((r) => r.election_in_cycle).length;
-    return `<div class="elections-governor-context"><div class="elections-gov-scope"><span>이번 선거 <strong>${contested}주</strong></span><span>비선거 <strong>${50-contested}주</strong></span></div>
+    // Current governor's party per state, from the same roster as the 현재 tile.
+    const governorParty = new Map((country?.ui_ready?.state_drilldown?.states || []).map((s) => [s.id, normalizeParty(s.governor?.abbr)]));
+    const partyClass = (id) => ({ DEM: 'is-dem', REP: 'is-gop', GOP: 'is-gop' }[governorParty.get(id)] || '');
+    const tally = (inCycle) => {
+        const list = rows.filter((r) => r.election_in_cycle === inCycle).map((r) => governorParty.get(r.state));
+        const dem = list.filter((p) => p === 'DEM').length, gop = list.filter((p) => p === 'REP' || p === 'GOP').length;
+        const other = list.length - dem - gop;
+        return `<small><b class="is-dem">DEM ${dem}</b> · <b class="is-gop">GOP ${gop}</b>${other ? ` · 기타·미확인 ${other}` : ''}${inCycle ? ' · 현재' : ''}</small>`;
+    };
+    return `<div class="elections-governor-context"><div class="elections-gov-scope"><span>이번 선거 <strong>${contested}주</strong>${tally(true)}</span><span>비선거 유지 <strong>${50-contested}주</strong>${tally(false)}</span></div>
         <details class="elections-disclosure"><summary>주별 선거·현직 출마 사유와 원문</summary>
         <p class="elections-panel-note">연임 제한·자진 불출마·경선 탈락은 구분합니다. 현직의 불출마가 후보 미확정을 뜻하지 않습니다.</p>
-        <div class="elections-governor-list">${rows.sort((a,b) => a.state.localeCompare(b.state)).map((r) => `<div><button type="button" data-overview-state="${r.state}" data-overview-office="governor" data-overview-district=""><strong>${escapeHtml(usaStateNameKo(r.state))} · ${r.election_in_cycle ? '선거' : '비선거'}</strong><span>${escapeHtml(governorStatus[r.incumbent_ballot_status] || '확인 중')}</span></button>${originLink(r.source.url || r.source.source_url, '근거 ↗')}</div>`).join('')}</div></details></div>`;
+        <div class="elections-governor-list">${rows.sort((a,b) => a.state.localeCompare(b.state)).map((r) => `<div><button type="button" data-overview-state="${r.state}" data-overview-office="governor" data-overview-district=""><strong class="${partyClass(r.state)}">${escapeHtml(usaStateNameKo(r.state))} · ${r.election_in_cycle ? '선거' : '비선거'}</strong><span>${escapeHtml(governorStatus[r.incumbent_ballot_status] || '확인 중')}</span></button>${originLink(r.source.url || r.source.source_url, '근거 ↗')}</div>`).join('')}</div></details></div>`;
 };
 
 export const linkedCampaignRow = (candidate, race, now = Date.now()) => {

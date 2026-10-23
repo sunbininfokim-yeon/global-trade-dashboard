@@ -2,7 +2,7 @@ import { renderCountryShell } from './country-shell.js?v=8';
 import { loadIsraelElectionAnalysis } from '../data/israel-service.js';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js?v=8';
-import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=13';
+import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=14';
 import { renderUsaDistrictMap } from './usa-district-map.js?v=7';
 import { createModal } from '../modal.js';
 import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
@@ -10,7 +10,7 @@ import { loadStateFinance, loadStateFinanceIndex, loadFinanceDisplayContract, lo
 import { MAPPING_FAILED } from './special/usa-state-superpac.js?v=11';
 import { loadLivePolls } from '../data/poll-service.js?v=2';
 import { loadUsaElectionRatings } from '../data/rating-service.js';
-import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=11';
+import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=12';
 import { loadCongressionalDistricts, prefetchCongressionalDistricts } from '../data/geo-service.js?v=2';
 import { applyEopChart } from './special/usa-executive.js';
 import { applyCnPartyChart } from './special/chn-org.js';

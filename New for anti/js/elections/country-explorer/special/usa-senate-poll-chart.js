@@ -59,7 +59,24 @@ const verdict = (race) => {
 
 const position = (margin) => 50 - Math.max(-AXIS, Math.min(AXIS, margin)) / AXIS * 50;
 
-const raceRow = (race, now) => {
+// Latest poll the board may count (aggregation eligible), else the latest
+// reference row. Shown as text so the numbers are readable without hovering.
+const latestPoll = (race) => {
+    const rows = (race.observations || []).filter((o) => Array.isArray(o.answers) && sides(o.answers));
+    const newest = (list) => [...list].sort((a, b) => (b.field_end || '').localeCompare(a.field_end || '')
+        || (b.population === 'lv') - (a.population === 'lv'))[0];
+    const eligible = newest(rows.filter((o) => o.aggregation_eligibility?.eligible));
+    const o = eligible || newest(rows);
+    return o ? { o, s: sides(o.answers), reference: !eligible } : null;
+};
+const latestText = (race) => {
+    const l = latestPoll(race);
+    if (!l) return '';
+    const day = (l.o.field_end || '').slice(5).replace('-', '/');
+    return `최근 ${l.o.pollster} ${day} · ${l.s.left.name.split(' ').at(-1)} ${l.s.left.pct} · ${l.s.rep.name.split(' ').at(-1)} ${l.s.rep.pct}${l.reference ? ' · 참고' : ''}`;
+};
+
+const raceRow = (race, now, office = 'senate') => {
     const dots = dotsFor(race, now);
     const v = verdict(race);
     const names = dots[0]?.s ? `${dots[0].s.left.name.split(' ').at(-1)} vs ${dots[0].s.rep.name.split(' ').at(-1)}` : '';
@@ -71,11 +88,41 @@ const raceRow = (race, now) => {
     }).join('');
     const counted = dots.filter((d) => d.counted);
     const leftLead = counted.filter((d) => d.s.margin > 0).length, repLead = counted.filter((d) => d.s.margin < 0).length;
-    return `<button type="button" class="elections-senate-row" data-poll-race="${escapeHtml(race.race_id)}" data-overview-state="${escapeHtml(race.state)}" data-overview-office="senate">
+    return `<button type="button" class="elections-senate-row" data-poll-race="${escapeHtml(race.race_id)}" data-overview-state="${escapeHtml(race.state)}" data-overview-office="${escapeHtml(office)}">
         <span class="elections-senate-state"><strong>${escapeHtml(race.state)}</strong><small>${escapeHtml(names)}${leftParty === 'IND' ? ' (무소속)' : ''}</small></span>
+        <span class="elections-senate-latest">${escapeHtml(latestText(race))}</span>
         <span class="elections-senate-axis" aria-hidden="true"><i class="elections-senate-zero"></i>${dotHtml}</span>
         <span class="elections-senate-verdict ${v.cls}">${escapeHtml(v.text)}${counted.length ? `<small>집계 ${counted.length}곳: ${leftParty === 'IND' ? 'I' : 'D'} ${leftLead} · R ${repLead}</small>` : `<small>참고 ${dots.length}건</small>`}</span>
     </button>`;
+};
+
+const leadParty = (race) => {
+    const w = race.windows?.['14'] || {};
+    return ['poll_lead', 'single_poll_lead'].includes(w.status) ? ({ DEM: 'DEM', REP: 'GOP', GOP: 'GOP', IND: 'IND' }[w.party] || null) : null;
+};
+
+// Card summary for one office: of this cycle's contests, how many have any
+// poll on the board, and the 14-day pipeline verdict among them. Clicking opens
+// the per-race rows underneath. Counts come from the board's own window status.
+export const officePollSummaryHtml = (office, contests, board, { now = Date.now() } = {}) => {
+    const unit = office === 'governor' ? '곳' : '석';
+    const races = (contests || []).map((c) => board?.races?.[c.race_id]).filter(Boolean);
+    const polled = races.filter((r) => r.observations?.length);
+    if (!contests?.length) return '';
+    const lead = { DEM: 0, GOP: 0, IND: 0 };
+    for (const r of polled) { const p = leadParty(r); if (p) lead[p]++; }
+    const held = polled.length - lead.DEM - lead.GOP - lead.IND;
+    const order = (r) => (leadParty(r) ? 0 : 1);
+    const rows = [...polled].sort((a, b) => order(a) - order(b) || a.state.localeCompare(b.state));
+    const single = contests.length === 1 && rows.length === 1;
+    return `<details class="elections-office-polls" data-office-polls="${escapeHtml(office)}">
+        <summary><span>여론조사 <strong>${polled.length}/${contests.length}${unit}</strong></span>
+            <span><b class="is-dem">DEM 우세 ${lead.DEM}</b> · <b class="is-gop">GOP 우세 ${lead.GOP}</b>${lead.IND ? ` · <b class="is-ind">무소속 우세 ${lead.IND}</b>` : ''} · 판정 보류 ${held}</span>
+            ${single ? `<small>${escapeHtml(latestText(rows[0]))}</small>` : ''}<small>최근 14일 판정 · 눌러서 ${single ? '자세히' : '선거별 보기'}</small></summary>
+        ${rows.length ? `<div class="elections-senate-scale" aria-hidden="true"><span class="is-dem">← 민주${office === 'senate' ? '·무소속' : ''}</span><span>±${AXIS}%p · 0</span><span class="is-gop">공화 →</span></div>
+        <div class="elections-senate-rows">${rows.map((r) => raceRow(r, now, office)).join('')}</div>` : ''}
+        <p class="elections-panel-note">조사 없음 ${contests.length - polled.length}${unit}. 우세는 최근 14일 안에 집계 가능한 조사의 판정이고, 그보다 오래된 조사나 참고 조사는 판정 보류로 셉니다. ● 채운 점=14일 집계 포함, ○ 빈 점=참고. 평균이나 당선 예측이 아닙니다.</p>
+    </details>`;
 };
 
 export const senatePollChartHtml = (races, { now = Date.now() } = {}) => {
