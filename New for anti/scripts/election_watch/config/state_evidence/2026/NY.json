@@ -232,19 +232,91 @@
         ],
         "limitations_ko": "NY21 LV496의 Q4 세 이름 문항. 정식 인쇄 후보2명 외 캠프가 기명 출마를 밝힌 Schmidt를 이름으로 제시했다. 일반 투표용지 재현·당선 예측으로 간주하지 않는다. Q5 주지사 지지율은 NY21 부분 표본이므로 NY 전체 주지사 조사로 편입하지 않는다. 4%p 차이는 보고된 sampling MOE4.6보다 작다. 이 정확한 발표만 검토하며 WPTZ 전체·기관의 미래 발표를 포괄 승인하지 않는다."
       }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "gov202quie8567b62"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T02:00:00+00:00",
+        "provider_record_sha256": "963466d28044f8ade03f25c3c00f9df0668f022a4fd9fe5edd17ff687644b3c0",
+        "sources": [
+          "https://poll.qu.edu/images/polling/ny/ny10212026_nygb97.pdf",
+          "https://poll.qu.edu/poll-release?releaseid=3972"
+        ],
+        "primary_toplines": {
+          "Kathy Hochul": 55.0,
+          "Bruce Blakeman": 41.0
+        },
+        "question_sample_n": 1167,
+        "admission": {
+          "pollster": "Quinnipiac University",
+          "provider_url": "https://www.nytimes.com/2026/10/21/nyregion/poll-hochul-blakeman-governor.html",
+          "group": "quinnipiac",
+          "methodology_url": "https://poll.qu.edu/images/polling/ny/ny10212026_nygb97.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "named_ballot_with_leaners",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 1167,
+          "field_dates": [
+            "2026-10-15",
+            "2026-10-19"
+          ],
+          "primary_release_date": "2026-10-22",
+          "provider_record_date": "2026-10-22",
+          "sponsors": [],
+          "sampling_method": "Quinnipiac University Poll, RDD live interviewers, landlines and cell phones, Oct 15-19",
+          "sampling_frame": "New York State likely voters (1,167)",
+          "weighting": "not described in release (MOE includes design effect)",
+          "question_wording_checked": false,
+          "question": "Q1 New York governor, Hochul vs. Blakeman (includes already voted and leaners), likely voters",
+          "provider_pollster_label": "Quinnipiac University",
+          "primary_pollster_name": "Quinnipiac University",
+          "source_fetch_receipt": "source-fetch/a-src3-20261023-39890316052"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 3.8,
+          "confidence_level_pct": null,
+          "scope": "whole_study_1167",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [],
+          "provider_sponsors": [],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "weighting"
+        ],
+        "limitations_ko": "Quinnipiac University 원문 대조: LV 1167명, 2026-10-15~2026-10-19, 표본오차 ±3.8. Quinnipiac 원문 PDF Q1 표(55/41, 이미 투표·리너 포함) 대조. VoteHub 출처는 NYT 기사였고 원문으로 교체 검토. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "aaf5c6d5ca8978a58bf7e4e69fb24ef9455252441953c80615b813f09815833f"
+      }
     }
   ],
   "capture": {
-    "as_of": "2026-10-16",
-    "fetched_at": "2026-10-16T09:37:35.726805+00:00",
+    "as_of": "2026-10-23",
+    "fetched_at": "2026-10-23T02:50:10.753236+00:00",
     "receipt": {
       "state": "NY",
       "cycle": 2026,
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-16",
-      "captured_at": "2026-10-16T09:37:35.726805+00:00",
-      "capture_kind": "provider_transport_with_exact_primary_release_review",
-      "serialized_provider_response_sha256": "76b72cd1370f1cd6de56c55be917c2722e0c434743555273d2a8fdc0046e2fbd",
-      "provider_records": 33,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+      "captured_at": "2026-10-23T02:50:10.753236+00:00",
+      "capture_kind": "provider_transport_only",
+      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
+      "provider_records": 35,
       "primary_rechecked_ids": [
         "us-202sie2af2e738"
       ],
@@ -252,7 +324,15 @@
       "primary_review_data_file": "usa_election_poll_release_reviews/2026/NY-primary-20261016.json",
       "primary_review_scope": "NY21 Siena Q4 only; other NY releases retain prior contracts",
       "federal_finance_recollected": false,
-      "governor_finance_recollected": false
+      "governor_finance_recollected": false,
+      "primary_supplement_receipts": [],
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "http_status": 200,
+        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+      }
     },
     "provider_records": [
       {
@@ -1152,9 +1232,63 @@
         "internal": false,
         "partisan": null,
         "subject": "2026 NY-21"
+      },
+      {
+        "id": "us-202pube3646207",
+        "poll_type": "us-representative",
+        "sample_size": 613,
+        "population": "lv",
+        "url": "https://x.com/cjwarnke/status/2112877284684341727",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-13",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Anthony Constantino",
+            "pct": 46.0
+          },
+          {
+            "choice": "Blake Gendebien",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": "NY-21",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 NY-21"
+      },
+      {
+        "id": "gov202quie8567b62",
+        "poll_type": "governor",
+        "sample_size": 1167,
+        "population": "lv",
+        "url": "https://www.nytimes.com/2026/10/21/nyregion/poll-hochul-blakeman-governor.html",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-15",
+        "end_date": "2026-10-19",
+        "pollster": "Quinnipiac University",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 55.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
       }
     ],
-    "provider_records_sha256": "e9897e1ff16a79e7a8687665d4a01d15a6c0d93d560be74ea615b4af147dfffd",
+    "provider_records_sha256": "8a5104aa39125b608668510eb7e13652129889571e2f021c4aeedc7b286f3607",
     "primary_records": []
   },
   "prior_capture_receipts": [

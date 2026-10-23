@@ -51,5 +51,9 @@ class NewYork21PrimaryTests(unittest.TestCase):
    if not rid.startswith('USA:NY:'):self.assertEqual(history['races'][rid],r)
   for k in ('as_of','fetched_at'):self.assertEqual(board[k],old[k])
   self.assertEqual(board['house_poll_focus']['race_count'],104);self.assertEqual(board['state_captures']['NY'],self.packet['capture']['receipt'])
-  r=board['races'][RID];self.assertEqual(r['windows']['14']['included_ids'],[ID]);self.assertFalse(r['windows']['7']['included_ids'])
+  # Windows follow the packet capture date: NY-21 fieldwork ended 10-06, so it
+  # is in the 14-day window of the 10-16 capture and out of it from 10-21 on.
+  from datetime import date
+  age=(date.fromisoformat(self.packet['capture']['as_of'])-date.fromisoformat('2026-10-06')).days
+  r=board['races'][RID];self.assertEqual(r['windows']['14']['included_ids'],[ID]if age<=14 else[]);self.assertFalse(r['windows']['7']['included_ids'])
 if __name__=='__main__':unittest.main()
