@@ -91,8 +91,9 @@ class MaineEvidenceTests(unittest.TestCase):
     def test_actual_api_refresh_does_not_advance_primary_or_finance_review_dates(self):
         original=self.packet['capture_history'][0]
         self.assertEqual(original['fetched_at'],'2026-10-13T13:05:08.953432+00:00')
-        self.assertEqual(self.packet['capture']['fetched_at'],'2026-10-14T05:14:02.840821+00:00')
-        self.assertEqual(len(self.packet['capture']['provider_records']),64)
+        # 2026-10-23 refresh: full-range VoteHub response fetched by source_fetch.yml.
+        self.assertEqual(self.packet['capture']['fetched_at'],'2026-10-23T02:32:01.138221+00:00')
+        self.assertEqual(len(self.packet['capture']['provider_records']),65)
         for row in self.observations:
             if row['id'] in ('us-202mare89f317d','gov202mar89bef491'):
                 self.assertEqual(row['source_quality']['reviewed_on'],'2026-10-13')
