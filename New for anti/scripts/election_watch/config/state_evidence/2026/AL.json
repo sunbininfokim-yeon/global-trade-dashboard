@@ -2602,107 +2602,194 @@
         "candidate_count": 18,
         "independent_certification_contains_only_state_legislature": true
       }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202cyg0d88fe11"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T02:00:00+00:00",
+        "provider_record_sha256": "10db4e63463d125d41033232321a8b6b23ad9633626bdd7b7a0975b0f235c9a1",
+        "sources": [
+          "https://aldailynews.com/poll-barry-moore-leads-everett-wess-in-u-s-senate-race/"
+        ],
+        "primary_toplines": {
+          "Barry Moore": 50.0,
+          "Everett Wess": 35.0
+        },
+        "question_sample_n": 500,
+        "admission": {
+          "pollster": "Cygnal",
+          "provider_url": "https://aldailynews.com/poll-barry-moore-leads-everett-wess-in-u-s-senate-race/",
+          "group": "cygnal",
+          "methodology_url": "https://aldailynews.com/poll-barry-moore-leads-everett-wess-in-u-s-senate-race/",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 500,
+          "field_dates": [
+            "2026-10-16",
+            "2026-10-17"
+          ],
+          "primary_release_date": "2026-10-22",
+          "provider_record_date": "2026-10-22",
+          "sponsors": [
+            "Alabama Daily News",
+            "Gray Television"
+          ],
+          "sampling_method": "Cygnal statewide poll for Alabama Daily News and Gray Television, Oct 16-17 (mode not described)",
+          "sampling_frame": "likely general election voters",
+          "weighting": "not described in article",
+          "question_wording_checked": false,
+          "question": "Alabama U.S. Senate vote intention, Moore (R) vs Wess (D); 15% undecided",
+          "provider_pollster_label": "Cygnal",
+          "primary_pollster_name": "Cygnal",
+          "source_fetch_receipt": "source-fetch/a-src1-20261023-39883610214"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 4.38,
+          "confidence_level_pct": null,
+          "scope": "whole_study_500",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "Alabama Daily News",
+            "Gray Television"
+          ],
+          "provider_sponsors": [
+            "Gray Television",
+            "Alabama Daily News"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "mode",
+          "weighting",
+          "full_questionnaire"
+        ],
+        "limitations_ko": "Cygnal 원문 대조: LV 500명, 2026-10-16~2026-10-17, 표본오차 ±4.38. Alabama Daily News·Gray TV 의뢰 Cygnal. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "c36ad79872dcb33e52d1c6deb779bdbbf6d5caa0804c58e231f6dd48f4d08c9e"
+      }
     }
   ],
   "capture": {
-    "as_of": "2026-10-09",
-    "fetched_at": "2026-10-09T09:45:25.605418+00:00",
+    "as_of": "2026-10-23",
+    "fetched_at": "2026-10-23T01:43:58.553370+00:00",
     "receipt": {
       "state": "AL",
       "cycle": 2026,
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-09",
-      "captured_at": "2026-10-09T09:45:25.605418+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+      "captured_at": "2026-10-23T01:43:58.553370+00:00",
       "capture_kind": "provider_transport_and_reviewed_primary_supplements",
-      "serialized_provider_response_sha256": "0331071c67eb22c2f6e9872a24633bff5e916c68bfb4ddcf3029f9ec254e24b2",
-      "provider_records": 5,
+      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
+      "provider_records": 8,
       "primary_supplement_receipts": [
         {
           "id": "primary-al-gov202yes83eff434",
           "state": "AL",
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:32.808477+00:00",
+          "checked_at": "2026-10-23T01:44:05.467960+00:00",
           "documents": [
             {
               "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
-              "status": "unchanged",
-              "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [
             "gov202yes83eff434"
           ],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         },
         {
           "id": "primary-al-us-202yes4308b337",
           "state": "AL",
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:33.158600+00:00",
+          "checked_at": "2026-10-23T01:44:05.750526+00:00",
           "documents": [
             {
               "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
-              "status": "unchanged",
-              "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [
             "us-202yes4308b337"
           ],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         },
         {
           "id": "primary-al-gov202rmg75bbe7fe",
           "state": "AL",
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:35.349030+00:00",
+          "checked_at": "2026-10-23T01:44:06.013866+00:00",
           "documents": [
             {
               "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
-              "status": "unchanged",
-              "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [
             "gov202rmg75bbe7fe"
           ],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         },
         {
           "id": "primary-al-us-202rmg809825be",
           "state": "AL",
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:37.274576+00:00",
+          "checked_at": "2026-10-23T01:44:06.305040+00:00",
           "documents": [
             {
               "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
-              "status": "unchanged",
-              "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [
             "us-202rmg809825be"
           ],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         },
         {
           "id": "primary-dccc-al-house-02-20260730",
           "state": "AL",
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:37.982193+00:00",
+          "checked_at": "2026-10-23T01:44:06.658754+00:00",
           "documents": [
             {
               "url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
-              "status": "unchanged",
-              "sha256": "5189c2555c27f52dea11c5654a1797821274046f55a1e5803531f21cb70b1f9c"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         }
       ],
       "primary_rechecked_ids": [
@@ -2715,7 +2802,14 @@
       "primary_review_data_file": "usa_election_poll_release_reviews/2026/AL-primary-20261009.json",
       "official_ballot_reviewed_on": "2026-10-09",
       "primary_review_method": "downloaded_full_primary_PDFs_toplines_methods_and_rendered_pages_checked",
-      "governor_audit_captured_at": "2026-10-09T09:45:23.231087+00:00"
+      "governor_audit_captured_at": "2026-10-09T09:45:23.231087+00:00",
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "http_status": 200,
+        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+      }
     },
     "provider_records": [
       {
@@ -2851,9 +2945,90 @@
         "internal": false,
         "partisan": "REP",
         "subject": "2026 Alabama"
+      },
+      {
+        "id": "us-202thef799bd14",
+        "poll_type": "us-senator",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.al.com/politics/2026/10/gop-faces-election-downturn-but-theres-no-blue-wave-for-alabama-democrats-poll-shows.html",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-15",
+        "end_date": "2026-10-16",
+        "pollster": "The Alabama Poll",
+        "answers": [
+          {
+            "choice": "Barry Moore",
+            "pct": 56.0
+          },
+          {
+            "choice": "Everett Wess",
+            "pct": 35.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alabama"
+      },
+      {
+        "id": "gov202thede40df6f",
+        "poll_type": "governor",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.al.com/politics/2026/10/gop-faces-election-downturn-but-theres-no-blue-wave-for-alabama-democrats-poll-shows.html",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-15",
+        "end_date": "2026-10-16",
+        "pollster": "The Alabama Poll",
+        "answers": [
+          {
+            "choice": "Tommy Tuberville",
+            "pct": 51.0
+          },
+          {
+            "choice": "Doug Jones",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alabama"
+      },
+      {
+        "id": "us-202cyg0d88fe11",
+        "poll_type": "us-senator",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://aldailynews.com/poll-barry-moore-leads-everett-wess-in-u-s-senate-race/",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-16",
+        "end_date": "2026-10-17",
+        "pollster": "Cygnal",
+        "answers": [
+          {
+            "choice": "Barry Moore",
+            "pct": 50.0
+          },
+          {
+            "choice": "Everett Wess",
+            "pct": 35.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Gray Television",
+          "Alabama Daily News"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Alabama"
       }
     ],
-    "provider_records_sha256": "8e391ce2ef0b2889d75f953eda6bafbf6173964c932d8f8e82c69d143be129df",
+    "provider_records_sha256": "177da8f23d388ea5c083f8849da0e05118f3c94f54d09becf431c571b3ee1277",
     "primary_records": [
       {
         "id": "primary-al-gov202yes83eff434",
@@ -2881,20 +3056,21 @@
         "partisan": null,
         "subject": "2026 Alabama",
         "primary_source_capture": {
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:32.808477+00:00",
+          "checked_at": "2026-10-23T01:44:05.467960+00:00",
           "documents": [
             {
               "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
-              "status": "unchanged",
-              "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [
             "gov202yes83eff434"
           ],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         }
       },
       {
@@ -2923,20 +3099,21 @@
         "partisan": null,
         "subject": "2026 Alabama",
         "primary_source_capture": {
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:33.158600+00:00",
+          "checked_at": "2026-10-23T01:44:05.750526+00:00",
           "documents": [
             {
               "url": "https://yeseverykidfoundation.org/wp-content/uploads/YESF_Alabama-Statewide-Survey_Topline.pdf",
-              "status": "unchanged",
-              "sha256": "6ddba7d29b176ed505bdd2066e36f2aa10b0fc758259452b0d24003233f108b6"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [
             "us-202yes4308b337"
           ],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         }
       },
       {
@@ -2967,20 +3144,21 @@
         "partisan": "REP",
         "subject": "2026 Alabama",
         "primary_source_capture": {
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:35.349030+00:00",
+          "checked_at": "2026-10-23T01:44:06.013866+00:00",
           "documents": [
             {
               "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
-              "status": "unchanged",
-              "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [
             "gov202rmg75bbe7fe"
           ],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         }
       },
       {
@@ -3011,20 +3189,21 @@
         "partisan": "REP",
         "subject": "2026 Alabama",
         "primary_source_capture": {
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:37.274576+00:00",
+          "checked_at": "2026-10-23T01:44:06.305040+00:00",
           "documents": [
             {
               "url": "https://alabamapolicy.org/wp-content/uploads/2026/10/0926-SURVEY-DATA.pdf",
-              "status": "unchanged",
-              "sha256": "70127c089206f51e4b299f77d71dfa6772844340696bb411f3ad75731f62e547"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [
             "us-202rmg809825be"
           ],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         }
       },
       {
@@ -3055,18 +3234,19 @@
           }
         ],
         "primary_source_capture": {
-          "status": "primary_documents_rechecked",
+          "status": "carried_forward_reference_only",
           "original_reviewed_on": "2026-10-09",
-          "checked_at": "2026-10-09T09:45:37.982193+00:00",
+          "checked_at": "2026-10-23T01:44:06.658754+00:00",
           "documents": [
             {
               "url": "https://dccc.org/wp-content/uploads/2026/08/DCCC-Polling-Memo-Rep.-Shomari-Figures-in-Toss-Up-Race-in-AL-02.pdf",
-              "status": "unchanged",
-              "sha256": "5189c2555c27f52dea11c5654a1797821274046f55a1e5803531f21cb70b1f9c"
+              "status": "unavailable",
+              "error_type": "URLError"
             }
           ],
           "provider_duplicate_ids": [],
-          "reviewed_replaced_provider_ids": []
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
         }
       }
     ]
