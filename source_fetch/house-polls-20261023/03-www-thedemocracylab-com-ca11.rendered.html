@@ -1,0 +1,334 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CA-11 Poll | USC Democracy and Fair Elections Lab</title>
+
+<!-- ================= SEO: meta description ================= -->
+<meta name="description" content="Polling results for California’s 11th Congressional District from the USC Democracy and Fair Elections Lab.">
+<link rel="canonical" href="https://www.thedemocracylab.com/">
+
+<!-- ================= favicon (browser tab + Google search results) ================= -->
+<!-- Square crops of logo.png. Google uses a square icon whose size is a
+     multiple of 48px; the .ico at the site root covers older browsers and
+     tools that look for /favicon.ico automatically. -->
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<!-- ================= speed: open the CDN connection early ================= -->
+<!-- Starts the connection to the map-library CDN while the page is still
+     being read, so d3/topojson (needed before the site's scripts can run)
+     download sooner. -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+<!-- ================= SEO: Open Graph (social previews) ================= -->
+<meta property="og:title" content="USC Democracy and Fair Elections Lab">
+<meta property="og:description" content="Nonpartisan, evidence-based research on redistricting, election administration, voting rights, and democratic representation, led by USC Professor Christian Grose.">
+<meta property="og:url" content="https://www.thedemocracylab.com/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://www.thedemocracylab.com/pictures/dfelogo.png">
+
+<!-- ================= SEO: Twitter/X card ================= -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="USC Democracy and Fair Elections Lab">
+<meta name="twitter:description" content="Nonpartisan, evidence-based research on redistricting, election administration, voting rights, and democratic representation.">
+<meta name="twitter:image" content="https://www.thedemocracylab.com/pictures/dfelogo.png">
+
+<!-- ================= SEO: structured data ================= -->
+<!-- NOTE: confirm christian-grose faculty page URL below, and confirm
+     "employee"/jobTitle is correct rather than "founder" for his role. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.thedemocracylab.com/#organization",
+      "name": "USC Democracy and Fair Elections Lab",
+      "alternateName": "DFE Lab",
+      "url": "https://www.thedemocracylab.com/",
+      "description": "The USC Democracy and Fair Elections Lab conducts evidence-based quantitative research on elections, redistricting, representation, voting rights, and democratic institutions.",
+      "parentOrganization": {
+        "@type": "CollegeOrUniversity",
+        "name": "University of Southern California",
+        "url": "https://www.usc.edu/"
+      },
+      "employee": {
+        "@id": "https://www.thedemocracylab.com/#christian-grose"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://www.thedemocracylab.com/#christian-grose",
+      "name": "Christian R. Grose",
+      "jobTitle": "Professor of Political Science and Public Policy; Director, USC Democracy and Fair Elections Lab",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "University of Southern California"
+      },
+      "affiliation": {
+        "@id": "https://www.thedemocracylab.com/#organization"
+      },
+      "url": "https://dornsife.usc.edu/christian-grose/",
+      "sameAs": [
+        "https://dornsife.usc.edu/christian-grose/"
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+    * { box-sizing: border-box; }
+    html, body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        overflow-x: hidden;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+    button { font-family: inherit; }
+
+    /* ===== Header works before the scripts finish loading =====
+       The header's hover effects and the Projects dropdown used to be wired
+       up only by main.js, which can't run until every script on the page
+       has downloaded -- so for the first couple of seconds the dropdown
+       wouldn't open. These CSS rules do the same thing with no JavaScript,
+       so the header responds immediately. (main.js still works the same
+       once it loads.) Desktop only; mobile keeps its tap-to-open menu. */
+    @media (min-width: 901px) {
+        .dfe-nav-menu > li:hover > .dfe-submenu { display: block !important; }
+        .dfe-nav-menu > li > a:hover { background-color: #f0f0f0 !important; color: #8B0000 !important; }
+    }
+
+    /* ===== Mobile navigation ===== */
+    .dfe-hamburger { display: none; }
+
+    @media (max-width: 900px) {
+        .dfe-nav-container { flex-wrap: wrap; justify-content: center !important; padding: 10px 15px !important; }
+        /* Hamburger removed on mobile: the full pill menu shows instead. */
+        .dfe-hamburger { display: none !important; }
+        /* Logo centered on its own row above the menu. */
+        .dfe-nav-left { width: 100% !important; display: flex !important; justify-content: center !important; margin-bottom: 4px; }
+        .dfe-nav-menu {
+            display: flex !important;
+            order: 4;
+            flex: none !important;
+            width: 100%;
+            flex-wrap: wrap !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            padding: 10px 0 !important;
+        }
+        .dfe-nav-menu.dfe-open { display: flex; }
+        .dfe-nav-menu > li { width: auto !important; white-space: nowrap !important; }
+        .dfe-nav-menu > li > a {
+            padding: 8px 14px !important;
+            border: 1px solid #ddd !important;
+            border-radius: 20px !important;
+            font-size: 13px !important;
+        }
+        .dfe-submenu {
+            display: none !important;
+            position: static !important;
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            border-radius: 10px !important;
+            margin-top: 6px !important;
+            overflow: hidden;
+        }
+        .dfe-submenu.dfe-open { display: block !important; }
+        .dfe-right-logo { display: none; }
+
+        /* ===== Hero / content ===== */
+        .dfe-hero-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+        .dfe-battlegrounds-media { grid-template-columns: 1fr !important; gap: 24px !important; }
+        .dfe-page-title { font-size: 26px !important; }
+        .dfe-hero-title { font-size: 22px !important; }
+    }
+</style>
+<script src="/districts/mi04.js"></script><script src="/districts/ak.js"></script><script src="/districts/tx.js"></script><script src="/districts/al02.js"></script><script src="/districts/fl07.js"></script><script src="/districts/fl04.js"></script><script src="/districts/az02.js"></script><script src="/districts/me02.js"></script><script src="/districts/mt01.js"></script><script src="/districts/pa01.js"></script><script src="/districts/tx23.js"></script><script src="/districts/tx15.js"></script><script src="/districts/mo02.js"></script><script src="/districts/mn01.js"></script><script src="/districts/va01.js"></script><script src="/districts/co04.js"></script><script src="/districts/nv02.js"></script><script src="/districts/fl22.js"></script><script src="/districts/fl25.js"></script><style id="dfe-pollpage-styles-v8">
+        .dfe-pp-hero { color:#fff; }
+        .dfe-pp-hero-grid { max-width:1200px; margin:0 auto; padding:48px 24px; box-sizing:border-box; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,540px); gap:48px; align-items:center; }
+        .dfe-pp-hero-noimg { grid-template-columns:minmax(0,1fr); padding:72px 24px 56px; }
+        .dfe-pp-hero-text { min-width:0; }
+        .dfe-pp-hero-media { aspect-ratio:3 / 2; overflow:hidden; background:rgba(255,255,255,0.08); box-shadow:0 12px 32px rgba(0,0,0,0.35); }
+        .dfe-pp-hero-img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+        .dfe-pp-crumb { display:inline-block; color:#fff; text-decoration:none; font-size:14px; font-weight:600; letter-spacing:.3px; margin-bottom:18px; border-bottom:2px solid #f2c14e; padding-bottom:2px; }
+        .dfe-pp-title { font-family:Georgia, "Times New Roman", serif; font-weight:400; font-size:clamp(26px, 3.2vw, 40px); line-height:1.2; margin:0; max-width:900px; color:#fff; text-wrap:balance; }
+        .dfe-pp-sub { font-size:18px; font-weight:600; margin:12px 0 0; color:#fff; }
+        .dfe-pp-date { font-size:15px; margin:14px 0 0; color:rgba(255,255,255,0.9); }
+
+        .dfe-pp-soon { padding:80px 20px 100px; background:#fff; text-align:center; }
+        .dfe-pp-soon-msg { font-size:22px; color:#333; margin:0 0 36px; }
+
+        /* Results button + quick facts, in one band under the photo */
+        .dfe-pp-strip { background:#8B0000; color:#fff; }
+        .dfe-pp-strip-inner { max-width:1200px; margin:0 auto; padding:20px 24px; box-sizing:border-box; display:flex; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:18px 28px; }
+        .dfe-pp-facts { display:flex; flex-wrap:nowrap; gap:14px 28px; margin:0; min-width:0; flex:1 1 auto; }
+        .dfe-pp-fact { flex:0 1 auto; min-width:0; }
+        .dfe-pp-fact dt { white-space:nowrap; font-size:11.5px; text-transform:uppercase; letter-spacing:.6px; color:rgba(255,255,255,0.75); }
+        .dfe-pp-fact dd { margin:3px 0 0; font-size:15px; }
+        .dfe-pp-fact:not(:last-child) dd { white-space:nowrap; }
+        .dfe-pp-btn { flex:none; display:inline-block; background:#fff; color:#8B0000; font-weight:700; font-size:14px; letter-spacing:.4px; padding:13px 22px; text-decoration:none; }
+        .dfe-pp-btn:hover { background:#f2c14e; color:#2b1b46; }
+
+        /* Body: text and headings sit in a centered column; charts can be wider */
+        .dfe-pp-wrap { background:#fff; padding:52px 24px 80px; }
+        .dfe-pp-article { max-width:1200px; margin:0 auto; }
+        .dfe-pp-p { font-size:17px; line-height:1.75; color:#333; margin:0 auto 20px; max-width:760px; }
+        .dfe-pp-h2 { display:block; width:fit-content; font-size:24px; color:#333; margin:48px auto 22px; padding-bottom:10px; border-bottom:2px solid #8B0000; text-align:center; }
+        .dfe-pp-q.dfe-pp-note { max-width:760px; margin:0 auto 12px; text-align:center; }
+        .dfe-pp-link { color:#8B0000; font-weight:600; }
+
+        .dfe-pp-chart { margin:0 auto 32px; padding:24px 26px 20px; background:#fff; border:1px solid #eee; border-top:4px solid #8B0000; box-shadow:0 2px 10px rgba(0,0,0,0.05); box-sizing:border-box; }
+        .dfe-pp-wide { max-width:900px; }
+        .dfe-pp-chart-title { font-size:20px; margin:0 0 6px; color:#333; }
+        .dfe-pp-chart-cap { font-size:13px; color:#555; margin:0 0 14px; font-weight:600; }
+        .dfe-pp-q { font-size:14px; line-height:1.55; color:#555; font-style:italic; margin:0 0 16px; }
+        .dfe-pp-bar { margin:0 0 12px; }
+        .dfe-pp-bar-top { display:flex; justify-content:space-between; gap:12px; align-items:baseline; font-size:15px; color:#333; margin-bottom:5px; }
+        .dfe-pp-bar-label { min-width:0; }
+        .dfe-pp-bar-val { font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
+        .dfe-pp-track { position:relative; height:18px; background:#f1f1f3; }
+        .dfe-pp-fill { height:100%; }
+        .dfe-pp-faded { opacity:0.4; }
+        .dfe-pp-moe { position:absolute; top:50%; height:2px; margin-top:-1px; background:#111; opacity:.8; }
+        .dfe-pp-moe::before, .dfe-pp-moe::after { content:""; position:absolute; top:-5px; width:2px; height:12px; background:#111; }
+        .dfe-pp-moe::before { left:0; } .dfe-pp-moe::after { right:0; }
+        .dfe-pp-moe-legend { display:flex; justify-content:center; align-items:center; gap:10px; font-size:13px; color:#555; margin:0 0 20px; }
+        .dfe-pp-moe-key { position:relative; display:inline-block; width:34px; height:2px; background:#111; opacity:.6; }
+        .dfe-pp-moe-key::before, .dfe-pp-moe-key::after { content:""; position:absolute; top:-5px; width:2px; height:12px; background:#111; }
+        .dfe-pp-moe-key::before { left:0; } .dfe-pp-moe-key::after { right:0; }
+        .dfe-pp-foot { font-size:13px; color:#555; margin:10px 0 0; }
+        .dfe-pp-sample { font-size:12.5px; color:#555; margin:12px 0 0; padding-top:10px; border-top:1px solid #eee; font-variant-numeric:tabular-nums; }
+        .dfe-pp-h2h { display:block; width:100%; max-width:460px; height:auto; margin:4px auto 0; font-family:inherit; }
+        .dfe-pp-h2h-key { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 20px; font-size:12.5px; color:#555; margin-top:8px; }
+        .dfe-pp-h2h-key-item { display:inline-flex; align-items:center; gap:7px; }
+        .dfe-pp-key-err { width:4px; height:16px; background:#111; display:inline-block; }
+        .dfe-pp-pair { padding:10px 0 4px; border-top:1px solid #eee; }
+        .dfe-pp-legend { display:flex; flex-wrap:wrap; gap:18px; font-size:13px; color:#555; margin:4px 0 14px; }
+        .dfe-pp-legend-item { display:inline-flex; align-items:center; gap:8px; }
+        .dfe-pp-swatch { width:22px; height:12px; display:inline-block; }
+        .dfe-pp-details { margin-top:14px; font-size:14px; }
+        .dfe-pp-details summary { cursor:pointer; color:#8B0000; font-weight:600; margin-bottom:10px; }
+        .dfe-pp-list { margin:0 auto 18px; padding-left:20px; font-size:15px; line-height:1.7; color:#333; max-width:740px; }
+
+        /* Charts side by side (cols) or one large chart per row (stack) */
+        .dfe-pp-grid { display:grid; gap:0 24px; margin:0 auto; }
+        .dfe-pp-grid .dfe-pp-chart { width:100%; margin:0 0 24px; }
+        .dfe-pp-cols-2 { grid-template-columns:repeat(2, minmax(0,1fr)); max-width:1100px; }
+        .dfe-pp-cols-3 { grid-template-columns:repeat(3, minmax(0,1fr)); }
+        .dfe-pp-chart-sm { padding:20px 20px 14px; }
+        .dfe-pp-chart-sm .dfe-pp-bar-top { font-size:14px; }
+        .dfe-pp-chart-sm .dfe-pp-track { height:14px; }
+        .dfe-pp-stack { max-width:1000px; margin:0 auto; }
+        .dfe-pp-stack .dfe-pp-chart { width:100%; }
+
+        .dfe-pp-method { margin-top:20px; }
+        .dfe-pp-method .dfe-pp-p, .dfe-pp-method .dfe-pp-list { font-size:15px; color:#555; }
+        .dfe-pp-back-row { text-align:center; }
+        .dfe-pp-back { display:inline-block; margin-top:24px; font-size:15px; font-weight:600; color:#8B0000; text-decoration:none; border-bottom:2px solid #8B0000; padding-bottom:3px; }
+
+        .dfe-pp-crumb:focus-visible, .dfe-pp-btn:focus-visible, .dfe-pp-back:focus-visible, .dfe-pp-link:focus-visible { outline:3px solid #f2c14e; outline-offset:3px; }
+
+        @media (max-width: 960px) {
+            .dfe-pp-cols-3, .dfe-pp-cols-2 { grid-template-columns:minmax(0,1fr); }
+            .dfe-pp-hero-grid { grid-template-columns:minmax(0,1fr); gap:24px; padding:28px 20px 36px; }
+            .dfe-pp-hero-media { order:-1; max-width:640px; width:100%; }
+            .dfe-pp-strip-inner, .dfe-pp-facts { flex-wrap:wrap; }
+        }
+        @media (max-width: 640px) {
+            .dfe-pp-hero-grid { padding:20px 16px 28px; }
+            .dfe-pp-strip-inner { padding:18px 16px; }
+            .dfe-pp-btn { width:100%; text-align:center; }
+            .dfe-pp-wrap { padding:32px 16px 60px; }
+            .dfe-pp-chart { padding:18px 16px 14px; }
+            .dfe-pp-p { font-size:16px; }
+        }
+    </style></head>
+<body>
+
+<!-- <noscript> content is never added to the DOM at all in a browser with
+     JavaScript enabled -- not "shown then removed," but never rendered in
+     the first place -- so real visitors never see a flash of this text.
+     It still appears in the raw HTML source (View Page Source), which is
+     what non-JS crawlers and tools read, satisfying the same goal as the
+     old plain <div> version without the visible flicker. -->
+<noscript>
+    <div style="padding:60px 20px; max-width:800px; margin:0 auto; font-family:-apple-system,sans-serif; color:#333;">
+        <h1>USC Democracy and Fair Elections Lab</h1>
+        <p>The USC Democracy and Fair Elections Lab conducts evidence-based, nonpartisan quantitative research on redistricting, election administration, voting rights, and democratic representation. The Lab is housed in the USC Dornsife College of Letters, Arts and Sciences.</p>
+        <h2>Director</h2>
+        <p>Christian R. Grose is Professor of Political Science and Public Policy at the University of Southern California and Director of the USC Democracy and Fair Elections Lab.</p>
+    </div>
+</noscript>
+
+<!-- main.js builds the entire site (nav, content, footer) inside this
+     container. Critically, main.js clears/rebuilds THIS div only -- not
+     document.body -- so the <script> tags below (siblings of this div,
+     not children of it) always survive every rebuild. Wiping document.body
+     directly used to also delete these <script> tags from the live DOM,
+     which meant every prerendered page was saved with zero scripts in it,
+     silently breaking both client-side navigation and future rebuilds. -->
+<div id="app-root"><nav style="background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px; position: sticky; top: 0px; z-index: 1000;"><div class="dfe-nav-container" style="max-width: 100%; margin: 0px auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 30px; gap: 20px;"><div class="dfe-nav-left" style="flex-shrink: 0;"><img src="pictures/dfelogo.png" alt="DFL Logo" style="max-height: 70px; width: auto; cursor: pointer;"></div><button class="dfe-hamburger" type="button" aria-label="Toggle menu">☰</button><ul class="dfe-nav-menu" style="display: flex; list-style: none; gap: 0px; flex: 1 1 0%; justify-content: center; margin: 0px; padding: 0px;"><li style="position: relative; white-space: nowrap;"><a href="/" style="display: block; padding: 20px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; transition: background-color 0.3s; cursor: pointer;">Home</a></li><li style="position: relative; white-space: nowrap;"><a href="/about" style="display: block; padding: 20px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; transition: background-color 0.3s; cursor: pointer;">About</a></li><li style="position: relative; white-space: nowrap;"><a href="/projects" style="display: block; padding: 20px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; transition: background-color 0.3s; cursor: pointer;">Projects</a><ul class="dfe-submenu" style="display: none; position: absolute; top: 100%; left: 0px; background-color: rgb(255, 255, 255); min-width: 200px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px; list-style: none; margin: 0px; padding: 0px;"><li><a href="/redistricting" style="display: block; padding: 12px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 13px; transition: background-color 0.3s; cursor: pointer;">Redistricting</a></li><li><a href="/district-demographics" style="display: block; padding: 12px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 13px; transition: background-color 0.3s; cursor: pointer;">Racial Demographics</a></li><li><a href="/surprise-districts" style="display: block; padding: 12px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 13px; transition: background-color 0.3s; cursor: pointer;">Emerging Battlegrounds</a></li><li><a href="/progressive-tracker" style="display: block; padding: 12px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 13px; transition: background-color 0.3s; cursor: pointer;">Progressive Challenger Tracker</a></li><li><a href="/scandal-tracker" style="display: block; padding: 12px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 13px; transition: background-color 0.3s; cursor: pointer;">Scandal Tracker</a></li><li><a href="/swingometer" style="display: block; padding: 12px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 13px; transition: background-color 0.3s; cursor: pointer;">Swingometer</a></li></ul></li><li style="position: relative; white-space: nowrap;"><a href="/people" style="display: block; padding: 20px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; transition: background-color 0.3s; cursor: pointer;">People</a></li><li style="position: relative; white-space: nowrap;"><a href="/events" style="display: block; padding: 20px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; transition: background-color 0.3s; cursor: pointer;">Events</a></li><li style="position: relative; white-space: nowrap;"><a href="/polls" style="display: block; padding: 20px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; transition: background-color 0.3s; cursor: pointer;">Polls</a></li><li style="position: relative; white-space: nowrap;"><a href="/publications" style="display: block; padding: 20px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; transition: background-color 0.3s; cursor: pointer;">Publications</a></li><li style="position: relative; white-space: nowrap;"><a href="/media" style="display: block; padding: 20px 15px; text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; transition: background-color 0.3s; cursor: pointer;">In the Media</a></li><li style="display: flex; align-items: center; white-space: nowrap; margin-left: 8px;"><a href="https://giveto.usc.edu/?fundid=GF1909261&amp;appealcode=WDORN0001&amp;buttongen=1" target="_blank" rel="noopener" style="display: inline-block; background-color: rgb(139, 0, 0); color: rgb(255, 255, 255); font-size: 14px; font-weight: 600; padding: 9px 20px; border-radius: 6px; cursor: pointer; text-decoration: none; user-select: none; transition: opacity 0.2s;">Donate</a></li></ul><div class="dfe-right-logo" style="flex-shrink: 0;"><img src="pictures/dornsifelogo.jpg" alt="Dornsife Logo" style="max-height: 70px; width: auto;"></div></div></nav><div id="content" style="position: relative;"><div style="transition: opacity 200ms; opacity: 1;"><header class="dfe-pp-hero" style="background: linear-gradient(135deg, rgb(58, 74, 99), rgb(139, 0, 0));"><div class="dfe-pp-hero-grid"><div class="dfe-pp-hero-text"><a class="dfe-pp-crumb" href="/polls">← All Polls</a><h1 class="dfe-pp-title">CA-11 Poll: Wiener Holds Slight Lead over Chan in San Francisco’s Open House Seat</h1><p class="dfe-pp-date">Date: October 22, 2026</p></div><div class="dfe-pp-hero-media"><img class="dfe-pp-hero-img" alt="" src="/pictures/ca11.png"></div></div></header><div class="dfe-pp-strip"><div class="dfe-pp-strip-inner"><dl class="dfe-pp-facts"><div class="dfe-pp-fact"><dt>Fielded</dt><dd>Oct. 16–19, 2026</dd></div><div class="dfe-pp-fact"><dt>Sample</dt><dd>454 likely voters</dd></div><div class="dfe-pp-fact"><dt>Margin of error</dt><dd>±4.6 points</dd></div><div class="dfe-pp-fact"><dt>Languages</dt><dd>English, Spanish, Chinese/Mandarin/Cantonese, Korean, Vietnamese</dd></div></dl><a class="dfe-pp-btn" href="/pdfs/ca11_poll.pdf" target="_blank" rel="noopener">FULL RELEASE &amp; RESULTS →</a></div></div><div class="dfe-pp-wrap"><article class="dfe-pp-article"><h2 class="dfe-pp-h2">U.S. House: CA-11</h2><div class="dfe-pp-grid dfe-pp-cols-2"><figure class="dfe-pp-chart"><h3 class="dfe-pp-chart-title">Without Undecided Leaners</h3><p class="dfe-pp-q">Thinking ahead to the 2026 November general election, who do you plan to vote for to be US House Representative? [no push on undecideds]</p><svg viewBox="0 0 440 300" class="dfe-pp-h2h" role="img" aria-label="Scott Wiener (Democratic) 47%, Connie Chan (Democratic) 41%. Margin of error plus or minus 4.6 points."><line x1="40" x2="426" y1="270" y2="270" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="274" text-anchor="end" font-size="11" fill="#777">0%</text><line x1="40" x2="426" y1="227.33333333333334" y2="227.33333333333334" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="231.33333333333334" text-anchor="end" font-size="11" fill="#777">10%</text><line x1="40" x2="426" y1="184.66666666666669" y2="184.66666666666669" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="188.66666666666669" text-anchor="end" font-size="11" fill="#777">20%</text><line x1="40" x2="426" y1="142" y2="142" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="146" text-anchor="end" font-size="11" fill="#777">30%</text><line x1="40" x2="426" y1="99.33333333333334" y2="99.33333333333334" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="103.33333333333334" text-anchor="end" font-size="11" fill="#777">40%</text><line x1="40" x2="426" y1="56.66666666666666" y2="56.66666666666666" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="60.66666666666666" text-anchor="end" font-size="11" fill="#777">50%</text><line x1="40" x2="426" y1="14" y2="14" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="18" text-anchor="end" font-size="11" fill="#777">60%</text><rect x="88.25" y="69.46666666666667" width="96.5" height="200.53333333333333" fill="#2b5ca8"></rect><text x="136.5" y="256" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">47%</text><text x="136.5" y="290" text-anchor="middle" font-size="13" fill="#333">Scott Wiener</text><rect x="281.25" y="95.06666666666666" width="96.5" height="174.93333333333334" fill="#7fa6dc"></rect><text x="329.5" y="256" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">41%</text><text x="329.5" y="290" text-anchor="middle" font-size="13" fill="#333">Connie Chan</text><line x1="136.5" x2="136.5" y1="49.84" y2="89.09333333333333" stroke="#111" stroke-width="4"></line><line x1="126.5" x2="146.5" y1="49.84" y2="49.84" stroke="#111" stroke-width="2"></line><line x1="126.5" x2="146.5" y1="89.09333333333333" y2="89.09333333333333" stroke="#111" stroke-width="2"></line><line x1="329.5" x2="329.5" y1="75.44" y2="114.69333333333333" stroke="#111" stroke-width="4"></line><line x1="319.5" x2="339.5" y1="75.44" y2="75.44" stroke="#111" stroke-width="2"></line><line x1="319.5" x2="339.5" y1="114.69333333333333" y2="114.69333333333333" stroke="#111" stroke-width="2"></line><line x1="40" x2="426" y1="270" y2="270" stroke="#999" stroke-width="1"></line></svg><div class="dfe-pp-h2h-key"><span class="dfe-pp-h2h-key-item"><span class="dfe-pp-key-err"></span>Margin of error: ±4.6 points</span></div><p class="dfe-pp-foot">9% I do not know/undecided  ·  3% I do not plan to vote in this election</p><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p></figure><figure class="dfe-pp-chart"><h3 class="dfe-pp-chart-title">With Undecided Leaners</h3><p class="dfe-pp-q">Thinking ahead to the 2026 November general election, who do you plan to vote for to be US House Representative? [includes push on undecideds]</p><svg viewBox="0 0 440 300" class="dfe-pp-h2h" role="img" aria-label="Scott Wiener (Democratic) 51%, Connie Chan (Democratic) 44%. Margin of error plus or minus 4.6 points."><line x1="40" x2="426" y1="270" y2="270" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="274" text-anchor="end" font-size="11" fill="#777">0%</text><line x1="40" x2="426" y1="227.33333333333334" y2="227.33333333333334" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="231.33333333333334" text-anchor="end" font-size="11" fill="#777">10%</text><line x1="40" x2="426" y1="184.66666666666669" y2="184.66666666666669" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="188.66666666666669" text-anchor="end" font-size="11" fill="#777">20%</text><line x1="40" x2="426" y1="142" y2="142" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="146" text-anchor="end" font-size="11" fill="#777">30%</text><line x1="40" x2="426" y1="99.33333333333334" y2="99.33333333333334" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="103.33333333333334" text-anchor="end" font-size="11" fill="#777">40%</text><line x1="40" x2="426" y1="56.66666666666666" y2="56.66666666666666" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="60.66666666666666" text-anchor="end" font-size="11" fill="#777">50%</text><line x1="40" x2="426" y1="14" y2="14" stroke="#e6e6e9" stroke-width="1"></line><text x="32" y="18" text-anchor="end" font-size="11" fill="#777">60%</text><rect x="88.25" y="52.400000000000006" width="96.5" height="217.6" fill="#2b5ca8"></rect><text x="136.5" y="256" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">51%</text><text x="136.5" y="290" text-anchor="middle" font-size="13" fill="#333">Scott Wiener</text><rect x="281.25" y="82.26666666666668" width="96.5" height="187.73333333333332" fill="#7fa6dc"></rect><text x="329.5" y="256" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">44%</text><text x="329.5" y="290" text-anchor="middle" font-size="13" fill="#333">Connie Chan</text><line x1="136.5" x2="136.5" y1="32.77333333333334" y2="72.02666666666667" stroke="#111" stroke-width="4"></line><line x1="126.5" x2="146.5" y1="32.77333333333334" y2="32.77333333333334" stroke="#111" stroke-width="2"></line><line x1="126.5" x2="146.5" y1="72.02666666666667" y2="72.02666666666667" stroke="#111" stroke-width="2"></line><line x1="329.5" x2="329.5" y1="62.639999999999986" y2="101.89333333333335" stroke="#111" stroke-width="4"></line><line x1="319.5" x2="339.5" y1="62.639999999999986" y2="62.639999999999986" stroke="#111" stroke-width="2"></line><line x1="319.5" x2="339.5" y1="101.89333333333335" y2="101.89333333333335" stroke="#111" stroke-width="2"></line><line x1="40" x2="426" y1="270" y2="270" stroke="#999" stroke-width="1"></line></svg><div class="dfe-pp-h2h-key"><span class="dfe-pp-h2h-key-item"><span class="dfe-pp-key-err"></span>Margin of error: ±4.6 points</span></div><p class="dfe-pp-foot">5% I do not plan to vote in this election</p><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p></figure></div><p class="dfe-pp-p">Scott Wiener holds a slight lead over Connie Chan in the open seat election for U.S. House in California’s 11th Congressional District. Among likely voters, Scott Wiener holds a 47% to 41% lead over Connie Chan with 9% undecided and 3% not planning to vote in this U.S. House contest. When the undecided voters are pushed to make a selection, Wiener leads 51% to 44% over Chan with 5% not planning to vote in this U.S. House contest. Both of these leads are just within the margin of error, suggesting a competitive race just two weeks from Election Day.</p><h2 class="dfe-pp-h2">Approval Ratings</h2><p class="dfe-pp-p">Mayor Daniel Lurie has sky-high approval among San Francisco voters in the 11th congressional district with a net +37 approval. Current Representative Nancy Pelosi follows at a net +23 approval, while Governor Gavin Newsom closely follows at a net +21 approval.</p><div class="dfe-pp-grid dfe-pp-cols-3"><figure class="dfe-pp-chart dfe-pp-chart-sm"><h3 class="dfe-pp-chart-title">Daniel Lurie</h3><p class="dfe-pp-chart-cap">Net +37</p><p class="dfe-pp-q">Do you approve or disapprove of the job Daniel Lurie is doing as Mayor of the City of San Francisco?</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Approve</span><span class="dfe-pp-bar-val">63%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 63%; background: rgb(47, 125, 79);"></div><div class="dfe-pp-moe" title="Margin of error: 58.4% to 67.6%" style="left: 58.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Neither approve nor disapprove</span><span class="dfe-pp-bar-val">9%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 9%; background: rgb(138, 143, 152);"></div><div class="dfe-pp-moe" title="Margin of error: 4.4% to 13.6%" style="left: 4.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Disapprove</span><span class="dfe-pp-bar-val">26%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 26%; background: rgb(184, 49, 47);"></div><div class="dfe-pp-moe" title="Margin of error: 21.4% to 30.6%" style="left: 21.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">I do not know</span><span class="dfe-pp-bar-val">2%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 2%; background: rgb(184, 189, 196);"></div><div class="dfe-pp-moe" title="Margin of error: 0.0% to 6.6%" style="left: 0%; width: 6.6%;"></div></div></div><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p><details class="dfe-pp-details"><summary>Full toplines</summary><ul class="dfe-pp-list"><li>29% Strongly approve</li><li>34% Somewhat approve</li><li>9% Neither approve nor disapprove</li><li>12% Somewhat disapprove</li><li>14% Strongly disapprove</li><li>2% I do not know</li></ul></details></figure><figure class="dfe-pp-chart dfe-pp-chart-sm"><h3 class="dfe-pp-chart-title">Nancy Pelosi</h3><p class="dfe-pp-chart-cap">Net +23</p><p class="dfe-pp-q">Do you approve or disapprove of Nancy Pelosi?</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Approve</span><span class="dfe-pp-bar-val">55%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 55%; background: rgb(47, 125, 79);"></div><div class="dfe-pp-moe" title="Margin of error: 50.4% to 59.6%" style="left: 50.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Neither approve nor disapprove</span><span class="dfe-pp-bar-val">11%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 11%; background: rgb(138, 143, 152);"></div><div class="dfe-pp-moe" title="Margin of error: 6.4% to 15.6%" style="left: 6.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Disapprove</span><span class="dfe-pp-bar-val">32%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 32%; background: rgb(184, 49, 47);"></div><div class="dfe-pp-moe" title="Margin of error: 27.4% to 36.6%" style="left: 27.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">I do not know</span><span class="dfe-pp-bar-val">2%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 2%; background: rgb(184, 189, 196);"></div><div class="dfe-pp-moe" title="Margin of error: 0.0% to 6.6%" style="left: 0%; width: 6.6%;"></div></div></div><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p><details class="dfe-pp-details"><summary>Full toplines</summary><ul class="dfe-pp-list"><li>26% Strongly approve</li><li>29% Somewhat approve</li><li>11% Neither approve nor disapprove</li><li>18% Somewhat disapprove</li><li>14% Strongly disapprove</li><li>2% I do not know</li></ul></details></figure><figure class="dfe-pp-chart dfe-pp-chart-sm"><h3 class="dfe-pp-chart-title">Gavin Newsom</h3><p class="dfe-pp-chart-cap">Net +21</p><p class="dfe-pp-q">Do you approve or disapprove of the job Gavin Newsom is doing as Governor of California?</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Approve</span><span class="dfe-pp-bar-val">55%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 55%; background: rgb(47, 125, 79);"></div><div class="dfe-pp-moe" title="Margin of error: 50.4% to 59.6%" style="left: 50.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Neither approve nor disapprove</span><span class="dfe-pp-bar-val">10%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 10%; background: rgb(138, 143, 152);"></div><div class="dfe-pp-moe" title="Margin of error: 5.4% to 14.6%" style="left: 5.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Disapprove</span><span class="dfe-pp-bar-val">34%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 34%; background: rgb(184, 49, 47);"></div><div class="dfe-pp-moe" title="Margin of error: 29.4% to 38.6%" style="left: 29.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">I do not know</span><span class="dfe-pp-bar-val">1%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 1%; background: rgb(184, 189, 196);"></div><div class="dfe-pp-moe" title="Margin of error: 0.0% to 5.6%" style="left: 0%; width: 5.6%;"></div></div></div><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p><details class="dfe-pp-details"><summary>Full toplines</summary><ul class="dfe-pp-list"><li>18% Strongly approve</li><li>37% Somewhat approve</li><li>10% Neither approve nor disapprove</li><li>18% Somewhat disapprove</li><li>16% Strongly disapprove</li><li>1% I do not know</li></ul></details></figure></div><h2 class="dfe-pp-h2">Capitalism, Socialism, and the Democratic Party</h2><p class="dfe-pp-p">Voters in CA-11 also have a Jekyll and Hyde set of opinions on capitalism and socialism. In tech-driven yet progressive San Francisco, a large plurality of voters rate capitalism positively and a large plurality of voters also approve of socialism. The battle for the soul of the Democratic party appears to have divided voters in San Francisco, with equal numbers approving and disapproving of the Democratic Party and Democratic Socialists of America.</p><div class="dfe-pp-grid dfe-pp-cols-2"><figure class="dfe-pp-chart"><h3 class="dfe-pp-chart-title">Capitalism</h3><p class="dfe-pp-q">Do you have a positive or negative opinion of capitalism?</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Strongly positive</span><span class="dfe-pp-bar-val">17%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 17%; background: rgb(47, 125, 79);"></div><div class="dfe-pp-moe" title="Margin of error: 12.4% to 21.6%" style="left: 12.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Somewhat positive</span><span class="dfe-pp-bar-val">28%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 28%; background: rgb(140, 197, 160);"></div><div class="dfe-pp-moe" title="Margin of error: 23.4% to 32.6%" style="left: 23.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Neither positive nor negative</span><span class="dfe-pp-bar-val">14%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 14%; background: rgb(138, 143, 152);"></div><div class="dfe-pp-moe" title="Margin of error: 9.4% to 18.6%" style="left: 9.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Somewhat negative</span><span class="dfe-pp-bar-val">21%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 21%; background: rgb(229, 154, 146);"></div><div class="dfe-pp-moe" title="Margin of error: 16.4% to 25.6%" style="left: 16.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Strongly negative</span><span class="dfe-pp-bar-val">18%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 18%; background: rgb(184, 49, 47);"></div><div class="dfe-pp-moe" title="Margin of error: 13.4% to 22.6%" style="left: 13.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">I do not know</span><span class="dfe-pp-bar-val">1%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 1%; background: rgb(184, 189, 196);"></div><div class="dfe-pp-moe" title="Margin of error: 0.0% to 5.6%" style="left: 0%; width: 5.6%;"></div></div></div><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p></figure><figure class="dfe-pp-chart"><h3 class="dfe-pp-chart-title">Socialism</h3><p class="dfe-pp-q">Do you have a positive or negative opinion of socialism?</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Strongly positive</span><span class="dfe-pp-bar-val">17%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 17%; background: rgb(47, 125, 79);"></div><div class="dfe-pp-moe" title="Margin of error: 12.4% to 21.6%" style="left: 12.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Somewhat positive</span><span class="dfe-pp-bar-val">29%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 29%; background: rgb(140, 197, 160);"></div><div class="dfe-pp-moe" title="Margin of error: 24.4% to 33.6%" style="left: 24.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Neither positive nor negative</span><span class="dfe-pp-bar-val">22%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 22%; background: rgb(138, 143, 152);"></div><div class="dfe-pp-moe" title="Margin of error: 17.4% to 26.6%" style="left: 17.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Somewhat negative</span><span class="dfe-pp-bar-val">10%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 10%; background: rgb(229, 154, 146);"></div><div class="dfe-pp-moe" title="Margin of error: 5.4% to 14.6%" style="left: 5.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Strongly negative</span><span class="dfe-pp-bar-val">19%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 19%; background: rgb(184, 49, 47);"></div><div class="dfe-pp-moe" title="Margin of error: 14.4% to 23.6%" style="left: 14.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">I do not know</span><span class="dfe-pp-bar-val">2%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 2%; background: rgb(184, 189, 196);"></div><div class="dfe-pp-moe" title="Margin of error: 0.0% to 6.6%" style="left: 0%; width: 6.6%;"></div></div></div><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p></figure><figure class="dfe-pp-chart"><h3 class="dfe-pp-chart-title">The Democratic Party</h3><p class="dfe-pp-q">Do you have a positive or negative opinion of the Democratic Party?</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Strongly positive</span><span class="dfe-pp-bar-val">6%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 6%; background: rgb(47, 125, 79);"></div><div class="dfe-pp-moe" title="Margin of error: 1.4% to 10.6%" style="left: 1.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Somewhat positive</span><span class="dfe-pp-bar-val">37%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 37%; background: rgb(140, 197, 160);"></div><div class="dfe-pp-moe" title="Margin of error: 32.4% to 41.6%" style="left: 32.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Neither positive nor negative</span><span class="dfe-pp-bar-val">13%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 13%; background: rgb(138, 143, 152);"></div><div class="dfe-pp-moe" title="Margin of error: 8.4% to 17.6%" style="left: 8.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Somewhat negative</span><span class="dfe-pp-bar-val">27%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 27%; background: rgb(229, 154, 146);"></div><div class="dfe-pp-moe" title="Margin of error: 22.4% to 31.6%" style="left: 22.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Strongly negative</span><span class="dfe-pp-bar-val">16%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 16%; background: rgb(184, 49, 47);"></div><div class="dfe-pp-moe" title="Margin of error: 11.4% to 20.6%" style="left: 11.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">I do not know</span><span class="dfe-pp-bar-val">1%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 1%; background: rgb(184, 189, 196);"></div><div class="dfe-pp-moe" title="Margin of error: 0.0% to 5.6%" style="left: 0%; width: 5.6%;"></div></div></div><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p></figure><figure class="dfe-pp-chart"><h3 class="dfe-pp-chart-title">Democratic Socialists of America (DSA)</h3><p class="dfe-pp-q">Do you have a positive or negative opinion of the Democratic Socialists of America (DSA)?</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Strongly positive</span><span class="dfe-pp-bar-val">14%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 14%; background: rgb(47, 125, 79);"></div><div class="dfe-pp-moe" title="Margin of error: 9.4% to 18.6%" style="left: 9.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Somewhat positive</span><span class="dfe-pp-bar-val">22%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 22%; background: rgb(140, 197, 160);"></div><div class="dfe-pp-moe" title="Margin of error: 17.4% to 26.6%" style="left: 17.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Neither positive nor negative</span><span class="dfe-pp-bar-val">18%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 18%; background: rgb(138, 143, 152);"></div><div class="dfe-pp-moe" title="Margin of error: 13.4% to 22.6%" style="left: 13.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Somewhat negative</span><span class="dfe-pp-bar-val">13%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 13%; background: rgb(229, 154, 146);"></div><div class="dfe-pp-moe" title="Margin of error: 8.4% to 17.6%" style="left: 8.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Strongly negative</span><span class="dfe-pp-bar-val">23%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 23%; background: rgb(184, 49, 47);"></div><div class="dfe-pp-moe" title="Margin of error: 18.4% to 27.6%" style="left: 18.4%; width: 9.2%;"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">I do not know</span><span class="dfe-pp-bar-val">10%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 10%; background: rgb(184, 189, 196);"></div><div class="dfe-pp-moe" title="Margin of error: 5.4% to 14.6%" style="left: 5.4%; width: 9.2%;"></div></div></div><p class="dfe-pp-sample">N = 454 likely voters  ·  Margin of error: ±4.6 points</p></figure></div><h2 class="dfe-pp-h2">Favorite Son, 2028?</h2><p class="dfe-pp-p">San Francisco Democratic voters in CA-11 choose Gavin Newsom over Kamala Harris when asked who they would vote for in a head-to-head 2028 Democratic presidential primary. We asked Democratic voters to choose only between Newsom and Harris for 2028 president. While both Newsom and Harris have deep ties to the Bay Area, 58% of San Francisco Democratic voters in CA-11 would choose Newsom over Harris in a head-to-head 2028 primary and 29% would choose Harris over Newsom. The remainder of Democratic voters (13%) said they would not participate in this election if these were the only two choices. Under an open-ended response, other potential candidates are more popular, with 21% of respondents naming Pete Buttigieg, 20% for Jon Ossoff, 18% for Gavin Newsom, and 10% for Alexandria Ocasio-Cortez over 5% for Kamala Harris.</p><div class="dfe-pp-grid dfe-pp-cols-2"><figure class="dfe-pp-chart"><h3 class="dfe-pp-chart-title">2028 Democratic Primary: Newsom vs. Harris</h3><p class="dfe-pp-chart-cap">Democratic voters in CA-11, choosing only between Newsom and Harris</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Gavin Newsom</span><span class="dfe-pp-bar-val">58%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 58%; background: rgb(43, 92, 168);"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Kamala Harris</span><span class="dfe-pp-bar-val">29%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 29%; background: rgb(127, 166, 220);"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Would not participate if these were the only two choices</span><span class="dfe-pp-bar-val">13%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 13%; background: rgb(214, 217, 221);"></div></div></div><p class="dfe-pp-sample">Asked of Democratic voters only. The margin of error for this subgroup is larger than ±4.6 points.</p></figure><figure class="dfe-pp-chart"><h3 class="dfe-pp-chart-title">2028 Democratic Primary: Open-Ended</h3><p class="dfe-pp-chart-cap">Most-named candidates in an open-ended response (other answers not shown)</p><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Pete Buttigieg</span><span class="dfe-pp-bar-val">21%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 21%; background: rgb(43, 92, 168);"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Jon Ossoff</span><span class="dfe-pp-bar-val">20%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 20%; background: rgb(43, 92, 168);"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Gavin Newsom</span><span class="dfe-pp-bar-val">18%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 18%; background: rgb(43, 92, 168);"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Alexandria Ocasio-Cortez</span><span class="dfe-pp-bar-val">10%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 10%; background: rgb(43, 92, 168);"></div></div></div><div class="dfe-pp-bar"><div class="dfe-pp-bar-top"><span class="dfe-pp-bar-label">Kamala Harris</span><span class="dfe-pp-bar-val">5%</span></div><div class="dfe-pp-track" aria-hidden="true"><div class="dfe-pp-fill" style="width: 5%; background: rgb(43, 92, 168);"></div></div></div><p class="dfe-pp-sample">Asked of Democratic voters only. The margin of error for this subgroup is larger than ±4.6 points.</p></figure></div><section class="dfe-pp-method"><h2 class="dfe-pp-h2">Survey Methodology</h2><p class="dfe-pp-p">This survey of 454 California voters from October 16-19 is representative of the California likely voter electorate in CA-11. The overall poll has a margin of error of +/- 4.6% points; with larger margins of error for subgroups and crosstabs. Voters were randomly sampled directly from the California voter file, ensuring equal probability of participation for all voters; and to provide representativeness of the CA-11’s voters. Then, voters were screened for those who said they were "very likely" or "somewhat likely" to vote; or who stated they had already voted. The poll was conducted via email to the probability-based sample of voters directly and randomly sampled off the California voter file. Survey weights standard in the field were used to adjust the full sample, so the final results are representative of the likely California CA-11 electorate. The survey weights included demographic variables such as party, race/ethnicity, gender, and age. A raking procedure using the anesrake method in the statistical program R was conducted. The survey was offered in English, and respondents also had the option to take the survey in Spanish, Chinese/Mandarin/Cantonese, Korean, and Vietnamese.</p><p class="dfe-pp-p"><strong>Link to PDF of poll: </strong><a class="dfe-pp-link" href="/pdfs/ca11_poll.pdf" target="_blank" rel="noopener">California Elections and Policy Poll (CEPP), CA-11</a></p></section><div class="dfe-pp-back-row"><a class="dfe-pp-back" href="/polls">← Back to Polls</a></div></article></div></div></div><footer style="background-color: rgb(51, 51, 51); color: rgb(255, 255, 255); padding: 40px 20px; text-align: center;"><div style="max-width: 1200px; margin: 0px auto;"><p style="font-size: 14px; margin: 10px 0px;">© 2026 Democracy and Fair Elections Lab. All rights reserved.</p><p style="font-size: 14px; margin: 10px 0px;">University of Southern California | <a href="mailto:uscdfel@gmail.com" style="color: #8B0000; text-decoration: none;">uscdfel@gmail.com</a></p><p style="font-size: 14px; margin: 10px 0px;"><a href="https://www.youtube.com/@DemocracyandFairElectionsLab" target="_blank" rel="noopener" style="color: #fff; text-decoration: none; margin: 0 10px;">YouTube</a><span style="color: #777;">|</span><a href="https://x.com/christiangrose" target="_blank" rel="noopener" style="color: #fff; text-decoration: none; margin: 0 10px;">Twitter / X</a><span style="color: #777;">|</span><a href="https://www.instagram.com/uscdemocracylab/" target="_blank" rel="noopener" style="color: #fff; text-decoration: none; margin: 0 10px;">Instagram</a></p></div></footer></div>
+
+
+<!-- ================= third-party libraries ================= -->
+<!-- Exact versions (not "@7" / "@3"): a pinned URL never changes, so the CDN
+     and browsers can cache it long-term and return visitors skip the download. -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+
+<!-- ================= shared map module ================= -->
+<!-- Defines window.DFEMap (topology cache, color/margin helpers, seat totals)
+     and renderHomeMap. Must load before anything that uses DFEMap / draws
+     the congressional map (homepage, Redistricting, Racial Demographics). -->
+<script src="homemap.js"></script>
+
+<!-- ================= page modules ================= -->
+<!-- Order mostly doesn't matter below (each defines its own render* function
+     on window and main.js references them by name), but map-dependent pages
+     are kept near homeMap.js for clarity. -->
+<script src="redis.js"></script>
+<script src="demographics.js"></script>
+<script src="swingometer.js"></script>
+
+<script src="surprise.js"></script>
+<!-- district write-ups registered into window.SurpriseDistricts by surprise.js's
+     DISTRICT_FILES list; included explicitly too so they work even if that
+     dynamic loader isn't used. -->
+<script src="districts/mi04.js"></script>
+<script src="districts/ak.js"></script>
+<script src="districts/tx.js"></script>
+
+<script src="scandal.js"></script>
+<!-- case data generated from the master data sheet; must load after scandal.js -->
+<script src="scandals/cases.js"></script>
+
+<script src="progressive.js"></script>
+<script src="about.js"></script>
+<script src="people.js"></script>
+<script src="events.js"></script>
+<script src="publications.js"></script>
+<!-- poll pages: shared renderer first, then one file per poll -->
+<script src="pollpage.js"></script>
+<script src="polls/ca11.js"></script>
+<script src="polls/ca34.js"></script>
+<script src="polls/ca-gov-primary-2026.js"></script>
+<script src="polls/ca-statewide-2024.js"></script>
+<script src="polls/ca-house-districts-2024.js"></script>
+<script src="media.js"></script>
+<script src="projects.js"></script>
+
+<!-- ================= site controller (must load last) ================= -->
+<script src="main.js"></script>
+
+
+</body></html>
