@@ -268,24 +268,104 @@
           "external_commissioner_or_funder"
         ]
       }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "gov202you47518a20"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T02:00:00+00:00",
+        "provider_record_sha256": "c0dcc018ae31602444e4f57a40c0c30924ea1dddc565dc56a6cd156e71328cb6",
+        "sources": [
+          "https://www.univision.com/noticias/politica/republicans-lead-florida-as-most-latino-voters-say-immigration-enforcement-has-gone-too-far"
+        ],
+        "primary_toplines": {
+          "Byron Donalds": 50.0,
+          "David Jolly": 42.0
+        },
+        "question_sample_n": 825,
+        "admission": {
+          "pollster": "YouGov",
+          "provider_url": "https://www.univision.com/noticias/politica/republicans-lead-florida-as-most-latino-voters-say-immigration-enforcement-has-gone-too-far",
+          "group": "yougov",
+          "methodology_url": "https://www.univision.com/noticias/politica/republicans-lead-florida-as-most-latino-voters-say-immigration-enforcement-has-gone-too-far",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "RV",
+          "sample_n": 825,
+          "field_dates": [
+            "2026-10-02",
+            "2026-10-15"
+          ],
+          "primary_release_date": "2026-10-20",
+          "provider_record_date": "2026-10-20",
+          "sponsors": [
+            "N+ Univision"
+          ],
+          "sampling_method": "YouGov online survey, Oct 2-15",
+          "sampling_frame": "YouGov panel selected to represent Florida registered voters; Latino oversample 937 reported separately",
+          "weighting": "per release (statewide sample)",
+          "question_wording_checked": false,
+          "question": "Florida governor vote intention, Donalds (R) vs Jolly (D), registered voters",
+          "provider_pollster_label": "YouGov",
+          "primary_pollster_name": "YouGov",
+          "source_fetch_receipt": "source-fetch/a-src2-20261023-39883622912"
+        },
+        "reported_precision": null,
+        "sponsor_review": {
+          "primary_sponsors": [
+            "N+ Univision"
+          ],
+          "provider_sponsors": [
+            "N+ Univision"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "margin_of_error_pp",
+          "full_questionnaire"
+        ],
+        "limitations_ko": "YouGov 원문 대조: RV 825명, 2026-10-02~2026-10-15, 표본오차 원문 미기재. N+ Univision 의뢰 YouGov. 라티노 추가 표본과 분리. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "46747b749afc9f8e7536f7690272439a18b4d9a3fc80eb807626a10ca260c7b5"
+      }
     }
   ],
   "capture": {
-    "as_of": "2026-10-18",
-    "fetched_at": "2026-10-18T23:03:56.165943+00:00",
+    "as_of": "2026-10-23",
+    "fetched_at": "2026-10-23T01:43:38.201172+00:00",
     "receipt": {
       "state": "FL",
       "cycle": 2026,
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-18",
-      "captured_at": "2026-10-18T23:03:56.165943+00:00",
-      "capture_kind": "new_provider_request_with_individual_source_review",
-      "provider_records": 66,
-      "serialized_provider_response_sha256": "0f6396ebeb3253c4f67c849cd8dd30af2b519f6b680eaa778822d0e44e7e9937",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+      "captured_at": "2026-10-23T01:43:38.201172+00:00",
+      "capture_kind": "provider_transport_only",
+      "provider_records": 75,
+      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
       "collection_checkpoint_sha256": "00c16d477074d0b0be50f8cd58cedbe84083f380000c8617ca5a6c2a5f31c276",
       "primary_review_checked_at": "2026-10-14T09:48:51.867233+00:00",
       "new_provider_collection": true,
       "response_sha256": "892f70157b46bf040ac728d511ffa2ddf88b2be3a56c7cee8912f9d25040fedb",
-      "previous_capture_at": "2026-10-14T05:14:02.840821+00:00"
+      "previous_capture_at": "2026-10-14T05:14:02.840821+00:00",
+      "primary_supplement_receipts": [],
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "http_status": 200,
+        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+      }
     },
     "provider_records": [
       {
@@ -2085,9 +2165,253 @@
         "internal": false,
         "partisan": null,
         "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202you47518a20",
+        "poll_type": "governor",
+        "sample_size": 825,
+        "population": "rv",
+        "url": "https://www.univision.com/noticias/politica/republicans-lead-florida-as-most-latino-voters-say-immigration-enforcement-has-gone-too-far",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-02",
+        "end_date": "2026-10-15",
+        "pollster": "YouGov",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 50.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "N+ Univision"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202act3d1f5d54",
+        "poll_type": "governor",
+        "sample_size": 400,
+        "population": "lv",
+        "url": "https://www.activote.net/polls/2026/fl-governor/",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-19",
+        "pollster": "ActiVote",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 51.7
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 48.3
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202dccdf4a1055",
+        "poll_type": "us-representative",
+        "sample_size": 414,
+        "population": "lv",
+        "url": "https://dccc.org/%f0%9f%9a%a8-breaking-new-dccc-poll-shows-a-tied-race-in-fl-07/",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-17",
+        "end_date": "2026-10-19",
+        "pollster": "DCCC Targeting and Analytics Department",
+        "answers": [
+          {
+            "choice": "Bale Dalton",
+            "pct": 45.0
+          },
+          {
+            "choice": "Ryan Elijah",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 FL-07"
+      },
+      {
+        "id": "us-202pub0883c101",
+        "poll_type": "us-representative",
+        "sample_size": 603,
+        "population": "lv",
+        "url": "https://x.com/cjwarnke/status/2112877284684341727",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-14",
+        "end_date": "2026-10-15",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Anna Paulina Luna",
+            "pct": 46.0
+          },
+          {
+            "choice": "Leela Gray",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": "FL-13",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 FL-13"
+      },
+      {
+        "id": "gov202uni6ec2ef24",
+        "poll_type": "governor",
+        "sample_size": 1378,
+        "population": "lv",
+        "url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/6ad8a5ec13c20404a1f8052b/1792583148294/UNF+PORL+FALL+Statewide+2026+FLLV+-+Press+Release+1021+EMBARGO.pdf",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-19",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 49.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202unif780f058",
+        "poll_type": "us-senator",
+        "sample_size": 1414,
+        "population": "lv",
+        "url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/6ad8a5ec13c20404a1f8052b/1792583148294/UNF+PORL+FALL+Statewide+2026+FLLV+-+Press+Release+1021+EMBARGO.pdf",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-19",
+        "pollster": "University of North Florida",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 49.0
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "gov202co/bb858b1c",
+        "poll_type": "governor",
+        "sample_size": 1014,
+        "population": "lv",
+        "url": "https://battlegrounds.coefficient.org/fl/",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-18",
+        "end_date": "2026-10-20",
+        "pollster": "co/efficient",
+        "answers": [
+          {
+            "choice": "Byron Donalds",
+            "pct": 49.0
+          },
+          {
+            "choice": "David Jolly",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202co/bf7a2617",
+        "poll_type": "us-senator",
+        "sample_size": 1014,
+        "population": "lv",
+        "url": "https://battlegrounds.coefficient.org/fl/",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-18",
+        "end_date": "2026-10-20",
+        "pollster": "co/efficient",
+        "answers": [
+          {
+            "choice": "Ashley Moody",
+            "pct": 48.0
+          },
+          {
+            "choice": "Angie Nixon",
+            "pct": 40.0
+          },
+          {
+            "choice": "Neil Gillespie",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Florida"
+      },
+      {
+        "id": "us-202eme63310cee",
+        "poll_type": "us-representative",
+        "sample_size": 315,
+        "population": "lv",
+        "url": "https://pollvault.substack.com/p/levee-math",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-14",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Kathy Castor",
+            "pct": 48.0
+          },
+          {
+            "choice": "Mike Beltran",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": "FL-14",
+        "sponsors": [
+          "Poll Vault"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 FL-14"
       }
     ],
-    "provider_records_sha256": "ff96de97d6c09a12143f2e851af91aa0a6181a4e8385847ea3c3cb1205c90337",
+    "provider_records_sha256": "673091b316b0fbf51e7f1b7a0a9d93aaab6d13b96cd24e9d29fb078b9462b5ff",
     "primary_records": []
   },
   "recent_primary_review": {
