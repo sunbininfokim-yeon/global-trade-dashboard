@@ -79,8 +79,9 @@
                 ? `언론 보도${last.decree ? `(장관결정문 ${esc(last.decree)} 인용)` : ''}`
                 : (last.decree ? `장관결정문 ${esc(last.decree)}` : '고시 원문')}</a></div>
             ${chartFor(series, ' $/톤', 'HBA II 고시 추이') || '<div class="stock-note">고시 이력이 쌓이는 중입니다.</div>'}
-            ${periods.some((p) => p.source_kind === 'press') ? '<div class="stock-note">결정문이 스캔본인 반월은 결정문을 인용한 언론 보도 값으로 채웠습니다.</div>' : ''}
+            ${periods.some((p) => p.source_kind === 'press') ? '<div class="stock-note">결정문 PDF를 읽지 못한 기간은 결정문을 인용한 언론 보도 값으로 채웠습니다(행마다 출처 링크는 데이터 파일에 있음).</div>' : ''}
             ${gaps ? '<div class="stock-note">빠진 반월이 있어 선은 확인된 고시끼리 이은 것입니다.</div>' : ''}
+            ${periods[0].start < '2025-03-01' ? '<div class="stock-note">2025년 3월 전은 월 1회 고시(2025년 3월부터 반월 고시로 바뀌었고 산정 방식도 달라짐)입니다.</div>' : ''}
         </details>`;
     }
 
