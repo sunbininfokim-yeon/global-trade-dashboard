@@ -11,7 +11,7 @@ from election_watch.governor_matchups import apply_matchups
 from election_watch.poll_targets import apply_targets
 from election_watch.poll_gaps import attach_gaps
 from election_watch.state_poll_capture import merge_capture
-from election_watch.poll_primary_supplements import merge_primary_supplements
+from election_watch.poll_primary_supplements import merge_primary_supplements, keep_unreachable_primary_receipts
 from election_watch.poll_html_tables import merge_html_tables, bind_html_reviews, saved_html_receipts
 from election_watch.superpac import STATES
 from election_watch.state_inputs import packets
@@ -72,12 +72,18 @@ def main():
                 'state':args.state, 'cycle':2026, 'config_operations':[]}
             subjects = {(r['subject'], r['poll_type']) for r in policy['races'].values()}
             selected_rows = [r for r in provider_rows if (r.get('subject'), r.get('poll_type')) in subjects]
+            primary_records = [r for r in rows if r.get('primary_source_capture')
+                and (r.get('subject'), r.get('poll_type')) in subjects]
+            # A replay without publisher access would otherwise rewrite every
+            # earlier recheck as carried_forward; keep those receipts as they were.
+            receipt['primary_supplement_receipts'], primary_records, kept = keep_unreachable_primary_receipts(
+                packet.get('capture'), receipt['primary_supplement_receipts'], primary_records)
             packet['capture'] = {'as_of':args.as_of, 'fetched_at':checked, 'receipt':receipt,
                 'provider_records':selected_rows, 'provider_records_sha256':digest(selected_rows),
-                'primary_records':[r for r in rows if r.get('primary_source_capture')
-                    and (r.get('subject'), r.get('poll_type')) in subjects]}
+                'primary_records':primary_records}
             atomic(path, packet)
-            print({'state':args.state, 'saved':'state_input_packet', 'national_outputs_changed':False})
+            print({'state':args.state, 'saved':'state_input_packet', 'national_outputs_changed':False,
+                   'prior_primary_receipts_kept':len(kept)})
             return 0
         board=merge_capture(previous,capture,args.state,receipt)
         board['target_catalog']['ballot_review_count']=len(ballots['races'])
