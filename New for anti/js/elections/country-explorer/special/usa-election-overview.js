@@ -1,10 +1,10 @@
 import { escapeHtml } from '../../ui.js';
-import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_OFFICES } from '../../data/election-overview.js?v=4';
+import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_OFFICES } from '../../data/election-overview.js?v=5';
 import { normalizeParty, pollSignal, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
 import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
 import { governorContextHtml, governorElectionSummaryHtml } from './usa-candidate-context.js';
 import { stateFundraisingHtml } from './usa-state-fundraising.js';
-import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=2';
+import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=3';
 
 const number = (value) => Number.isFinite(value) ? String(value) : '—';
 const tile = (label, value, cls, key, office) => `<button type="button" class="elections-rating-tile ${cls}" data-rating-filter="${key}" aria-expanded="false" aria-controls="elections-${office}-${key}"><span>${label}</span><strong>${number(value)}</strong></button>`;
@@ -84,6 +84,7 @@ export const electionOverviewHtml = (country, ratings, { state = null, board = n
                 ${office === 'senate' && outlook ? `<p class="elections-seat-extras">선거 후 전체 ${outlook.total}석 = 비선거 ${outlook.retained} + 이번 선거 ${resultUniverse.contested}</p>` : ''}
                 ${outlook?.counts.IND ? `<p class="elections-seat-extras">전망 무소속 ${outlook.counts.IND}</p>` : ''}
                 ${outlook?.single ? `<p class="elections-seat-extras">단일 기관 참고 ${outlook.single}${office === 'governor' ? '곳' : '석'} 포함</p>` : ''}
+                ${outlook?.unreviewed ? `<p class="elections-seat-extras is-low-confidence">원문 미검토·참고 조사로 판정 ${outlook.unreviewed}${office === 'governor' ? '곳' : '석'} 포함 · 신뢰도 낮음</p>` : ''}
                 ${rating ? `<p class="elections-rating-heading">${office === 'senate' ? '전망 · ' : ''}이번 선거 ${rating.contested}${office === 'governor' ? '곳' : '석'} 분류 <small>칩을 눌러 목록 보기</small></p>
                 <div class="elections-rating-grid" aria-label="2026 선거 분류">
                     ${tile('DEM', rating.blue, 'is-dem', 'dem', office)}

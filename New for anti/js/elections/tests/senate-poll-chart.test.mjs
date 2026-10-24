@@ -66,3 +66,13 @@ test('office card summary counts polled contests and the 14-day verdict among th
     assert.match(one, /<small>최근 Quinnipiac 10\/05/);
     assert.equal(officePollSummaryHtml('senate', [], board, { now }), '');
 });
+
+test('low-confidence layer fills a missing 14-day verdict and says so', () => {
+    const gov = (state, observations, window = {}) => ({ ...race(state, observations, window), race_id: `USA:${state}:governor`, office: 'governor' });
+    const board = { races: { 'USA:MI:governor': gov('MI', [], { status: 'no_recent_poll' }), 'USA:WY:governor': gov('WY', []) },
+        unreviewed: { races: { 'USA:MI:governor': { polls: [{ id: 'm', pollster: 'Marist', field_end: '2026-10-18', population: 'lv', tier: 'unreviewed', answers: two(51, 45) }],
+            combined_14: { status: 'single_poll_lead', party: 'DEM', unreviewed_ids: ['m'] } } } } };
+    const html = officePollSummaryHtml('governor', [{ race_id: 'USA:MI:governor' }, { race_id: 'USA:WY:governor' }], board, { now });
+    assert.match(html, /여론조사 <strong>1\/2곳/); assert.match(html, /DEM 우세 1/); assert.match(html, /원문 미검토·참고 조사 판정 1곳/);
+    assert.match(html, /D 앞섬 · 미검토 포함/); assert.match(html, /is-low/); assert.match(html, /최근 Marist 10\/18 · Name 51 · Name 45 · 원문 미검토/);
+});

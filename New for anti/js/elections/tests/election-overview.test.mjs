@@ -155,3 +155,18 @@ test('overview separates current holders, outlook, ratings and collapsed evidenc
     assert.doesNotMatch(evidenceSectionHtml('poll','여론조사','', '<p>data</p>'),/ open>/);
     assert.match(evidenceSectionHtml('poll','여론조사','', '<p>data</p>',true),/ open>/);
 });
+
+test('low-confidence layer resolves a Lean/Toss-up seat only without a reviewed verdict, counted separately', () => {
+    const r = summary('governor');
+    const open = r.races.filter((x) => !['solid_dem','likely_dem','solid_rep','likely_rep'].includes(x.effective_rating));
+    const target = open[0];
+    const base = electionOutlook(country, 'governor', r, { now });
+    const board = { races: {}, unreviewed: { races: { [target.race_id]: { combined_14: { status: 'single_poll_lead', party: 'REP' } } } } };
+    const o = electionOutlook(country, 'governor', r, { board, now });
+    assert.equal(o.unreviewed, 1);
+    assert.equal(o.counts.GOP, base.counts.GOP + 1);
+    assert.equal(o.pending, base.pending - 1);
+    // Internal-only or tied layers do not resolve anything.
+    board.unreviewed.races[target.race_id].combined_14 = { status: 'tie', party: null };
+    assert.equal(electionOutlook(country, 'governor', r, { board, now }).unreviewed, 0);
+});
