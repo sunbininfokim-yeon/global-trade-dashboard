@@ -1,7 +1,7 @@
 import { loadCongressionalDistricts } from '../data/geo-service.js?v=2';
 import { pollSignal, pollSourceReady } from '../data/usa-election-context.js?v=2';
 
-import { electionRatingSummary } from '../data/election-overview.js?v=4';
+import { electionRatingSummary } from '../data/election-overview.js?v=5';
 import { electionMatchup, pollMatchesMatchup } from '../data/election-matchups.js';
 
 const partyColor = (party) => party === 'DEM' ? [37, 99, 235, 225]

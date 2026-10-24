@@ -8,6 +8,16 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 PUBLIC = 'New for anti/public/data/'
+UNREVIEWED_FILE = 'usa_election_unreviewed_polls_v1.json'
+
+
+def build_unreviewed(checkpoint):
+    # Lower-confidence read model from the same provider capture. Optional: a
+    # failure here keeps the previous file and never blocks the reviewed board.
+    result = subprocess.run([sys.executable, str(ROOT/'build_unreviewed_polls.py'), '--checkpoint', str(checkpoint)],
+                            cwd=ROOT, check=False)
+    if result.returncode:
+        git('checkout', '--', PUBLIC+UNREVIEWED_FILE, check=False)
 
 
 def git(*args, check=True):
@@ -25,6 +35,8 @@ def stage_paths():
     from election_watch.poll_intake import INTAKE_FILE
     if Path(PUBLIC+INTAKE_FILE).is_file():
         paths.append(PUBLIC+INTAKE_FILE)
+    if Path(PUBLIC+UNREVIEWED_FILE).is_file():
+        paths.append(PUBLIC+UNREVIEWED_FILE)
     index = __import__('json').loads(Path(PUBLIC+'usa_election_state_evidence_index_v1.json').read_text())
     paths += [PUBLIC+index['states'][p['state']]['data_file'] for p in packets()]
     return paths
@@ -44,6 +56,7 @@ def main():
             subprocess.run([sys.executable, str(ROOT/'publish_packet_projections.py')], check=True)
             subprocess.run([sys.executable, str(ROOT/'refresh_live_polls.py'), '--retry-capture', str(args.checkpoint)], check=True)
         subprocess.run([sys.executable, str(ROOT/'publish_packet_projections.py')], check=True)
+        build_unreviewed(args.checkpoint)
         git('add', '--', *stage_paths())
         if git('diff', '--cached', '--quiet', check=False).returncode == 0: return
         git('commit', '-m', 'chore: publish US election inputs and generated read models')

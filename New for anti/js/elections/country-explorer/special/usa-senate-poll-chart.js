@@ -43,8 +43,29 @@ const dotsFor = (race, now) => {
     return [...latest.values()].flat().map((o) => ({ o, s: sides(o.answers), counted: counted.has(o.id) })).filter((d) => d.s);
 };
 
-const verdict = (race) => {
+// Lower-confidence layer (board.unreviewed): rows the board holds for review.
+// Board reference observations are already on the race; only provider rows
+// the board did not admit are added, flagged low so they draw as dashed dots.
+const LOW_LABEL = { unreviewed: '원문 미검토', partisan_unreviewed: '당파 후원·원문 미검토', campaign_internal: '캠프 내부·미집계',
+    provider_conflict: '원문 불일치·미집계', reference_reviewed: '참고용' };
+const withLow = (race, low) => {
+    if (!low?.polls?.length) return race;
+    const extra = low.polls.filter((p) => p.tier !== 'reference_reviewed').map((p) => ({ id: p.id, pollster: p.pollster,
+        field_end: p.field_end, population: p.population, answers: p.answers, low: p.tier }));
+    return { ...race, observations: [...(race.observations || []), ...extra] };
+};
+const lowVerdict = (low) => {
+    const c = low?.combined_14;
+    const party = { DEM: 'D', REP: 'R', GOP: 'R', IND: 'I' }[c?.party];
+    if (!party || !['poll_lead', 'single_poll_lead', 'mixed_lead'].includes(c.status)) return null;
+    return { cls: `${party === 'R' ? 'is-gop' : party === 'I' ? 'is-ind' : 'is-dem'} is-low`,
+        text: `${party} ${c.status === 'single_poll_lead' ? '앞섬' : '우세'} · 미검토 포함`, party };
+};
+
+const verdict = (race, low = null) => {
     const w = race.windows?.['14'] || {};
+    const lv = !['poll_lead', 'single_poll_lead', 'tie'].includes(w.status) ? lowVerdict(low) : null;
+    if (lv) return lv;
     const party = w.party === 'DEM' ? 'D' : w.party === 'REP' ? 'R' : w.party ? w.party : '';
     switch (w.status) {
         case 'poll_lead': return { cls: party === 'R' ? 'is-gop' : 'is-dem', text: `${party} 우세 (복수 기관)` };
@@ -67,24 +88,27 @@ const latestPoll = (race) => {
         || (b.population === 'lv') - (a.population === 'lv'))[0];
     const eligible = newest(rows.filter((o) => o.aggregation_eligibility?.eligible));
     const o = eligible || newest(rows);
-    return o ? { o, s: sides(o.answers), reference: !eligible } : null;
+    return o ? { o, s: sides(o.answers), reference: !eligible, low: o.low } : null;
 };
+const pct = (v) => Number.isFinite(v) ? String(Math.round(v * 10) / 10) : '—';
 const latestText = (race) => {
     const l = latestPoll(race);
     if (!l) return '';
     const day = (l.o.field_end || '').slice(5).replace('-', '/');
-    return `최근 ${l.o.pollster} ${day} · ${l.s.left.name.split(' ').at(-1)} ${l.s.left.pct} · ${l.s.rep.name.split(' ').at(-1)} ${l.s.rep.pct}${l.reference ? ' · 참고' : ''}`;
+    return `최근 ${l.o.pollster} ${day} · ${l.s.left.name.split(' ').at(-1)} ${pct(l.s.left.pct)} · ${l.s.rep.name.split(' ').at(-1)} ${pct(l.s.rep.pct)}${l.low ? ` · ${LOW_LABEL[l.low] || '미검토'}` : l.reference ? ' · 참고' : ''}`;
 };
 
-const raceRow = (race, now, office = 'senate') => {
-    const dots = dotsFor(race, now);
-    const v = verdict(race);
+const raceRow = (board_race, now, office = 'senate', low = null) => {
+    const race = withLow(board_race, low);
+    const lowCounted = new Set(lowVerdict(low) ? low.combined_14.unreviewed_ids || [] : []);
+    const dots = dotsFor(race, now).map((d) => ({ ...d, lowCounted: lowCounted.has(d.o.id) }));
+    const v = verdict(board_race, low);
     const names = dots[0]?.s ? `${dots[0].s.left.name.split(' ').at(-1)} vs ${dots[0].s.rep.name.split(' ').at(-1)}` : '';
     const leftParty = dots[0]?.s?.left.party || 'DEM';
-    const dotHtml = dots.map(({ o, s, counted }) => {
+    const dotHtml = dots.map(({ o, s, counted, lowCounted: lc }) => {
         const side = s.margin > 0 ? (s.left.party === 'DEM' ? 'is-dem' : 'is-ind') : s.margin < 0 ? 'is-gop' : 'is-close';
-        const label = `${o.pollster} · ${o.field_end} · ${o.population?.toUpperCase() || ''} · ${s.left.name} ${s.left.pct} / ${s.rep.name} ${s.rep.pct}${counted ? ' · 14일 집계 포함' : ' · 참고'}`;
-        return `<span class="elections-senate-dot ${side}${counted ? ' is-counted' : ''}${Math.abs(s.margin) > AXIS ? ' is-clamped' : ''}" style="left:${position(s.margin).toFixed(1)}%" title="${escapeHtml(label)}"></span>`;
+        const label = `${o.pollster} · ${o.field_end} · ${o.population?.toUpperCase() || ''} · ${s.left.name} ${pct(s.left.pct)} / ${s.rep.name} ${pct(s.rep.pct)}${counted ? ' · 14일 집계 포함' : o.low ? ` · ${LOW_LABEL[o.low] || '미검토'}${lc ? ' · 미검토 판정에 포함' : ''}` : lc ? ' · 참고 · 미검토 판정에 포함' : ' · 참고'}`;
+        return `<span class="elections-senate-dot ${side}${counted ? ' is-counted' : ''}${o.low ? ' is-low' : ''}${lc ? ' is-low-counted' : ''}${Math.abs(s.margin) > AXIS ? ' is-clamped' : ''}" style="left:${position(s.margin).toFixed(1)}%" title="${escapeHtml(label)}"></span>`;
     }).join('');
     const counted = dots.filter((d) => d.counted);
     const leftLead = counted.filter((d) => d.s.margin > 0).length, repLead = counted.filter((d) => d.s.margin < 0).length;
@@ -92,7 +116,7 @@ const raceRow = (race, now, office = 'senate') => {
         <span class="elections-senate-state"><strong>${escapeHtml(race.state)}</strong><small>${escapeHtml(names)}${leftParty === 'IND' ? ' (무소속)' : ''}</small></span>
         <span class="elections-senate-latest">${escapeHtml(latestText(race))}</span>
         <span class="elections-senate-axis" aria-hidden="true"><i class="elections-senate-zero"></i>${dotHtml}</span>
-        <span class="elections-senate-verdict ${v.cls}">${escapeHtml(v.text)}${counted.length ? `<small>집계 ${counted.length}곳: ${leftParty === 'IND' ? 'I' : 'D'} ${leftLead} · R ${repLead}</small>` : `<small>참고 ${dots.length}건</small>`}</span>
+        <span class="elections-senate-verdict ${v.cls}">${escapeHtml(v.text)}${counted.length ? `<small>집계 ${counted.length}곳: ${leftParty === 'IND' ? 'I' : 'D'} ${leftLead} · R ${repLead}</small>` : v.party ? `<small>신뢰도 낮음 · ${lowCounted.size}건 기준</small>` : `<small>참고 ${dots.length}건</small>`}</span>
     </button>`;
 };
 
@@ -106,22 +130,30 @@ const leadParty = (race) => {
 // the per-race rows underneath. Counts come from the board's own window status.
 export const officePollSummaryHtml = (office, contests, board, { now = Date.now() } = {}) => {
     const unit = office === 'governor' ? '곳' : '석';
+    const lowOf = (r) => board?.unreviewed?.races?.[r.race_id] || null;
     const races = (contests || []).map((c) => board?.races?.[c.race_id]).filter(Boolean);
-    const polled = races.filter((r) => r.observations?.length);
+    const polled = races.filter((r) => r.observations?.length || lowOf(r)?.polls?.length);
     if (!contests?.length) return '';
-    const lead = { DEM: 0, GOP: 0, IND: 0 };
-    for (const r of polled) { const p = leadParty(r); if (p) lead[p]++; }
-    const held = polled.length - lead.DEM - lead.GOP - lead.IND;
-    const order = (r) => (leadParty(r) ? 0 : 1);
+    const lead = { DEM: 0, GOP: 0, IND: 0 }, low = { DEM: 0, GOP: 0, IND: 0 };
+    for (const r of polled) {
+        const p = leadParty(r);
+        if (p) { lead[p]++; continue; }
+        const lv = lowVerdict(lowOf(r));
+        if (lv) low[{ D: 'DEM', R: 'GOP', I: 'IND' }[lv.party]]++;
+    }
+    const lowTotal = low.DEM + low.GOP + low.IND;
+    const held = polled.length - lead.DEM - lead.GOP - lead.IND - lowTotal;
+    const order = (r) => (leadParty(r) ? 0 : lowVerdict(lowOf(r)) ? 1 : 2);
     const rows = [...polled].sort((a, b) => order(a) - order(b) || a.state.localeCompare(b.state));
     const single = contests.length === 1 && rows.length === 1;
     return `<details class="elections-office-polls" data-office-polls="${escapeHtml(office)}">
         <summary><span>여론조사 <strong>${polled.length}/${contests.length}${unit}</strong></span>
-            <span><b class="is-dem">DEM 우세 ${lead.DEM}</b> · <b class="is-gop">GOP 우세 ${lead.GOP}</b>${lead.IND ? ` · <b class="is-ind">무소속 우세 ${lead.IND}</b>` : ''} · 판정 보류 ${held}</span>
+            <span><b class="is-dem">DEM 우세 ${lead.DEM + low.DEM}</b> · <b class="is-gop">GOP 우세 ${lead.GOP + low.GOP}</b>${lead.IND + low.IND ? ` · <b class="is-ind">무소속 우세 ${lead.IND + low.IND}</b>` : ''} · 판정 보류 ${held}</span>
+            ${lowTotal ? `<small class="is-low-confidence">이 중 원문 미검토·참고 조사 판정 ${lowTotal}${unit} (DEM ${low.DEM} · GOP ${low.GOP}${low.IND ? ` · 무소속 ${low.IND}` : ''}) · 신뢰도 낮음</small>` : ''}
             ${single ? `<small>${escapeHtml(latestText(rows[0]))}</small>` : ''}<small>최근 14일 판정 · 눌러서 ${single ? '자세히' : '선거별 보기'}</small></summary>
         ${rows.length ? `<div class="elections-senate-scale" aria-hidden="true"><span class="is-dem">← 민주${office === 'senate' ? '·무소속' : ''}</span><span>±${AXIS}%p · 0</span><span class="is-gop">공화 →</span></div>
-        <div class="elections-senate-rows">${rows.map((r) => raceRow(r, now, office)).join('')}</div>` : ''}
-        <p class="elections-panel-note">조사 없음 ${contests.length - polled.length}${unit}. 우세는 최근 14일 안에 집계 가능한 조사의 판정이고, 그보다 오래된 조사나 참고 조사는 판정 보류로 셉니다. ● 채운 점=14일 집계 포함, ○ 빈 점=참고. 평균이나 당선 예측이 아닙니다.</p>
+        <div class="elections-senate-rows">${rows.map((r) => raceRow(r, now, office, lowOf(r))).join('')}</div>` : ''}
+        <p class="elections-panel-note">조사 없음 ${contests.length - polled.length}${unit}. 우세는 최근 14일 안의 조사 판정입니다. 검토 보드 판정이 없으면 원문 미검토·참고 조사로 판정하고 '미검토 포함'으로 표시합니다(신뢰도 낮음, 캠프 내부·원문 불일치는 제외). ● 검토 집계 포함, ◍ 미검토 판정 포함, ○ 참고, 점선=원문 미검토. 평균이나 당선 예측이 아닙니다.</p>
     </details>`;
 };
 

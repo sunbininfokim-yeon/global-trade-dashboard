@@ -152,7 +152,7 @@ export const electionOutlook = (country, office, rating, { state = null, board =
     }
     let pending = counts.unknown;
     delete counts.unknown;
-    let single = 0, pollResolved = 0, certified = 0;
+    let single = 0, pollResolved = 0, certified = 0, unreviewed = 0;
     for (const race of rating.races) {
         const pollRace = board?.races?.[race.race_id];
         const raceState = state || country?.ui_ready?.state_drilldown?.states?.find((s) => s.id === race.state);
@@ -164,9 +164,17 @@ export const electionOutlook = (country, office, rating, { state = null, board =
         else if (stableParty(race.effective_rating)) counts[stableParty(race.effective_rating)]++;
         else if (pollMatchesMatchup(pollRace, ballot) && ['poll_lead', 'single_poll_lead'].includes(signal.status) && ['DEM', 'GOP'].includes(party)) {
             counts[party]++; pollResolved++; if (signal.status === 'single_poll_lead') single++;
-        } else pending++;
+        } else {
+            // No reviewed 14-day verdict: fall back to the lower-confidence layer
+            // (원문 미검토·참고용 포함). Counted separately so the card can say so.
+            const low = board?.unreviewed?.races?.[race.race_id]?.combined_14;
+            const lowParty = partyKey(low?.party);
+            if (['poll_lead', 'single_poll_lead', 'mixed_lead'].includes(low?.status) && ['DEM', 'GOP'].includes(lowParty)) {
+                counts[lowParty]++; unreviewed++;
+            } else pending++;
+        }
     }
     const total = retained.length + rating.contested;
     if (!state && total !== { house: 435, senate: 100, governor: 50 }[office]) return null;
-    return { counts, pending, total, retained: retained.length, retainedCounts, contestedCurrentCounts, single, pollResolved, certified };
+    return { counts, pending, total, retained: retained.length, retainedCounts, contestedCurrentCounts, single, pollResolved, certified, unreviewed };
 };

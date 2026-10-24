@@ -16,7 +16,12 @@ export const loadLivePolls = () => {
         currentPromise = Promise.all([
         fetchJson('usa_election_live_polls_v1.json'),
         fetchJson('usa_election_live_polls_status_v1.json'),
-        ]).then(([board, health]) => ({ board, health })).catch(() => {
+        // Lower-confidence layer (원문 미검토). Optional: missing just means none.
+        fetchJson('usa_election_unreviewed_polls_v1.json').catch(() => null),
+        ]).then(([board, health, unreviewed]) => {
+            if (board && unreviewed?.schema === 'usa_election_unreviewed_polls_v1' && unreviewed.as_of === board.as_of) board.unreviewed = unreviewed;
+            return { board, health };
+        }).catch(() => {
             expiresAt = Date.now() + 60 * 1000;
             return { board: null, health: null };
         });
