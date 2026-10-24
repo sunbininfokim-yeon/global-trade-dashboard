@@ -62,7 +62,7 @@ export function mountSubscriptions(root,connect,{staticRegions=[]}={}){
   const t=starredTopics(),r=starredRegions(),n=enabled().length;
   if(pendingRegions.size&&!t.size)status.textContent='알림을 받을 품목에도 ☆를 누르세요.';
   else if(!n)status.textContent='☆를 눌러 품목·지역을 즐겨찾기하세요. 지역을 고르지 않으면 전국으로 저장합니다.';
-  else status.textContent=`${t.size}개 품목 × ${r.size}개 지역 · 알림 조합 ${n}개${deliveryNote}`;
+  else status.textContent=`품목 ${t.size}개 · 지역 ${r.size}개 · 알림 조합 ${n}개${deliveryNote}`;
  }
  let deliveryNote='';
  // The client sends 전국 on its own (a mixed list collapses to 전국 only).

@@ -191,9 +191,9 @@ test('favourite stars: visible signed out, a star asks for login, then stars bec
   assert.equal(await root.locator('[data-region-stars] .fav-chip:visible').count(),1);
   await root.locator('[data-region-stars]').getByRole('button',{name:'동칼리만탄 즐겨찾기',exact:true}).click();
   await star('니켈 즐겨찾기').waitFor();await star('니켈 즐겨찾기').click();
-  await root.getByText('2개 품목 × 2개 지역',{exact:false}).waitFor();
+  await root.getByText('품목 2개 · 지역 2개',{exact:false}).waitFor();
   assert.ok((await root.innerText()).includes('자동 발송은 아직 준비 중'));
-  await star('석탄 즐겨찾기 해제').click();await root.getByText('1개 품목 × 2개 지역',{exact:false}).waitFor();
+  await star('석탄 즐겨찾기 해제').click();await root.getByText('품목 1개 · 지역 2개',{exact:false}).waitFor();
   assert.deepEqual(await page.evaluate(()=>window.__idnSubscriptions.filter(s=>s.enabled).map(s=>[s.topic,s.region]).sort()),[['nickel_mining','Kalimantan Timur'],['nickel_mining','__all__']]);
   assert.equal(new URL(page.url()).searchParams.get('q'),'석탄');assert.equal(await page.locator('#search-form [name=topic]').inputValue(),'');
   await root.getByRole('button',{name:'☆ 북수마트라 · 수력발전',exact:true}).click();
@@ -201,6 +201,7 @@ test('favourite stars: visible signed out, a star asks for login, then stars bec
   await root.getByRole('button',{name:'☆ 중부칼리만탄 · 석탄',exact:true}).click();
   await root.getByRole('button',{name:'★ 중부칼리만탄 · 석탄',exact:true}).waitFor();
   assert.deepEqual(await page.evaluate(()=>window.__idnSubscriptions.filter(s=>s.enabled).map(s=>[s.topic,s.region]).sort()),[['coal','Kalimantan Tengah'],['hydropower','Sumatera Utara'],['nickel_mining','Kalimantan Timur'],['nickel_mining','__all__']]);
+  assert.equal(await root.locator('[data-mail-status]').innerText(),'품목 3개 · 지역 4개 · 알림 조합 4개 · 인도네시아 자동 발송은 아직 준비 중입니다');
   const calls=await page.evaluate(()=>window.__idnMailCalls);
   assert.ok(calls.every(c=>['idn_my_mail_subscriptions','idn_set_my_mail_subscription','idn_set_my_mail_subscriptions'].includes(c.name)));
   assert.ok(calls.filter(c=>c.name==='idn_set_my_mail_subscriptions').every(c=>!(c.args.p_regions.includes('__all__')&&c.args.p_regions.length>1)));

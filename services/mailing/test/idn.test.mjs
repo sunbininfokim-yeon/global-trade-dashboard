@@ -15,6 +15,7 @@ const serialize='20261020230106_indonesia_ingest_serialization.sql';
 const lease='20261020231311_indonesia_sync_lease.sql';
 const completeSource='20261020231617_indonesia_mail_complete_source_gate.sql';
 const multiScope='20261021040724_indonesia_multi_scope_subscriptions.sql';
+const hydroCommon='20261024065333_indonesia_hydropower_common_scope.sql';
 const hydroRegions='20261024015419_indonesia_hydropower_regions.sql';
 const automaticIngestion='20261021043352_indonesia_automatic_ingestion.sql';
 const sql=name=>readFileSync(new URL('../../../supabase/migrations/'+name,import.meta.url),'utf8');
@@ -50,6 +51,7 @@ async function fixture(fn,withCatalogue=false){
   await db.exec(sql(completeSource));
   await db.exec(sql(multiScope));
   await db.exec(sql(hydroRegions));
+  await db.exec(sql(hydroCommon));
   if(withCatalogue){
    // Search projection used by the real catalogue reconciliation migration.
    await db.exec(`create view policy_idn.embedding_corpus with(security_invoker=true) as
@@ -129,7 +131,8 @@ test('multi-scope subscriptions expose nationwide plus 38 BPS provinces, preserv
  assert.equal((await list()).subscriptions.length,4);
  assert.equal((await acting(V,()=>rpc('idn_my_mail_subscriptions'))).subscriptions.length,0);
  await db.exec(sql(multiScope));
-  await db.exec(sql(hydroRegions));assert.equal((await list()).region_options.length,39);
+ await db.exec(sql(hydroRegions));
+ await db.exec(sql(hydroCommon));assert.equal((await list()).region_options.length,39);
  const source=JSON.parse(readFileSync(new URL('../../../scripts/indonesia_policy/mail-regions.json',import.meta.url),'utf8'));
  assert.equal(source.provinces.length,38);assert.equal(new Set(source.provinces.map(p=>p[0])).size,38);
  assert.deepEqual(options.filter(r=>r.level==='provincial').map(r=>r.value).sort(),source.provinces.map(p=>p[1]).sort());
@@ -348,5 +351,15 @@ test('operating provinces support hydropower and include nationwide laws without
  await review(c,{topics:['hydropower'],scope:'national',regions:[]});
  const matches=await db.query("select region from policy_idn.mail_subscriptions s,policy_idn.mail_changes c where c.change_id=$1 and policy_idn.mail_scope_matches(c.review,s.topic,s.region)",[c.change_id]);
  assert.deepEqual(matches.rows.map(r=>r.region),['Sumatera Utara']);
+ assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,0);
+}));
+
+test('common national hydropower retrieval scope survives old collector metadata without creating legal mail',()=>fixture(async({db,save})=>{
+ const d={...document('idn-uu-32-2009'),topics:['coal']};await save(d);
+ assert.ok((await db.query("select topics from policy_idn.documents where document_id=$1",[d.document_id])).rows[0].topics.includes('hydropower'));
+ const count=(await db.query('select count(*)::int n from policy_idn.mail_changes')).rows[0].n;
+ await save(d);await db.exec(sql(hydroCommon));
+ assert.ok((await db.query("select topics from policy_idn.documents where document_id=$1",[d.document_id])).rows[0].topics.includes('hydropower'));
+ assert.equal((await db.query('select count(*)::int n from policy_idn.mail_changes')).rows[0].n,count);
  assert.equal((await db.query('select count(*)::int n from mailing_outbox')).rows[0].n,0);
 }));
