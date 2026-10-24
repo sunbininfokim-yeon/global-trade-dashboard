@@ -16,10 +16,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      # Reviewed collector from PR #652. UI/mail changes are not merged or deployed.
+      # Reviewed regional collector from PR #703; UI deployment remains independent.
       - uses: actions/checkout@v4
         with:
-          ref: 7cdbb19868426bcd82e0f5a263d260fadf181e8b
+          ref: 572756c39ae5425a8f7d812246a19be1b224acdd
           path: collector
           persist-credentials: false
       - uses: actions/setup-python@v5

@@ -92,6 +92,9 @@ ISRAEL_CI_PATHS = frozenset({'.github/workflows/israel_analysis_validation.yml'}
 
 
 def scoped_paths(branch):
+    # User requested automatic coverage of additional regions on 2026-10-24.
+    if branch == 'codex/idn-region-collector-pin-20261024':
+        return frozenset({'.github/workflows/sync-indonesia-policy.yml'})
     return {POLLING_BRANCH: POLLING_PATHS, ELECTION_UI_BRANCH: ELECTION_UI_PATHS,
             POLL_UI_BRANCH: ELECTION_UI_PATHS,
             DAILY_POLLING_BRANCH: DAILY_POLLING_PATHS,
