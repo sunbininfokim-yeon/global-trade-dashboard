@@ -7186,7 +7186,7 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .elections-senate-scale { display: flex; justify-content: space-between; font-size: 9px; color: #94a3b8; padding: 0 4px 4px; }
 .elections-senate-scale .is-dem { color: #60a5fa; } .elections-senate-scale .is-gop { color: #f87171; }
 .elections-senate-rows { display: grid; gap: 2px; }
-.elections-senate-row { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "state verdict" "axis axis"; gap: 3px 8px; align-items: end; width: 100%; padding: 6px 4px; border: 0; border-radius: 6px; background: transparent; color: inherit; text-align: left; cursor: pointer; font: inherit; }
+.elections-senate-row { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "state verdict" "latest latest" "axis axis"; gap: 3px 8px; align-items: end; width: 100%; padding: 6px 4px; border: 0; border-radius: 6px; background: transparent; color: inherit; text-align: left; cursor: pointer; font: inherit; }
 .elections-senate-row:hover, .elections-senate-row:focus-visible { background: rgba(148,163,184,0.10); outline: none; }
 .elections-senate-state { grid-area: state; min-width: 0; }
 .elections-senate-state strong { font-size: 12px; color: #e2e8f0; margin-right: 6px; }
@@ -7200,3 +7200,17 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .elections-senate-dot.is-dem { color: #60a5fa; } .elections-senate-dot.is-gop { color: #f87171; } .elections-senate-dot.is-ind { color: #c084fc; } .elections-senate-dot.is-close { color: #e2e8f0; }
 .elections-senate-dot.is-clamped { box-shadow: 0 0 0 2px rgba(251,191,36,0.6); }
 .elections-senate-verdict.is-dem { color: #60a5fa; } .elections-senate-verdict.is-gop { color: #f87171; } .elections-senate-verdict.is-close { color: #e2e8f0; } .elections-senate-verdict.is-none { color: #94a3b8; font-weight: 400; }
+.elections-senate-latest { grid-area: latest; min-width: 0; font-size: 10px; color: #cbd5e1; overflow-wrap: anywhere; }
+.elections-senate-latest:empty { display: none; }
+/* 주지사·상원 카드 안 여론조사 요약: 몇 곳에 조사가 있고 그중 누가 앞서는지. 눌러서 선거별 줄을 펼친다. */
+.elections-office-polls { margin: 8px 0; border: 1px solid #334155; border-radius: 7px; background: #172236; font-size: 11px; color: #cbd5e1; }
+.elections-office-polls > summary { display: grid; gap: 3px; padding: 9px; cursor: pointer; list-style: none; }
+.elections-office-polls > summary::-webkit-details-marker { display: none; }
+.elections-office-polls > summary::after { content: '＋'; justify-self: end; margin-top: -16px; color: #94a3b8; }
+.elections-office-polls[open] > summary::after { content: '－'; }
+.elections-office-polls > summary strong { color: #f1f5f9; }
+.elections-office-polls > summary small { font-size: 10px; color: #94a3b8; }
+.elections-office-polls .is-dem { color: #93c5fd; } .elections-office-polls .is-gop { color: #fca5a5; } .elections-office-polls .is-ind { color: #c084fc; }
+.elections-office-polls > .elections-senate-scale, .elections-office-polls > .elections-senate-rows, .elections-office-polls > .elections-panel-note { margin-left: 6px; margin-right: 6px; }
+.elections-office-polls > .elections-senate-scale .is-dem { color: #60a5fa; } .elections-office-polls > .elections-senate-scale .is-gop { color: #f87171; }
+.elections-office-polls .elections-senate-verdict.is-dem { color: #60a5fa; } .elections-office-polls .elections-senate-verdict.is-gop { color: #f87171; }

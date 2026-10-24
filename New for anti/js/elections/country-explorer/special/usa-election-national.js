@@ -1,9 +1,8 @@
 import { escapeHtml } from '../../ui.js';
 import { pollOfficePanelsHtml } from './usa-poll-panels.js?v=3';
-import { senatePollChartHtml } from './usa-senate-poll-chart.js';
 import { STATE_CLASSIFICATION_SOURCES, classLabels, stateClass2024, pollSignal } from '../../data/usa-election-context.js?v=2';
 import { financeEvidenceHtml, pollEvidenceHtml, raceLabel } from './usa-election-evidence.js?v=6';
-import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml, compactPollLabel } from './usa-election-overview.js?v=7';
+import { electionOverviewHtml, bindElectionOverview, evidenceSectionHtml, compactPollLabel } from './usa-election-overview.js?v=8';
 import { ensureElectionContextStyle } from './usa-candidate-context.js';
 
 export const NATIONAL_WATCH_STATES = ['NY', 'TN', 'GA', 'FL', 'AZ', 'MI', 'NV', 'NC', 'PA', 'WI', 'TX'];
@@ -89,7 +88,6 @@ export const renderUsaElectionNational = (root, {
         </div>
         <div class="panel-header"><h2>미국 선거</h2><p>현재 보유 → 선거 구도 → 여론조사·캠프 모금·슈퍼팩</p></div>
         ${electionOverviewHtml(country, ratings, { board, health, days })}
-        ${senatePollChartHtml(allMonitored)}
         <p class="elections-section-heading">선거별 자료 <small>눌러서 펼치기</small></p>
         ${evidenceSectionHtml('poll', '여론조사', `${observedRaces}개 선거 · 누적 ${observations}건 · 최근 ${days}일`, pollContent, evidenceOpen.poll)}
         ${evidenceSectionHtml('finance', '후보 모금 · 슈퍼팩', '주·지역구에서 캠프 모금과 외부 지출 비교', financeContent, evidenceOpen.finance)}

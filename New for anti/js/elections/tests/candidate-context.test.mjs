@@ -33,6 +33,11 @@ test('national governor list uses all fifty reviewed rows and exposes 36 electio
     const states=Object.fromEntries(Object.keys(catalog.states).map((st)=>[st,{...governor(),state:st,election_in_cycle:!!inputs.contests[st],race_id:inputs.contests[st]?`USA:${st}:governor`:null,election_date:inputs.contests[st]?'2026-11-03':null}]));
     const country={ui_ready:{state_drilldown:{governor_elections:{schema:'usa_governor_election_context_v1',states}}}};
     const html=governorElectionSummaryHtml(country,now);assert.match(html,/36주/);assert.match(html,/14주/);assert.equal((html.match(/data-overview-state=/g)||[]).length,50);
+    // Current governor's party colours the state name and splits each scope by party.
+    country.ui_ready.state_drilldown.states=Object.keys(states).map((id)=>({id,governor:{abbr:id==='PA'?'DEM':'GOP'}}));
+    const coloured=governorElectionSummaryHtml(country,now);
+    assert.match(coloured,/<strong class="is-dem">[^<]*· 선거<\/strong>/);assert.equal((coloured.match(/<strong class="is-dem">/g)||[]).length,1);
+    assert.match(coloured,/<b class="is-dem">DEM 1<\/b> · <b class="is-gop">GOP 35<\/b> · 현재/);assert.match(coloured,/<b class="is-dem">DEM 0<\/b> · <b class="is-gop">GOP 14<\/b>/);
     delete states.WA;assert.equal(governorElectionSummaryHtml(country,now),'');
 });
 test('campaign money renders individual giving, gross receipts, cash, original report date and original FEC links separately', () => {

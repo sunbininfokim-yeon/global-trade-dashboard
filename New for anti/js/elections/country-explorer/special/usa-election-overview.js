@@ -4,6 +4,7 @@ import { normalizeParty, pollSignal, raceClosedByDate } from '../../data/usa-ele
 import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
 import { governorContextHtml, governorElectionSummaryHtml } from './usa-candidate-context.js';
 import { stateFundraisingHtml } from './usa-state-fundraising.js';
+import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=2';
 
 const number = (value) => Number.isFinite(value) ? String(value) : '—';
 const tile = (label, value, cls, key, office) => `<button type="button" class="elections-rating-tile ${cls}" data-rating-filter="${key}" aria-expanded="false" aria-controls="elections-${office}-${key}"><span>${label}</span><strong>${number(value)}</strong></button>`;
@@ -72,6 +73,7 @@ export const electionOverviewHtml = (country, ratings, { state = null, board = n
                     <div><span>비선거 유지 <strong>${number(outlook?.retained)}석</strong></span><span><b class="is-dem">DEM ${number(outlook?.retainedCounts.DEM)}</b> · <b class="is-gop">GOP ${number(outlook?.retainedCounts.GOP)}</b>${outlook?.retainedCounts.IND ? ` · 무소속 ${outlook.retainedCounts.IND}` : ''}</span></div>
                     <div><span>이번 선거 <strong>${resultUniverse.contested}석</strong> · 현재</span><span><b class="is-dem">DEM ${number(outlook?.contestedCurrentCounts?.DEM)}</b> · <b class="is-gop">GOP ${number(outlook?.contestedCurrentCounts?.GOP)}</b>${outlook?.contestedCurrentCounts?.IND ? ` · 무소속 ${outlook.contestedCurrentCounts.IND}` : ''}</span></div>
                     ${resultUniverse.contested === 0 ? '<small>이 주는 이번 상원 선거 없음 · 기존 2석 유지</small>' : ''}</div>` : ''}
+                ${['senate', 'governor'].includes(office) && resultUniverse && !resultUniverse.afterElection ? officePollSummaryHtml(office, resultUniverse.races, board, { now }) : ''}
                 <div class="elections-seat-row"><span class="elections-seat-row-label">${resultUniverse?.afterElection ? '결과' : '전망'}</span>
                 <div class="elections-outlook-parties" aria-label="${resultUniverse?.afterElection ? '선거 후 · 공식 결과' : `전망 · 최근 ${days}일 반영`}">
                     <span class="is-dem">DEM <strong>${number(outlook?.counts.DEM)}</strong></span>
