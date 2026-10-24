@@ -132,6 +132,24 @@ jobs:
         run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # 인도네시아 의미검색: the flag ships in wrangler.jsonc; the key is a Worker
+      # secret. Logs only whether the secret exists (never its value) and what
+      # the live API reports. Never fails the deploy -- data still ships.
+      - name: Check Indonesia semantic search
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if npx wrangler secret list --format json | python3 -c "import json,sys; sys.exit(0 if any(s.get('name')=='GEMINI_API_KEY' for s in json.load(sys.stdin)) else 1)"; then
+            echo "GEMINI_API_KEY secret: present"
+          else
+            echo "::warning::GEMINI_API_KEY secret is missing on the site Worker; Indonesia semantic search stays off"
+          fi
+          base=https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/idn/search
+          curl -fsS "$base?q=%EC%84%9D%ED%83%84&limit=1" | python3 -c "import json,sys; d=json.load(sys.stdin); print('semantic_enabled:', d.get('semantic_enabled'))"
+          # 한국어 의미검색: "석탄 수출 규제"
+          curl -sS -o /tmp/idn-hybrid.json -w "hybrid HTTP %{http_code}\n" "$base?q=%EC%84%9D%ED%83%84%20%EC%88%98%EC%B6%9C%20%EA%B7%9C%EC%A0%9C&mode=hybrid&limit=3"
+          python3 -c "import json; d=json.load(open('/tmp/idn-hybrid.json')); print('hybrid total:', d.get('total'), '| error:', d.get('error')); [print(' -', (i.get('title_ko') or i.get('title') or '')[:80]) for i in d.get('items', [])[:3]]"
       - name: Verify overseas LETF public assets
         run: |
           if [ -f 'New for anti/public/data/overseas_letf_board_v1.json' ]; then
