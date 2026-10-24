@@ -1,5 +1,7 @@
 import {subscriptionClient} from './subscription-client.mjs?v=2';
-const topicNames={coal:'석탄',nickel_mining:'니켈',palm_oil:'팜유',biofuel:'바이오연료',bauxite:'보크사이트·알루미늄',copper:'구리',tin:'주석',cobalt:'코발트',manganese:'망간',iron_steel:'철광석·철강',silica:'실리카·석영',gold_silver:'금·은',rare_earths:'희토류'};
+const topicNames={coal:'석탄',nickel_mining:'니켈',palm_oil:'팜유',biofuel:'바이오연료',bauxite:'보크사이트·알루미늄',copper:'구리',tin:'주석',cobalt:'코발트',manganese:'망간',iron_steel:'철광석·철강',silica:'실리카·석영',gold_silver:'금·은',rare_earths:'희토류',hydropower:'수력발전'};
+const regionPairs=[['coal','Kalimantan Timur','동칼리만탄 · 석탄'],['coal','Kalimantan Tengah','중부칼리만탄 · 석탄'],['palm_oil','Kalimantan Barat','서칼리만탄 · 팜유'],['nickel_mining','Sulawesi Tenggara','동남술라웨시 · 니켈'],['hydropower','Sumatera Utara','북수마트라 · 수력발전']];
+const priorityRegions=new Set(['Kalimantan Timur','Kalimantan Tengah','Kalimantan Barat','Sulawesi Tenggara','Sumatera Utara']);
 const ALL='__all__',allLabel='인도네시아 전국';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
 // Favourites are stars on products and regions; a mail alert is every starred
@@ -33,8 +35,10 @@ export function mountSubscriptions(root,connect,{staticRegions=[]}={}){
   topicBox.replaceChildren(...Object.entries(topicNames).map(([v,l])=>star('topic',v,l,t.has(v))));
   const others=[...regions.values()].filter(x=>x.value!==ALL);
   // The nationwide star and every starred province stay in view; the rest sit under 지역 더보기.
-  regionMain.replaceChildren(star('region',ALL,allLabel,r.has(ALL)),...others.filter(x=>r.has(x.value)).map(x=>star('region',x.value,x.label,true)));
+  regionMain.replaceChildren(star('region',ALL,allLabel,r.has(ALL)),...others.filter(x=>r.has(x.value)||priorityRegions.has(x.value)).map(x=>star('region',x.value,x.label,r.has(x.value),x.has_local_documents===false?'지방 자료 미확보':'')));
   regionBox.replaceChildren(...others.map(x=>star('region',x.value,x.label===x.value?x.value:x.label,r.has(x.value),x.has_local_documents===false?'지방 자료 미확보':'')));
+  const pairBox=root.querySelector('[data-region-pairs]');
+  if(pairBox)pairBox.replaceChildren(...regionPairs.map(([topic,region,label])=>{const on=enabled().some(s=>s.topic===topic&&s.region===region);const b=el('button',`${on?'★':'☆'} ${label}`);b.type='button';b.disabled=busy;b.setAttribute('aria-pressed',String(on));b.addEventListener('click',()=>void togglePair(topic,region));return b;}));
   filterRegions();
   list.replaceChildren(...subs.map(s=>{
    const row=el('li'),label=el('span',`${topicNames[s.topic]||s.topic} · ${regions.get(s.region)?.label||s.region} · ${s.enabled?'알림 중':'해제됨'}`),b=el('button',s.enabled?'해제':'다시 켜기');
@@ -72,6 +76,11 @@ export function mountSubscriptions(root,connect,{staticRegions=[]}={}){
   try{await job();await refresh();if(done)status.textContent=done;}
   catch(e){status.textContent=e.message;}
   finally{busy=false;render();}
+ }
+ async function togglePair(topic,region){
+  if(!user){pending={kind:'pair',value:{topic,region}};openLogin();return;}
+  const on=!enabled().some(s=>s.topic===topic&&s.region===region);
+  return run(()=>api.set(topic,region,on));
  }
  async function toggle(kind,value){
   if(!user){pending={kind,value};openLogin();return;}
@@ -123,7 +132,8 @@ export function mountSubscriptions(root,connect,{staticRegions=[]}={}){
    await refresh();
    const p=pending;pending=null;
    // The star pressed before logging in, unless the account already has it.
-   if(p&&!(p.kind==='topic'?starredTopics():starredRegions()).has(p.value))await toggle(p.kind,p.value);
+   if(p?.kind==='pair')await togglePair(p.value.topic,p.value.region);
+   else if(p&&!(p.kind==='topic'?starredTopics():starredRegions()).has(p.value))await toggle(p.kind,p.value);
   }catch(err){loginStatus.textContent=err.message;}finally{button.disabled=false;}
  });
  dialog?.querySelector('[data-login-cancel]')?.addEventListener('click',()=>{pending=null;dialog.close();});

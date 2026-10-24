@@ -26,7 +26,7 @@ export function subscriptionClient(client){
    return rpc('idn_set_my_mail_subscription',{p_topic:topic,p_region:region,p_enabled:enabled});
   },
   async setMany(topics,regions,enabled=true){
-   if(!Array.isArray(topics)||!Array.isArray(regions)||topics.length<1||topics.length>13||regions.length<1||regions.length>50||typeof enabled!=='boolean'||![...topics,...regions].every(v=>typeof v==='string'&&v.length>0))throw Error('품목과 지역을 하나 이상 선택하세요.');
+   if(!Array.isArray(topics)||!Array.isArray(regions)||topics.length<1||topics.length>14||regions.length<1||regions.length>50||typeof enabled!=='boolean'||![...topics,...regions].every(v=>typeof v==='string'&&v.length>0))throw Error('품목과 지역을 하나 이상 선택하세요.');
    const data=await rpc('idn_set_my_mail_subscriptions',{p_topics:[...new Set(topics)],p_regions:regions.includes('__all__')?['__all__']:[...new Set(regions)],p_enabled:enabled});
    if(data?.country!=='IDN'||!Number.isInteger(data.affected))throw Error('구독 저장 결과를 확인하지 못했습니다. 다시 조회해 주세요.');
    return data;

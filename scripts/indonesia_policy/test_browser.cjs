@@ -173,7 +173,7 @@ test('favourite stars: visible signed out, a star asks for login, then stars bec
     rpc:async(name,args)=>{window.__idnMailCalls.push({name,args});
      if(name==='idn_my_mail_subscriptions')return {data:{country:'IDN',delivery_enabled:false,max_active_combinations:100,region_options:[{value:'__all__',label:'인도네시아 전국 · 중앙·모든 지방',level:'all'},...provinces.map(([,value,label])=>({value,label,level:'provincial',has_local_documents:value==='Kalimantan Timur'}))],subscriptions:window.__idnSubscriptions},error:null};
      if(name==='idn_set_my_mail_subscriptions'){for(const topic of args.p_topics)for(const region of args.p_regions){let s=window.__idnSubscriptions.find(s=>s.topic===topic&&s.region===region);if(!s){s={id:topic+':'+region,topic,region};window.__idnSubscriptions.push(s);}s.enabled=args.p_enabled;}return {data:{country:'IDN',affected:args.p_topics.length*args.p_regions.length},error:null};}
-     if(name==='idn_set_my_mail_subscription'){let s=window.__idnSubscriptions.find(s=>s.topic===args.p_topic&&s.region===args.p_region);s.enabled=args.p_enabled;return {data:s.id,error:null};}
+     if(name==='idn_set_my_mail_subscription'){let s=window.__idnSubscriptions.find(s=>s.topic===args.p_topic&&s.region===args.p_region);if(!s){s={id:args.p_topic+':'+args.p_region,topic:args.p_topic,region:args.p_region};window.__idnSubscriptions.push(s);}s.enabled=args.p_enabled;return {data:s.id,error:null};}
      throw Error('unexpected RPC');}};
   },provinces);
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm',r=>r.fulfill({contentType:'text/javascript',body:'export function createClient(){return window.__idnMockClient}'}));
@@ -181,7 +181,7 @@ test('favourite stars: visible signed out, a star asks for login, then stars bec
   await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('건 검색됨'));
   const root=page.locator('#mail-subscriptions'),star=name=>root.getByRole('button',{name,exact:true});
   assert.equal(await root.evaluate(d=>d.open),false);await root.locator(':scope > summary').click();
-  assert.equal(await root.locator('[data-topic-stars] .fav-chip').count(),13);assert.equal(await root.locator('[data-region-stars] .fav-chip').count(),38);
+  assert.equal(await root.locator('[data-topic-stars] .fav-chip').count(),14);assert.equal(await root.locator('[data-region-stars] .fav-chip').count(),38);
   assert.equal(await page.evaluate(()=>window.__idnMailCalls.length),0);
   await star('석탄 즐겨찾기').click();assert.equal(await page.locator('#login-dialog').evaluate(d=>d.open),true);
   await page.fill('#login-dialog [name=email]','fixture@example.test');await page.fill('#login-dialog [name=password]','pw');await page.click('#login-dialog [type=submit]');
@@ -196,6 +196,11 @@ test('favourite stars: visible signed out, a star asks for login, then stars bec
   await star('석탄 즐겨찾기 해제').click();await root.getByText('1개 품목 × 2개 지역',{exact:false}).waitFor();
   assert.deepEqual(await page.evaluate(()=>window.__idnSubscriptions.filter(s=>s.enabled).map(s=>[s.topic,s.region]).sort()),[['nickel_mining','Kalimantan Timur'],['nickel_mining','__all__']]);
   assert.equal(new URL(page.url()).searchParams.get('q'),'석탄');assert.equal(await page.locator('#search-form [name=topic]').inputValue(),'');
+  await root.getByRole('button',{name:'☆ 북수마트라 · 수력발전',exact:true}).click();
+  await root.getByRole('button',{name:'★ 북수마트라 · 수력발전',exact:true}).waitFor();
+  await root.getByRole('button',{name:'☆ 중부칼리만탄 · 석탄',exact:true}).click();
+  await root.getByRole('button',{name:'★ 중부칼리만탄 · 석탄',exact:true}).waitFor();
+  assert.deepEqual(await page.evaluate(()=>window.__idnSubscriptions.filter(s=>s.enabled).map(s=>[s.topic,s.region]).sort()),[['coal','Kalimantan Tengah'],['hydropower','Sumatera Utara'],['nickel_mining','Kalimantan Timur'],['nickel_mining','__all__']]);
   const calls=await page.evaluate(()=>window.__idnMailCalls);
   assert.ok(calls.every(c=>['idn_my_mail_subscriptions','idn_set_my_mail_subscription','idn_set_my_mail_subscriptions'].includes(c.name)));
   assert.ok(calls.filter(c=>c.name==='idn_set_my_mail_subscriptions').every(c=>!(c.args.p_regions.includes('__all__')&&c.args.p_regions.length>1)));

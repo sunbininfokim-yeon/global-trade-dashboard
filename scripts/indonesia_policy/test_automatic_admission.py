@@ -46,7 +46,7 @@ class AdmissionTests(unittest.TestCase):
   r=row();title='Peraturan Gubernur Kalimantan Utara Nomor 1 Tahun 2026 tentang Perizinan Berusaha'
   r['metadata'].update(title=title,**identity(title));e=prepare(r,SOURCE)
   self.assertEqual(e['issuer_level'],'provincial');self.assertEqual(e['jurisdiction'],'Kalimantan Utara')
-  self.assertEqual(len(validate_document(doc(e),e,r)['topics']),13)
+  self.assertEqual(len(validate_document(doc(e),e,r)['topics']),14)
  def test_catalogue_head_is_partial_not_country_complete_and_failures_remain_failures(self):
   with tempfile.TemporaryDirectory() as root:
    data=json.dumps([dict(idData='17',judul=TITLE,urlDetailPeraturan='https://example.go.id/17')]).encode()
@@ -86,6 +86,8 @@ class AdmissionTests(unittest.TestCase):
     result=run(root,rpc,collector=collector,fetcher=fetcher,pause=lambda _:None)
    self.assertEqual(result['admitted'],1);self.assertEqual(collector.call_count,1);self.assertEqual(fetcher.call_count,1)
    self.assertEqual(calls.count('idn_ingestion_queue'),1)
+   self.assertTrue((root/'reviewed'/'status.json').exists())
+   self.assertTrue((root/'regional-reviewed'/'status.json').exists())
  def test_global_stop_never_connects(self):
   with tempfile.TemporaryDirectory() as root:
    Path(root,'STOP').touch();rpc=Mock();self.assertEqual(run(root,rpc)['state'],'stopped');rpc.assert_not_called()

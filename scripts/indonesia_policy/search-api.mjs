@@ -1,8 +1,10 @@
 // IDN-only read API. No collection, provider calls, user data or US fallback.
 import {embedTexts} from './embeddings.mjs';
-export const TOPICS = {coal:'석탄',nickel_mining:'니켈',palm_oil:'팜유',biofuel:'바이오연료',bauxite:'보크사이트·알루미늄',copper:'구리',tin:'주석',cobalt:'코발트',manganese:'망간',iron_steel:'철광석·철강',silica:'실리카·석영',gold_silver:'금·은',rare_earths:'희토류'};
+export const TOPICS = {coal:'석탄',nickel_mining:'니켈',palm_oil:'팜유',biofuel:'바이오연료',bauxite:'보크사이트·알루미늄',copper:'구리',tin:'주석',cobalt:'코발트',manganese:'망간',iron_steel:'철광석·철강',silica:'실리카·석영',gold_silver:'금·은',rare_earths:'희토류',hydropower:'수력발전'};
 const GROUPS = [
  ['석탄','coal','batubara','batu bara'],
+ ['수력발전','수력','hydropower','hydro power','tenaga air','plta'],
+ ['북수마트라','sumatera utara'],['중부칼리만탄','중앙칼리만탄','kalimantan tengah'],['서칼리만탄','kalimantan barat'],['동칼리만탄','kalimantan timur'],['동남술라웨시','sulawesi tenggara'],
  ['유연탄','bituminous','bituminus'],['무연탄','anthracite','antrasit'],
  ['니켈','nickel','nikel','nickel_mining','ferronickel','feronikel'],
  ['광산','광업','mining','pertambangan'],

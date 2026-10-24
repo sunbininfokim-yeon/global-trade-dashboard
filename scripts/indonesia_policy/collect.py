@@ -21,7 +21,7 @@ from pypdf import PdfReader
 
 MAX_BYTES = 12 * 1024 * 1024
 MAX_CHARS = 300_000
-ORDER = ("coal", "nickel_mining", "palm_oil", "biofuel", "mineral_mining")
+ORDER = ("coal", "nickel_mining", "palm_oil", "biofuel", "mineral_mining", "hydropower")
 
 
 def normalized(text):

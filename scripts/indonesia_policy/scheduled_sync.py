@@ -96,7 +96,7 @@ def run(root,rpc,*,refresh_limit=20,discovery_limit=5,fetcher=fetch,collector=co
                 unsupported_sources=[s['source_id'] for s in sources if s['adapter'] not in ADAPTERS]))
             atomic_json(state_path,state)
         if state.get('version')!=1 or state.get('sources')!=list(registry):raise ValueError('scheduler registry changed; preserve old checkpoint before restarting')
-        if str(uuid.UUID(state['run_id']))!=state['run_id'] or state['phase'] not in ('refresh','catalogues','admission') or type(state['source_index']) is not int or not 0<=state['source_index']<=len(verified):raise ValueError('invalid scheduler checkpoint')
+        if str(uuid.UUID(state['run_id']))!=state['run_id'] or state['phase'] not in ('refresh','regional','catalogues','admission') or type(state['source_index']) is not int or not 0<=state['source_index']<=len(verified):raise ValueError('invalid scheduler checkpoint')
         work=root/'runs'/state['run_id'];work.mkdir(parents=True,exist_ok=True,mode=0o700)
         raw=root/'raw';raw.mkdir(exist_ok=True,mode=0o700)
         # Retain official originals; stop rather than grow without a bound.
@@ -113,6 +113,12 @@ def run(root,rpc,*,refresh_limit=20,discovery_limit=5,fetcher=fetch,collector=co
                     state['result']['refresh']=refresh(manifest,root/'reviewed',lease,limit=refresh_limit,collect_fn=collector,
                       heartbeat=lambda:boundary(lease),pause=pause,external_cooldowns=state['cooldowns'])
                     state['cooldowns'].update(json.loads((root/'reviewed'/'status.json').read_text())['cooldowns'])
+                    state['phase']='regional';checkpoint()
+                if state['phase']=='regional':
+                    boundary(lease)
+                    regional=sorted(json.loads((HERE/'sources-operating-regions-20261024.json').read_text()),key=lambda e:(ORDER.index(e['primary_stage']),e['document_id']))
+                    state['result']['regional_refresh']=refresh(regional,root/'regional-reviewed',lease,limit=6,collect_fn=collector,heartbeat=lambda:boundary(lease),pause=pause,external_cooldowns=state['cooldowns'])
+                    state['cooldowns'].update(json.loads((root/'regional-reviewed'/'status.json').read_text())['cooldowns'])
                     state['phase']='catalogues';checkpoint()
                 if state['phase']=='catalogues':
                     for index in range(state['source_index'],len(verified)):
@@ -153,7 +159,7 @@ def run(root,rpc,*,refresh_limit=20,discovery_limit=5,fetcher=fetch,collector=co
                         state['candidate_index']=index+1;checkpoint()
                         print(json.dumps(dict(phase='admission',source=row['source_id'],record=row['source_record_id'],state=item['p_outcome'],new_version=response['new_version'],reason=item['p_reason'])),flush=True)
                         pause(3)
-                state.update(complete=True,finished_at=stamp());state['result']['state']='partial' if state['result']['catalogue_failures'] or state['result']['failed'] or state['result']['refresh']['state']!='ok' else 'ok'
+                state.update(complete=True,finished_at=stamp());state['result']['state']='partial' if state['result']['catalogue_failures'] or state['result']['failed'] or (state['result']['refresh']['state']!='ok' or state['result'].get('regional_refresh',{}).get('state','ok')!='ok') else 'ok'
                 checkpoint();atomic_json(root/'last-run.json',{**state['result'],'run_id':state['run_id'],'started_at':state['started_at'],'finished_at':state['finished_at']})
                 return state['result']
             except Stopped:
