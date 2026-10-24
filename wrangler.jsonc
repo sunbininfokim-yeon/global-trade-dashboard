@@ -18,6 +18,13 @@
   // /api/* route 404s and Variables/Secrets can't even be added in the
   // dashboard ("Worker that only has static assets").
   "main": "_worker.js",
+  // Plain flags. `wrangler deploy` replaces dashboard-set vars with this list,
+  // so a flag set only in the dashboard disappears on the next deploy. Secrets
+  // (GEMINI_API_KEY, SUPABASE_*) are separate and persist across deploys.
+  // IDN_SEMANTIC_ENABLED: 인도네시아 문서개요 의미검색 (GEMINI_API_KEY 도 있어야 켜짐).
+  "vars": {
+    "IDN_SEMANTIC_ENABLED": "true"
+  },
   // single-page-application: any request path that doesn't match a real
   // static file (e.g. /macro_monitor, /shipping_fleet -- the new per-view
   // routes app.js pushes into the URL) falls back to index.html with a 200,
