@@ -207,3 +207,33 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
         output=[r for r in output if r not in duplicates];output.append(raw)
         receipts.append({'id':raw['id'],'state':entry['state'],**capture})
     return output,receipts
+
+
+def keep_unreachable_primary_receipts(previous_capture, receipts, records):
+    """Offline packet replay must not erase an earlier successful recheck.
+
+    When every publisher document of a reviewed release is merely unreachable
+    (no body fetched, so no evidence it changed), keep the previous packet's
+    receipt and primary record for that ID. A changed digest, a different
+    document set or a new review date is real news and is never masked.
+    Returns (receipts, records, kept_ids).
+    """
+    previous_capture = previous_capture or {}
+    old_receipts = {r.get('id'): r for r in (previous_capture.get('receipt') or {}).get('primary_supplement_receipts', [])}
+    old_records = {r.get('id'): r for r in previous_capture.get('primary_records', [])}
+    kept = set()
+    out = []
+    for receipt in receipts:
+        prev = old_receipts.get(receipt.get('id'))
+        docs = receipt.get('documents') or []
+        if (prev and docs and receipt['id'] in old_records
+                and all(d.get('status') == 'unavailable' for d in docs)
+                and prev.get('status') == 'primary_documents_rechecked'
+                and prev.get('original_reviewed_on') == receipt.get('original_reviewed_on')
+                and sorted(d.get('url') for d in prev.get('documents', [])) == sorted(d.get('url') for d in docs)):
+            out.append(deepcopy(prev))
+            kept.add(receipt['id'])
+        else:
+            out.append(receipt)
+    records = [deepcopy(old_records[r['id']]) if r.get('id') in kept else r for r in records]
+    return out, records, kept

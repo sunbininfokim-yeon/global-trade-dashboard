@@ -465,9 +465,12 @@ Actions → "Source fetch for manual review" → Run workflow
 IA #693 · RI #694 · CA #695 · ME #696 · NY #697. 발행 후 채택 255 → 273건.
 
 재현 시 주의(실제로 걸린 것):
-- 기존 packet이 있는 주는 오프라인 `--packet` 재생성이 `primary_supplement_receipts`를
-  `carried_forward_reference_only`로 덮는다. 직전 packet(main)의 영수증·primary_records를
-  같은 id로 되돌린 뒤 커밋할 것(CA·AL·OH에서 발생, `test_poll_ca_source_recheck_20261021`이 잡음).
+- ~~기존 packet이 있는 주는 오프라인 `--packet` 재생성이 `primary_supplement_receipts`를
+  `carried_forward_reference_only`로 덮는다~~ → **2026-10-24 생성기에서 해결**
+  (`keep_unreachable_primary_receipts`). 원문 문서가 전부 `unavailable`일 때만 직전 packet의
+  재확인 영수증·primary_records를 유지하고, 출력에 `prior_primary_receipts_kept` 수를 찍는다.
+  문서 변경(`changed_review_required`)·검토일 변경·문서 목록 변경은 그대로 드러난다.
+  손으로 되돌릴 필요 없음. 커밋 전 `git diff`에 `carried_forward_reference_only` 추가가 없는지만 확인.
 - 주별 테스트가 capture 날짜를 고정해 둔 경우(ME, NY-21 14일 창)는 그 주 테스트만 새 capture에
   맞춰 갱신. 검토일·과거 이력 단언은 건드리지 않는다.
 - 메인 상원·하원은 순위선택투표: Marist 선례대로 `ranked_choice_question: first_preference` +
@@ -480,9 +483,7 @@ A등급 중 남은 것(Codex/브라우저 몫):
   utahdebatecommission.org(UT Lighthouse 2건), Express-News(TX-15 TSU), WaPo(ME·MI Schar 4건),
   Star Tribune(MN Mason-Dixon), Politico(CA Citrin 2건·NY Beacon), al.com(AL Alabama Poll).
 - **원문은 있으나 추가 작업 필요:**
-  - MA 주지사 Suffolk(gov202suf418414b7): 원문 10/14~18, Healey 58.6·Minogue 36·James 2.
-    governor_matchups MA에 Andrea James(무소속, 인쇄 후보) 추가 근거와 `Maura Healy` 별칭이 먼저 필요.
-    원문 PDF: `source-fetch/a-src4-20261023-39893658088`.
+  - ~~MA 주지사 Suffolk(gov202suf418414b7)~~ → Codex #705로 완료(2026-10-24 병합, 집계 +1).
   - MN SurveyUSA 2건: KSTP 기사에 수치·표본·기간 없음 → SurveyUSA 원 발표 필요.
   - AZ Equis: 메모상 현장조사 9/1~9, VoteHub는 10/1~9 → 날짜 교정 검토 필요(진보 성향 연구기관 여부도 확인).
   - TX Pollfinity(RV/LV 불일치), NC Elon(군소 후보 분리 미확인)·Harper(표본·기간 미기재),
