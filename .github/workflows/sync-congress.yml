@@ -50,6 +50,9 @@ concurrency:
 
 jobs:
   sync-government-policy:
+    # 운영 DB 키를 쓰는 job: main 에서만 돈다. 브랜치에서 수동 실행하면 건너뛴다
+    # (2026-10-22 브랜치 수집이 운영 메일 대기열을 만든 사고 후속).
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     # Was 55: two bootstrap dispatches in a row (2026-09-05, 2026-09-08) got
     # cancelled mid-run by this ceiling, not by the Congress.gov/GovInfo rate
