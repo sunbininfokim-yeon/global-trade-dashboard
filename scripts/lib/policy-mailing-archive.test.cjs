@@ -1,6 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { archiveReports, githubSnapshot } = require('../archive-mailing-reports');
+const { archiveReports, githubSnapshot, assertArchiveExecutionContext } = require('../archive-mailing-reports');
+const { spawnSync } = require('node:child_process');
 const report = id => ({ id, source_id: 'eia', title: { original: 'Official report' }, published_at: '2026-10-01T10:00:00Z', url: 'https://www.eia.gov/report', commodities: ['crude_oil'] });
 test('only verified undated items may be explicitly skipped; dates are never invented', async () => {
   const undated = report('unknown'); delete undated.published_at;
@@ -62,4 +63,38 @@ test('a malformed news item never blocks the official archive', async () => {
   const result = await archiveReports({ document: { items: [report('official'), bare] }, upsert: async (_table, rows) => saved = rows });
   assert.deepEqual(saved.map(r => r.report_id), ['official']);
   assert.equal(result.skipped_news, 1); assert.equal(result.partial, false);
+});
+test('catalog news is excluded from old or incorrectly labelled snapshots', async () => {
+  const items = [report('official'),
+    { ...report('old-news'), source_id: 'gn_idn_nickel_coal_en' },
+    { ...report('wrong-type'), source_id: 'gn_idn_nickel_coal_en', publisher_type: 'official' },
+    { ...report('case'), publisher_type: ' News ' },
+    { ...report('institution'), source_id: 'my_mpoc_news' }];
+  let saved;
+  const result = await archiveReports({ document: { items }, upsert: async (_table, rows) => saved = rows });
+  assert.deepEqual(saved.map(r => r.report_id), ['official', 'institution']);
+  assert.equal(result.skipped_news, 3);
+});
+test('only main schedule/manual Actions writes are accepted; local recovery is allowed', () => {
+  const main = { GITHUB_ACTIONS: 'true', GITHUB_REPOSITORY: 'sunbininfokim-yeon/global-trade-dashboard', GITHUB_REF: 'refs/heads/main', GITHUB_EVENT_NAME: 'schedule' };
+  assert.doesNotThrow(() => assertArchiveExecutionContext({}));
+  assert.doesNotThrow(() => assertArchiveExecutionContext(main));
+  assert.doesNotThrow(() => assertArchiveExecutionContext({ ...main, GITHUB_EVENT_NAME: 'workflow_dispatch' }));
+  for (const overrides of [{ GITHUB_REF: 'refs/heads/work' }, { GITHUB_REF: 'refs/pull/1/merge' },
+    { GITHUB_REF: 'refs/tags/main' }, { GITHUB_REF: '' }, { GITHUB_REPOSITORY: 'fork/repo' },
+    { GITHUB_EVENT_NAME: 'pull_request_target' }, { GITHUB_EVENT_NAME: undefined }]) {
+    assert.throws(() => assertArchiveExecutionContext({ ...main, ...overrides }), /mailing_archive_untrusted_execution/);
+  }
+});
+test('default DB adapter rejects a branch before reading a snapshot; preview remains usable', () => {
+  const script = `const {archiveReports}=require(${JSON.stringify(require.resolve('../archive-mailing-reports'))});
+    (async()=>{
+      try { await archiveReports({file:'/missing-archive-snapshot.json'}); process.exitCode=2; }
+      catch(e) { if(e.message!=='mailing_archive_untrusted_execution') throw e; }
+      const result=await archiveReports({document:{items:[]},dryRun:true});
+      if(result.mode!=='preview') process.exitCode=3;
+    })().catch(()=>{process.exitCode=4});`;
+  const result = spawnSync(process.execPath, ['-e', script], { encoding: 'utf8',
+    env: { ...process.env, GITHUB_ACTIONS: 'true', GITHUB_REF: 'refs/heads/work', GITHUB_EVENT_NAME: 'workflow_dispatch' } });
+  assert.equal(result.status, 0, result.stderr);
 });
