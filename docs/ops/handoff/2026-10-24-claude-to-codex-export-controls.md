@@ -21,7 +21,7 @@
 | 파일 | 내용 | 고치는 쪽 |
 |---|---|---|
 | `public/data/export_controls/{manifest,agri,energy,minerals}.json` | 현행 조치 카탈로그 24행. 한 파일로 합치지 말 것 | Claude (Cursor 주간 확인 → Claude 반영) |
-| `public/data/trade_policy/us_tariffs_v1.json` | 미국 관세 조치·국가별 세율·법적 수단 | Codex (시뮬레이터 입력과 공유) |
+| `public/data/trade_policy/us_tariffs_v1.json` | 미국 관세 조치·국가별 세율·법적 수단 (시뮬레이터와 공유는 아직 안 됨 — 6절) | Codex |
 | `public/data/trade_policy/us_sanctions_v1.json` | 4개국 제재·한시 허용·기업 대조 | Codex |
 | `public/data/trade_policy/country_announcements_v1.json` | 국가별 통상 발표 | Codex |
 | `public/data/commodity_reports_v1.json` 의 `boards.export_controls` | 「최근 공고」 (4시간 주기 수집) | 파이프라인 `scripts/commodity_reports` |
@@ -59,8 +59,11 @@
 
 ## 6. Codex 에게 부탁
 
-1. 시뮬레이터 세율은 `us_tariffs_v1.json` 을 입력으로 쓴다. 모니터와 숫자가 갈리지 않게
-   별도 표를 만들지 말 것.
+1. **(미완료, 2026-10-24 Codex 확인으로 정정)** 시뮬레이터는 아직 `us_tariffs_v1.json` 을
+   쓰지 않는다. `policy-simulator/policy-catalog.mjs` 에 별도 세율·계산 규칙이 있다.
+   목표: 공용 자료에 HTS·원산지·발효일·중첩(stacking) 조건을 구조화해 넣고, 모니터와
+   시뮬레이터가 그 하나를 함께 읽게 한다. 설명문(`rate_ko` 등)에서 숫자를 뽑아 계산하지
+   말 것 — 계산은 구조화 필드로만.
 2. 미국 조치를 바꾸면 `as_of` 와 해당 항목 `verification`·`verified_at` 을 같이 갱신.
    2차 자료만 있는 항목은 `primary_text_checked` 로 올리지 않는다.
 3. 11-10 전후 미·중 휴전·희토류 유예가 바뀌면 Claude 에게 알려 줄 것 — 카탈로그
