@@ -16,7 +16,8 @@ RULES = {
  'bauxite': r'\b(?:bauksit|alumina|aluminium|aluminum)\b', 'copper': r'\btembaga\b',
  'tin': r'\btimah\b(?!\s+hitam)', 'cobalt': r'\bkobalt\b', 'manganese': r'\bmangan\b',
  'iron_steel': r'\b(?:besi|baja)\b', 'silica': r'\b(?:silika|kuarsa)\b',
- 'gold_silver': r'\b(?:emas|perak)\b', 'rare_earths': r'\b(?:logam|unsur) tanah jarang\b'
+ 'gold_silver': r'\b(?:emas|perak)\b', 'rare_earths': r'\b(?:logam|unsur) tanah jarang\b',
+ 'hydropower': r'\b(?:tenaga air|plta|hydropower)\b'
 }
 MINING = r'\b(?:pertambangan|mineral|minerba)\b'
 COMMON = r'\b(?:perlindungan dan pengelolaan lingkungan hidup|perizinan berusaha|penanaman modal|perseroan terbatas|ketenagakerjaan|penerimaan negara bukan pajak|perpajakan|tata ruang|kebijakan dan pengaturan (?:ekspor|impor))\b'
@@ -33,7 +34,7 @@ def topics(text):
     text=re.split(r'\btentang\b',text,flags=re.I)[-1]
     found={key for key,pattern in RULES.items() if re.search(pattern,text,re.I)}
     if re.search(MINING,text,re.I):
-        found.update(set(RULES)-{'palm_oil','biofuel'})
+        found.update(set(RULES)-{'palm_oil','biofuel','hydropower'})
     if re.search(COMMON,text,re.I):
         found.update(RULES)
     return sorted(found)
