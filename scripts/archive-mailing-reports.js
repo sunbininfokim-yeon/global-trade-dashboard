@@ -3,6 +3,20 @@ const fs = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
 const { spawnSync } = require("node:child_process");
+const sources = require("../New for anti/scripts/commodity_reports/config/sources.json").sources;
+const publisherType = value => typeof value === "string" ? value.trim().toLowerCase() : "";
+const newsSources = new Set(sources.filter(source => publisherType(source.publisher_type) === "news").map(source => source.id));
+function assertArchiveExecutionContext(env = process.env) {
+  // Local Mac recovery remains available. In Actions, reject branch/tag/PR
+  // writes before loading the snapshot or the production DB adapter.
+  // This is an accident guard; protected environment secrets are still needed
+  // to prevent modified branch code from bypassing repository-side checks.
+  if (env.GITHUB_ACTIONS === "true" && (
+    env.GITHUB_REPOSITORY !== "sunbininfokim-yeon/global-trade-dashboard" ||
+    env.GITHUB_REF !== "refs/heads/main" ||
+    !["schedule", "workflow_dispatch"].includes(env.GITHUB_EVENT_NAME)
+  )) throw new Error("mailing_archive_untrusted_execution");
+}
 function githubSnapshot({ repo = "sunbininfokim-yeon/global-trade-dashboard", ref = "main", gh = path.join(os.homedir(), ".local/bin/gh"), run = spawnSync } = {}) {
   const result = run(gh, ["api", `repos/${repo}/contents/New%20for%20anti/public/data/commodity_reports_v1.json?ref=${encodeURIComponent(ref)}`], { encoding: "utf8", timeout: 30000, maxBuffer: 4 * 1024 * 1024 });
   if (result.status !== 0) throw new Error("report_snapshot_unavailable");
@@ -58,6 +72,8 @@ function normalizeReport(item) {
   };
 }
 async function archiveReports({ file, document, upsert, dryRun = false, skipUndated = false, skipUnclassified = false } = {}) {
+  // Injected adapters are used by offline tests; production uses the default.
+  if (!dryRun && !upsert) assertArchiveExecutionContext();
   const source =
     file ||
     path.join(
@@ -70,9 +86,9 @@ async function archiveReports({ file, document, upsert, dryRun = false, skipUnda
     );
   const data = document || JSON.parse(fs.readFileSync(source, "utf8"));
   if (!Array.isArray(data.items)) throw new Error("invalid_reports_document");
-  // News headlines (publisher_type "news") are a link the panel shows for two
-  // weeks, not an official report: they are never archived or mailed one by one.
-  const items = data.items.filter((item) => item?.publisher_type !== "news");
+  // Cached snapshots can predate publisher_type. The committed source catalog
+  // must also exclude news, even when a snapshot omits or contradicts its type.
+  const items = data.items.filter((item) => publisherType(item?.publisher_type) !== "news" && !newsSources.has(item?.source_id));
   const skippedNews = data.items.length - items.length;
   const normalized = items.map(normalizeReport);
   // A feed can contain several releases at the same permanent URL. Input
@@ -106,9 +122,10 @@ async function archiveReports({ file, document, upsert, dryRun = false, skipUnda
     mode: dryRun ? "preview" : "archive",
   };
 }
-module.exports = { normalizeReport, archiveReports, githubSnapshot };
+module.exports = { normalizeReport, archiveReports, githubSnapshot, assertArchiveExecutionContext };
 if (require.main === module)
   Promise.resolve().then(async () => {
+    if (!process.argv.includes("--dry-run")) assertArchiveExecutionContext();
     const snapshot = process.argv.includes("--github") ? githubSnapshot() : null;
     const result = await archiveReports({ document: snapshot?.document, dryRun: process.argv.includes("--dry-run"), skipUndated: process.argv.includes("--skip-undated"), skipUnclassified: process.argv.includes("--skip-unclassified") });
     console.log(JSON.stringify({ ...result, source_sha: snapshot?.sha || null }));
