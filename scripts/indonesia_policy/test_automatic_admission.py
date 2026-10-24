@@ -86,8 +86,8 @@ class AdmissionTests(unittest.TestCase):
     result=run(root,rpc,collector=collector,fetcher=fetcher,pause=lambda _:None)
    self.assertEqual(result['admitted'],1);self.assertEqual(collector.call_count,1);self.assertEqual(fetcher.call_count,1)
    self.assertEqual(calls.count('idn_ingestion_queue'),1)
-   self.assertTrue((root/'reviewed'/'status.json').exists())
-   self.assertTrue((root/'regional-reviewed'/'status.json').exists())
+   self.assertTrue((Path(root)/'reviewed'/'status.json').exists())
+   self.assertTrue((Path(root)/'regional-reviewed'/'status.json').exists())
  def test_global_stop_never_connects(self):
   with tempfile.TemporaryDirectory() as root:
    Path(root,'STOP').touch();rpc=Mock();self.assertEqual(run(root,rpc)['state'],'stopped');rpc.assert_not_called()
