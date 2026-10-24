@@ -140,11 +140,12 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          if npx wrangler secret list --format json | python3 -c "import json,sys; sys.exit(0 if any(s.get('name')=='GEMINI_API_KEY' for s in json.load(sys.stdin)) else 1)"; then
-            echo "GEMINI_API_KEY secret: present"
-          else
-            echo "::warning::GEMINI_API_KEY secret is missing on the site Worker; Indonesia semantic search stays off"
-          fi
+          npx wrangler secret list --format json | python3 -c "
+          import json,sys
+          names={s.get('name') for s in json.load(sys.stdin)}
+          for n in ('GEMINI_API_KEY','AI_STUDIO_API_KEY'): print(n, 'present' if n in names else 'absent')
+          if not names & {'GEMINI_API_KEY','AI_STUDIO_API_KEY'}: print('::warning::no Gemini key secret on the site Worker; Indonesia semantic search stays off')
+          "
           base=https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/idn/search
           curl -fsS "$base?q=%EC%84%9D%ED%83%84&limit=1" | python3 -c "import json,sys; d=json.load(sys.stdin); print('semantic_enabled:', d.get('semantic_enabled'))"
           # 한국어 의미검색: "석탄 수출 규제"

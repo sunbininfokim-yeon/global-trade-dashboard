@@ -1,5 +1,8 @@
 // IDN-only read API. No collection, provider calls, user data or US fallback.
 import {embedTexts} from './embeddings.mjs';
+// The site Worker keeps its Google AI Studio key as AI_STUDIO_API_KEY (US policy
+// search uses it); local tools set GEMINI_API_KEY. Same API, either works.
+const geminiKey=env=>env.GEMINI_API_KEY||env.AI_STUDIO_API_KEY;
 export const TOPICS = {coal:'석탄',nickel_mining:'니켈',palm_oil:'팜유',biofuel:'바이오연료',bauxite:'보크사이트·알루미늄',copper:'구리',tin:'주석',cobalt:'코발트',manganese:'망간',iron_steel:'철광석·철강',silica:'실리카·석영',gold_silver:'금·은',rare_earths:'희토류',hydropower:'수력발전'};
 const GROUPS = [
  ['석탄','coal','batubara','batu bara'],
@@ -97,7 +100,7 @@ export function createHandler(fetcher=fetch){
     const stream=url.searchParams.get('stream')||null,group=url.searchParams.get('group')||null,type=url.searchParams.get('type')||null;
     if(stream&&!['upstream','midstream','downstream','trading'].includes(stream)||group&&!['business','sector'].includes(group)||type&&!['UU','PP','Perpres','Inpres','Permen','Permendag','PMK','Perda','Pergub','Perbup','Keputusan','Kepmen','Permentan','Permenperin'].includes(type))throw Error('사업단계·자료 필터를 확인하세요.');
     const mode=url.searchParams.get('mode')||'keyword';if(!['keyword','hybrid'].includes(mode))throw Error('검색 방식을 확인하세요.');
-    if(mode==='hybrid'&&q.trim()&&(env.IDN_SEMANTIC_ENABLED!=='true'||!env.GEMINI_API_KEY))return response({error:'인도네시아 문서개요 의미검색이 이 서버에서 활성화되지 않았습니다.'},503);
+    if(mode==='hybrid'&&q.trim()&&(env.IDN_SEMANTIC_ENABLED!=='true'||!geminiKey(env)))return response({error:'인도네시아 문서개요 의미검색이 이 서버에서 활성화되지 않았습니다.'},503);
     const terms=parseTerms(q);
     if(!env.SUPABASE_URL||!env.SUPABASE_SERVICE_ROLE_KEY)return response({error:'인도네시아 검색 연결이 준비되지 않았습니다.',unavailable:true},503);
     let queryVector=null;
@@ -105,7 +108,7 @@ export function createHandler(fetcher=fetch){
      try{
       const cached=queryCache.get(q);
       if(cached&&cached.expires>Date.now())queryVector=cached.vector;
-      else{[queryVector]=await embedTexts([q],env.GEMINI_API_KEY,'RETRIEVAL_QUERY',fetcher);if(queryCache.size>=64)queryCache.delete(queryCache.keys().next().value);queryCache.set(q,{vector:queryVector,expires:Date.now()+600000});}
+      else{[queryVector]=await embedTexts([q],geminiKey(env),'RETRIEVAL_QUERY',fetcher);if(queryCache.size>=64)queryCache.delete(queryCache.keys().next().value);queryCache.set(q,{vector:queryVector,expires:Date.now()+600000});}
      }catch{return response({error:'의미검색 연결에 실패했습니다. 키워드 검색을 이용하세요.'},503);}
     }
     args={p_terms:terms,p_topic:topic,p_level:level,p_jurisdiction:jurisdiction,p_sort:sort,
@@ -148,7 +151,7 @@ export function createHandler(fetcher=fetch){
    const body=await upstream.json();
    if(body===null)return response({error:'저장된 문서가 없습니다.'},404);
    if(body.country!=='IDN')return response({error:'국가별 데이터 검증에 실패했습니다.'},502);
-   if(rpc==='idn_search_documents_v2')body.semantic_enabled=env.IDN_SEMANTIC_ENABLED==='true'&&Boolean(env.GEMINI_API_KEY);
+   if(rpc==='idn_search_documents_v2')body.semantic_enabled=env.IDN_SEMANTIC_ENABLED==='true'&&Boolean(geminiKey(env));
    if(rpc==='idn_search_documents_v2'&&body.items?.length&&args.p_terms?.length){
     // Optional evidence annotations cannot change document ranking, totals or hard filters.
     body.passage_annotations_available=false;
