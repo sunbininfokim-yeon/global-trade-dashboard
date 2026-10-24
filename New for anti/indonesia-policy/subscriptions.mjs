@@ -1,4 +1,4 @@
-import {subscriptionClient} from './subscription-client.mjs?v=2';
+import {subscriptionClient} from './subscription-client.mjs?v=3';
 const topicNames={coal:'석탄',nickel_mining:'니켈',palm_oil:'팜유',biofuel:'바이오연료',bauxite:'보크사이트·알루미늄',copper:'구리',tin:'주석',cobalt:'코발트',manganese:'망간',iron_steel:'철광석·철강',silica:'실리카·석영',gold_silver:'금·은',rare_earths:'희토류',hydropower:'수력발전'};
 const regionPairs=[['coal','Kalimantan Timur','동칼리만탄 · 석탄'],['coal','Kalimantan Tengah','중부칼리만탄 · 석탄'],['palm_oil','Kalimantan Barat','서칼리만탄 · 팜유'],['nickel_mining','Sulawesi Tenggara','동남술라웨시 · 니켈'],['hydropower','Sumatera Utara','북수마트라 · 수력발전']];
 const priorityRegions=new Set(['Kalimantan Timur','Kalimantan Tengah','Kalimantan Barat','Sulawesi Tenggara','Sumatera Utara']);
@@ -38,7 +38,7 @@ export function mountSubscriptions(root,connect,{staticRegions=[]}={}){
   regionMain.replaceChildren(star('region',ALL,allLabel,r.has(ALL)),...others.filter(x=>r.has(x.value)||priorityRegions.has(x.value)).map(x=>star('region',x.value,x.label,r.has(x.value),x.has_local_documents===false?'지방 자료 미확보':'')));
   regionBox.replaceChildren(...others.map(x=>star('region',x.value,x.label===x.value?x.value:x.label,r.has(x.value),x.has_local_documents===false?'지방 자료 미확보':'')));
   const pairBox=root.querySelector('[data-region-pairs]');
-  if(pairBox)pairBox.replaceChildren(...regionPairs.map(([topic,region,label])=>{const on=enabled().some(s=>s.topic===topic&&s.region===region);const b=el('button',`${on?'★':'☆'} ${label}`);b.type='button';b.disabled=busy;b.setAttribute('aria-pressed',String(on));b.addEventListener('click',()=>void togglePair(topic,region));return b;}));
+  if(pairBox)pairBox.replaceChildren(...regionPairs.map(([topic,region,label])=>{const on=enabled().some(s=>s.topic===topic&&s.region===region);const b=el('button',`${on?'★':'☆'} ${label}`);b.type='button';b.className='fav-pair'+(on?' on':'');b.disabled=busy;b.setAttribute('aria-pressed',String(on));b.addEventListener('click',()=>void togglePair(topic,region));return b;}));
   filterRegions();
   list.replaceChildren(...subs.map(s=>{
    const row=el('li'),label=el('span',`${topicNames[s.topic]||s.topic} · ${regions.get(s.region)?.label||s.region} · ${s.enabled?'알림 중':'해제됨'}`),b=el('button',s.enabled?'해제':'다시 켜기');
