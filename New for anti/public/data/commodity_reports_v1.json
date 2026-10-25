@@ -1,6 +1,6 @@
 {
   "schema_version": "commodity-reports-v1",
-  "generated_at": "2026-10-25T19:13:49.606761+00:00",
+  "generated_at": "2026-10-25T22:47:23.275660+00:00",
   "model": {
     "name": "commodity_reports_v1",
     "description": "Official crop/energy/metal reports tagged (commodity × country) so the dashboard's stage-2 country window can show what was published about that country's commodity. The report's text picks the country, not the publisher: a USDA release on Brazilian wheat belongs on BRA·wheat.",
@@ -17,15 +17,15 @@
     "per_bucket_limit": 500
   },
   "stats": {
-    "sources_ok": 78,
-    "sources_failed": 2,
-    "raw_items": 1773,
-    "scored": 522,
-    "unclassified": 910,
-    "rejected": 82,
-    "published": 417,
+    "sources_ok": 77,
+    "sources_failed": 3,
+    "raw_items": 1759,
+    "scored": 533,
+    "unclassified": 900,
+    "rejected": 81,
+    "published": 419,
     "commodities": 34,
-    "buckets": 188
+    "buckets": 189
   },
   "feed_status": [
     {
@@ -117,12 +117,11 @@
     },
     {
       "source_id": "us_fas_gain_reports",
-      "ok": true,
-      "count": 36,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "no list page answered: /data/commodities/wheat: HTTPError; /data/commodities/corn: HTTPError; /data/commodities/rice: HTTPError",
       "mode": "live",
-      "note": "45 list pages, 49 reports linked, 11 read, 25 already known",
-      "archived": 23
+      "carried_over": 45
     },
     {
       "source_id": "my_mpob",
@@ -433,7 +432,7 @@
       "count": 10,
       "error": null,
       "mode": "live",
-      "archived": 10
+      "archived": 11
     },
     {
       "source_id": "my_mpoc_news",
@@ -471,7 +470,7 @@
       "count": 40,
       "error": null,
       "mode": "live",
-      "archived": 10
+      "archived": 11
     },
     {
       "source_id": "gn_idn_esdm_id",
@@ -487,7 +486,7 @@
       "count": 40,
       "error": null,
       "mode": "live",
-      "archived": 16
+      "archived": 17
     },
     {
       "source_id": "gn_africa_minerals",
@@ -635,12 +634,12 @@
     "error": null
   },
   "news": {
-    "rows": 189,
-    "folded_same_story": 1,
-    "dropped_untrusted_outlet": 97,
+    "rows": 191,
+    "folded_same_story": 0,
+    "dropped_untrusted_outlet": 98,
     "untrusted_outlets": {
+      "yahoo.com": 6,
       "cruxinvestor.com": 5,
-      "yahoo.com": 5,
       "commodity-board.com": 4,
       "investingnews.com": 3,
       "briefs.co": 3,
@@ -652,40 +651,38 @@
       "cnbcafrica.com": 2,
       "atlanticcouncil.org": 2,
       "energy-news-network.com": 2,
-      "miningmx.com": 2,
-      "industriall-union.org": 2,
-      "instagram.com": 2,
-      "acleddata.com": 2,
+      "geomechanics.io": 2,
       "petromindo.com": 1,
       "idnfinancials.com": 1,
       "detiksultra.com": 1,
       "demokratis.co.id": 1,
-      "listrikindonesia.com": 1,
       "kabarbursa.com": 1,
-      "dtnpf.com": 1,
+      "listrikindonesia.com": 1,
+      "agrolatam.com": 1,
       "sei.org": 1,
+      "dtnpf.com": 1,
       "eastasiaforum.org": 1,
       "toyota-tsusho.com": 1,
       "ua.news": 1,
       "or.jp": 1,
-      "chemanalyst.com": 1
+      "theagribiz.com": 1,
+      "chemanalyst.com": 1,
+      "gapki.id": 1
     },
     "skip_refs": [
       "6319968bba5c",
       "645fc50de466",
       "6f9c47bf6bfb",
       "a89857e9211f",
-      "b00953366cd4",
       "c90b7fc98d9d",
-      "e50e0bf0de37",
-      "f21845926b8f"
+      "e50e0bf0de37"
     ],
     "resolved_new": 150,
-    "resolved_cached": 58,
+    "resolved_cached": 66,
     "unresolved": 0,
     "outlet_mismatch": 0,
-    "skipped_known": 8,
-    "deferred": 15
+    "skipped_known": 7,
+    "deferred": 3
   },
   "boards": {
     "export_controls": [
@@ -1253,11 +1250,11 @@
       "PER": [
         "154c30b8c72eee8f"
       ],
-      "GBR": [
-        "5182ceca72889750"
-      ],
       "CAN": [
         "929e1ee5c8475871"
+      ],
+      "GBR": [
+        "5182ceca72889750"
       ],
       "MEX": [
         "bcb5a45294b9ba8f"
@@ -1859,7 +1856,11 @@
         "2d2bfac42dfc8247"
       ],
       "ETH": [
+        "ad5fc60f8e261ca6",
         "9bb5774b8de8434c"
+      ],
+      "BFA": [
+        "ad5fc60f8e261ca6"
       ],
       "CAN": [
         "929e1ee5c8475871"
@@ -2066,6 +2067,7 @@
         "9cecde2549d691eb"
       ],
       "CHN": [
+        "fcecf4a22db7b8f0",
         "f79031a41821b87e"
       ],
       "USA": [
@@ -2155,7 +2157,7 @@
       "country_source": "source_default",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 4.996,
+      "importance": 4.981,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -2187,7 +2189,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.798,
+      "importance": 4.784,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2219,7 +2221,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.707,
+      "importance": 4.694,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2251,7 +2253,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.692,
+      "importance": 4.681,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2285,7 +2287,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 4.306,
+      "importance": 4.293,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "has_figure",
@@ -2318,7 +2320,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.259,
+      "importance": 4.247,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2350,7 +2352,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.152,
+      "importance": 4.143,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2383,7 +2385,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 4.007,
+      "importance": 3.996,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2415,7 +2417,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.878,
+      "importance": 3.869,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2447,7 +2449,7 @@
       "country_source": "text",
       "series_id": "MPOB_SUPPLY_DEMAND",
       "series_label_ko": "MPOB 팜유 수급",
-      "importance": 3.779,
+      "importance": 3.768,
       "reasons": [
         "series:MPOB_SUPPLY_DEMAND",
         "has_figure",
@@ -2481,7 +2483,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.644,
+      "importance": 3.636,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2513,7 +2515,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.566,
+      "importance": 3.558,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2545,7 +2547,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.509,
+      "importance": 3.5,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2578,7 +2580,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.509,
+      "importance": 3.5,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -2610,7 +2612,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.304,
+      "importance": 3.298,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2644,7 +2646,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 3.168,
+      "importance": 3.161,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -2676,7 +2678,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.146,
+      "importance": 3.143,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2709,7 +2711,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.121,
+      "importance": 3.117,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2742,7 +2744,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.117,
+      "importance": 3.113,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2775,7 +2777,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 3.094,
+      "importance": 3.085,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -2809,7 +2811,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.03,
+      "importance": 3.025,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2839,7 +2841,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 3.003,
+      "importance": 2.996,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language"
@@ -2869,7 +2871,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 3.002,
+      "importance": 2.993,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -2900,7 +2902,7 @@
       "country_source": "text",
       "series_id": "COCHILCO_COPPER_MARKET",
       "series_label_ko": "Cochilco 구리시장 보고",
-      "importance": 2.949,
+      "importance": 2.943,
       "reasons": [
         "series:COCHILCO_COPPER_MARKET",
         "has_figure",
@@ -2932,7 +2934,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.911,
+      "importance": 2.904,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -2963,7 +2965,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.857,
+      "importance": 2.855,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -2996,7 +2998,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.815,
+      "importance": 2.809,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3027,7 +3029,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.77,
+      "importance": 2.763,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3058,7 +3060,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.77,
+      "importance": 2.763,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3089,7 +3091,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.722,
+      "importance": 2.713,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3121,7 +3123,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.71,
+      "importance": 2.706,
       "reasons": [
         "series:EIA_STEO",
         "has_figure",
@@ -3154,7 +3156,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.665,
+      "importance": 2.662,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -3186,7 +3188,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.622,
+      "importance": 2.619,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -3218,7 +3220,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.603,
+      "importance": 2.597,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3251,7 +3253,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.603,
+      "importance": 2.597,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3282,7 +3284,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.603,
+      "importance": 2.597,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3313,7 +3315,7 @@
       "country_source": "text",
       "series_id": "EIA_STEO",
       "series_label_ko": "EIA 단기 에너지 전망",
-      "importance": 2.579,
+      "importance": 2.573,
       "reasons": [
         "series:EIA_STEO",
         "country_in_text"
@@ -3344,7 +3346,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.564,
+      "importance": 2.559,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3375,7 +3377,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.527,
+      "importance": 2.522,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3406,7 +3408,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.507,
+      "importance": 2.505,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -3439,7 +3441,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.498,
+      "importance": 2.495,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -3655,7 +3657,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.328,
+      "importance": 2.323,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3687,7 +3689,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.328,
+      "importance": 2.323,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -3716,7 +3718,7 @@
       "country_source": "none",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.252,
+      "importance": 2.247,
       "reasons": [
         "series:USDA_GAIN"
       ],
@@ -3746,7 +3748,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.237,
+      "importance": 2.236,
       "reasons": [
         "series:USDA_GAIN",
         "has_figure",
@@ -3778,7 +3780,7 @@
       "country_source": "text",
       "series_id": "USDA_OUTLOOK",
       "series_label_ko": "USDA 품목별 아웃룩",
-      "importance": 2.14,
+      "importance": 2.133,
       "reasons": [
         "series:USDA_OUTLOOK",
         "country_in_text"
@@ -3809,7 +3811,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.139,
+      "importance": 2.133,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3843,7 +3845,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.063,
+      "importance": 2.057,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3876,7 +3878,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.055,
+      "importance": 2.049,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -3909,7 +3911,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 2.024,
+      "importance": 2.023,
       "reasons": [
         "series:USDA_GAIN",
         "revision_language",
@@ -3939,7 +3941,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.019,
+      "importance": 2.014,
       "reasons": [
         "has_figure",
         "revision_language"
@@ -3970,7 +3972,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 2.009,
+      "importance": 2.003,
       "reasons": [
         "country_in_text"
       ],
@@ -4000,7 +4002,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.995,
+      "importance": 1.99,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4031,7 +4033,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.989,
+      "importance": 1.983,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -4064,7 +4066,7 @@
       "country_source": "text",
       "series_id": "USDA_GAIN",
       "series_label_ko": "USDA GAIN 주재관 보고",
-      "importance": 1.888,
+      "importance": 1.886,
       "reasons": [
         "series:USDA_GAIN",
         "country_in_text"
@@ -4093,7 +4095,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.87,
+      "importance": 1.864,
       "src_ref": "9e602c39898d",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -4122,7 +4124,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.838,
+      "importance": 1.835,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -4153,7 +4155,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.836,
+      "importance": 1.832,
       "reasons": [
         "has_figure",
         "revision_language",
@@ -4185,7 +4187,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.829,
+      "importance": 1.824,
       "reasons": [
         "has_figure"
       ],
@@ -4217,7 +4219,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.766,
+      "importance": 1.76,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -4248,7 +4250,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.753,
+      "importance": 1.748,
       "reasons": [
         "country_in_text"
       ],
@@ -4278,7 +4280,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.705,
+      "importance": 1.7,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -4390,7 +4392,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.661,
+      "importance": 1.656,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4419,7 +4421,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.659,
+      "importance": 1.655,
       "src_ref": "49b541b5364a",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -4481,7 +4483,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.616,
+      "importance": 1.612,
       "reasons": [
         "country_in_text"
       ],
@@ -4511,7 +4513,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.565,
+      "importance": 1.561,
       "reasons": [
         "country_in_text"
       ],
@@ -4629,7 +4631,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.542,
+      "importance": 1.538,
       "reasons": [
         "country_in_text"
       ],
@@ -4659,7 +4661,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.542,
+      "importance": 1.537,
       "reasons": [
         "revision_language",
         "country_in_text"
@@ -4691,7 +4693,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.534,
+      "importance": 1.53,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4722,7 +4724,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.529,
+      "importance": 1.526,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -4753,7 +4755,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.524,
+      "importance": 1.52,
       "reasons": [
         "country_in_text"
       ],
@@ -4781,7 +4783,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.484,
+      "importance": 1.479,
       "agency_url": "https://en.antaranews.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-24T18:58:05.091184+00:00"
@@ -4811,73 +4813,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.479,
+      "importance": 1.475,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://gapki.id/",
       "first_seen_at": "2026-10-25T05:13:09.460017+00:00"
-    },
-    {
-      "id": "c7c90cf6cc411310",
-      "title": {
-        "original": "Pelepasan Ekspor Produk Olahan Kopi PT Nestle Indonesia",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": "Menteri Perdagangan, Budi Santoso bersama Ketua MPR RI, Ahmad Muzani melakukan pelepasan ekspor produk olahan kopi PT Nestle Indonesia ke Melbourne, Australia yang berlangsung di sela penyelenggaraan Trade Expo Indonesia ke-41 di BSD City, Tangerang, Banten, Kamis (15 Okt).",
-      "url": "https://www.kemendag.go.id/berita/foto/pelepasan-ekspor-produk-olahan-kopi-pt-nestle-indonesia",
-      "published_at": "2026-10-15T16:04:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "coffee"
-      ],
-      "countries": [
-        "IDN",
-        "AUS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.467,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
-    },
-    {
-      "id": "0c511d86c84c17c2",
-      "title": {
-        "original": "Kemendag Dorong Kopi Indonesia Tembus Pasar Global melalui Penguatan Mutu dan Nilai Tambah",
-        "original_lang": "id",
-        "ko": null
-      },
-      "summary": "Kabupaten Tangerang, 15 Oktober 2026 – Kementerian Perdagangan terus mendorong peningkatan daya saing kopi Indonesia di pasar internasional melalui pemenuhan standar mutu, pemahaman persyaratan negara tujuan, dan pengembangan produk bernilai tambah. Upaya tersebut diwujudkan melalui Forum Bisnis “Brewing Global Success: Strategi Memenuhi Standar Global dan Menciptakan Produk Kopi Bernilai Tambah Tinggi” dalam gelaran Trade Expo Indonesia (TEI) ke-41 di ICE BSD City, Kabupaten Tangerang, Banten, Kamis (15/10).Kegiatan dibuka secara resmi oleh Sekretaris Direktorat Jenderal Perlindungan…",
-      "url": "https://www.kemendag.go.id/berita/siaran-pers/kemendag-dorong-kopi-indonesia-tembus-pasar-global-melalui-penguatan-mutu-dan-nilai-tambah",
-      "published_at": "2026-10-15T15:53:00+00:00",
-      "agency": "Ministry of Trade of Indonesia",
-      "agency_ko": "인도네시아 무역부",
-      "source_id": "id_kemendag",
-      "commodities": [
-        "coffee"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.467,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.kemendag.go.id/",
-      "first_seen_at": "2026-10-15T20:00:47.021398+00:00"
     },
     {
       "id": "4098432089e3ba07",
@@ -5050,6 +4991,67 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "c7c90cf6cc411310",
+      "title": {
+        "original": "Pelepasan Ekspor Produk Olahan Kopi PT Nestle Indonesia",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": "Menteri Perdagangan, Budi Santoso bersama Ketua MPR RI, Ahmad Muzani melakukan pelepasan ekspor produk olahan kopi PT Nestle Indonesia ke Melbourne, Australia yang berlangsung di sela penyelenggaraan Trade Expo Indonesia ke-41 di BSD City, Tangerang, Banten, Kamis (15 Okt).",
+      "url": "https://www.kemendag.go.id/berita/foto/pelepasan-ekspor-produk-olahan-kopi-pt-nestle-indonesia",
+      "published_at": "2026-10-15T16:04:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "IDN",
+        "AUS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.463,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
+    },
+    {
+      "id": "0c511d86c84c17c2",
+      "title": {
+        "original": "Kemendag Dorong Kopi Indonesia Tembus Pasar Global melalui Penguatan Mutu dan Nilai Tambah",
+        "original_lang": "id",
+        "ko": null
+      },
+      "summary": "Kabupaten Tangerang, 15 Oktober 2026 – Kementerian Perdagangan terus mendorong peningkatan daya saing kopi Indonesia di pasar internasional melalui pemenuhan standar mutu, pemahaman persyaratan negara tujuan, dan pengembangan produk bernilai tambah. Upaya tersebut diwujudkan melalui Forum Bisnis “Brewing Global Success: Strategi Memenuhi Standar Global dan Menciptakan Produk Kopi Bernilai Tambah Tinggi” dalam gelaran Trade Expo Indonesia (TEI) ke-41 di ICE BSD City, Kabupaten Tangerang, Banten, Kamis (15/10).Kegiatan dibuka secara resmi oleh Sekretaris Direktorat Jenderal Perlindungan…",
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/kemendag-dorong-kopi-indonesia-tembus-pasar-global-melalui-penguatan-mutu-dan-nilai-tambah",
+      "published_at": "2026-10-15T15:53:00+00:00",
+      "agency": "Ministry of Trade of Indonesia",
+      "agency_ko": "인도네시아 무역부",
+      "source_id": "id_kemendag",
+      "commodities": [
+        "coffee"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.463,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.kemendag.go.id/",
+      "first_seen_at": "2026-10-15T20:00:47.021398+00:00"
+    },
+    {
       "id": "51e9b64989fadc3d",
       "title": {
         "original": "Milestone for Urenco USA expansion project",
@@ -5073,7 +5075,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.45,
+      "importance": 1.446,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5102,7 +5104,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.447,
+      "importance": 1.443,
       "agency_url": "https://en.antaranews.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
@@ -5131,7 +5133,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.434,
+      "importance": 1.43,
       "reasons": [
         "country_in_text"
       ],
@@ -5162,7 +5164,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.411,
+      "importance": 1.407,
       "reasons": [
         "country_in_text"
       ],
@@ -5207,7 +5209,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.4,
+      "importance": 1.398,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5238,7 +5240,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.394,
+      "importance": 1.39,
       "reasons": [
         "country_in_text"
       ],
@@ -5268,7 +5270,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.38,
+      "importance": 1.377,
       "reasons": [
         "has_figure"
       ],
@@ -5297,7 +5299,7 @@
       "country_source": "none",
       "series_id": "WORLDSTEEL_CRUDE_STEEL",
       "series_label_ko": "세계철강협회 월간 조강 생산",
-      "importance": 1.37,
+      "importance": 1.369,
       "reasons": [
         "series:WORLDSTEEL_CRUDE_STEEL",
         "has_figure"
@@ -5328,7 +5330,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.367,
+      "importance": 1.363,
       "reasons": [
         "country_in_text"
       ],
@@ -5357,7 +5359,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.356,
+      "importance": 1.352,
       "reasons": [
         "country_in_text"
       ],
@@ -5373,38 +5375,6 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-19T15:50:55.048765+00:00"
-    },
-    {
-      "id": "9fc6c0f2f5e3568a",
-      "title": {
-        "original": "Higher tin prices and output lift MSC Q2 revenue",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Malaysia Smelting Corporation (MSC) reported higher revenue and profit year-on-year in Q2 2026, supported by increased refined tin sales, stronger tin prices and improved performance from its mining business. Revenue reached RM637.3 million (approximately US$151 million), up 68.2% from RM379 million (approximately US$93 million) in Q2 2025. MSC attributed the increase primarily to a 44.7% rise in refined tin sales volumes and a 60.3% higher average tin price compared with… Read the full article by registering for free on Tin Desk The post Higher tin prices and output lift MSC Q2 revenue…",
-      "url": "https://www.internationaltin.org/higher-tin-prices-and-output-lift-msc-q2-revenue/?utm_source=rss&utm_medium=rss&utm_campaign=higher-tin-prices-and-output-lift-msc-q2-revenue",
-      "published_at": "2026-08-17T09:32:03+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "MYS"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.351,
-      "reasons": [
-        "has_figure",
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "aad561e1acbfd247",
@@ -5564,6 +5534,38 @@
       "first_seen_at": "2026-10-23T20:03:54.076904+00:00"
     },
     {
+      "id": "9fc6c0f2f5e3568a",
+      "title": {
+        "original": "Higher tin prices and output lift MSC Q2 revenue",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Malaysia Smelting Corporation (MSC) reported higher revenue and profit year-on-year in Q2 2026, supported by increased refined tin sales, stronger tin prices and improved performance from its mining business. Revenue reached RM637.3 million (approximately US$151 million), up 68.2% from RM379 million (approximately US$93 million) in Q2 2025. MSC attributed the increase primarily to a 44.7% rise in refined tin sales volumes and a 60.3% higher average tin price compared with… Read the full article by registering for free on Tin Desk The post Higher tin prices and output lift MSC Q2 revenue…",
+      "url": "https://www.internationaltin.org/higher-tin-prices-and-output-lift-msc-q2-revenue/?utm_source=rss&utm_medium=rss&utm_campaign=higher-tin-prices-and-output-lift-msc-q2-revenue",
+      "published_at": "2026-08-17T09:32:03+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "MYS"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.35,
+      "reasons": [
+        "has_figure",
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
       "id": "44e05f03eab98000",
       "title": {
         "original": "Precio spot del carbonato de litio alcanzó US$ 19.525 por tonelada en agosto",
@@ -5586,7 +5588,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.345,
+      "importance": 1.343,
       "reasons": [
         "has_figure"
       ],
@@ -5616,7 +5618,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.34,
+      "importance": 1.339,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -5646,7 +5648,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.312,
+      "importance": 1.308,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -5684,7 +5686,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.306,
+      "importance": 1.302,
       "reasons": [
         "country_in_text"
       ],
@@ -5712,7 +5714,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.3,
+      "importance": 1.296,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T20:03:54.076904+00:00"
@@ -5738,7 +5740,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.296,
+      "importance": 1.292,
       "agency_url": "https://en.antaranews.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
@@ -5767,7 +5769,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.288,
+      "importance": 1.284,
       "reasons": [
         "country_in_text"
       ],
@@ -5796,7 +5798,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.28,
+      "importance": 1.276,
       "reasons": [
         "country_in_text"
       ],
@@ -5836,7 +5838,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.275,
+      "importance": 1.271,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T20:03:54.076904+00:00"
@@ -5865,7 +5867,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.26,
+      "importance": 1.256,
       "reasons": [
         "country_in_text"
       ],
@@ -5895,7 +5897,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.259,
+      "importance": 1.255,
       "reasons": [
         "country_in_text"
       ],
@@ -5923,7 +5925,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.256,
+      "importance": 1.253,
       "agency_url": "https://allafrica.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -5950,7 +5952,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.256,
+      "importance": 1.252,
       "reasons": [
         "country_in_text"
       ],
@@ -5994,7 +5996,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.246,
+      "importance": 1.243,
       "reasons": [
         "country_in_text"
       ],
@@ -6025,7 +6027,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.245,
+      "importance": 1.242,
       "reasons": [
         "country_in_text"
       ],
@@ -6054,7 +6056,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.238,
+      "importance": 1.234,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -6083,7 +6085,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.237,
+      "importance": 1.233,
       "reasons": [
         "country_in_text"
       ],
@@ -6112,7 +6114,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.233,
+      "importance": 1.23,
       "reasons": [
         "country_in_text"
       ],
@@ -6152,7 +6154,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.223,
+      "importance": 1.22,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -6178,7 +6180,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.222,
+      "importance": 1.219,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-13T19:30:24.698725+00:00"
@@ -6204,7 +6206,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.216,
+      "importance": 1.213,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -6232,7 +6234,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.216,
+      "importance": 1.212,
       "reasons": [
         "country_in_text"
       ],
@@ -6414,7 +6416,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.212,
+      "importance": 1.208,
       "reasons": [
         "country_in_text"
       ],
@@ -6443,7 +6445,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.211,
+      "importance": 1.207,
       "reasons": [
         "country_in_text"
       ],
@@ -6486,12 +6488,42 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.187,
+      "importance": 1.184,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.world-nuclear-news.org/",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
+    },
+    {
+      "id": "d6be49771c7e2707",
+      "title": {
+        "original": "Kenya: Barley - The Alternative Lifeline for Kenyan Wheat Farmers",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Kenyan wheat farmers are increasingly switching to barley to escape high costs, rigid pricing, and import competition. The transition is seamless because both...",
+      "url": "https://www.fas.usda.gov/data/gain/2026/09/kenya-barley-alternative-lifeline-kenyan-wheat-farmers",
+      "published_at": "2026-09-15T09:09:00+00:00",
+      "agency": "USDA FAS GAIN",
+      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
+      "source_id": "us_fas_gain_reports",
+      "commodities": [
+        "wheat"
+      ],
+      "countries": [
+        "KEN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.171,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.fas.usda.gov/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "89c2ae835e6ab4cd",
@@ -6517,7 +6549,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.173,
+      "importance": 1.171,
       "reasons": [
         "country_in_text"
       ],
@@ -6548,7 +6580,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.173,
+      "importance": 1.171,
       "reasons": [
         "country_in_text"
       ],
@@ -6579,42 +6611,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.173,
+      "importance": 1.171,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T15:50:24.550348+00:00"
-    },
-    {
-      "id": "d6be49771c7e2707",
-      "title": {
-        "original": "Kenya: Barley - The Alternative Lifeline for Kenyan Wheat Farmers",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Kenyan wheat farmers are increasingly switching to barley to escape high costs, rigid pricing, and import competition. The transition is seamless because both...",
-      "url": "https://www.fas.usda.gov/data/gain/2026/09/kenya-barley-alternative-lifeline-kenyan-wheat-farmers",
-      "published_at": "2026-09-15T09:09:00+00:00",
-      "agency": "USDA FAS GAIN",
-      "agency_ko": "미 농무부 해외농업국(FAS) GAIN 보고서",
-      "source_id": "us_fas_gain_reports",
-      "commodities": [
-        "wheat"
-      ],
-      "countries": [
-        "KEN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.173,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.fas.usda.gov/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "976dad99c36e6871",
@@ -6638,7 +6640,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.171,
+      "importance": 1.168,
       "reasons": [],
       "agency_url": "https://www.fas.usda.gov/",
       "first_seen_at": "2026-10-04T14:21:01.247690+00:00"
@@ -6667,7 +6669,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.149,
+      "importance": 1.148,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -6698,7 +6700,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.149,
+      "importance": 1.146,
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-14T13:59:45.416517+00:00"
@@ -6722,7 +6724,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 1.135,
+      "importance": 1.131,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -6749,7 +6751,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.13,
+      "importance": 1.127,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6786,7 +6788,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.13,
+      "importance": 1.127,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -6822,7 +6824,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.129,
+      "importance": 1.126,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -6849,7 +6851,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.128,
+      "importance": 1.126,
       "reasons": [
         "country_in_text"
       ],
@@ -6892,7 +6894,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.12,
+      "importance": 1.117,
       "reasons": [
         "country_in_text"
       ],
@@ -6924,7 +6926,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.119,
+      "importance": 1.115,
       "reasons": [
         "country_in_text"
       ],
@@ -6956,7 +6958,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.119,
+      "importance": 1.115,
       "reasons": [
         "country_in_text"
       ],
@@ -6986,7 +6988,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.114,
+      "importance": 1.113,
       "reasons": [
         "country_in_text"
       ],
@@ -7016,7 +7018,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.109,
+      "importance": 1.107,
       "reasons": [
         "country_in_text"
       ],
@@ -7090,7 +7092,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.102,
+      "importance": 1.099,
       "reasons": [
         "country_in_text"
       ],
@@ -7120,12 +7122,43 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.102,
+      "importance": 1.099,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
+    },
+    {
+      "id": "25541b98e1af190a",
+      "title": {
+        "original": "Canadian LNG project signs third international offtake deal",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Canada has what the world wants, and to build a more prosperous, sovereign and resilient economy, we are expanding and strengthening our international energy exports. Providing Canadian energy to our allies reinforces global energy security, domestic prosperity, lower-carbon energy markets and Canada’s position as an energy superpower.",
+      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canadian-lng-project-signs-third-international-offtake-deal.html",
+      "published_at": "2026-09-15T23:07:23+00:00",
+      "agency": "Natural Resources Canada",
+      "agency_ko": "캐나다 천연자원부",
+      "source_id": "ca_nrcan",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "CAN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.094,
+      "reasons": [
+        "revision_language",
+        "country_in_text"
+      ],
+      "agency_url": "https://api.io.canada.ca/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "bafa4acd0c82c71b",
@@ -7151,43 +7184,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.097,
+      "importance": 1.094,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.world-nuclear-news.org/",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
-    },
-    {
-      "id": "25541b98e1af190a",
-      "title": {
-        "original": "Canadian LNG project signs third international offtake deal",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Canada has what the world wants, and to build a more prosperous, sovereign and resilient economy, we are expanding and strengthening our international energy exports. Providing Canadian energy to our allies reinforces global energy security, domestic prosperity, lower-carbon energy markets and Canada’s position as an energy superpower.",
-      "url": "https://www.canada.ca/en/natural-resources-canada/news/2026/09/canadian-lng-project-signs-third-international-offtake-deal.html",
-      "published_at": "2026-09-15T23:07:23+00:00",
-      "agency": "Natural Resources Canada",
-      "agency_ko": "캐나다 천연자원부",
-      "source_id": "ca_nrcan",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "CAN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.096,
-      "reasons": [
-        "revision_language",
-        "country_in_text"
-      ],
-      "agency_url": "https://api.io.canada.ca/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "f79031a41821b87e",
@@ -7212,7 +7214,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.093,
+      "importance": 1.09,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -7238,42 +7240,12 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.09,
+      "importance": 1.087,
       "src_ref": "24bf45065a4f",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
       "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-23T20:03:54.076904+00:00"
-    },
-    {
-      "id": "de49cf7992871dbf",
-      "title": {
-        "original": "Natural Gas Monthly",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "(Wed, 30 Sep 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
-      "url": "http://www.eia.gov/naturalgas/monthly/",
-      "published_at": "2026-09-30T05:00:00+00:00",
-      "agency": "EIA",
-      "agency_ko": "미 에너지정보청",
-      "source_id": "us_eia_whats_new",
-      "commodities": [
-        "gas"
-      ],
-      "countries": [
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.086,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eia.gov/",
-      "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
     },
     {
       "id": "3712a39225da7475",
@@ -7300,13 +7272,43 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.085,
+      "importance": 1.083,
       "reasons": [
         "has_figure",
         "country_in_text"
       ],
       "agency_url": "https://www.nucnet.org/",
       "first_seen_at": "2026-10-16T05:25:12.584037+00:00"
+    },
+    {
+      "id": "de49cf7992871dbf",
+      "title": {
+        "original": "Natural Gas Monthly",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "(Wed, 30 Sep 2026) The <em>Natural Gas Monthly</em> presents volume and price data each month for natural gas production, distribution, consumption, and interstate pipeline activities. NGM also reports producer-related activities and underground storage data. NGM data on 50 U.S. states and the District of Columbia are collected on EIA surveys.",
+      "url": "http://www.eia.gov/naturalgas/monthly/",
+      "published_at": "2026-09-30T05:00:00+00:00",
+      "agency": "EIA",
+      "agency_ko": "미 에너지정보청",
+      "source_id": "us_eia_whats_new",
+      "commodities": [
+        "gas"
+      ],
+      "countries": [
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.083,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eia.gov/",
+      "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
     },
     {
       "id": "21edb52a7afb7a80",
@@ -7329,7 +7331,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.077,
+      "importance": 1.074,
       "src_ref": "9765d83a4235",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -7360,7 +7362,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.074,
+      "importance": 1.071,
       "reasons": [
         "country_in_text"
       ],
@@ -7388,7 +7390,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.073,
+      "importance": 1.07,
       "src_ref": "43374954267d",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -7414,7 +7416,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 1.059,
+      "importance": 1.056,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -7440,7 +7442,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.057,
+      "importance": 1.054,
       "src_ref": "2eaf2ed2aeef",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -7469,7 +7471,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.056,
+      "importance": 1.054,
       "reasons": [
         "country_in_text"
       ],
@@ -7512,7 +7514,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.051,
+      "importance": 1.048,
       "reasons": [
         "country_in_text"
       ],
@@ -7538,99 +7540,10 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 1.05,
+      "importance": 1.047,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
-    },
-    {
-      "id": "3cac3e995aa9e757",
-      "title": {
-        "original": "Tin to be traded on Indonesia’s new commodity exchange",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Tin is expected to be the first commodity traded on Indonesia’s new Mineral and Strategic Commodity Exchange (BMKS, or ICOMEX), with trading scheduled to begin on 4 January 2027. Following a hearing with Indonesia’s parliament, Sarjito, OJK’s Chief Executive for Mineral and Strategic Commodity Exchange Supervision, told local media that tin was chosen to “encourage transparency in trading”… Read the full article for free by registering on Tin Desk The post Tin to be traded on Indonesia’s new commodity exchange appeared first on International Tin Association .",
-      "url": "https://www.internationaltin.org/35445-2/?utm_source=rss&utm_medium=rss&utm_campaign=35445-2",
-      "published_at": "2026-09-17T11:44:17+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [
-        "IDN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.04,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "a8d44cf55ee81730",
-      "title": {
-        "original": "[SMM Gold Flash] Ghana’s Gold Board reports that 5.4 tonnes of the 5.",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://news.metal.com/newscontent/104171451-ghana-reports-refining-54-tonnes-of-small-scale-gold-locally-in-october",
-      "published_at": "2026-10-21T10:03:00+00:00",
-      "agency": "Shanghai Metals Market",
-      "agency_ko": "Shanghai Metals Market",
-      "source_id": "gn_west_africa_gold",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [
-        "GHA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "importance": 1.04,
-      "src_ref": "ea8eedaafc9e",
-      "publisher_type": "news",
-      "source_agency": "Google News",
-      "source_agency_ko": "구글 뉴스 경유",
-      "first_seen_at": "2026-10-23T05:17:08.311517+00:00"
-    },
-    {
-      "id": "44df574f7511371e",
-      "title": {
-        "original": "Hyundai E&C tests used fuel repository excavation equipment",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "South Korea's Hyundai Engineering & Construction announced it has employed equipment it has developed to excavate a full-scale deposition hole for used nuclear fuel disposal in the bedrock at its research demonstration site.",
-      "url": "https://www.world-nuclear-news.org/articles/hyundai-ec-tests-repository-excavation-equipment",
-      "published_at": "2026-10-12T13:18:01+00:00",
-      "agency": "World Nuclear News",
-      "agency_ko": "월드 뉴클리어 뉴스(WNN)",
-      "source_id": "int_wnn",
-      "commodities": [
-        "uranium",
-        "uranium_ore"
-      ],
-      "countries": [
-        "KOR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.039,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.world-nuclear-news.org/",
-      "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
     },
     {
       "id": "7796ff7e4f3b30ae",
@@ -8354,6 +8267,95 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "3cac3e995aa9e757",
+      "title": {
+        "original": "Tin to be traded on Indonesia’s new commodity exchange",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Tin is expected to be the first commodity traded on Indonesia’s new Mineral and Strategic Commodity Exchange (BMKS, or ICOMEX), with trading scheduled to begin on 4 January 2027. Following a hearing with Indonesia’s parliament, Sarjito, OJK’s Chief Executive for Mineral and Strategic Commodity Exchange Supervision, told local media that tin was chosen to “encourage transparency in trading”… Read the full article for free by registering on Tin Desk The post Tin to be traded on Indonesia’s new commodity exchange appeared first on International Tin Association .",
+      "url": "https://www.internationaltin.org/35445-2/?utm_source=rss&utm_medium=rss&utm_campaign=35445-2",
+      "published_at": "2026-09-17T11:44:17+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [
+        "IDN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.039,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "a8d44cf55ee81730",
+      "title": {
+        "original": "[SMM Gold Flash] Ghana’s Gold Board reports that 5.4 tonnes of the 5.",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://news.metal.com/newscontent/104171451-ghana-reports-refining-54-tonnes-of-small-scale-gold-locally-in-october",
+      "published_at": "2026-10-21T10:03:00+00:00",
+      "agency": "Shanghai Metals Market",
+      "agency_ko": "Shanghai Metals Market",
+      "source_id": "gn_west_africa_gold",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "GHA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 1.037,
+      "src_ref": "ea8eedaafc9e",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-23T05:17:08.311517+00:00"
+    },
+    {
+      "id": "44df574f7511371e",
+      "title": {
+        "original": "Hyundai E&C tests used fuel repository excavation equipment",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "South Korea's Hyundai Engineering & Construction announced it has employed equipment it has developed to excavate a full-scale deposition hole for used nuclear fuel disposal in the bedrock at its research demonstration site.",
+      "url": "https://www.world-nuclear-news.org/articles/hyundai-ec-tests-repository-excavation-equipment",
+      "published_at": "2026-10-12T13:18:01+00:00",
+      "agency": "World Nuclear News",
+      "agency_ko": "월드 뉴클리어 뉴스(WNN)",
+      "source_id": "int_wnn",
+      "commodities": [
+        "uranium",
+        "uranium_ore"
+      ],
+      "countries": [
+        "KOR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.036,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.world-nuclear-news.org/",
+      "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
+    },
+    {
       "id": "d028f1046c1200ee",
       "title": {
         "original": "Indonesia accelerates paddy field creation in Merauke for productivity",
@@ -8374,10 +8376,38 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.037,
+      "importance": 1.034,
       "agency_url": "https://en.antaranews.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-25T19:13:49.606761+00:00"
+    },
+    {
+      "id": "022ee0b6016f3dd5",
+      "title": {
+        "original": "ITA publishes updated Life Cycle Assessment baseline for tin industry",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "The International Tin Association (ITA) is pleased to publish the results from a new Life Cycle Assessment (LCA) quantifying the environmental impacts associated with the production of refined tin. The updated study represents the second industry-wide LCA undertaken by ITA and was completed with 100% participation from ITA member companies, collectively representing approximately 51% of global refined tin production. Using 2024 as the reference year, the study updates the industry’s previous 2018/2019 baseline and provides the most comprehensive and globally representative refined tin…",
+      "url": "https://www.internationaltin.org/ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry/?utm_source=rss&utm_medium=rss&utm_campaign=ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry",
+      "published_at": "2026-08-27T14:20:42+00:00",
+      "agency": "International Tin Association",
+      "agency_ko": "국제주석협회(ITA)",
+      "source_id": "int_ita_tin",
+      "commodities": [
+        "tin"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 1.033,
+      "reasons": [
+        "has_figure"
+      ],
+      "agency_url": "https://www.internationaltin.org/",
+      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "d293c0b8e58bb026",
@@ -8403,7 +8433,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.035,
+      "importance": 1.033,
       "reasons": [
         "country_in_text"
       ],
@@ -8434,40 +8464,12 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.035,
+      "importance": 1.033,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://www.federalregister.gov/",
       "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
-    },
-    {
-      "id": "022ee0b6016f3dd5",
-      "title": {
-        "original": "ITA publishes updated Life Cycle Assessment baseline for tin industry",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "The International Tin Association (ITA) is pleased to publish the results from a new Life Cycle Assessment (LCA) quantifying the environmental impacts associated with the production of refined tin. The updated study represents the second industry-wide LCA undertaken by ITA and was completed with 100% participation from ITA member companies, collectively representing approximately 51% of global refined tin production. Using 2024 as the reference year, the study updates the industry’s previous 2018/2019 baseline and provides the most comprehensive and globally representative refined tin…",
-      "url": "https://www.internationaltin.org/ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry/?utm_source=rss&utm_medium=rss&utm_campaign=ita-publishes-updated-life-cycle-assessment-baseline-for-tin-industry",
-      "published_at": "2026-08-27T14:20:42+00:00",
-      "agency": "International Tin Association",
-      "agency_ko": "국제주석협회(ITA)",
-      "source_id": "int_ita_tin",
-      "commodities": [
-        "tin"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 1.035,
-      "reasons": [
-        "has_figure"
-      ],
-      "agency_url": "https://www.internationaltin.org/",
-      "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
       "id": "1ba4eeccd1b30db2",
@@ -8490,7 +8492,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.033,
+      "importance": 1.03,
       "agency_url": "https://en.antaranews.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-25T13:20:32.444694+00:00"
@@ -8518,7 +8520,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.023,
+      "importance": 1.022,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -8549,7 +8551,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.023,
+      "importance": 1.022,
       "reasons": [
         "country_in_text"
       ],
@@ -8577,7 +8579,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.018,
+      "importance": 1.015,
       "src_ref": "6f665439d28a",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -8607,7 +8609,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.014,
+      "importance": 1.013,
       "reasons": [
         "country_in_text"
       ],
@@ -8636,7 +8638,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.009,
+      "importance": 1.006,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -8672,7 +8674,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 1.009,
+      "importance": 1.006,
       "agency_url": "https://en.antaranews.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-24T12:54:28.008909+00:00"
@@ -8696,7 +8698,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 1.004,
+      "importance": 1.001,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -8724,7 +8726,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 1.001,
+      "importance": 1.0,
       "reasons": [
         "has_figure",
         "country_in_text"
@@ -8753,7 +8755,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.996,
+      "importance": 0.993,
       "src_ref": "ab80a71771fe",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -8783,7 +8785,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.994,
+      "importance": 0.991,
       "reasons": [],
       "agency_url": "https://www.bpdp.or.id/",
       "first_seen_at": "2026-10-16T13:10:29.687929+00:00"
@@ -8810,7 +8812,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.994,
+      "importance": 0.991,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T20:03:54.076904+00:00"
@@ -8836,7 +8838,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.993,
+      "importance": 0.99,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T20:03:54.076904+00:00"
@@ -8862,7 +8864,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.991,
+      "importance": 0.988,
       "agency_url": "https://allafrica.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
@@ -8888,7 +8890,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.99,
+      "importance": 0.987,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
@@ -8915,7 +8917,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.99,
+      "importance": 0.987,
       "src_ref": "ba5f842124c2",
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
@@ -8940,7 +8942,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.989,
+      "importance": 0.986,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -8964,7 +8966,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.987,
+      "importance": 0.984,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -8989,7 +8991,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.986,
+      "importance": 0.983,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9016,7 +9018,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.983,
+      "importance": 0.981,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -9055,7 +9057,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.979,
+      "importance": 0.977,
       "reasons": [
         "country_in_text"
       ],
@@ -9096,7 +9098,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.975,
+      "importance": 0.972,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
@@ -9123,7 +9125,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.973,
+      "importance": 0.97,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
@@ -9149,7 +9151,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.969,
+      "importance": 0.966,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9178,7 +9180,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.966,
+      "importance": 0.964,
       "reasons": [
         "country_in_text"
       ],
@@ -9207,7 +9209,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.965,
+      "importance": 0.963,
       "reasons": [
         "country_in_text"
       ],
@@ -9247,41 +9249,10 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.957,
+      "importance": 0.955,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
-    },
-    {
-      "id": "01399109dc789f34",
-      "title": {
-        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Critical Circumstances Determination in Countervailing Duty Investigation",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that critical circumstances exist with respect to imports of large diameter graphite electrodes (large graphite electrodes) from the People's Republic of China (China). The period of investigation is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination of critical circumstances.",
-      "url": "https://www.federalregister.gov/documents/2026/09/24/2026-19518/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-preliminary-affirmative",
-      "published_at": "2026-09-24T00:00:00+00:00",
-      "agency": "U.S. Federal Register (federal agencies)",
-      "agency_ko": "미국 관보(연방기관 고시)",
-      "source_id": "us_federal_register_minerals",
-      "commodities": [
-        "graphite"
-      ],
-      "countries": [
-        "CHN",
-        "USA"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.953,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.federalregister.gov/",
-      "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
     },
     {
       "id": "7aa1d9ea8f7acd29",
@@ -9368,6 +9339,37 @@
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
     },
     {
+      "id": "01399109dc789f34",
+      "title": {
+        "original": "Large Diameter Graphite Electrodes From the People's Republic of China: Preliminary Affirmative Critical Circumstances Determination in Countervailing Duty Investigation",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Commerce Department; International Trade Administration: The U.S. Department of Commerce (Commerce) preliminarily determines that critical circumstances exist with respect to imports of large diameter graphite electrodes (large graphite electrodes) from the People's Republic of China (China). The period of investigation is January 1, 2025, through December 31, 2025. Interested parties are invited to comment on this preliminary determination of critical circumstances.",
+      "url": "https://www.federalregister.gov/documents/2026/09/24/2026-19518/large-diameter-graphite-electrodes-from-the-peoples-republic-of-china-preliminary-affirmative",
+      "published_at": "2026-09-24T00:00:00+00:00",
+      "agency": "U.S. Federal Register (federal agencies)",
+      "agency_ko": "미국 관보(연방기관 고시)",
+      "source_id": "us_federal_register_minerals",
+      "commodities": [
+        "graphite"
+      ],
+      "countries": [
+        "CHN",
+        "USA"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.951,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.federalregister.gov/",
+      "first_seen_at": "2026-10-08T06:36:02.170314+00:00"
+    },
+    {
       "id": "216e13da16246de3",
       "title": {
         "original": "Chile plans five new lithium tenders in push to double output",
@@ -9388,7 +9390,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.952,
+      "importance": 0.949,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9415,7 +9417,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.951,
+      "importance": 0.949,
       "reasons": [
         "country_in_text"
       ],
@@ -9456,7 +9458,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.95,
+      "importance": 0.947,
       "agency_url": "https://allafrica.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9482,7 +9484,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.95,
+      "importance": 0.947,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9507,7 +9509,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.942,
+      "importance": 0.939,
       "src_ref": "ae4f4db11040",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -9536,8 +9538,8 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.94,
-      "also": 1,
+      "importance": 0.937,
+      "src_ref": "7e7f2e5adc52",
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9564,7 +9566,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.938,
+      "importance": 0.935,
       "src_ref": "12fc35a58be4",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -9594,7 +9596,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.937,
+      "importance": 0.935,
       "reasons": [],
       "agency_url": "https://mpoc.org.my/",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9622,7 +9624,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.936,
+      "importance": 0.933,
       "reasons": [],
       "agency_url": "https://mpoc.org.my/",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9648,7 +9650,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.935,
+      "importance": 0.932,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9675,7 +9677,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.931,
+      "importance": 0.929,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -9709,7 +9711,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.93,
+      "importance": 0.928,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9739,7 +9741,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.925,
+      "importance": 0.923,
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-02T06:07:05.910845+00:00"
@@ -9767,7 +9769,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.921,
+      "importance": 0.92,
       "reasons": [
         "country_in_text"
       ],
@@ -9795,7 +9797,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.916,
+      "importance": 0.913,
       "src_ref": "82d1777f5706",
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
@@ -9822,7 +9824,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.913,
+      "importance": 0.91,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9850,7 +9852,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.91,
+      "importance": 0.908,
       "reasons": [],
       "agency_url": "https://www.kemendag.go.id/",
       "first_seen_at": "2026-10-01T00:16:44.963019+00:00"
@@ -9877,7 +9879,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.906,
+      "importance": 0.903,
       "src_ref": "052f1bc0658d",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -9905,7 +9907,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.906,
+      "importance": 0.903,
       "src_ref": "521b0b08eef9",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -9931,7 +9933,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.895,
+      "importance": 0.893,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9955,7 +9957,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.895,
+      "importance": 0.893,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -9981,7 +9983,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.893,
+      "importance": 0.89,
       "src_ref": "3430511cd960",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -10010,7 +10012,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.889,
+      "importance": 0.888,
       "reasons": [
         "country_in_text"
       ],
@@ -10051,7 +10053,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.889,
+      "importance": 0.887,
       "src_ref": "322e12e5ad13",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -10080,7 +10082,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.889,
+      "importance": 0.887,
       "src_ref": "aa2348960c48",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -10106,7 +10108,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.881,
+      "importance": 0.878,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -10132,7 +10134,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.874,
+      "importance": 0.872,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T05:17:08.311517+00:00"
@@ -10158,7 +10160,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.873,
+      "importance": 0.871,
       "src_ref": "62d1eb76b9dd",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -10186,67 +10188,10 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.868,
+      "importance": 0.867,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
-    },
-    {
-      "id": "3a55343654c7fe18",
-      "title": {
-        "original": "Congo arrests hundreds of Chinese miners in copper heartland",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.mining.com/web/congo-arrests-hundreds-of-chinese-miners-in-copper-heartland/",
-      "published_at": "2026-10-16T21:00:58+00:00",
-      "agency": "MINING.COM (아프리카)",
-      "agency_ko": "마이닝닷컴 아프리카",
-      "source_id": "int_mining_africa",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHN",
-        "COD"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "importance": 0.868,
-      "agency_url": "https://www.mining.com/",
-      "publisher_type": "news",
-      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
-    },
-    {
-      "id": "64c0cc4a2c480eea",
-      "title": {
-        "original": "Centenario-Ratones Lithium Plant Expansion Project: 3 Questions for Jean-Baptiste Hogard, Director of Eramet’s Lithium Business Unit",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Eramet is considering a first expansion of Centenario-Ratones and plans to apply for inclusion in Argentina’s Large Investment Incentive Regime, known as RIGI. What is at stake in this next phase? Jean-Baptiste Hogard: This first expansion marks a major milestone in Eramet’s long-term commitment to Argentina. It would add 11,000 t-LCE, or metric tons [...] The post Centenario-Ratones Lithium Plant Expansion Project: 3 Questions for Jean-Baptiste Hogard, Director of Eramet’s Lithium Business Unit appeared first on Eramet .",
-      "url": "https://www.eramet.com/en/news/centenario-ratones-lithium-plant-expansion-project-3-questions-for-jean-baptiste-hogard-director-of-eramets-lithium-business-unit/",
-      "published_at": "2026-10-01T13:00:03+00:00",
-      "agency": "Eramet",
-      "agency_ko": "에라메(망간·니켈·리튬 생산사)",
-      "source_id": "fr_eramet_news",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "ARG"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.866,
-      "reasons": [
-        "country_in_text"
-      ],
-      "agency_url": "https://www.eramet.com/",
-      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
     },
     {
       "id": "674a420ab4e62eb2",
@@ -10278,6 +10223,63 @@
       "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
     },
     {
+      "id": "3a55343654c7fe18",
+      "title": {
+        "original": "Congo arrests hundreds of Chinese miners in copper heartland",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/congo-arrests-hundreds-of-chinese-miners-in-copper-heartland/",
+      "published_at": "2026-10-16T21:00:58+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHN",
+        "COD"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.865,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "64c0cc4a2c480eea",
+      "title": {
+        "original": "Centenario-Ratones Lithium Plant Expansion Project: 3 Questions for Jean-Baptiste Hogard, Director of Eramet’s Lithium Business Unit",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": "Eramet is considering a first expansion of Centenario-Ratones and plans to apply for inclusion in Argentina’s Large Investment Incentive Regime, known as RIGI. What is at stake in this next phase? Jean-Baptiste Hogard: This first expansion marks a major milestone in Eramet’s long-term commitment to Argentina. It would add 11,000 t-LCE, or metric tons [...] The post Centenario-Ratones Lithium Plant Expansion Project: 3 Questions for Jean-Baptiste Hogard, Director of Eramet’s Lithium Business Unit appeared first on Eramet .",
+      "url": "https://www.eramet.com/en/news/centenario-ratones-lithium-plant-expansion-project-3-questions-for-jean-baptiste-hogard-director-of-eramets-lithium-business-unit/",
+      "published_at": "2026-10-01T13:00:03+00:00",
+      "agency": "Eramet",
+      "agency_ko": "에라메(망간·니켈·리튬 생산사)",
+      "source_id": "fr_eramet_news",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "ARG"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.865,
+      "reasons": [
+        "country_in_text"
+      ],
+      "agency_url": "https://www.eramet.com/",
+      "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
+    },
+    {
       "id": "611132e2ba14ab2c",
       "title": {
         "original": "Exiro-led group takes control of Vale’s Manitoba nickel complex",
@@ -10298,7 +10300,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.863,
+      "importance": 0.861,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -10329,7 +10331,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.854,
+      "importance": 0.852,
       "reasons": [
         "country_in_text"
       ],
@@ -10357,7 +10359,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.849,
+      "importance": 0.847,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -10383,7 +10385,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.844,
+      "importance": 0.841,
       "src_ref": "5c13a45e30d2",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -10413,7 +10415,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.842,
+      "importance": 0.841,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -10439,7 +10441,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.839,
+      "importance": 0.837,
       "src_ref": "87927279f431",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -10469,7 +10471,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.837,
+      "importance": 0.836,
       "reasons": [
         "country_in_text"
       ],
@@ -10510,7 +10512,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.831,
+      "importance": 0.829,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -10567,7 +10569,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.828,
+      "importance": 0.826,
       "reasons": [
         "country_in_text"
       ],
@@ -10611,7 +10613,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.819,
+      "importance": 0.817,
       "reasons": [
         "country_in_text"
       ],
@@ -10652,7 +10654,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.817,
+      "importance": 0.815,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -10678,7 +10680,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.816,
+      "importance": 0.814,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -10707,7 +10709,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.814,
+      "importance": 0.813,
       "reasons": [
         "country_in_text"
       ],
@@ -10735,7 +10737,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.813,
+      "importance": 0.812,
       "reasons": [],
       "agency_url": "https://www.internationaltin.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -10763,7 +10765,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.811,
+      "importance": 0.81,
       "reasons": [],
       "agency_url": "https://www.cochilco.cl/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -10789,7 +10791,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.809,
+      "importance": 0.808,
       "reasons": [],
       "agency_url": "https://international-aluminium.org/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -10815,59 +10817,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.805,
-      "agency_url": "https://www.mining.com/",
-      "publisher_type": "news",
-      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
-    },
-    {
-      "id": "9bb5774b8de8434c",
-      "title": {
-        "original": "Ethiopia launches its first gold refinery, Prime Minister says",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.mining.com/web/ethiopia-launches-its-first-gold-refinery-prime-minister-says/",
-      "published_at": "2026-10-12T15:29:32+00:00",
-      "agency": "MINING.COM (아프리카)",
-      "agency_ko": "마이닝닷컴 아프리카",
-      "source_id": "int_mining_africa",
-      "commodities": [
-        "gold"
-      ],
-      "countries": [
-        "ETH"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "importance": 0.802,
-      "agency_url": "https://www.mining.com/",
-      "publisher_type": "news",
-      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
-    },
-    {
-      "id": "0960a258e30be791",
-      "title": {
-        "original": "Chinese lithium prices tumble to nearly 10-month low on demand concerns",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.mining.com/web/chinese-lithium-prices-tumble-to-nearly-10-month-low-on-demand-concerns/",
-      "published_at": "2026-10-12T15:14:11+00:00",
-      "agency": "MINING.COM (아시아)",
-      "agency_ko": "마이닝닷컴 아시아",
-      "source_id": "int_mining_asia",
-      "commodities": [
-        "lithium"
-      ],
-      "countries": [
-        "CHN"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "importance": 0.802,
+      "importance": 0.803,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -10895,7 +10845,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.801,
+      "importance": 0.8,
       "reasons": [
         "country_in_text"
       ],
@@ -10914,6 +10864,58 @@
       },
       "agency_url": "https://ofac.treasury.gov/",
       "first_seen_at": "2026-10-01T10:27:43.350823+00:00"
+    },
+    {
+      "id": "9bb5774b8de8434c",
+      "title": {
+        "original": "Ethiopia launches its first gold refinery, Prime Minister says",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/ethiopia-launches-its-first-gold-refinery-prime-minister-says/",
+      "published_at": "2026-10-12T15:29:32+00:00",
+      "agency": "MINING.COM (아프리카)",
+      "agency_ko": "마이닝닷컴 아프리카",
+      "source_id": "int_mining_africa",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "ETH"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.8,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "0960a258e30be791",
+      "title": {
+        "original": "Chinese lithium prices tumble to nearly 10-month low on demand concerns",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/chinese-lithium-prices-tumble-to-nearly-10-month-low-on-demand-concerns/",
+      "published_at": "2026-10-12T15:14:11+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "lithium"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.8,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "b67197b6b32a8c07",
@@ -10936,7 +10938,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.794,
+      "importance": 0.791,
       "agency_url": "https://en.antaranews.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-25T13:20:32.444694+00:00"
@@ -10960,12 +10962,41 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.791,
+      "importance": 0.788,
       "src_ref": "8384a223bd63",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
       "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-23T05:17:08.311517+00:00"
+    },
+    {
+      "id": "ad5fc60f8e261ca6",
+      "title": {
+        "original": "Africa welcomes its newest gold refinery as another nation joins Burkina Faso, Ethiopia in refining gold at home",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://africa.businessinsider.com/local/markets/africa-welcomes-its-newest-gold-refinery-as-another-nation-joins-burkina-faso/phem0ns",
+      "published_at": "2026-10-25T19:21:13+00:00",
+      "agency": "Business Insider Africa",
+      "agency_ko": "Business Insider Africa",
+      "source_id": "gn_africa_minerals",
+      "commodities": [
+        "gold"
+      ],
+      "countries": [
+        "BFA",
+        "ETH"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.778,
+      "src_ref": "f61ae1d8c55e",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-25T22:47:23.275660+00:00"
     },
     {
       "id": "922529a322767a94",
@@ -10989,7 +11020,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.776,
+      "importance": 0.774,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -11026,7 +11057,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.775,
+      "importance": 0.773,
       "reasons": [],
       "agency_url": "https://www.world-nuclear-news.org/",
       "first_seen_at": "2026-10-16T04:16:07.956664+00:00"
@@ -11051,64 +11082,11 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.769,
+      "importance": 0.767,
       "src_ref": "d567090c0515",
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T23:26:46.552602+00:00"
-    },
-    {
-      "id": "5182ceca72889750",
-      "title": {
-        "original": "Teck says strike begins at Highland Valley Copper mine in British Columbia",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.reuters.com/business/world-at-work/teck-says-strike-begins-highland-valley-copper-mine-british-columbia-2026-10-24/",
-      "published_at": "2026-10-24T20:22:10+00:00",
-      "agency": "Reuters",
-      "agency_ko": "Reuters",
-      "source_id": "gn_reuters_africa",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "GBR"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "importance": 0.764,
-      "src_ref": "a38d59f82310",
-      "publisher_type": "news",
-      "source_agency": "Google News (Reuters)",
-      "source_agency_ko": "구글 뉴스 경유(로이터)",
-      "first_seen_at": "2026-10-25T05:13:09.460017+00:00"
-    },
-    {
-      "id": "84f3af1babada52d",
-      "title": {
-        "original": "JSW Steel warns of coking coal price spike as profit more than triples",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.mining.com/web/jsw-steel-warns-of-coking-coal-price-spike-as-profit-more-than-triples/",
-      "published_at": "2026-10-23T15:05:30+00:00",
-      "agency": "MINING.COM (아시아)",
-      "agency_ko": "마이닝닷컴 아시아",
-      "source_id": "int_mining_asia",
-      "commodities": [
-        "thermal_coal",
-        "met_coal"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "importance": 0.764,
-      "agency_url": "https://www.mining.com/",
-      "publisher_type": "news",
-      "first_seen_at": "2026-10-23T20:03:54.076904+00:00"
     },
     {
       "id": "929e1ee5c8475871",
@@ -11135,12 +11113,65 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.764,
+      "importance": 0.763,
       "reasons": [
         "country_in_text"
       ],
       "agency_url": "https://api.io.canada.ca/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
+    },
+    {
+      "id": "5182ceca72889750",
+      "title": {
+        "original": "Teck says strike begins at Highland Valley Copper mine in British Columbia",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.reuters.com/business/world-at-work/teck-says-strike-begins-highland-valley-copper-mine-british-columbia-2026-10-24/",
+      "published_at": "2026-10-24T20:22:10+00:00",
+      "agency": "Reuters",
+      "agency_ko": "Reuters",
+      "source_id": "gn_reuters_africa",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "GBR"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.762,
+      "src_ref": "a38d59f82310",
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
+      "first_seen_at": "2026-10-25T05:13:09.460017+00:00"
+    },
+    {
+      "id": "84f3af1babada52d",
+      "title": {
+        "original": "JSW Steel warns of coking coal price spike as profit more than triples",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/web/jsw-steel-warns-of-coking-coal-price-spike-as-profit-more-than-triples/",
+      "published_at": "2026-10-23T15:05:30+00:00",
+      "agency": "MINING.COM (아시아)",
+      "agency_ko": "마이닝닷컴 아시아",
+      "source_id": "int_mining_asia",
+      "commodities": [
+        "thermal_coal",
+        "met_coal"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.762,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-23T20:03:54.076904+00:00"
     },
     {
       "id": "67e0ff55651a810b",
@@ -11161,7 +11192,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.753,
+      "importance": 0.751,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T23:33:19.288686+00:00"
@@ -11185,7 +11216,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.75,
+      "importance": 0.748,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
@@ -11209,7 +11240,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.749,
+      "importance": 0.746,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
@@ -11233,7 +11264,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.744,
+      "importance": 0.742,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11260,7 +11291,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.742,
+      "importance": 0.74,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -11298,7 +11329,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.741,
+      "importance": 0.739,
       "src_ref": "fac3d6094d8c",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -11327,7 +11358,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.74,
+      "importance": 0.737,
       "src_ref": "e2a374b55326",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -11355,7 +11386,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.736,
+      "importance": 0.734,
       "src_ref": "3a48dcc3fa62",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -11382,7 +11413,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.735,
+      "importance": 0.732,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11409,36 +11440,12 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.734,
+      "importance": 0.732,
       "src_ref": "75e8da0ba1f8",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
       "source_agency_ko": "구글 뉴스 경유(로이터)",
       "first_seen_at": "2026-10-23T05:17:08.311517+00:00"
-    },
-    {
-      "id": "70566b70a21c456c",
-      "title": {
-        "original": "Hudbay, Mitsubishi approve Copper World construction",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.mining.com/hudbay-mitsubishi-approve-copper-world-construction/",
-      "published_at": "2026-10-21T14:23:33+00:00",
-      "agency": "MINING.COM",
-      "agency_ko": "마이닝닷컴(광업 전문 매체)",
-      "source_id": "int_mining_all",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "importance": 0.733,
-      "agency_url": "https://www.mining.com/",
-      "publisher_type": "news",
-      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "882a7745e1a1f1d0",
@@ -11462,7 +11469,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.732,
+      "importance": 0.731,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -11476,6 +11483,30 @@
       },
       "agency_url": "https://aqygzj.mofcom.gov.cn/",
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
+    },
+    {
+      "id": "70566b70a21c456c",
+      "title": {
+        "original": "Hudbay, Mitsubishi approve Copper World construction",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.mining.com/hudbay-mitsubishi-approve-copper-world-construction/",
+      "published_at": "2026-10-21T14:23:33+00:00",
+      "agency": "MINING.COM",
+      "agency_ko": "마이닝닷컴(광업 전문 매체)",
+      "source_id": "int_mining_all",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.73,
+      "agency_url": "https://www.mining.com/",
+      "publisher_type": "news",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "ac34b3462f00b867",
@@ -11498,12 +11529,40 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.726,
+      "importance": 0.724,
       "src_ref": "d0f29f593365",
       "publisher_type": "news",
       "source_agency": "Google News",
       "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "fcecf4a22db7b8f0",
+      "title": {
+        "original": "EXCLUSIVE: TSMC seeks factory-equipment alternatives to thwart China's rare earths grip, sources say",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.reuters.com/world/china/tsmc-seeks-factory-equipment-alternatives-thwart-chinas-rare-earths-grip-sources-2026-10-22/",
+      "published_at": "2026-10-22T09:20:00+00:00",
+      "agency": "Reuters",
+      "agency_ko": "Reuters",
+      "source_id": "gn_reuters_africa",
+      "commodities": [
+        "rare_earths"
+      ],
+      "countries": [
+        "CHN"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.724,
+      "src_ref": "bd0e9f321e36",
+      "publisher_type": "news",
+      "source_agency": "Google News (Reuters)",
+      "source_agency_ko": "구글 뉴스 경유(로이터)",
+      "first_seen_at": "2026-10-25T22:47:23.275660+00:00"
     },
     {
       "id": "04055507695f6b24",
@@ -11526,7 +11585,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.726,
+      "importance": 0.723,
       "src_ref": "cd3a1c322c8f",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -11552,7 +11611,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.724,
+      "importance": 0.721,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11578,7 +11637,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.723,
+      "importance": 0.721,
       "src_ref": "932e2381772d",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -11606,7 +11665,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.722,
+      "importance": 0.72,
       "src_ref": "c0540ae2f863",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -11634,7 +11693,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.721,
+      "importance": 0.719,
       "src_ref": "a09fdfa84bf7",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -11660,7 +11719,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.72,
+      "importance": 0.717,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11684,7 +11743,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.719,
+      "importance": 0.717,
       "src_ref": "ebe0447fec64",
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
@@ -11711,7 +11770,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.715,
+      "importance": 0.713,
       "src_ref": "3174236340c2",
       "also": 1,
       "publisher_type": "news",
@@ -11740,7 +11799,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.714,
+      "importance": 0.712,
       "src_ref": "851548551147",
       "also": 1,
       "publisher_type": "news",
@@ -11769,7 +11828,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.714,
+      "importance": 0.712,
       "src_ref": "abbea6073b09",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -11797,7 +11856,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.709,
+      "importance": 0.706,
       "src_ref": "20f7aeaa077b",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -11823,7 +11882,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.708,
+      "importance": 0.706,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11849,7 +11908,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.706,
+      "importance": 0.704,
       "src_ref": "335bd81e20d1",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -11875,7 +11934,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.706,
+      "importance": 0.704,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11899,7 +11958,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.704,
+      "importance": 0.702,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11923,7 +11982,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.704,
+      "importance": 0.702,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11947,7 +12006,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.702,
+      "importance": 0.7,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11971,7 +12030,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.702,
+      "importance": 0.7,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -11998,7 +12057,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.7,
+      "importance": 0.698,
       "src_ref": "eed226e0f1f5",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12026,7 +12085,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.695,
+      "importance": 0.693,
       "src_ref": "61a5b883cf66",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12054,7 +12113,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.695,
+      "importance": 0.693,
       "src_ref": "0addc28b69eb",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -12082,7 +12141,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.695,
+      "importance": 0.693,
       "src_ref": "ea2dfb02f17f",
       "also": 1,
       "publisher_type": "news",
@@ -12111,7 +12170,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.695,
+      "importance": 0.693,
       "src_ref": "1b2a4b2f55ea",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12140,7 +12199,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.693,
+      "importance": 0.692,
       "reasons": [],
       "board": "export_controls",
       "control": {
@@ -12176,7 +12235,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.693,
+      "importance": 0.691,
       "src_ref": "032ac3bb3605",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12204,7 +12263,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.691,
+      "importance": 0.689,
       "src_ref": "a08ceb9c69f6",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -12232,12 +12291,40 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.687,
+      "importance": 0.685,
       "src_ref": "677d6a2a0979",
       "publisher_type": "news",
       "source_agency": "Google News (Argus Media)",
       "source_agency_ko": "구글 뉴스 경유(아거스)",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
+      "id": "b87baa2603ba1ba3",
+      "title": {
+        "original": "Informe Salud Mental en la Industria Minera Nacional",
+        "original_lang": "es",
+        "ko": null
+      },
+      "summary": "Este trabajo sistematiza información actualizada sobre salud mental y gestión de riesgos psicosociales en la industria minera nacional, a partir de cuatro fuentes principales: las estadísticas de enfermedades profesionales de la Superintendencia de Seguridad Social ( SUSESO) para el período 2019 –2025, los resultados del cuestionario de Evaluación de Ambiente Laboral – Salud mental (CEAL-SM)/[...] La entrada Informe Salud Mental en la Industria Minera Nacional se publicó primero en COCHILCO .",
+      "url": "https://www.cochilco.cl/web/informe-salud-mental-en-la-industria-minera-nacional/",
+      "published_at": "2026-08-13T15:07:49+00:00",
+      "agency": "Cochilco",
+      "agency_ko": "칠레 구리위원회(Cochilco)",
+      "source_id": "cl_cochilco",
+      "commodities": [
+        "copper"
+      ],
+      "countries": [
+        "CHL"
+      ],
+      "scope": "country",
+      "country_source": "source_default",
+      "series_id": null,
+      "series_label_ko": null,
+      "importance": 0.685,
+      "reasons": [],
+      "agency_url": "https://www.cochilco.cl/",
+      "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
     {
       "id": "d63ddcae8f02be38",
@@ -12260,7 +12347,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.686,
+      "importance": 0.684,
       "src_ref": "231469a3453d",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12290,7 +12377,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.686,
+      "importance": 0.684,
       "src_ref": "0e5be5f5b7a8",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12318,40 +12405,12 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.686,
+      "importance": 0.684,
       "src_ref": "f92e5da75858",
       "publisher_type": "news",
       "source_agency": "Google News",
       "source_agency_ko": "구글 뉴스 경유",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
-    },
-    {
-      "id": "b87baa2603ba1ba3",
-      "title": {
-        "original": "Informe Salud Mental en la Industria Minera Nacional",
-        "original_lang": "es",
-        "ko": null
-      },
-      "summary": "Este trabajo sistematiza información actualizada sobre salud mental y gestión de riesgos psicosociales en la industria minera nacional, a partir de cuatro fuentes principales: las estadísticas de enfermedades profesionales de la Superintendencia de Seguridad Social ( SUSESO) para el período 2019 –2025, los resultados del cuestionario de Evaluación de Ambiente Laboral – Salud mental (CEAL-SM)/[...] La entrada Informe Salud Mental en la Industria Minera Nacional se publicó primero en COCHILCO .",
-      "url": "https://www.cochilco.cl/web/informe-salud-mental-en-la-industria-minera-nacional/",
-      "published_at": "2026-08-13T15:07:49+00:00",
-      "agency": "Cochilco",
-      "agency_ko": "칠레 구리위원회(Cochilco)",
-      "source_id": "cl_cochilco",
-      "commodities": [
-        "copper"
-      ],
-      "countries": [
-        "CHL"
-      ],
-      "scope": "country",
-      "country_source": "source_default",
-      "series_id": null,
-      "series_label_ko": null,
-      "importance": 0.686,
-      "reasons": [],
-      "agency_url": "https://www.cochilco.cl/",
-      "first_seen_at": "2026-09-26T13:59:00.985887+00:00"
     },
     {
       "id": "17a2e99db64e5f1b",
@@ -12375,7 +12434,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.685,
+      "importance": 0.683,
       "src_ref": "ab4bad7f908f",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12404,7 +12463,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.685,
+      "importance": 0.683,
       "src_ref": "2d13e8dc6b40",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12432,7 +12491,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.682,
+      "importance": 0.68,
       "src_ref": "e75b591ae35c",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12461,7 +12520,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.682,
+      "importance": 0.68,
       "src_ref": "c5b0a68fb68d",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12489,7 +12548,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.682,
+      "importance": 0.68,
       "src_ref": "606c884585c1",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12520,7 +12579,7 @@
       "country_source": "text",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.675,
+      "importance": 0.674,
       "reasons": [
         "country_in_text"
       ],
@@ -12546,7 +12605,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.672,
+      "importance": 0.67,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
@@ -12570,7 +12629,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.671,
+      "importance": 0.669,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-23T13:46:43.718790+00:00"
@@ -12594,7 +12653,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.671,
+      "importance": 0.669,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -12618,7 +12677,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.671,
+      "importance": 0.669,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
@@ -12642,7 +12701,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.671,
+      "importance": 0.669,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
@@ -12669,7 +12728,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.671,
+      "importance": 0.669,
       "src_ref": "dad174486c9a",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -12737,7 +12796,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.665,
+      "importance": 0.663,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T23:33:19.288686+00:00"
@@ -12761,7 +12820,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.664,
+      "importance": 0.662,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -12787,7 +12846,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.664,
+      "importance": 0.662,
       "src_ref": "4acc51e3f17a",
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
@@ -12813,7 +12872,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.658,
+      "importance": 0.656,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -12837,7 +12896,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.658,
+      "importance": 0.656,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -12861,7 +12920,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.657,
+      "importance": 0.655,
       "agency_url": "https://www.investing.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
@@ -12887,7 +12946,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.654,
+      "importance": 0.652,
       "src_ref": "9362f893b162",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -12913,7 +12972,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.652,
+      "importance": 0.65,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -12937,7 +12996,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.652,
+      "importance": 0.65,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -12963,7 +13022,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.646,
+      "importance": 0.644,
       "src_ref": "1451e0003686",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -12992,7 +13051,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.646,
+      "importance": 0.644,
       "src_ref": "61245905164f",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13020,7 +13079,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.64,
+      "importance": 0.638,
       "src_ref": "7526e0c5f9b5",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13048,7 +13107,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.639,
+      "importance": 0.637,
       "src_ref": "41e0c227189b",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13076,7 +13135,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.639,
+      "importance": 0.637,
       "src_ref": "53620742a025",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13105,7 +13164,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.633,
+      "importance": 0.631,
       "src_ref": "9a08ee3ae788",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13133,7 +13192,7 @@
       "country_source": "none",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.631,
+      "importance": 0.63,
       "reasons": [],
       "agency_url": "https://www.eia.gov/",
       "first_seen_at": "2026-09-26T13:18:41.861691+00:00"
@@ -13147,7 +13206,7 @@
       },
       "summary": null,
       "url": "https://asia.nikkei.com/editor-s-picks/interview/india-s-lohum-targets-ev-batteries-after-opening-zimbabwe-lithium-mine",
-      "published_at": "2026-10-15T02:56:00+00:00",
+      "published_at": "2026-10-15T07:00:00+00:00",
       "agency": "Nikkei Asia",
       "agency_ko": "Nikkei Asia",
       "source_id": "gn_zambia_zimbabwe",
@@ -13160,7 +13219,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.629,
+      "importance": 0.63,
       "src_ref": "378327451721",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13186,7 +13245,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.627,
+      "importance": 0.626,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -13212,7 +13271,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.623,
+      "importance": 0.621,
       "src_ref": "6a77217c5332",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13240,7 +13299,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.62,
+      "importance": 0.618,
       "src_ref": "bbe04bbd6709",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13268,7 +13327,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.62,
+      "importance": 0.618,
       "src_ref": "90a54d813931",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13294,7 +13353,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.618,
+      "importance": 0.616,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -13318,7 +13377,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.617,
+      "importance": 0.615,
       "agency_url": "https://www.mining.com/",
       "publisher_type": "news",
       "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
@@ -13365,34 +13424,6 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
-      "id": "80da764753795bb5",
-      "title": {
-        "original": "MISTRA roundtable to explore practical steps for South Africa’s PGM-powered hydrogen economy",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.miningweekly.com/article/mistra-roundtable-to-explore-practical-steps-for-south-africas-pgm-powered-hydrogen-economy-2026-10-13",
-      "published_at": "2026-10-13T09:06:00+00:00",
-      "agency": "Mining Weekly",
-      "agency_ko": "Mining Weekly",
-      "source_id": "gn_sa_pgm_chrome_manganese",
-      "commodities": [
-        "platinum"
-      ],
-      "countries": [
-        "ZAF"
-      ],
-      "scope": "country",
-      "country_source": "text",
-      "importance": 0.609,
-      "src_ref": "27fda2a454b5",
-      "publisher_type": "news",
-      "source_agency": "Google News",
-      "source_agency_ko": "구글 뉴스 경유",
-      "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
-    },
-    {
       "id": "05101536483c310c",
       "title": {
         "original": "商务部新闻发言人就将10家美国实体列入出口管制管控名单答记者问",
@@ -13434,6 +13465,34 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "80da764753795bb5",
+      "title": {
+        "original": "MISTRA roundtable to explore practical steps for South Africa’s PGM-powered hydrogen economy",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.miningweekly.com/article/mistra-roundtable-to-explore-practical-steps-for-south-africas-pgm-powered-hydrogen-economy-2026-10-13",
+      "published_at": "2026-10-13T09:06:00+00:00",
+      "agency": "Mining Weekly",
+      "agency_ko": "Mining Weekly",
+      "source_id": "gn_sa_pgm_chrome_manganese",
+      "commodities": [
+        "platinum"
+      ],
+      "countries": [
+        "ZAF"
+      ],
+      "scope": "country",
+      "country_source": "text",
+      "importance": 0.608,
+      "src_ref": "27fda2a454b5",
+      "publisher_type": "news",
+      "source_agency": "Google News",
+      "source_agency_ko": "구글 뉴스 경유",
+      "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
+    },
+    {
       "id": "f70ac5c47ee39f3f",
       "title": {
         "original": "World’s top platinum-producing company says South Africa still has what it takes to dominate global mining",
@@ -13454,7 +13513,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.608,
+      "importance": 0.607,
       "src_ref": "46ee3dfb0550",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13482,7 +13541,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.608,
+      "importance": 0.607,
       "src_ref": "9af294543905",
       "publisher_type": "news",
       "source_agency": "Google News (Argus Media)",
@@ -13510,7 +13569,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.6,
+      "importance": 0.599,
       "src_ref": "b318f89f138c",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13539,7 +13598,7 @@
       ],
       "scope": "country",
       "country_source": "text",
-      "importance": 0.598,
+      "importance": 0.596,
       "src_ref": "befd018fbc38",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13580,8 +13639,8 @@
       "title": {
         "original": "Smelter Pangkas Produksi, ESDM Waspadai Serapan Bijih Nikel Turun",
         "original_lang": "id",
-        "ko": "제련소들이 생산을 감축함에 따라 에너지광물자원부는 니켈 원광 흡수 감소에 경고를 보냈습니다.",
-        "en": "Smelters cut production, ESDM warns of declining nickel ore absorption"
+        "ko": "제련소들이 생산을 감축하고 있으며, 에너지광물자원부는 니켈 원광 흡수량 감소를 주시하고 있음",
+        "en": "Smelters Cut Production, MEMR Watchful of Falling Nickel Ore Absorption"
       },
       "summary": null,
       "url": "https://www.bloombergtechnoz.com/detail-news/125624/smelter-pangkas-produksi-esdm-waspadai-serapan-bijih-nikel-turun",
@@ -13597,7 +13656,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.58,
+      "importance": 0.579,
       "src_ref": "c14f2286a898",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -13623,7 +13682,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.572,
+      "importance": 0.571,
       "src_ref": "336b4ebfef27",
       "also": 1,
       "publisher_type": "news",
@@ -13650,7 +13709,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.569,
+      "importance": 0.568,
       "src_ref": "f36af3a2833e",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13662,8 +13721,8 @@
       "title": {
         "original": "Hilirisasi Bauksit Digencarkan, ESDM Janji Jaga Keseimbangan Stok",
         "original_lang": "id",
-        "ko": "보스이트 가공 산업이 강화되는 가운데, 에너지광물자원부는 재고 균형을 유지할 것을 약속했습니다.",
-        "en": "Bauxite downstreaming intensified, ESDM promises to maintain stock balance"
+        "ko": "보스텍스 가공 산업화 강화, 에너지광물자원부는 재고 균형 유지 약속",
+        "en": "Bauxite Downstreaming Intensified, MEMR Promises to Maintain Stock Balance"
       },
       "summary": null,
       "url": "https://www.bloombergtechnoz.com/detail-news/125503/hilirisasi-bauksit-digencarkan-esdm-janji-jaga-keseimbangan-stok",
@@ -13679,7 +13738,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.567,
+      "importance": 0.565,
       "src_ref": "60212a96bda9",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -13705,7 +13764,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.565,
+      "importance": 0.563,
       "src_ref": "04f7a0a2ae83",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13731,7 +13790,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.562,
+      "importance": 0.56,
       "src_ref": "c31e89753c18",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -13758,7 +13817,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.56,
+      "importance": 0.559,
       "src_ref": "e569519b04cb",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13770,8 +13829,8 @@
       "title": {
         "original": "ESDM perhatikan keseimbangan smelter alumina dengan permintaan global",
         "original_lang": "id",
-        "ko": "에너지광물자원부는 알루미나 제련소와 글로벌 수요의 균형에 주목하고 있습니다.",
-        "en": "ESDM pays attention to the balance of alumina smelters with global demand"
+        "ko": "에너지광물자원부는 알루미나 제련소와 글로벌 수요의 균형에 주목하고 있음",
+        "en": "MEMR pays attention to the balance of alumina smelters with global demand"
       },
       "summary": null,
       "url": "https://www.antaranews.com/berita/5805571/esdm-perhatikan-keseimbangan-smelter-alumina-dengan-permintaan-global",
@@ -13787,7 +13846,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.56,
+      "importance": 0.558,
       "src_ref": "dbf0ae0e7b0d",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -13799,7 +13858,7 @@
       "title": {
         "original": "Yosafat Leonard: Konservasi dan Lingkungan Penting dalam Tata Kelola Produksi Nikel",
         "original_lang": "id",
-        "ko": "요사파트 레오나르드: 니켈 생산 거버넌스에서 보존과 환경은 중요합니다.",
+        "ko": "요사파트 레오나르드: 니켈 생산 거버넌스에서 보존과 환경은 중요함",
         "en": "Yosafat Leonard: Conservation and environment are important in nickel production governance"
       },
       "summary": null,
@@ -13816,7 +13875,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.559,
+      "importance": 0.558,
       "src_ref": "4ee8a2b47bcf",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -13842,7 +13901,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.558,
+      "importance": 0.556,
       "src_ref": "9d24584234d8",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13868,7 +13927,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.558,
+      "importance": 0.556,
       "src_ref": "f29ae3f8aa6e",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13896,7 +13955,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.557,
+      "importance": 0.556,
       "src_ref": "934a58b93bc0",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13922,7 +13981,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.555,
+      "importance": 0.553,
       "src_ref": "c06f28791212",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13948,7 +14007,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.555,
+      "importance": 0.553,
       "src_ref": "4cab4725b774",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13974,7 +14033,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.555,
+      "importance": 0.553,
       "src_ref": "fe041ad66b9d",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -13986,8 +14045,8 @@
       "title": {
         "original": "Pembatasan Kuota Bisa Menekan Laba Emiten Nikel dan Batubara",
         "original_lang": "id",
-        "ko": "할당량 제한은 니켈 및 석탄 발행 기업의 이익을 압박할 수 있습니다.",
-        "en": "Quota restrictions could suppress the profits of nickel and coal issuers"
+        "ko": "할당량 제한은 니켈 및 석탄 발행사의 이익을 압박할 수 있음",
+        "en": "Quota restrictions could depress profits of nickel and coal issuers"
       },
       "summary": null,
       "url": "https://insight.kontan.co.id/news/pembatasan-kuota-bisa-menekan-laba-emiten-nikel-dan-batubara",
@@ -14004,7 +14063,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.554,
+      "importance": 0.553,
       "src_ref": "6e5f9ac380bb",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14016,8 +14075,8 @@
       "title": {
         "original": "Revisi RKAB 2026 Berdampak ke Emiten Nikel dan Batubara, Simak Rekomendasi Sahamnya",
         "original_lang": "id",
-        "ko": "2026년 RKAB 수정안이 니켈 및 석탄 발행 기업에 미치는 영향과 주식 추천 종목을 확인하세요.",
-        "en": "2026 RKAB revision impacts nickel and coal issuers, check out the stock recommendations"
+        "ko": "2026년 RKAB 수정은 니켈 및 석탄 발행사에 영향을 미치며, 주식 추천 종목을 확인하세요",
+        "en": "2026 RKAB Revision Impacts Nickel and Coal Issuers, Check Stock Recommendations"
       },
       "summary": null,
       "url": "https://investasi.kontan.co.id/news/revisi-rkab-2026-berdampak-ke-emiten-nikel-dan-batubara-simak-rekomendasi-sahamnya",
@@ -14033,7 +14092,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.548,
+      "importance": 0.546,
       "src_ref": "f64eeb68ec2d",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14062,7 +14121,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.548,
+      "importance": 0.546,
       "src_ref": "a0fbe3234852",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14088,7 +14147,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.544,
+      "importance": 0.542,
       "src_ref": "f61ccb62ea92",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -14114,7 +14173,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.537,
+      "importance": 0.536,
       "src_ref": "54615f4d9455",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -14140,7 +14199,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.537,
+      "importance": 0.535,
       "src_ref": "5032a04d2fc1",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -14166,7 +14225,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.536,
+      "importance": 0.534,
       "src_ref": "0f816df82859",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -14192,7 +14251,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.535,
+      "importance": 0.534,
       "src_ref": "51a24b25eb79",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -14204,8 +14263,8 @@
       "title": {
         "original": "Revisi RKAB 2026 Disetujui 290 Juta Ton, Pasokan Bijih Nikel Berpotensi Defisit",
         "original_lang": "id",
-        "ko": "2026년 RKAB 수정안이 2억 9천만 톤으로 승인됨에 따라 니켈 원광 공급이 부족해질 잠재적 위험이 있습니다.",
-        "en": "2026 RKAB revision approved by 290 million tons, nickel ore supply potentially deficient"
+        "ko": "2026년 RKAB 수정안 2억 9천만 톤으로 승인, 니켈 원광 공급 부족 잠재적 우려",
+        "en": "2026 RKAB Revision Approved at 290 Million Tons, Nickel Ore Supply Potentially Deficit"
       },
       "summary": null,
       "url": "https://nikel.co.id/2026/10/20/revisi-rkab-2026-disetujui-290-juta-ton-pasokan-bijih-nikel-berpotensi-defisit/",
@@ -14221,7 +14280,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.534,
+      "importance": 0.532,
       "src_ref": "4724c1c9321e",
       "also": 1,
       "publisher_type": "news",
@@ -14248,7 +14307,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.532,
+      "importance": 0.53,
       "src_ref": "f888229726c4",
       "publisher_type": "news",
       "source_agency": "Google News (Argus Media)",
@@ -14274,7 +14333,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.53,
+      "importance": 0.528,
       "src_ref": "2bc28ab5f5e7",
       "publisher_type": "news",
       "source_agency": "Google News",
@@ -14301,7 +14360,7 @@
       "countries": [],
       "scope": "global",
       "country_source": "none",
-      "importance": 0.527,
+      "importance": 0.525,
       "src_ref": "4622a55fd694",
       "publisher_type": "news",
       "source_agency": "Google News (Reuters)",
@@ -14313,8 +14372,8 @@
       "title": {
         "original": "Revisi RKAB Batubara 2026 Disetujui, APBI Soroti Tantangan Operasional Tambang",
         "original_lang": "id",
-        "ko": "2026년 석탄 RKAB 수정안이 승인된 가운데, 인도네시아석탄광업협회(APBI)는 광산 운영상의 과제를 강조했습니다.",
-        "en": "2026 Coal RKAB revision approved, APBI highlights mine operational challenges"
+        "ko": "2026년 석탄 RKAB 수정안 승인, APBI는 광산 운영상의 과제 강조",
+        "en": "2026 Coal RKAB Revision Approved, APBI Highlights Mine Operational Challenges"
       },
       "summary": null,
       "url": "https://industri.kontan.co.id/news/revisi-rkab-batubara-2026-disetujui-apbi-soroti-tantangan-operasional-tambang",
@@ -14330,7 +14389,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.526,
+      "importance": 0.525,
       "src_ref": "89bced3aa772",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14342,8 +14401,8 @@
       "title": {
         "original": "Revisi RKAB 2026 Disetujui, Perhatikan Pasokan DMO Batubara & Kebutuhan Smelter Nikel",
         "original_lang": "id",
-        "ko": "2026년 RKAB 수정안이 승인되었으니 석탄 내수공급의무(DMO) 공급과 니켈 제련소 수요에 주의를 기울이세요.",
-        "en": "2026 RKAB revision approved, pay attention to coal DMO supply & nickel smelter needs"
+        "ko": "2026년 RKAB 수정안 승인, 석탄 국내시장공급의무(DMO) 공급 및 니켈 제련소 수요 주목",
+        "en": "2026 RKAB Revision Approved, Pay Attention to Coal DMO Supply & Nickel Smelter Needs"
       },
       "summary": null,
       "url": "https://industri.kontan.co.id/news/revisi-rkab-2026-disetujui-perhatikan-pasokan-dmo-batubara-kebutuhan-smelter-nikel",
@@ -14360,7 +14419,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.526,
+      "importance": 0.524,
       "src_ref": "b9f9c04deb96",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14372,8 +14431,8 @@
       "title": {
         "original": "Revisi RKAB 2026: Pasokan Nikel Berpotensi Defisit, Ekspor Batubara Menyusut",
         "original_lang": "id",
-        "ko": "2026년 RKAB 수정안: 니켈 공급 부족 가능성 및 석탄 수출 감소",
-        "en": "2026 RKAB revision: Nickel supply potentially deficient, coal exports shrink"
+        "ko": "2026년 RKAB 수정: 니켈 공급 부족 잠재적 우려, 석탄 수출 감소",
+        "en": "2026 RKAB Revision: Nickel Supply Potentially Deficit, Coal Exports Shrink"
       },
       "summary": null,
       "url": "https://industri.kontan.co.id/news/revisi-rkab-2026-pasokan-nikel-berpotensi-defisit-ekspor-batubara-menyusut",
@@ -14390,7 +14449,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.525,
+      "importance": 0.523,
       "src_ref": "104d2be08fbf",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14430,8 +14489,8 @@
       "title": {
         "original": "Revisi RKAB 2026 Disetujui, Segini Kuota Produksi Batubara dan Nikel",
         "original_lang": "id",
-        "ko": "2026년 RKAB 수정안이 승인되었으며, 석탄 및 니켈 생산 할당량은 다음과 같습니다.",
-        "en": "2026 RKAB revision approved, here is the coal and nickel production quota"
+        "ko": "2026년 RKAB 수정안 승인, 석탄 및 니켈 생산 할당량은 다음과 같음",
+        "en": "2026 RKAB Revision Approved, This is the Coal and Nickel Production Quota"
       },
       "summary": null,
       "url": "https://industri.kontan.co.id/news/revisi-rkab-2026-disetujui-segini-kuota-produksi-batubara-dan-nikel",
@@ -14448,7 +14507,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.513,
+      "importance": 0.512,
       "src_ref": "252073134f4a",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14477,7 +14536,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.496,
+      "importance": 0.494,
       "src_ref": "6618a511006b",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14507,7 +14566,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.495,
+      "importance": 0.494,
       "src_ref": "823a212fe727",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14558,7 +14617,7 @@
       "title": {
         "original": "Ekspor Nikel Ditargetkan Tembus USD45 Miliar pada 2026, Menko Bahlil: Hilirisasi Kunci Kemandirian Ekonomi",
         "original_lang": "id",
-        "ko": "2026년까지 니켈 수출 45억 달러 달성 목표, 바흘릴 조정장관: 가공 산업 육성이 경제 자립의 열쇠",
+        "ko": "2026년까지 니켈 수출 45억 달러 달성 목표, 바흘릴 조정장관: 가공 산업화가 경제 자립의 열쇠",
         "en": "Nickel exports targeted to reach USD 45 billion by 2026, Coordinating Minister Bahlil: Downstreaming is the key to economic independence"
       },
       "summary": null,
@@ -14575,39 +14634,12 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.477,
+      "importance": 0.475,
       "src_ref": "7c73e5ac8d8d",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
       "source_agency_ko": "구글 뉴스 경유(인니어)",
       "first_seen_at": "2026-10-22T20:16:30.760574+00:00"
-    },
-    {
-      "id": "9f86cbe207def562",
-      "title": {
-        "original": "Does Diwali actually move palm oil and soyoil demand? What the data shows",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": null,
-      "url": "https://www.fastmarkets.com/insights/does-diwali-actually-move-cpo-and-soyoil-demand-what-the-data-shows/",
-      "published_at": "2026-10-13T11:10:02+00:00",
-      "agency": "Fastmarkets",
-      "agency_ko": "Fastmarkets",
-      "source_id": "gn_fastmarkets",
-      "commodities": [
-        "soybeans",
-        "palm_oil"
-      ],
-      "countries": [],
-      "scope": "global",
-      "country_source": "none",
-      "importance": 0.47,
-      "src_ref": "9a8240b6049a",
-      "publisher_type": "news",
-      "source_agency": "Google News (Fastmarkets)",
-      "source_agency_ko": "구글 뉴스 경유(패스트마켓)",
-      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
     },
     {
       "id": "272dad20d1638da6",
@@ -14647,12 +14679,39 @@
       "first_seen_at": "2026-10-01T05:17:38.713382+00:00"
     },
     {
+      "id": "9f86cbe207def562",
+      "title": {
+        "original": "Does Diwali actually move palm oil and soyoil demand? What the data shows",
+        "original_lang": "en",
+        "ko": null
+      },
+      "summary": null,
+      "url": "https://www.fastmarkets.com/insights/does-diwali-actually-move-cpo-and-soyoil-demand-what-the-data-shows/",
+      "published_at": "2026-10-13T11:10:02+00:00",
+      "agency": "Fastmarkets",
+      "agency_ko": "Fastmarkets",
+      "source_id": "gn_fastmarkets",
+      "commodities": [
+        "soybeans",
+        "palm_oil"
+      ],
+      "countries": [],
+      "scope": "global",
+      "country_source": "none",
+      "importance": 0.468,
+      "src_ref": "9a8240b6049a",
+      "publisher_type": "news",
+      "source_agency": "Google News (Fastmarkets)",
+      "source_agency_ko": "구글 뉴스 경유(패스트마켓)",
+      "first_seen_at": "2026-10-22T14:17:06.104282+00:00"
+    },
+    {
       "id": "c4507fe1867dc877",
       "title": {
         "original": "Perhapi Usul Kuota Produksi Batubara 700 Juta Ton untuk RKAB 2027",
         "original_lang": "id",
-        "ko": "인도네시아광업전문가협회(Perhapi)는 2027년 RKAB를 위해 7억 톤의 석탄 생산 할당량을 제안했습니다.",
-        "en": "Perhapi proposes 700 million tons coal production quota for 2027 RKAB"
+        "ko": "Perhapi, 2027년 RKAB를 위한 석탄 생산 할당량 7억 톤 제안",
+        "en": "Perhapi Proposes Coal Production Quota of 700 Million Tons for 2027 RKAB"
       },
       "summary": null,
       "url": "https://industri.kontan.co.id/news/perhapi-usul-kuota-produksi-batubara-700-juta-ton-untuk-rkab-2027",
@@ -14668,7 +14727,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.468,
+      "importance": 0.467,
       "src_ref": "1a4986ae1150",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14697,7 +14756,7 @@
       ],
       "scope": "country",
       "country_source": "source_default",
-      "importance": 0.467,
+      "importance": 0.466,
       "src_ref": "08cfe2450143",
       "publisher_type": "news",
       "source_agency": "Google News (인니어)",
@@ -14728,7 +14787,7 @@
       "country_source": "source_default",
       "series_id": null,
       "series_label_ko": null,
-      "importance": 0.458,
+      "importance": 0.457,
       "reasons": [],
       "agency_url": "https://www.nrc.gov/",
       "first_seen_at": "2026-10-16T05:25:12.584037+00:00"
