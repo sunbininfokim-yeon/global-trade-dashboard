@@ -1,19 +1,21 @@
-# 수출통제 주간 점검 2026-W43 (2026-10-19)
+# 수출통제 주간 점검 2026-W44 (2026-10-26)
 
 | 항목 | 건수 |
 |---|---|
-| 기한 지남·임박 | 1 |
+| 기한 지남·임박 | 3 |
 | 링크 깨짐 / 자동 확인 불가 | 0 / 11 (확인 24) |
 | 이번 주 공고 → 기존 행 갱신 후보 | 0 |
-| 이번 주 공고 → 신규 행 후보 | 2 |
-| 카탈로그 행 / 재확인 필요 | 24 / 13 |
+| 이번 주 공고 → 신규 행 후보 | 0 |
+| 카탈로그 행 / 재확인 필요 | 24 / 14 |
 | 감시 쌍: 현행 / 해제 / 미확인 | 31 / 1 / 265 |
 
 ## 1. 기한
 
 | 행 | 국가 | 구분 | 날짜 | 상태 |
 |---|---|---|---|---|
-| `rus-fuel-products` | 러시아 | 재검토 기한 | 2026-10-31 | **임박** (12일 남음) |
+| `rus-fuel-products` | 러시아 | 재검토 기한 | 2026-10-31 | **임박** (5일 남음) |
+| `chn-rare-earths` | 중국 | 재검토 기한 | 2026-11-13 | **임박** (18일 남음) |
+| `gab-manganese` | 가봉 | 재검토 기한 | 2026-11-14 | **임박** (19일 남음) |
 
 ## 2. 원문 링크
 
@@ -23,73 +25,21 @@
 | `rus-wheat` | 자동 확인 불가 | 403 | https://www.bloomberg.com/news/articles/2026-09-02/russia-pauses-grain-export-duty-through-the-end-of-2026 |
 | `idn-palm-oil` | 자동 확인 불가 | 응답 없음 | https://www.palmoilmagazine.com/cpo-export/2026/05/25/indonesia-to-launch-new-cpo-export-reporting-system-through-danantara-on-june-1/ |
 | `ukr-soybeans` | 자동 확인 불가 | 403 | https://www.fas.usda.gov/data/gain-report/2026/04/Oilseeds%20and%20Products%20Annual_Kyiv_Ukraine_UP2026-0011.pdf |
+| `chn-fertilizer` | 자동 확인 불가 | 응답 없음 | https://www.fertilizerdaily.com/20260729-china-phosphate-export-restrictions-august-2026-russia-quotas/ |
 | `idn-coal-single-gate` | 자동 확인 불가 | 403 | https://www.lexology.com/library/detail.aspx?g=103ff22e-019e-48e3-877a-a7ea7d683f60 |
 | `idn-nickel-ore` | 자동 확인 불가 | 403 | https://www.iea.org/policies/16084-prohibition-of-the-export-of-nickel-ore |
 | `idn-bauxite` | 자동 확인 불가 | 403 | https://berkas.dpr.go.id/pusaka/files/info_singkat/Info%20Singkat-XV-4-II-P3DI-Februari-2023-191-EN.pdf |
 | `cod-cobalt` | 자동 확인 불가 | 403 | https://www.iea.org/policies/29138-drc-arecoms-decision-no-0042025-cobalt-quota-system |
 | `chl-lithium` | 자동 확인 불가 | 403 | https://investmentpolicy.unctad.org/investment-policy-monitor/measures/4305/chile-launches-a-new-national-strategy-for-lithium |
 | `idn-ferroalloys-single-gate` | 자동 확인 불가 | 403 | https://www.lexology.com/library/detail.aspx?g=103ff22e-019e-48e3-877a-a7ea7d683f60 |
-| `gab-manganese` | 자동 확인 불가 | 응답 없음 | https://journal-officiel.ga/738-decret/ |
 
 「자동 확인 불가」는 사이트가 봇을 막거나 시간 초과된 것이다. 깨졌다는 뜻이 아니다.
 
 ## 3. 최근 8일 공고 → 카탈로그 후보
 
-| 날짜 | 발표국 | 조치 | 공고 | 품목 | 판단 |
-|---|---|---|---|---|---|
-| 2026-10-15 | IDN | 수출통제 | [PT 네슬레 인도네시아 커피 가공 제품 수출 출하](https://www.kemendag.go.id/berita/foto/pelepasan-ekspor-produk-olahan-kopi-pt-nestle-indonesia) | coffee | **신규 후보** |
-| 2026-10-14 | IDN | 수출통제 | [2026년 10월 2차 HPE 및 HR Emas 다시 하락](https://www.kemendag.go.id/berita/siaran-pers/hpe-dan-hr-emas-periode-ii-oktober-2026-kembali-turun) | gold | **신규 후보** |
+원자재를 명시한 수출 금지·제한·해제 공고 없음 (보드 전체 57건 중).
 
-<details><summary>신규 후보 초안 (원문 확인 후 분류 모듈 파일에 넣을 것)</summary>
-
-```json
-[
-  {
-    "id": "idn-coffee",
-    "country": null,
-    "country_ko": null,
-    "iso": "IDN",
-    "category": "agri",
-    "commodities": [
-      "coffee"
-    ],
-    "level": "restricted",
-    "measure_type": null,
-    "since": "2026-10",
-    "measure_ko": "PT 네슬레 인도네시아 커피 가공 제품 수출 출하",
-    "source": "Ministry of Trade of Indonesia",
-    "url": "https://www.kemendag.go.id/berita/foto/pelepasan-ekspor-produk-olahan-kopi-pt-nestle-indonesia",
-    "confidence": "low",
-    "verified_at": null,
-    "needs_reconfirm": true
-  },
-  {
-    "id": "idn-gold",
-    "country": null,
-    "country_ko": null,
-    "iso": "IDN",
-    "category": "minerals",
-    "commodities": [
-      "gold"
-    ],
-    "level": "restricted",
-    "measure_type": null,
-    "since": "2026-10",
-    "measure_ko": "2026년 10월 2차 HPE 및 HR Emas 다시 하락",
-    "source": "Ministry of Trade of Indonesia",
-    "url": "https://www.kemendag.go.id/berita/siaran-pers/hpe-dan-hr-emas-periode-ii-oktober-2026-kembali-turun",
-    "confidence": "low",
-    "verified_at": null,
-    "needs_reconfirm": true
-  }
-]
-```
-
-</details>
-
-조치 종류·품목은 공고 제목 한 줄을 Gemini 가 읽은 값이다. 금지인지 제한인지는 원문으로 정한다.
-
-원자재를 명시하지 않은 수출통제 공고 1건(반도체·무기·항공 등 기술 통제)은 후보에서 뺐다. 수출통제 모니터 「최근 공고」 탭에서 볼 수 있다.
+원자재를 명시하지 않은 수출통제 공고 2건(반도체·무기·항공 등 기술 통제)은 후보에서 뺐다. 수출통제 모니터 「최근 공고」 탭에서 볼 수 있다.
 
 ## 4. 열린 질문
 
