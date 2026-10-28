@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-10-28T12:49:22.797573+00:00",
+  "generated_at": "2026-10-28T22:32:26.262496+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -65,6 +65,13 @@
     "fed": {
       "beige_book": null,
       "items": [
+        {
+          "title": "Federal Reserve issues FOMC statement",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+          "published": "Wed, 28 Oct 2026 18:00:00 GMT",
+          "event_type": "fomc",
+          "tone": null
+        },
         {
           "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
           "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
@@ -133,13 +140,6 @@
           "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260526a.htm",
           "published": "Tue, 26 May 2026 18:00:00 GMT",
           "event_type": "press",
-          "tone": null
-        },
-        {
-          "title": "Federal Reserve issues FOMC statement",
-          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
-          "published": "Wed, 29 Apr 2026 18:00:00 GMT",
-          "event_type": "fomc",
           "tone": null
         }
       ]
@@ -245,7 +245,7 @@
   },
   "ticker_items": [
     {
-      "id": "qra-21854529102",
+      "id": "qra-304659211428",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -278,7 +278,38 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-618732329934",
+      "id": "fed-589044334396",
+      "published_at": "Wed, 28 Oct 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[FOMC] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:fomc"
+      ],
+      "translation_status": "ok",
+      "event_type": "fomc"
+    },
+    {
+      "id": "fed-120975714634",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -309,7 +340,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-719184385720",
+      "id": "fed-299574223704",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -340,7 +371,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-890242233611",
+      "id": "fed-203977575906",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -371,7 +402,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-374285976111",
+      "id": "fed-541294477836",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -402,7 +433,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-68391666270",
+      "id": "fed-74092716153",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -433,38 +464,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-170660143519",
-      "published_at": "Wed, 29 Apr 2026 18:00:00 GMT",
-      "source": {
-        "id": "federal_reserve",
-        "name": "Federal Reserve",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
-      "category": "liquidity_official",
-      "commodities": [],
-      "title": {
-        "original": "Federal Reserve issues FOMC statement",
-        "original_lang": "en",
-        "ko": "[FOMC] Federal Reserve issues FOMC statement"
-      },
-      "summary": "Federal Reserve issues FOMC statement",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0,
-        "region_weight": 1.0,
-        "freshness": 1.0,
-        "final": 8.5
-      },
-      "rank_reasons": [
-        "event:fomc"
-      ],
-      "translation_status": "ok",
-      "event_type": "fomc"
-    },
-    {
-      "id": "fed-911457573817",
+      "id": "fed-708209642136",
       "published_at": "Tue, 13 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -495,7 +495,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-297547629319",
+      "id": "fed-479110503928",
       "published_at": "Thu, 8 Oct 2026 20:30:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -526,7 +526,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-674569809266",
+      "id": "fed-45517986693",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -557,7 +557,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-942284952225",
+      "id": "fed-876759824380",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -588,7 +588,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-808895355589",
+      "id": "fed-871931076647",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -619,7 +619,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-658939090515",
+      "id": "liq-ind-468735286565",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
