@@ -1,8 +1,8 @@
 {
   "schema": "usa_election_unreviewed_polls_v1",
-  "as_of": "2026-10-27",
-  "generated_at": "2026-10-27T00:40:59.532014+00:00",
-  "board_fetched_at": "2026-10-27T00:22:44.729735+00:00",
+  "as_of": "2026-10-28",
+  "generated_at": "2026-10-28T00:48:43.434446+00:00",
+  "board_fetched_at": "2026-10-28T00:27:58.767952+00:00",
   "window_days": 14,
   "tiers": {
     "reference_reviewed": {
@@ -27,8 +27,8 @@
     }
   },
   "basis_ko": "검토 보드가 보류한 공급자(VoteHub) 조사를 후보 명부에 맞춰 붙인 낮은 신뢰도 층입니다. 원문 대조 전 수치이며, 검토 보드에 14일 판정이 없을 때만 전망에 참고 반영합니다. 캠프 내부 조사와 원문 불일치 행은 표시만 하고 세지 않습니다.",
-  "race_count": 104,
-  "poll_count": 286,
+  "race_count": 108,
+  "poll_count": 314,
   "races": {
     "USA:NY:governor": {
       "race_id": "USA:NY:governor",
@@ -108,8 +108,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -176,8 +176,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "REP": 1
@@ -194,6 +194,46 @@
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202echc0a48602",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 508,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Jon Ossoff",
+              "pct": 55.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Mike Collins",
+              "pct": 40.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Allen Buckley",
+              "pct": 3.0,
+              "party": null,
+              "matched": null
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 15.0
+          }
+        },
         {
           "id": "us-202act204154cb",
           "pollster": "ActiVote",
@@ -294,14 +334,15 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 3,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 4,
         "lead_counts": {
-          "DEM": 3
+          "DEM": 4
         },
         "unreviewed_ids": [
           "us-202act204154cb",
+          "us-202echc0a48602",
           "us-202quae590b629"
         ],
         "reviewed_ids": [
@@ -315,6 +356,40 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202ech45428865",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 508,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Keisha Lance Bottoms",
+              "pct": 49.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Rick Jackson",
+              "pct": 48.0,
+              "party": "REP",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 1.0
+          }
+        },
         {
           "id": "gov202actab967fe7",
           "pollster": "ActiVote",
@@ -447,16 +522,18 @@
         }
       ],
       "combined_14": {
-        "status": "poll_lead",
+        "status": "mixed_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 3,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 4,
         "lead_counts": {
+          "DEM": 1,
           "REP": 3
         },
         "unreviewed_ids": [
           "gov202actab967fe7",
+          "gov202ech45428865",
           "gov202gba360d6617",
           "gov202qua2fa31d0f"
         ],
@@ -469,6 +546,78 @@
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202actc8c031ff",
+          "pollster": "ActiVote",
+          "field_start": "2026-10-17",
+          "field_end": "2026-10-27",
+          "population": "lv",
+          "sample_n": 400,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://www.activote.net/polls/2026/fl-u-s-senate/",
+          "held_reason": "publisher_identified_release_review_pending",
+          "tier": "reference_reviewed",
+          "answers": [
+            {
+              "name": "Ashley Moody",
+              "pct": 53.0,
+              "party": "REP",
+              "matched": "board"
+            },
+            {
+              "name": "Angie Nixon",
+              "pct": 47.0,
+              "party": "DEM",
+              "matched": "board"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -6.0
+          }
+        },
+        {
+          "id": "us-202ech9cca8dca",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 515,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Ashley Moody",
+              "pct": 51.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Angie Nixon",
+              "pct": 43.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Neil J. Gillespie",
+              "pct": 3.0,
+              "party": "IND",
+              "matched": "last_name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -8.0
+          }
+        },
         {
           "id": "us-202co/bf7a2617",
           "pollster": "co/efficient",
@@ -785,14 +934,16 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 4,
         "lead_counts": {
-          "REP": 2
+          "REP": 4
         },
         "unreviewed_ids": [
-          "us-202co/bf7a2617"
+          "us-202actc8c031ff",
+          "us-202co/bf7a2617",
+          "us-202ech9cca8dca"
         ],
         "reviewed_ids": [
           "us-202unif780f058"
@@ -805,6 +956,46 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202ech7ccc86ed",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 515,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Byron Donalds",
+              "pct": 50.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "David Jolly",
+              "pct": 44.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Scott Eckhard Jewett",
+              "pct": 1.0,
+              "party": "LIB",
+              "matched": "last_name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -6.0
+          }
+        },
         {
           "id": "gov202co/bb858b1c",
           "pollster": "co/efficient",
@@ -1109,15 +1300,16 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 3,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 4,
         "lead_counts": {
-          "REP": 3
+          "REP": 4
         },
         "unreviewed_ids": [
           "gov202act3d1f5d54",
-          "gov202co/bb858b1c"
+          "gov202co/bb858b1c",
+          "gov202ech7ccc86ed"
         ],
         "reviewed_ids": [
           "gov202uni6ec2ef24"
@@ -1238,8 +1430,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -1256,6 +1448,73 @@
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202gle5c572e3a",
+          "pollster": "Glengariff Group, Inc.",
+          "field_start": "2026-10-19",
+          "field_end": "2026-10-22",
+          "population": "lv",
+          "sample_n": 600,
+          "sponsors": [
+            "The Detroit News",
+            "WDIV-TV"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://www.detroitnews.com/story/news/politics/2026/10/27/jocelyn-bensons-lead-over-john-james-grows-in-michigan-governor-race/92441176007/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Abdul El-Sayed",
+              "pct": 51.4,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Mike Rogers",
+              "pct": 45.1,
+              "party": "REP",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 6.3
+          }
+        },
+        {
+          "id": "us-202mic57c88db3",
+          "pollster": "Michigan State University Institute for Public Policy and Social Research/YouGov",
+          "field_start": "2026-10-02",
+          "field_end": "2026-10-19",
+          "population": "lv",
+          "sample_n": 836,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://ippsr.msu.edu/news/msu-poll-shows-benson-large-lead-while-el-sayed-roger-race-tight",
+          "held_reason": "publisher_identified_release_review_pending",
+          "tier": "reference_reviewed",
+          "answers": [
+            {
+              "name": "Abdul El-Sayed",
+              "pct": 48.0,
+              "party": "DEM",
+              "matched": "board"
+            },
+            {
+              "name": "Mike Rogers",
+              "pct": 45.5,
+              "party": "REP",
+              "matched": "board"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 2.5
+          }
+        },
         {
           "id": "us-202marad729239",
           "pollster": "Marist University",
@@ -1716,14 +1975,16 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 4,
         "lead_counts": {
-          "DEM": 2
+          "DEM": 4
         },
         "unreviewed_ids": [
-          "us-202marad729239"
+          "us-202gle5c572e3a",
+          "us-202marad729239",
+          "us-202mic57c88db3"
         ],
         "reviewed_ids": [
           "us-202ins51d307b7"
@@ -1768,6 +2029,73 @@
           "lead": {
             "party": "DEM",
             "margin": 5.0
+          }
+        },
+        {
+          "id": "gov202gle26998710",
+          "pollster": "Glengariff Group, Inc.",
+          "field_start": "2026-10-19",
+          "field_end": "2026-10-22",
+          "population": "lv",
+          "sample_n": 600,
+          "sponsors": [
+            "The Detroit News",
+            "WDIV-TV"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://www.detroitnews.com/story/news/politics/2026/10/27/jocelyn-bensons-lead-over-john-james-grows-in-michigan-governor-race/92441176007/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Jocelyn Benson",
+              "pct": 51.4,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "John James",
+              "pct": 44.5,
+              "party": "REP",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 6.9
+          }
+        },
+        {
+          "id": "gov202mic9eb10e12",
+          "pollster": "Michigan State University Institute for Public Policy and Social Research/YouGov",
+          "field_start": "2026-10-02",
+          "field_end": "2026-10-19",
+          "population": "lv",
+          "sample_n": 836,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://ippsr.msu.edu/news/msu-poll-shows-benson-large-lead-while-el-sayed-roger-race-tight",
+          "held_reason": "publisher_identified_release_review_pending",
+          "tier": "reference_reviewed",
+          "answers": [
+            {
+              "name": "Jocelyn Benson",
+              "pct": 53.3,
+              "party": "DEM",
+              "matched": "board"
+            },
+            {
+              "name": "John James",
+              "pct": 40.9,
+              "party": "REP",
+              "matched": "board"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 12.4
           }
         },
         {
@@ -1936,15 +2264,17 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 4,
         "lead_counts": {
-          "DEM": 2
+          "DEM": 4
         },
         "unreviewed_ids": [
+          "gov202gle26998710",
           "gov202gui12b1fe0d",
-          "gov202mar8163ad9f"
+          "gov202mar8163ad9f",
+          "gov202mic9eb10e12"
         ],
         "reviewed_ids": []
       }
@@ -1993,8 +2323,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -2134,8 +2464,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -2146,12 +2476,112 @@
         "reviewed_ids": []
       }
     },
+    "USA:NV:governor": {
+      "race_id": "USA:NV:governor",
+      "state": "NV",
+      "office": "governor",
+      "district": null,
+      "polls": [
+        {
+          "id": "gov202harb5888037",
+          "pollster": "Hart Research Associates",
+          "field_start": "2026-10-20",
+          "field_end": "2026-10-25",
+          "population": "lv",
+          "sample_n": 950,
+          "sponsors": [
+            "A More Affordable Nevada"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://hub.nationaljournal.com/wednesday-morning-quarterbacking",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Joe Lombardo",
+              "pct": 45.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Aaron Ford",
+              "pct": 49.0,
+              "party": "DEM",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 4.0
+          }
+        }
+      ],
+      "combined_14": {
+        "status": "single_poll_lead",
+        "party": "DEM",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 1,
+        "lead_counts": {
+          "DEM": 1
+        },
+        "unreviewed_ids": [
+          "gov202harb5888037"
+        ],
+        "reviewed_ids": []
+      }
+    },
     "USA:NC:senate": {
       "race_id": "USA:NC:senate",
       "state": "NC",
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202qua525d8d11",
+          "pollster": "Quantus Insights",
+          "field_start": "2026-10-24",
+          "field_end": "2026-10-25",
+          "population": "lv",
+          "sample_n": 722,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://quantusinsights.org/polling/f/north-carolina-senate-cooper-holds-a-9-point-lead-over-whatley",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Roy Cooper",
+              "pct": 51.4,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Michael Whatley",
+              "pct": 42.8,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Shannon W. Bray",
+              "pct": 1.3,
+              "party": "LIB",
+              "matched": "name"
+            },
+            {
+              "name": "Michael Dublin",
+              "pct": 0.7,
+              "party": "GRN",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 8.6
+          }
+        },
         {
           "id": "us-202har90f566f4",
           "pollster": "Harper Polling",
@@ -2814,15 +3244,16 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 3,
         "lead_counts": {
-          "DEM": 2
+          "DEM": 3
         },
         "unreviewed_ids": [
           "us-202act3e915bba",
-          "us-202har90f566f4"
+          "us-202har90f566f4",
+          "us-202qua525d8d11"
         ],
         "reviewed_ids": []
       }
@@ -2869,8 +3300,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -2883,6 +3314,40 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202you88baa506",
+          "pollster": "YouGov",
+          "field_start": "2026-10-13",
+          "field_end": "2026-10-21",
+          "population": "rv",
+          "sample_n": 1000,
+          "sponsors": [
+            "N+ Univision"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://www.univision.com/noticias/politica/poll-univision-texas-latinos",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Greg Abbott",
+              "pct": 48.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Gina Hinojosa",
+              "pct": 46.0,
+              "party": "DEM",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -2.0
+          }
+        },
         {
           "id": "gov202act0a641407",
           "pollster": "ActiVote",
@@ -3247,18 +3712,19 @@
       "combined_14": {
         "status": "mixed_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 6,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 7,
         "lead_counts": {
-          "REP": 5,
+          "REP": 6,
           "DEM": 1
         },
         "unreviewed_ids": [
           "gov202act0a641407",
           "gov202pol037842f6",
           "gov202sli1a6f1e50",
-          "gov202votbd451aa9"
+          "gov202votbd451aa9",
+          "gov202you88baa506"
         ],
         "reviewed_ids": [
           "gov202beaa47eb5a6",
@@ -3272,6 +3738,46 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202ech0acb366e",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 508,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Amy Acton",
+              "pct": 45.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Vivek Ramaswamy",
+              "pct": 47.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Don Kissick",
+              "pct": 2.0,
+              "party": "LIB",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -2.0
+          }
+        },
         {
           "id": "gov202acta3742c7f",
           "pollster": "ActiVote",
@@ -3426,15 +3932,16 @@
       "combined_14": {
         "status": "mixed_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 4,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 5,
         "lead_counts": {
           "DEM": 3,
-          "REP": 1
+          "REP": 2
         },
         "unreviewed_ids": [
-          "gov202acta3742c7f"
+          "gov202acta3742c7f",
+          "gov202ech0acb366e"
         ],
         "reviewed_ids": [
           "gov202beafcf8ece3",
@@ -3449,6 +3956,40 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202ech60c386d1",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 403,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Rob Sand",
+              "pct": 50.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Zach Lahn",
+              "pct": 46.0,
+              "party": "REP",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 4.0
+          }
+        },
         {
           "id": "gov202co/923c9460",
           "pollster": "co/efficient",
@@ -3679,16 +4220,17 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
+        "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 2,
         "lead_counts": {
-          "DEM": 1
+          "DEM": 2
         },
         "unreviewed_ids": [
-          "gov202co/923c9460"
+          "gov202co/923c9460",
+          "gov202ech60c386d1"
         ],
         "reviewed_ids": []
       }
@@ -3699,6 +4241,52 @@
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202ech01f06c61",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 508,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Sherrod Brown",
+              "pct": 47.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Jon Husted",
+              "pct": 47.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "William B. Redpath",
+              "pct": 1.0,
+              "party": "LIB",
+              "matched": "last_name"
+            },
+            {
+              "name": "Greg Levy",
+              "pct": 2.0,
+              "party": "OTH",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": null,
+            "margin": 0.0
+          }
+        },
         {
           "id": "us-202new8d3274bf",
           "pollster": "New River Strategies/GS Strategy Group",
@@ -3999,13 +4587,16 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 4,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 5,
         "lead_counts": {
-          "DEM": 4
+          "DEM": 4,
+          "TIE": 1
         },
-        "unreviewed_ids": [],
+        "unreviewed_ids": [
+          "us-202ech01f06c61"
+        ],
         "reviewed_ids": [
           "us-202bea80ab32e9",
           "us-202ins6e5f29f2",
@@ -4020,6 +4611,40 @@
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202youe49ed5b8",
+          "pollster": "YouGov",
+          "field_start": "2026-10-13",
+          "field_end": "2026-10-21",
+          "population": "rv",
+          "sample_n": 1000,
+          "sponsors": [
+            "N+ Univision"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://www.univision.com/noticias/politica/poll-univision-texas-latinos",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "James Talarico",
+              "pct": 50.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Ken Paxton",
+              "pct": 45.0,
+              "party": "REP",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 5.0
+          }
+        },
         {
           "id": "us-202actbd0ac41f",
           "pollster": "ActiVote",
@@ -4382,26 +5007,25 @@
         }
       ],
       "combined_14": {
-        "status": "mixed_lead",
+        "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 7,
         "lead_counts": {
-          "DEM": 5,
-          "TIE": 1,
-          "REP": 1
+          "DEM": 6,
+          "TIE": 1
         },
         "unreviewed_ids": [
           "us-202actbd0ac41f",
           "us-202pol8bd7b267",
           "us-202slidcb5236a",
-          "us-202vot954dd8b2"
+          "us-202vot954dd8b2",
+          "us-202youe49ed5b8"
         ],
         "reviewed_ids": [
           "us-202bea368d4e46",
-          "us-202eme43ceed84",
-          "us-202ins62d5470c"
+          "us-202eme43ceed84"
         ]
       }
     },
@@ -4411,6 +5035,46 @@
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202echbc68f468",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 403,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Josh Turek",
+              "pct": 45.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Ashley Hinson",
+              "pct": 43.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Thomas Laehn",
+              "pct": 7.0,
+              "party": "LIB",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 2.0
+          }
+        },
         {
           "id": "us-202co/2755fd48",
           "pollster": "co/efficient",
@@ -4697,16 +5361,18 @@
         }
       ],
       "combined_14": {
-        "status": "poll_lead",
+        "status": "mixed_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 3,
         "lead_counts": {
-          "REP": 2
+          "REP": 2,
+          "DEM": 1
         },
         "unreviewed_ids": [
-          "us-202co/2755fd48"
+          "us-202co/2755fd48",
+          "us-202echbc68f468"
         ],
         "reviewed_ids": [
           "us-202ins750c2821"
@@ -4759,18 +5425,14 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "REP": 1
-        },
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
         "unreviewed_ids": [],
-        "reviewed_ids": [
-          "us-202ins9dcc36f4"
-        ]
+        "reviewed_ids": []
       }
     },
     "USA:KS:governor": {
@@ -4847,8 +5509,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -4899,8 +5561,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -4955,8 +5617,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -4973,6 +5635,72 @@
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202mar84640418",
+          "pollster": "Marist University",
+          "field_start": "2026-10-22",
+          "field_end": "2026-10-25",
+          "population": "lv",
+          "sample_n": 1449,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://maristpoll.marist.edu/polls/the-midterm-elections-in-maine-october-2026/",
+          "held_reason": "ranked_choice_question_not_reviewed",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Troy Dale Jackson",
+              "pct": 49.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Susan Collins",
+              "pct": 47.0,
+              "party": "REP",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 2.0
+          }
+        },
+        {
+          "id": "us-202ech31fe342b",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 413,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Troy Dale Jackson",
+              "pct": 51.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Susan Collins",
+              "pct": 44.0,
+              "party": "REP",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 7.0
+          }
+        },
         {
           "id": "us-202bea00f453c2",
           "pollster": "Beacon Research/Shaw & Co. Research",
@@ -5269,16 +5997,17 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 3,
         "lead_counts": {
-          "TIE": 1,
-          "DEM": 1
+          "DEM": 2,
+          "TIE": 1
         },
         "unreviewed_ids": [
           "us-202bea00f453c2",
-          "us-202inscfc77987"
+          "us-202ech31fe342b",
+          "us-202mar84640418"
         ],
         "reviewed_ids": []
       }
@@ -5357,8 +6086,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -6273,8 +7002,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "REP": 1
@@ -6401,18 +7130,13 @@
         }
       ],
       "combined_14": {
-        "status": "poll_lead",
-        "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
-        "lead_counts": {
-          "DEM": 2
-        },
-        "unreviewed_ids": [
-          "us-202eme08dc10c3",
-          "us-202pubba1dafd6"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -6422,6 +7146,52 @@
       "office": "senate",
       "district": null,
       "polls": [
+        {
+          "id": "us-202ech8ce34abf",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 407,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Pete Ricketts",
+              "pct": 47.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Dan Osborn",
+              "pct": 46.0,
+              "party": "IND",
+              "matched": "name"
+            },
+            {
+              "name": "Robin Richards",
+              "pct": 2.0,
+              "party": "OTH",
+              "matched": "name"
+            },
+            {
+              "name": "Chuck Conboy",
+              "pct": 1.0,
+              "party": "OTH",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -1.0
+          }
+        },
         {
           "id": "us-202natd1a93c5a",
           "pollster": "National Public Affairs",
@@ -6604,15 +7374,16 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
+        "status": "poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 2,
         "lead_counts": {
-          "REP": 1
+          "REP": 2
         },
         "unreviewed_ids": [
+          "us-202ech8ce34abf",
           "us-202natd1a93c5a"
         ],
         "reviewed_ids": []
@@ -6694,8 +7465,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -6746,8 +7517,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -6798,8 +7569,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -6848,17 +7619,13 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "DEM": 1
-        },
-        "unreviewed_ids": [
-          "us-202eme63310cee"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -6906,8 +7673,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -6960,17 +7727,13 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "DEM": 1
-        },
-        "unreviewed_ids": [
-          "us-202eme2c268367"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -7016,17 +7779,13 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "DEM": 1
-        },
-        "unreviewed_ids": [
-          "us-202eme1c60a2fd"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -7072,17 +7831,13 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "DEM": 1
-        },
-        "unreviewed_ids": [
-          "us-202emea36e3a37"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -7166,8 +7921,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -7232,8 +7987,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -7286,8 +8041,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -7377,8 +8132,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -7435,8 +8190,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -7485,8 +8240,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -7537,8 +8292,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -7589,8 +8344,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -7639,17 +8394,13 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "DEM": 1
-        },
-        "unreviewed_ids": [
-          "us-202eme59eee485"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -7729,18 +8480,13 @@
         }
       ],
       "combined_14": {
-        "status": "poll_lead",
-        "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
-        "lead_counts": {
-          "DEM": 2
-        },
-        "unreviewed_ids": [
-          "us-202emec9ad5ca5",
-          "us-202nord8a4b596"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -7788,8 +8534,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -7844,8 +8590,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -7926,8 +8672,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -7944,6 +8690,38 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202ala46ff7ca4",
+          "pollster": "Alaska Survey Research",
+          "field_start": "2026-10-23",
+          "field_end": "2026-10-25",
+          "population": "lv",
+          "sample_n": 1068,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://x.com/The_Real_ASR/status/2114855199819051178",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Jonathan S. \"JKT\" Kreiss-Tomkins",
+              "pct": 53.4,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Bernadette M. Wilson",
+              "pct": 46.6,
+              "party": "REP",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 6.8
+          }
+        },
         {
           "id": "gov202ala7c90a5de",
           "pollster": "Alaska Survey Research",
@@ -8012,14 +8790,14 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
         },
         "unreviewed_ids": [
-          "gov202ala7c90a5de"
+          "gov202ala46ff7ca4"
         ],
         "reviewed_ids": []
       }
@@ -8148,8 +8926,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -8264,8 +9042,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "REP": 1
@@ -8452,17 +9230,16 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 2,
         "lead_counts": {
           "DEM": 2
         },
-        "unreviewed_ids": [
-          "gov202uni78d0c8fb"
-        ],
+        "unreviewed_ids": [],
         "reviewed_ids": [
-          "gov202eme545ba1d8"
+          "gov202eme545ba1d8",
+          "gov202surafe1b671"
         ]
       }
     },
@@ -8646,8 +9423,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -8708,8 +9485,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -8798,8 +9575,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -8932,8 +9709,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -8998,8 +9775,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -9012,6 +9789,46 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202ech161b28e4",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 413,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Hannah Pingree",
+              "pct": 51.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Bobby Charles",
+              "pct": 38.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Rick Bennett",
+              "pct": 7.0,
+              "party": "IND",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "DEM",
+            "margin": 13.0
+          }
+        },
         {
           "id": "gov202the9c601223",
           "pollster": "The Washington Post/George Mason University School of Policy and Government",
@@ -9160,17 +9977,21 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
+        "status": "poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 3,
         "lead_counts": {
-          "DEM": 1
+          "TIE": 1,
+          "DEM": 2
         },
-        "unreviewed_ids": [],
+        "unreviewed_ids": [
+          "gov202ech161b28e4"
+        ],
         "reviewed_ids": [
-          "gov202bea65109344"
+          "gov202bea65109344",
+          "gov202mare4c178b5"
         ]
       }
     },
@@ -9334,8 +10155,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -9348,6 +10169,52 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202ech6a54009b",
+          "pollster": "Echelon Insights",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-23",
+          "population": "lv",
+          "sample_n": 407,
+          "sponsors": [
+            "NetChoice"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Jim Pillen",
+              "pct": 47.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Lynne Walz",
+              "pct": 40.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Brett Lindstrom",
+              "pct": 4.0,
+              "party": "OTH",
+              "matched": "name"
+            },
+            {
+              "name": "Rick Beard",
+              "pct": 7.0,
+              "party": "OTH",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -7.0
+          }
+        },
         {
           "id": "gov202natbac56f44",
           "pollster": "National Public Affairs",
@@ -9514,15 +10381,16 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
+        "status": "poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 2,
         "lead_counts": {
-          "REP": 1
+          "REP": 2
         },
         "unreviewed_ids": [
+          "gov202ech6a54009b",
           "gov202natbac56f44"
         ],
         "reviewed_ids": []
@@ -9602,8 +10470,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "REP": 1
@@ -9656,8 +10524,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -9776,8 +10644,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -9790,6 +10658,52 @@
       "office": "governor",
       "district": null,
       "polls": [
+        {
+          "id": "gov202tarb23f26cd",
+          "pollster": "Targoz Market Research",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-25",
+          "population": "lv",
+          "sample_n": 895,
+          "sponsors": [
+            "South Carolina Policy Council"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://www.foxcarolina.com/2026/10/26/new-poll-shows-neck-and-neck-senate-race-double-digit-lead-governor-sc-midterms/",
+          "held_reason": "unregistered_primary_host",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Alan Wilson",
+              "pct": 51.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Jermaine Johnson",
+              "pct": 41.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Michael Addison",
+              "pct": 1.0,
+              "party": "UC",
+              "matched": "name"
+            },
+            {
+              "name": "Walid Hakim",
+              "pct": 1.0,
+              "party": "GRE",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -10.0
+          }
+        },
         {
           "id": "gov202tra179819af",
           "pollster": "Trafalgar Group",
@@ -9836,16 +10750,71 @@
         }
       ],
       "combined_14": {
+        "status": "poll_lead",
+        "party": "REP",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 2,
+        "lead_counts": {
+          "REP": 2
+        },
+        "unreviewed_ids": [
+          "gov202tarb23f26cd",
+          "gov202tra179819af"
+        ],
+        "reviewed_ids": []
+      }
+    },
+    "USA:VT:governor": {
+      "race_id": "USA:VT:governor",
+      "state": "VT",
+      "office": "governor",
+      "district": null,
+      "polls": [
+        {
+          "id": "gov202sta2b5cca98",
+          "pollster": "State Navigate",
+          "field_start": "2026-10-23",
+          "field_end": "2026-10-25",
+          "population": "lv",
+          "sample_n": 1752,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://articles.statenavigate.com/vt/final-vermont-governor-poll-has-phil-scott-holding-a-3-point-lead/",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Phil Scott",
+              "pct": 49.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Amanda Janoo",
+              "pct": 46.0,
+              "party": "DEM",
+              "matched": "name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -3.0
+          }
+        }
+      ],
+      "combined_14": {
         "status": "single_poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "REP": 1
         },
         "unreviewed_ids": [
-          "gov202tra179819af"
+          "gov202sta2b5cca98"
         ],
         "reviewed_ids": []
       }
@@ -9894,8 +10863,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -10010,8 +10979,8 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 2,
         "lead_counts": {
           "REP": 2
@@ -10066,17 +11035,13 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "REP": 1
-        },
-        "unreviewed_ids": [
-          "us-202emef6848322"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -10128,8 +11093,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -10178,17 +11143,13 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "DEM": 1
-        },
-        "unreviewed_ids": [
-          "us-202emecd4e9339"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -10233,8 +11194,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -10282,8 +11243,55 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
+        "reviewed_ids": []
+      }
+    },
+    "USA:CA:house:34": {
+      "race_id": "USA:CA:house:34",
+      "state": "CA",
+      "office": "house",
+      "district": "34",
+      "polls": [
+        {
+          "id": "us-202uni0b5ba8c8",
+          "pollster": "University of Southern California Democracy and Fair Elections Lab",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-24",
+          "population": "lv",
+          "sample_n": 423,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://www.thedemocracylab.com/ca34",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Angela Gonzales-Torres",
+              "pct": 51.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Jimmy Gomez",
+              "pct": 45.0,
+              "party": "DEM",
+              "matched": "name"
+            }
+          ],
+          "lead": null
+        }
+      ],
+      "combined_14": {
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -10362,8 +11370,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -10412,8 +11420,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -10474,8 +11482,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -10524,8 +11532,8 @@
       "combined_14": {
         "status": "tie",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "TIE": 1
@@ -10578,8 +11586,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -10662,8 +11670,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -10680,6 +11688,38 @@
       "office": "house",
       "district": "05",
       "polls": [
+        {
+          "id": "us-202qua75e251d2",
+          "pollster": "Quantus Insights",
+          "field_start": "2026-10-21",
+          "field_end": "2026-10-22",
+          "population": "lv",
+          "sample_n": 601,
+          "sponsors": [],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://quantusinsights.org/polling/f/indiana-5th-spartz-leads-ford-by-3-in-tight-race",
+          "held_reason": "pollster_not_selected",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Victoria Spartz",
+              "pct": 47.4,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "James David Ford \"J.D.\" Ford",
+              "pct": 44.6,
+              "party": "DEM",
+              "matched": "last_name"
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -2.8
+          }
+        },
         {
           "id": "us-202exp61baa04f",
           "pollster": "Expedition Strategies",
@@ -10716,13 +11756,17 @@
         }
       ],
       "combined_14": {
-        "status": "no_recent_poll",
-        "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 0,
-        "lead_counts": {},
-        "unreviewed_ids": [],
+        "status": "single_poll_lead",
+        "party": "REP",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 1,
+        "lead_counts": {
+          "REP": 1
+        },
+        "unreviewed_ids": [
+          "us-202qua75e251d2"
+        ],
         "reviewed_ids": []
       }
     },
@@ -10850,8 +11894,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -10918,8 +11962,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -11006,17 +12050,13 @@
         }
       ],
       "combined_14": {
-        "status": "tie",
+        "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "TIE": 1
-        },
-        "unreviewed_ids": [
-          "us-202pube424dda1"
-        ],
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -11244,8 +12284,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -11360,16 +12400,15 @@
         }
       ],
       "combined_14": {
-        "status": "poll_lead",
+        "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 2,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 1,
         "lead_counts": {
-          "DEM": 2
+          "DEM": 1
         },
         "unreviewed_ids": [
-          "us-202emeae9d8cb2",
           "us-202pub64d2c386"
         ],
         "reviewed_ids": []
@@ -11415,17 +12454,13 @@
         }
       ],
       "combined_14": {
-        "status": "single_poll_lead",
-        "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 1,
-        "lead_counts": {
-          "REP": 1
-        },
-        "unreviewed_ids": [
-          "us-202weda6e4ad64"
-        ],
+        "status": "no_recent_poll",
+        "party": null,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 0,
+        "lead_counts": {},
+        "unreviewed_ids": [],
         "reviewed_ids": []
       }
     },
@@ -11473,8 +12508,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "REP": 1
@@ -11563,8 +12598,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "REP": 1
@@ -11649,8 +12684,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -11703,8 +12738,8 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
@@ -11759,8 +12794,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -11811,8 +12846,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -11863,8 +12898,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -11919,8 +12954,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12005,8 +13040,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12063,8 +13098,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12115,8 +13150,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12167,14 +13202,82 @@
       "combined_14": {
         "status": "single_poll_lead",
         "party": "DEM",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 1,
         "lead_counts": {
           "DEM": 1
         },
         "unreviewed_ids": [
           "us-202pubd9e6a1c9"
+        ],
+        "reviewed_ids": []
+      }
+    },
+    "USA:SC:senate": {
+      "race_id": "USA:SC:senate",
+      "state": "SC",
+      "office": "senate",
+      "district": null,
+      "polls": [
+        {
+          "id": "us-202tarbd5d9c4c",
+          "pollster": "Targoz Market Research",
+          "field_start": "2026-10-16",
+          "field_end": "2026-10-25",
+          "population": "lv",
+          "sample_n": 895,
+          "sponsors": [
+            "South Carolina Policy Council"
+          ],
+          "partisan": null,
+          "internal": false,
+          "source_url": "https://www.foxcarolina.com/2026/10/26/new-poll-shows-neck-and-neck-senate-race-double-digit-lead-governor-sc-midterms/",
+          "held_reason": "unregistered_primary_host",
+          "tier": "unreviewed",
+          "answers": [
+            {
+              "name": "Darline Graham",
+              "pct": 47.0,
+              "party": "REP",
+              "matched": "name"
+            },
+            {
+              "name": "Annie Andrews",
+              "pct": 46.0,
+              "party": "DEM",
+              "matched": "name"
+            },
+            {
+              "name": "Kasie Whitener",
+              "pct": 2.0,
+              "party": null,
+              "matched": null
+            },
+            {
+              "name": "Mark Hackett",
+              "pct": 1.0,
+              "party": null,
+              "matched": null
+            }
+          ],
+          "lead": {
+            "party": "REP",
+            "margin": -1.0
+          }
+        }
+      ],
+      "combined_14": {
+        "status": "single_poll_lead",
+        "party": "REP",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 1,
+        "lead_counts": {
+          "REP": 1
+        },
+        "unreviewed_ids": [
+          "us-202tarbd5d9c4c"
         ],
         "reviewed_ids": []
       }
@@ -12221,18 +13324,17 @@
       "combined_14": {
         "status": "poll_lead",
         "party": "REP",
-        "from": "2026-10-14",
-        "through": "2026-10-27",
-        "pollster_count": 3,
+        "from": "2026-10-15",
+        "through": "2026-10-28",
+        "pollster_count": 2,
         "lead_counts": {
-          "REP": 3
+          "REP": 2
         },
         "unreviewed_ids": [
           "us-202quabb30f998"
         ],
         "reviewed_ids": [
-          "us-202eme8e34bf7e",
-          "us-202masda7d2a14"
+          "us-202eme8e34bf7e"
         ]
       }
     },
@@ -12280,8 +13382,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12332,8 +13434,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12396,8 +13498,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12472,8 +13574,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12536,8 +13638,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
@@ -12610,8 +13712,8 @@
       "combined_14": {
         "status": "no_recent_poll",
         "party": null,
-        "from": "2026-10-14",
-        "through": "2026-10-27",
+        "from": "2026-10-15",
+        "through": "2026-10-28",
         "pollster_count": 0,
         "lead_counts": {},
         "unreviewed_ids": [],
