@@ -41,6 +41,7 @@ from .collect import (
     oni_for,
     retry_json,
 )
+from . import enso_analog as E
 from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -143,6 +144,45 @@ def panel_features(cfg, feats, year, history, predicted):
     return notes
 
 
+def enso_fill(cfg, year, past_years, logs):
+    """ENSO-weighted mean of the filled scenarios, or None where it is off."""
+    if cfg.key not in E.ON:
+        return None
+    try:
+        series = E.load_nino34()
+    except (OSError, ValueError, StopIteration):
+        return None
+    now = E.sowing_nino34(series, year, cfg.crop)
+    past = np.array([E.sowing_nino34(series, int(y), cfg.crop) or np.nan
+                     for y in past_years], dtype=float)
+    ok = ~np.isnan(past)
+    if now is None or ok.sum() < 15:
+        return None
+    w = E.weights(past[ok], now)
+    if w.sum() <= 0:
+        return None
+    lg = np.asarray(logs)[ok]
+    order = np.argsort(-w)[:4]
+    return {
+        "log": float(np.sum(w * lg) / w.sum()),
+        "nino34_sowing": round(now, 2),
+        "sowing_months": [f"{year - 1}-{m:02d}" for m in E.SOWING_MONTHS],
+        "bandwidth_c": E.BANDWIDTH,
+        "effective_seasons": round(E.effective_n(w), 1),
+        "analogs": [{"year": int(np.asarray(past_years)[ok][j]),
+                     "nino34_sowing": round(float(past[ok][j]), 2),
+                     "weight": round(float(w[j] / w.sum()), 3),
+                     "weather_effect_pct": round(float((np.exp(lg[j]) - 1) * 100), 1)}
+                    for j in order],
+        # Niño3.4 beyond anything in the record: the nearest seasons stand in
+        # for a year the data has not seen, so say so rather than imply more.
+        "beyond_record": bool(now > np.nanmax(past) + BEYOND or now < np.nanmin(past) - BEYOND),
+    }
+
+
+BEYOND = 0.5
+
+
 def predict_one(cfg, year, oni, dmi, predicted):
     model_path = os.path.join(MODELS, f"{cfg.key}.json")
     if not os.path.exists(model_path):
@@ -193,6 +233,7 @@ def predict_one(cfg, year, oni, dmi, predicted):
     scale = np.array(model["scaler"]["scale"])
     coef = np.array(model["ridge"]["coef"])
     unk = np.array([f in missing for f in model["features"]])
+    analog = None
     if unk.any():
         past = history[[f for f, u in zip(model["features"], unk) if u]].dropna()
         if past.empty:
@@ -206,6 +247,17 @@ def predict_one(cfg, year, oni, dmi, predicted):
         notes = notes + [f"{len(missing)} of {len(model['features'])} features not "
                          f"yet observed, filled from {len(past)} past seasons: "
                          + ", ".join(missing)]
+        # Where the pre-season backtest earned it, weight those past seasons
+        # by how close their Niño3.4 at sowing was to this one's (enso_analog).
+        analog = enso_fill(cfg, year, history.loc[past.index, "year"], logs)
+        if analog:
+            analog["even_fill_effect_pct"] = round((np.exp(weather_log) - 1) * 100, 2)
+            weather_log = analog.pop("log")
+            notes = notes + [
+                f"filled seasons weighted by Niño3.4 at sowing "
+                f"({analog['nino34_sowing']:+.2f} °C), effective "
+                f"{analog['effective_seasons']:.1f} seasons: "
+                + ", ".join(str(a["year"]) for a in analog["analogs"])]
     else:
         weather_log = float(model["ridge"]["intercept"]
                             + np.dot((x - mean) / scale, coef))
@@ -259,6 +311,7 @@ def predict_one(cfg, year, oni, dmi, predicted):
         "features": {f: (None if f in missing else float(feats[f]))
                      for f in model["features"]},
         "features_filled": missing,
+        "enso_analog": analog,
         "oni": feats.get("oni_lag"),
         "iod": feats.get("iod_spring"),
         "weather_through": str(coverage.date()),
