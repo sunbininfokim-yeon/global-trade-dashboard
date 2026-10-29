@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-10-29T15:16:23.773731+00:00",
+  "generated_at": "2026-10-29T21:11:39.451905+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 169,
     "scored": 169,
     "selected": 40,
-    "indicators": 10
+    "indicators": 9
   },
   "feed_status": [
     {
@@ -129,14 +129,13 @@
       "label_ko": "FOMC 성명·의사록",
       "country": "USA",
       "domains": [
-        "finance",
-        "economy"
+        "finance"
       ],
       "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
       "published_at": "2026-09-16T18:00:00+00:00",
       "site_slot": "finance.policy",
-      "significance": 3.445
+      "significance": 2.842
     },
     {
       "series_id": "US_FED_FOMC",
@@ -220,23 +219,44 @@
       "published_at": "2026-09-10T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
-      "published_at": "2026-10-22T08:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
     }
   ],
   "ticker_items": [
+    {
+      "id": "aaf43852cd39d583",
+      "published_at": "2026-10-29T16:27:20+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-unleashes-the-american-economy-gdp-surges-as-investment-hits-multi-year-high/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "President Trump Unleashes the American Economy: GDP Surges as Investment Hits Multi-Year High",
+        "original_lang": "en",
+        "ko": "[USA·경제] President Trump Unleashes the American Economy: GDP Surges as Investment Hits Multi-Year High"
+      },
+      "summary": "The U.S. economy grew at a strong annual rate of 3.4% in the third quarter of 2026 — the strongest pace in a year. President Donald J. Trump’s America First agenda is delivering as promised: faster growth, historic levels of investment, and an economy that continues to outperform",
+      "scores": {
+        "significance": 4.508,
+        "final": 4.508
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
     {
       "id": "01cfdfb380c8b2b3",
       "published_at": "2026-09-17T11:00:00+00:00",
@@ -412,10 +432,10 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "c077487460d9d3d6",
+      "id": "2c34cfffcee1a9b4",
       "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
-        "id": "us_fed_all",
+        "id": "us_fed_monetary",
         "name": "Federal Reserve",
         "region": "usa",
         "slant": null
@@ -424,8 +444,7 @@
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance",
-        "economy"
+        "finance"
       ],
       "series_id": "US_FED_FOMC",
       "title": {
@@ -435,11 +454,11 @@
       },
       "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
       "scores": {
-        "significance": 3.445,
-        "final": 3.445
+        "significance": 2.842,
+        "final": 2.842
       },
       "rank_reasons": [
-        "domains:economy,finance",
+        "domains:finance",
         "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
@@ -1253,6 +1272,41 @@
       "site_slot": null
     },
     {
+      "id": "cae3689a5cb38239",
+      "published_at": "2026-10-29T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261029a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by The Bank of Nova Scotia"
+      },
+      "summary": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "9a5276e7be02ed50",
       "published_at": "2026-10-16T15:00:00+00:00",
       "source": {
@@ -1566,81 +1620,22 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    },
-    {
-      "id": "afcd050f27db0d35",
-      "published_at": "2026-09-18T15:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula"
-      },
-      "summary": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "9151e2346fa707e2",
-      "published_at": "2026-10-22T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
     {
-      "title": "Christine Lagarde, Boris Vujčić: Monetary policy statement",
+      "title": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 2.322,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
       "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is261029~5c5ffe99e5.en.html",
       "country": "EUR",
       "domains": [
@@ -1704,31 +1699,44 @@
       ],
       "significance": 2.024,
       "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Asset Purchase Facility: Gilt Sales – Market Notice 17 September 2026",
-      "url": "https://www.bankofengland.co.uk/markets/market-notices/2026/asset-purchase-facility-gilt-sales-market-notice-17-september-2026",
-      "country": "GBR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Meeting of the Court of Directors held on 17 September 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/court-minutes-17-september-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
+    {
+      "id": "aaf43852cd39d583",
+      "published_at": "2026-10-29T16:27:20+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-unleashes-the-american-economy-gdp-surges-as-investment-hits-multi-year-high/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "diplomacy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "President Trump Unleashes the American Economy: GDP Surges as Investment Hits Multi-Year High",
+        "original_lang": "en",
+        "ko": "[USA·경제] President Trump Unleashes the American Economy: GDP Surges as Investment Hits Multi-Year High"
+      },
+      "summary": "The U.S. economy grew at a strong annual rate of 3.4% in the third quarter of 2026 — the strongest pace in a year. President Donald J. Trump’s America First agenda is delivering as promised: faster growth, historic levels of investment, and an economy that continues to outperform",
+      "scores": {
+        "significance": 4.508,
+        "final": 4.508
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
     {
       "id": "01cfdfb380c8b2b3",
       "published_at": "2026-09-17T11:00:00+00:00",
@@ -1904,10 +1912,10 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "c077487460d9d3d6",
+      "id": "2c34cfffcee1a9b4",
       "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
-        "id": "us_fed_all",
+        "id": "us_fed_monetary",
         "name": "Federal Reserve",
         "region": "usa",
         "slant": null
@@ -1916,8 +1924,7 @@
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance",
-        "economy"
+        "finance"
       ],
       "series_id": "US_FED_FOMC",
       "title": {
@@ -1927,11 +1934,11 @@
       },
       "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
       "scores": {
-        "significance": 3.445,
-        "final": 3.445
+        "significance": 2.842,
+        "final": 2.842
       },
       "rank_reasons": [
-        "domains:economy,finance",
+        "domains:finance",
         "series:US_FED_FOMC"
       ],
       "translation_status": "skipped",
@@ -2745,6 +2752,41 @@
       "site_slot": null
     },
     {
+      "id": "cae3689a5cb38239",
+      "published_at": "2026-10-29T20:30:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261029a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by The Bank of Nova Scotia"
+      },
+      "summary": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "9a5276e7be02ed50",
       "published_at": "2026-10-16T15:00:00+00:00",
       "source": {
@@ -3058,76 +3100,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    },
-    {
-      "id": "afcd050f27db0d35",
-      "published_at": "2026-09-18T15:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula"
-      },
-      "summary": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "9151e2346fa707e2",
-      "published_at": "2026-10-22T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ]
 }
