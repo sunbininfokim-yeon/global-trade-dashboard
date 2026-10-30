@@ -140,14 +140,34 @@ def onset_doy(daily, harvest_year, dry_midpoint=(7, 1), mean_rain=None):
     DOY 182, the guide's t0) and runs a full year forward, so both the onset
     and the following demise fall inside one window.
 
-    Returns (onset_doy, end_doy) or (None, None) when the window is not
-    covered. DOY is measured in the planting year, so the 20 October threshold
-    the guide uses is DOY 293.
+    Returns (onset_doy, end_doy), either of them None when the data does not
+    yet show it. DOY is measured in the planting year, so the 20 October
+    threshold the guide uses is DOY 293.
+
+    A season still in progress needs two changes, or its last data day reads
+    as the demise (MT corn's ers_doy came out at z=-18 on 2026-10-21) and the
+    onset moves early:
+
+      * the demise is reported only once the window is covered to its end;
+      * Rbar is the mean of the complete windows in `daily`, not of the
+        partial one -- July-October alone is the dry season, so its own mean
+        would put the onset at the first light rain -- and the onset counts
+        only once the curve has risen for ONSET_CONFIRM_DAYS after its
+        minimum.
+
+    A covered window is computed exactly as before, so training is unchanged.
     """
     m, d = dry_midpoint
     plant_year = harvest_year - 1
     start = pd.Timestamp(year=plant_year, month=m, day=d)
     end = start + pd.DateOffset(years=1) - pd.Timedelta(days=1)
+    last = daily.date.max() if len(daily) else None
+    covered = last is not None and last >= end - pd.Timedelta(days=COVER_SLACK_DAYS)
+
+    if not covered and mean_rain is None:
+        mean_rain = _complete_window_mean(daily, dry_midpoint, before=start)
+        if mean_rain is None:
+            return None, None
 
     onset, demise, curve = anomalous_accumulation(daily, start, end, mean_rain)
     if onset is None:
@@ -160,7 +180,36 @@ def onset_doy(daily, harvest_year, dry_midpoint=(7, 1), mean_rain=None):
     # falling in the harvest year keeps counting past 365 instead of wrapping
     # back to 1 and looking like an absurdly early date.
     jan1 = pd.Timestamp(year=plant_year, month=1, day=1)
-    return (onset - jan1).days + 1, (demise - jan1).days + 1
+    onset_doy = (onset - jan1).days + 1
+    if covered:
+        return onset_doy, (demise - jan1).days + 1
+    if last - onset < pd.Timedelta(days=ONSET_CONFIRM_DAYS):
+        return None, None
+    return onset_doy, None
+
+
+# A window whose data stops this close to its end counts as covered (NASA
+# POWER runs about three days behind).
+COVER_SLACK_DAYS = 5
+# Days of rising curve after the minimum before a live onset is reported.
+ONSET_CONFIRM_DAYS = 10
+
+
+def _complete_window_mean(daily, dry_midpoint, before):
+    """Mean daily rain over the complete July-June windows ending before `before`."""
+    m, d = dry_midpoint
+    first = daily.date.min()
+    s = pd.Timestamp(year=first.year, month=m, day=d)
+    if s < first:
+        s += pd.DateOffset(years=1)
+    totals = []
+    while s + pd.DateOffset(years=1) <= before:
+        e = s + pd.DateOffset(years=1) - pd.Timedelta(days=1)
+        w = daily[(daily.date >= s) & (daily.date <= e)].precip.dropna()
+        if len(w) >= 330:
+            totals.append(w.mean())
+        s += pd.DateOffset(years=1)
+    return float(np.mean(totals)) if totals else None
 
 
 def onset_doy_agronomic(daily, harvest_year, trigger_mm=30.0, window=3,
