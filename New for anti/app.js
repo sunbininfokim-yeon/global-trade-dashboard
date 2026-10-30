@@ -3436,6 +3436,9 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null, cropK
         // Pre-season fill weighted by Niño3.4 at sowing (argentina/enso_analog.py,
         // south_africa/enso_preseason.py); null once the season is observed.
         ensoOutlook: entry.enso?.analog_fill || entry.enso_preseason || null,
+        // MODIS NDVI correction already folded into `point` (argentina/,
+        // brazil/, thailand/ ndvi_blend.py); null where off or not yet seen.
+        ndvi: entry.ndvi || null,
         // Four ways to say "do not trust this as weather skill":
         // low_confidence flag, beats_trend false, skill_vs_trend < 0.20,
         // climate_gate stopped for short sample (Indonesia).
@@ -4900,6 +4903,17 @@ const renderEnsoOutlook = (o) => {
         ${o.beyond_record ? ' · 관측 기록 밖 수온이라 표본이 적음' : ''}</div>`;
 };
 
+// The satellite correction moves the point on top of the weather effect, so
+// say by how much -- otherwise point and "기상 효과" disagree with no reason.
+const renderNdviCorrection = (n) => {
+    const pct = num(n?.adjustment_pct);
+    if (pct === null) return '';
+    const skill = num(n.backtest_skill);
+    return `<div class="climate-sub">위성 생육(NDVI) 보정 ${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%
+        · ${n.window === 'half' ? '생육 창 전반' : '생육 창 전체'} 관측
+        ${skill !== null ? ` · 과거 검증 오차 ${Math.round(skill * 100)}% 감소` : ''}</div>`;
+};
+
 // Region yield numbers stay on the right; left holds model provenance.
 const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = null) => {
     fc = fc || await loadClimateForecast(cfg);
@@ -4942,6 +4956,7 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
                             ${c.pct != null ? ` (${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%)` : ''}</span>
                     </div>
                     ${c.pct != null ? `<div class="climate-sub">기상 효과(추세 대비) ${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%</div>` : ''}
+                    ${renderNdviCorrection(c.ndvi)}
                     ${renderEnsoOutlook(c.ensoOutlook)}
                     ${c.reason ? `<div class="climate-sub">${c.reason}</div>` : ''}`}
                 ${c.weatherConditions

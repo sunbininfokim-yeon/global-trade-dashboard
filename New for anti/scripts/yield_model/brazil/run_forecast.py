@@ -28,7 +28,10 @@ import os
 import sys
 from datetime import datetime, timezone
 
+import numpy as np
+
 from .collect import current_season, load_oni
+from .ndvi_blend import adjustment as ndvi_adjustment
 from .predict import predict_with_lags
 from .regions import ALL
 
@@ -93,6 +96,15 @@ def main():
             skipped.append((cfg.key, r["error"]))
             continue
 
+        # Satellite correction, only where the backtest earned it and only
+        # once enough of the NDVI window has been seen (ndvi_blend).
+        nd = ndvi_adjustment(cfg, season)
+        if nd:
+            k = float(np.exp(nd.pop("log_adjustment")))
+            r["point"] *= k
+            r["range_68"] = [v * k for v in r["range_68"]]
+            r["range_95"] = [v * k for v in r["range_95"]]
+
         label, value = enso_label(r["features"].get("oni_season"))
 
         # IBGE finalises PAM municipal data slowly -- typically well over a
@@ -128,6 +140,8 @@ def main():
             "point_basis": r["point_basis"],
             "model_weather_effect_pct": round(r["model_weather_effect_pct"], 2),
             "last_actual": r["last_actual"],
+            # MODIS NDVI correction (None when off or not yet observable).
+            "ndvi": nd,
             "enso": {"state": label, "oni_growing_season": value},
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
