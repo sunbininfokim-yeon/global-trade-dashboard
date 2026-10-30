@@ -8,9 +8,9 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 
 비유: 주차장(코스피 거래)에 차 100대가 들어오면, 그 중 약 25대가 ‘가속 페달 달린 특수차(레버·인버스 ETF)’입니다. 특수차 1대는 일반차 2대 분량의 힘을 씁니다(2배 레버).
 
-- 레버·인버스 ETF가 코스피 현금 거래의 상당 부분을 차지할 수 있음
-- ETF 시장 안에서는 레버·인버스가 약 37.3%
-- 단일종목 레버는 소수, 대부분은 지수형
+- 오늘 코스피 현금 거래 중, 레버·인버스 ETF 거래는 대략 57.2% 수준
+- ETF 시장 안에서는 레버·인버스가 약 32.3%
+- ‘한 종목’ 레버(삼전·하닉)만 보면 코스피 거래의 약 5.21% — 나머지는 지수/섹터 레버
 - 하닉: 현물 거래 100원이면 레버 ETF가 약 9원 같이 움직임(당일 기준)
 - 삼전: 현물 100원 대비 레버 ETF 약 4원
 - 레버리지 2배 ETF를 100만 원어치 사면, 하이닉스가 1% 움직일 때 그 상품은 대략 2%를 목표로 합니다. 그래서 ‘지갑의 100만 원’이 시장에서는 ‘약 200만 원짜리 베팅’처럼 움직입니다. 우리가 쓰는 노셔널(AUM×2)이 그 의미입니다.
@@ -31,6 +31,16 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 - beginner: 레버리지 2배 ETF를 100만 원어치 사면, 하이닉스가 1% 움직일 때 그 상품은 대략 2%를 목표로 합니다. 그래서 ‘지갑의 100만 원’이 시장에서는 ‘약 200만 원짜리 베팅’처럼 움직입니다. 우리가 쓰는 노셔널(AUM×2)이 그 의미입니다.
 - expert: Price target ≈ L×R (daily reset). Exposure stock = AUM×|L|. End-of-day hedge/rebalance notional TR = AUM×(L²−L)×R; IR = |TR|/ADV_spot. Long and inverse TR computed separately then summed.
 - formulas: {'notional_exposure': 'Σ AUM × |L| × β', 'daily_rebalance_TR': 'Σ AUM × (L² − L) × R', 'L2_example': 'L=+2 → (L²−L)=2; L=-2 → (L²−L)=6 (인버스가 AUM 대비 리밸런싱 더 큼)'}
+
+## Trading share (당일 거래대금)
+
+| metric | value |
+|--------|------:|
+| 레버+인버스 / 전체 ETF % | 32.3 |
+| 레버+인버스 / KOSPI % | 57.2 |
+| 단일종목 LETF / KOSPI % | 5.21 |
+| 레버 TV 조 | 6.17 |
+| KOSPI TV 조 | 10.79 |
 
 ## Product UX (목록 vs 검색)
 
@@ -147,7 +157,7 @@ KR LETF AUM **2.971조** ($2.12bn) · 일거래 **0.755조** · 노셔널 $4.24b
 | 0195S0 | TIGER SK하이닉스단일종목레버리지 | 2.0 | 1.051 | 0.104 |
 | 0197X0 | SOL SK하이닉스선물단일종목인버스2X | -2.0 | 0.091 | 0.319 |
 
-HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)) · HK turnover 10.58% of KR cash turnover (observed) · crypto OI $0.0bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
+HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)) · HK turnover 12.18% of KR cash turnover (observed) · crypto OI $0.0bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
 
 ## Ranked leverage ETFs (click / open detail)
 
