@@ -2,7 +2,7 @@
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
   "as_of": "2026-10-30",
-  "generated_at": "2026-10-30T00:52:40.472258+00:00",
+  "generated_at": "2026-10-30T04:55:04.321299+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.",
@@ -1097,7 +1097,7 @@
     },
     "senate": {
       "lead_abbr": "없음",
-      "margin_note_ko": "조건부 집계 민주 35 · 공화 31 · 무소속 2 · 미정 32. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+      "margin_note_ko": "조건부 집계 민주 35 · 공화 31 · 무소속 2 · 미정 32. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
       "total_seats": 100,
       "scenario_counts": {
         "DEM": 35,
@@ -1112,23 +1112,25 @@
           "IND": 2
         },
         "rated_baseline_assumption": {},
-        "recent_poll_lead": {},
+        "recent_poll_lead": {
+          "DEM": 2
+        },
         "single_poll_lead": {
-          "DEM": 3
+          "DEM": 1
         },
         "certified_result": {}
       },
       "single_poll_lead_counts": {
-        "DEM": 3,
+        "DEM": 1,
         "GOP": 0,
         "IND": 0
       },
       "scenario_counts_without_single_polls": {
-        "DEM": 32,
+        "DEM": 34,
         "GOP": 31,
         "IND": 2
       },
-      "unresolved_without_single_polls": 35,
+      "unresolved_without_single_polls": 33,
       "conditional_bounds": {
         "DEM": {
           "min": 35,
@@ -1511,17 +1513,17 @@
           "race_id": "USA:MI:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
+          "basis": "recent_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "conclusion_ko": "민주당 조사상 우세",
+          "poll_status": "poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -1550,10 +1552,91 @@
               },
               "leading_margin_pp": 7.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202mit52e22a51",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire",
+                  "minor_candidate_values_not_in_release"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://www.cbsnews.com/detroit/news/el-sayed-widens-lead-rogers-michigan-senate-poll/"
+                ],
+                "primary_toplines": {
+                  "Abdul El-Sayed": 51.0,
+                  "Mike Rogers": 44.0
+                },
+                "question_sample_n": 636,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 636,
+                  "field_dates": [
+                    "2026-10-26",
+                    "2026-10-27"
+                  ],
+                  "primary_release_date": "2026-10-29",
+                  "provider_record_date": "2026-10-29",
+                  "sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "sampling_method": "Mitchell Research & Communications for WWJ-TV/WKBD (CBS Detroit), Oct 26-27; online panels plus survey links texted to randomly selected registered voters",
+                  "sampling_frame": "Michigan likely voters (636)",
+                  "weighting": "demographics and 2022/2024 election results to project 2026 turnout",
+                  "question_wording_checked": false,
+                  "question": "U.S. Senate vote intention, likely voters",
+                  "provider_pollster_label": "Mitchell Research & Communications",
+                  "primary_pollster_name": "Mitchell Research & Communications",
+                  "commissioner": "CBS Detroit (WWJ-TV/WKBD)",
+                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 3.9,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_636",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "provider_sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Mitchell Research & Communications 원문 대조: LV 636명, 2026-10-26~2026-10-27, 표본오차 ±3.9. CBS Detroit 발표 El-Sayed 51 · Rogers 44 대조. 군소 후보 수치는 기사에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "WWJ-TV",
+                  "WKBD-TV"
+                ]
+              },
+              "leading_margin_pp": 7.0,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "us-202cnn2b6bf541"
+            "us-202cnn2b6bf541",
+            "us-202mit52e22a51"
           ]
         },
         {
@@ -1608,17 +1691,17 @@
           "race_id": "USA:TX:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
+          "basis": "recent_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "conclusion_ko": "민주당 조사상 우세",
+          "poll_status": "poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -1647,10 +1730,72 @@
               },
               "leading_margin_pp": 6.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202tex39cdaf4f",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "margin_of_error",
+                  "minor_candidate_values_not_in_release"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://www.jordanresearchcenter.org/publications/tsuoct2026-txelections-statewide2026"
+                ],
+                "primary_toplines": {
+                  "James Talarico": 49.0,
+                  "Ken Paxton": 47.0
+                },
+                "question_sample_n": 2000,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 2000,
+                  "field_dates": [
+                    "2026-10-21",
+                    "2026-10-25"
+                  ],
+                  "primary_release_date": "2026-10-29",
+                  "provider_record_date": "2026-10-29",
+                  "sponsors": [],
+                  "sampling_method": "Barbara Jordan Public Policy Research and Survey Center, Oct 21-25",
+                  "sampling_frame": "Texas likely voters (2,000)",
+                  "weighting": "per full report (not independently verified)",
+                  "question_wording_checked": false,
+                  "question": "U.S. Senate vote intention, likely voters",
+                  "provider_pollster_label": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                  "primary_pollster_name": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                },
+                "reported_precision": null,
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [],
+                  "provider_sponsors": [],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center 원문 대조: LV 2000명, 2026-10-21~2026-10-25, 표본오차 원문 미기재. 발표 요약 Talarico 49 · Paxton 47 대조. 군소 후보 Brown 3은 요약에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": []
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "us-202cnn4329221b"
+            "us-202cnn4329221b",
+            "us-202tex39cdaf4f"
           ]
         },
         {
@@ -4143,7 +4288,7 @@
         },
         "senate": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 35 · 공화 31 · 무소속 2 · 미정 32. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 35 · 공화 31 · 무소속 2 · 미정 32. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 100,
           "scenario_counts": {
             "DEM": 35,
@@ -4158,23 +4303,25 @@
               "IND": 2
             },
             "rated_baseline_assumption": {},
-            "recent_poll_lead": {},
+            "recent_poll_lead": {
+              "DEM": 2
+            },
             "single_poll_lead": {
-              "DEM": 3
+              "DEM": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 3,
+            "DEM": 1,
             "GOP": 0,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
-            "DEM": 32,
+            "DEM": 34,
             "GOP": 31,
             "IND": 2
           },
-          "unresolved_without_single_polls": 35,
+          "unresolved_without_single_polls": 33,
           "conditional_bounds": {
             "DEM": {
               "min": 35,
@@ -4557,17 +4704,17 @@
               "race_id": "USA:MI:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "single_poll_lead",
+              "basis": "recent_poll_lead",
               "party_abbr": "DEM",
-              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "conclusion_ko": "민주당 조사상 우세",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -4596,10 +4743,91 @@
                   },
                   "leading_margin_pp": 7.0,
                   "significance": "not_evaluated"
+                },
+                {
+                  "id": "us-202mit52e22a51",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire",
+                      "minor_candidate_values_not_in_release"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://www.cbsnews.com/detroit/news/el-sayed-widens-lead-rogers-michigan-senate-poll/"
+                    ],
+                    "primary_toplines": {
+                      "Abdul El-Sayed": 51.0,
+                      "Mike Rogers": 44.0
+                    },
+                    "question_sample_n": 636,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 636,
+                      "field_dates": [
+                        "2026-10-26",
+                        "2026-10-27"
+                      ],
+                      "primary_release_date": "2026-10-29",
+                      "provider_record_date": "2026-10-29",
+                      "sponsors": [
+                        "WWJ-TV",
+                        "WKBD-TV"
+                      ],
+                      "sampling_method": "Mitchell Research & Communications for WWJ-TV/WKBD (CBS Detroit), Oct 26-27; online panels plus survey links texted to randomly selected registered voters",
+                      "sampling_frame": "Michigan likely voters (636)",
+                      "weighting": "demographics and 2022/2024 election results to project 2026 turnout",
+                      "question_wording_checked": false,
+                      "question": "U.S. Senate vote intention, likely voters",
+                      "provider_pollster_label": "Mitchell Research & Communications",
+                      "primary_pollster_name": "Mitchell Research & Communications",
+                      "commissioner": "CBS Detroit (WWJ-TV/WKBD)",
+                      "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 3.9,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_636",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "WWJ-TV",
+                        "WKBD-TV"
+                      ],
+                      "provider_sponsors": [
+                        "WWJ-TV",
+                        "WKBD-TV"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Mitchell Research & Communications 원문 대조: LV 636명, 2026-10-26~2026-10-27, 표본오차 ±3.9. CBS Detroit 발표 El-Sayed 51 · Rogers 44 대조. 군소 후보 수치는 기사에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "WWJ-TV",
+                      "WKBD-TV"
+                    ]
+                  },
+                  "leading_margin_pp": 7.0,
+                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
-                "us-202cnn2b6bf541"
+                "us-202cnn2b6bf541",
+                "us-202mit52e22a51"
               ]
             },
             {
@@ -4654,17 +4882,17 @@
               "race_id": "USA:TX:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "single_poll_lead",
+              "basis": "recent_poll_lead",
               "party_abbr": "DEM",
-              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "conclusion_ko": "민주당 조사상 우세",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -4693,10 +4921,72 @@
                   },
                   "leading_margin_pp": 6.0,
                   "significance": "not_evaluated"
+                },
+                {
+                  "id": "us-202tex39cdaf4f",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "margin_of_error",
+                      "minor_candidate_values_not_in_release"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://www.jordanresearchcenter.org/publications/tsuoct2026-txelections-statewide2026"
+                    ],
+                    "primary_toplines": {
+                      "James Talarico": 49.0,
+                      "Ken Paxton": 47.0
+                    },
+                    "question_sample_n": 2000,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 2000,
+                      "field_dates": [
+                        "2026-10-21",
+                        "2026-10-25"
+                      ],
+                      "primary_release_date": "2026-10-29",
+                      "provider_record_date": "2026-10-29",
+                      "sponsors": [],
+                      "sampling_method": "Barbara Jordan Public Policy Research and Survey Center, Oct 21-25",
+                      "sampling_frame": "Texas likely voters (2,000)",
+                      "weighting": "per full report (not independently verified)",
+                      "question_wording_checked": false,
+                      "question": "U.S. Senate vote intention, likely voters",
+                      "provider_pollster_label": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                      "primary_pollster_name": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                      "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                    },
+                    "reported_precision": null,
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [],
+                      "provider_sponsors": [],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center 원문 대조: LV 2000명, 2026-10-21~2026-10-25, 표본오차 원문 미기재. 발표 요약 Talarico 49 · Paxton 47 대조. 군소 후보 Brown 3은 요약에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": []
+                  },
+                  "leading_margin_pp": 2.0,
+                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
-                "us-202cnn4329221b"
+                "us-202cnn4329221b",
+                "us-202tex39cdaf4f"
               ]
             },
             {
@@ -7237,17 +7527,17 @@
           "race_id": "USA:MI:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
+          "basis": "recent_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "conclusion_ko": "민주당 조사상 우세",
+          "poll_status": "poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -7276,10 +7566,91 @@
               },
               "leading_margin_pp": 7.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202mit52e22a51",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire",
+                  "minor_candidate_values_not_in_release"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://www.cbsnews.com/detroit/news/el-sayed-widens-lead-rogers-michigan-senate-poll/"
+                ],
+                "primary_toplines": {
+                  "Abdul El-Sayed": 51.0,
+                  "Mike Rogers": 44.0
+                },
+                "question_sample_n": 636,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 636,
+                  "field_dates": [
+                    "2026-10-26",
+                    "2026-10-27"
+                  ],
+                  "primary_release_date": "2026-10-29",
+                  "provider_record_date": "2026-10-29",
+                  "sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "sampling_method": "Mitchell Research & Communications for WWJ-TV/WKBD (CBS Detroit), Oct 26-27; online panels plus survey links texted to randomly selected registered voters",
+                  "sampling_frame": "Michigan likely voters (636)",
+                  "weighting": "demographics and 2022/2024 election results to project 2026 turnout",
+                  "question_wording_checked": false,
+                  "question": "U.S. Senate vote intention, likely voters",
+                  "provider_pollster_label": "Mitchell Research & Communications",
+                  "primary_pollster_name": "Mitchell Research & Communications",
+                  "commissioner": "CBS Detroit (WWJ-TV/WKBD)",
+                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 3.9,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_636",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "provider_sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Mitchell Research & Communications 원문 대조: LV 636명, 2026-10-26~2026-10-27, 표본오차 ±3.9. CBS Detroit 발표 El-Sayed 51 · Rogers 44 대조. 군소 후보 수치는 기사에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "WWJ-TV",
+                  "WKBD-TV"
+                ]
+              },
+              "leading_margin_pp": 7.0,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "us-202cnn2b6bf541"
+            "us-202cnn2b6bf541",
+            "us-202mit52e22a51"
           ]
         },
         {
@@ -7334,17 +7705,17 @@
           "race_id": "USA:TX:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
+          "basis": "recent_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "conclusion_ko": "민주당 조사상 우세",
+          "poll_status": "poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -7373,10 +7744,72 @@
               },
               "leading_margin_pp": 6.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202tex39cdaf4f",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "margin_of_error",
+                  "minor_candidate_values_not_in_release"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://www.jordanresearchcenter.org/publications/tsuoct2026-txelections-statewide2026"
+                ],
+                "primary_toplines": {
+                  "James Talarico": 49.0,
+                  "Ken Paxton": 47.0
+                },
+                "question_sample_n": 2000,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 2000,
+                  "field_dates": [
+                    "2026-10-21",
+                    "2026-10-25"
+                  ],
+                  "primary_release_date": "2026-10-29",
+                  "provider_record_date": "2026-10-29",
+                  "sponsors": [],
+                  "sampling_method": "Barbara Jordan Public Policy Research and Survey Center, Oct 21-25",
+                  "sampling_frame": "Texas likely voters (2,000)",
+                  "weighting": "per full report (not independently verified)",
+                  "question_wording_checked": false,
+                  "question": "U.S. Senate vote intention, likely voters",
+                  "provider_pollster_label": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                  "primary_pollster_name": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                },
+                "reported_precision": null,
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [],
+                  "provider_sponsors": [],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center 원문 대조: LV 2000명, 2026-10-21~2026-10-25, 표본오차 원문 미기재. 발표 요약 Talarico 49 · Paxton 47 대조. 군소 후보 Brown 3은 요약에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": []
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "us-202cnn4329221b"
+            "us-202cnn4329221b",
+            "us-202tex39cdaf4f"
           ]
         },
         {
@@ -8877,11 +9310,11 @@
         },
         "senate": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 37 · 공화 32 · 무소속 2 · 미정 29. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 38 · 공화 31 · 무소속 2 · 미정 29. 단일 기관 참고 2곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 100,
           "scenario_counts": {
-            "DEM": 37,
-            "GOP": 32,
+            "DEM": 38,
+            "GOP": 31,
             "IND": 2
           },
           "unresolved_seats": 29,
@@ -8893,33 +9326,32 @@
             },
             "rated_baseline_assumption": {},
             "recent_poll_lead": {
-              "DEM": 3
+              "DEM": 4
             },
             "single_poll_lead": {
-              "DEM": 2,
-              "GOP": 1
+              "DEM": 2
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
             "DEM": 2,
-            "GOP": 1,
+            "GOP": 0,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
-            "DEM": 35,
+            "DEM": 36,
             "GOP": 31,
             "IND": 2
           },
-          "unresolved_without_single_polls": 32,
+          "unresolved_without_single_polls": 31,
           "conditional_bounds": {
             "DEM": {
-              "min": 37,
-              "max": 66
+              "min": 38,
+              "max": 67
             },
             "GOP": {
-              "min": 32,
-              "max": 61
+              "min": 31,
+              "max": 60
             },
             "IND": {
               "min": 2,
@@ -9153,16 +9585,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -9271,24 +9703,101 @@
               "race_id": "USA:IA:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "single_poll_lead",
-              "party_abbr": "GOP",
-              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "basis": "pending",
+              "party_abbr": "없음",
+              "conclusion_ko": "판정 보류",
+              "poll_status": "tie",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 1.0,
+                "agreement_fraction": 0.5,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
               "poll_details": [
+                {
+                  "id": "us-202echbc68f468",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                      "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Josh Turek": 45.0,
+                      "Ashley Hinson": 43.0,
+                      "Thomas Laehn": 7.0
+                    },
+                    "question_sample_n": 403,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 403,
+                      "field_dates": [
+                        "2026-10-16",
+                        "2026-10-23"
+                      ],
+                      "primary_release_date": "2026-10-27",
+                      "provider_record_date": "2026-10-27",
+                      "sponsors": [
+                        "NetChoice"
+                      ],
+                      "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                      "sampling_frame": "IA likely voters (state oversample n=403)",
+                      "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                      "question_wording_checked": false,
+                      "question": "IA U.S. Senate vote intention, state oversample of likely voters",
+                      "provider_pollster_label": "Echelon Insights",
+                      "primary_pollster_name": "Echelon Insights",
+                      "commissioner": "NetChoice",
+                      "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 6.5,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_403",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Echelon Insights 원문 대조: LV 403명, 2026-10-16~2026-10-23, 표본오차 ±6.5. NetChoice 발표 IA U.S. Senate 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "NetChoice"
+                    ]
+                  },
+                  "leading_margin_pp": 2.0,
+                  "significance": "not_evaluated"
+                },
                 {
                   "id": "us-202ins750c2821",
                   "source_quality": {
@@ -9312,9 +9821,7 @@
                   "significance": "not_evaluated"
                 }
               ],
-              "included_poll_ids": [
-                "us-202ins750c2821"
-              ]
+              "included_poll_ids": []
             },
             {
               "race_id": "USA:ME:senate",
@@ -9354,7 +9861,7 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "independent_pollster_count": 3,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -9405,36 +9912,255 @@
                   },
                   "leading_margin_pp": 1.0,
                   "significance": "not_evaluated"
+                },
+                {
+                  "id": "us-202mit52e22a51",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire",
+                      "minor_candidate_values_not_in_release"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://www.cbsnews.com/detroit/news/el-sayed-widens-lead-rogers-michigan-senate-poll/"
+                    ],
+                    "primary_toplines": {
+                      "Abdul El-Sayed": 51.0,
+                      "Mike Rogers": 44.0
+                    },
+                    "question_sample_n": 636,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 636,
+                      "field_dates": [
+                        "2026-10-26",
+                        "2026-10-27"
+                      ],
+                      "primary_release_date": "2026-10-29",
+                      "provider_record_date": "2026-10-29",
+                      "sponsors": [
+                        "WWJ-TV",
+                        "WKBD-TV"
+                      ],
+                      "sampling_method": "Mitchell Research & Communications for WWJ-TV/WKBD (CBS Detroit), Oct 26-27; online panels plus survey links texted to randomly selected registered voters",
+                      "sampling_frame": "Michigan likely voters (636)",
+                      "weighting": "demographics and 2022/2024 election results to project 2026 turnout",
+                      "question_wording_checked": false,
+                      "question": "U.S. Senate vote intention, likely voters",
+                      "provider_pollster_label": "Mitchell Research & Communications",
+                      "primary_pollster_name": "Mitchell Research & Communications",
+                      "commissioner": "CBS Detroit (WWJ-TV/WKBD)",
+                      "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 3.9,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_636",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "WWJ-TV",
+                        "WKBD-TV"
+                      ],
+                      "provider_sponsors": [
+                        "WWJ-TV",
+                        "WKBD-TV"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Mitchell Research & Communications 원문 대조: LV 636명, 2026-10-26~2026-10-27, 표본오차 ±3.9. CBS Detroit 발표 El-Sayed 51 · Rogers 44 대조. 군소 후보 수치는 기사에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "WWJ-TV",
+                      "WKBD-TV"
+                    ]
+                  },
+                  "leading_margin_pp": 7.0,
+                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
                 "us-202cnn2b6bf541",
-                "us-202ins51d307b7"
+                "us-202ins51d307b7",
+                "us-202mit52e22a51"
               ]
             },
             {
               "race_id": "USA:NH:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "recent_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 조사상 우세",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "us-202sai55f1c7c2",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://www.anselm.edu/about/anselmian-hub/news/new-saint-anselm-college-poll-finds-democrats-leading-congressional-races-affordability-concerns-shape-election-landscape"
+                    ],
+                    "primary_toplines": {
+                      "Chris Pappas": 50.0,
+                      "John Sununu": 43.0
+                    },
+                    "question_sample_n": 1672,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 1672,
+                      "field_dates": [
+                        "2026-10-19",
+                        "2026-10-20"
+                      ],
+                      "primary_release_date": "2026-10-23",
+                      "provider_record_date": "2026-10-23",
+                      "sponsors": [],
+                      "sampling_method": "Saint Anselm College Survey Center online survey of cell phone users drawn from the registered voter list, Oct 19-20",
+                      "sampling_frame": "New Hampshire likely voters (1,672)",
+                      "weighting": "party registration, age, gender, geography, education (voter demographic model)",
+                      "question_wording_checked": false,
+                      "question": "U.S. Senate ballot test, names in random order",
+                      "provider_pollster_label": "Saint Anselm",
+                      "primary_pollster_name": "Saint Anselm",
+                      "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 2.4,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_1672",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [],
+                      "provider_sponsors": [],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Saint Anselm 원문 대조: LV 1672명, 2026-10-19~2026-10-20, 표본오차 ±2.4. 발표문 Pappas 50 · Sununu 43 대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": []
+                  },
+                  "leading_margin_pp": 7.0,
+                  "significance": "not_evaluated"
+                },
+                {
+                  "id": "us-202uni57f2dfa4",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire",
+                      "weighting_details"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://www.uml.edu/news/press-releases/2026/102826-new-england-polls.aspx"
+                    ],
+                    "primary_toplines": {
+                      "Chris Pappas": 48.0,
+                      "John Sununu": 41.0,
+                      "Edmond Laplante": 4.0
+                    },
+                    "question_sample_n": 600,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 600,
+                      "field_dates": [
+                        "2026-10-02",
+                        "2026-10-19"
+                      ],
+                      "primary_release_date": "2026-10-29",
+                      "provider_record_date": "2026-10-29",
+                      "sponsors": [],
+                      "sampling_method": "UMass Lowell Center for Public Opinion / YouGov online panel, Oct 2-19",
+                      "sampling_frame": "New Hampshire likely voters (600)",
+                      "weighting": "per YouGov release (not independently verified)",
+                      "question_wording_checked": false,
+                      "question": "U.S. Senate vote intention incl. Constitution Party candidate",
+                      "provider_pollster_label": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+                      "primary_pollster_name": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+                      "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_adjusted_margin_of_error",
+                      "half_width_pp": 5.0,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_600",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [],
+                      "provider_sponsors": [],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "University of Massachusetts Lowell Center for Public Opinion/YouGov 원문 대조: LV 600명, 2026-10-02~2026-10-19, 표본오차 ±5.0. 발표문 Pappas 48 · Sununu 41 · LaPlante 4 대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": []
+                  },
+                  "leading_margin_pp": 7.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "us-202sai55f1c7c2",
+                "us-202uni57f2dfa4"
+              ]
             },
             {
               "race_id": "USA:OH:senate",
@@ -9450,9 +10176,9 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 4,
+                "independent_pollster_count": 5,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 1.0,
+                "agreement_fraction": 0.8,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -9480,6 +10206,84 @@
                     ]
                   },
                   "leading_margin_pp": 5.0,
+                  "significance": "not_evaluated"
+                },
+                {
+                  "id": "us-202ech01f06c61",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                      "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Sherrod Brown": 47.0,
+                      "Jon Husted": 47.0,
+                      "Bill Redpath": 1.0,
+                      "Greg Levy": 2.0
+                    },
+                    "question_sample_n": 508,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 508,
+                      "field_dates": [
+                        "2026-10-16",
+                        "2026-10-23"
+                      ],
+                      "primary_release_date": "2026-10-27",
+                      "provider_record_date": "2026-10-27",
+                      "sponsors": [
+                        "NetChoice"
+                      ],
+                      "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                      "sampling_frame": "OH likely voters (state oversample n=508)",
+                      "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                      "question_wording_checked": false,
+                      "question": "OH U.S. Senate vote intention, state oversample of likely voters",
+                      "provider_pollster_label": "Echelon Insights",
+                      "primary_pollster_name": "Echelon Insights",
+                      "commissioner": "NetChoice",
+                      "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 5.2,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_508",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Echelon Insights 원문 대조: LV 508명, 2026-10-16~2026-10-23, 표본오차 ±5.2. NetChoice 발표 OH U.S. Senate 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "NetChoice"
+                    ]
+                  },
+                  "leading_margin_pp": 0.0,
                   "significance": "not_evaluated"
                 },
                 {
@@ -9605,6 +10409,7 @@
               ],
               "included_poll_ids": [
                 "us-202bea80ab32e9",
+                "us-202ech01f06c61",
                 "us-202ins6e5f29f2",
                 "us-202mar3b19e64d",
                 "us-202vot936927b5"
@@ -9624,9 +10429,9 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 3,
+                "independent_pollster_count": 4,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 0.6666666666666666,
+                "agreement_fraction": 0.75,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -9701,12 +10506,74 @@
                   },
                   "leading_margin_pp": 2.0,
                   "significance": "not_evaluated"
+                },
+                {
+                  "id": "us-202tex39cdaf4f",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "margin_of_error",
+                      "minor_candidate_values_not_in_release"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://www.jordanresearchcenter.org/publications/tsuoct2026-txelections-statewide2026"
+                    ],
+                    "primary_toplines": {
+                      "James Talarico": 49.0,
+                      "Ken Paxton": 47.0
+                    },
+                    "question_sample_n": 2000,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 2000,
+                      "field_dates": [
+                        "2026-10-21",
+                        "2026-10-25"
+                      ],
+                      "primary_release_date": "2026-10-29",
+                      "provider_record_date": "2026-10-29",
+                      "sponsors": [],
+                      "sampling_method": "Barbara Jordan Public Policy Research and Survey Center, Oct 21-25",
+                      "sampling_frame": "Texas likely voters (2,000)",
+                      "weighting": "per full report (not independently verified)",
+                      "question_wording_checked": false,
+                      "question": "U.S. Senate vote intention, likely voters",
+                      "provider_pollster_label": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                      "primary_pollster_name": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                      "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                    },
+                    "reported_precision": null,
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [],
+                      "provider_sponsors": [],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center 원문 대조: LV 2000명, 2026-10-21~2026-10-25, 표본오차 원문 미기재. 발표 요약 Talarico 49 · Paxton 47 대조. 군소 후보 Brown 3은 요약에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": []
+                  },
+                  "leading_margin_pp": 2.0,
+                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
                 "us-202bea368d4e46",
                 "us-202cnn4329221b",
-                "us-202eme43ceed84"
+                "us-202eme43ceed84",
+                "us-202tex39cdaf4f"
               ]
             },
             {
@@ -9765,16 +10632,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -9861,14 +10728,14 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "single_poll_lead",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -10122,14 +10989,14 @@
         },
         "governor": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 8 · 공화 11 · 무소속 0 · 미정 31. 단일 기관 참고 3곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 10 · 공화 11 · 무소속 0 · 미정 29. 단일 기관 참고 4곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 50,
           "scenario_counts": {
-            "DEM": 8,
+            "DEM": 10,
             "GOP": 11,
             "IND": 0
           },
-          "unresolved_seats": 31,
+          "unresolved_seats": 29,
           "buckets": {
             "retained": {
               "DEM": 6,
@@ -10138,37 +11005,37 @@
             "rated_baseline_assumption": {},
             "recent_poll_lead": {
               "DEM": 1,
-              "GOP": 1
+              "GOP": 2
             },
             "single_poll_lead": {
-              "DEM": 1,
-              "GOP": 2
+              "DEM": 3,
+              "GOP": 1
             },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 1,
-            "GOP": 2,
+            "DEM": 3,
+            "GOP": 1,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
             "DEM": 7,
-            "GOP": 9,
+            "GOP": 10,
             "IND": 0
           },
-          "unresolved_without_single_polls": 34,
+          "unresolved_without_single_polls": 33,
           "conditional_bounds": {
             "DEM": {
-              "min": 8,
+              "min": 10,
               "max": 39
             },
             "GOP": {
               "min": 11,
-              "max": 42
+              "max": 40
             },
             "IND": {
               "min": 0,
-              "max": 31
+              "max": 29
             }
           },
           "ratings_as_of": "2026-10-01",
@@ -10350,16 +11217,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "tie",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "independent_pollster_count": 3,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 0.5,
+                "agreement_fraction": 0.6666666666666666,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -10515,25 +11382,104 @@
               "race_id": "USA:IA:governor",
               "rating": "lean_dem",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "gov202ech60c386d1",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                      "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Rob Sand": 50.0,
+                      "Zach Lahn": 46.0
+                    },
+                    "question_sample_n": 403,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 403,
+                      "field_dates": [
+                        "2026-10-16",
+                        "2026-10-23"
+                      ],
+                      "primary_release_date": "2026-10-27",
+                      "provider_record_date": "2026-10-27",
+                      "sponsors": [
+                        "NetChoice"
+                      ],
+                      "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                      "sampling_frame": "IA likely voters (state oversample n=403)",
+                      "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                      "question_wording_checked": false,
+                      "question": "IA governor vote intention, state oversample of likely voters",
+                      "provider_pollster_label": "Echelon Insights",
+                      "primary_pollster_name": "Echelon Insights",
+                      "commissioner": "NetChoice",
+                      "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 6.5,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_403",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Echelon Insights 원문 대조: LV 403명, 2026-10-16~2026-10-23, 표본오차 ±6.5. NetChoice 발표 IA governor 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "NetChoice"
+                    ]
+                  },
+                  "leading_margin_pp": 4.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "gov202ech60c386d1"
+              ]
             },
             {
               "race_id": "USA:MI:governor",
@@ -10636,25 +11582,104 @@
               "race_id": "USA:GA:governor",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "pending",
-              "party_abbr": "없음",
-              "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "basis": "single_poll_lead",
+              "party_abbr": "DEM",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
-              "poll_details": [],
-              "included_poll_ids": []
+              "poll_details": [
+                {
+                  "id": "gov202ech45428865",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                      "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Keisha Lance Bottoms": 49.0,
+                      "Rick Jackson": 48.0
+                    },
+                    "question_sample_n": 508,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 508,
+                      "field_dates": [
+                        "2026-10-16",
+                        "2026-10-23"
+                      ],
+                      "primary_release_date": "2026-10-27",
+                      "provider_record_date": "2026-10-27",
+                      "sponsors": [
+                        "NetChoice"
+                      ],
+                      "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                      "sampling_frame": "GA likely voters (state oversample n=508)",
+                      "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                      "question_wording_checked": false,
+                      "question": "GA governor vote intention, state oversample of likely voters",
+                      "provider_pollster_label": "Echelon Insights",
+                      "primary_pollster_name": "Echelon Insights",
+                      "commissioner": "NetChoice",
+                      "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 5.2,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_508",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Echelon Insights 원문 대조: LV 508명, 2026-10-16~2026-10-23, 표본오차 ±5.2. NetChoice 발표 GA governor 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "NetChoice"
+                    ]
+                  },
+                  "leading_margin_pp": 1.0,
+                  "significance": "not_evaluated"
+                }
+              ],
+              "included_poll_ids": [
+                "gov202ech45428865"
+              ]
             },
             {
               "race_id": "USA:NV:governor",
@@ -10694,9 +11719,9 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 3,
+                "independent_pollster_count": 4,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 1.0,
+                "agreement_fraction": 0.75,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -10721,6 +11746,83 @@
                     "partisan": null,
                     "sponsors": [
                       "Fox News"
+                    ]
+                  },
+                  "leading_margin_pp": 2.0,
+                  "significance": "not_evaluated"
+                },
+                {
+                  "id": "gov202ech0acb366e",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire",
+                      "provider_minor_candidate_value_differs_from_release"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                      "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Amy Acton": 45.0,
+                      "Vivek Ramaswamy": 47.0
+                    },
+                    "question_sample_n": 508,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 508,
+                      "field_dates": [
+                        "2026-10-16",
+                        "2026-10-23"
+                      ],
+                      "primary_release_date": "2026-10-27",
+                      "provider_record_date": "2026-10-27",
+                      "sponsors": [
+                        "NetChoice"
+                      ],
+                      "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                      "sampling_frame": "OH likely voters (state oversample n=508)",
+                      "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                      "question_wording_checked": false,
+                      "question": "OH governor vote intention, state oversample of likely voters",
+                      "provider_pollster_label": "Echelon Insights",
+                      "primary_pollster_name": "Echelon Insights",
+                      "commissioner": "NetChoice",
+                      "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 5.2,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_508",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Echelon Insights 원문 대조: LV 508명, 2026-10-16~2026-10-23, 표본오차 ±5.2. NetChoice 발표 OH governor 수치 대조. VoteHub의 Kissick 2는 발표문 4와 달라 대조에서 제외. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "NetChoice"
                     ]
                   },
                   "leading_margin_pp": 2.0,
@@ -10826,6 +11928,7 @@
               ],
               "included_poll_ids": [
                 "gov202beafcf8ece3",
+                "gov202ech0acb366e",
                 "gov202mar01928469",
                 "gov202vot834ec374"
               ]
@@ -10858,17 +11961,17 @@
               "race_id": "USA:FL:governor",
               "rating": "lean_rep",
               "competitive": true,
-              "basis": "single_poll_lead",
+              "basis": "recent_poll_lead",
               "party_abbr": "GOP",
-              "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-              "poll_status": "single_poll_lead",
+              "conclusion_ko": "공화당 조사상 우세",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -10876,6 +11979,83 @@
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
               },
               "poll_details": [
+                {
+                  "id": "gov202ech7ccc86ed",
+                  "source_quality": {
+                    "verification_level": "primary_toplines_checked",
+                    "methodological_quality": "unrated",
+                    "accuracy_grade": null,
+                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                    "missing_fields": [
+                      "historical_accuracy_rating",
+                      "full_questionnaire"
+                    ],
+                    "review_method": "manual_primary_review",
+                    "reviewed_on": "2026-10-30",
+                    "review_sources": [
+                      "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                      "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                    ],
+                    "primary_toplines": {
+                      "Byron Donalds": 50.0,
+                      "David Jolly": 44.0,
+                      "Scott Jewett": 1.0
+                    },
+                    "question_sample_n": 515,
+                    "disclosure_review": {
+                      "population": "LV",
+                      "sample_n": 515,
+                      "field_dates": [
+                        "2026-10-16",
+                        "2026-10-23"
+                      ],
+                      "primary_release_date": "2026-10-27",
+                      "provider_record_date": "2026-10-27",
+                      "sponsors": [
+                        "NetChoice"
+                      ],
+                      "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                      "sampling_frame": "FL likely voters (state oversample n=515)",
+                      "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                      "question_wording_checked": false,
+                      "question": "FL governor vote intention, state oversample of likely voters",
+                      "provider_pollster_label": "Echelon Insights",
+                      "primary_pollster_name": "Echelon Insights",
+                      "commissioner": "NetChoice",
+                      "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                    },
+                    "reported_precision": {
+                      "kind": "publisher_reported_margin_of_sampling_error",
+                      "half_width_pp": 5.0,
+                      "confidence_level_pct": null,
+                      "scope": "whole_study_515",
+                      "model_details_verified": false
+                    },
+                    "ballot_format": "ordinary_named_candidate_ballot",
+                    "sponsor_review": {
+                      "primary_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_sponsors": [
+                        "NetChoice"
+                      ],
+                      "provider_partisan_flag": null,
+                      "affiliation_independently_verified": null,
+                      "primary_internal": false
+                    },
+                    "limitations_ko": "Echelon Insights 원문 대조: LV 515명, 2026-10-16~2026-10-23, 표본오차 ±5.0. NetChoice 발표 FL governor 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+                  },
+                  "commissioning": {
+                    "internal": false,
+                    "partisan": null,
+                    "sponsors": [
+                      "NetChoice"
+                    ]
+                  },
+                  "leading_margin_pp": 6.0,
+                  "significance": "not_evaluated"
+                },
                 {
                   "id": "gov202uni6ec2ef24",
                   "source_quality": {
@@ -10900,6 +12080,7 @@
                 }
               ],
               "included_poll_ids": [
+                "gov202ech7ccc86ed",
                 "gov202uni6ec2ef24"
               ]
             },
@@ -11058,16 +12239,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "multiple_sources",
+                "coverage_label_ko": "복수 기관 집계",
+                "independent_pollster_count": 2,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -11154,16 +12335,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "no_recent_poll",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "none",
-                "coverage_label_ko": "조사 없음",
-                "independent_pollster_count": 0,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": null,
+                "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -12428,24 +13609,101 @@
           "race_id": "USA:IA:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "single_poll_lead",
-          "party_abbr": "GOP",
-          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "basis": "pending",
+          "party_abbr": "없음",
+          "conclusion_ko": "판정 보류",
+          "poll_status": "tie",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 1.0,
+            "agreement_fraction": 0.5,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
           "poll_details": [
+            {
+              "id": "us-202echbc68f468",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                  "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                ],
+                "primary_toplines": {
+                  "Josh Turek": 45.0,
+                  "Ashley Hinson": 43.0,
+                  "Thomas Laehn": 7.0
+                },
+                "question_sample_n": 403,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 403,
+                  "field_dates": [
+                    "2026-10-16",
+                    "2026-10-23"
+                  ],
+                  "primary_release_date": "2026-10-27",
+                  "provider_record_date": "2026-10-27",
+                  "sponsors": [
+                    "NetChoice"
+                  ],
+                  "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                  "sampling_frame": "IA likely voters (state oversample n=403)",
+                  "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                  "question_wording_checked": false,
+                  "question": "IA U.S. Senate vote intention, state oversample of likely voters",
+                  "provider_pollster_label": "Echelon Insights",
+                  "primary_pollster_name": "Echelon Insights",
+                  "commissioner": "NetChoice",
+                  "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 6.5,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_403",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Echelon Insights 원문 대조: LV 403명, 2026-10-16~2026-10-23, 표본오차 ±6.5. NetChoice 발표 IA U.S. Senate 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "NetChoice"
+                ]
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
+            },
             {
               "id": "us-202ins750c2821",
               "source_quality": {
@@ -12469,9 +13727,7 @@
               "significance": "not_evaluated"
             }
           ],
-          "included_poll_ids": [
-            "us-202ins750c2821"
-          ]
+          "included_poll_ids": []
         },
         {
           "race_id": "USA:ME:senate",
@@ -12511,7 +13767,7 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "independent_pollster_count": 3,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -12562,36 +13818,255 @@
               },
               "leading_margin_pp": 1.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202mit52e22a51",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire",
+                  "minor_candidate_values_not_in_release"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://www.cbsnews.com/detroit/news/el-sayed-widens-lead-rogers-michigan-senate-poll/"
+                ],
+                "primary_toplines": {
+                  "Abdul El-Sayed": 51.0,
+                  "Mike Rogers": 44.0
+                },
+                "question_sample_n": 636,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 636,
+                  "field_dates": [
+                    "2026-10-26",
+                    "2026-10-27"
+                  ],
+                  "primary_release_date": "2026-10-29",
+                  "provider_record_date": "2026-10-29",
+                  "sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "sampling_method": "Mitchell Research & Communications for WWJ-TV/WKBD (CBS Detroit), Oct 26-27; online panels plus survey links texted to randomly selected registered voters",
+                  "sampling_frame": "Michigan likely voters (636)",
+                  "weighting": "demographics and 2022/2024 election results to project 2026 turnout",
+                  "question_wording_checked": false,
+                  "question": "U.S. Senate vote intention, likely voters",
+                  "provider_pollster_label": "Mitchell Research & Communications",
+                  "primary_pollster_name": "Mitchell Research & Communications",
+                  "commissioner": "CBS Detroit (WWJ-TV/WKBD)",
+                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 3.9,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_636",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "provider_sponsors": [
+                    "WWJ-TV",
+                    "WKBD-TV"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Mitchell Research & Communications 원문 대조: LV 636명, 2026-10-26~2026-10-27, 표본오차 ±3.9. CBS Detroit 발표 El-Sayed 51 · Rogers 44 대조. 군소 후보 수치는 기사에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "WWJ-TV",
+                  "WKBD-TV"
+                ]
+              },
+              "leading_margin_pp": 7.0,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "us-202cnn2b6bf541",
-            "us-202ins51d307b7"
+            "us-202ins51d307b7",
+            "us-202mit52e22a51"
           ]
         },
         {
           "race_id": "USA:NH:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "recent_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 조사상 우세",
+          "poll_status": "poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": null,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "us-202sai55f1c7c2",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://www.anselm.edu/about/anselmian-hub/news/new-saint-anselm-college-poll-finds-democrats-leading-congressional-races-affordability-concerns-shape-election-landscape"
+                ],
+                "primary_toplines": {
+                  "Chris Pappas": 50.0,
+                  "John Sununu": 43.0
+                },
+                "question_sample_n": 1672,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 1672,
+                  "field_dates": [
+                    "2026-10-19",
+                    "2026-10-20"
+                  ],
+                  "primary_release_date": "2026-10-23",
+                  "provider_record_date": "2026-10-23",
+                  "sponsors": [],
+                  "sampling_method": "Saint Anselm College Survey Center online survey of cell phone users drawn from the registered voter list, Oct 19-20",
+                  "sampling_frame": "New Hampshire likely voters (1,672)",
+                  "weighting": "party registration, age, gender, geography, education (voter demographic model)",
+                  "question_wording_checked": false,
+                  "question": "U.S. Senate ballot test, names in random order",
+                  "provider_pollster_label": "Saint Anselm",
+                  "primary_pollster_name": "Saint Anselm",
+                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 2.4,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_1672",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [],
+                  "provider_sponsors": [],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Saint Anselm 원문 대조: LV 1672명, 2026-10-19~2026-10-20, 표본오차 ±2.4. 발표문 Pappas 50 · Sununu 43 대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": []
+              },
+              "leading_margin_pp": 7.0,
+              "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202uni57f2dfa4",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire",
+                  "weighting_details"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://www.uml.edu/news/press-releases/2026/102826-new-england-polls.aspx"
+                ],
+                "primary_toplines": {
+                  "Chris Pappas": 48.0,
+                  "John Sununu": 41.0,
+                  "Edmond Laplante": 4.0
+                },
+                "question_sample_n": 600,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 600,
+                  "field_dates": [
+                    "2026-10-02",
+                    "2026-10-19"
+                  ],
+                  "primary_release_date": "2026-10-29",
+                  "provider_record_date": "2026-10-29",
+                  "sponsors": [],
+                  "sampling_method": "UMass Lowell Center for Public Opinion / YouGov online panel, Oct 2-19",
+                  "sampling_frame": "New Hampshire likely voters (600)",
+                  "weighting": "per YouGov release (not independently verified)",
+                  "question_wording_checked": false,
+                  "question": "U.S. Senate vote intention incl. Constitution Party candidate",
+                  "provider_pollster_label": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+                  "primary_pollster_name": "University of Massachusetts Lowell Center for Public Opinion/YouGov",
+                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_adjusted_margin_of_error",
+                  "half_width_pp": 5.0,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_600",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [],
+                  "provider_sponsors": [],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "University of Massachusetts Lowell Center for Public Opinion/YouGov 원문 대조: LV 600명, 2026-10-02~2026-10-19, 표본오차 ±5.0. 발표문 Pappas 48 · Sununu 41 · LaPlante 4 대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": []
+              },
+              "leading_margin_pp": 7.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "us-202sai55f1c7c2",
+            "us-202uni57f2dfa4"
+          ]
         },
         {
           "race_id": "USA:OH:senate",
@@ -12607,9 +14082,9 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 4,
+            "independent_pollster_count": 5,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 1.0,
+            "agreement_fraction": 0.8,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -12637,6 +14112,84 @@
                 ]
               },
               "leading_margin_pp": 5.0,
+              "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202ech01f06c61",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                  "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                ],
+                "primary_toplines": {
+                  "Sherrod Brown": 47.0,
+                  "Jon Husted": 47.0,
+                  "Bill Redpath": 1.0,
+                  "Greg Levy": 2.0
+                },
+                "question_sample_n": 508,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 508,
+                  "field_dates": [
+                    "2026-10-16",
+                    "2026-10-23"
+                  ],
+                  "primary_release_date": "2026-10-27",
+                  "provider_record_date": "2026-10-27",
+                  "sponsors": [
+                    "NetChoice"
+                  ],
+                  "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                  "sampling_frame": "OH likely voters (state oversample n=508)",
+                  "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                  "question_wording_checked": false,
+                  "question": "OH U.S. Senate vote intention, state oversample of likely voters",
+                  "provider_pollster_label": "Echelon Insights",
+                  "primary_pollster_name": "Echelon Insights",
+                  "commissioner": "NetChoice",
+                  "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 5.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_508",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Echelon Insights 원문 대조: LV 508명, 2026-10-16~2026-10-23, 표본오차 ±5.2. NetChoice 발표 OH U.S. Senate 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "NetChoice"
+                ]
+              },
+              "leading_margin_pp": 0.0,
               "significance": "not_evaluated"
             },
             {
@@ -12762,6 +14315,7 @@
           ],
           "included_poll_ids": [
             "us-202bea80ab32e9",
+            "us-202ech01f06c61",
             "us-202ins6e5f29f2",
             "us-202mar3b19e64d",
             "us-202vot936927b5"
@@ -12781,9 +14335,9 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 3,
+            "independent_pollster_count": 4,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 0.6666666666666666,
+            "agreement_fraction": 0.75,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -12858,12 +14412,74 @@
               },
               "leading_margin_pp": 2.0,
               "significance": "not_evaluated"
+            },
+            {
+              "id": "us-202tex39cdaf4f",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "margin_of_error",
+                  "minor_candidate_values_not_in_release"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://www.jordanresearchcenter.org/publications/tsuoct2026-txelections-statewide2026"
+                ],
+                "primary_toplines": {
+                  "James Talarico": 49.0,
+                  "Ken Paxton": 47.0
+                },
+                "question_sample_n": 2000,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 2000,
+                  "field_dates": [
+                    "2026-10-21",
+                    "2026-10-25"
+                  ],
+                  "primary_release_date": "2026-10-29",
+                  "provider_record_date": "2026-10-29",
+                  "sponsors": [],
+                  "sampling_method": "Barbara Jordan Public Policy Research and Survey Center, Oct 21-25",
+                  "sampling_frame": "Texas likely voters (2,000)",
+                  "weighting": "per full report (not independently verified)",
+                  "question_wording_checked": false,
+                  "question": "U.S. Senate vote intention, likely voters",
+                  "provider_pollster_label": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                  "primary_pollster_name": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
+                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
+                },
+                "reported_precision": null,
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [],
+                  "provider_sponsors": [],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center 원문 대조: LV 2000명, 2026-10-21~2026-10-25, 표본오차 원문 미기재. 발표 요약 Talarico 49 · Paxton 47 대조. 군소 후보 Brown 3은 요약에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": []
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
             "us-202bea368d4e46",
             "us-202cnn4329221b",
-            "us-202eme43ceed84"
+            "us-202eme43ceed84",
+            "us-202tex39cdaf4f"
           ]
         },
         {
@@ -12943,25 +14559,104 @@
           "race_id": "USA:IA:governor",
           "rating": "lean_dem",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": null,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "gov202ech60c386d1",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                  "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                ],
+                "primary_toplines": {
+                  "Rob Sand": 50.0,
+                  "Zach Lahn": 46.0
+                },
+                "question_sample_n": 403,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 403,
+                  "field_dates": [
+                    "2026-10-16",
+                    "2026-10-23"
+                  ],
+                  "primary_release_date": "2026-10-27",
+                  "provider_record_date": "2026-10-27",
+                  "sponsors": [
+                    "NetChoice"
+                  ],
+                  "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                  "sampling_frame": "IA likely voters (state oversample n=403)",
+                  "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                  "question_wording_checked": false,
+                  "question": "IA governor vote intention, state oversample of likely voters",
+                  "provider_pollster_label": "Echelon Insights",
+                  "primary_pollster_name": "Echelon Insights",
+                  "commissioner": "NetChoice",
+                  "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 6.5,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_403",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Echelon Insights 원문 대조: LV 403명, 2026-10-16~2026-10-23, 표본오차 ±6.5. NetChoice 발표 IA governor 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "NetChoice"
+                ]
+              },
+              "leading_margin_pp": 4.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "gov202ech60c386d1"
+          ]
         },
         {
           "race_id": "USA:MI:governor",
@@ -13064,25 +14759,104 @@
           "race_id": "USA:GA:governor",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "pending",
-          "party_abbr": "없음",
-          "conclusion_ko": "판정 보류",
-          "poll_status": "no_recent_poll",
+          "basis": "single_poll_lead",
+          "party_abbr": "DEM",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "none",
-            "coverage_label_ko": "조사 없음",
-            "independent_pollster_count": 0,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": null,
+            "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
-          "poll_details": [],
-          "included_poll_ids": []
+          "poll_details": [
+            {
+              "id": "gov202ech45428865",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                  "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                ],
+                "primary_toplines": {
+                  "Keisha Lance Bottoms": 49.0,
+                  "Rick Jackson": 48.0
+                },
+                "question_sample_n": 508,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 508,
+                  "field_dates": [
+                    "2026-10-16",
+                    "2026-10-23"
+                  ],
+                  "primary_release_date": "2026-10-27",
+                  "provider_record_date": "2026-10-27",
+                  "sponsors": [
+                    "NetChoice"
+                  ],
+                  "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                  "sampling_frame": "GA likely voters (state oversample n=508)",
+                  "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                  "question_wording_checked": false,
+                  "question": "GA governor vote intention, state oversample of likely voters",
+                  "provider_pollster_label": "Echelon Insights",
+                  "primary_pollster_name": "Echelon Insights",
+                  "commissioner": "NetChoice",
+                  "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 5.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_508",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Echelon Insights 원문 대조: LV 508명, 2026-10-16~2026-10-23, 표본오차 ±5.2. NetChoice 발표 GA governor 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "NetChoice"
+                ]
+              },
+              "leading_margin_pp": 1.0,
+              "significance": "not_evaluated"
+            }
+          ],
+          "included_poll_ids": [
+            "gov202ech45428865"
+          ]
         },
         {
           "race_id": "USA:NV:governor",
@@ -13122,9 +14896,9 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 3,
+            "independent_pollster_count": 4,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 1.0,
+            "agreement_fraction": 0.75,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -13149,6 +14923,83 @@
                 "partisan": null,
                 "sponsors": [
                   "Fox News"
+                ]
+              },
+              "leading_margin_pp": 2.0,
+              "significance": "not_evaluated"
+            },
+            {
+              "id": "gov202ech0acb366e",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire",
+                  "provider_minor_candidate_value_differs_from_release"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                  "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                ],
+                "primary_toplines": {
+                  "Amy Acton": 45.0,
+                  "Vivek Ramaswamy": 47.0
+                },
+                "question_sample_n": 508,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 508,
+                  "field_dates": [
+                    "2026-10-16",
+                    "2026-10-23"
+                  ],
+                  "primary_release_date": "2026-10-27",
+                  "provider_record_date": "2026-10-27",
+                  "sponsors": [
+                    "NetChoice"
+                  ],
+                  "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                  "sampling_frame": "OH likely voters (state oversample n=508)",
+                  "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                  "question_wording_checked": false,
+                  "question": "OH governor vote intention, state oversample of likely voters",
+                  "provider_pollster_label": "Echelon Insights",
+                  "primary_pollster_name": "Echelon Insights",
+                  "commissioner": "NetChoice",
+                  "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 5.2,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_508",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Echelon Insights 원문 대조: LV 508명, 2026-10-16~2026-10-23, 표본오차 ±5.2. NetChoice 발표 OH governor 수치 대조. VoteHub의 Kissick 2는 발표문 4와 달라 대조에서 제외. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "NetChoice"
                 ]
               },
               "leading_margin_pp": 2.0,
@@ -13254,6 +15105,7 @@
           ],
           "included_poll_ids": [
             "gov202beafcf8ece3",
+            "gov202ech0acb366e",
             "gov202mar01928469",
             "gov202vot834ec374"
           ]
@@ -13286,17 +15138,17 @@
           "race_id": "USA:FL:governor",
           "rating": "lean_rep",
           "competitive": true,
-          "basis": "single_poll_lead",
+          "basis": "recent_poll_lead",
           "party_abbr": "GOP",
-          "conclusion_ko": "공화당 단일 조사에서 수치상 앞섬 · 참고",
-          "poll_status": "single_poll_lead",
+          "conclusion_ko": "공화당 조사상 우세",
+          "poll_status": "poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "multiple_sources",
+            "coverage_label_ko": "복수 기관 집계",
+            "independent_pollster_count": 2,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -13304,6 +15156,83 @@
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
           },
           "poll_details": [
+            {
+              "id": "gov202ech7ccc86ed",
+              "source_quality": {
+                "verification_level": "primary_toplines_checked",
+                "methodological_quality": "unrated",
+                "accuracy_grade": null,
+                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
+                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
+                "missing_fields": [
+                  "historical_accuracy_rating",
+                  "full_questionnaire"
+                ],
+                "review_method": "manual_primary_review",
+                "reviewed_on": "2026-10-30",
+                "review_sources": [
+                  "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+                  "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+                ],
+                "primary_toplines": {
+                  "Byron Donalds": 50.0,
+                  "David Jolly": 44.0,
+                  "Scott Jewett": 1.0
+                },
+                "question_sample_n": 515,
+                "disclosure_review": {
+                  "population": "LV",
+                  "sample_n": 515,
+                  "field_dates": [
+                    "2026-10-16",
+                    "2026-10-23"
+                  ],
+                  "primary_release_date": "2026-10-27",
+                  "provider_record_date": "2026-10-27",
+                  "sponsors": [
+                    "NetChoice"
+                  ],
+                  "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+                  "sampling_frame": "FL likely voters (state oversample n=515)",
+                  "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+                  "question_wording_checked": false,
+                  "question": "FL governor vote intention, state oversample of likely voters",
+                  "provider_pollster_label": "Echelon Insights",
+                  "primary_pollster_name": "Echelon Insights",
+                  "commissioner": "NetChoice",
+                  "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+                },
+                "reported_precision": {
+                  "kind": "publisher_reported_margin_of_sampling_error",
+                  "half_width_pp": 5.0,
+                  "confidence_level_pct": null,
+                  "scope": "whole_study_515",
+                  "model_details_verified": false
+                },
+                "ballot_format": "ordinary_named_candidate_ballot",
+                "sponsor_review": {
+                  "primary_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_sponsors": [
+                    "NetChoice"
+                  ],
+                  "provider_partisan_flag": null,
+                  "affiliation_independently_verified": null,
+                  "primary_internal": false
+                },
+                "limitations_ko": "Echelon Insights 원문 대조: LV 515명, 2026-10-16~2026-10-23, 표본오차 ±5.0. NetChoice 발표 FL governor 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
+              },
+              "commissioning": {
+                "internal": false,
+                "partisan": null,
+                "sponsors": [
+                  "NetChoice"
+                ]
+              },
+              "leading_margin_pp": 6.0,
+              "significance": "not_evaluated"
+            },
             {
               "id": "gov202uni6ec2ef24",
               "source_quality": {
@@ -13328,6 +15257,7 @@
             }
           ],
           "included_poll_ids": [
+            "gov202ech7ccc86ed",
             "gov202uni6ec2ef24"
           ]
         },
