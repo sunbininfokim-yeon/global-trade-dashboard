@@ -18,8 +18,11 @@ export const loadLivePolls = () => {
         fetchJson('usa_election_live_polls_status_v1.json'),
         // Lower-confidence layer (원문 미검토). Optional: missing just means none.
         fetchJson('usa_election_unreviewed_polls_v1.json').catch(() => null),
-        ]).then(([board, health, unreviewed]) => {
+        // Election-night media calls (AP 등, 비공식). Optional.
+        fetchJson('usa_election_media_calls_v1.json').catch(() => null),
+        ]).then(([board, health, unreviewed, calls]) => {
             if (board && unreviewed?.schema === 'usa_election_unreviewed_polls_v1' && unreviewed.as_of === board.as_of) board.unreviewed = unreviewed;
+            if (board && calls?.schema === 'usa_election_media_calls_v1') board.mediaCalls = calls;
             return { board, health };
         }).catch(() => {
             expiresAt = Date.now() + 60 * 1000;

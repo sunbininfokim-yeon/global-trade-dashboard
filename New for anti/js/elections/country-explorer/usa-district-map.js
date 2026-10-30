@@ -1,7 +1,7 @@
 import { loadCongressionalDistricts } from '../data/geo-service.js?v=2';
 import { pollSignal, pollSourceReady } from '../data/usa-election-context.js?v=2';
 
-import { electionRatingSummary } from '../data/election-overview.js?v=5';
+import { electionRatingSummary, mediaCall } from '../data/election-overview.js?v=6';
 import { electionMatchup, pollMatchesMatchup } from '../data/election-matchups.js';
 
 const partyColor = (party) => party === 'DEM' ? [37, 99, 235, 225]
@@ -10,6 +10,9 @@ const partyColor = (party) => party === 'DEM' ? [37, 99, 235, 225]
 export const districtElectionColor = (raceId, rating, board, health, days = 7, now = Date.now(), matchup = null) => {
     const signal = pollSignal(board?.races?.[raceId] || {election_date:'2026-11-03'},board,health,days,now);
     if (signal.status === 'certified_result') return partyColor(signal.party === 'REP' ? 'GOP' : signal.party);
+    // Media call (비공식): same party colour, slightly lighter than certified.
+    const call = mediaCall(board, raceId);
+    if (call?.status === 'called') return call.party === 'DEM' ? [37,99,235,190] : call.party === 'REP' ? [220,38,38,190] : [16,185,129,190];
     if (signal.status === 'awaiting_certified_result') return [71,85,105,230];
     const r = rating?.races?.find((row) => row.race_id === raceId);
     if (['solid_dem','likely_dem'].includes(r?.effective_rating)) return [96,165,250,115];

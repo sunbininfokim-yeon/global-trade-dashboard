@@ -170,3 +170,19 @@ test('low-confidence layer resolves a Lean/Toss-up seat only without a reviewed 
     board.unreviewed.races[target.race_id].combined_14 = { status: 'tie', party: null };
     assert.equal(electionOutlook(country, 'governor', r, { board, now }).unreviewed, 0);
 });
+
+test('media calls fill seats before certification, runoff stays pending, certified results are not overridden', async () => {
+    const { mediaCall } = await import('../data/election-overview.js');
+    const r = summary('governor');
+    const target = r.races.find((x) => x.effective_rating === 'toss_up');
+    const base = electionOutlook(country, 'governor', r, { now });
+    const call = { race_id: target.race_id, status: 'called', winner: 'Someone', party: 'REP', called_by: ['AP'], called_at: '2026-11-04T03:00:00Z', source_url: 'https://apnews.com/x' };
+    const board = { races: {}, mediaCalls: { schema: 'usa_election_media_calls_v1', calls: [call] } };
+    const o = electionOutlook(country, 'governor', r, { board, now });
+    assert.equal(o.called, 1); assert.equal(o.counts.GOP, base.counts.GOP + 1); assert.equal(o.pending, base.pending - 1);
+    board.mediaCalls.calls = [{ ...call, status: 'runoff', party: null, winner: null }];
+    const run = electionOutlook(country, 'governor', r, { board, now });
+    assert.equal(run.runoff, 1); assert.equal(run.pending, base.pending);
+    board.mediaCalls.calls = [{ ...call, status: 'retracted' }];
+    assert.equal(mediaCall(board, target.race_id), null);
+});

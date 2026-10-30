@@ -98,11 +98,14 @@ const latestText = (race) => {
     return `최근 ${l.o.pollster} ${day} · ${l.s.left.name.split(' ').at(-1)} ${pct(l.s.left.pct)} · ${l.s.rep.name.split(' ').at(-1)} ${pct(l.s.rep.pct)}${l.low ? ` · ${LOW_LABEL[l.low] || '미검토'}` : l.reference ? ' · 참고' : ''}`;
 };
 
-const raceRow = (board_race, now, office = 'senate', low = null) => {
+const raceRow = (board_race, now, office = 'senate', low = null, call = null) => {
     const race = withLow(board_race, low);
     const lowCounted = new Set(lowVerdict(low) ? low.combined_14.unreviewed_ids || [] : []);
     const dots = dotsFor(race, now).map((d) => ({ ...d, lowCounted: lowCounted.has(d.o.id) }));
-    const v = verdict(board_race, low);
+    const callParty = { DEM: 'D', REP: 'R', IND: 'I' }[call?.party];
+    const v = call?.status === 'called' && callParty
+        ? { cls: callParty === 'R' ? 'is-gop' : callParty === 'I' ? 'is-ind' : 'is-dem', text: `${callParty} 당선 선언 (${call.called_by.join('·')}) · 비공식` }
+        : call?.status === 'runoff' ? { cls: 'is-close', text: `결선 투표로 (${call.called_by.join('·')})` } : verdict(board_race, low);
     const names = dots[0]?.s ? `${dots[0].s.left.name.split(' ').at(-1)} vs ${dots[0].s.rep.name.split(' ').at(-1)}` : '';
     const leftParty = dots[0]?.s?.left.party || 'DEM';
     const dotHtml = dots.map(({ o, s, counted, lowCounted: lc }) => {
@@ -152,7 +155,7 @@ export const officePollSummaryHtml = (office, contests, board, { now = Date.now(
             ${lowTotal ? `<small class="is-low-confidence">이 중 원문 미검토·참고 조사 판정 ${lowTotal}${unit} (DEM ${low.DEM} · GOP ${low.GOP}${low.IND ? ` · 무소속 ${low.IND}` : ''}) · 신뢰도 낮음</small>` : ''}
             ${single ? `<small>${escapeHtml(latestText(rows[0]))}</small>` : ''}<small>최근 14일 판정 · 눌러서 ${single ? '자세히' : '선거별 보기'}</small></summary>
         ${rows.length ? `<div class="elections-senate-scale" aria-hidden="true"><span class="is-dem">← 민주${office === 'senate' ? '·무소속' : ''}</span><span>±${AXIS}%p · 0</span><span class="is-gop">공화 →</span></div>
-        <div class="elections-senate-rows">${rows.map((r) => raceRow(r, now, office, lowOf(r))).join('')}</div>` : ''}
+        <div class="elections-senate-rows">${rows.map((r) => raceRow(r, now, office, lowOf(r), (board?.mediaCalls?.calls || []).find((c) => c.race_id === r.race_id && ['called', 'runoff'].includes(c.status)))).join('')}</div>` : ''}
         <p class="elections-panel-note">조사 없음 ${contests.length - polled.length}${unit}. 우세는 최근 14일 안의 조사 판정입니다. 검토 보드 판정이 없으면 원문 미검토·참고 조사로 판정하고 '미검토 포함'으로 표시합니다(신뢰도 낮음, 캠프 내부·원문 불일치는 제외). ● 검토 집계 포함, ◍ 미검토 판정 포함, ○ 참고, 점선=원문 미검토. 평균이나 당선 예측이 아닙니다.</p>
     </details>`;
 };
