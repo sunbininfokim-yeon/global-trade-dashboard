@@ -79,7 +79,8 @@ def _get(url: str, *, timeout: int = 60, tries: int = 3) -> bytes:
 
 def parse_boj_csv(text: str) -> Points:
     """The API's CSV: a status header, then SERIES_CODE,NAME,UNIT,FREQUENCY,CATEGORY,LAST_UPDATE,SURVEY_DATES,VALUES.
-    Monthly survey dates are YYYYMM; a value that is empty or not a number is skipped."""
+    Monthly survey dates are YYYYMM; quarterly ones are YYYYQQ (202602 = 2026 Q2) and are dated by the
+    quarter's first month, as FRED dates quarters. A value that is empty or not a number is skipped."""
     if "STATUS,200" not in text[:200]:
         raise ValueError(f"BOJ API did not answer OK: {text[:120]!r}")
     i = text.find("SERIES_CODE")
@@ -90,8 +91,11 @@ def parse_boj_csv(text: str) -> Points:
         sd, v = (row.get("SURVEY_DATES") or "").strip(), (row.get("VALUES") or "").strip()
         if len(sd) != 6 or v in ("", "NA", "-"):
             continue
+        month = int(sd[4:6])
+        if (row.get("FREQUENCY") or "").strip().upper().startswith("QUARTER"):
+            month = (month - 1) * 3 + 1
         try:
-            out.append((f"{sd[:4]}-{sd[4:6]}-01", float(v)))
+            out.append((f"{sd[:4]}-{month:02d}-01", float(v)))
         except ValueError:
             continue
     if not out:
@@ -412,6 +416,12 @@ def ratio_to_quarterly(monthly: Points, quarterly_base: Points, *, pct: bool = T
     return out
 
 
+def share_pct(part: Points, whole: Points) -> Points:
+    """part ÷ whole × 100 on the dates both have."""
+    w = dict(whole)
+    return [(d, v / w[d] * 100.0) for d, v in part if w.get(d)]
+
+
 def spread_bp(a: Points, b: Points) -> Points:
     bd = dict(b)
     return [(d, (v - bd[d]) * 100) for d, v in a if d in bd]
@@ -448,6 +458,11 @@ SPECS: dict[str, Spec] = {s.id: s for s in [
          BOJ_SRC, _urls(_BOJ_PAGE), "monthly"),
     Spec("boj_jreit", "monthly", "bn_jpy", "bn0u", "BOJ가 신탁으로 보유한 J-REIT(장부가). BS01 'Pecuniary Trusts (J-REITs)'.",
          BOJ_SRC, _urls(_BOJ_PAGE), "monthly"),
+    Spec("boj_jgb_share", "quarterly", "%", "pct1",
+         "국채·재투채 발행 잔액 중 일본은행이 보유한 비율(분기 말, 시가 기준)입니다. 일본은행 자금순환 통계: "
+         "중앙은행 보유(FOF_FFAS110A311) ÷ 전 부문 보유 합계(FOF_FFAS700A311) × 100. 단기국채(T-bill)는 제외했습니다.",
+         "boj:stat-search:FF", _urls(_BOJ_PAGE, "https://www.boj.or.jp/en/statistics/sj/index.htm"), "quarterly",
+         label_ko="JGB BOJ보유비율"),
     Spec("call_rate", "monthly", "%", "pct2", "무담보 콜금리(익일물)의 월평균입니다. 일본은행 FM02.",
          BOJ_SRC, _urls(_BOJ_PAGE), "monthly"),
     Spec("m2_vs_2019", "monthly", "%", "pct1", "(현재 M2 평잔 − 2019-12) / 2019-12 × 100. 일본은행 MD02 M2 평잔(원계열) 기준입니다.",
@@ -536,6 +551,8 @@ def series_for(spec_id: str, s: Sources) -> Points:
         return ups.scale(s.boj("BS01", "MABJMA003"), 1e-4)
     if spec_id == "boj_jreit":
         return ups.scale(s.boj("BS01", "MABJMA004"), 0.1)                      # 100 million yen -> billion yen
+    if spec_id == "boj_jgb_share":
+        return share_pct(s.boj("FF", "FOF_FFAS110A311"), s.boj("FF", "FOF_FFAS700A311"))
     if spec_id == "call_rate":
         return s.boj("FM02", "STRACLUCON")
     if spec_id == "m2_vs_2019":
