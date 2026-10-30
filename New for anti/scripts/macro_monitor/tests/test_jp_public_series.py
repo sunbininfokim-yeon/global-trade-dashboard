@@ -40,6 +40,12 @@ class Parsers(unittest.TestCase):
     def test_boj_rows_become_first_of_month_points_and_blank_values_are_skipped(self):
         self.assertEqual(jps.parse_boj_csv(BOJ_OK), [("2026-07-01", 6497120.0), ("2026-08-01", 6446620.0)])
 
+    def test_boj_quarterly_dates_are_the_quarters_first_month(self):
+        text = BOJ_OK.split("MABJMTA,")[0] + (
+            "FOF_FFAS110A311,x,100 million yen,QUARTERLY,Flow of Funds,20260917,202601,1\n"
+            "FOF_FFAS110A311,x,100 million yen,QUARTERLY,Flow of Funds,20260917,202602,2\n")
+        self.assertEqual(jps.parse_boj_csv(text), [("2026-01-01", 1.0), ("2026-04-01", 2.0)])
+
     def test_boj_answer_that_is_not_ok_raises(self):
         with self.assertRaises(ValueError):
             jps.parse_boj_csv("STATUS,400\nMESSAGE,Invalid\n")
@@ -225,6 +231,11 @@ class Series(unittest.TestCase):
         self.assertAlmostEqual(jps.series_for("fx_reserves", s)[-1][1], 1083.42049, places=4)   # million USD -> billion USD
         self.assertAlmostEqual(jps.series_for("yen_imm_net", s)[-1][1], 71.982)            # contracts -> thousand
 
+    def test_jgb_share_is_boj_holdings_over_all_holders(self):
+        s = stub_sources(**{"FF/FOF_FFAS110A311": [("2026-01-01", 5_000_000.0), ("2026-04-01", 4_670_000.0)],
+                            "FF/FOF_FFAS700A311": [("2026-04-01", 10_000_000.0)]})
+        self.assertEqual(jps.series_for("boj_jgb_share", s), [("2026-04-01", 46.7)])       # a quarter missing a total is dropped
+
     def test_patch_shows_the_observation_date_for_daily_sourced_series(self):
         y = jps.parse_mof_jgb(MOF)
         s = stub_sources(jgb=y)
@@ -238,7 +249,7 @@ class Series(unittest.TestCase):
             self.assertIn(spec_id, {"boj_total_assets", "boj_assets_yoy", "boj_assets_gdp", "boj_etf", "boj_jreit", "call_rate", "m2_vs_2019",
                                     "cgpi", "current_account", "gdp_yoy", "gdp_qoq", "fx_reserves", "bond_2y", "bond_10y", "bond_30y",
                                     "spread_10y2y", "spread_30y10y", "yen_imm_net", "core_cpi_jp", "core_core_cpi", "tokyo_cpi",
-                                    "job_applicant_ratio", "real_wage_yoy"})
+                                    "job_applicant_ratio", "real_wage_yoy", "boj_jgb_share"})
 
 
 class Apply(unittest.TestCase):
