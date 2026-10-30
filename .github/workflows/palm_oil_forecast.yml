@@ -63,9 +63,27 @@ jobs:
         working-directory: "New for anti/scripts/yield_model"
         run: python -m palm_oil.forecast
 
+      - name: Commit to the pull request branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          for f in "New for anti/scripts/yield_model/palm_oil/training" \
+                   "New for anti/public/data/"{malaysia,colombia,nigeria,thailand}_yield_forecast.json; do
+            [ -e "$f" ] && git add "$f"
+          done
+          git commit -m "chore: palm oil forecast on the PR branch" || exit 0
+          for i in 1 2 3; do
+            git push origin "HEAD:$GITHUB_HEAD_REF" && exit 0
+            echo "push rejected, rebasing and retrying ($i/3)"
+            git pull --rebase --autostash origin "$GITHUB_HEAD_REF"
+          done
+          git push origin "HEAD:$GITHUB_HEAD_REF"
+
+      # A separate step with a bare `git push`, so tools/ops/check_deploy_chain.py
+      # sees that this workflow commits to main and deploy.yml must chain it.
       - name: Commit and Push Changes
-        env:
-          BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+        if: github.event_name != 'pull_request'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -75,8 +93,8 @@ jobs:
           done
           git commit -m "chore: weekly palm oil forecast refresh" || exit 0
           for i in 1 2 3; do
-            git push origin "HEAD:$BRANCH" && exit 0
-            echo "push rejected, rebasing onto latest $BRANCH and retrying ($i/3)"
-            git pull --rebase --autostash origin "$BRANCH"
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
           done
-          git push origin "HEAD:$BRANCH"
+          git push
