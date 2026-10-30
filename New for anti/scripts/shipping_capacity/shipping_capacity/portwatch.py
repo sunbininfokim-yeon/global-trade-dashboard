@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 import statistics
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -331,10 +334,63 @@ def validate_7d_28d_signal(
 
 
 class PortWatchClient:
-    def __init__(self, timeout_seconds: int = 30) -> None:
+    def __init__(self, timeout_seconds: int = 30, retry_attempts: int = 3) -> None:
         self.timeout_seconds = timeout_seconds
+        if retry_attempts < 1:
+            raise ValueError("retry_attempts must be positive")
+        self.retry_attempts = retry_attempts
+
+    def _fetch_page(self, params: dict[str, str]) -> dict[str, Any]:
+        """Retry transient ArcGIS failures, including errors inside HTTP 200.
+
+        ArcGIS also uses 400 for inaccessible hosted tables, not just bad SQL.
+        Alternate the supported JSON representations on retry
+        so a cached error for one representation need not poison the whole run.
+        Authentication failures and malformed successful payloads fail closed.
+        """
+        for attempt in range(self.retry_attempts):
+            request_params = {**params, "f": "pjson" if attempt % 2 else "json"}
+            request = urllib.request.Request(
+                PORTWATCH_QUERY_URL + "?" + urllib.parse.urlencode(request_params),
+                headers={
+                    "User-Agent": "global-trade-dashboard/1.0",
+                    "Cache-Control": "no-cache",
+                },
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+                    payload = json.load(response)
+            except urllib.error.HTTPError as exc:
+                if exc.code not in (400, 408, 429, 500, 502, 503, 504):
+                    raise
+                error: Exception = exc
+            except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
+                error = exc
+            else:
+                if not isinstance(payload, dict):
+                    raise RuntimeError("PortWatch response is not a feature-set object")
+                if "error" not in payload:
+                    if not isinstance(payload.get("features"), list):
+                        raise RuntimeError("PortWatch response is missing features")
+                    return payload
+                detail = payload["error"]
+                error = RuntimeError(f"PortWatch API error: {detail}")
+                if not isinstance(detail, dict) or detail.get("code") not in (
+                    400, 408, 429, 500, 502, 503, 504,
+                ):
+                    raise error
+            if attempt + 1 == self.retry_attempts:
+                raise RuntimeError(
+                    f"PortWatch query failed after {self.retry_attempts} attempts: {error}"
+                ) from error
+            time.sleep(2 ** attempt)
+        raise AssertionError("unreachable")
 
     def fetch_series(self, portwatch_id: str, record_count: int = 730) -> list[dict[str, Any]]:
+        if not portwatch_id.startswith("chokepoint") or not portwatch_id[10:].isdigit():
+            raise ValueError("expected a PortWatch chokepoint ID")
+        if record_count < 1:
+            raise ValueError("record_count must be positive")
         rows: list[dict[str, Any]] = []
         offset = 0
         page_size = min(1000, record_count)
@@ -349,18 +405,25 @@ class PortWatchClient:
                 "resultRecordCount": str(requested),
                 "f": "json",
             }
-            url = PORTWATCH_QUERY_URL + "?" + urllib.parse.urlencode(params)
-            request = urllib.request.Request(
-                url,
-                headers={"User-Agent": "global-trade-dashboard/1.0"},
-            )
-            with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-                payload = json.load(response)
-            if "error" in payload:
-                raise RuntimeError(f"PortWatch API error: {payload['error']}")
-            page = [feature["attributes"] for feature in payload.get("features", [])]
+            payload = self._fetch_page(params)
+            page = []
+            for feature in payload["features"]:
+                row = feature.get("attributes") if isinstance(feature, dict) else None
+                if (
+                    not isinstance(row, dict)
+                    or row.get("portid") != portwatch_id
+                    or _iso_date(row.get("date")) is None
+                    or isinstance(row.get("capacity"), bool)
+                    or not isinstance(row.get("capacity"), (int, float))
+                    or not math.isfinite(row["capacity"])
+                    or row["capacity"] < 0
+                ):
+                    raise RuntimeError("PortWatch returned invalid or wrong-chokepoint observations")
+                page.append(row)
+            if not page and payload.get("exceededTransferLimit"):
+                raise RuntimeError("PortWatch pagination made no progress")
             rows.extend(page)
-            if len(page) < requested:
+            if not page or (len(page) < requested and not payload.get("exceededTransferLimit")):
                 break
             offset += len(page)
 
@@ -371,10 +434,15 @@ class PortWatchClient:
             deduplicated[(row.get("portid"), row.get("date"))] = row
         rows = list(deduplicated.values())
         rows.sort(key=lambda row: _date_key(row.get("date")))
-        return rows
+        if not rows:
+            raise RuntimeError("PortWatch returned no observations; previous data must be retained")
+        return rows[-record_count:]
 
     def fetch_status(self, portwatch_id: str) -> dict[str, Any]:
-        return summarize_series(self.fetch_series(portwatch_id), portwatch_id)
+        status = summarize_series(self.fetch_series(portwatch_id), portwatch_id)
+        if not status.get("metrics"):
+            raise RuntimeError("PortWatch returned insufficient history for a live status")
+        return status
 
 
 class PortWatchPortClient:
