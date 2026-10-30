@@ -16,12 +16,12 @@ name: Refresh Japan growth diagnostics
 
 on:
   schedule:
-    # Sat 02:56 KST (Fri 17:56 UTC) — weekend batch, 22min after climate.
-    # Macro/growth diagnostics (GDP-side), not a commodity feed -- grouped
-    # here only because it shares the weekly cadence and weekend slot.
-    # Source releases are quarterly; weekly is generous headroom, not a
-    # rate this needs.
-    - cron: '56 17 * * 5'
+    # Daily 02:56 KST (17:56 UTC). Was weekly (Fridays); ESRI releases land on weekdays and the
+    # snapshot now follows the newest vintage on its own, so a daily run picks a release up the same
+    # day instead of up to a week late.
+    # Macro/growth diagnostics (GDP-side), not a commodity feed. A day with no new release changes
+    # nothing and commits nothing.
+    - cron: '56 17 * * *'
   workflow_dispatch:
 
 jobs:
