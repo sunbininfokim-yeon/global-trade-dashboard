@@ -188,6 +188,16 @@ def main():
         },
     }
 
+    # Crude palm oil from USDA PSD, shared with Malaysia/Colombia/Nigeria
+    # (palm_oil/forecast.py); the PSD slice is refreshed by palm_oil_forecast.yml.
+    from palm_oil.forecast import region as palm_region
+    from palm_oil.producers import THAILAND as PALM
+    palm = palm_region(PALM)
+    if palm:
+        payload["regions"][PALM.key] = palm
+    else:
+        payload.setdefault("skipped", {})[PALM.key] = "USDA PSD slice missing"
+
     if not any_ok:
         payload["forecast_available"] = False
         payload["unavailable_reason"] = (

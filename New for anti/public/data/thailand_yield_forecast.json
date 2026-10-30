@@ -330,6 +330,121 @@
           }
         }
       }
+    },
+    "thailand_palm_oil": {
+      "label": "Thailand palm oil (CPO) production",
+      "label_ko": "팜유(CPO) 생산",
+      "crop": "palm_oil",
+      "season": 2027,
+      "marketing_year": "2026/27 (Oct-Sep)",
+      "unit": "천 t",
+      "point": 4112.0,
+      "range_68": [
+        3898.0,
+        4327.0
+      ],
+      "range_95": [
+        3692.0,
+        4533.0
+      ],
+      "trend": 4112.0,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "usda_estimate": 3720.0,
+      "last_actual": {
+        "year": 2026,
+        "value": 3900.0,
+        "source": "USDA PSD estimate"
+      },
+      "enso": {
+        "nino34_year_before": 0.65,
+        "window": "2025/26",
+        "note": "El Nino in the year before tends to cut output 6-24 months later; context only, not applied."
+      },
+      "weather_conditions": {
+        "target_year": 2027,
+        "verdict": "unfavorable",
+        "verdict_ko": "불리",
+        "score": -2,
+        "reason_ko": "불리 신호 2개: 직전 1년 물부족량, 직전 1년 엘니뇨(Niño3.4)",
+        "season_observed_share": 1.0,
+        "indicators": [
+          {
+            "key": "water_deficit_lag1",
+            "label_ko": "직전 1년 물부족량",
+            "season": "2025/26",
+            "value": 265.5,
+            "normal": 170.57,
+            "z": 1.21,
+            "unit": "mm",
+            "status": "unfavorable",
+            "status_ko": "불리",
+            "why_ko": "월 강수 100mm 미만인 달의 부족분 합. 부족이 크면 약 12개월 뒤 수확할 송이가 떨어진다."
+          },
+          {
+            "key": "dry_spell_lag1",
+            "label_ko": "직전 1년 최장 무강우 일수",
+            "season": "2025/26",
+            "value": 21.85,
+            "normal": 24.35,
+            "z": -0.22,
+            "unit": "일",
+            "status": "neutral",
+            "status_ko": "중립",
+            "why_ko": "긴 가뭄은 자라던 송이의 낙과·수분 실패로 이어진다."
+          },
+          {
+            "key": "nino34_lag1",
+            "label_ko": "직전 1년 엘니뇨(Niño3.4)",
+            "season": "2025/26",
+            "value": 0.65,
+            "normal": null,
+            "z": null,
+            "unit": "°C",
+            "status": "unfavorable",
+            "status_ko": "불리",
+            "why_ko": "엘니뇨는 동남아·콜롬비아 북부에 가뭄을 부르고 6~24개월 뒤 생산을 깎는다."
+          },
+          {
+            "key": "soil_lag2",
+            "label_ko": "2년 전 토양수분",
+            "season": "2024/25",
+            "value": 0.83,
+            "normal": 0.8,
+            "z": 0.49,
+            "unit": "",
+            "status": "neutral",
+            "status_ko": "중립",
+            "why_ko": "2년 전 가뭄은 암꽃 분화를 줄여 약 24개월 뒤 수확량을 낮춘다."
+          }
+        ],
+        "history_ko": "1997~2026년 중 불리 판정 6번(1999, 2006, 2015, 2016, 2020, 2025), 생산이 추세보다 낮았던 비율 100%, 평균 -20.2% (중립 해 평균 +1.7%)",
+        "unfavorable_supported": true,
+        "applied_to_forecast": false,
+        "note_ko": "판정은 참고용이며 예측치(추세)에는 반영하지 않는다."
+      },
+      "skill": {
+        "beats_trend": false,
+        "skill_vs_trend_only": 0.0,
+        "low_confidence": true,
+        "forward_folds": 40,
+        "recent_mape": 0.0452,
+        "trend_form": "recent_15_linear",
+        "conditions_backtest": "training/thailand_palm_oil_backtest.json"
+      },
+      "forecast_gate": {
+        "publishable": true,
+        "recent_operational_mape": 0.04517743525807122,
+        "latest_operational_ape": 0.006708256442388912,
+        "maximum_publish_mape": 0.15,
+        "status": "publishable_baseline"
+      },
+      "provenance": {
+        "label_source": "USDA FAS PSD Oilseeds, Oil, Palm, Thailand",
+        "url": "https://apps.fas.usda.gov/psdonline/downloads/psd_oilseeds_csv.zip",
+        "weather": "NASA POWER daily at production-weighted points; Niño3.4 OISST v2.1",
+        "caveat": "USDA marketing-year estimates, not a census; the current year is revised monthly."
+      }
     }
   },
   "climate_context": {

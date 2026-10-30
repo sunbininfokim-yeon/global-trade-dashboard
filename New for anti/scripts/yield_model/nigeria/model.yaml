@@ -1,0 +1,40 @@
+# nigeria — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 모델 코드는 ../palm_oil/ (말레이시아·태국·콜롬비아·나이지리아 공용)
+
+country: nigeria
+iso: NGA
+label_ko: 나이지리아
+label_en: Nigeria
+panel_mode: forecast
+model_status: training
+status_note_ko: "USDA PSD 생산 추세와 USDA 추정치를 함께 보여준다. 기상 조건 판정은 참고용이고 숫자에 반영하지 않는다."
+data_file: nigeria_yield_forecast.json
+model_name: "Nigeria palm oil (USDA PSD trend + weather read-out)"
+
+view:
+  longitude: 7.0
+  latitude: 7.0
+  zoom: 5.0
+
+regions:
+  - key: nigeria_palm_oil
+    label_ko: 팜유 생산
+    ui_name: nigeria_palm_oil
+    coordinates: [7.0, 5.5]
+    crops_region_keys: [nigeria_palm_oil]
+
+sources:
+  labels:
+    name: USDA FAS PSD (Oil, Palm)
+    url: https://apps.fas.usda.gov/psdonline/
+    updated: "2026-10-09"
+  climate:
+    name: NASA POWER (daily) · NOAA OISST v2.1 Niño3.4
+    url: https://power.larc.nasa.gov/
+    updated: "2026-10-27"
+
+method_refs: "Corley & Tinker (2015) The Oil Palm · Oettli et al. (2018) Sci Rep (ENSO and palm oil)"
+
+notes_ko: |
+  나이지리아 팜유는 남동·남남부 소농 생산이 대부분이라 USDA 추정치 자체의 변동이 작고 불확실하다.
+  기상 조건은 마케팅연도(10~9월) 직전 1년의 물부족량·최장 무강우·엘니뇨와 2년 전 토양수분으로 판정한다.
