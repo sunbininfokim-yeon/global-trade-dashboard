@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-23T21:52:07.807416+00:00",
-  "season": 2026,
+  "generated_at": "2026-10-30T03:41:55.493333+00:00",
+  "season": 2027,
   "country": "South Africa",
   "forecast_available": true,
   "source_note": "Commercial maize yield labels: Crop Estimates Committee via SAGIS. Climate: NASA POWER daily precipitation, maximum temperature, VPD and root-zone soil wetness at six belt locations.",
@@ -19,30 +19,69 @@
         "corn": {
           "label_ko": "옥수수",
           "unit": "kg/ha",
-          "point": 6207.8,
+          "point": 6432.0,
           "range_68": [
-            5582.0,
-            6833.7
+            5600.1,
+            7263.9
           ],
           "range_95": [
-            4435.1,
-            7980.6
+            4075.6,
+            8788.4
           ],
-          "trend": 6699.8,
-          "weather_effect": -491.9,
-          "weather_effect_pct": -7.34,
+          "trend": 6910.4,
+          "weather_effect": -478.4,
+          "weather_effect_pct": -6.92,
           "last_actual": {
             "year": 2025,
             "yield": 6412.0
           },
           "season_progress": {
             "critical_days": {
-              "observed": 59,
+              "observed": 0,
               "forecast": 0,
-              "climatology": 0
+              "climatology": 59
             },
-            "observed_share": 1.0,
-            "weather_window": "2025-10-01 through 2026-02-28"
+            "observed_share": 0.0,
+            "weather_window": "2026-10-01 through 2027-02-28"
+          },
+          "enso_preseason": {
+            "trend": 6910.405660691962,
+            "point": 6431.995778640565,
+            "even_fill_point": 6890.87456819581,
+            "nino34_planting": 2.59,
+            "planting_months": [
+              "2026-08",
+              "2026-09"
+            ],
+            "bandwidth_c": 0.5,
+            "effective_seasons": 2.6,
+            "beyond_record": true,
+            "analogs": [
+              {
+                "year": 1998,
+                "nino34_planting": 1.69,
+                "weight": 0.449,
+                "weather_effect_pct": 0.6
+              },
+              {
+                "year": 2016,
+                "nino34_planting": 1.67,
+                "weight": 0.41,
+                "weather_effect_pct": -11.3
+              },
+              {
+                "year": 2024,
+                "nino34_planting": 1.41,
+                "weight": 0.136,
+                "weather_effect_pct": -16.5
+              },
+              {
+                "year": 2003,
+                "nino34_planting": 0.72,
+                "weight": 0.002,
+                "weather_effect_pct": -7.6
+              }
+            ]
           },
           "skill": {
             "method": "forward chaining; log trend refit inside every fold",
@@ -54,7 +93,7 @@
             "low_confidence": true,
             "operational_choice": "trend_ensemble_ridge_weather",
             "selected_feature_set": "water_demand",
-            "sigma_used": 625.8,
+            "sigma_used": 831.9,
             "model_warnings": [
               "Selected weather predictors are strongly correlated; coefficient signs are not causal.",
               "The untouched evaluation set contains only ten seasons (2016-2025)."
@@ -101,42 +140,25 @@
             1992,
             2025
           ],
-          "government_outlook": {
-            "season": "2025/26",
-            "yield_kg_ha": 6432.3,
-            "production_t": 17522840.0,
-            "area_ha": 2724200.0,
-            "status": "CEC estimate; excluded from model training"
-          },
+          "government_outlook": null,
           "production": {
             "unit": "metric_tons",
-            "area_ha": 2724200.0,
+            "area_ha": 2596700.0,
             "area_source": "CEC planted area; production estimate excluded from model",
-            "point": 16911369.0,
+            "point": 16701963.0,
             "range_68": [
-              15206450.0,
-              18616289.0
+              14541807.0,
+              18862120.0
             ],
             "range_95": [
-              12082093.0,
-              21740646.0
+              10583205.0,
+              22820722.0
             ]
           },
-          "trend_components": [
-            {
-              "name": "full_history",
-              "trend": 7097.3,
-              "point": 6477.6
-            },
-            {
-              "name": "rolling_20",
-              "trend": 6302.2,
-              "point": 5938.0
-            }
-          ],
+          "trend_components": [],
           "diagnostics": {
-            "root_sm_critical_z": -0.764,
-            "vpd_critical_kpa_z": 0.73
+            "root_sm_critical_z": null,
+            "vpd_critical_kpa_z": null
           }
         }
       }
