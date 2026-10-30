@@ -1,0 +1,106 @@
+name: Investor price levels daily
+
+# 가격대별 누적 수급 (investor_price_levels_v1.json), split out of
+# market_microstructure_daily.yml so it can run after the KRX close.
+#
+# Why a separate, later job: the daily job's cron is 06:13 KST but GitHub
+# starts it 2.5-3.7h late, anywhere from 08:50 to 10:00 KST -- across the open.
+# On 2026-10-27..30 its four runs inside that window got a KOSPI listing from
+# FinanceDataReader with no usable market caps ("0 valid ordinary shares"),
+# failed closed (correctly: no universe is invented) and the file stood still.
+# The same call at 16:11 KST returned all 939 caps. 19:00 KST leaves the
+# per-stock Naver series time to publish the day's row, and a delayed start
+# is still after the close.
+#
+# FinanceDataReader reads data.krx.co.kr, which blocks by IP (7 days on
+# 2026-09-10). This job makes one listing call plus the per-ticker Naver
+# requests, once a day; do not add retries or extra triggers here.
+
+on:
+  schedule:
+    - cron: '0 10 * * 1-5'   # 19:00 KST, Mon-Fri
+  workflow_dispatch:
+
+concurrency:
+  group: investor-price-levels
+  cancel-in-progress: false
+
+jobs:
+  levels:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: New for anti/scripts/market_microstructure
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: New for anti/scripts/market_microstructure/requirements-ci.txt
+
+      - name: Install deps
+        run: pip install -r requirements-ci.txt
+
+      # The index view prefers the stock-scoped KRX 12008 export from this
+      # checkout and falls back to Naver when it is absent, so a failed
+      # checkout degrades the index view instead of stopping the stock views.
+      # The report step below still turns the run red when it happens.
+      - name: Checkout krx-month-paste (KRX 12008 stock-scoped export)
+        id: krx_checkout
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: sunbininfokim-yeon/krx-month-paste
+          token: ${{ secrets.KRX_MONTH_PASTE_TOKEN }}
+          path: krx-month-paste
+          sparse-checkout: |
+            data/normalized/krx_12008_kospi_stock_investor
+          sparse-checkout-cone-mode: false
+
+      - name: Investor × price levels (real data; marcap + high-vol in top100)
+        env:
+          KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
+        run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
+
+      - name: Validate UI data contract
+        run: python validate_ui_contracts.py
+
+      - name: Commit snapshot
+        working-directory: ${{ github.workspace }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            "New for anti/public/data/investor_price_levels_v1.json" \
+            "New for anti/scripts/market_microstructure/INVESTOR_PRICE_LEVELS.md"
+          git commit -m "chore: refresh investor price levels" || exit 0
+          # Other scheduled jobs commit to main too; a bare push loses the
+          # day's snapshot to a non-fast-forward rejection.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push
+
+      # continue-on-error hides a failed checkout behind a green run. This
+      # runs after the commit, so what did refresh is already published.
+      - name: Report steps that failed but were allowed to continue
+        if: always()
+        env:
+          KRX_CHECKOUT: ${{ steps.krx_checkout.outcome }}
+        run: |
+          if [ "$KRX_CHECKOUT" != "failure" ]; then
+            echo "No continue-on-error step failed."
+            exit 0
+          fi
+          {
+            echo "### Steps that failed but did not stop the run"
+            echo "- Checkout krx-month-paste (the index view used the Naver fallback or carried days forward)"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error title=Not refreshed::Checkout krx-month-paste failed (continue-on-error); the KRX 12008 export was not read"
+          exit 1
