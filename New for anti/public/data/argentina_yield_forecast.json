@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T03:39:34.192335+00:00",
+  "generated_at": "2026-10-30T20:37:42.673740+00:00",
   "season": 2027,
   "country": "Argentina",
   "source_note": "Yields: MAGyP Estimaciones Agrícolas, department level, aggregated as sum(production)/sum(harvested area). Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI. IOD: NOAA PSL HadISST DMI.",
@@ -91,7 +91,7 @@
         "guide": "Regions/아르헨티나/팜파스/대두/대두_상세분석_및_수식.md",
         "caveat": "Sowing is fixed at 15 November rather than observed; MAGyP publishes area and production but not planting progress by department. The spatial fixed-effects/embedding structure in §3B is replaced by production-weighting six stations, which captures between-province contrast but not within-province soil variation.",
         "non_weather_drivers": "",
-        "weather_through": "2026-10-21",
+        "weather_through": "2026-10-24",
         "critical_window_observed": 0.0,
         "season_complete": false,
         "notes": [
@@ -111,19 +111,19 @@
       ],
       "season": 2027,
       "unit": "kg/ha",
-      "point": 7485.1,
+      "point": 7477.8,
       "range_68": [
-        6297.1,
-        8673.2
+        6289.7,
+        8665.9
       ],
       "range_95": [
-        5156.5,
-        9813.8
+        5149.2,
+        9806.4
       ],
       "trend": 6745.0,
-      "weather_effect_pct": 10.97,
+      "weather_effect_pct": 10.87,
       "point_basis": "model",
-      "model_weather_effect_pct": 10.97,
+      "model_weather_effect_pct": 10.87,
       "last_actual": {
         "year": 2025,
         "yield": 7627.242847533014
@@ -148,29 +148,29 @@
               "year": 1998,
               "nino34_sowing": 1.69,
               "weight": 0.426,
-              "weather_effect_pct": 17.3
+              "weather_effect_pct": 17.2
             },
             {
               "year": 2016,
               "nino34_sowing": 1.67,
               "weight": 0.389,
-              "weather_effect_pct": 7.6
+              "weather_effect_pct": 7.5
             },
             {
               "year": 2024,
               "nino34_sowing": 1.41,
               "weight": 0.129,
-              "weather_effect_pct": 3.0
+              "weather_effect_pct": 2.9
             },
             {
               "year": 1988,
               "nino34_sowing": 1.22,
               "weight": 0.05,
-              "weather_effect_pct": 6.1
+              "weather_effect_pct": 6.0
             }
           ],
           "beyond_record": true,
-          "even_fill_effect_pct": 0.51
+          "even_fill_effect_pct": 0.42
         }
       },
       "skill": {
@@ -186,7 +186,7 @@
         "guide": "Regions/아르헨티나/팜파스/옥수수/옥수수_상세분석_및_수식.md",
         "caveat": "The guide's Climate_Shock_Index never fires: across 42 seasons no year has both ONI < -0.5 in the pre-sowing spring and DMI > 0.4, so the switch is constant at 1.0 and the training run drops it. That is a property of the climate rather than of the data -- a strongly positive dipole and a La Nina are themselves negatively associated, so the guide's worst case is close to mutually exclusive at these thresholds. ONI and DMI are carried separately instead. SAWHC is one constant per region here, so it rescales every season identically. DSSAT/APSIM is not runnable, so WDEF is the same ratio (ETa/ETc over silking) taken from a bucket balance instead of a process model.",
         "non_weather_drivers": "The early/late sowing split is the guide's own headline variable and it is not published: MAGyP reports one combined corn figure per department. The split moves year to year with December rainfall and with the corn/soy price ratio, so part of this target is a sowing decision the weather cannot see. Both calendars are modelled and offered, but their mix is unobserved.",
-        "weather_through": "2026-10-21",
+        "weather_through": "2026-10-24",
         "critical_window_observed": 0.0,
         "season_complete": false,
         "notes": [
@@ -219,7 +219,7 @@
       "trend": 3524.5,
       "weather_effect_pct": 0.0,
       "point_basis": "trend",
-      "model_weather_effect_pct": 14.81,
+      "model_weather_effect_pct": 13.93,
       "last_actual": {
         "year": 2024,
         "yield": 3112.6907443253394
@@ -246,8 +246,8 @@
         "guide": "Regions/아르헨티나/팜파스/밀/밀_상세분석_및_수식.md",
         "caveat": "The guide's FII cannot be computed as written from this weather feed: over the fixed 10-25 October anthesis window, POWER's gridded 2 m minimum falls below 0 C on 4 days in 42 years across five stations, because damaging spring frost in the Pampas is a radiative canopy-level event below the resolution of a reanalysis 2 m field. `fii` is kept at the guide's 0 C and is near-constant; `fii_proxy` raises the threshold to 3 C over a wider window as a frost-risk proxy. This variable needs station minima (INTA SIGA, SMN) to be modelled properly. Anthesis is also fixed at 15 October rather than tracked, and DSSAT CERES-Wheat is not runnable, so the guide's two-stage delta model collapses to one regression.",
         "non_weather_drivers": "",
-        "weather_through": "2026-10-21",
-        "critical_window_observed": 0.344,
+        "weather_through": "2026-10-24",
+        "critical_window_observed": 0.393,
         "season_complete": false,
         "notes": [
           "6 of 14 features not yet observed, filled from 42 past seasons: water_deficit_fill, water_deficit_season, smi_anthesis, heat_days_fill, harvest_rain_penalty, iod_spring"
@@ -305,7 +305,7 @@
         "guide": "Regions/아르헨티나/북부지역_NOA_NEA/대두/대두_상세분석_및_수식.md",
         "caveat": "Sowing fixed at 15 December. The spatial error model in §3 is replaced by production-weighting five stations across four provinces -- between-province contrast survives, department-level soil and management fixed effects do not.",
         "non_weather_drivers": "This is a frontier crop: area has expanded roughly twentyfold since the 1980s onto newly cleared and progressively more marginal Chaco land. Average yield therefore moves with *where* the crop is grown, not only with the weather over it, and no climate feed sees that.",
-        "weather_through": "2026-10-21",
+        "weather_through": "2026-10-24",
         "critical_window_observed": 0.0,
         "season_complete": false,
         "notes": [
@@ -364,7 +364,7 @@
         "guide": "Regions/아르헨티나/북부지역_NOA_NEA/면화/면화_상세분석_및_수식.md",
         "caveat": "Soil_Moisture_Index is a modelled bucket store, not a satellite product. Sowing fixed at 1 November. Fibre quality has no open series, so the target is lint yield alone.",
         "non_weather_drivers": "Argentine cotton area collapsed from ~700k ha in the late 1990s to ~150k ha in the mid-2000s and has swung with the cotton/soy price ratio ever since, while the crop simultaneously shifted from smallholder rainfed to mechanised narrow-row production. Both moves change average yield without any weather doing anything.",
-        "weather_through": "2026-10-21",
+        "weather_through": "2026-10-24",
         "critical_window_observed": 0.0,
         "season_complete": false,
         "notes": [
