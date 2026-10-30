@@ -86,6 +86,20 @@ TAMURA Naoki
 [Others present]
 """
 
+# October 2026 onward: decisions are numbered and each vote sits in its heading.
+OCT_HEADING = """1.  Guideline for money market operations (an 8-1 majority vote) [Note]
+At the Monetary Policy Meeting (MPM) held today, the Policy Board of the Bank of Japan
+decided to set the following guideline for money market operations for the intermeeting period:
+The  Bank  will  encourage  the  uncollateralized  overnight  call  rate  to  remain  at  around  1.25
+percent.
+2.  Change in the pace of sales of exchange-traded funds (ETFs) (a unanimous vote)
+[Note] Voting for the action: UEDA Kazuo, HIMINO Ryozo, UCHIDA Shinichi, TAMURA Naoki, KOEDA
+Junko,  MASU  Kazuyuki, ASADA  Toichiro,  and  SATO Ayano.  Voting  against  the  action:  TAKATA
+Hajime. Takata Hajime considered that the Bank needs to step up the pace. He
+proposed  that  the  Bank  set  the  guideline  for  money  market  operations  as  follows:  the  Bank  would
+encourage the uncollateralized overnight call rate to remain at around 1.5 percent.
+"""
+
 
 def _parse(text, day="2026-09-18"):
     return boj.parse_statement(text, meeting_date=day, source_url="https://example/k")
@@ -123,6 +137,13 @@ class StatementVotes(unittest.TestCase):
         self.assertEqual(r["voting_against"], [])
         self.assertEqual(r["voting_for_source"], "unanimous_all_present")
         self.assertEqual(r["voting_for"], ["Ueda Kazuo", "Himino Ryozo", "Tamura Naoki"])
+
+    def test_vote_in_the_decision_heading(self):
+        r = _parse(OCT_HEADING, "2026-10-30")
+        self.assertEqual(r["guideline_rate_pct"], 1.25)
+        self.assertEqual((r["vote_for_count"], r["vote_against_count"]), (8, 1))
+        self.assertEqual([a["name"] for a in r["voting_against"]], ["Takata Hajime"])
+        self.assertEqual(r["voting_against"][0]["proposal_rate_pct"], 1.5)
 
     def test_tally_that_does_not_match_the_names_is_an_error(self):
         broken = SEPT.replace("7-2 majority", "8-1 majority")
