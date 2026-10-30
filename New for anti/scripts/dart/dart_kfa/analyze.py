@@ -7,6 +7,7 @@ from typing import Any
 
 from . import ENGINE_VERSION
 from .accounts import amounts_only, load_accounts_map, resolve_accounts
+from .entity_policy import classify_entity, is_financial
 from .industry import apply_industry_layer
 from .ma_metrics import compute_ma_metrics
 from .metrics import compute_metrics, load_metrics_spec
@@ -18,6 +19,7 @@ from .valuation import (
     run_valuation_bundle,
     seed_from_statements,
 )
+from .view_engine import build_unified_views
 
 
 def _now_iso() -> str:
@@ -52,29 +54,33 @@ def analyze_rows(
     metrics_spec: dict[str, Any] | None = None,
     include_valuation: bool = True,
     shares_out: float | None = None,
+    share_basis: str | None = None,
+    share_metadata: dict[str, Any] | None = None,
+    valuation_assumptions: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     amap = accounts_map or load_accounts_map()
     mspec = metrics_spec or load_metrics_spec()
+    entity_policy = classify_entity(corp)
 
-    resolved = resolve_accounts(rows, amap)
+    resolved = resolve_accounts(rows, amap, entity_policy=entity_policy)
     current = amounts_only(resolved, "value")
     prior = amounts_only(resolved, "prior")
     prior2 = amounts_only(resolved, "prior2")
 
     gate = validate_accounts(current)
-    metrics = compute_metrics(current, mspec)
+    metrics = compute_metrics(current, mspec, entity_policy=entity_policy)
 
     for mid in list(metrics.keys()):
         series = [
-            compute_metrics(prior2, mspec).get(mid, {}).get("value"),
-            compute_metrics(prior, mspec).get(mid, {}).get("value"),
+            compute_metrics(prior2, mspec, entity_policy=entity_policy).get(mid, {}).get("value"),
+            compute_metrics(prior, mspec, entity_policy=entity_policy).get(mid, {}).get("value"),
             metrics[mid].get("value"),
         ]
         if any(v is not None for v in series):
             metrics[mid]["trend_3y"] = series
 
-    industry = apply_industry_layer(corp=corp, metrics=metrics, amounts=current)
-    ma = compute_ma_metrics(current, metrics)
+    industry = apply_industry_layer(corp=corp, metrics=metrics, amounts=current, entity_policy=entity_policy)
+    ma = compute_ma_metrics(current, metrics, entity_policy=entity_policy)
 
     # Current operating margin for UI assumption defaults
     om = _mv(metrics, "operating_margin")
@@ -85,54 +91,72 @@ def analyze_rows(
         peer_net = None
 
     fcf_v = (ma.get("fcf") or {}).get("value")
-    val_seed = seed_from_statements(
-        current,
-        operating_margin_pct=om,
-        fcf=float(fcf_v) if fcf_v is not None else None,
-    )
+    if is_financial(entity_policy):
+        val_seed = {
+            "capex_to_sales": None, "da_to_sales": None, "operating_nwc_to_sales": None,
+            "tax_rate": None, "quality_tier": "not_applicable_financial_entity",
+            "ev_ebitda_multiples": None,
+            "assumption_sources": {},
+            "notes_ko": ["금융업에는 산업기업 DCF 시드를 만들지 않습니다."],
+        }
+    else:
+        val_seed = seed_from_statements(
+            current,
+            operating_margin_pct=om,
+            fcf=float(fcf_v) if fcf_v is not None else None,
+        )
     assumption_defaults = {
         "current_operating_margin_pct": om,
         "bok_peer_net_margin_pct": peer_net,
         "seeded_from_statements": {
             "capex_to_sales": val_seed.get("capex_to_sales"),
             "da_to_sales": val_seed.get("da_to_sales"),
-            "sales_to_nwc": val_seed.get("sales_to_nwc"),
+            "operating_nwc_to_sales": val_seed.get("operating_nwc_to_sales"),
+            "nwc_to_sales_proxy": val_seed.get("nwc_to_sales_proxy"),
             "tax_rate": val_seed.get("tax_rate"),
             "quality_tier": val_seed.get("quality_tier"),
             "ev_ebitda_multiples": val_seed.get("ev_ebitda_multiples"),
+            "assumption_sources": val_seed.get("assumption_sources") or {},
         },
         "preset_suggestions": {
-            "bear": None if om is None else round(max(om - 2.0, om * 0.7), 2),
-            "base": om,
-            "bull": None if om is None else round(om + 2.0, 2),
+            "status": "needs_user_input",
+            "reported_current_operating_margin": om,
+            "bear": None,
+            "base": None,
+            "bull": None,
             "unit": "pct",
-            "note_ko": "마진·Capex·DA·세금은 공시에서 시드. DCF는 시가 추종이 아님. "
-            "한은 peer 순이익률은 참고용(영업이익률과 정의 다름).",
+            "note_ko": "현재 마진은 공시 실적이지 미래 가정이 아닙니다. Bear/Base/Bull 마진·WACC·영구성장은 사용자 또는 근거 있는 외부 입력이 필요합니다.",
         },
         "notes_ko": val_seed.get("notes_ko") or [],
     }
 
     valuation = None
-    if include_valuation and current.get("REVENUE") is not None:
+    if is_financial(entity_policy):
+        valuation = {
+            "status": "not_applicable",
+            "reason": "not_applicable:financial_entity_industrial_valuation",
+            "models": {},
+        }
+    elif include_valuation and current.get("REVENUE") is not None:
         ebitda = (ma.get("ebitda_proxy") or {}).get("value")
         net_debt = (ma.get("net_debt") or {}).get("value")
-        if net_debt is None:
-            net_debt = (ma.get("net_debt_incl_lease") or {}).get("value")
-        if net_debt is None:
-            net_debt = (ma.get("net_debt_proxy") or {}).get("value")
-        custom_scenarios = None
-        if om is not None:
+        custom_scenarios: list[dict[str, Any]] = []
+        if om is not None and valuation_assumptions:
             custom_scenarios = build_seeded_scenarios(
                 operating_margin_pct=om,
                 seed=val_seed,
+                explicit_assumptions=valuation_assumptions,
             )
         valuation = run_valuation_bundle(
             revenue0=float(current["REVENUE"]),
             ebitda0=float(ebitda) if ebitda is not None else None,
-            net_debt=float(net_debt) if net_debt is not None else 0.0,
+            net_debt=float(net_debt) if net_debt is not None else None,
             shares_out=float(shares_out) if shares_out is not None else None,
+            share_basis=share_basis,
+            share_metadata=share_metadata,
             scenarios=custom_scenarios,
         )
+        valuation["historical_seed"] = val_seed
 
     meta = _meta_from_rows(rows)
     corp_out = {
@@ -141,6 +165,7 @@ def analyze_rows(
         "name": (corp or {}).get("name"),
         "industry": (corp or {}).get("industry"),
         "industry_kit": industry.get("industry_kit"),
+        "entity_policy": entity_policy,
     }
 
     year = None
@@ -175,13 +200,15 @@ def analyze_rows(
         amounts_current=current,
         amounts_prior=prior,
         amounts_prior2=prior2,
+        entity_policy=entity_policy,
     )
 
-    return {
+    output = {
         "schema_version": "dart-company-v1",
         "generated_at": _now_iso(),
         "engine_version": mspec.get("engine_version") or ENGINE_VERSION,
         "corp": corp_out,
+        "entity_policy": entity_policy,
         "period": period,
         "parse_status": parse_status,
         "validation": gate,
@@ -191,9 +218,15 @@ def analyze_rows(
                 "match": v.get("match"),
                 "account_nm": v.get("account_nm"),
                 "reason": v.get("reason"),
+                # Keep filing currency through the adapter boundary.  The
+                # view layer must never infer it from an unlabelled market
+                # input when it builds an EV bridge or DCF model.
+                "currency": v.get("currency"),
+                "unit": v.get("unit"),
             }
             for k, v in resolved.items()
         },
+        "currency": meta.get("currency"),
         "metrics": metrics,
         "industry": industry,
         "ma_metrics": ma,
@@ -201,11 +234,18 @@ def analyze_rows(
         "valuation": valuation,
         "fundamental_pack": fundamental_pack,
         "shares_out": float(shares_out) if shares_out is not None else None,
+        "share_basis": share_basis,
+        "share_metadata": dict(share_metadata or {}),
         "scores": {},
         "macro_beta": {},
         "narrative": narrative,
         "disclaimer_ko": "본 산출물은 공시 숫자·사용자 가정 모형이며 투자 권유가 아닙니다.",
     }
+    view_inputs: dict[str, Any] = {}
+    if valuation_assumptions:
+        view_inputs["valuation_assumptions"] = valuation_assumptions
+    output["unified_views"] = build_unified_views(output, user_inputs=view_inputs)
+    return output
 
 
 def analyze_payload(
@@ -214,6 +254,9 @@ def analyze_payload(
     corp: dict[str, Any] | None = None,
     include_valuation: bool = True,
     shares_out: float | None = None,
+    share_basis: str | None = None,
+    share_metadata: dict[str, Any] | None = None,
+    valuation_assumptions: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     from .fetch import rows_from_payload
 
@@ -223,6 +266,9 @@ def analyze_payload(
         corp=corp,
         include_valuation=include_valuation,
         shares_out=shares_out,
+        share_basis=share_basis,
+        share_metadata=share_metadata,
+        valuation_assumptions=valuation_assumptions,
     )
 
 
@@ -240,6 +286,7 @@ def universe_summary(company: dict[str, Any]) -> dict[str, Any]:
     return {
         "corp": company.get("corp"),
         "period": company.get("period"),
+        "entity_policy": company.get("entity_policy"),
         "parse_status": company.get("parse_status"),
         "industry_kit": industry.get("industry_kit"),
         "flags": [f.get("id") for f in industry.get("flags") or []],

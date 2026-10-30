@@ -223,10 +223,18 @@ def parse_financing_estimates(
         )
         result.raw_matches.append(m.group(0)[:280])
 
-    # Attach first vs-prior figure to first estimate lacking one
-    for m in _VS_PRIOR.finditer(plain):
-        vs = _money(m.group("vs"), m.group("unit"))
-        if m.group("dir").lower() == "lower":
+    # The release compares only the CURRENT quarter's estimate to the previous
+    # announcement -- and can say so twice ("The borrowing estimate is $68
+    # billion higher than announced in May" and, in the August 2026 release,
+    # "Excluding the higher-than-assumed beginning-of-quarter cash balance, the
+    # current quarter borrowing estimate is $87 billion higher..."). Attaching
+    # each match to the next estimate lacking one put that second, current-
+    # quarter figure on the following quarter ($87B on Oct-Dec 2026), so only
+    # the first match is used and it goes to the first estimate.
+    first = _VS_PRIOR.search(plain)
+    if first is not None:
+        vs = _money(first.group("vs"), first.group("unit"))
+        if first.group("dir").lower() == "lower":
             vs = -vs
         for q in result.quarters:
             if q.kind == "estimate" and q.vs_prior_bn is None:

@@ -4,5 +4,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 -m election_watch.extract_usa_eop --fetch --merge-tier12 --write-report
+python3 -m election_watch.extract_usa_congress_officers --fetch
 python3 build_board.py --no-betting --print-stats
 python3 build_ui_manifest.py

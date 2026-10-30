@@ -121,12 +121,44 @@ def build_fundamental_pack(
     amounts_current: dict[str, float | None] | None = None,
     amounts_prior: dict[str, float | None] | None = None,
     amounts_prior2: dict[str, float | None] | None = None,
+    entity_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a desk-style fundamental brief from KFA outputs."""
     industry = industry or {}
     amounts_current = amounts_current or {}
     amounts_prior = amounts_prior or {}
     amounts_prior2 = amounts_prior2 or {}
+
+    if (entity_policy or {}).get("is_financial_entity"):
+        # This function otherwise reads raw CFO, Capex and debt amounts into
+        # cash/leverage bridges.  Financial issuers therefore return only
+        # filing-led safe fields rather than a cosmetically empty industrial
+        # desk brief.
+        return {
+            "schema_version": PACK_VERSION,
+            "style": "financial_entity_safe",
+            "disclaimer_ko": "공시 기반 정리이며 투자의견·신용등급이 아닙니다.",
+            "corp": corp,
+            "period": period,
+            "entity_policy": entity_policy,
+            "safe_metrics": {
+                "reported_operating_income": _f(amounts_current.get("OPERATING_INCOME")),
+                "net_income": _f(amounts_current.get("NET_INCOME")),
+                "equity": _f(amounts_current.get("EQUITY")),
+                "total_assets": _f(amounts_current.get("TOTAL_ASSETS")),
+                "roe_pct": _cell(metrics, "roe"),
+                "roa_pct": _cell(metrics, "roa"),
+            },
+            "not_applicable": (entity_policy.get("safe_output_policy") or {}).get("not_applicable") or [],
+            "valuation_context": {
+                "status": "not_applicable",
+                "reason": "not_applicable:financial_entity_industrial_valuation",
+            },
+            "method_ko": [
+                "금융업은 보고 영업이익·순이익·자본·자산 중심으로 표시합니다.",
+                "산업기업 CFO/FCF·순차입·유동성·EBITDA·DCF/EV 산식은 적용하지 않습니다.",
+            ],
+        }
 
     rev = [
         _f(amounts_prior2.get("REVENUE")),

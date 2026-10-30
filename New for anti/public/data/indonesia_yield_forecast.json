@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03T14:32:29.575078+00:00",
+  "generated_at": "2026-10-23T20:46:27.594283+00:00",
   "season": 2026,
   "country": "Indonesia",
   "methodology": "FAOSTAT national yield/area/production trend plus NASA POWER climate deviations from a leak-free prior-20-year normal. Ridge strength is selected inside each training fold; skill is forward-chained against a trend-only baseline. Weak weather models publish the trend, not an unvalidated climate adjustment.",
@@ -928,6 +928,118 @@
         "guide": "Regions/인도네시아/수마트라/고무_커피/고무_커피_상세분석_및_수식.md",
         "caveat": "Fungal-risk days are a weather proxy and are not observed Pestalotiopsis incidence.",
         "non_weather_drivers": "Rubber price, tapping intensity, labour, mature area and disease control."
+      }
+    },
+    "indonesia_palm_oil": {
+      "label": "Indonesia palm oil (CPO) production",
+      "label_ko": "팜유(CPO) 생산",
+      "crop": "palm_oil",
+      "season": 2027,
+      "marketing_year": "2026/27 (Oct-Sep)",
+      "unit": "천 t",
+      "point": 47895.0,
+      "range_68": [
+        43775.0,
+        52015.0
+      ],
+      "range_95": [
+        39820.0,
+        55970.0
+      ],
+      "trend": 47895.0,
+      "weather_effect_pct": 0.0,
+      "point_basis": "trend",
+      "usda_estimate": 45000.0,
+      "last_actual": {
+        "year": 2026,
+        "value": 46700.0,
+        "source": "USDA PSD estimate"
+      },
+      "enso": {
+        "oni_dry_season_before": 1.98,
+        "note": "El Nino in the preceding dry season tends to cut output 6-24 months later; context only, not applied."
+      },
+      "weather_conditions": {
+        "target_year": 2027,
+        "verdict": "unfavorable",
+        "verdict_ko": "불리",
+        "score": -3,
+        "reason_ko": "불리 신호 3개: 건기 최장 무강우 일수, 건기(6~10월) 강수량, 건기 엘니뇨/라니냐(ONI)",
+        "season_observed_share": 0.95,
+        "indicators": [
+          {
+            "key": "dry_spell_lag1",
+            "label_ko": "건기 최장 무강우 일수",
+            "season": 2026,
+            "value": 13.26,
+            "normal": 5.63,
+            "z": 2.66,
+            "unit": "일",
+            "status": "unfavorable",
+            "status_ko": "불리",
+            "why_ko": "건기 가뭄이 길면 약 12개월 뒤 수확할 송이가 떨어진다(낙과·수분 실패)."
+          },
+          {
+            "key": "precip_dry_lag1",
+            "label_ko": "건기(6~10월) 강수량",
+            "season": 2026,
+            "value": 14175.4,
+            "normal": 21433.99,
+            "z": -1.44,
+            "unit": "mm",
+            "status": "unfavorable",
+            "status_ko": "불리",
+            "why_ko": "건기 강수 부족은 이듬해 송이 수와 무게를 줄인다."
+          },
+          {
+            "key": "oni_season",
+            "label_ko": "건기 엘니뇨/라니냐(ONI)",
+            "season": 2026,
+            "value": 1.98,
+            "normal": null,
+            "z": null,
+            "unit": "°C",
+            "status": "unfavorable",
+            "status_ko": "불리",
+            "why_ko": "엘니뇨 해 건기는 수마트라·칼리만탄 가뭄과 연무로 이어져 6~24개월 뒤 생산을 깎는다."
+          },
+          {
+            "key": "soil_dry_lag2",
+            "label_ko": "2년 전 건기 토양수분",
+            "season": 2025,
+            "value": 0.85,
+            "normal": 0.85,
+            "z": 0.02,
+            "unit": "",
+            "status": "neutral",
+            "status_ko": "중립",
+            "why_ko": "2년 전 가뭄은 암꽃 분화를 줄여 약 24개월 뒤 수확량을 낮춘다."
+          }
+        ],
+        "history_ko": "1996~2025년 중 불리 판정 4번(1998, 2016, 2020, 2024) 모두 생산이 추세보다 낮았고, 평균 -14.8% (중립 해 평균 -3.1%)",
+        "applied_to_forecast": false,
+        "note_ko": "판정은 참고용이며 예측치(추세)에는 반영하지 않는다."
+      },
+      "skill": {
+        "beats_trend": false,
+        "skill_vs_trend_only": 0.0,
+        "low_confidence": true,
+        "forward_folds": 52,
+        "recent_mape": 0.0859,
+        "trend_form": "recent_10_linear",
+        "climate_test": "training/palm_psd_experiment.json"
+      },
+      "forecast_gate": {
+        "publishable": true,
+        "recent_operational_mape": 0.08594687233856016,
+        "latest_operational_ape": 0.037364509693218445,
+        "maximum_publish_mape": 0.15,
+        "status": "publishable_baseline"
+      },
+      "provenance": {
+        "label_source": "USDA FAS PSD Oilseeds, Oil, Palm, Indonesia",
+        "url": "https://apps.fas.usda.gov/psdonline/downloads/psd_oilseeds_csv.zip",
+        "caveat": "USDA marketing-year estimates, not a census; the current year is revised monthly."
       }
     }
   },

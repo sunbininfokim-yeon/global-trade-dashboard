@@ -1,0 +1,84 @@
+{
+  "schema_version": "kfa-p1-source-validation/1",
+  "report_priority": {
+    "DART": ["11014", "11012", "11013", "11011"],
+    "SEC": ["Q3", "Q2", "Q1", "FY"]
+  },
+  "verified_mappings": [
+    {
+      "mapping_id": "fixture-dart-ppe-depreciation-v1",
+      "provider": "DART",
+      "status": "verified",
+      "kind": "account",
+      "canonical_account_id": "PPE_DEPRECIATION",
+      "source_concept": "fixture_PpeDepreciation",
+      "statement": "IS",
+      "separate_component": true,
+      "acceptance_record": {"reviewed_at": "2026-08-27", "reviewer": "fixture", "evidence_ids": ["fixture-dart-ppe"], "acceptance_basis": "offline contract fixture"}
+    },
+    {
+      "mapping_id": "fixture-dart-intangible-amortization-v1",
+      "provider": "DART",
+      "status": "verified",
+      "kind": "account",
+      "canonical_account_id": "INTANGIBLE_AMORTIZATION",
+      "source_concept": "fixture_IntangibleAmortization",
+      "statement": "IS",
+      "separate_component": true,
+      "acceptance_record": {"reviewed_at": "2026-08-27", "reviewer": "fixture", "evidence_ids": ["fixture-dart-intangible"], "acceptance_basis": "offline contract fixture"}
+    },
+    {
+      "mapping_id": "fixture-sec-ppe-depreciation-v1",
+      "provider": "SEC",
+      "status": "verified",
+      "kind": "account",
+      "canonical_account_id": "PPE_DEPRECIATION",
+      "source_concept": "FixturePpeDepreciation",
+      "statement": "IS",
+      "separate_component": true,
+      "acceptance_record": {"reviewed_at": "2026-08-27", "reviewer": "fixture", "evidence_ids": ["fixture-sec-ppe"], "acceptance_basis": "offline contract fixture"}
+    },
+    {
+      "mapping_id": "fixture-sec-intangible-amortization-v1",
+      "provider": "SEC",
+      "status": "verified",
+      "kind": "account",
+      "canonical_account_id": "INTANGIBLE_AMORTIZATION",
+      "source_concept": "FixtureIntangibleAmortization",
+      "statement": "IS",
+      "separate_component": true,
+      "acceptance_record": {"reviewed_at": "2026-08-27", "reviewer": "fixture", "evidence_ids": ["fixture-sec-intangible"], "acceptance_basis": "offline contract fixture"}
+    },
+    {
+      "mapping_id": "fixture-dart-segment-profit-v1",
+      "provider": "DART",
+      "status": "verified",
+      "kind": "structured_row",
+      "disclosure_type": "segment_profit",
+      "source_table_id": "fixture-segment-table",
+      "source_row_type": "segment-profit",
+      "acceptance_record": {"reviewed_at": "2026-08-27", "reviewer": "fixture", "evidence_ids": ["fixture-dart-segment"], "acceptance_basis": "offline contract fixture"}
+    },
+    {
+      "mapping_id": "fixture-dart-backlog-v1",
+      "provider": "DART",
+      "status": "verified",
+      "kind": "structured_row",
+      "disclosure_type": "backlog_order_book",
+      "source_table_id": "fixture-order-table",
+      "source_row_type": "backlog",
+      "acceptance_record": {"reviewed_at": "2026-08-27", "reviewer": "fixture", "evidence_ids": ["fixture-dart-backlog"], "acceptance_basis": "offline contract fixture"}
+    }
+  ],
+  "candidate_mappings": [
+    {
+      "mapping_id": "candidate-combined-da-never-executable",
+      "provider": "DART",
+      "status": "candidate",
+      "kind": "account",
+      "canonical_account_id": "PPE_DEPRECIATION",
+      "source_concept": "fixture_CombinedDepreciationAndAmortization",
+      "reason": "combined D&A is not a separate PPE component"
+    }
+  ]
+}

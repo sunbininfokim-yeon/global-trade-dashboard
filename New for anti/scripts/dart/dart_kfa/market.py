@@ -56,6 +56,7 @@ def market_multiples(
     equity: float | None,
     ebitda: float | None,
     net_debt: float | None,
+    currency: str | None = None,
 ) -> dict[str, Any]:
     """PER / PBR / EV/EBITDA from price × shares and filing fundamentals."""
     out: dict[str, Any] = {
@@ -66,6 +67,7 @@ def market_multiples(
         "pbr": None,
         "ev": None,
         "ev_ebitda": None,
+        "currency": str(currency).upper() if currency else None,
         "reasons": {},
     }
     if price is None or shares_out is None:

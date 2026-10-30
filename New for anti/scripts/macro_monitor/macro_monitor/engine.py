@@ -486,6 +486,7 @@ def _apply_qra_engine_file(by_id: dict[str, Any]) -> None:
         return
     try:
         from .qra.build import load_latest_issuance
+        from .qra.compare import apply_real_history
     except Exception:
         return
     hit = load_latest_issuance()
@@ -510,6 +511,7 @@ def _apply_qra_engine_file(by_id: dict[str, Any]) -> None:
             ind["display_chip"] = ind["display"]
     if hit.get("history_net_borrowing"):
         ind["history_net_borrowing"] = hit["history_net_borrowing"]
+    apply_real_history(ind, hit.get("history_net_borrowing"))
     if hit.get("summary_ko"):
         ind["note_ko"] = hit["summary_ko"]
     if hit.get("flags"):

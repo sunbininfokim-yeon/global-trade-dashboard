@@ -1,0 +1,438 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "SD",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:SD:house:00"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "f305827e4b7764696c44dc7a4ea1065a9da612801558aeefffb703541abc5909",
+      "value": {
+        "race_id": "USA:SD:house:00",
+        "state": "SD",
+        "office": "house",
+        "district": "00",
+        "election_date": "2026-11-03",
+        "reviewed_on": "2026-10-08",
+        "source_url": "https://vip.sdsos.gov/candidatelist.aspx?eid=774",
+        "source_role": "state_election_agency",
+        "status": "reported_general_matchup",
+        "coverage": "complete_active_agency_listing",
+        "candidates": [
+          {
+            "name": "Marty Jackley",
+            "party": "REP",
+            "candidate_id": "H6SD01109",
+            "source_url": "https://vip.sdsos.gov/candidatelist.aspx?eid=774",
+            "reported_fec_id": "H6SD01109",
+            "secondary_identifier_source_url": "https://vip.sdsos.gov/candidatelist.aspx?eid=774",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party"
+          },
+          {
+            "name": "Nicole \"Nikki\" Gronli",
+            "party": "DEM",
+            "candidate_id": "H6SD01141",
+            "source_url": "https://vip.sdsos.gov/candidatelist.aspx?eid=774",
+            "reported_fec_id": "H6SD01141",
+            "secondary_identifier_source_url": "https://vip.sdsos.gov/candidatelist.aspx?eid=774",
+            "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+            "poll_name_aliases": [
+              "Nikki Gronli"
+            ],
+            "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname"
+          }
+        ],
+        "absent_parties": [],
+        "limitations_ko": "공식 본선 명부의 현재 후보입니다. 당선 결과 또는 향후 기명 후보까지 완결되었다는 뜻이 아닙니다."
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202mas4a1e1960"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T01:00:00+00:00",
+        "provider_record_sha256": "067d676bc9304dc946a5c4f0843d790b20ea7d0c434134793171ba2e2d20d58b",
+        "sources": [
+          "https://www.sdnewswatch.org/south-dakota-poll-us-house-jackley-gronli/"
+        ],
+        "primary_toplines": {
+          "Marty Jackley": 60.0,
+          "Nikki Gronli": 32.0
+        },
+        "question_sample_n": 500,
+        "admission": {
+          "pollster": "Mason-Dixon",
+          "provider_url": "https://www.sdnewswatch.org/south-dakota-poll-us-house-jackley-gronli/",
+          "group": "mason-dixon",
+          "methodology_url": "https://www.sdnewswatch.org/south-dakota-poll-us-house-jackley-gronli/",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 500,
+          "field_dates": [
+            "2026-10-12",
+            "2026-10-14"
+          ],
+          "primary_release_date": "2026-10-21",
+          "provider_record_date": "2026-10-21",
+          "sponsors": [
+            "South Dakota News Watch",
+            "Chiesman Center for Democracy at the University of South Dakota"
+          ],
+          "sampling_method": "random selection from a telephone-matched state voter registration list (landline and cell)",
+          "sampling_frame": "South Dakota voter registration list matched to telephone numbers; respondents self-identified as likely general-election voters",
+          "weighting": "not disclosed in release",
+          "question_wording_checked": false,
+          "question": "U.S. House vote intention, Jackley (R) vs Gronli (D); undecided retained",
+          "provider_pollster_label": "Mason-Dixon",
+          "primary_pollster_name": "Mason-Dixon Polling and Strategy",
+          "source_fetch_receipt": {
+            "provider_api_url": "https://api.votehub.com/polls?subject=2026&from_date=2026-09-01&to_date=2026-10-23",
+            "provider_api_raw_sha256": "b032f2177163edca45cd3748c431b35a2fde0442172056a994de005598a38d55",
+            "fetched_at": "2026-10-23T00:33:14.124353+00:00",
+            "fetch_branch": "source-fetch/votehub-20261023-39878722044"
+          }
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 4.5,
+          "confidence_level_pct": null,
+          "scope": "whole_study_500",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "South Dakota News Watch",
+            "Chiesman Center for Democracy at the University of South Dakota"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "full_questionnaire",
+          "weighting",
+          "confidence_level_pct"
+        ],
+        "limitations_ko": "News Watch·USD Chiesman Center 의뢰 Mason-Dixon 조사 원문 기사(500명, 투표 의향 확인, 10/12~14, 표본오차 ±4.5) 수치 대조. 전체 설문지·가중 방식은 미공개. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "d5cf67c8bffc0180bc76ce54ee1d7d2330c515241896656a712f5e33340c5bbc"
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202masda7d2a14"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T01:00:00+00:00",
+        "provider_record_sha256": "07aa081d8e30e2f52c43cfbeeaf67e71903f4f5b6cd58f4395e3f22939671a21",
+        "sources": [
+          "https://www.sdnewswatch.org/south-dakota-poll-us-senate-rounds-bengs"
+        ],
+        "primary_toplines": {
+          "Mike Rounds": 56.0,
+          "Brian Bengs": 37.0
+        },
+        "question_sample_n": 500,
+        "admission": {
+          "pollster": "Mason-Dixon",
+          "provider_url": "https://www.sdnewswatch.org/south-dakota-poll-us-senate-rounds-bengs",
+          "group": "mason-dixon",
+          "methodology_url": "https://www.sdnewswatch.org/south-dakota-poll-us-senate-rounds-bengs",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 500,
+          "field_dates": [
+            "2026-10-12",
+            "2026-10-14"
+          ],
+          "primary_release_date": "2026-10-22",
+          "provider_record_date": "2026-10-22",
+          "sponsors": [
+            "South Dakota News Watch",
+            "Chiesman Center for Democracy at the University of South Dakota"
+          ],
+          "sampling_method": "random selection from a telephone-matched state voter registration list (landline and cell)",
+          "sampling_frame": "South Dakota voter registration list matched to telephone numbers; respondents self-identified as likely general-election voters",
+          "weighting": "not disclosed in release",
+          "question_wording_checked": false,
+          "question": "U.S. Senate vote intention, Rounds (R) vs Bengs (I); undecided retained",
+          "provider_pollster_label": "Mason-Dixon",
+          "primary_pollster_name": "Mason-Dixon Polling and Strategy",
+          "source_fetch_receipt": {
+            "provider_api_url": "https://api.votehub.com/polls?subject=2026&from_date=2026-09-01&to_date=2026-10-23",
+            "provider_api_raw_sha256": "b032f2177163edca45cd3748c431b35a2fde0442172056a994de005598a38d55",
+            "fetched_at": "2026-10-23T00:33:14.124353+00:00",
+            "fetch_branch": "source-fetch/votehub-20261023-39878722044"
+          }
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 4.5,
+          "confidence_level_pct": null,
+          "scope": "whole_study_500",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "South Dakota News Watch",
+            "Chiesman Center for Democracy at the University of South Dakota"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "full_questionnaire",
+          "weighting",
+          "confidence_level_pct"
+        ],
+        "limitations_ko": "News Watch·USD Chiesman Center 의뢰 Mason-Dixon 조사 원문 기사(500명, 투표 의향 확인, 10/12~14, 표본오차 ±4.5) 수치 대조. 전체 설문지·가중 방식은 미공개. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "81dada46c6bc1421dab0dca884626b8f74b5533dd8faafe096502d4a5fbad216"
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202eme8e34bf7e"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T02:00:00+00:00",
+        "provider_record_sha256": "b971abc5d366fa56a5ee2c179e2ff02645c0c42b238940c3ad26e4a86a29fa2d",
+        "sources": [
+          "https://www.keloland.com/keloland-com-original/keloland-poll-rounds-leads-bengs-at-8-trump-approval-down/amp/"
+        ],
+        "primary_toplines": {
+          "Mike Rounds": 50.0,
+          "Brian Bengs": 42.0
+        },
+        "question_sample_n": 803,
+        "admission": {
+          "pollster": "Emerson College",
+          "provider_url": "https://www.keloland.com/keloland-com-original/keloland-poll-rounds-leads-bengs-at-8-trump-approval-down/amp/",
+          "group": "emerson",
+          "methodology_url": "https://www.keloland.com/keloland-com-original/keloland-poll-rounds-leads-bengs-at-8-trump-approval-down/amp/",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 803,
+          "field_dates": [
+            "2026-10-19",
+            "2026-10-20"
+          ],
+          "primary_release_date": "2026-10-22",
+          "provider_record_date": "2026-10-22",
+          "sponsors": [
+            "KELOLAND News (KELO-TV)"
+          ],
+          "sampling_method": "Emerson College Polling for KELOLAND (mode not described in article)",
+          "sampling_frame": "likely South Dakota voters",
+          "weighting": "not described in article",
+          "question_wording_checked": false,
+          "question": "South Dakota U.S. Senate vote intention incl. already-voted, Rounds (R) vs Bengs (I); 8% undecided",
+          "provider_pollster_label": "Emerson College",
+          "primary_pollster_name": "Emerson College",
+          "source_fetch_receipt": "source-fetch/a-src2-20261023-39883622912"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 3.5,
+          "confidence_level_pct": null,
+          "scope": "whole_study_803",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "KELOLAND News (KELO-TV)"
+          ],
+          "provider_sponsors": [
+            "KELO-TV"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "mode",
+          "weighting",
+          "full_questionnaire"
+        ],
+        "limitations_ko": "Emerson College 원문 대조: LV 803명, 2026-10-19~2026-10-20, 표본오차 ±3.5. KELOLAND 의뢰 Emerson. 이미 투표한 응답 포함 문항. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "c8efade4e399350a09e862fe22d4ab4a9369491b9fcd08c11418e751277eae39"
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-23",
+    "fetched_at": "2026-10-23T01:41:58.874606+00:00",
+    "receipt": {
+      "state": "SD",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+      "captured_at": "2026-10-23T01:41:58.874606+00:00",
+      "capture_kind": "provider_transport_only",
+      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
+      "provider_records": 4,
+      "primary_supplement_receipts": [],
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "http_status": 200,
+        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+      }
+    },
+    "provider_records": [
+      {
+        "id": "us-202mas4a1e1960",
+        "poll_type": "us-representative",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://www.sdnewswatch.org/south-dakota-poll-us-house-jackley-gronli/",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-14",
+        "pollster": "Mason-Dixon",
+        "answers": [
+          {
+            "choice": "Marty Jackley",
+            "pct": 60.0
+          },
+          {
+            "choice": "Nikki Gronli",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": "SD-01",
+        "sponsors": [
+          "South Dakota News Watch",
+          "Chiesman Center for Democracy at the University of South Dakota"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 SD-01"
+      },
+      {
+        "id": "us-202quabb30f998",
+        "poll_type": "us-senator",
+        "sample_size": 657,
+        "population": "lv",
+        "url": "https://www.semafor.com/article/10/21/2026/poll-shows-big-lead-for-south-dakota-republican-rounds",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-17",
+        "end_date": "2026-10-19",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Mike Rounds",
+            "pct": 59.0
+          },
+          {
+            "choice": "Brian Bengs",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 South Dakota"
+      },
+      {
+        "id": "us-202masda7d2a14",
+        "poll_type": "us-senator",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://www.sdnewswatch.org/south-dakota-poll-us-senate-rounds-bengs",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-14",
+        "pollster": "Mason-Dixon",
+        "answers": [
+          {
+            "choice": "Mike Rounds",
+            "pct": 56.0
+          },
+          {
+            "choice": "Brian Bengs",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "South Dakota News Watch",
+          "Chiesman Center for Democracy at the University of South Dakota"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 South Dakota"
+      },
+      {
+        "id": "us-202eme8e34bf7e",
+        "poll_type": "us-senator",
+        "sample_size": 803,
+        "population": "lv",
+        "url": "https://www.keloland.com/keloland-com-original/keloland-poll-rounds-leads-bengs-at-8-trump-approval-down/amp/",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-19",
+        "end_date": "2026-10-20",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Mike Rounds",
+            "pct": 50.0
+          },
+          {
+            "choice": "Brian Bengs",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "KELO-TV"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 South Dakota"
+      }
+    ],
+    "provider_records_sha256": "8f6b3e1964d346edb2e91c09e64cb00b0a4bd26d8da8c57a9eff708c17cb1389",
+    "primary_records": []
+  },
+  "source_ref": "claude/house-poll-sources-20261023"
+}

@@ -32,9 +32,11 @@ import os
 import sys
 from datetime import datetime, timezone
 
+import numpy as np
 import pandas as pd
 
 from .collect import current_season, load_dmi, load_oni
+from .ndvi_blend import adjustment as ndvi_adjustment
 from .predict import predict_one
 from .regions import ALL, BY_KEY
 
@@ -132,13 +134,15 @@ def main():
         "regions": {},
     }
 
-    predicted = {}
     skipped = []
 
     for cfg in ALL:
         # Resolved per crop: in August, wheat is a standing crop and the summer
         # crops are not yet sown, so they are not on the same harvest year.
         season = override or current_season(cfg)
+        # Per crop: a lag feature reads its own crop's previous season, never
+        # another crop's (brazil had that bug: SP orange read coffee, #582).
+        predicted = {}
         prior = predict_one(cfg, season - 1, oni, dmi, predicted)
         if prior and "error" not in prior:
             predicted[season - 1] = prior["point"]
@@ -151,8 +155,24 @@ def main():
             skipped.append((cfg.key, r["error"]))
             continue
 
+        # Satellite correction, only where the backtest earned it and only
+        # once enough of the critical window has been seen (ndvi_blend).
+        nd = ndvi_adjustment(cfg, season)
+        if nd:
+            k = float(np.exp(nd.pop("log_adjustment")))
+            r["point"] *= k
+            r["range_68"] = [v * k for v in r["range_68"]]
+            r["range_95"] = [v * k for v in r["range_95"]]
+
         label, value = enso_label(r.get("oni"))
         iod = r.get("iod")
+        analog = r.get("enso_analog")
+        # Before the growing-season ONI exists, say what ENSO looked like at
+        # sowing instead of "unknown" -- it is what the analog fill used.
+        basis = "oni_growing_season"
+        if value is None and analog:
+            label, _ = enso_label(analog["nino34_sowing"])
+            basis = "nino34_sowing"
 
         payload["regions"][cfg.key] = {
             "label": r["label"],
@@ -166,9 +186,16 @@ def main():
             "range_95": [round(r["range_95"][0], 1), round(r["range_95"][1], 1)],
             "trend": round(r["trend"], 1),
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
+            # "trend" when the model lost to the trend out of sample; the
+            # model's would-be adjustment stays visible for reference.
+            "point_basis": r["point_basis"],
+            "model_weather_effect_pct": round(r["model_weather_effect_pct"], 2),
             "last_actual": r["last_actual"],
+            # MODIS NDVI correction (None when off or not yet observable).
+            "ndvi": nd,
             "enso": {
                 "state": label,
+                "state_basis": basis,
                 "oni_growing_season": value,
                 "iod_spring": round(iod, 3) if iod is not None else None,
                 # The guide's own conjunction, surfaced so a reader can see
@@ -176,6 +203,9 @@ def main():
                 "la_nina_positive_iod": bool(
                     value is not None and iod is not None
                     and value < -0.5 and iod > 0.4),
+                # ENSO-weighted climatology for the unobserved weather
+                # (enso_analog.py); None where off or once the window is in.
+                "analog_fill": analog,
             },
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "

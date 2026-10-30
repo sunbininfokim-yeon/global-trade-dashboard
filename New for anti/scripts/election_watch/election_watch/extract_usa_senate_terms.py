@@ -46,6 +46,9 @@ def apply_senate_terms(congress: Dict[str, Any], terms: Dict[str, Any]) -> Dict[
         row["term_end"] = extra.get("term_end")
         row["next_election_year"] = extra.get("next_election_year")
         row["up_in_2026"] = extra.get("up_in_2026")
+        for key in ("election_kind_2026", "special_election_date", "special_election_source_url"):
+            if key in extra:
+                row[key] = extra[key]
         attached += 1
     summary = congress.setdefault("summary", {})
     summary["senate_with_class"] = attached
@@ -54,6 +57,11 @@ def apply_senate_terms(congress: Dict[str, Any], terms: Dict[str, Any]) -> Dict[
         for row in congress.get("members") or []
         if row.get("chamber") == "senate" and row.get("up_in_2026")
     )
+    summary["senate_special_up_in_2026"] = sum(
+        1 for row in congress.get("members") or []
+        if row.get("chamber") == "senate" and row.get("up_in_2026") and row.get("election_kind_2026") == "special"
+    )
+    summary["senate_regular_up_in_2026"] = summary["senate_up_in_2026"] - summary["senate_special_up_in_2026"]
     congress["senate_terms_source"] = terms.get("source")
     congress["senate_terms_missing_bioguides"] = missing
     return congress

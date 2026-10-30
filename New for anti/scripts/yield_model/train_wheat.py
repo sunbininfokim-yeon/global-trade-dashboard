@@ -111,6 +111,59 @@ def score(name, truth, pred, base):
             "detrended_r2": r2, "detrended_r": r, "n": len(truth)}
 
 
+COMPONENTS = os.path.join(HERE, "us_cotton_components.csv")
+
+
+def fit_component(years, y, X):
+    """trend + ridge on standardised features, as the direct model."""
+    k, b = np.polyfit(years, y, 1)
+    sc = StandardScaler().fit(X)
+    m = RidgeCV(alphas=ALPHAS).fit(sc.transform(X), y - (k * years + b))
+    return {"trend": {"slope_per_year": float(k), "intercept": float(b)},
+            "scaler": {"mean": sc.mean_.tolist(), "scale": sc.scale_.tolist()},
+            "ridge": {"alpha": float(m.alpha_), "coef": m.coef_.tolist(),
+                      "intercept": float(m.intercept_)}}
+
+
+def component_predict(comp, year, z_raw):
+    z = (np.asarray(z_raw, dtype=float) - comp["scaler"]["mean"]) / comp["scaler"]["scale"]
+    t = comp["trend"]["slope_per_year"] * year + comp["trend"]["intercept"]
+    return t + comp["ridge"]["intercept"] + float(np.dot(z, comp["ridge"]["coef"]))
+
+
+# Share harvested is bounded; the worst Texas years abandon about half.
+RATIO_BOUNDS = (0.3, 1.0)
+
+
+def two_part_cv(df, feats, min_train, window):
+    """Cotton as (share of planted acres harvested) x (yield per harvested acre).
+
+    The label is yield per planted acre, which mixes two processes with
+    different weather drivers: abandonment on dryland Texas (pre-plant
+    moisture, early drought) and what the surviving fields produce
+    (flowering-time moisture, heat). Each part gets its own trend and
+    ridge on the same features; the product is scored against the direct
+    model's trend baseline, so the two skills compare like for like.
+    """
+    years = df.year.values
+    X = df[feats].values
+    truth, pred, base = [], [], []
+    for i, ty in enumerate(years):
+        tr = years < ty
+        if window:
+            tr &= years >= ty - window
+        if tr.sum() < min_train:
+            continue
+        parts = {c: fit_component(years[tr], df[c].values[tr], X[tr])
+                 for c in ("harvest_ratio", "yield_harvested")}
+        ratio = np.clip(component_predict(parts["harvest_ratio"], ty, X[i]), *RATIO_BOUNDS)
+        k, b = np.polyfit(years[tr], df["yield"].values[tr], 1)
+        truth.append(df["yield"].values[i])
+        base.append(k * ty + b)
+        pred.append(ratio * component_predict(parts["yield_harvested"], ty, X[i]))
+    return map(np.array, (truth, pred, base))
+
+
 def train(crop):
     df = pd.read_csv(os.path.join(HERE, f"us_{crop}_training.csv"))
     df = df.sort_values("year").reset_index(drop=True).dropna(subset=["yield"])
@@ -164,12 +217,40 @@ def train(crop):
                         "basis": "out-of-sample forward-chaining RMSE"},
         "validation": results,
     }
+    if crop == "cotton" and os.path.exists(COMPONENTS):
+        add_two_part(art, df, feats, fit, min_train, window, fwd)
+
     out = os.path.join(HERE, f"us_{crop}_model.json")
     with open(out, "w", encoding="utf-8") as f:
         json.dump(art, f, indent=2)
-    log(f" wrote {out}  sigma=+/-{fwd['rmse']:.2f}")
+    log(f" wrote {out}  sigma=+/-{art['uncertainty']['sigma']:.2f}")
     log("")
     return art
+
+
+def add_two_part(art, df, feats, fit, min_train, window, fwd):
+    """Validate the two-part cotton model; ship it only if it beats direct."""
+    comp = pd.read_csv(COMPONENTS)[["year", "harvest_ratio", "yield_harvested"]]
+    d = df.merge(comp, on="year").sort_values("year").reset_index(drop=True)
+    if len(d) < len(df):
+        log(f" two-part: components cover {len(d)} of {len(df)} seasons, skipped")
+        return
+    t, p, b = two_part_cv(d, feats, min_train, window)
+    res = score("two-part forward", t, p, b)
+    art["validation"]["two_part_forward"] = res
+    selected = res["skill_vs_trend"] > fwd["skill_vs_trend"]
+    f = d[d.year.isin(fit.year)]
+    art["two_part"] = {
+        "selected": bool(selected),
+        "ratio_bounds": list(RATIO_BOUNDS),
+        "harvest_ratio": fit_component(f.year.values, f.harvest_ratio.values, f[feats].values),
+        "yield_harvested": fit_component(f.year.values, f.yield_harvested.values, f[feats].values),
+    }
+    if selected:
+        art["uncertainty"] = {"sigma": res["rmse"],
+                              "basis": "out-of-sample forward-chaining RMSE (two-part)"}
+    log(f" two-part {'selected' if selected else 'not selected'}: "
+        f"{res['skill_vs_trend']:+.1%} vs direct {fwd['skill_vs_trend']:+.1%}")
 
 
 if __name__ == "__main__":

@@ -137,7 +137,7 @@ const coDerive = (s) => {
 };
 
 const renderCompanyCalc = async (host) => {
-    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p></div>`;
     await Promise.all([pfLoadRefs(), krxLoadFilers()]);
 
     host.innerHTML = `

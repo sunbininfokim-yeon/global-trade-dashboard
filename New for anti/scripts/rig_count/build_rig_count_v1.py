@@ -22,9 +22,15 @@ stitched from a pair -- a long-history file and a current file -- with the
 current file winning wherever the two overlap:
 
   North America   08-29-2025 ...            2013-01 .. 2025-08   (fallback)
-                  ..._14-Aug-2026.xlsx      2024-01 .. 2026-08   (preferred)
+                  09-25-2026 ...            2024-01 .. 2026-09   (preferred)
   Worldwide       July-2025 ...             2013-01 .. 2025-07   (fallback)
-                  July-2026 ...             2024-01 .. 2026-07   (preferred)
+                  August-2026 ...           2024-01 .. 2026-08   (preferred)
+
+The previous preferred pair (14-Aug-2026 NAM, July-2026 WW) is superseded by
+the pair above -- same 2024-01 start, later end, and the NAM file's own
+09-25-2026 vintage revises 2026-06..08 (see build_rig_count_v1.py's raw/ dir
+history if those superseded values are ever needed again) -- so they were
+dropped rather than kept alongside a strict superset.
 
 Each workbook's Monthly sheet carries several title rows and a short
 rolling-window pivot summary (a handful of recent months by region) above the
@@ -140,9 +146,9 @@ DEFAULT_OUT = ROOT.parent.parent / "public" / "data" / "rig_count_v1.json"
 # column than the 2025 one (an added `Rig Status`), which is why this is a
 # per-file constant rather than a shared schema.
 NAM_FALLBACK = ("08-29-2025 North America Rig Count Report.xlsx", "NAM Monthly", 11, 11)
-NAM_PREFERRED = ("North_America_Rig_Count_Report_14-Aug-2026.xlsx", "NAM Monthly", 11, 11)
+NAM_PREFERRED = ("09-25-2026 North_America Rig_Count Report.xlsx", "NAM Monthly", 11, 11)
 WW_FALLBACK = ("July-2025  WorldWide Rig Count Report.xlsx", "WW Monthly", 12, 7)
-WW_PREFERRED = ("July-2026  WorldWide Rig Count Report.xlsx", "WW Monthly", 12, 8)
+WW_PREFERRED = ("August-2026  WorldWide Rig Count Report .xlsx", "WW Monthly", 12, 8)
 
 # Baker Hughes country labels -> a plain English name app.js's resolveCountry()
 # resolves to a basemap country. Only entries that need it are listed; anything

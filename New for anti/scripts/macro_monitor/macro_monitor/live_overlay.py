@@ -33,6 +33,13 @@ def _curl(url: str, timeout: int = 25) -> bytes:
 
 
 def fetch_yahoo_monthly(symbol: str, years: int = 11) -> list[tuple[date, float]]:
+    return fetch_yahoo(symbol, years)[0]
+
+
+def fetch_yahoo(symbol: str, years: int = 11) -> tuple[list[tuple[date, float]], date | None]:
+    """Monthly closes plus the date of the newest price. Yahoo stamps a monthly bar with the first of
+    its month, and the current month's bar holds the latest price, so the bar's own date says nothing
+    about when that price was struck; `meta.regularMarketTime` does."""
     period2 = int(time.time())
     period1 = period2 - years * 365 * 24 * 3600
     enc = urllib.parse.quote(symbol, safe="")
@@ -43,7 +50,7 @@ def fetch_yahoo_monthly(symbol: str, years: int = 11) -> list[tuple[date, float]
     doc = json.loads(_curl(url).decode("utf-8"))
     result = ((doc.get("chart") or {}).get("result") or [None])[0]
     if not result:
-        return []
+        return [], None
     ts = result.get("timestamp") or []
     closes = (((result.get("indicators") or {}).get("quote") or [{}])[0].get("close")) or []
     out: list[tuple[date, float]] = []
@@ -58,7 +65,12 @@ def fetch_yahoo_monthly(symbol: str, years: int = 11) -> list[tuple[date, float]
         if math.isfinite(v):
             out.append((d, v))
     out.sort(key=lambda x: x[0])
-    return out
+    last_obs = None
+    try:
+        last_obs = datetime.utcfromtimestamp(int((result.get("meta") or {}).get("regularMarketTime"))).date()
+    except (TypeError, ValueError, OSError):
+        pass
+    return out, last_obs
 
 
 def fetch_fred_worker_latest(series_id: str) -> tuple[date, float]:
@@ -88,6 +100,28 @@ def fetch_bok_worker() -> dict[str, tuple[str, float]]:
     return out
 
 
+def _cycle_to_date(cycle: str, today: date) -> date:
+    """The observation date of an ECOS KeyStatisticList row from its CYCLE ("20260924" a day, "202608"
+    a month, "2026Q2" a quarter), never later than `today`. Unreadable -> today (the run date, an
+    upper bound that claims nothing fresher)."""
+    import calendar
+
+    c = (cycle or "").strip()
+    try:
+        if len(c) == 8 and c.isdigit():
+            d = date(int(c[:4]), int(c[4:6]), int(c[6:]))
+        elif len(c) == 6 and c.isdigit():
+            d = date(int(c[:4]), int(c[4:]), calendar.monthrange(int(c[:4]), int(c[4:]))[1])
+        elif len(c) == 6 and c[4] == "Q":
+            q = int(c[5]) * 3
+            d = date(int(c[:4]), q, calendar.monthrange(int(c[:4]), q)[1])
+        else:
+            return today
+    except ValueError:
+        return today
+    return min(d, today)
+
+
 def _to_month_map(points: list[tuple[date, float]]) -> dict[str, float]:
     import calendar
 
@@ -103,7 +137,12 @@ def _to_month_map(points: list[tuple[date, float]]) -> dict[str, float]:
     return out
 
 
-def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str, float], source: str) -> bool:
+def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str, float], source: str,
+                     last_obs: date | None = None) -> bool:
+    """`last_obs` is the date of the newest observation. It is what the card is "as of", and the
+    history's last point carries it when that month is still running (never a month-end that has not
+    happened). A grid month with no observation after the last real one stays empty: carrying the last
+    value forward made a stale series read as this month's."""
     vals: list[float | None] = []
     for ds in dates:
         if ds in month_map:
@@ -120,12 +159,15 @@ def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str,
         if v is not None:
             last = v
         filled.append(last)
-    if filled[-1] is None:
+    last_real = max((i for i, v in enumerate(vals) if v is not None), default=None)
+    if filled[-1] is None or last_real is None:
         return False
-    ind["value"] = filled[-1]
+    for i in range(last_real + 1, len(filled)):
+        filled[i] = None                                   # no observation for these months
+    ind["value"] = filled[last_real]
     fmt = ind.get("format") or "number1"
     if fmt not in ("rating", "fx_watch", "flag", "fedwatch"):
-        ind["display"] = format_value(filled[-1], fmt)
+        ind["display"] = format_value(filled[last_real], fmt)
     for y in (5, 10):
         key = f"{y}y"
         if key not in ind.get("history", {}):
@@ -133,7 +175,9 @@ def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str,
         n = y * 12
         slice_v = filled[-n:]
         ind["history"][key]["values"] = slice_v
-        ind["history"][key]["dates"] = dates[-n:]
+        ind["history"][key]["dates"] = list(dates[-n:])
+        if last_obs is not None and last_real == len(dates) - 1 and last_obs.isoformat() < dates[-1]:
+            ind["history"][key]["dates"][-1] = last_obs.isoformat()          # this month is not over
         if ind.get("category") == "equity":
             ma = []
             for i in range(len(slice_v)):
@@ -142,7 +186,12 @@ def _overlay_history(ind: dict[str, Any], dates: list[str], month_map: dict[str,
             ind["history"][key]["ma5"] = ma
     ind["source"] = source
     ind["quality"] = "live"
-    ind["asof"] = dates[-1]
+    # The badge reads data_status, not quality. A card added to the Yahoo catalog after the pack was
+    # built kept its "demo" badge over a real price history until this was set here too.
+    ind["data_status"] = "live"
+    real_date = (last_obs.isoformat() if last_obs is not None and last_obs.isoformat()[:7] == dates[last_real][:7] else dates[last_real])
+    ind["asof"] = real_date
+    ind["observed_at"] = real_date
     return True
 
 
@@ -158,6 +207,9 @@ def _pin_latest(ind: dict[str, Any], value: float, source: str, asof_s: str) -> 
         if key in ind.get("history", {}) and ind["history"][key].get("values"):
             ind["history"][key]["values"][-1] = round(value, 6)
             ind["history"][key]["real_points_from_end"] = 1
+            hd = ind["history"][key].get("dates") or []
+            if hd and hd[-1][:7] == asof_s[:7] and asof_s <= hd[-1]:
+                hd[-1] = asof_s                # the overwritten point is the pinned observation, on its own date
     ind["value"] = round(value, 6)
     fmt = ind.get("format") or "number1"
     if fmt not in ("rating", "fx_watch", "flag", "fedwatch"):
@@ -165,6 +217,7 @@ def _pin_latest(ind: dict[str, Any], value: float, source: str, asof_s: str) -> 
     ind["source"] = source
     ind["quality"] = "live_latest"
     ind["asof"] = asof_s
+    ind["observed_at"] = asof_s
 
 
 def _sync_chips(pack: dict[str, Any], ind: dict[str, Any]) -> None:
@@ -174,6 +227,18 @@ def _sync_chips(pack: dict[str, Any], ind: dict[str, Any]) -> None:
                 ch["display"] = ind.get("display_chip") or ind["display"]
                 ch["value"] = ind["value"]
                 ch["asof"] = ind["asof"]
+                for k in ("data_status", "source"):
+                    if k in ind:
+                        ch[k] = ind[k]
+                if "observed_at" in ch or "observed_at" in ind:
+                    ch["observed_at"] = ind.get("observed_at", ind["asof"])
+    # Headlines are a projection too; left alone they kept the fixture's quote (USD/CHF 0.812 over a
+    # live 0.834 card).
+    for h in pack.get("headlines") or []:
+        if h.get("id") == ind["id"]:
+            h["display"] = ind.get("display_chip") or ind["display"]
+            if "data_status" in ind:
+                h["data_status"] = ind["data_status"]
 
 
 def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[str, Any]:
@@ -194,8 +259,8 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
         symbol = meta["symbol"]
         print(f"  yahoo {iso3}:{sid} {symbol}", flush=True)
         try:
-            pts = fetch_yahoo_monthly(symbol)
-            if _overlay_history(ind, dates, _to_month_map(pts), f"yahoo:{symbol}"):
+            pts, last_obs = fetch_yahoo(symbol)
+            if _overlay_history(ind, dates, _to_month_map(pts), f"yahoo:{symbol}", last_obs or min(asof, date.fromisoformat(dates[-1]))):
                 stats["ok"].append(f"{iso3}:{sid}")
                 _sync_chips(pack, ind)
             else:
@@ -242,14 +307,16 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
             ):
                 net = float(fed) - float(tga) / 1000.0 - float(rrp) / 1000.0
                 if "net_liquidity" in by_id:
-                    _pin_latest(by_id["net_liquidity"], net, "derived:live_latest", dates[-1])
+                    _pin_latest(by_id["net_liquidity"], net, "derived:live_latest",
+                                min(by_id[k].get("asof") or dates[-1] for k in ("fed_total_assets", "tga", "on_rrp")))
                     _sync_chips(usa, by_id["net_liquidity"])
                     stats["ok"].append("USA:net_liquidity:latest")
 
         if all(k in by_id and by_id[k].get("quality", "").startswith("live") for k in ("bond_10y", "bond_2y")):
             if "spread_10y2y" in by_id:
                 sp = (float(by_id["bond_10y"]["value"]) - float(by_id["bond_2y"]["value"])) * 100.0
-                _pin_latest(by_id["spread_10y2y"], sp, "derived:live", dates[-1])
+                _pin_latest(by_id["spread_10y2y"], sp, "derived:live",
+                            min(by_id[k].get("asof") or dates[-1] for k in ("bond_10y", "bond_2y")))
                 _sync_chips(usa, by_id["spread_10y2y"])
                 stats["ok"].append("USA:spread_10y2y")
 
@@ -263,9 +330,9 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
             for name, sid in BOK_NAME_MAP.items():
                 if name not in bok or sid not in by_id:
                     continue
-                _cycle, val = bok[name]
+                cycle, val = bok[name]
                 # Prefer yahoo history for kospi/usdkrw; still pin BOK latest
-                _pin_latest(by_id[sid], val, "bok:ecos_keystat", dates[-1])
+                _pin_latest(by_id[sid], val, "bok:ecos_keystat", _cycle_to_date(cycle, asof).isoformat())
                 if by_id[sid].get("quality") == "live":
                     by_id[sid]["quality"] = "live"
                 _sync_chips(pack, by_id[sid])
@@ -294,7 +361,8 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
             ind["source"] = hit["source"]
             ind["quality"] = hit["quality"]
             ind["note_ko"] = hit["note_ko"]
-            ind["asof"] = dates[-1]
+            ind["asof"] = asof.isoformat()                 # a table read today, not a month-end
+            ind["observed_at"] = asof.isoformat()
             # keep a numeric placeholder for schema; not used for display
             if ind.get("value") is None:
                 ind["value"] = 0.0
@@ -314,6 +382,7 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
     try:
         print("  qra-engine", flush=True)
         from .qra.build import load_latest_issuance  # noqa: WPS433
+        from .qra.compare import apply_real_history  # noqa: WPS433
 
         hit = load_latest_issuance()
         usa = by_country.get("USA")
@@ -337,6 +406,7 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
                     }
                 if hit.get("history_net_borrowing"):
                     ind["history_net_borrowing"] = hit["history_net_borrowing"]
+                apply_real_history(ind, hit.get("history_net_borrowing"))
                 if hit.get("flags"):
                     ind["flags"] = hit["flags"]
                 if hit.get("tga_vs_qra"):
@@ -398,4 +468,9 @@ def overlay_live(universe: dict[str, Any], *, asof: date | None = None) -> dict[
         ],
     }
     universe["live_stats"] = stats
+    # The per-country badge counts are read from the indicators; a card this overlay turned live
+    # (a new Yahoo symbol) otherwise stayed counted as demo.
+    from .us_public_series import refresh_status_summary
+    for country in by_country.values():
+        refresh_status_summary(country)
     return stats

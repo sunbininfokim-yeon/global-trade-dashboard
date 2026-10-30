@@ -5,12 +5,15 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from market_microstructure.overseas_letf import (
     build_board, implied_rebalance, leverage_on, normalize_bars, number,
     parse_themes_holdings, parse_leverage_shares, strict_sum, upsert_history, usd_rate,
 )
+import build_overseas_letf as pipeline
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -128,6 +131,47 @@ class OverseasLetfTests(unittest.TestCase):
             with gzip.open(p, 'rt') as f:
                 data = [json.loads(l) for l in f]
             self.assertEqual([r['v'] for r in data], [10, 30])
+
+    def test_pipeline_recovers_gap_and_later_outage_preserves_observations(self):
+        # Offline source fixture: the response includes missed sessions. It is
+        # not evidence that Yahoo or the issuer actually delivered these dates.
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            product = copy.deepcopy(self.p)
+            product.pop('holdings_url', None)
+            registry = root / 'registry.json'
+            registry.write_text(json.dumps(dict(products=[product], verified_on='2026-09-07', coverage='test_fixture')))
+            cache = root / 'cache'
+            cache.mkdir()
+            args = SimpleNamespace(registry=registry, cache_dir=cache, archive_dir=root / 'archive',
+                                   output_dir=root / 'public', kr_history=root / 'absent.jsonl',
+                                   as_of='2026-10-14', live=False, print_stats=False)
+            bars_path = cache / (product['listings'][0]['yahoo'] + '_bars.json')
+            old = dict(date='2026-09-30', close=10, volume=100)
+            bars_path.write_text(json.dumps([old]))
+            self.assertEqual(pipeline.build(args), 0)
+            missed = ['2026-10-01', '2026-10-02', '2026-10-06', '2026-10-07',
+                      '2026-10-08', '2026-10-09', '2026-10-12', '2026-10-13']
+            bars_path.write_text(json.dumps([dict(old, volume=101)] +
+                                           [dict(date=date, close=11, volume=200) for date in missed]))
+            args.live = True
+            good = dict(source=product['listings'][0]['yahoo'], status='ok', date_max=missed[-1])
+            with patch.object(pipeline, 'collect', return_value=[good]):
+                self.assertEqual(pipeline.build(args), 0)
+            rows = pipeline.read_history(args.archive_dir / 'listings.jsonl.gz')
+            self.assertEqual([r['date'] for r in rows], [old['date']] + missed)
+            self.assertEqual(rows[0]['volume'], 101)  # revised key, no duplicate
+            self.assertEqual(len(rows), 9)           # missing dates are not filled
+            self.assertEqual(json.loads((args.output_dir / 'overseas_letf_board_v1.json').read_text())
+                             ['products'][0]['latest']['date'], missed[-1])
+            archive_before = (args.archive_dir / 'listings.jsonl.gz').read_bytes()
+            public_before = (args.output_dir / 'overseas_letf_history_v1.jsonl.gz').read_bytes()
+            with patch.object(pipeline, 'collect', return_value=[dict(source=good['source'], status='failed')]):
+                self.assertEqual(pipeline.build(args), 2)
+            self.assertEqual((args.archive_dir / 'listings.jsonl.gz').read_bytes(), archive_before)
+            self.assertEqual((args.output_dir / 'overseas_letf_history_v1.jsonl.gz').read_bytes(), public_before)
+            status = json.loads((args.output_dir / 'overseas_letf_pipeline_status_v1.json').read_text())
+            self.assertEqual(status['status'], 'failed')
 
     def test_issuer_aum_units_and_simulated_history(self):
         p = next(p for p in self.registry['products'] if p['product_id'] == 'XS3388190301')

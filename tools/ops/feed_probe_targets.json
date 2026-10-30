@@ -1,0 +1,207 @@
+{
+ "notes": [
+  "Candidate feeds for scripts/commodity_reports, checked by tools/ops/feed_probe.py on an Actions runner. Guesses until a run says otherwise; a URL listed here is not an endorsement."
+ ],
+ "targets": [
+  {
+   "group": "sanctions",
+   "id": "ofac_recent_actions",
+   "url": "https://ofac.treasury.gov/recent-actions",
+   "variants": true,
+   "link_text": true,
+   "link_re": "ofac\\.treasury\\.gov/recent-actions/\\d{8}",
+   "samples": 8
+  },
+  {
+   "group": "sanctions",
+   "id": "ofac_rss_guess",
+   "url": "https://ofac.treasury.gov/recent-actions/rss.xml",
+   "variants": true,
+   "show_body": 300
+  },
+  {
+   "group": "sanctions",
+   "id": "fr_bis",
+   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[agencies][]=industry-and-security-bureau",
+   "show_body": 1200
+  },
+  {
+   "group": "sanctions",
+   "id": "fr_ofac",
+   "url": "https://www.federalregister.gov/api/v1/documents.json?per_page=5&order=newest&conditions[agencies][]=foreign-assets-control-office",
+   "show_body": 1200
+  },
+  {
+   "group": "sanctions",
+   "id": "bis_news",
+   "url": "https://www.bis.gov/news-updates",
+   "variants": true,
+   "link_text": true,
+   "link_re": "bis\\.gov/(?:press-release|news-updates)/[a-z0-9-]+",
+   "samples": 8
+  },
+  {
+   "group": "sanctions",
+   "id": "eu_sanctions_news",
+   "url": "https://finance.ec.europa.eu/eu-and-world/sanctions-restrictive-measures_en",
+   "variants": true,
+   "link_text": true,
+   "link_re": "europa\\.eu/[^\\\"' ]*sanction[^\\\"' ]*",
+   "samples": 8
+  },
+  {
+   "group": "sanctions",
+   "id": "meti_export_control_en",
+   "url": "https://www.meti.go.jp/policy/anpo/englishpage.html",
+   "variants": true,
+   "link_text": true,
+   "link_re": "meti\\.go\\.jp/[^\\\"' ]+",
+   "samples": 10
+  },
+  {
+   "group": "prod",
+   "id": "reports_pager_oil_usa_p1",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=oil&country=USA&limit=2&offset=0",
+   "show_body": 500
+  },
+  {
+   "group": "prod",
+   "id": "reports_pager_oil_usa_p2",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=oil&country=USA&limit=2&offset=2",
+   "show_body": 500
+  },
+  {
+   "group": "prod",
+   "id": "reports_pager_corn_world",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/commodity-reports?commodity=corn&limit=100",
+   "show_body": 300
+  },
+  {
+   "group": "prod",
+   "id": "reports_pager_index_html",
+   "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/",
+   "show_body": 0,
+   "link_re": "trade\\.js\\?v=[a-z0-9-]+",
+   "samples": 3
+  },
+  {
+   "group": "opec",
+   "id": "opec_home_links",
+   "url": "https://www.opec.org/",
+   "link_re": "opec\\.org/[a-zA-Z0-9/_.-]{6,}",
+   "samples": 60
+  },
+  {
+   "group": "opec",
+   "id": "opec_pdf_1",
+   "url": "https://www.opec.org/assets/assetdb/momr-september-2026.pdf",
+   "show_body": 200
+  },
+  {
+   "group": "opec",
+   "id": "opec_pdf_2",
+   "url": "https://www.opec.org/opec_web/static_files_project/media/downloads/publications/MOMR%20September%202026.pdf",
+   "show_body": 200
+  },
+  {
+   "group": "opec",
+   "id": "opec_pdf_3",
+   "url": "https://momr.opec.org/pdf-download/",
+   "show_body": 200
+  },
+  {
+   "group": "wp",
+   "id": "icsg_types",
+   "url": "https://icsg.org/wp-json/wp/v2/types",
+   "show_body": 1500
+  },
+  {
+   "group": "wp",
+   "id": "ilzsg_types",
+   "url": "https://www.ilzsg.org/wp-json/wp/v2/types",
+   "show_body": 1500
+  },
+  {
+   "group": "wp",
+   "id": "insg_types",
+   "url": "https://insg.org/index.php/wp-json/wp/v2/types",
+   "show_body": 1500
+  },
+  {
+   "group": "wp",
+   "id": "cobalt_types",
+   "url": "https://www.cobaltinstitute.org/wp-json/wp/v2/types",
+   "show_body": 1500
+  },
+  {
+   "group": "wp",
+   "id": "ico_types",
+   "url": "https://ico.org/wp-json/wp/v2/types",
+   "show_body": 1500
+  },
+  {
+   "group": "wp",
+   "id": "ita_types",
+   "url": "https://www.internationaltin.org/wp-json/wp/v2/types",
+   "show_body": 1500
+  },
+  {
+   "group": "wp",
+   "id": "icsg_press_pdf",
+   "url": "https://icsg.org/press-releases/",
+   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press-release)",
+   "samples": 12
+  },
+  {
+   "group": "wp",
+   "id": "ilzsg_press",
+   "url": "https://www.ilzsg.org/press-releases/",
+   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press)",
+   "samples": 12
+  },
+  {
+   "group": "wp",
+   "id": "insg_press",
+   "url": "https://insg.org/index.php/press-releases/",
+   "link_re": "(\\.pdf|/\\d{4}/\\d{2}/|press)",
+   "samples": 12
+  },
+  {
+   "group": "wp",
+   "id": "cobalt_news",
+   "url": "https://www.cobaltinstitute.org/news/",
+   "link_re": "cobaltinstitute\\.org/(news|press)[^\\\"' ]*",
+   "samples": 12
+  },
+  {
+   "group": "more",
+   "id": "esdm_press",
+   "url": "https://www.esdm.go.id/id/media-center/siaran-pers",
+   "link_re": "/id/media-center/(siaran-pers|arsip-berita)/[a-z0-9-]{12,}",
+   "samples": 8,
+   "list_feeds": true
+  },
+  {
+   "group": "more",
+   "id": "jodi_news",
+   "url": "https://www.jodidata.org/news-events/jodi-news.aspx",
+   "link_re": "jodidata\\.org/news[^\\\"' ]*",
+   "samples": 10
+  },
+  {
+   "group": "more",
+   "id": "bcr_links",
+   "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal",
+   "link_re": "/es/mercados/[a-z0-9/-]+/[a-z0-9-]{8,}",
+   "samples": 10,
+   "list_feeds": true
+  },
+  {
+   "group": "more",
+   "id": "irsg_news2",
+   "url": "https://www.rubberstudy.org/news",
+   "link_re": "rubberstudy\\.org/(news|press|nw|article)/[^\\\"' ]+",
+   "samples": 15
+  }
+ ]
+}

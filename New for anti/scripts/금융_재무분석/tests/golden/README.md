@@ -2,6 +2,10 @@
 
 Freeze a known portfolio + cached prices, run the engine, and compare key metrics to a checked-in JSON.
 
+> `samples/user_balanced_portfolio.json` was a personal holdings file and is no longer
+> committed (removed before the repo went public). Keep your own copy locally at that
+> path to run this test; without it `test_golden_portfolio.py` skips.
+
 ## Workflow
 
 1. **Run with fixed cache** (must already exist under `cache/prices/`):

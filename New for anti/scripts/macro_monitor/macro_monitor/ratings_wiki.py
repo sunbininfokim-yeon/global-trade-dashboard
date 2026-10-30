@@ -30,6 +30,7 @@ WIKI_NAMES: dict[str, list[str]] = {
     "TWN": ["Taiwan"],
     "KAZ": ["Kazakhstan"],
     "RUS": ["Russia"],
+    "IDN": ["Indonesia"],
     # Eurozone pack: Germany as core AAA anchor (not a true EZ sovereign)
     "EMU": ["Germany"],
 }

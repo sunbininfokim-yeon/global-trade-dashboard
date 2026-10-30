@@ -1,10 +1,14 @@
 """Join Ethiopian coffee climate, yield, production and structural lags."""
 
+import os
 from pathlib import Path
 
 import pandas as pd
 
-from .climate import collect_seasonal
+if os.environ.get("CLIMATE_SOURCE", "power") == "gee":
+    from .climate import collect_seasonal
+else:
+    from .climate_power import collect_seasonal
 from .labels import load_labels
 from .regions import BELT_KEY
 

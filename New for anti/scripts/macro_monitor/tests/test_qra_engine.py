@@ -8,7 +8,7 @@ from pathlib import Path
 from macro_monitor.qra.causal import auctions_to_issuance_components, build_causal_pack
 from macro_monitor.qra.fetch import parse_year_quarter_table
 from macro_monitor.qra.parse import parse_financing_estimates, parse_policy_statement
-from macro_monitor.qra.tables_pdf import parse_sources_uses_pdf, parse_tbac_financing_pdf
+from macro_monitor.qra.tables_pdf import extract_pdf_links_from_html, parse_sources_uses_pdf, parse_tbac_financing_pdf
 
 FIX = Path(__file__).resolve().parents[1].parent / "macro_intel" / "tests" / "fixtures" / "treasury_qra.html"
 PDF_DIR = Path(__file__).resolve().parents[1] / "cache" / "qra" / "pdf"
@@ -26,6 +26,26 @@ class TestQraParse(unittest.TestCase):
         self.assertEqual(est[0].vs_prior_bn, 68.0)
         act = [q for q in p.quarters if q.kind == "actual"]
         self.assertEqual(act[0].net_borrowing_bn, 190.0)
+
+    def test_second_comparison_sentence_is_not_attached_to_the_next_quarter(self):
+        # August 3, 2026 wording: the same release compares the current quarter
+        # twice; the $87B (excluding the cash-balance effect) belongs to
+        # July-September, not to October-December.
+        html = """
+        <html><title>Estimates</title><body>
+        During the July \u2013 September 2026 quarter, Treasury expects to borrow $739 billion
+        in privately-held net marketable debt, assuming an end-of-September cash balance of $950 billion.
+        The borrowing estimate is $68 billion higher than announced in May 2026, primarily due to lower net cash flows.
+        Excluding the higher-than-assumed beginning-of-quarter cash balance, the current quarter borrowing estimate
+        is $87 billion higher than announced in May.
+        During the October \u2013 December 2026 quarter, Treasury expects to borrow $628 billion
+        in privately-held net marketable debt, assuming an end-of-December cash balance of $850 billion.
+        </body></html>
+        """
+        p = parse_financing_estimates(html)
+        est = [q for q in p.quarters if q.kind == "estimate"]
+        self.assertEqual(est[0].vs_prior_bn, 68.0)
+        self.assertIsNone(est[1].vs_prior_bn)
 
     def test_policy_stance_and_auctions(self):
         html = """
@@ -113,6 +133,62 @@ class TestQraParse(unittest.TestCase):
         years = {d.year for d in docs}
         self.assertEqual(years, {2026, 2020})
         self.assertTrue(any(d.year == 2020 and d.quarter == 4 for d in docs))
+
+    def test_archive_table_parse_minified_unquoted_attributes(self):
+        # Treasury now serves this page minified with unquoted attributes; the
+        # regex parser found 0 docs and build_qra_engine "succeeded" empty.
+        html = (
+            "<table><thead><tr><th class=span colspan=4 id=2026>2026</th></tr>"
+            "<tr><th headers=2026>4th Quarter</th>"
+            "<th headers=2026><a href=/news/press-releases/sb0584>3rd Quarter</a></th>"
+            "<th headers=2026><a href=/news/press-releases/sb0485>2nd Quarter</a></th>"
+            "<th headers=2026><a aria-label=\"2026 1st Quarter\" href=/news/press-releases/sb0377>1st Quarter</a></th></tr>"
+            "</thead></table>"
+        )
+        docs = parse_year_quarter_table(html, "financing_estimates")
+        self.assertEqual(sorted(d.quarter for d in docs), [1, 2, 3])  # 4th has no link yet
+        self.assertTrue(all(d.url.startswith("https://home.treasury.gov/news/press-releases/sb0") for d in docs))
+
+    def test_rebuild_with_fewer_events_never_overwrites_the_published_file(self):
+        import json
+        import tempfile
+        from unittest import mock
+
+        from macro_monitor.qra import build as qra_build
+
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "qra_engine_v1.json"
+            out.write_text(json.dumps({"events": [{"id": "2026-Q3"}, {"id": "2026-Q2"}]}))
+            with mock.patch.object(qra_build, "discover_archives", return_value=[]):
+                with self.assertRaises(RuntimeError):
+                    qra_build.build_qra_engine(
+                        cache_dir=Path(tmp) / "cache", download=False, out_path=out, fiscal=False
+                    )
+            self.assertEqual(len(json.loads(out.read_text())["events"]), 2)  # untouched
+
+    def test_split_summary_uses_the_releases_own_stances(self):
+        from macro_monitor.qra.compare import split_summary_ko
+
+        compare = {"series": [
+            {"id": "current", "period": "October–December 2026", "value": 700.0, "end_cash_bn": 850.0,
+             "announcement_date": "November 2, 2026"},
+            {"id": "next_estimate", "period": "January–March 2027", "value": 600.0, "end_cash_bn": 850.0},
+        ]}
+        note = split_summary_ko(compare, "increase", "maintain")
+        self.assertIn("November 2, 2026 발표", note)
+        self.assertIn("T-bill 스탠스=increase", note)   # not a stance carried over from August
+        self.assertIn("쿠폰 스탠스=maintain", note)
+        self.assertNotIn("change_bias", note)
+        self.assertIsNone(split_summary_ko({"series": [compare["series"][0]]}))
+
+    def test_pdf_links_found_in_minified_html_with_unquoted_href(self):
+        html = (
+            "<p><a href=/system/files/136/Sources-Uses-Public-Table-August-2026.pdf>Sources</a> "
+            "<a href=\"/system/files/221/TBACRecommendedFinancingTableByRefundingQuarter-08052026.pdf\">TBAC</a></p>"
+        )
+        links = dict(extract_pdf_links_from_html(html))
+        self.assertTrue(links["sources_uses"].endswith("Sources-Uses-Public-Table-August-2026.pdf"))
+        self.assertIn("tbac_financing", links)
 
     @unittest.skipUnless(
         (PDF_DIR / "Sources-Uses-Public-Table-August-2026.pdf").exists(),
@@ -202,6 +278,74 @@ class TestQraParse(unittest.TestCase):
         self.assertEqual(by["prior_forecast"], 823.0)
         self.assertEqual(by["current"], 815.0)
         self.assertEqual(len(cmp["table"]), 3)
+        self.assertEqual(cmp["series"][2]["announcement_date"], "February 3, 2025")
+
+    def test_august_announcement_splits_current_and_next_quarter(self):
+        from macro_monitor.qra.compare import build_net_borrowing_compare
+
+        event = {
+            "estimates": {
+                "quarters": [
+                    {
+                        "period": "July–September 2026",
+                        "kind": "estimate",
+                        "net_borrowing_bn": 739.0,
+                        "end_cash_balance_bn": 950.0,
+                        "vs_prior_bn": 68.0,
+                    },
+                    {
+                        "period": "October–December 2026",
+                        "kind": "estimate",
+                        "net_borrowing_bn": 628.0,
+                        "end_cash_balance_bn": 850.0,
+                        "vs_prior_bn": 87.0,
+                    },
+                    {
+                        "period": "April–June 2026",
+                        "kind": "actual",
+                        "net_borrowing_bn": 190.0,
+                        "end_cash_balance_bn": 919.0,
+                    },
+                ]
+            },
+            "sources_uses": {
+                "rows": [
+                    {
+                        "period": "Jul - Sep 2026",
+                        "row_kind": "estimate",
+                        "announcement_date": "May 4, 2026",
+                        "marketable_borrowing_bn": 671.0,
+                        "end_cash_balance_bn": 950.0,
+                    },
+                    {
+                        "period": "Jul - Sep 2026",
+                        "row_kind": "estimate",
+                        "announcement_date": "August 3, 2026",
+                        "marketable_borrowing_bn": 739.0,
+                        "end_cash_balance_bn": 950.0,
+                    },
+                    {
+                        "period": "Oct - Dec 2026",
+                        "row_kind": "estimate",
+                        "announcement_date": "August 3, 2026",
+                        "marketable_borrowing_bn": 628.0,
+                        "end_cash_balance_bn": 850.0,
+                    },
+                ]
+            },
+        }
+        cmp = build_net_borrowing_compare(event)
+        by = {s["id"]: s for s in cmp["series"]}
+        self.assertEqual(by["current"]["value"], 739.0)
+        self.assertEqual(by["current"]["announcement_date"], "August 3, 2026")
+        self.assertEqual(by["current"]["end_cash_bn"], 950.0)
+        self.assertEqual(by["next_estimate"]["label_ko"], "다음 분기 예상")
+        self.assertEqual(by["next_estimate"]["period"], "October–December 2026")
+        self.assertEqual(by["next_estimate"]["value"], 628.0)
+        self.assertEqual(by["next_estimate"]["end_cash_bn"], 850.0)
+        self.assertEqual(by["next_estimate"]["announcement_date"], "August 3, 2026")
+        self.assertEqual(by["prior_forecast"]["value"], 671.0)
+        self.assertEqual(by["prior_forecast"]["announcement_date"], "May 4, 2026")
 
 
 if __name__ == "__main__":

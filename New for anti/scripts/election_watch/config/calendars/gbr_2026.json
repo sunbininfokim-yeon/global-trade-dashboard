@@ -26,13 +26,125 @@
   ],
   "events": [
     {
-      "id": "gbr-2026-con-leadership",
-      "type": "party_leadership",
-      "party_id": "con",
-      "label_ko": "보수당 당대표 경선",
-      "date": "없음",
-      "status": "없음",
-      "notes": "2026 중 공식 당대표 교체 대회 없음(Badenoch 임기 중으로 추적 중)"
+      "id": "gbr-2026-local-may7",
+      "type": "local",
+      "label_ko": "지방선거(잉글랜드 등)",
+      "date": "2026-05-07",
+      "status": "completed",
+      "sources": [
+        "uk_ec_2026"
+      ],
+      "level": "subnational",
+      "contested_ko": "잉글랜드 일부 지방의원·시장 (2026-05-07 공고분)",
+      "notes": "같은 날 스코틀랜드 의회·세네드와 겹침. 제도 행은 각각 별도.",
+      "system_id": "gbr-england-local",
+      "chamber": "없음"
+    },
+    {
+      "id": "gbr-2026-scottish-parliament",
+      "type": "local",
+      "label_ko": "스코틀랜드 의회",
+      "date": "2026-05-07",
+      "status": "completed",
+      "sources": [
+        "uk_ec_2026",
+        "wiki_elections_2026",
+        "https://www.parliament.scot/msps/elections/2026-election-results",
+        "https://spice-spotlight.scot/wp-content/uploads/2026/05/Election-2026-tools-data-2.xlsx",
+        "https://spice-spotlight.scot/2026/05/28/election-2026-results-in-full/",
+        "https://www.parliament.scot/chamber-and-committees/research-prepared-for-parliament/research-briefings/2026/5/12/sb-2626"
+      ],
+      "system_id": "gbr-holyrood",
+      "level": "subnational",
+      "chamber": "holyrood",
+      "contested_ko": "전체 129석 (지역구 73 + 권역 56)",
+      "previous": {
+        "date": "2021-05-06",
+        "seats_total": 129,
+        "by_party": [
+          {
+            "abbr": "SNP",
+            "name_ko": "스코틀랜드국민당",
+            "seats": 64
+          },
+          {
+            "abbr": "Con",
+            "name_ko": "보수당",
+            "seats": 31
+          },
+          {
+            "abbr": "Lab",
+            "name_ko": "노동당",
+            "seats": 22
+          },
+          {
+            "abbr": "Green",
+            "name_ko": "녹색당",
+            "seats": 8
+          },
+          {
+            "abbr": "LD",
+            "name_ko": "자유민주당",
+            "seats": 4
+          }
+        ],
+        "sources": [
+          "https://www.parliament.scot/msps/elections/2026-election-results"
+        ]
+      },
+      "result": "SNP 58 · Lab 17 · Reform 17 · Green 15 · Con 12 · LD 10 (129석)",
+      "result_summary": "스코틀랜드 의회 결과 페이지의 의석과 SPICe 자료(2026-07-14 수정)의 합계 행이 같다. SNP 58, 노동 17, 개혁 17, 녹색 15, 보수 12, 자민 10. 지역구와 권역은 SNP 57+1, 노동 3+14, 녹색 2+13, 보수 4+8, 자민 7+3. 개혁은 지역구 의석이 없고 권역 17석이다. 권역 득표율은 그 자료가 적은 SNP 27.2%, 개혁 16.6%, 노동 16.0%, 녹색 14.0%, 보수 11.8%, 자민 9.4%, 그 밖 5.0%. 7월 14일 SPICe 페이지는 투표자 2,309,063명, 유효표 기준 권역 투표율 53.2%, 지역구 투표율 53.1%라고 적는다. 5월 12일 브리핑은 지역구 투표 2,297,159, 투표율 53.2%라고 적는다. 둘을 평균하거나 하나로 고르지 않는다."
+    },
+    {
+      "id": "gbr-2026-senedd",
+      "type": "local",
+      "label_ko": "웨일스 세네드",
+      "date": "2026-05-07",
+      "status": "completed",
+      "sources": [
+        "uk_ec_2026",
+        "wiki_elections_2026",
+        "https://vote.wales/election-results/",
+        "https://research.senedd.wales/media/v4njg01m/senedd-election-2026.pdf",
+        "https://senedd.wales/how-we-work/our-role/future-senedd-reform/senedd-election-and-member-changes-frequently-asked-questions/",
+        "https://business.senedd.wales/mgManageElectionResults.aspx"
+      ],
+      "system_id": "gbr-senedd",
+      "level": "subnational",
+      "chamber": "senedd",
+      "contested_ko": "전체 96석 (16개 선거구 × 6, 2026년 개정 정수)",
+      "previous": {
+        "date": "2021-05-06",
+        "seats_total": 60,
+        "by_party": [
+          {
+            "abbr": "Lab",
+            "name_ko": "노동당",
+            "seats": 30
+          },
+          {
+            "abbr": "Con",
+            "name_ko": "보수당",
+            "seats": 16
+          },
+          {
+            "abbr": "PC",
+            "name_ko": "플라이드 컴리",
+            "seats": 13
+          },
+          {
+            "abbr": "LD",
+            "name_ko": "자유민주당",
+            "seats": 1
+          }
+        ],
+        "sources": [
+          "https://vote.wales/election-results/"
+        ]
+      },
+      "result": "PC 43 · Reform 34 · Lab 9 · Con 7 · Green 2 · LD 1 (96석)",
+      "result_summary": "vote.wales(2026-05-09, 96석 선언)와 세네드 리서치 브리핑 표 1이 같다. 플라이드 444,665(35.41%) 43석, 개혁 367,985(29.30%) 34석, 노동 139,203(11.08%) 9석, 보수 134,926(10.74%) 7석, 녹색 84,608(6.74%) 2석, 자민 56,012(4.46%) 1석. 무소속 후보 합 14,063(1.12%)은 의석이 없다. 표 1의 나머지 정당도 의석이 없다. 무효표 2,986. 브리핑은 유권자를 243만여 명, 투표자를 125만여 명, 유효표 기준 투표율 51.7%로 적고 전국 유효표 정수는 적지 않는다. vote.wales는 유효표를 1.26 million으로 적는다. 세네드 FAQ는 투표율 51.6%다. 하나를 골라 맞추지 않는다. business.senedd.wales는 2026년 전체 결과 페이지를 아직 준비 중이라고 적는다.",
+      "notes": "previous 는 2021년 60석 AMS. 2026부터 제도·정수가 바뀌어 의석을 맞추지 말 것. 득표율은 브리핑 표 1이 적은 반올림이다."
     },
     {
       "id": "gbr-2026-labour-leadership",
@@ -52,19 +164,75 @@
       "sources": [
         "https://labour.org.uk/updates/members-updates/andy-burnham-elected-leader-of-the-labour-party/",
         "https://en.wikipedia.org/wiki/2026_Labour_Party_leadership_election"
+      ],
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "노동당 당대표 특별당대회"
+    },
+    {
+      "id": "gbr-2026-pm-succession",
+      "type": "party_leadership",
+      "label_ko": "총리 교체(노동당·내각)",
+      "date": "2026-07-20",
+      "status": "completed",
+      "notes": "Keir Starmer 사임 후 Andy Burnham PM 취임(2026-07-20). 당대표 선출은 gbr-2026-labour-leadership(2026-07-17) 참고.",
+      "sources": [
+        "https://www.gov.uk/government/people/andy-burnham"
+      ],
+      "related_event": "gbr-2026-labour-leadership",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "총리 교체(노동당·내각)"
+    },
+    {
+      "id": "gbr-2026-clacton-by",
+      "type": "by_election",
+      "label_ko": "하원 재보궐 클랙턴",
+      "label_en": "Clacton by-election",
+      "date": "2026-08-13",
+      "status": "completed",
+      "system_id": "gbr-commons",
+      "level": "national",
+      "chamber": "commons",
+      "contested_ko": "하원 1석",
+      "notes": "Tendring DC: polling 13 Aug 2026. 지나간 재보궐, status로 구분.",
+      "sources": [
+        "https://www.tendringdc.gov.uk/news/date-set-for-clacton-constituency-by-election"
+      ]
+    },
+    {
+      "id": "gbr-2026-holborn-st-pancras-by",
+      "type": "by_election",
+      "label_ko": "하원 재보궐 홀본·세인트판크라스",
+      "label_en": "Holborn and St Pancras by-election",
+      "date": "2026-10-08",
+      "status": "scheduled",
+      "system_id": "gbr-commons",
+      "level": "national",
+      "chamber": "commons",
+      "contested_ko": "하원 1석 (Starmer 사퇴 잔여)",
+      "notes": "전 총리 Keir Starmer 사퇴 후 본선.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/2026_Holborn_and_St_Pancras_by-election",
+        "https://elections.democracyclub.org.uk/elections/parl.holborn-and-st-pancras.by.2026-10-08/"
       ]
     },
     {
       "id": "gbr-2026-westminster",
       "type": "general",
       "label_ko": "하원 총선",
-      "date": "없음",
-      "status": "없음",
+      "date": "2029-08",
+      "status": "outside_year",
       "notes": "2024 총선 의석은 Commons Library CBP-10009 (Labour 411). BBC 집계는 Labour 412 — 맞추지 않고 Library를 쓰고 여기 병기.",
       "sources": [
-        "uk_ec_2026"
+        "uk_ec_2026",
+        "https://www.bbc.co.uk/news/articles/cvg0dzrw5rno",
+        "https://commonslibrary.parliament.uk/research-briefings/cdp-2024-0177/"
       ],
+      "date_note": "의회 개원일 2024-07-09의 5주년에 자동 해산(2029-07-09). 본선 법정 최후 2029-08-15(BBC/하원도서관). 총리가 그 전에 국왕에게 해산을 요청할 수 있음.",
       "system_id": "gbr-commons",
+      "level": "national",
+      "chamber": "commons",
       "contested_ko": "없음 — 2026년 하원 총선 없음",
       "previous": {
         "date": "2024-07-04",
@@ -123,124 +291,34 @@
       }
     },
     {
-      "id": "gbr-2026-local-may7",
-      "type": "local",
-      "label_ko": "지방선거(잉글랜드 등)",
-      "date": "2026-05-07",
-      "status": "completed",
+      "id": "gbr-2026-con-leadership",
+      "type": "party_leadership",
+      "party_id": "con",
+      "label_ko": "보수당 당대표 경선",
+      "date": "없음",
+      "status": "없음",
+      "notes": "2026 중 공식 당대표 교체 대회 없음(Badenoch 임기 중으로 추적 중)",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "보수당 당대표 경선",
       "sources": [
-        "uk_ec_2026"
+        "https://www.conservatives.com/"
       ]
     },
     {
-      "id": "gbr-2026-scottish-parliament",
-      "type": "local",
-      "label_ko": "스코틀랜드 의회",
-      "date": "2026-05-07",
-      "status": "completed",
+      "id": "gbr-presidential",
+      "type": "presidential",
+      "label_ko": "대통령 선거",
+      "label_en": "Presidential election",
+      "date": "없음",
+      "status": "없음",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "없음",
+      "notes": "의원내각제. 국가원수는 세습 군주이며 대통령 선거가 없다. 총리는 하원 다수 정당이 정한다.",
       "sources": [
-        "https://www.parliament.scot/msps/elections/2026-election-results",
-        "https://spice-spotlight.scot/wp-content/uploads/2026/05/Election-2026-tools-data-2.xlsx",
-        "https://spice-spotlight.scot/2026/05/28/election-2026-results-in-full/",
-        "https://www.parliament.scot/chamber-and-committees/research-prepared-for-parliament/research-briefings/2026/5/12/sb-2626"
-      ],
-      "system_id": "gbr-holyrood",
-      "contested_ko": "전체 129석 (지역구 73 + 권역 56)",
-      "previous": {
-        "date": "2021-05-06",
-        "seats_total": 129,
-        "by_party": [
-          {
-            "abbr": "SNP",
-            "name_ko": "스코틀랜드국민당",
-            "seats": 64
-          },
-          {
-            "abbr": "Con",
-            "name_ko": "보수당",
-            "seats": 31
-          },
-          {
-            "abbr": "Lab",
-            "name_ko": "노동당",
-            "seats": 22
-          },
-          {
-            "abbr": "Green",
-            "name_ko": "녹색당",
-            "seats": 8
-          },
-          {
-            "abbr": "LD",
-            "name_ko": "자유민주당",
-            "seats": 4
-          }
-        ],
-        "sources": [
-          "https://www.parliament.scot/msps/elections/2026-election-results"
-        ]
-      },
-      "result": "SNP 58 · Lab 17 · Reform 17 · Green 15 · Con 12 · LD 10 (129석)",
-      "result_summary": "스코틀랜드 의회 결과 페이지의 의석과 SPICe 자료(2026-07-14 수정)의 합계 행이 같다. SNP 58, 노동 17, 개혁 17, 녹색 15, 보수 12, 자민 10. 지역구와 권역은 SNP 57+1, 노동 3+14, 녹색 2+13, 보수 4+8, 자민 7+3. 개혁은 지역구 의석이 없고 권역 17석이다. 권역 득표율은 그 자료가 적은 SNP 27.2%, 개혁 16.6%, 노동 16.0%, 녹색 14.0%, 보수 11.8%, 자민 9.4%, 그 밖 5.0%. 7월 14일 SPICe 페이지는 투표자 2,309,063명, 유효표 기준 권역 투표율 53.2%, 지역구 투표율 53.1%라고 적는다. 5월 12일 브리핑은 지역구 투표 2,297,159, 투표율 53.2%라고 적는다. 둘을 평균하거나 하나로 고르지 않는다."
-    },
-    {
-      "id": "gbr-2026-senedd",
-      "type": "local",
-      "label_ko": "웨일스 세네드",
-      "date": "2026-05-07",
-      "status": "completed",
-      "sources": [
-        "https://vote.wales/election-results/",
-        "https://research.senedd.wales/media/v4njg01m/senedd-election-2026.pdf",
-        "https://senedd.wales/how-we-work/our-role/future-senedd-reform/senedd-election-and-member-changes-frequently-asked-questions/",
-        "https://business.senedd.wales/mgManageElectionResults.aspx"
-      ],
-      "system_id": "gbr-senedd",
-      "contested_ko": "전체 96석 (16개 선거구 × 6, 2026년 개정 정수)",
-      "previous": {
-        "date": "2021-05-06",
-        "seats_total": 60,
-        "by_party": [
-          {
-            "abbr": "Lab",
-            "name_ko": "노동당",
-            "seats": 30
-          },
-          {
-            "abbr": "Con",
-            "name_ko": "보수당",
-            "seats": 16
-          },
-          {
-            "abbr": "PC",
-            "name_ko": "플라이드 컴리",
-            "seats": 13
-          },
-          {
-            "abbr": "LD",
-            "name_ko": "자유민주당",
-            "seats": 1
-          }
-        ],
-        "sources": [
-          "https://vote.wales/election-results/"
-        ]
-      },
-      "result": "PC 43 · Reform 34 · Lab 9 · Con 7 · Green 2 · LD 1 (96석)",
-      "result_summary": "vote.wales(2026-05-09, 96석 선언)와 세네드 리서치 브리핑 표 1이 같다. 플라이드 444,665(35.41%) 43석, 개혁 367,985(29.30%) 34석, 노동 139,203(11.08%) 9석, 보수 134,926(10.74%) 7석, 녹색 84,608(6.74%) 2석, 자민 56,012(4.46%) 1석. 무소속 후보 합 14,063(1.12%)은 의석이 없다. 표 1의 나머지 정당도 의석이 없다. 무효표 2,986. 브리핑은 유권자를 243만여 명, 투표자를 125만여 명, 유효표 기준 투표율 51.7%로 적고 전국 유효표 정수는 적지 않는다. vote.wales는 유효표를 1.26 million으로 적는다. 세네드 FAQ는 투표율 51.6%다. 하나를 골라 맞추지 않는다. business.senedd.wales는 2026년 전체 결과 페이지를 아직 준비 중이라고 적는다.",
-      "notes": "previous 는 2021년 60석 AMS. 2026부터 제도·정수가 바뀌어 의석을 맞추지 말 것. 득표율은 브리핑 표 1이 적은 반올림이다."
-    },
-    {
-      "id": "gbr-2026-pm-succession",
-      "type": "party_leadership",
-      "label_ko": "총리 교체(노동당·내각)",
-      "date": "2026-07-20",
-      "status": "completed",
-      "notes": "Keir Starmer 사임 후 Andy Burnham PM 취임(2026-07-20). 당대표 선출은 gbr-2026-labour-leadership(2026-07-17) 참고.",
-      "sources": [
-        "https://www.gov.uk/government/people/andy-burnham"
-      ],
-      "related_event": "gbr-2026-labour-leadership"
+        "https://www.gov.uk/government/how-government-works"
+      ]
     }
   ]
 }

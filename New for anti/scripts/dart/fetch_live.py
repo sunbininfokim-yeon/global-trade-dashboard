@@ -25,7 +25,8 @@ from dart_kfa.fetch import DartApiError, api_key_from_env, fetch_fnltt_singl_acn
 from dart_kfa.fundamental_pack import attach_market_to_pack  # noqa: E402
 from dart_kfa.market import QuoteError, fetch_yahoo_quote, market_multiples  # noqa: E402
 from dart_kfa.sec_fetch import SecApiError, fetch_company_facts, ticker_to_cik  # noqa: E402
-from dart_kfa.sec_xbrl import facts_to_fnltt_payload, shares_outstanding  # noqa: E402
+from dart_kfa.sec_xbrl import facts_to_fnltt_payload, shares_outstanding_fact  # noqa: E402
+from dart_kfa.view_engine import build_unified_views  # noqa: E402
 
 
 def _attach_market(company: dict, ticker: str | None) -> None:
@@ -50,6 +51,7 @@ def _attach_market(company: dict, ticker: str | None) -> None:
         equity=av("EQUITY"),
         ebitda=(ma.get("ebitda_proxy") or {}).get("value"),
         net_debt=(ma.get("net_debt") or {}).get("value"),
+        currency=q.get("currency"),
     )
     company["market"] = {"ok": True, "quote": q, "multiples": mm}
     if company.get("fundamental_pack"):
@@ -58,6 +60,9 @@ def _attach_market(company: dict, ticker: str | None) -> None:
             market=company["market"],
             valuation=company.get("valuation"),
         )
+    # Market-dependent cards/models are rebuilt from the same canonical
+    # registry after the quote is attached; views still contain ID refs only.
+    company["unified_views"] = build_unified_views(company)
 
 
 def main() -> int:
@@ -97,15 +102,26 @@ def main() -> int:
                 cik=meta["cik"],
                 asof_fy=args.year,
             )
-            shares = shares_outstanding(facts, fy=payload.get("meta", {}).get("fy"))
+            share_fact = shares_outstanding_fact(facts, fy=payload.get("meta", {}).get("fy"))
+            shares = None if share_fact is None else share_fact["value"]
             corp = {
                 "name": meta.get("title") or meta.get("ticker"),
                 "code": meta.get("ticker"),
                 "corp_code": meta.get("cik"),
+                "source": "sec",
                 "industry": args.industry,
                 "industry_kit": args.industry_kit or "general",
             }
-            company = analyze_payload(payload, corp=corp, shares_out=shares)
+            company = analyze_payload(
+                payload,
+                corp=corp,
+                shares_out=shares,
+                share_basis=None if share_fact is None else share_fact["share_basis"],
+                share_metadata=None if share_fact is None else {
+                    key: share_fact[key]
+                    for key in ("share_source_ref", "share_as_of", "share_class", "dilution_policy")
+                },
+            )
             company["source"] = "sec_companyfacts"
             if not args.no_quote:
                 _attach_market(company, meta.get("ticker"))
@@ -150,6 +166,7 @@ def main() -> int:
                 payload,
                 corp={
                     "corp_code": args.dart_corp,
+                    "source": "dart",
                     "industry": args.industry,
                     "industry_kit": args.industry_kit,
                 },
@@ -221,7 +238,7 @@ def main() -> int:
         if seed:
             print(
                 f"  seed capex/da/nwc/tax={seed.get('capex_to_sales')}/"
-                f"{seed.get('da_to_sales')}/{seed.get('sales_to_nwc')}/{seed.get('tax_rate')} "
+                f"{seed.get('da_to_sales')}/{seed.get('operating_nwc_to_sales')}/{seed.get('tax_rate')} "
                 f"tier={seed.get('quality_tier')}"
             )
         print(f"→ {out}")

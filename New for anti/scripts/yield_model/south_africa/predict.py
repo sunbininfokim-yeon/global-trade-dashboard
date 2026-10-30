@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from . import enso_preseason as E
 from .regions import BELT_KEY, POINTS
 
 HERE = Path(__file__).resolve().parent
@@ -23,16 +24,18 @@ def predict(year: int = None) -> dict:
         model = json.load(handle)
     frame = pd.read_csv(TRAINING / f"{BELT_KEY}.csv")
     row = frame[frame.year == year]
-    if row.empty:
-        raise ValueError(f"No climate features for harvest year {year}")
-    row = row.iloc[0]
-
     features = model["selected_features"]
-    x = np.asarray([row[name] for name in features], dtype=float)
+    x = (np.asarray([row.iloc[0][name] for name in features], dtype=float)
+         if not row.empty else np.full(len(features), np.nan))
+    preseason = None
     if np.isnan(x).any():
-        raise ValueError("Forecast climate anomalies are incomplete")
+        # Next harvest year, planted from October: its critical window has
+        # not happened, so publish the ENSO-weighted outlook (enso_preseason).
+        preseason = E.outlook(model, frame, year)
+        if preseason is None:
+            raise ValueError(f"No climate features for harvest year {year}")
     component_results = []
-    for component in model["components"]:
+    for component in model["components"] if preseason is None else []:
         trend_log = float(np.polyval(component["trend"]["log_poly_coef"], year))
         trend_component = float(np.exp(trend_log))
         z = (x - np.asarray(component["scaler"]["mean"])) / np.asarray(
@@ -49,12 +52,18 @@ def predict(year: int = None) -> dict:
                 "point": float(np.exp(trend_log + weather_log)),
             }
         )
-    trend = float(np.mean([item["trend"] for item in component_results]))
-    point = float(np.mean([item["point"] for item in component_results]))
-    if model["operational_choice"] == "trend_ensemble_only":
-        point = trend
     q68 = model["uncertainty"]["q68_kg_ha"]
     q95 = model["uncertainty"]["q95_kg_ha"]
+    if preseason is None:
+        trend = float(np.mean([item["trend"] for item in component_results]))
+        point = float(np.mean([item["point"] for item in component_results]))
+    else:
+        trend, point = preseason["trend"], preseason["point"]
+        # Scored on 19 seasons only: the honest band is the trend's own error.
+        widen = model["skill"]["baseline_rmse_kg_ha"] / q68
+        q68, q95 = q68 * max(widen, 1.0), q95 * max(widen, 1.0)
+    if model["operational_choice"] == "trend_ensemble_only":
+        point = trend
     last = frame[(frame.target_status == "final") & frame.yield_kg_ha.notna()].iloc[-1]
     cec = frame[(frame.year == year) & (frame.target_status == "cec_estimate")]
     cec_outlook = None
@@ -95,10 +104,14 @@ def predict(year: int = None) -> dict:
         "weather_effect_pct": round((point / trend - 1) * 100, 2),
         "last_actual": {"year": int(last.year), "yield": round(last.yield_kg_ha, 1)},
         "season_progress": {
-            "critical_days": {"observed": 59, "forecast": 0, "climatology": 0},
-            "observed_share": 1.0,
+            "critical_days": ({"observed": 59, "forecast": 0, "climatology": 0}
+                              if preseason is None else
+                              {"observed": 0, "forecast": 0, "climatology": 59}),
+            "observed_share": 1.0 if preseason is None else 0.0,
             "weather_window": f"{year - 1}-10-01 through {year}-02-28",
         },
+        # ENSO-weighted outlook before the critical window (None once observed).
+        "enso_preseason": preseason,
         "skill": {
             "method": "forward chaining; log trend refit inside every fold",
             "skill_vs_trend_only": round(model["skill"]["skill_vs_trend"], 3),
@@ -125,8 +138,8 @@ def predict(year: int = None) -> dict:
             for item in component_results
         ],
         "diagnostics": {
-            name: round(float(row[name]), 3)
-            for name in model["selected_features"]
+            name: (None if np.isnan(v) else round(float(v), 3))
+            for name, v in zip(features, x)
         },
     }
     payload = {
@@ -136,8 +149,8 @@ def predict(year: int = None) -> dict:
         "forecast_available": True,
         "source_note": (
             "Commercial maize yield labels: Crop Estimates Committee via SAGIS. "
-            "Climate: Google Earth Engine CHIRPS daily precipitation and "
-            "ERA5-Land daily temperature, VPD and 0-100 cm soil moisture."
+            "Climate: NASA POWER daily precipitation, maximum temperature, "
+            "VPD and root-zone soil wetness at six belt locations."
         ),
         "methodology_note": (
             "A national commercial-maize yield target is paired with a fixed, "

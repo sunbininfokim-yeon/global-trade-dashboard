@@ -1,0 +1,1313 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "cycle": 2026,
+  "state": "NY",
+  "config_operations": [
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:NY:house:21"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "c2173f03390bfee256fdb81744600fe50b4684da0e11fc8afb04bc8ec05f6f91",
+      "value": {
+        "race_id": "USA:NY:house:21",
+        "state": "NY",
+        "office": "house",
+        "district": "21",
+        "election_date": "2026-11-03",
+        "reviewed_on": "2026-10-16",
+        "source_url": "https://clintoncountyny.gov/sites/default/files/boe/Sample%20Ballots%20GE%2026.pdf",
+        "source_role": "local_election_agency",
+        "coverage": "official_county_sample_ballot",
+        "reviewed_general_from": "2026-06-24",
+        "period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "limitations_ko": "Clinton County NY CD21 공식 샘플 투표용지 p1의 DEM/GOP 2명과 fusion ballot lines를 확인. 주 전체 공식 명부 전수 검토가 아니며 기명 캠프는 별도. 결과 인증 아님.",
+        "candidates": [
+          {
+            "name": "Anthony Constantino",
+            "party": "REP",
+            "candidate_id": null,
+            "source_url": "https://clintoncountyny.gov/sites/default/files/boe/Sample%20Ballots%20GE%2026.pdf"
+          },
+          {
+            "name": "Blake Gendebien",
+            "party": "DEM",
+            "candidate_id": null,
+            "source_url": "https://clintoncountyny.gov/sites/default/files/boe/Sample%20Ballots%20GE%2026.pdf"
+          }
+        ],
+        "candidate_declared_write_ins": [
+          {
+            "name": "Christopher Schmidt",
+            "poll_name_aliases": [
+              "Chris Schmidt"
+            ],
+            "party": "IND",
+            "source_url": "https://www.schmidtforthenorthcountry.com/",
+            "source_role": "candidate_campaign",
+            "status": "campaign_declared_not_agency_certified"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/live_2026.json",
+      "path": [
+        "races",
+        "USA:NY:house:21"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "state": "NY",
+        "office": "house",
+        "district": "21",
+        "subject": "2026 NY-21",
+        "poll_type": "us-representative",
+        "seat_name": "NY-21",
+        "contest_id": "USA:NY:house:21:2026:general",
+        "general_from": "2026-06-24",
+        "election_date": "2026-11-03",
+        "schedule_status": "reported_general_matchup",
+        "required_candidates": [
+          "Anthony Constantino",
+          "Blake Gendebien"
+        ],
+        "candidates": {
+          "Anthony Constantino": {
+            "party": "REP",
+            "source_url": "https://clintoncountyny.gov/sites/default/files/boe/Sample%20Ballots%20GE%2026.pdf",
+            "candidate_id": null,
+            "canonical_name": "Anthony Constantino"
+          },
+          "Blake Gendebien": {
+            "party": "DEM",
+            "source_url": "https://clintoncountyny.gov/sites/default/files/boe/Sample%20Ballots%20GE%2026.pdf",
+            "candidate_id": null,
+            "canonical_name": "Blake Gendebien"
+          },
+          "Christopher Schmidt": {
+            "party": "IND",
+            "canonical_name": "Christopher Schmidt",
+            "source_url": "https://www.schmidtforthenorthcountry.com/",
+            "ballot_status": "campaign_declared_write_in"
+          },
+          "Chris Schmidt": {
+            "party": "IND",
+            "canonical_name": "Christopher Schmidt",
+            "source_url": "https://www.schmidtforthenorthcountry.com/",
+            "ballot_status": "campaign_declared_write_in"
+          }
+        },
+        "collection_priority": {
+          "order": 1,
+          "reasons": [
+            "requested_state"
+          ]
+        },
+        "selection_reason_ko": "전국 본선 발견 대상. 대진·출처 검토를 통과해야 수치 편입.",
+        "general_period_source_url": "https://www.fec.gov/resources/cms-content/documents/2026pdates.pdf",
+        "ballot_competition": {
+          "status": "contested",
+          "candidate_count": 2,
+          "parties": [
+            "DEM",
+            "REP"
+          ],
+          "coverage": "official_county_sample_ballot",
+          "source_url": "https://clintoncountyny.gov/sites/default/files/boe/Sample%20Ballots%20GE%2026.pdf",
+          "reviewed_on": "2026-10-16",
+          "general_unopposed": null,
+          "write_in_candidates": [],
+          "no_vote_status": "not_verified",
+          "no_vote_law_url": null,
+          "confirmed_winner": false,
+          "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+        },
+        "ballot_review": {
+          "source_url": "https://clintoncountyny.gov/sites/default/files/boe/Sample%20Ballots%20GE%2026.pdf",
+          "source_role": "local_election_agency",
+          "reviewed_on": "2026-10-16",
+          "coverage": "official_county_sample_ballot"
+        }
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202sie2af2e738"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-16",
+        "reviewed_at": "2026-10-16T09:52:29.946539+00:00",
+        "provider_record_sha256": "852e22e24701a5ddf66ae351fc3885c106cce66663f98f5eb120c4e207d5159a",
+        "sources": [
+          "https://sri.siena.edu/2026/10/09/times-union-wptz-nbc5-wamc-siena-poll-of-likely-ny-21-voters/",
+          "https://sri.siena.edu/wp-content/uploads/2026/10/NYCD21-Press-Release_FINAL.pdf",
+          "https://sri.siena.edu/wp-content/uploads/2026/10/CD21Crosstabs1026-Crosstabs-Final.pdf",
+          "https://www.mynbc5.com/article/poll-new-york-21-constantino-gendebien/74082680"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://sri.siena.edu/wp-content/uploads/2026/10/NYCD21-Press-Release_FINAL.pdf",
+            "sha256": "a1a148e1d95e52e8916b94b719410a89896abdad379da0cd11ad0de2d0c9025b"
+          },
+          {
+            "url": "https://sri.siena.edu/wp-content/uploads/2026/10/CD21Crosstabs1026-Crosstabs-Final.pdf",
+            "sha256": "fdc966f15bb8e429e9b10f125cebd3d0862ce075718d6c5bd81608e9fd34b1a7"
+          }
+        ],
+        "primary_toplines": {
+          "Blake Gendebien": 46.0,
+          "Anthony Constantino": 42.0,
+          "Christopher Schmidt": 5.0
+        },
+        "question_sample_n": 496,
+        "snapshot_sha256": "a6065e8e570d8b324197d44ef6733380f3f22465007451bf5027ea18e27cb2da",
+        "admission": {
+          "pollster": "Siena University",
+          "provider_url": "https://www.mynbc5.com/article/poll-new-york-21-constantino-gendebien/74082680",
+          "group": "siena",
+          "methodology_url": "https://sri.siena.edu/wp-content/uploads/2026/10/NYCD21-Press-Release_FINAL.pdf",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "named_candidate_ballot_including_named_write_in",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 496,
+          "field_dates": [
+            "2026-09-30",
+            "2026-10-06"
+          ],
+          "primary_release_date": "2026-10-09",
+          "sponsors": [
+            "Times Union",
+            "WPTZ-NBC5",
+            "WAMC"
+          ],
+          "question_wording_checked": true,
+          "question_number": "Q4",
+          "question": "Named-candidate House ballot, choices rotated, before candidate favorability questions.",
+          "question_before_candidate_favorability": true,
+          "sampling_method": "308 landline/cell interviews and188 text-to-web responses from L2 voter database",
+          "weighting": "age, region, education, party registration, stated/derived vote likelihood and gender; publisher describes NY population targets",
+          "named_write_in_presented": true,
+          "printed_ballot_candidate_names": [
+            "Blake Gendebien",
+            "Anthony Constantino"
+          ],
+          "statewide_governor_poll": false,
+          "undecided_pct": 8,
+          "rounding_not_renormalized": true
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 4.6,
+          "confidence_level_pct": null,
+          "scope": "NY CD21 likely voters LV n496 including design effects"
+        },
+        "sponsor_review": {
+          "primary_internal": false,
+          "primary_sponsors": [
+            "Times Union",
+            "WPTZ-NBC5",
+            "WAMC"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "response_rate",
+          "confidence_level_pct"
+        ],
+        "limitations_ko": "NY21 LV496의 Q4 세 이름 문항. 정식 인쇄 후보2명 외 캠프가 기명 출마를 밝힌 Schmidt를 이름으로 제시했다. 일반 투표용지 재현·당선 예측으로 간주하지 않는다. Q5 주지사 지지율은 NY21 부분 표본이므로 NY 전체 주지사 조사로 편입하지 않는다. 4%p 차이는 보고된 sampling MOE4.6보다 작다. 이 정확한 발표만 검토하며 WPTZ 전체·기관의 미래 발표를 포괄 승인하지 않는다."
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "gov202quie8567b62"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T02:00:00+00:00",
+        "provider_record_sha256": "963466d28044f8ade03f25c3c00f9df0668f022a4fd9fe5edd17ff687644b3c0",
+        "sources": [
+          "https://poll.qu.edu/images/polling/ny/ny10212026_nygb97.pdf",
+          "https://poll.qu.edu/poll-release?releaseid=3972"
+        ],
+        "primary_toplines": {
+          "Kathy Hochul": 55.0,
+          "Bruce Blakeman": 41.0
+        },
+        "question_sample_n": 1167,
+        "admission": {
+          "pollster": "Quinnipiac University",
+          "provider_url": "https://www.nytimes.com/2026/10/21/nyregion/poll-hochul-blakeman-governor.html",
+          "group": "quinnipiac",
+          "methodology_url": "https://poll.qu.edu/images/polling/ny/ny10212026_nygb97.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "named_ballot_with_leaners",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 1167,
+          "field_dates": [
+            "2026-10-15",
+            "2026-10-19"
+          ],
+          "primary_release_date": "2026-10-22",
+          "provider_record_date": "2026-10-22",
+          "sponsors": [],
+          "sampling_method": "Quinnipiac University Poll, RDD live interviewers, landlines and cell phones, Oct 15-19",
+          "sampling_frame": "New York State likely voters (1,167)",
+          "weighting": "not described in release (MOE includes design effect)",
+          "question_wording_checked": false,
+          "question": "Q1 New York governor, Hochul vs. Blakeman (includes already voted and leaners), likely voters",
+          "provider_pollster_label": "Quinnipiac University",
+          "primary_pollster_name": "Quinnipiac University",
+          "source_fetch_receipt": "source-fetch/a-src3-20261023-39890316052"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 3.8,
+          "confidence_level_pct": null,
+          "scope": "whole_study_1167",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [],
+          "provider_sponsors": [],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "weighting"
+        ],
+        "limitations_ko": "Quinnipiac University 원문 대조: LV 1167명, 2026-10-15~2026-10-19, 표본오차 ±3.8. Quinnipiac 원문 PDF Q1 표(55/41, 이미 투표·리너 포함) 대조. VoteHub 출처는 NYT 기사였고 원문으로 교체 검토. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "aaf5c6d5ca8978a58bf7e4e69fb24ef9455252441953c80615b813f09815833f"
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-23",
+    "fetched_at": "2026-10-23T02:50:10.753236+00:00",
+    "receipt": {
+      "state": "NY",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+      "captured_at": "2026-10-23T02:50:10.753236+00:00",
+      "capture_kind": "provider_transport_only",
+      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
+      "provider_records": 35,
+      "primary_rechecked_ids": [
+        "us-202sie2af2e738"
+      ],
+      "primary_review_checked_at": "2026-10-16T09:52:29.946539+00:00",
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/NY-primary-20261016.json",
+      "primary_review_scope": "NY21 Siena Q4 only; other NY releases retain prior contracts",
+      "federal_finance_recollected": false,
+      "governor_finance_recollected": false,
+      "primary_supplement_receipts": [],
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "http_status": 200,
+        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+      }
+    },
+    "provider_records": [
+      {
+        "id": "gov202siec153e5e2",
+        "poll_type": "governor",
+        "sample_size": 804,
+        "population": "rv",
+        "url": "https://sri.siena.edu/wp-content/uploads/2026/03/SNY-March-2026-Poll-Release-3-31-26-FINAL.pdf",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-23",
+        "end_date": "2026-03-26",
+        "pollster": "Siena College",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 47.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202echb68f41fd",
+        "poll_type": "governor",
+        "sample_size": 500,
+        "population": "rv",
+        "url": "https://www.politico.com/f/?id=0000019d-407c-d107-a19d-e6ff72210000",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-24",
+        "end_date": "2026-03-26",
+        "pollster": "Echelon Insights/Tusk Strategies",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 55.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202sie54d6070e",
+        "poll_type": "governor",
+        "sample_size": 805,
+        "population": "rv",
+        "url": "https://sri.siena.edu/2026/03/04/strong-majorities-of-democrats-nyc-voters-support-gov-leg-giving-nyc-ability-to-raise-income-tax-on-its-residents-earning-at-least-1m/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-02-23",
+        "end_date": "2026-02-26",
+        "pollster": "Siena College",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 51.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 31.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202mar6e5d554b",
+        "poll_type": "governor",
+        "sample_size": 1442,
+        "population": "rv",
+        "url": "https://maristpoll.marist.edu/polls/the-state-of-new-york-in-an-election-year-february-2026/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-02-16",
+        "end_date": "2026-02-19",
+        "pollster": "Marist College",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 50.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202mad3c7076a1",
+        "poll_type": "governor",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://yonkerstimes.com/new-poll-shows-new-york-voters-support-hochuls-pragmatic-leadership-on-natural-gas-and-renewables-by-wide-margins/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-02-02",
+        "end_date": "2026-02-04",
+        "pollster": "MAD Global Strategy",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 47.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Natural Allies for a Clean Energy Future"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202sie42b3faba",
+        "poll_type": "governor",
+        "sample_size": 802,
+        "population": "rv",
+        "url": "https://sri.siena.edu/2026/02/03/hochul-with-her-best-ever-favorability-rating-49-40-continues-to-hold-commanding-leads-over-blakeman-54-28-among-dems-delgado-64-11/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-26",
+        "end_date": "2026-01-28",
+        "pollster": "Siena College",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 54.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 28.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202joh7fef529e",
+        "poll_type": "governor",
+        "sample_size": 844,
+        "population": "lv",
+        "url": "https://johnzogbystrategies.com/new-john-zogby-strategies-poll-hochul-leads-comfortably-today-but-could-lose-support-from-independents-and-upstate/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-01-06",
+        "end_date": "2026-01-08",
+        "pollster": "John Zogby Strategies",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 53.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202sie1fbf4f7e",
+        "poll_type": "governor",
+        "sample_size": 801,
+        "population": "rv",
+        "url": "https://sri.siena.edu/2025/12/16/hochul-holds-19-point-lead-over-stefanik-leads-blakeman-by-25-points/?_gl=1*klln4g*_ga*MTIyMjU3OTkzNi4xNzU3NDIwNzQ4*_ga_XN3VDZ9ZYZ*czE3NjU5MTI3MDAkbzMkZzEkdDE3NjU5MTMwMjYkajU2JGwwJGgw",
+        "created_at": "2026-04-27",
+        "start_date": "2025-12-08",
+        "end_date": "2025-12-12",
+        "pollster": "Siena College",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 50.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 25.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202sie7ce685a1",
+        "poll_type": "governor",
+        "sample_size": 801,
+        "population": "rv",
+        "url": "https://sri.siena.edu/2025/12/16/hochul-holds-19-point-lead-over-stefanik-leads-blakeman-by-25-points/?_gl=1*klln4g*_ga*MTIyMjU3OTkzNi4xNzU3NDIwNzQ4*_ga_XN3VDZ9ZYZ*czE3NjU5MTI3MDAkbzMkZzEkdDE3NjU5MTMwMjYkajU2JGwwJGgw",
+        "created_at": "2026-04-27",
+        "start_date": "2025-12-08",
+        "end_date": "2025-12-12",
+        "pollster": "Siena College",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 50.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 25.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202j.la2014323",
+        "poll_type": "governor",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://static1.squarespace.com/static/663253f0bc87b7070102f41f/t/69146bc572175e2b24eca5d1/1762945989294/NY+Statewide+Toplines.pdf",
+        "created_at": "2026-04-27",
+        "start_date": "2025-11-09",
+        "end_date": "2025-11-10",
+        "pollster": "J.L. Partners",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 47.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202sied0732f72",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://scri.siena.edu/wp-content/uploads/2025/06/SNY-June-2025-Poll-Release-STATE-7-1-25-Final.pdf",
+        "created_at": "2026-04-27",
+        "start_date": "2025-06-23",
+        "end_date": "2026-06-26",
+        "pollster": "Siena College",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 44.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 19.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202grac908fd46",
+        "poll_type": "governor",
+        "sample_size": 600,
+        "population": "rv",
+        "url": "https://www.politico.com/f/?id=00000196-794c-d38d-ad9f-fdde91da0000",
+        "created_at": "2026-04-27",
+        "start_date": "2025-04-22",
+        "end_date": "2025-04-24",
+        "pollster": "Grayhouse",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 44.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 New York"
+      },
+      {
+        "id": "us-202pub8f0230b7",
+        "poll_type": "us-representative",
+        "sample_size": 579,
+        "population": "a",
+        "url": "https://www.thehousemajoritypac.com/news/new-hmp-polling-shows-nick-lalota-vulnerable-in-november",
+        "created_at": "2026-04-27",
+        "start_date": "2025-12-10",
+        "end_date": "2025-12-11",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Nick LaLota",
+            "pct": 41.0
+          },
+          {
+            "choice": "Chris Gallant",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": "NY-01",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 NY-01"
+      },
+      {
+        "id": "us-202impfabbd7e2",
+        "poll_type": "us-representative",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://protectingamericanconsumers.org/wp-content/uploads/2026/02/IMPACT-NY-2026-Poll.pdf",
+        "created_at": "2026-05-22",
+        "start_date": "2026-02-09",
+        "end_date": "2026-02-17",
+        "pollster": "Impact Research",
+        "answers": [
+          {
+            "choice": "Rep",
+            "pct": 41.0
+          },
+          {
+            "choice": "Dem",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": "NY-04",
+        "sponsors": [
+          "Protecting American Consumers Together"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NY-04"
+      },
+      {
+        "id": "gov202sief53f0c6e",
+        "poll_type": "governor",
+        "sample_size": 806,
+        "population": "rv",
+        "url": "https://sri.siena.edu/2026/05/05/hochul-favorability-approval-ratings-each-drop-8-points-to-lowest-levels-in-last-year-her-lead-over-blakeman-grows-3-points-to-49-33/",
+        "created_at": "2026-05-28",
+        "start_date": "2026-04-27",
+        "end_date": "2026-04-30",
+        "pollster": "Siena University",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 49.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 33.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "us-202imp36a5f870",
+        "poll_type": "us-representative",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://protectingamericanconsumers.org/wp-content/uploads/2026/02/IMPACT-NY-2026-Poll.pdf",
+        "created_at": "2026-06-11",
+        "start_date": "2026-02-09",
+        "end_date": "2026-02-17",
+        "pollster": "Impact Research",
+        "answers": [
+          {
+            "choice": "Rep",
+            "pct": 39.0
+          },
+          {
+            "choice": "Dem",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": "NY-17",
+        "sponsors": [
+          "Protecting American Consumers Together"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 NY-17"
+      },
+      {
+        "id": "us-202imp51a744df",
+        "poll_type": "us-representative",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://protectingamericanconsumers.org/wp-content/uploads/2026/02/IMPACT-NY-2026-Poll.pdf",
+        "created_at": "2026-06-11",
+        "start_date": "2026-02-09",
+        "end_date": "2026-02-17",
+        "pollster": "Impact Research",
+        "answers": [
+          {
+            "choice": "Rep",
+            "pct": 35.0
+          },
+          {
+            "choice": "Dem",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": "NY-18",
+        "sponsors": [
+          "Protecting American Consumers Together"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 NY-18"
+      },
+      {
+        "id": "gov202polf70d258d",
+        "poll_type": "governor",
+        "sample_size": 229,
+        "population": "lv",
+        "url": "https://pollfinity.com/polls/ny-governor-2026",
+        "created_at": "2026-06-23",
+        "start_date": "2026-06-11",
+        "end_date": "2026-06-14",
+        "pollster": "Pollfinity",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 50.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202sie225a317c",
+        "poll_type": "governor",
+        "sample_size": 1120,
+        "population": "rv",
+        "url": "https://sri.siena.edu/2026/06/25/hochul-favorability-approval-ratings-edge-up-as-does-her-general-election-lead-over-blakeman-now-52-32-from-49-33/",
+        "created_at": "2026-06-25",
+        "start_date": "2026-06-17",
+        "end_date": "2026-06-23",
+        "pollster": "Siena University",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 52.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 32.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202co/61f8d14e",
+        "poll_type": "governor",
+        "sample_size": 1085,
+        "population": "lv",
+        "url": "https://nypost.com/2026/07/06/us-news/nyc-ny-state-politics-live-updates-on-governors-race-more/",
+        "created_at": "2026-07-07",
+        "start_date": "2026-06-30",
+        "end_date": "2026-07-02",
+        "pollster": "co/efficient",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 47.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Coalition to Protect Nassau Taxpayers"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "us-202fm3b695b2b8",
+        "poll_type": "us-representative",
+        "sample_size": 509,
+        "population": "lv",
+        "url": "https://www.politico.com/newsletters/playbook/2026/07/08/inside-the-battle-for-maine-00989731",
+        "created_at": "2026-07-08",
+        "start_date": "2026-06-27",
+        "end_date": "2026-07-01",
+        "pollster": "FM3 Research",
+        "answers": [
+          {
+            "choice": "Cait Conley",
+            "pct": 51.0
+          },
+          {
+            "choice": "Mike Lawler",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": "NY-17",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 NY-17"
+      },
+      {
+        "id": "us-202co/cc143c95",
+        "poll_type": "us-representative",
+        "sample_size": 1292,
+        "population": "lv",
+        "url": "https://coefficient.org/b96b92b3.pdf",
+        "created_at": "2026-07-24",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-22",
+        "pollster": "co/efficient",
+        "answers": [
+          {
+            "choice": "Cait Conley",
+            "pct": 45.0
+          },
+          {
+            "choice": "Mike Lawler",
+            "pct": 50.0
+          }
+        ],
+        "seat_name": "NY-17",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NY-17"
+      },
+      {
+        "id": "gov202red8c5fcf3a",
+        "poll_type": "governor",
+        "sample_size": 2000,
+        "population": "rv",
+        "url": "https://nypost.com/2026/07/28/us-news/ny-gop-governor-candidate-bruce-blakeman-trails-hochul-by-just-4-points-in-shocking-new-poll/",
+        "created_at": "2026-07-29",
+        "start_date": "2026-07-07",
+        "end_date": "2026-07-12",
+        "pollster": "Red Oak Strategic",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 47.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Strong and Safe"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202sie040ecd95",
+        "poll_type": "governor",
+        "sample_size": 811,
+        "population": "lv",
+        "url": "https://sri.siena.edu/2026/08/12/siena-poll-of-likely-new-york-state-voters-hochul-49-blakeman-39/",
+        "created_at": "2026-08-12",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-06",
+        "pollster": "Siena University",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 49.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "us-202sur34bdca99",
+        "poll_type": "us-representative",
+        "sample_size": 800,
+        "population": "a",
+        "url": "https://results.surveyusa.com/client/PollReport.aspx?g=7dad7202-08be-4fe4-a687-b52480791639",
+        "created_at": "2026-08-14",
+        "start_date": "2026-08-04",
+        "end_date": "2026-08-08",
+        "pollster": "SurveyUSA",
+        "answers": [
+          {
+            "choice": "Anthony Constantino",
+            "pct": 39.0
+          },
+          {
+            "choice": "Blake Gendebien",
+            "pct": 43.0
+          },
+          {
+            "choice": "Chris Schmidt",
+            "pct": 5.0
+          }
+        ],
+        "seat_name": "NY-21",
+        "sponsors": [
+          "WNYT"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NY-21"
+      },
+      {
+        "id": "us-202j.lcde5bf32",
+        "poll_type": "us-representative",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://jlpartners.com/new-york-21st-district-likely-voter-polling",
+        "created_at": "2026-08-20",
+        "start_date": "2026-08-15",
+        "end_date": "2026-08-17",
+        "pollster": "J.L. Partners",
+        "answers": [
+          {
+            "choice": "Anthony Constantino",
+            "pct": 53.0
+          },
+          {
+            "choice": "Blake Gendebien",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": "NY-21",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NY-21"
+      },
+      {
+        "id": "gov202conb6a8d324",
+        "poll_type": "governor",
+        "sample_size": 505,
+        "population": "lv",
+        "url": "https://www.politico.com/newsletters/new-york-playbook/2026/09/03/mamdani-has-already-endorsed-aoc-for-president-sort-of-01062556",
+        "created_at": "2026-09-03",
+        "start_date": "2026-08-19",
+        "end_date": "2026-08-21",
+        "pollster": "Concord Public Opinion Partners",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 50.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 34.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Education Reform Now Advocacy"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202bea0915f96a",
+        "poll_type": "governor",
+        "sample_size": 820,
+        "population": "rv",
+        "url": "https://www.politico.com/newsletters/new-york-playbook/2026/10/15/mamdanis-mia-from-gop-attack-ads-01119739",
+        "created_at": "2026-10-15",
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-06",
+        "pollster": "Beacon Research",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 53.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 31.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Secure AI Project"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202quie0227b77",
+        "poll_type": "governor",
+        "sample_size": 1026,
+        "population": "lv",
+        "url": "https://poll.qu.edu/poll-release?releaseid=3967",
+        "created_at": "2026-09-24",
+        "start_date": "2026-09-17",
+        "end_date": "2026-09-20",
+        "pollster": "Quinnipiac University",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 58.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "us-202emefa6f3e99",
+        "poll_type": "us-representative",
+        "sample_size": 400,
+        "population": "lv",
+        "url": "https://emersoncollegepolling.com/ny-17-2026-poll/",
+        "created_at": "2026-10-01",
+        "start_date": "2026-09-27",
+        "end_date": "2026-09-29",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Cait Conley",
+            "pct": 48.0
+          },
+          {
+            "choice": "Mike Lawler",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": "NY-17",
+        "sponsors": [
+          "WPIX"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NY-17"
+      },
+      {
+        "id": "gov202co/7ac95f4a",
+        "poll_type": "governor",
+        "sample_size": 1046,
+        "population": "lv",
+        "url": "https://nypost.com/2026/10/05/us-news/more-than-half-of-new-york-voters-concerned-about-rise-of-socialism-poll/",
+        "created_at": "2026-10-06",
+        "start_date": "2026-09-23",
+        "end_date": "2026-09-25",
+        "pollster": "co/efficient",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 48.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Coalition to Protect Nassau Taxpayers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 New York"
+      },
+      {
+        "id": "gov202eme388a5e9b",
+        "poll_type": "governor",
+        "sample_size": 900,
+        "population": "lv",
+        "url": "https://emersoncollegepolling.com/new-york-2026-poll-governor-hochul-leads-blakeman-by-12/?utm_source=substack&utm_medium=email",
+        "created_at": "2026-10-08",
+        "start_date": "2026-10-03",
+        "end_date": "2026-10-05",
+        "pollster": "Emerson College",
+        "answers": [
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 39.7
+          },
+          {
+            "choice": "Kathy Hochul",
+            "pct": 52.4
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "WPIX"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      },
+      {
+        "id": "us-202sie2af2e738",
+        "poll_type": "us-representative",
+        "sample_size": 496,
+        "population": "lv",
+        "url": "https://www.mynbc5.com/article/poll-new-york-21-constantino-gendebien/74082680",
+        "created_at": "2026-10-09",
+        "start_date": "2026-09-30",
+        "end_date": "2026-10-06",
+        "pollster": "Siena University",
+        "answers": [
+          {
+            "choice": "Blake Gendebien",
+            "pct": 46.0
+          },
+          {
+            "choice": "Anthony Constantino",
+            "pct": 42.0
+          },
+          {
+            "choice": "Christopher Schmidt",
+            "pct": 5.0
+          }
+        ],
+        "seat_name": "NY-21",
+        "sponsors": [
+          "WAMC-FM",
+          "Albany Times Union",
+          "WPTZ"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 NY-21"
+      },
+      {
+        "id": "us-202pube3646207",
+        "poll_type": "us-representative",
+        "sample_size": 613,
+        "population": "lv",
+        "url": "https://x.com/cjwarnke/status/2112877284684341727",
+        "created_at": "2026-10-21",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-13",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Anthony Constantino",
+            "pct": 46.0
+          },
+          {
+            "choice": "Blake Gendebien",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": "NY-21",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 NY-21"
+      },
+      {
+        "id": "gov202quie8567b62",
+        "poll_type": "governor",
+        "sample_size": 1167,
+        "population": "lv",
+        "url": "https://www.nytimes.com/2026/10/21/nyregion/poll-hochul-blakeman-governor.html",
+        "created_at": "2026-10-22",
+        "start_date": "2026-10-15",
+        "end_date": "2026-10-19",
+        "pollster": "Quinnipiac University",
+        "answers": [
+          {
+            "choice": "Kathy Hochul",
+            "pct": 55.0
+          },
+          {
+            "choice": "Bruce Blakeman",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 New York"
+      }
+    ],
+    "provider_records_sha256": "8a5104aa39125b608668510eb7e13652129889571e2f021c4aeedc7b286f3607",
+    "primary_records": []
+  },
+  "prior_capture_receipts": [
+    {
+      "cycle": 2026,
+      "state": "NY",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-08",
+      "fetched_at": "2026-10-08T05:58:41.791003+00:00",
+      "response_sha256": "4e3ceacaae40ae3506010febdc46737c1c3164e9b0199b99f578270de6de4ca1",
+      "provider_records": 30,
+      "primary_rechecked_ids": [
+        "us-202emefa6f3e99",
+        "gov202quie0227b77"
+      ],
+      "reviewed_on": "2026-10-08",
+      "governor_last_success_at": "2026-10-08T05:59:25.007293+00:00",
+      "captured_at": "2026-10-08T07:35:48.002068+00:00",
+      "capture_kind": "provider_transport_only",
+      "serialized_provider_response_sha256": "ce59c875cbd6808771a4c4df03dcb1b34209d6e1950303af247b53733eb5afe4"
+    }
+  ]
+}

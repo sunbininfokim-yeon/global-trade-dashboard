@@ -3,23 +3,30 @@ In-season US Corn Belt yield forecast.
 
 Usage: python3 predict_us.py [year] [crop ...]
 
-Assembles the current season from three tiers, in order of confidence:
+Builds the current season from three tiers, in order of confidence:
 
   1. Observed   - NASA POWER daily, the same source the model was trained on.
                   Lags real time by 2-3 days.
   2. Forecast   - Open-Meteo, up to ~16 days ahead, for temperature and rain.
-  3. Climatology- Day-of-year normals from POWER history, for whatever remains
-                  of the season beyond the forecast horizon.
+  3. Scenarios  - for every day beyond the forecast, each past year's POWER
+                  weather in turn (UNL Yield Forecasting Center approach).
+
+Each past year gives one complete season and one model prediction. The mean
+of those predictions is the point estimate; their spread, with the model's
+own out-of-sample error laid around each, is the range. Early in the season
+the borrowed years dominate and the range is wide; as observed days replace
+them it narrows on its own, so there is no hand-tuned widening factor.
+
+Whether the number is a forecast or a reference depends on how far the
+season has got. train_us.py backtests the engine at 1 June, 30 June, 31 July
+and 31 August; below the 0.20 skill bar at today's date the output is marked
+as a reference (trend plus the range of past summers), not a forecast.
 
 Soil moisture is only ever taken from POWER or POWER climatology, never from
 Open-Meteo. Open-Meteo's soil moisture sits on a different scale after 2025
 (at Goias, identical rainfall in Jan-Feb 2024 and 2025 produced 0.463 vs
 0.351), so mixing it into a POWER-trained model would push features several
 standard deviations out of distribution.
-
-The reported interval widens with the share of the critical July-August
-window that is still unobserved, because the model's historical sigma was
-measured on complete seasons and understates a mid-season forecast.
 """
 
 import json
@@ -41,6 +48,7 @@ from collect_us_cornbelt import (
     power_weather,
     season_features,
 )
+from us_scenarios import FORECAST_SKILL, mixture_quantiles, skill_at
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
@@ -107,16 +115,15 @@ def climatology(hist, year, ref_years=CLIMATOLOGY_YEARS):
     return h.groupby("doy")[["tmax", "tmin", "tmean", "precip", "soil", "vpd"]].mean()
 
 
-def assemble_season(state, year, hist):
-    """Observed + forecast + climatology, with provenance per day."""
-    obs = power_current(state, year)
-    obs["src"] = "observed"
-
+def known_season(state, year, hist):
+    """Observed + forecast days up to 31 August, with provenance per day."""
     end = pd.Timestamp(f"{year}-08-31")
-    have = obs.date.max()
+    obs = power_current(state, year)
+    obs = obs[obs.date <= end].copy()
+    obs["src"] = "observed"
+    observed_through = obs.date.max()
 
-    parts = [obs[obs.date <= end]]
-
+    parts, have = [obs], observed_through
     if have < end:
         fc = forecast_frame(state)
         fc = fc[(fc.date > have) & (fc.date <= end)].copy()
@@ -124,20 +131,6 @@ def assemble_season(state, year, hist):
         if not fc.empty:
             parts.append(fc)
             have = fc.date.max()
-
-    if have < end:
-        clim = climatology(hist, year)
-        days = pd.date_range(have + pd.Timedelta(days=1), end, freq="D")
-        rows = []
-        for d in days:
-            c = clim.loc[d.dayofyear] if d.dayofyear in clim.index else None
-            if c is None:
-                continue
-            rows.append({"date": d, "tmax": c.tmax, "tmin": c.tmin, "tmean": c.tmean,
-                         "precip": c.precip, "soil": c.soil, "vpd": c.vpd,
-                         "src": "climatology"})
-        if rows:
-            parts.append(pd.DataFrame(rows))
 
     df = pd.concat(parts, ignore_index=True).sort_values("date").reset_index(drop=True)
 
@@ -150,89 +143,165 @@ def assemble_season(state, year, hist):
             clim.loc[d.dayofyear].soil if d.dayofyear in clim.index else np.nan
             for d in df.loc[need, "date"]
         ]
-    return df
+    return df, observed_through, have
 
 
-def anomalies_for(state, year, season_df, hist, spec):
-    """Stage features for the season, expressed vs the trailing climatology."""
-    cur = season_features(season_df, year, spec)
-    if cur is None:
+def borrowed_tail(hist, past_year, year, have, end):
+    """Past year's weather for the days after `have`, relabelled to `year`."""
+    days = pd.date_range(have + pd.Timedelta(days=1), end, freq="D")
+    src = days - pd.DateOffset(years=year - past_year)
+    h = hist.drop_duplicates("date").set_index("date")
+    cols = ["tmax", "tmin", "tmean", "precip", "soil", "vpd"]
+    tail = h.reindex(src)[cols].reset_index(drop=True)
+    if tail.tmax.isna().any():
         return None
+    tail["date"] = days
+    tail["src"] = "scenario"
+    return tail
 
-    base = {}
-    for y in range(year - CLIMATOLOGY_YEARS, year):
-        f = season_features(hist, y, spec)
-        if f:
-            base[y] = f
+
+def anomaly_stats(hist, year, spec):
+    """Mean and sd of each stage feature over the trailing climatology."""
+    base = [f for y in range(year - CLIMATOLOGY_YEARS, year)
+            if (f := season_features(hist, y, spec))]
     if len(base) < 10:
         return None
+    keys = set.intersection(*(set(b) for b in base))
+    return {k: (float(np.mean([b[k] for b in base])), float(np.std([b[k] for b in base])))
+            for k in keys}
+
+
+def to_anomalies(raw, stats):
+    return {f"{k}_anom": (v - stats[k][0]) / stats[k][1] if stats[k][1] > 0 else 0.0
+            for k, v in raw.items() if k in stats}
+
+
+def state_scenarios(state, year, hist, spec):
+    """Anomaly features per scenario for one state, keyed by past year.
+
+    Once the season is complete there is nothing to borrow and the only
+    scenario is the observed season itself (key None).
+    """
+    end = pd.Timestamp(f"{year}-08-31")
+    known, observed_through, have = known_season(state, year, hist)
+    stats = anomaly_stats(hist, year, spec)
+    if stats is None:
+        return None
+
+    ja = known[(known.date >= f"{year}-07-01") & (known.date <= end)]
+    n_ja = (end - pd.Timestamp(f"{year}-07-01")).days + 1
+    provenance = {"observed": int((ja.src == "observed").sum()),
+                  "forecast": int((ja.src == "forecast").sum())}
+    provenance["scenario"] = n_ja - provenance["observed"] - provenance["forecast"]
 
     out = {}
-    for k, v in cur.items():
-        hist_vals = [base[y][k] for y in base if k in base[y]]
-        if not hist_vals:
-            continue
-        mu, sd = float(np.mean(hist_vals)), float(np.std(hist_vals))
-        out[f"{k}_anom"] = (v - mu) / sd if sd > 0 else 0.0
-    return out
+    if have >= end:
+        raw = season_features(known, year, spec)
+        if raw:
+            out[None] = to_anomalies(raw, stats)
+    else:
+        first = int(hist.date.dt.year.min()) + 1   # first year with a full Sep-Aug
+        for past in range(first, year):
+            tail = borrowed_tail(hist, past, year, have, end)
+            if tail is None:
+                continue
+            season = pd.concat([known, tail], ignore_index=True)
+            raw = season_features(season, year, spec)
+            if raw:
+                out[past] = to_anomalies(raw, stats)
+    return {"scenarios": out, "provenance": provenance,
+            "observed_through": observed_through, "known_through": have}
 
 
 def predict(crop, year):
     with open(os.path.join(HERE, f"us_{crop}_model.json"), encoding="utf-8") as f:
         model = json.load(f)
     spec = CROPS[crop]
+    feats = model["features"]
 
-    blended, wsum = {}, 0.0
-    provenance = {"observed": 0, "forecast": 0, "climatology": 0}
-
+    per_state = []
     for st in STATES:
         hist = power_weather(st)
-        season = assemble_season(st, year, hist)
-
-        # Track how much of the decisive July-August window is real.
-        ja = season[(season.date >= f"{year}-07-01") & (season.date <= f"{year}-08-31")]
-        for s in provenance:
-            provenance[s] += int((ja.src == s).sum())
-
-        a = anomalies_for(st, year, season, hist, spec)
-        if a is None:
+        r = state_scenarios(st, year, hist, spec)
+        if r is None or not r["scenarios"]:
             log(f"  {st['code']}: insufficient history, skipped")
             continue
-        for k, v in a.items():
-            blended[k] = blended.get(k, 0.0) + v * st["weight"]
-        wsum += st["weight"]
-
-    if wsum == 0:
+        per_state.append((st, r))
+    if not per_state:
         return None
-    blended = {k: v / wsum for k, v in blended.items()}
-    blended["oni_growing"] = growing_season_oni(load_oni(), year)
 
-    missing = [f for f in model["features"] if f not in blended or pd.isna(blended[f])]
-    if missing:
+    # The same past year fills every state, so a scenario is one coherent
+    # summer across the Corn Belt rather than a patchwork of different years.
+    keys = set.intersection(*(set(r["scenarios"]) for _, r in per_state))
+    keys = sorted(keys, key=lambda k: -1 if k is None else k)
+    wsum = sum(st["weight"] for st, _ in per_state)
+
+    rows = []
+    for k in keys:
+        blended = {}
+        for st, r in per_state:
+            for f, v in r["scenarios"][k].items():
+                blended[f] = blended.get(f, 0.0) + v * st["weight"] / wsum
+        if "oni_growing" in feats:   # older artifacts still carry it
+            blended["oni_growing"] = growing_season_oni(load_oni(), year)
+        rows.append(blended)
+
+    missing = [f for f in feats if any(f not in b or pd.isna(b[f]) for b in rows)]
+    if missing or not rows:
         log(f"  missing features: {missing}")
         return None
 
-    trend = model["trend"]["slope_per_year"] * year + model["trend"]["intercept"]
-    z = [(blended[f] - m) / s
-         for f, m, s in zip(model["features"], model["scaler"]["mean"], model["scaler"]["scale"])]
-    resid = model["ridge"]["intercept"] + float(np.dot(z, model["ridge"]["coef"]))
+    X = np.array([[b[f] for f in feats] for b in rows])
+    z = (X - np.array(model["scaler"]["mean"])) / np.array(model["scaler"]["scale"])
+    resid = model["ridge"]["intercept"] + z @ np.array(model["ridge"]["coef"])
 
+    trend = model["trend"]["slope_per_year"] * year + model["trend"]["intercept"]
+    preds = trend + resid
+    point = float(preds.mean())
+
+    base_sigma = model["uncertainty"]["sigma"]
+    q025, q10, q16, q50, q84, q90, q975 = mixture_quantiles(
+        preds, base_sigma, (0.025, 0.10, 0.16, 0.50, 0.84, 0.90, 0.975))
+
+    provenance = {s: sum(r["provenance"][s] for _, r in per_state) for s in
+                  ("observed", "forecast", "scenario")}
     total_ja = sum(provenance.values()) or 1
     observed_share = provenance["observed"] / total_ja
+    observed_through = min(r["observed_through"] for _, r in per_state)
+    known_through = min(r["known_through"] for _, r in per_state)
 
-    # The model's sigma was measured on finished seasons. Inflate it by the
-    # share of the July-August window that is still forecast or climatology,
-    # so a mid-season number is not quoted as confidently as a final one.
-    sigma = model["uncertainty"]["sigma"] * (1 + 0.5 * (1 - observed_share))
+    # How far the season has got decides whether this is a forecast. Day of
+    # year counts only observed days; the 16-day forecast is not credited.
+    if observed_through.year < year:
+        doy = 0
+    else:
+        doy = min(observed_through.dayofyear - (observed_through.is_leap_year
+                                                and observed_through.month > 2), 365)
+    if model.get("inseason"):
+        skill_now = skill_at(model["inseason"], doy)
+    else:
+        sel = model.get("selected", "core")
+        skill_now = model["validation"].get(f"{sel}_forward", {}).get("skill_vs_trend")
+    mode = "forecast" if skill_now is not None and skill_now >= FORECAST_SKILL else "reference"
 
+    past = [k for k in keys if k is not None]
     return {
         "crop": crop, "year": year, "unit": model["unit"],
-        "trend": trend, "weather_effect": resid, "point": trend + resid,
-        "range_68": [trend + resid - sigma, trend + resid + sigma],
-        "range_95": [trend + resid - 1.96 * sigma, trend + resid + 1.96 * sigma],
-        "sigma": sigma, "base_sigma": model["uncertainty"]["sigma"],
+        "trend": trend, "weather_effect": point - trend, "point": point,
+        "range_68": [q16, q84], "range_95": [q025, q975],
+        "percentiles": {"p10": q10, "p50": q50, "p90": q90},
+        "sigma": (q84 - q16) / 2, "base_sigma": base_sigma,
         "julaug_days": provenance, "observed_share": observed_share,
-        "features": {f: blended[f] for f in model["features"]},
+        "inseason": {
+            "mode": mode,
+            "skill_now": skill_now,
+            "observed_through": observed_through.date().isoformat(),
+            "known_through": known_through.date().isoformat(),
+            "n_scenarios": len(keys),
+            "scenario_years": [min(past), max(past)] if past else None,
+            "scenario_spread_sd": float(preds.std()),
+        },
+        "features": {f: float(X[:, i].mean()) for i, f in enumerate(feats)},
     }
 
 
@@ -248,14 +317,18 @@ def main():
             log("  no forecast")
             continue
         p = r["julaug_days"]
+        ins = r["inseason"]
         log(f"  Jul-Aug window: {p['observed']}d observed, {p['forecast']}d forecast, "
-            f"{p['climatology']}d climatology ({r['observed_share']:.0%} observed)")
+            f"{p['scenario']}d from past years ({r['observed_share']:.0%} observed)")
+        log(f"  observed through {ins['observed_through']}, {ins['n_scenarios']} scenarios, "
+            f"skill now {ins['skill_now']:+.0%} -> {ins['mode']}")
         log(f"  trend           {r['trend']:8.1f} {r['unit']}")
         log(f"  weather effect  {r['weather_effect']:+8.1f}")
         log(f"  point estimate  {r['point']:8.1f}")
         log(f"  68% range       {r['range_68'][0]:.1f} - {r['range_68'][1]:.1f}")
         log(f"  95% range       {r['range_95'][0]:.1f} - {r['range_95'][1]:.1f}")
-        log(f"  sigma {r['sigma']:.2f} (model {r['base_sigma']:.2f}, widened for unobserved days)")
+        q = r["percentiles"]
+        log(f"  P10/P50/P90     {q['p10']:.1f} / {q['p50']:.1f} / {q['p90']:.1f}")
         log("  key anomalies (sd): " + ", ".join(
             f"{k.replace('_anom','')}={v:+.2f}" for k, v in list(r["features"].items())[:5]))
         log("")

@@ -8,7 +8,7 @@ import subprocess
 import sys
 from build_superpac import PUBLIC, ROOT, atomic_json
 from build_superpac_map import build
-from election_watch.superpac import now
+from election_watch.superpac import now, SourceError
 from election_watch.superpac_schedule import collection_plan
 
 
@@ -31,7 +31,13 @@ def main():
     started = now()
     results = []
     for cycle in cycles:
-        for name, script in [('federal', 'build_superpac.py'), ('WA_governor', 'build_governor_finance.py'), ('CA_governor', 'build_governor_finance.py')]:
+        sources = [('federal', 'build_superpac.py'), ('WA_governor', 'build_governor_finance.py'), ('CA_governor', 'build_governor_finance.py')]
+        if cycle == 2026:
+            sources.insert(0, ('candidate_fundraising', 'refresh_candidate_fundraising.py'))
+            sources.insert(1, ('governor_context', 'refresh_governor_context.py'))
+        if (ROOT / 'config/governor_ie_filers' / str(cycle) / 'NY.json').exists():
+            sources.append(('NY_governor', 'build_governor_finance.py'))
+        for name, script in sources:
             # The key is inherited from the runner environment, never written to arguments or outputs.
             command = [sys.executable, str(ROOT / script), '--cycle', str(cycle), '--public', str(args.public)]
             if name.endswith('_governor'):
@@ -44,9 +50,11 @@ def main():
             results.append({'cycle': cycle, 'source': name, 'status': 'success' if code == 0 else 'failed', 'exit_code': code})
     # Source failures leave their last good files intact. Healthy sources still advance.
     try:
-        build(args.public, cadence=args.cadence)
+        from refresh_governor_matchups import ROSTERS
+        from election_watch.polls import read
+        build(args.public, cadence=args.cadence, governor_rosters=read(ROSTERS) if ROSTERS.exists() else None)
         map_status = 'success'
-    except (ValueError, OSError, KeyError, AssertionError, TypeError):
+    except (ValueError, OSError, KeyError, AssertionError, TypeError, SourceError):
         map_status = 'failed'
     failed = map_status == 'failed' or any(r['status'] == 'failed' for r in results)
     atomic_json(args.public / 'usa_election_finance_refresh_status_v1.json', {

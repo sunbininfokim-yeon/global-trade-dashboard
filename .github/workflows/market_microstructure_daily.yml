@@ -36,39 +36,14 @@ jobs:
       - name: Install deps
         run: pip install -r requirements-ci.txt
 
-      # These four steps all call FinanceDataReader, which reads through KRX
-      # Data Marketplace (data.krx.co.kr). That site rate-limits by IP and, on
-      # 2026-09-10, returned an explicit 7-day block ("자동화 수단을 통한
-      # 비정상 대량 조회가 감지") after this same source was hit repeatedly
-      # across sessions. When blocked, the underlying script still exits
-      # non-zero -- without continue-on-error, that stopped the whole job
-      # here, at the FIRST step, so nothing downstream (concentration,
-      # microstructure, investor levels, alerts, AND the 15007 call/put board
-      # that doesn't touch FDR at all) ever ran or committed that day.
-      # continue-on-error lets a source-level outage degrade to "this one
-      # domain doesn't get a new row today" instead of "nothing does" --
-      # every builder here already treats missing/stale input as
-      # null/carry-forward, never as zero or a fabricated value, so a skipped
-      # step here is honestly reflected downstream, not silently papered
-      # over.
-      - name: Conc history append
-        continue-on-error: true
-        run: |
-          python build_conc_history.py --append-only --print-stats || \
-            python build_conc_history.py --live --months 6 --print-stats
-
-      - name: US→KR L3
-        run: python build_us_kr_l3.py --live --print-stats
-
-      - name: Market microstructure snapshot
-        continue-on-error: true
-        env:
-          KRX_API: ${{ secrets.KRX_API }}
-        run: python build_market_microstructure.py --live --source auto --print-stats
-
-      - name: Append external ETF snapshot history
-        run: python append_external_history.py --print-stats
-
+      # Checked out before the snapshot steps: the KOSPI stock-market investor
+      # flow (가격대별 누적 수급's index view and public_extras) reads the
+      # stock-scoped KRX 12008 export from this checkout via
+      # $KRX_MONTH_PASTE_DIR once Cursor publishes it
+      # (CURSOR_HANDOFF_KOSPI_STOCK_FLOW.md). The Naver page it used has
+      # returned empty tables since 2026-09-17; until then the published
+      # stock-only days are carried forward.
+      #
       # Cursor crawls KRX 15007 CALL/PUT buy/sell exports into its own repo
       # (private) at data/raw/krx_15007/<date>/{options_call,options_put,
       # futures}_{buy,sell}.csv -- the exact raw shape build_derivatives_board
@@ -89,7 +64,50 @@ jobs:
           path: krx-month-paste
           sparse-checkout: |
             data/raw/krx_15007
+            data/normalized/krx_15007_k200_investor
+            data/normalized/krx_12008_kospi_stock_investor
+            data/normalized/kospi200_futures_oi
+            data/normalized/kospi200_option_oi
+            data/normalized/kospi_program
+            data/manifests/krx_15007_k200_investor.json
+            data/manifests/kospi_program.json
           sparse-checkout-cone-mode: false
+
+      # These four steps all call FinanceDataReader, which reads through KRX
+      # Data Marketplace (data.krx.co.kr). That site rate-limits by IP and, on
+      # 2026-09-10, returned an explicit 7-day block ("자동화 수단을 통한
+      # 비정상 대량 조회가 감지") after this same source was hit repeatedly
+      # across sessions. When blocked, the underlying script still exits
+      # non-zero -- without continue-on-error, that stopped the whole job
+      # here, at the FIRST step, so nothing downstream (concentration,
+      # microstructure, investor levels, alerts, AND the 15007 call/put board
+      # that doesn't touch FDR at all) ever ran or committed that day.
+      # continue-on-error lets a source-level outage degrade to "this one
+      # domain doesn't get a new row today" instead of "nothing does" --
+      # every builder here already treats missing/stale input as
+      # null/carry-forward, never as zero or a fabricated value, so a skipped
+      # step here is honestly reflected downstream, not silently papered
+      # over.
+      - name: Conc history append
+        id: conc_history
+        continue-on-error: true
+        run: |
+          python build_conc_history.py --append-only --print-stats || \
+            python build_conc_history.py --live --months 6 --print-stats
+
+      - name: US→KR L3
+        run: python build_us_kr_l3.py --live --print-stats
+
+      - name: Market microstructure snapshot
+        id: micro_snapshot
+        continue-on-error: true
+        env:
+          KRX_API: ${{ secrets.KRX_API }}
+          KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
+        run: python build_market_microstructure.py --live --source auto --print-stats
+
+      - name: Append external ETF snapshot history
+        run: python append_external_history.py --print-stats
 
       - name: Resolve latest complete KRX 15007 raw date
         id: krx15007
@@ -135,14 +153,30 @@ jobs:
       - name: Append derivatives and LETF history
         run: python append_derivatives_history.py --print-stats
 
-      - name: Investor × price levels (real data; marcap + high-vol in top100)
+      # K200 derivatives microstructure history from the normalized hive in
+      # the same checkout: 15007 investor flow (futures/call/put x foreign,
+      # institution, retail, other-corp; 2019~), 15003 front futures, 15018
+      # front option chain OI, 12012 program trading. The builder merges onto
+      # the committed file, so a stalled or partial source never erases the
+      # days already published; a failed checkout leaves the file untouched.
+      - name: KRX derivatives microstructure history
+        id: krx_flow
+        if: steps.krx15007_checkout.outcome == 'success'
         continue-on-error: true
+        run: python build_krx_deriv_flow.py --source "${{ github.workspace }}/krx-month-paste" --print-stats
+
+      - name: Investor × price levels (real data; marcap + high-vol in top100)
+        id: investor_levels
+        continue-on-error: true
+        env:
+          KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
         run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
 
       - name: Deposit · credit overlay
         run: python publish_deposit_credit.py
 
       - name: Alert levels
+        id: alert_levels
         continue-on-error: true
         run: python build_alert_levels.py --live
 
@@ -164,6 +198,7 @@ jobs:
             "New for anti/public/data/us_kr_hitrate_v1.json" \
             "New for anti/public/data/us_kr_regime_proxy_backtest_v1.json" \
             "New for anti/public/data/derivatives_board_v1.json" \
+            "New for anti/public/data/krx_deriv_flow_v1.json" \
             "New for anti/public/data/us_oi_daily_archive.jsonl" \
             "New for anti/public/data/market_microstructure_v1.json" \
             "New for anti/public/data/ai_casino_brief_v1.json" \
@@ -193,3 +228,41 @@ jobs:
             git pull --rebase --autostash
           done
           git push
+
+      # continue-on-error keeps one blocked source from stopping the day's
+      # commit, but it also makes a failed step report as success -- on
+      # 2026-10-06/07 the investor-levels step was silently wrong for two days
+      # under a green run. This runs after the commit, so the data that did
+      # refresh is already published; it only turns the run red (and writes
+      # the list to the run summary) when a step marked continue-on-error
+      # actually failed. A step that the workflow skipped is not a failure.
+      - name: Report steps that failed but were allowed to continue
+        if: always()
+        env:
+          CONC_HISTORY: ${{ steps.conc_history.outcome }}
+          MICRO_SNAPSHOT: ${{ steps.micro_snapshot.outcome }}
+          KRX_CHECKOUT: ${{ steps.krx15007_checkout.outcome }}
+          KRX_FLOW: ${{ steps.krx_flow.outcome }}
+          INVESTOR_LEVELS: ${{ steps.investor_levels.outcome }}
+          ALERT_LEVELS: ${{ steps.alert_levels.outcome }}
+        run: |
+          failed=()
+          [ "$CONC_HISTORY" = "failure" ]    && failed+=("Conc history append")
+          [ "$MICRO_SNAPSHOT" = "failure" ]  && failed+=("Market microstructure snapshot")
+          [ "$KRX_CHECKOUT" = "failure" ]    && failed+=("Checkout krx-month-paste")
+          [ "$KRX_FLOW" = "failure" ]        && failed+=("KRX derivatives microstructure history")
+          [ "$INVESTOR_LEVELS" = "failure" ] && failed+=("Investor × price levels")
+          [ "$ALERT_LEVELS" = "failure" ]    && failed+=("Alert levels")
+          if [ "${#failed[@]}" -eq 0 ]; then
+            echo "No continue-on-error step failed."
+            exit 0
+          fi
+          {
+            echo "### Steps that failed but did not stop the run"
+            echo "The rest of the day was committed. These outputs were **not refreshed** by this run:"
+            for s in "${failed[@]}"; do echo "- $s"; done
+          } >> "$GITHUB_STEP_SUMMARY"
+          for s in "${failed[@]}"; do
+            echo "::error title=Not refreshed::$s failed (continue-on-error); its output was not updated by this run"
+          done
+          exit 1

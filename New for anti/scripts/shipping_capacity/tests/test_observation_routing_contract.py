@@ -124,7 +124,7 @@ class PortWatchHistoryContractTests(unittest.TestCase):
     def test_screen_metric_histories_are_bounded_without_cross_type_copying(self) -> None:
         full_history = [
             {"date": f"2026-01-{(day % 28) + 1:02d}", "value": float(day)}
-            for day in range(200)
+            for day in range(800)
         ]
         screen = _screen_chokepoints_live(
             {
@@ -140,8 +140,38 @@ class PortWatchHistoryContractTests(unittest.TestCase):
             }
         )["test"]
         container = screen["metric_histories"]["container"]
-        self.assertEqual(container["history_source_point_count"], 200)
-        self.assertEqual(container["history"], full_history[-180:])
+        self.assertEqual(container["history_source_point_count"], 800)
+        self.assertEqual(container["history"], full_history[-730:])
+        self.assertEqual(container["history_screen_point_limit"], 730)
+
+
+    def test_screen_year_ago_is_aligned_52_weeks_back_without_filling_gaps(self) -> None:
+        from datetime import date, timedelta
+        start = date(2025, 1, 1)
+        full_history = [
+            {"date": (start + timedelta(days=day)).isoformat(), "value": float(day)}
+            for day in range(600)
+            if day != 250  # a missing prior-year day must stay null
+        ]
+        screen = _screen_chokepoints_live(
+            {"test": {"history": [], "metric_histories": {
+                "tanker": {"metric_key": "tanker", "history": full_history},
+                "general_cargo": {"metric_key": "general_cargo", "history": full_history},
+            }}}
+        )["test"]
+        tanker = screen["metric_histories"]["tanker"]
+        values = tanker["year_ago"]["values"]
+        self.assertEqual(len(values), len(tanker["history"]))
+        for row, prior in zip(tanker["history"], values):
+            offset = (date.fromisoformat(row["date"]) - start).days - 364
+            expected = None if offset < 0 or offset == 250 else float(offset)
+            self.assertEqual(prior, expected)
+        self.assertIsNone(screen["metric_histories"]["general_cargo"]["year_ago"])
+        self.assertEqual(len(screen["metric_histories"]["general_cargo"]["history"]), 180)
+        # last 7 screen days are 593..599; 52 weeks earlier is 229..235
+        self.assertEqual(tanker["year_ago"]["recent_7d_mean"], 596.0)
+        self.assertEqual(tanker["year_ago"]["year_ago_7d_mean"], 232.0)
+        self.assertEqual(tanker["year_ago"]["change_pct"], round((596 / 232 - 1) * 100, 1))
 
 
 class RouteOperationalContractTests(unittest.TestCase):

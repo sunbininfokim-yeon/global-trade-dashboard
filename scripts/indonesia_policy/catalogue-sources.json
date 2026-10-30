@@ -1,0 +1,124 @@
+[
+  {
+    "source_id": "jateng-esdm-regulasi",
+    "adapter": "jateng_table",
+    "url": "https://ppidnew.esdm.jatengprov.go.id/regulasi",
+    "publisher": "ESDM Provinsi Jawa Tengah",
+    "scope": "All rows of the published ESDM Jawa Tengah regulation table; central republications and local documents. Not all Indonesian or provincial law.",
+    "publisher_jurisdiction": "Jawa Tengah"
+  },
+  {
+    "source_id": "sulbar-pp-republications",
+    "adapter": "sulbar_table",
+    "url": "https://jdih.sulbarprov.go.id/?act=listperaturan&id=47&page=peraturan",
+    "publisher": "JDIH Provinsi Sulawesi Barat",
+    "scope": "All rows of this published PP category. Government republications, not Sulawesi Barat local ordinances.",
+    "publisher_jurisdiction": "Sulawesi Barat"
+  },
+  {
+    "source_id": "djbc-kemendag",
+    "adapter": "djbc_pages",
+    "url": "https://peraturan.beacukai.go.id/regulasi/index.html?page=penerbit/43/menteri-perdagangan/1.html",
+    "publisher": "Direktorat Jenderal Bea dan Cukai",
+    "scope": "Menteri Perdagangan category in the DJBC directory. Publisher category is not proof of the document issuer; original ministry completeness is unverified."
+  },
+  {
+    "source_id": "djbc-kemenperin",
+    "adapter": "djbc_pages",
+    "url": "https://peraturan.beacukai.go.id/regulasi/index.html?page=penerbit/48/menteri-perindustrian/1.html",
+    "publisher": "Direktorat Jenderal Bea dan Cukai",
+    "scope": "Menteri Perindustrian category in the DJBC directory. Known cross-agency entries are retained with unresolved issuer."
+  },
+  {
+    "source_id": "djbc-kemenkeu",
+    "adapter": "djbc_pages",
+    "url": "https://peraturan.beacukai.go.id/regulasi/index.html?page=penerbit/8/menteri-keuangan/1.html",
+    "publisher": "Direktorat Jenderal Bea dan Cukai",
+    "scope": "Menteri Keuangan category republished by DJBC. Only the customs-directory scope, not the original ministry or all fiscal law. Publisher category and listing status do not prove current legal effect.",
+    "source_role": "official_republication",
+    "require_reported_total": true,
+    "original_source_id": "kemenkeu-original",
+    "discovered_from": "https://peraturan.beacukai.go.id/regulasi/index.html"
+  },
+  {
+    "source_id": "esdm-original",
+    "adapter": "unverified",
+    "url": "https://jdih.esdm.go.id/",
+    "publisher": "Kementerian ESDM",
+    "scope": "Original ministry catalogue. Latest availability check: maintenance. Enumeration unverified; not zero laws.",
+    "verification": {
+      "checked_at": "2026-10-20T06:50:59.938475+00:00",
+      "outcome": "maintenance",
+      "enumeration_verified": false,
+      "observed_listing_url": "https://jdih.esdm.go.id/dokumen/index",
+      "url": "https://jdih.esdm.go.id/dokumen/index",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "actual_url": "https://jdih.esdm.go.id/dokumen/index",
+      "raw_sha256": "1e936011e5404a9059f6db54b452f7cb70ba7aa8a6cdb2b42e77481f4852eba7",
+      "title": "ESDM-MAINTENANCE",
+      "observed_links": []
+    }
+  },
+  {
+    "source_id": "kemendag-original",
+    "adapter": "kemendag_pages",
+    "url": "https://jdih.kemendag.go.id/peraturan",
+    "publisher": "Kementerian Perdagangan",
+    "scope": "Original ministry unfiltered regulation list with observed pagination and publisher status. List metadata may be truncated; not final-text or consolidated legal-effect proof.",
+    "verification": {
+      "checked_at": "2026-10-19T14:31:59.775120+00:00",
+      "outcome": "original_list_verified_partial",
+      "enumeration_verified": true
+    }
+  },
+  {
+    "source_id": "pertanian-original",
+    "adapter": "unverified",
+    "url": "https://jdih.pertanian.go.id/",
+    "publisher": "Kementerian Pertanian",
+    "scope": "Original ministry catalogue. Latest availability check: http_403. Enumeration unverified; not zero laws.",
+    "verification": {
+      "checked_at": "2026-10-20T06:50:59.938986+00:00",
+      "outcome": "http_403",
+      "enumeration_verified": false,
+      "url": "https://jdih.pertanian.go.id/",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "error_type": "HTTPError",
+      "http_status": 403
+    }
+  },
+  {
+    "source_id": "kemenperin-original",
+    "adapter": "unverified",
+    "url": "https://jdih.kemenperin.go.id/",
+    "publisher": "Kementerian Perindustrian",
+    "scope": "Original ministry catalogue. Latest availability check: connection_timeout. Enumeration unverified; not zero laws.",
+    "verification": {
+      "checked_at": "2026-10-20T06:50:59.939104+00:00",
+      "outcome": "connection_timeout",
+      "enumeration_verified": false,
+      "url": "https://jdih.kemenperin.go.id/",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "error_type": "ConnectTimeout",
+      "http_status": null
+    }
+  },
+  {
+    "source_id": "kemenkeu-original",
+    "adapter": "unverified",
+    "url": "https://jdih.kemenkeu.go.id/",
+    "publisher": "Kementerian Keuangan",
+    "scope": "Original ministry catalogue. Latest availability check: read_timeout. Enumeration unverified; not zero laws.",
+    "verification": {
+      "checked_at": "2026-10-20T06:50:59.939273+00:00",
+      "outcome": "read_timeout",
+      "enumeration_verified": false,
+      "observed_listing_url": "https://jdih.kemenkeu.go.id/search?bentuk=Peraturan+Menteri&order=desc&teu=Kementerian+Keuangan",
+      "url": "https://jdih.kemenkeu.go.id/search?bentuk=Peraturan+Menteri&order=desc&teu=Kementerian+Keuangan",
+      "finished_at": "2026-10-20T06:51:10.549988+00:00",
+      "error_type": "ReadTimeout",
+      "http_status": null,
+      "additional_transport_check": "curl HTTPS connection: SSL connection timeout; no HTTP response"
+    }
+  }
+]

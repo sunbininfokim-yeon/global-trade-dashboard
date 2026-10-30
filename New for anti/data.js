@@ -31,6 +31,20 @@
             name_ko: "천연가스",
             aliases: ["gas", "natural gas", "천연가스", "lng", "2711"]
         },
+        // Exact aliases only: enriched uranium / ferroalloys must never be
+        // pulled into the ore or natural-uranium bucket by substring matching.
+        "uranium_ore": {
+            id: "uranium_ore", name_ko: "우라늄 광석·정광", exactAliasesOnly: true,
+            aliases: ["uranium_ore", "uranium ore", "uranium ores and concentrates", "우라늄 광석·정광", "우라늄광", "우라늄 정광", "261210"]
+        },
+        "uranium": {
+            id: "uranium", name_ko: "천연우라늄·화합물", exactAliasesOnly: true,
+            aliases: ["uranium", "natural uranium", "우라늄", "천연우라늄", "천연우라늄·화합물", "284410"]
+        },
+        "manganese": {
+            id: "manganese", name_ko: "망간광·정광", exactAliasesOnly: true,
+            aliases: ["manganese", "manganese ore", "manganese ores and concentrates", "망간광", "망간광·정광", "망간 정광", "2602", "260200"]
+        },
         "gold": {
             id: "gold",
             name_ko: "금",
@@ -51,6 +65,11 @@
             name_ko: "아연",
             aliases: ["zinc", "아연", "7901"]
         },
+        "bauxite": {
+            id: "bauxite",
+            name_ko: "보크사이트",
+            aliases: ["bauxite", "보크사이트", "보크사이드", "알루미늄광", "알루미늄 정광", "aluminium ores", "aluminum ores", "2606", "260600"]
+        },
         "aluminum": {
             id: "aluminum",
             name_ko: "알루미늄",
@@ -65,6 +84,21 @@
             id: "coffee",
             name_ko: "커피",
             aliases: ["coffee", "커피", "원두", "0901"]
+        },
+        "palm_oil": {
+            id: "palm_oil",
+            name_ko: "팜유",
+            aliases: ["palm_oil", "palm oil", "팜유", "cpo", "1511"]
+        },
+        "rubber": {
+            id: "rubber",
+            name_ko: "천연고무",
+            aliases: ["rubber", "natural rubber", "천연고무", "고무", "tsr", "rss", "4001"]
+        },
+        "light_oils": {
+            id: "light_oils",
+            name_ko: "경질유",
+            aliases: ["light_oils", "light oils", "경질유", "naphtha", "납사", "나프타", "gasoline", "휘발유", "271012"]
         }
     };
 
@@ -77,6 +111,7 @@
             if (COMMODITY_TAXONOMY[key].id === str || COMMODITY_TAXONOMY[key].aliases.includes(str)) {
                 return COMMODITY_TAXONOMY[key].id;
             }
+            if (COMMODITY_TAXONOMY[key].exactAliasesOnly) continue;
             for (const alias of COMMODITY_TAXONOMY[key].aliases) {
                 if (str.includes(alias) && alias.length > 2) {
                     return COMMODITY_TAXONOMY[key].id;
@@ -234,7 +269,16 @@
             { symbol: "UK10Y", name: "UK10Y" },
             { symbol: "^SOX", name: "SOX" },
             { symbol: "^KS11", name: "KOSPI" },
-            { symbol: "KRW=X", name: "KRW_USD" }
+            { symbol: "KRW=X", name: "KRW_USD" },
+            // Wheat/corn/soybeans/sugar: IMF's monthly PWHEAMTUSDM/PMAIZMTUSDM/
+            // PSOYBUSDM/PSUGAISAUSDM (fetched above into macroData already)
+            // lag real-world prices by weeks, so overwrite with Yahoo futures
+            // when available -- displayed in Yahoo's own quoting units
+            // (cents/bushel for wheat/corn/soybeans, cents/lb for sugar).
+            { symbol: "ZW=F", name: "WHEAT" },
+            { symbol: "ZC=F", name: "CORN" },
+            { symbol: "ZS=F", name: "SOYBEANS" },
+            { symbol: "SB=F", name: "SUGAR" }
         ];
 
         const fetchCnbcQuote = async (symbol) => {
@@ -285,7 +329,7 @@
             }
         }));
     } catch(e) {
-        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD):", e);
+        console.error("Daily quote fetch error (JP10Y/UK10Y/SOX/KOSPI/KRW_USD/WHEAT/CORN/SOYBEANS/SUGAR):", e);
     }
 
     // EIA returns rows newest-first; sparklines want oldest-first.
@@ -412,7 +456,8 @@
         // world #2), Mozambique/Madagascar (graphite), Zambia/Finland
         // (cobalt), Bolivia (refined tin), Rwanda (tin concentrate).
         266: "Gabon", 508: "Mozambique", 450: "Madagascar", 894: "Zambia",
-        246: "Finland", 68: "Bolivia", 646: "Rwanda"
+        246: "Finland", 68: "Bolivia", 646: "Rwanda",
+        324: "Guinea", 388: "Jamaica", 516: "Namibia", 562: "Niger"
     };
 
     const ALL_M49_CODES = Object.keys(M49_MAP).join(",");
@@ -427,6 +472,14 @@
         gas: {
             hsCode: "2711",
             colorScheme: { source: [239, 68, 68], target: [248, 113, 113] }
+        },
+        // Light oils, HS 271012: naphtha, motor gasoline, aviation spirit and
+        // light solvents in one six-digit line -- only national 8-digit codes
+        // split them. The map is the line as a whole; the view lists its
+        // representative products (TradeData.light_oils.subProducts).
+        light_oils: {
+            hsCode: "271012",
+            colorScheme: { source: [217, 70, 239], target: [232, 121, 249] }
         },
         thermal_coal: {
             hsCode: "2701",
@@ -456,6 +509,25 @@
             hsCode: "7601",
             colorScheme: { source: [14, 165, 233], target: [56, 189, 248] }
         },
+        // Ore/concentrate only: not alumina (281820) or metal (7601).
+        // Explicit scope includes Guinea/Jamaica without changing the shared
+        // Worker's cached country universe for unrelated commodities.
+        bauxite: {
+            hsCode: "2606",
+            reporters: ALL_M49_CODES,
+            partners: ALL_M49_CODES,
+            colorScheme: { source: [180, 83, 9], target: [217, 119, 6] }
+        },
+        uranium: {
+            hsCode: "284410", strictHs: true,
+            reporters: ALL_M49_CODES, partners: ALL_M49_CODES,
+            colorScheme: { source: [132, 204, 22], target: [190, 242, 100] }
+        },
+        uranium_ore: {
+            hsCode: "261210", strictHs: true,
+            reporters: ALL_M49_CODES, partners: ALL_M49_CODES,
+            colorScheme: { source: [101, 163, 13], target: [163, 230, 53] }
+        },
         wheat: {
             hsCode: "1001",
             colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
@@ -475,6 +547,21 @@
         coffee: {
             hsCode: "0901",
             colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        },
+        // 1511 = palm oil and its fractions, crude and refined. Palm kernel
+        // oil (1513) is a separate, much smaller market and is left out, the
+        // same line the monthly pipeline draws (commodity_id palm_oil = 1511).
+        palm_oil: {
+            hsCode: "1511",
+            colorScheme: { source: [202, 138, 4], target: [250, 204, 21] }
+        },
+        // Natural rubber is a plantation crop (latex tapped from Hevea trees),
+        // so it sits with agriculture, as FAO and USDA file it. 4001 covers
+        // latex, smoked sheets (RSS) and technically specified rubber (TSR).
+        // Synthetic rubber (4002) is a petrochemical and is left out.
+        rubber: {
+            hsCode: "4001",
+            colorScheme: { source: [101, 163, 13], target: [163, 230, 53] }
         },
 
         // Battery and strategic minerals. These are the commodities the export
@@ -502,15 +589,11 @@
         // Steel chain. Iron ore and manganese are the two largest dry-bulk
         // flows after coal, which the shipping screens already model.
         //
-        // Manganese and chromium carry their ferroalloys alongside the ore,
-        // because the ore alone describes a trade that mostly is not happening.
-        // Countries with no smelter buy the alloy, not the rock: US imports of
-        // chrome ore run $32M against $373M of ferrochromium, and manganese ore
-        // $5M against $203M of ferromanganese. On ore alone the United States
-        // read as a country that barely touches chromium, which is the opposite
-        // of true -- it has mined no chromite since 1961 and imports all of it.
+        // Manganese is explicitly ore/concentrate only. Chromium retains its
+        // existing alloy-inclusive scope; changing it is outside this task.
         iron_ore: { hsCode: "2601", colorScheme: { source: [180, 83, 9], target: [217, 119, 6] } },
-        manganese: { hsCode: "2602,720211,720219", colorScheme: { source: [161, 98, 7], target: [202, 138, 4] } },
+        manganese: { hsCode: "2602", strictHs: true, reporters: ALL_M49_CODES, partners: ALL_M49_CODES,
+            colorScheme: { source: [161, 98, 7], target: [202, 138, 4] } },
         chromium: { hsCode: "2610,720241,720249", colorScheme: { source: [120, 113, 108], target: [168, 162, 158] } },
 
         // Remaining industrial metals, and the platinum group as a precious
@@ -523,24 +606,43 @@
         platinum: { hsCode: "7110", colorScheme: { source: [226, 232, 240], target: [241, 245, 249] } }
     };
 
+    // Partner codes in the monthly bilateral files are M49 too (trade-monthly.js).
+    window.ComtradeM49Names = M49_MAP;
+    // Commodity key -> HS code(s), for the per-country monthly Comtrade series.
+    window.ComtradeHsCodes = Object.fromEntries(
+        Object.entries(COMMODITY_API_CONFIG).map(([key, cfg]) => [key, cfg.hsCode]));
+
     // === Fetch Real Trade Data from UN Comtrade via CORS Proxy ===
     // 출처: UN Comtrade API (comtradeapi.un.org) → Cloudflare Pages Function 프록시 경유
-    window.fetchComtradeArcs = async function(commodityKey) {
+    //
+    // opts.freq   'A' (default) or 'M'.
+    // opts.period Omit for annual: the Worker serves the newest year it has
+    //             fully cached and says which one (X-Comtrade-Period). It was
+    //             a literal "2023" here until 2026-09. Monthly has no default
+    //             month -- pass YYYYMM[,YYYYMM...].
+    //
+    // The returned arcs carry `period` / `freq`, so the UI labels the year it
+    // actually got rather than the year it thinks it asked for.
+    window.fetchComtradeArcs = async function(commodityKey, opts = {}) {
         const config = COMMODITY_API_CONFIG[commodityKey];
         if (!config) {
             console.warn(`[Comtrade] No API config for commodity: ${commodityKey}`);
             return [];
         }
 
-        console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode})...`);
+        const freq = opts.freq === 'M' ? 'M' : 'A';
+        console.log(`[Comtrade] Fetching real trade data for ${commodityKey} (HS ${config.hsCode}, ${freq})...`);
 
         try {
-            // ALL_M49_CODES contains 40+ countries allowing for dynamic mapping of global trade routes
-            // Reporter/partner list intentionally omitted: the Worker supplies
-            // its own canonical list, so this request lands on exactly the
-            // cache key the nightly warm-up wrote.
-            const proxyUrl = `/api/comtrade?hs=${config.hsCode}&period=2023`;
-            const res = await fetch(proxyUrl);
+            // Usually omit reporter/partner lists to reuse the Worker's warm
+            // cache. Product-specific scope (bauxite) can include countries
+            // absent from that shared universe. The year still comes from it.
+            const params = new URLSearchParams({ hs: config.hsCode });
+            if (config.reporters) params.set('reporters', config.reporters);
+            if (config.partners) params.set('partners', config.partners);
+            if (freq === 'M') params.set('freq', 'M');
+            if (opts.period) params.set('period', opts.period);
+            const res = await fetch(`/api/comtrade?${params}`);
 
             if (!res.ok) {
                 console.warn(`[Comtrade] Proxy returned ${res.status} for ${commodityKey}`);
@@ -552,9 +654,39 @@
                 console.warn(`[Comtrade] No data returned for ${commodityKey}`);
                 return [];
             }
+            const period = res.headers.get('X-Comtrade-Period') || json.period || opts.period || null;
+            // Set when the Worker served the newest year per country, with the
+            // previous year only where neither end of a route has filed yet.
+            const blendFrom = res.headers.get('X-Comtrade-Blend') || json.blend_from || null;
+            // HTTP 200 with chunks missing (Worker body.partial): keep the rows,
+            // but the totals are not the whole year and must not read as one.
+            const partial = json.partial === true || Number(json.missing_chunks) > 0;
 
-            // Use a map to deduplicate arcs and combine X (Export) and M (Import) 'Mirror Data'
-            const arcMap = {};
+            // The commodity's HS basket. A code whose parent heading is also in
+            // the basket is the same trade counted twice (2709 ⊃ 270900), so
+            // only the parent is kept as a basket member; its children's rows
+            // fold into it below (#602 A05).
+            const basket = String(config.hsCode).split(',').map((h) => h.trim()).filter(Boolean)
+                .filter((h, _i, all) => !all.some((p) => p !== h && h.startsWith(p)));
+            // Which basket member a row belongs to; null = not this commodity.
+            // A row without cmdCode (older proxy responses) is the whole basket.
+            const memberOf = (cmd) => {
+                if (!cmd) return basket.length === 1 ? basket[0] : '*';
+                return basket.find((h) => cmd === h || cmd.startsWith(h)) || null;
+            };
+            // kg as reported: null when the filer left it blank, never 0
+            // (#602 A03). A real 0 stays 0.
+            const kgOf = (v) => (v === null || v === undefined || v === '' || !Number.isFinite(Number(v)) ? null : Number(v));
+
+            // Two passes. Within one period and one HS line, a route appears up
+            // to twice -- the exporter's report (X) and the importer's mirror
+            // (M) -- and the larger of the two wins, as before. Then the winners
+            // are summed: across HS lines of the basket (cobalt is 8105 + 2822 +
+            // 283329, three different goods, so all three are trade) and across
+            // periods of a multi-month request. The key used to leave HS out,
+            // so a basket's lines competed as if they were mirror reports and
+            // only the largest survived (#602 A01).
+            const perPeriod = {};
 
             // Position lookup. COUNTRIES is a 65-entry hand-written table; anything
             // outside it used to be dropped here, which is why newly added
@@ -565,6 +697,13 @@
                 || (window.CountryCoords ? window.CountryCoords(name) : null);
 
             json.data.forEach(row => {
+                if (!['X', 'M'].includes(row.flowCode)) return;
+                const cmd = String(row.cmdCode || '');
+                const hs = memberOf(cmd);
+                if (!hs) return;
+                // Narrow products (manganese ore, uranium) take only their own
+                // line, and a row that does not say which line it is is not it.
+                if (config.strictHs && cmd !== config.hsCode) return;
                 // Fall back to the names Comtrade ships with the row, so a code
                 // missing from M49_MAP no longer silently loses the route.
                 const reporterName = M49_MAP[row.reporterCode] || row.reporterDesc;
@@ -573,9 +712,11 @@
                 if (!posOf(reporterName) || !posOf(partnerName)) return;
                 if (reporterName === partnerName) return; // Ignore domestic trade
 
-                const tradeValue = row.primaryValue || 0;  // USD
-                const netWeight = row.netWgt || 0;          // kg
-                if (tradeValue <= 0) return;
+                const tradeValue = Number(row.primaryValue);  // USD, full precision
+                // A route on the map is a value flow; a row with no or zero USD
+                // draws nothing (weight-only rows are a monthly-table matter).
+                if (!(tradeValue > 0)) return;
+                const netWeight = kgOf(row.netWgt);
 
                 let sourceName, targetName;
                 if (row.flowCode === "M") {
@@ -586,27 +727,77 @@
                     targetName = partnerName;
                 }
 
-                const arcKey = `${sourceName}-${targetName}`;
-                const volume = Math.round(tradeValue / 1000000); // Millions USD
-                const netWeightMt = Math.round(netWeight / 1000000000 * 100) / 100;
+                const periodKey = `${row.period ?? ''}|${hs}|${sourceName}|${targetName}`;
+                const seen = perPeriod[periodKey];
+                if (!seen || seen.usdValue < tradeValue) {
+                    perPeriod[periodKey] = { sourceName, targetName, hs, usdValue: tradeValue, netWeight, year: String(row.period ?? '') };
+                }
+            });
 
-                if (!arcMap[arcKey] || arcMap[arcKey].usdValue < tradeValue) {
+            // A blended response carries one year per route, but check anyway:
+            // two years of one route must never be added together.
+            if (blendFrom) {
+                const newest = {};
+                for (const r of Object.values(perPeriod)) {
+                    const k = `${r.sourceName}|${r.targetName}`;
+                    if (!newest[k] || r.year > newest[k]) newest[k] = r.year;
+                }
+                for (const [k, r] of Object.entries(perPeriod)) {
+                    if (r.year !== newest[`${r.sourceName}|${r.targetName}`]) delete perPeriod[k];
+                }
+            }
+
+            const arcMap = {};
+            for (const r of Object.values(perPeriod)) {
+                const arcKey = `${r.sourceName}-${r.targetName}`;
+                if (!arcMap[arcKey]) {
                     arcMap[arcKey] = {
-                        sourceName,
-                        targetName,
-                        sourcePosition: posOf(sourceName),
-                        targetPosition: posOf(targetName),
-                        volume,
-                        netWeightMt,
+                        sourceName: r.sourceName,
+                        targetName: r.targetName,
+                        sourcePosition: posOf(r.sourceName),
+                        targetPosition: posOf(r.targetName),
+                        volume: 0,
+                        netWeightMt: null,
                         percentage: 0,
                         typeName: config.hsCode,
                         sourceColor: config.colorScheme.source,
                         targetColor: config.colorScheme.target,
-                        usdValue: tradeValue,
+                        usdValue: 0,
+                        netWeightKg: null,
+                        // kg per HS line. Ore, oxide and metal tonnes are not
+                        // one quantity, so a multi-line basket keeps them apart.
+                        weightByHs: {},
+                        weightPartial: false,
+                        period,
+                        freq,
+                        blendFrom,
+                        partial,
+                        dataYear: r.year || period,
                         dataSource: "UN Comtrade (comtradeapi.un.org)"
                     };
                 }
-            });
+                const a = arcMap[arcKey];
+                a.usdValue += r.usdValue;
+                if (r.netWeight === null) {
+                    a.weightPartial = true;
+                } else {
+                    a.weightByHs[r.hs] = (a.weightByHs[r.hs] || 0) + r.netWeight;
+                }
+            }
+            // Raw USD and kg are what every sum, share and rank below uses.
+            // `volume` (M USD) and `netWeightMt` are the same numbers in display
+            // units, unrounded: rounding here turned a $400k route into 0 and
+            // dropped it from every ranking (#602 A02). Formatting rounds.
+            for (const a of Object.values(arcMap)) {
+                a.volume = a.usdValue / 1e6;
+                const lines = Object.keys(a.weightByHs);
+                // One HS line: its kg is the route's weight. Several: no single
+                // tonnage (shown per line), and partial weight is never a total.
+                if (lines.length === 1 && basket.length === 1) {
+                    a.netWeightKg = a.weightByHs[lines[0]];
+                    a.netWeightMt = a.weightPartial ? null : a.netWeightKg / 1e9;
+                }
+            }
 
             // No Comex Stat override here any more.
             //
@@ -628,15 +819,15 @@
             // Keep one decimal: trade is dominated by a few mega-routes (Brazil->China
             // alone is ~71% of soybeans), so Math.round() collapsed every remaining
             // route to 0 and the map's `percentage >= 1` filter then dropped ~95% of them.
-            const totalVol = arcs.reduce((sum, a) => sum + a.volume, 0);
+            const totalUsd = arcs.reduce((sum, a) => sum + a.usdValue, 0);
             arcs.forEach(a => {
-                a.percentage = totalVol > 0 ? Math.round((a.volume / totalVol) * 1000) / 10 : 0;
+                a.percentage = totalUsd > 0 ? Math.round((a.usdValue / totalUsd) * 1000) / 10 : 0;
             });
 
-            // Sort by volume descending
-            arcs.sort((a, b) => b.volume - a.volume);
+            // Sort by value descending
+            arcs.sort((a, b) => b.usdValue - a.usdValue);
 
-            console.log(`[Comtrade] ✅ ${commodityKey}: ${arcs.length} trade flows loaded (Total: $${totalVol}M)`);
+            console.log(`[Comtrade] ✅ ${commodityKey} ${period || '?'}: ${arcs.length} trade flows loaded (Total: $${(totalUsd / 1e6).toFixed(1)}M)`);
             return arcs;
 
         } catch (e) {
@@ -815,8 +1006,28 @@
                 "default": { production: "N/A", import: "N/A", consumption: "N/A", price: "N/A" }
             }
         },
+        light_oils: {
+            title: "에너지: 경질유 (HS 271012)",
+            desc: "납사·휘발유 등 경질유 무역 흐름 · HS 271012",
+            // Shown in the map's source note (app.js comtradeSourceText).
+            hsNote: "HS 271012 경질유: 납사·휘발유 등 합산(제품별 구분 불가)",
+            // Representative products inside the line. The trade map cannot
+            // split them; the view describes each and tags each report with
+            // the one it is about (trade.js). `match` is tested against the
+            // report's title (original, English and Korean).
+            subProducts: [
+                { id: "naphtha", label: "납사", desc: "석유화학 원료(에틸렌·프로필렌), 휘발유 배합 원료. 한국·일본·대만 등 아시아가 주 수입처",
+                  match: "naphtha|납사|나프타|石脑油|ナフサ" },
+                { id: "gasoline", label: "휘발유", desc: "자동차 연료. 경질유 교역에서 가장 큰 몫",
+                  match: "gasoline|petrol(?!eum|ochem)|motor spirit|휘발유|汽油|ガソリン" },
+            ],
+            totalVolume: "—",
+            topExporter: "—",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 271012)
+            news: defaultNews("light oils")
+        },
         oil: {
-            title: "글로벌 에너지: 원유",
+            title: "에너지: 원유",
             desc: "전 세계 주요 산유국 및 소비국 간 원유 물동량 흐름",
             totalVolume: "98.5 Million bpd",
             topExporter: "사우디아라비아",
@@ -839,7 +1050,7 @@
             }
         },
         gas: {
-            title: "글로벌 에너지: 천연가스 (Natural Gas)",
+            title: "에너지: 천연가스 (Natural Gas)",
             desc: "전 세계 주요 LNG 및 파이프라인 가스 물동량 흐름",
             totalVolume: "4.04 Trillion cubic meters",
             topExporter: "미국 / 카타르",
@@ -861,7 +1072,7 @@
             }
         },
         gold: {
-            title: "글로벌 귀금속: 금 (Gold)",
+            title: "귀금속: 금 (Gold)",
             desc: "스위스 정련소 및 주요 소비국 간의 금 무역 흐름",
             totalVolume: "4,741 Tonnes",
             topExporter: "스위스",
@@ -869,7 +1080,7 @@
             news: defaultNews("Gold")
         },
         silver: {
-            title: "글로벌 귀금속: 은 (Silver)",
+            title: "귀금속: 은 (Silver)",
             desc: "산업용 및 투자용 은 글로벌 무역 흐름",
             totalVolume: "32,000 Tonnes",
             topExporter: "멕시코 / 페루",
@@ -877,7 +1088,7 @@
             news: defaultNews("Silver")
         },
         copper: {
-            title: "글로벌 비철금속: 구리 (Copper)",
+            title: "비철금속: 구리 (Copper)",
             desc: "전기차/인프라 핵심 소재인 구리의 물동량 (정광 및 제련)",
             totalVolume: "26.5 Million Tonnes",
             topExporter: "칠레",
@@ -885,7 +1096,7 @@
             news: defaultNews("Copper")
         },
         zinc: {
-            title: "글로벌 비철금속: 아연 (Zinc)",
+            title: "비철금속: 아연 (Zinc)",
             desc: "도금용 주요 소재 아연 무역 흐름",
             totalVolume: "13.2 Million Tonnes",
             topExporter: "호주",
@@ -893,15 +1104,37 @@
             news: defaultNews("Zinc")
         },
         aluminum: {
-            title: "글로벌 비철금속: 알루미늄",
+            title: "비철금속: 알루미늄",
             desc: "경량화 핵심 소재 알루미늄 무역 흐름",
             totalVolume: "68.9 Million Tonnes",
             topExporter: "중국 (가공품)",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 7601)
             news: defaultNews("Aluminum")
         },
+        bauxite: {
+            title: "광물: 보크사이트 (Bauxite)",
+            desc: "알루미늄광·정광 수출입 · 국가 클릭 후 연간·월별 확인",
+            hsNote: "HS2606 알루미늄광·정광(보크사이트) · 알루미나(HS281820)·알루미늄 금속(HS7601) 제외 · 신고·미러 자료 조회 범위",
+            totalVolume: "—",
+            observedOnly: true,
+            topExporter: "—",
+            arcs: [],
+            news: {} // No invented price, production, news or global total.
+        },
+        uranium: {
+            title: "에너지: 천연우라늄·화합물",
+            desc: "천연우라늄 수출입 · 국가 클릭 후 연간·월별 확인",
+            hsNote: "HS284410 천연우라늄·화합물 및 관련 혼합물 · 농축우라늄·토륨·핵연료 제외 · 신고 중량은 우라늄 함유량(tU)이 아님 · 신고·미러 자료 조회 범위",
+            totalVolume: "—", topExporter: "—", observedOnly: true, arcs: [], news: {}
+        },
+        uranium_ore: {
+            title: "에너지: 우라늄 광석·정광",
+            desc: "우라늄광·정광 수출입 · 천연우라늄·화합물과 별도 표시",
+            hsNote: "HS261210 우라늄광·정광 · HS2612 전체(토륨광 포함)·HS284410과 합산하지 않음 · 신고 중량은 우라늄 함유량(tU)이 아님 · 신고·미러 자료 조회 범위",
+            totalVolume: "—", topExporter: "—", observedOnly: true, arcs: [], news: {}
+        },
         nickel: {
-            title: "글로벌 전략광물: 니켈",
+            title: "전략광물: 니켈",
             desc: "스테인리스·배터리용 니켈 무역 흐름",
             totalVolume: "3.6 Million Tonnes",
             topExporter: "인도네시아",
@@ -909,7 +1142,7 @@
             news: defaultNews("nickel")
         },
         cobalt: {
-            title: "글로벌 전략광물: 코발트",
+            title: "전략광물: 코발트",
             desc: "배터리 양극재용 코발트 무역 흐름",
             totalVolume: "0.23 Million Tonnes",
             topExporter: "콩고민주공화국",
@@ -917,7 +1150,7 @@
             news: defaultNews("cobalt")
         },
         lithium: {
-            title: "글로벌 전략광물: 리튬",
+            title: "전략광물: 리튬",
             desc: "탄산리튬 기준 무역 흐름",
             totalVolume: "1.0 Million Tonnes LCE",
             topExporter: "칠레 / 호주",
@@ -925,7 +1158,7 @@
             news: defaultNews("lithium")
         },
         graphite: {
-            title: "글로벌 전략광물: 흑연",
+            title: "전략광물: 흑연",
             desc: "음극재용 천연흑연 무역 흐름",
             totalVolume: "1.6 Million Tonnes",
             topExporter: "중국",
@@ -933,7 +1166,7 @@
             news: defaultNews("graphite")
         },
         rare_earths: {
-            title: "글로벌 전략광물: 희토류",
+            title: "전략광물: 희토류",
             desc: "희토류 화합물 무역 흐름",
             totalVolume: "0.35 Million Tonnes",
             topExporter: "중국",
@@ -941,7 +1174,7 @@
             news: defaultNews("rare_earths")
         },
         iron_ore: {
-            title: "글로벌 철강원료: 철광석",
+            title: "철강원료: 철광석",
             desc: "제철용 철광석 무역 흐름",
             totalVolume: "1,600 Million Tonnes",
             topExporter: "호주",
@@ -949,15 +1182,13 @@
             news: defaultNews("iron_ore")
         },
         manganese: {
-            title: "글로벌 철강원료: 망간",
-            desc: "합금철용 망간광 무역 흐름",
-            totalVolume: "20 Million Tonnes",
-            topExporter: "남아프리카공화국",
-            arcs: [],  // Lazy loaded from UN Comtrade API
-            news: defaultNews("manganese")
+            title: "철강원료: 망간광·정광",
+            desc: "망간광·정광 수출입 · 페로망간과 분리",
+            hsNote: "HS2602 망간광·정광 · 페로망간(HS720211·720219) 제외 · 중량은 망간 함유량이 아닌 신고 순중량 · 신고·미러 자료 조회 범위",
+            totalVolume: "—", topExporter: "—", observedOnly: true, arcs: [], news: {}
         },
         chromium: {
-            title: "글로벌 철강원료: 크롬",
+            title: "철강원료: 크롬",
             desc: "스테인리스용 크롬광 무역 흐름",
             totalVolume: "41 Million Tonnes",
             topExporter: "남아프리카공화국",
@@ -965,7 +1196,7 @@
             news: defaultNews("chromium")
         },
         tin: {
-            title: "글로벌 산업금속: 주석",
+            title: "산업금속: 주석",
             desc: "납땜·도금용 주석 무역 흐름",
             totalVolume: "0.38 Million Tonnes",
             topExporter: "인도네시아",
@@ -973,7 +1204,7 @@
             news: defaultNews("tin")
         },
         lead: {
-            title: "글로벌 산업금속: 납",
+            title: "산업금속: 납",
             desc: "축전지용 납 무역 흐름",
             totalVolume: "4.5 Million Tonnes",
             topExporter: "중국",
@@ -981,7 +1212,7 @@
             news: defaultNews("lead")
         },
         platinum: {
-            title: "글로벌 귀금속: 백금족",
+            title: "귀금속: 백금족",
             desc: "백금·팔라듐 무역 흐름",
             totalVolume: "0.4 Thousand Tonnes",
             topExporter: "남아프리카공화국",
@@ -989,7 +1220,7 @@
             news: defaultNews("platinum")
         },
         wheat: {
-            title: "글로벌 농산물: 밀 (Wheat)",
+            title: "농산물: 밀 (Wheat)",
             desc: "글로벌 주요 식량 자원인 밀의 무역 흐름",
             totalVolume: "215 Million Tonnes",
             topExporter: "러시아",
@@ -997,7 +1228,7 @@
             news: defaultNews("Wheat")
         },
         corn: {
-            title: "글로벌 농산물: 옥수수 (Corn)",
+            title: "농산물: 옥수수 (Corn)",
             desc: "사료 및 바이오연료용 옥수수 무역 흐름",
             totalVolume: "190 Million Tonnes",
             topExporter: "미국",
@@ -1005,15 +1236,31 @@
             news: defaultNews("Corn")
         },
         soybeans: {
-            title: "글로벌 농산물: 대두 (Soybeans)",
+            title: "농산물: 대두 (Soybeans)",
             desc: "단백질 사료 및 식용유의 핵심, 대두 무역 흐름",
             totalVolume: "172 Million Tonnes",
             topExporter: "브라질",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 1201)
             news: defaultNews("Soybeans")
         },
+        rubber: {
+            title: "농산물: 천연고무 (Natural Rubber)",
+            desc: "타이어 원료인 천연고무(HS 4001), 태국·인도네시아·베트남·코트디부아르발 수출입 무역 흐름",
+            totalVolume: "생산 ~14.5 Million Tonnes",
+            topExporter: "태국",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 4001)
+            news: defaultNews("Rubber")
+        },
+        palm_oil: {
+            title: "농산물: 팜유 (Palm Oil)",
+            desc: "세계 최대 식물성 기름, 인도네시아·말레이시아발 팜유 수출입 무역 흐름",
+            totalVolume: "~45 Million Tonnes",
+            topExporter: "인도네시아",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 1511)
+            news: defaultNews("Palm Oil")
+        },
         sugar: {
-            title: "글로벌 농산물: 설탕 (Sugar)",
+            title: "농산물: 설탕 (Sugar)",
             desc: "사탕수수 기반 설탕 수출입 무역 흐름",
             totalVolume: "64 Million Tonnes",
             topExporter: "브라질",
@@ -1021,7 +1268,7 @@
             news: defaultNews("Sugar")
         },
         coffee: {
-            title: "글로벌 농산물: 커피 (Coffee)",
+            title: "농산물: 커피 (Coffee)",
             desc: "전 세계 원두(아라비카/로부스타) 수출입 무역 흐름",
             totalVolume: "140 Million Bags",
             topExporter: "브라질 / 에티오피아",

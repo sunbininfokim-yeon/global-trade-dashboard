@@ -1,0 +1,59 @@
+name: Weekly Indonesia Yield Forecast
+
+# Indonesia had no scheduled refresh; its forecast JSON was last written by
+# hand on 2026-08-03. Refreshes the USDA PSD palm-oil slice (monthly WASDE
+# revisions) and rewrites the forecast with current weather.
+on:
+  schedule:
+    # Fri 17:56 UTC -- after Thailand (17:34), before the multi-country batch.
+    - cron: '56 17 * * 5'
+  workflow_dispatch:
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scipy scikit-learn
+
+      - name: Refresh USDA PSD palm oil
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m indonesia.palm_psd fetch || echo "::warning::PSD refresh failed; using the committed slice"
+
+      - name: Refresh palm weather-condition backtest
+        # Offline: re-scores past seasons from the committed feature table.
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m indonesia.palm_conditions backtest
+
+      - name: Run forecast
+        # No API keys: NASA POWER, Open-Meteo, NOAA CPC, USDA PSD are open.
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m indonesia.run_forecast
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/indonesia_yield_forecast.json" \
+                  "New for anti/scripts/yield_model/indonesia/training/psd_palm_indonesia.csv" \
+                  "New for anti/scripts/yield_model/indonesia/training/palm_conditions_backtest.json"
+          git commit -m "chore: weekly Indonesia yield forecast refresh" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push

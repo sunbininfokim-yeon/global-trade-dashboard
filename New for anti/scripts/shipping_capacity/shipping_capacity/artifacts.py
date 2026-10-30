@@ -4,10 +4,48 @@ from __future__ import annotations
 
 import hashlib
 import json
+import copy
+from datetime import date, timedelta
 from typing import Any
+
+from shipping_capacity.traffic_summary import CONTRACT_VERSION, build_traffic_summary
 
 
 SCREEN_HISTORY_POINT_LIMIT = 180
+SCREEN_METRIC_HISTORY_POINT_LIMIT = 730
+# 52 weeks, so each prior-year point falls on the same weekday. Only the ship
+# types the chokepoint screen draws get one; the 730-day source stays in
+# diagnostics.
+YEAR_AGO_SHIFT_DAYS = 364
+YEAR_AGO_METRICS = ("all", "container", "dry_bulk", "tanker")
+
+
+def _year_ago_values(
+    screen_history: list[dict[str, Any]], full_history: list[dict[str, Any]]
+) -> list[float | None]:
+    """Values 52 weeks before each screen date, aligned by index; gaps stay null."""
+
+    by_date = {
+        row.get("date"): row.get("value")
+        for row in full_history
+        if isinstance(row, dict)
+    }
+    values: list[float | None] = []
+    for row in screen_history:
+        try:
+            prior = (
+                date.fromisoformat(str(row.get("date"))) - timedelta(days=YEAR_AGO_SHIFT_DAYS)
+            ).isoformat()
+        except ValueError:
+            values.append(None)
+            continue
+        value = by_date.get(prior)
+        values.append(
+            float(value)
+            if isinstance(value, (int, float)) and not isinstance(value, bool)
+            else None
+        )
+    return values
 
 
 def _bundle_id(snapshot: dict[str, Any]) -> str:
@@ -16,6 +54,8 @@ def _bundle_id(snapshot: dict[str, Any]) -> str:
         "model_version": snapshot.get("model", {}).get("version"),
         "route_ids": [row["id"] for row in snapshot.get("routes", [])],
         "scenario_ids": [row["id"] for row in snapshot.get("scenarios", [])],
+        "traffic_contract_version": CONTRACT_VERSION,
+        "screen_metric_history_point_limit": SCREEN_METRIC_HISTORY_POINT_LIMIT,
     }
     encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()[:20]
@@ -61,7 +101,7 @@ def _screen_route(route: dict[str, Any]) -> dict[str, Any]:
 def _screen_chokepoints_live(
     live_status: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
-    """Keep the public screen artifact compact while diagnostics retain 730 days."""
+    """Keep summaries compact; expose up to two years for the charted metrics."""
 
     screen_status: dict[str, dict[str, Any]] = {}
     for chokepoint_id, status in live_status.items():
@@ -76,21 +116,50 @@ def _screen_chokepoints_live(
             if not isinstance(metric_status, dict):
                 continue
             full_metric_history = metric_status.get("history", [])
+            metric_limit = SCREEN_METRIC_HISTORY_POINT_LIMIT if metric_key in YEAR_AGO_METRICS else SCREEN_HISTORY_POINT_LIMIT
             metric_history = (
-                full_metric_history[-SCREEN_HISTORY_POINT_LIMIT:]
+                full_metric_history[-metric_limit:]
                 if isinstance(full_metric_history, list)
                 else []
             )
+            year_ago = None
+            if metric_key in YEAR_AGO_METRICS and isinstance(full_metric_history, list):
+                values = _year_ago_values(metric_history, full_metric_history)
+                # Last 7 published days against the same 7 weekdays a year
+                # earlier; any gap on either side means no comparison.
+                recent = [row.get("value") for row in metric_history[-7:]]
+                prior = values[-7:]
+                comparable = (
+                    len(recent) == 7
+                    and all(isinstance(value, (int, float)) for value in recent)
+                    and all(value is not None for value in prior)
+                )
+                recent_mean = sum(recent) / 7 if comparable else None
+                prior_mean = sum(prior) / 7 if comparable else None
+                year_ago = {
+                    "shift_days": YEAR_AGO_SHIFT_DAYS,
+                    "basis": "same_weekday_52_weeks_earlier_aligned_to_history_index",
+                    "available_point_count": sum(value is not None for value in values),
+                    "values": values,
+                    "recent_7d_mean": round(recent_mean, 1) if recent_mean is not None else None,
+                    "year_ago_7d_mean": round(prior_mean, 1) if prior_mean is not None else None,
+                    "change_pct": (
+                        round((recent_mean / prior_mean - 1) * 100, 1)
+                        if recent_mean is not None and prior_mean
+                        else None
+                    ),
+                }
             screen_metric_histories[metric_key] = {
                 **metric_status,
                 "history": metric_history,
+                "year_ago": year_ago,
                 "history_point_count": len(metric_history),
                 "history_source_point_count": (
                     len(full_metric_history)
                     if isinstance(full_metric_history, list)
                     else 0
                 ),
-                "history_screen_point_limit": SCREEN_HISTORY_POINT_LIMIT,
+                "history_screen_point_limit": metric_limit,
             }
         screen_status[chokepoint_id] = {
             **status,
@@ -226,6 +295,9 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
     the fleet/routes/chokepoint list screens should not have to download it.
     """
 
+    snapshot = copy.deepcopy(snapshot)
+    for status in snapshot.get("chokepoints_live", {}).values():
+        status["traffic_summary"] = build_traffic_summary(status)
     bundle_id = _bundle_id(snapshot)
     routes = snapshot.get("routes", [])
     public_count = sum(
@@ -291,6 +363,9 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
         "generated_at": snapshot["generated_at"],
         "ui_scenario_grid": _screen_grid(snapshot["ui_scenario_grid"]),
     }
+    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend"):
+        if key in snapshot:
+            screen[key] = snapshot[key]
     diagnostics = {
         "schema_version": "shipping-capacity-diagnostics-v1",
         "artifact_type": "model_diagnostics",
@@ -302,6 +377,8 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
             if key
             not in {
                 "schema_version",
+                "artifact_type",
+                "bundle_id",
                 "generated_at",
                 "event_observations",
                 "historical_event_calibration",
@@ -337,6 +414,12 @@ def golden_contract_failures(
     """Compare every UI-visible route and simulator value with model diagnostics."""
 
     failures: list[str] = []
+    for point_id, status in screen.get("chokepoints_live", {}).items():
+        if status.get("traffic_summary") != diagnostics.get("chokepoints_live", {}).get(point_id, {}).get("traffic_summary"):
+            failures.append(f"traffic_summary_screen_diagnostics_mismatch:{point_id}")
+    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend"):
+        if screen.get(key) != diagnostics.get(key):
+            failures.append(f"{key}_screen_diagnostics_mismatch")
     bundle_id_values = {screen.get("bundle_id"), diagnostics.get("bundle_id"), scenario_grid.get("bundle_id")}
     if None in bundle_id_values or len(bundle_id_values) != 1:
         failures.append("bundle_id_mismatch")

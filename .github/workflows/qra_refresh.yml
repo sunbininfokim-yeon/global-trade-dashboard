@@ -1,0 +1,68 @@
+name: Refresh Treasury QRA (refunding windows)
+
+# build_qra_engine.py had no workflow -- qra_engine_v1.json was whatever a
+# human last ran locally (46 days stale on 2026-09-24, and a new quarter's
+# announcement would have sat unread indefinitely). Wiring it up exposed that
+# it could not have run unattended anyway: Treasury re-minified its archive
+# pages (unquoted attributes), and every regex-based discovery/link parser
+# silently matched nothing -- "0 archive docs", "0 events", exit 0. Those
+# parsers now use a real HTML parser, and build.py refuses to overwrite a
+# published engine file with fewer events than it already has.
+#
+# The Treasury announces financing estimates on the Monday of refunding week
+# (Feb/May/Aug/Nov) and publishes the statement, TBAC report and Sources &
+# Uses PDF over the next few days, so the run is daily through the first ten
+# days of those months. Every run but the one that finds new documents just
+# reproduces the file (docs are cached between runs, so it is one page fetch
+# plus the Fiscal Data TGA overlay).
+
+on:
+  schedule:
+    - cron: '20 19 1-10 2,5,8,11 *'
+  workflow_dispatch:
+
+jobs:
+  refresh-qra:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        working-directory: New for anti/scripts/macro_monitor
+        run: pip install pytest beautifulsoup4 pypdf
+      - name: Restore downloaded Treasury documents
+        uses: actions/cache@v4
+        with:
+          path: New for anti/scripts/macro_monitor/cache/qra
+          key: qra-docs-${{ github.run_id }}
+          restore-keys: qra-docs-
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m pytest tests/test_qra_engine.py tests/test_qra_history.py tests/test_tbill.py -v
+      - name: Build QRA engine
+        working-directory: New for anti/scripts/macro_monitor
+        # Fails (and commits nothing) if the rebuild has fewer events than
+        # the published file -- a broken scrape must not replace good data.
+        run: python build_qra_engine.py --download
+      - name: Graft into macro_monitor_v1.json
+        working-directory: New for anti/scripts/macro_monitor
+        run: python refresh_qra_quarters_in_pack.py
+      - name: Refresh T-bill rows for the (possibly new) quarter
+        working-directory: New for anti/scripts/macro_monitor
+        # A new refunding quarter makes the stored bill file stale (the graft
+        # above drops it rather than mix quarters). Best effort: if Fiscal Data
+        # is down the weekly tbill_issuance_refresh.yml fills it in.
+        run: python refresh_tbill_in_pack.py || true
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/qra_engine_v1.json" \
+                  "New for anti/public/data/tbill_issuance_v1.json" \
+                  "New for anti/public/data/macro_monitor_v1.json"
+          git commit -m "chore: refresh Treasury QRA" || exit 0
+          git push

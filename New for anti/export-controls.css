@@ -1,0 +1,222 @@
+/* 수출통제 모니터 (export-controls.js). Level colours match the trade-map
+   overlay in style.css (.ctl-*): prohibited red, restricted orange, watch amber. */
+
+/* The commodity template's trade-volume stats mean nothing here. */
+#commodity-info-panel.ec-mode .stats-container { display: none; }
+
+#export-controls-panel { display: flex; flex-direction: column; min-height: 0; flex: 1 1 auto; }
+.ec-panel { overflow-y: auto; min-height: 0; padding-right: 2px; }
+
+.ec-filters { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.ec-filter {
+    font: inherit; font-size: 11.5px; color: #cbd5e1; cursor: pointer;
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(148, 163, 184, .1); border: 1px solid rgba(148, 163, 184, .2);
+}
+.ec-filter span { color: #64748b; margin-left: 2px; font-variant-numeric: tabular-nums; }
+.ec-filter:hover { border-color: rgba(125, 211, 252, .5); }
+.ec-filter.is-on { background: rgba(56, 189, 248, .16); border-color: rgba(56, 189, 248, .55); color: #e0f2fe; }
+.ec-filter.is-on span { color: #7dd3fc; }
+.ec-filter:focus-visible, .ec-country:focus-visible, .ec-back:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; }
+
+.ec-country {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    font: inherit; text-align: left; cursor: pointer; color: inherit;
+    padding: 8px 2px; background: none; border: 0; border-top: 1px solid rgba(148, 163, 184, .14);
+}
+.ec-country:hover .ec-name { color: #7dd3fc; }
+.ec-name { font-size: 12.5px; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
+.ec-iso { font-size: 10px; color: #64748b; font-weight: 400; margin-left: 4px; }
+.ec-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-left: auto; justify-content: flex-end; }
+.ec-chip, .ec-lv {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 999px; white-space: nowrap;
+    background: rgba(148, 163, 184, .14); color: #cbd5e1;
+}
+.ec-lv { font-size: 10px; }
+.ec-chip.ctl-prohibited, .ec-lv.ctl-prohibited { color: #fecaca; background: rgba(248, 113, 113, .18); }
+.ec-chip.ctl-restricted, .ec-lv.ctl-restricted { color: #fed7aa; background: rgba(251, 146, 60, .16); }
+.ec-chip.ctl-watch, .ec-lv.ctl-watch { color: #fef08a; background: rgba(250, 204, 21, .14); }
+.ec-chip.ctl-lifted, .ec-lv.ctl-lifted { opacity: .6; }
+
+.ec-back {
+    font: inherit; font-size: 11.5px; color: #7dd3fc; cursor: pointer;
+    background: none; border: 0; padding: 2px 0; margin-bottom: 8px;
+}
+.ec-country-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ec-country-head h3 { margin: 0; font-size: 15px; color: #f1f5f9; }
+.ec-count { font-size: 11px; color: #94a3b8; }
+.ec-cat {
+    margin: 14px 0 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .08em;
+    color: #94a3b8; text-transform: uppercase;
+}
+.ec-items { list-style: none; margin: 0; padding: 0; }
+.ec-item {
+    padding: 8px 10px; margin-top: 5px; border-radius: 6px;
+    background: rgba(15, 23, 42, .45); border-left: 3px solid rgba(148, 163, 184, .4);
+}
+.ec-item.ec-prohibited { border-left-color: #f87171; }
+.ec-item.ec-restricted { border-left-color: #fb923c; }
+.ec-item.ec-watch { border-left-color: #facc15; }
+.ec-item.ec-lifted { opacity: .62; }
+.ec-top { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; color: #e2e8f0; }
+.ec-measure { font-size: 11.5px; color: #cbd5e1; margin-top: 4px; line-height: 1.5; }
+.ec-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 10.5px; color: #94a3b8; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.ec-src { font-size: 10px; color: #64748b; margin-top: 4px; line-height: 1.5; }
+.ec-src a { color: #7dd3fc; }
+.ec-recheck { color: #fbbf24; }
+
+.ec-empty { font-size: 12px; color: #94a3b8; line-height: 1.6; padding: 10px 0; }
+.ec-warn { font-size: 11.5px; color: #fca5a5; margin: 10px 0 0; }
+.ec-foot { font-size: 10px; color: #64748b; line-height: 1.55; margin: 14px 0 4px; }
+
+/* Tooltip pills reuse the panel's level colours. */
+#tooltip .ec-lv { margin-left: 8px; }
+
+/* Tabs: 현행 조치 (curated) | 최근 공고 (regulator feed). */
+.ec-tabs { display: flex; gap: 2px; margin-bottom: 10px; border-bottom: 1px solid rgba(148, 163, 184, .18); }
+.ec-tab {
+    font: inherit; font-size: 12.5px; font-weight: 600; color: #94a3b8; cursor: pointer;
+    background: none; border: 0; border-bottom: 2px solid transparent; padding: 7px 10px 8px; margin-bottom: -1px;
+}
+.ec-tab span { font-weight: 400; color: #64748b; margin-left: 2px; font-variant-numeric: tabular-nums; }
+.ec-tab:hover { color: #e2e8f0; }
+.ec-tab.is-on { color: #f1f5f9; border-bottom-color: #38bdf8; }
+.ec-tab:focus-visible, .ec-more:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; }
+.ec-filter-sm { font-size: 10.5px; padding: 3px 8px; }
+
+.ec-sect { margin: 14px 0 0; font-size: 12px; color: #e2e8f0; }
+.ec-cat-n { font-weight: 400; color: #64748b; letter-spacing: 0; text-transform: none; margin-left: 4px; }
+
+/* Notice rows. */
+.ec-notices { list-style: none; margin: 0; padding: 0; }
+.ec-notice { padding: 9px 2px; border-top: 1px solid rgba(148, 163, 184, .14); }
+.ec-n-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 10.5px; color: #94a3b8; }
+.ec-n-date { font-variant-numeric: tabular-nums; color: #cbd5e1; }
+.ec-n-body { color: #94a3b8; text-decoration: none; }
+a.ec-n-body:hover { color: #7dd3fc; text-decoration: underline; }
+.ec-n-measure {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 999px; margin-left: auto;
+    background: rgba(148, 163, 184, .14); color: #cbd5e1; white-space: nowrap;
+}
+.ec-n-measure.m-export_ban, .ec-n-measure.m-entity_list { color: #fecaca; background: rgba(248, 113, 113, .18); }
+.ec-n-measure.m-export_restriction, .ec-n-measure.m-sanctions, .ec-n-measure.m-countermeasure { color: #fed7aa; background: rgba(251, 146, 60, .16); }
+.ec-n-measure.m-list_adjustment, .ec-n-measure.m-enforcement { color: #fef08a; background: rgba(250, 204, 21, .13); }
+.ec-n-measure.m-suspension { color: #bbf7d0; background: rgba(74, 222, 128, .14); }
+.ec-n-title { display: block; margin-top: 4px; font-size: 12px; line-height: 1.5; color: #e2e8f0; text-decoration: none; }
+a.ec-n-title:hover { color: #7dd3fc; }
+.ec-n-go { font-size: 10px; color: #7dd3fc; white-space: nowrap; }
+.ec-n-orig { margin-top: 3px; font-size: 10.5px; line-height: 1.45; color: #64748b; }
+.ec-n-tags { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-top: 4px; font-size: 10.5px; color: #c4b5fd; }
+
+.ec-more {
+    display: block; width: 100%; margin-top: 8px; padding: 7px; cursor: pointer;
+    font: inherit; font-size: 11.5px; color: #7dd3fc;
+    background: rgba(56, 189, 248, .06); border: 1px solid rgba(56, 189, 248, .25); border-radius: 6px;
+}
+.ec-more:hover { background: rgba(56, 189, 248, .12); }
+
+/* "기한 경과": the until date passed; shown apart from live measures. */
+.ec-chip.ctl-expired, .ec-lv.ctl-expired { color: #fde68a; background: rgba(148, 163, 184, .16); border: 1px dashed rgba(251, 191, 36, .5); }
+.ec-item.ec-expired { border-left-color: #fbbf24; border-left-style: dashed; opacity: .8; }
+
+/* 현행 조치: 국가별 | 품목별. */
+.ec-bys { display: inline-flex; margin-bottom: 8px; border: 1px solid rgba(148, 163, 184, .25); border-radius: 7px; overflow: hidden; }
+.ec-by { font: inherit; font-size: 11.5px; color: #94a3b8; cursor: pointer; background: none; border: 0; padding: 4px 12px; }
+.ec-by + .ec-by { border-left: 1px solid rgba(148, 163, 184, .25); }
+.ec-by.is-on { background: rgba(56, 189, 248, .16); color: #e0f2fe; }
+.ec-by:focus-visible, .ec-scope input:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; }
+
+/* What each level means, in a line each. */
+.ec-levelkey { display: grid; gap: 3px; margin: 2px 0 8px; font-size: 10.5px; color: #94a3b8; }
+.ec-levelkey i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.ec-levelkey i.ctl-prohibited { background: #f87171; }
+.ec-levelkey i.ctl-restricted { background: #fb923c; }
+.ec-levelkey i.ctl-watch { background: #facc15; }
+.ec-levelkey i.ctl-expired { background: rgba(148, 163, 184, .5); border: 1px dashed #fbbf24; }
+
+.ec-scope { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: 11px; color: #cbd5e1; cursor: pointer; }
+.ec-scope span { color: #64748b; font-size: 10px; }
+
+/* 미국 관세·통상 정책 (us_tariffs_v1.json). Teal = the US's own colour on the map. */
+.ust-entry {
+    display: flex; flex-direction: column; gap: 2px; width: 100%; margin: 0 0 10px; padding: 8px 10px;
+    font: inherit; text-align: left; cursor: pointer; color: #ccfbf1;
+    background: rgba(45, 212, 191, .08); border: 1px solid rgba(45, 212, 191, .35); border-radius: 8px;
+}
+.ust-entry b { font-size: 12.5px; }
+.ust-entry span { font-size: 10.5px; color: #5eead4; }
+.ust-entry:hover { background: rgba(45, 212, 191, .14); }
+.ust-entry:focus-visible, .ust-pname:focus-visible { outline: 2px solid #2dd4bf; outline-offset: 1px; }
+.ust-lead { font-size: 11.5px; color: #cbd5e1; line-height: 1.55; margin: 6px 0 4px; }
+.ust-list { list-style: none; margin: 0; padding: 0; }
+.ust-item {
+    padding: 8px 10px; margin-top: 6px; border-radius: 6px;
+    background: rgba(15, 23, 42, .45); border-left: 3px solid #2dd4bf;
+}
+.ust-item.ust-expired, .ust-item.ust-struck_down, .ust-item.ust-ended { border-left-color: rgba(148, 163, 184, .5); }
+.ust-top { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #e2e8f0; }
+.ust-auth {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 4px; white-space: nowrap;
+    background: rgba(45, 212, 191, .14); color: #99f6e4;
+}
+.ust-status { margin-left: auto; font-size: 10px; color: #94a3b8; white-space: nowrap; }
+.ust-item.ust-active .ust-status { color: #5eead4; }
+.ust-item.ust-struck_down .ust-status { color: #fca5a5; }
+.ust-when { font-size: 10.5px; color: #94a3b8; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.ust-rate { font-size: 11.5px; color: #e2e8f0; margin-top: 4px; line-height: 1.5; }
+.ust-ended { font-size: 11px; color: #fecaca; margin-top: 4px; line-height: 1.5; }
+.ust-ended b { color: #fca5a5; margin-right: 4px; }
+.ust-scope { font-size: 11px; color: #94a3b8; margin-top: 4px; line-height: 1.5; }
+.ust-gone { margin-top: 12px; }
+.ust-gone summary { cursor: pointer; font-size: 11.5px; font-weight: 700; color: #94a3b8; }
+.ust-partner { padding: 8px 0; border-top: 1px solid rgba(148, 163, 184, .14); }
+.ust-pname { font: inherit; font-size: 12.5px; font-weight: 700; color: #5eead4; background: none; border: 0; padding: 0; cursor: pointer; }
+.ust-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 11px; }
+.ust-table th { text-align: left; font-weight: 600; color: #cbd5e1; padding: 3px 6px 3px 0; width: 30%; vertical-align: top; }
+.ust-table td { color: #e2e8f0; padding: 3px 0; vertical-align: top; line-height: 1.45; }
+.ust-table .ust-auth-cell { color: #64748b; width: 3.5em; text-align: right; white-space: nowrap; }
+.ust-toggle { margin-top: 8px; }
+.ust-toggle span { color: #64748b; font-size: 10px; margin-left: 2px; }
+.ust-top { flex-wrap: wrap; }
+.ust-verification { display: block; margin-top: 4px; font-size: 10px; line-height: 1.5; }
+.ust-checked { color: #99f6e4; }
+.ust-review { color: #fde68a; }
+.ust-tools { margin-top: 12px; }
+.ust-tools > summary, .ust-line-detail > summary { cursor: pointer; color: #7dd3fc; font-size: 11px; line-height: 1.5; }
+.ust-line-detail { margin-top: 5px; }
+.ust-item.ust-conditional, .ust-item.ust-investigation, .ust-item.ust-review_required { border-left-color: #fbbf24; }
+.ust-table td, .ust-scope, .ec-src { overflow-wrap: anywhere; }
+.ust-negotiation-brief { margin: 7px 0; padding-left: 8px; border-left: 2px solid #36516d; color: #cbd5e1; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+.ust-negotiation-brief b { color: #94a3b8; font-weight: 500; }
+.ust-negotiations { margin-top: 10px; }
+.ust-negotiations > summary { cursor: pointer; color: #7dd3fc; font-size: 11px; line-height: 1.6; }
+.ust-negotiations h5 { margin: 12px 0 5px; color: #cbd5e1; font-size: 11px; }
+.ust-negotiation-list { list-style: none; margin: 0; padding: 0; }
+.ust-negotiation-list li { margin: 6px 0; padding: 6px 8px; border-left: 2px solid #36516d; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+
+/* Independent, compact numeric pages for each country notice list. */
+.ec-pagination { display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin:10px 0 18px; }
+.ec-pagination button { border:1px solid #334155; background:#101c2e; color:#cbd5e1; border-radius:5px; min-width:30px; min-height:30px; cursor:pointer; }
+.ec-pagination button[aria-current="page"] { background:#164e63; border-color:#22d3ee; color:#ecfeff; }
+.ec-pagination button:focus-visible { outline:2px solid #38bdf8; outline-offset:2px; }
+.ec-pagination span { color:#94a3b8; font-size:11px; margin-left:5px; }
+.ec-n-summary { color:#cbd5e1; font-size:12px; line-height:1.65; margin:6px 0; }
+
+/* Country sanctions pilot; list types remain separate from catalogue levels. */
+.uss-section { margin:20px 0; border-top:1px solid #334155; padding-top:12px; font-size:12px; line-height:1.65; }
+.uss-section h4 { font-size:15px; margin:6px 0; }.uss-section h5 { font-size:12px; margin:12px 0 6px; }
+.uss-scope { color:#cbd5e1; }.uss-meta { color:#94a3b8; font-size:11px; overflow-wrap:anywhere; }
+.uss-tabs,.uss-pages { display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin:10px 0; }
+.uss-tabs button,.uss-pages button { color:#cbd5e1; background:#101c2e; border:1px solid #334155; border-radius:5px; padding:6px 9px; cursor:pointer; }
+.uss-tabs button[aria-pressed="true"],.uss-pages button[aria-current="page"] { color:#ecfeff; border-color:#22d3ee; background:#164e63; }
+.uss-tabs button:focus-visible,.uss-pages button:focus-visible { outline:2px solid #38bdf8; outline-offset:2px; }
+.uss-list { list-style:none; margin:0; padding:0; }.uss-card { padding:10px 0; border-bottom:1px solid #233044; overflow-wrap:anywhere; }
+.uss-card p { margin:5px 0; }.uss-section a { color:#7dd3fc; }.uss-card details,.uss-coverage { margin-top:8px; }
+.uss-section summary { cursor:pointer; color:#a5d8f3; }.uss-matches { padding-left:18px; }.uss-matches li { padding:8px 0; }
+.uss-deadline { color:#fbbf24; }.uss-pages span { color:#94a3b8; }
+
+/* Toggles that can hold 3-4 labelled buttons: wrap instead of overflowing a narrow panel. */
+.ust-toggle, .ust-subtoggle { flex-wrap: wrap; max-width: 100%; }
+.ust-subtoggle { margin: 10px 0 6px; }
+.ust-subtoggle span { color: #64748b; font-size: 10px; margin-left: 2px; }
+.ust-subtoggle .ec-by.is-on span, .ust-toggle .ec-by.is-on span { color: #bae6fd; }

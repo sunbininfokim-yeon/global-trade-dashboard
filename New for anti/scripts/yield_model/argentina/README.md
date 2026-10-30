@@ -208,3 +208,61 @@ re-forecasts from fresh POWER weather, checks whether MAGyP has published a new
 campaign, and rebuilds the training tables and models if so. The cache
 (`cache/`, ~94 MB) is gitignored and regenerates on demand; the training tables,
 model artifacts and the forecast JSON are committed.
+
+## Satellite condition channel (MODIS NDVI)
+
+The Bolsa de Cereales weekly condition ratings are behind a Cloudflare browser
+challenge, so the in-season condition signal is MODIS MOD13Q1 NDVI from the
+keyless ORNL DAAC API, collected weekly by `.github/workflows/argentina_ndvi.yml`.
+
+```bash
+python3 -m argentina.ndvi            # append new composites -> condition/ndvi_points.csv
+python3 -m argentina.ndvi_backtest   # score the correction -> condition/ndvi_backtest.json
+```
+
+NDVI is a correction on top of the existing forecast, not a model feature: the
+forecast's log error is regressed on the season's production-weighted NDVI
+using only earlier seasons. A window goes live only when that beats the
+forecast by at least 5% with both the 75th-percentile and the median pixel
+summary. First run (2013–2025, 13 scored seasons):
+
+| region | full window | first half |
+|---|---|---|
+| Pampas soy (Jan–Mar) | **+16%** (live) | +4% (off) |
+| Chaco cotton (Jan–Mar) | **+19%** (live) | **+18%** (live) |
+| Pampas corn | −2% | −8% |
+| Pampas wheat | −10% | −36% |
+| Norte soy | −16% | −24% |
+
+`run_forecast` applies a live window through `ndvi_blend.py` and publishes it
+under `ndvi` in each region; nothing changes until half the window is observed.
+
+## ENSO-weighted pre-season fill (`enso_analog.py`)
+
+Before the critical window opens every weather feature is filled from past
+seasons, and averaged evenly that is just the trend. Pampas soy and maize now
+weight those past seasons by how close their Niño3.4 at sowing (Aug-Sep, from
+`public/data/sst_regions_v1.json`) was to this season's, with a 0.5 °C Gaussian
+kernel fixed before scoring. Observed features still replace filled ones as
+the season comes in.
+
+```bash
+python3 -m argentina.enso_analog   # -> condition/enso_analog_backtest.json
+```
+
+Pre-season forward chaining, skill vs trend-only (26 seasons, 2000-2025):
+
+| region-crop | even fill | ENSO fill | last 10 even → ENSO | switched |
+|---|---:|---:|---:|---|
+| pampas_maiz | 0.0% | **+7.8%** | 0.0% → +8.9% | on |
+| pampas_soja | 0.0% | **+4.0%** | 0.0% → +5.2% | on |
+| chaco_algodon | 0.0% | −1.3% | 0.0% → −1.8% | off |
+| norte_soja | 0.0% | −0.9% | 0.0% → −2.6% | off |
+
+Wheat is not covered (sown May-June, different index window). The script
+fails if the `ON` set and the backtest disagree.
+
+2026/27 caveat: Niño3.4 at sowing is +2.6 °C, beyond anything since 1982
+(next highest +1.7 °C, 1997 and 2015). The fill then rests on about three
+seasons (1998, 2016, 2024), so `enso.analog_fill.beyond_record` is set and the
+band stays at the trend's own width.

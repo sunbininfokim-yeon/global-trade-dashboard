@@ -1916,7 +1916,7 @@ const pfGetView = () => (localStorage.getItem(PF_VIEW_KEY) === 'manual') ? 'manu
 const pfSetView = (v) => pfPersist(PF_VIEW_KEY, v);
 
 const renderPortfolioLab = async (host) => {
-    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…</p></div>`;
+    host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p></div>`;
     await pfLoadRefs();
 
     const view = pfGetView();

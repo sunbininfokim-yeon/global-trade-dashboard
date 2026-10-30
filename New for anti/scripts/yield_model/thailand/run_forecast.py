@@ -11,7 +11,10 @@ import os
 import sys
 from datetime import datetime, timezone
 
+import numpy as np
+
 from .collect import current_season, load_oni, oni_djf
+from .ndvi_blend import adjustment as ndvi_adjustment
 from .predict import predict_one
 from .regions import ALL
 
@@ -80,6 +83,14 @@ def main():
                 log(f"{cfg.key}: {r['error']}")
             continue
         any_ok = True
+        # Satellite correction, only where the backtest earned it and only
+        # once enough of the window has been seen (ndvi_blend).
+        nd = ndvi_adjustment(cfg, target)
+        if nd:
+            k = float(np.exp(nd.pop("log_adjustment")))
+            r["point"] *= k
+            r["range_68"] = [v * k for v in r["range_68"]]
+            r["range_95"] = [v * k for v in r["range_95"]]
         low_conf = (
             (not r["beats_trend"])
             or r.get("labels_provisional", True)
@@ -99,6 +110,10 @@ def main():
                          round(r["range_95"][1], 1)],
             "trend": round(r["trend"], 1),
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
+            "model_weather_effect_pct": round(r["model_weather_effect_pct"], 2),
+            "point_basis": r["point_basis"],
+            # MODIS NDVI correction (None when off or not yet observable).
+            "ndvi": nd,
             "last_actual": {
                 "year": r["last_actual"]["year"],
                 "yield": round(r["last_actual"]["yield"], 1),
@@ -172,6 +187,16 @@ def main():
             }
         },
     }
+
+    # Crude palm oil from USDA PSD, shared with Malaysia/Colombia/Nigeria
+    # (palm_oil/forecast.py); the PSD slice is refreshed by palm_oil_forecast.yml.
+    from palm_oil.forecast import region as palm_region
+    from palm_oil.producers import THAILAND as PALM
+    palm = palm_region(PALM)
+    if palm:
+        payload["regions"][PALM.key] = palm
+    else:
+        payload.setdefault("skipped", {})[PALM.key] = "USDA PSD slice missing"
 
     if not any_ok:
         payload["forecast_available"] = False

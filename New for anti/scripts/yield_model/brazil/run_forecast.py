@@ -11,8 +11,8 @@ missing data, how much of the season is observed, measured skill) that a
 number on screen can be judged rather than just believed.
 
 Region-crops whose weather features do not beat a trend-only baseline are
-still published, flagged `beats_trend: false` and given the trend's own error
-as their band. Hiding them would misrepresent which of the nine methodologies
+still published, flagged `beats_trend: false`, with the trend as their point
+(`point_basis: "trend"`) and the trend's own error as their band. Hiding them would misrepresent which of the nine methodologies
 actually carries at this resolution.
 
 Where a crop is moved substantially by things that are not weather -- the
@@ -29,7 +29,7 @@ import sys
 from datetime import datetime, timezone
 
 from .collect import current_season, load_oni
-from .predict import predict_one
+from .predict import predict_with_lags
 from .regions import ALL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -78,7 +78,6 @@ def main():
         "regions": {},
     }
 
-    predicted = {}
     skipped = []
 
     for cfg in ALL:
@@ -86,13 +85,7 @@ def main():
         # wheat with the calendar, so in October they are not all on the same
         # harvest year.
         season = override or current_season(cfg)
-        # The prior season first, so coffee's biennial lag has something to
-        # stand on where SIDRA has not published yet.
-        prior = predict_one(cfg, season - 1, oni, predicted)
-        if prior and "error" not in prior:
-            predicted[season - 1] = prior["point"]
-
-        r = predict_one(cfg, season, oni, predicted)
+        r = predict_with_lags(cfg, season, oni)
         if r is None:
             skipped.append((cfg.key, "no trained model"))
             continue
@@ -130,6 +123,10 @@ def main():
             "range_95": [round(r["range_95"][0], 1), round(r["range_95"][1], 1)],
             "trend": round(r["trend"], 1),
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
+            # "trend" when the model failed validation: point is the trend and
+            # model_weather_effect_pct is the adjustment it would have made.
+            "point_basis": r["point_basis"],
+            "model_weather_effect_pct": round(r["model_weather_effect_pct"], 2),
             "last_actual": r["last_actual"],
             "enso": {"state": label, "oni_growing_season": value},
             "skill": {
@@ -162,6 +159,7 @@ def main():
                     if r["critical_window_observed"] is not None else None),
                 "season_complete": r["season_complete"],
                 "notes": r["notes"],
+                "inputs_out_of_range": r.get("inputs_out_of_range", []),
             },
         }
         flag = "" if r["beats_trend"] else "  [no skill vs trend]"

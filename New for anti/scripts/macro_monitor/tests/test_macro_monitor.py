@@ -504,7 +504,7 @@ class TestUsMacroKit(unittest.TestCase):
         self.assertEqual(by_id["net_funding_demand"]["asof"], "2026-03-31")
         self.assertEqual(by_id["gdp_gap"]["asof"], "2026-03-31")
         self.assertAlmostEqual(by_id["capex_gdp_ratio"]["value"], 18.6409, places=4)
-        self.assertAlmostEqual(by_id["net_funding_demand"]["value"], 1.5893, places=4)
+        self.assertAlmostEqual(by_id["net_funding_demand"]["value"], 1.8834, places=4)
         self.assertAlmostEqual(by_id["gdp_gap"]["value"], 0.5345, places=4)
         # Growth: GDP first, PMI surveys last
         growth_ids = [c["id"] for c in jpn["categories"]["growth"]]

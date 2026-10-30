@@ -18,6 +18,13 @@
   // /api/* route 404s and Variables/Secrets can't even be added in the
   // dashboard ("Worker that only has static assets").
   "main": "_worker.js",
+  // Plain flags. `wrangler deploy` replaces dashboard-set vars with this list,
+  // so a flag set only in the dashboard disappears on the next deploy. Secrets
+  // (GEMINI_API_KEY, SUPABASE_*) are separate and persist across deploys.
+  // IDN_SEMANTIC_ENABLED: 인도네시아 문서개요 의미검색 (GEMINI_API_KEY 도 있어야 켜짐).
+  "vars": {
+    "IDN_SEMANTIC_ENABLED": "true"
+  },
   // single-page-application: any request path that doesn't match a real
   // static file (e.g. /macro_monitor, /shipping_fleet -- the new per-view
   // routes app.js pushes into the URL) falls back to index.html with a 200,
@@ -33,7 +40,9 @@
     // /api/night-tile/... 을 주소창에 직접 쳐 보고서야 알았다 -- 타일도 사진도
     // 아니고 사이트 HTML 이 돌아왔다. API 경로는 어떤 Accept 헤더로 오든 워커가
     // 받아야 한다.
-    "run_worker_first": ["/api/*"]
+    // /policy/indonesia 는 정적 페이지 indonesia-policy/ 를 워커가 그 주소로 내준다.
+    // 워커가 먼저 받지 않으면 SPA 폴백이 메인 index.html 을 돌려준다.
+    "run_worker_first": ["/api/*", "/policy/indonesia", "/policy/indonesia/", "/indonesia-policy", "/indonesia-policy/", "/indonesia-policy/index.html"]
   },
   // Shared response cache for the /api/* proxies. Without this binding
   // env.API_CACHE is undefined and every visitor triggers their own upstream
@@ -47,19 +56,18 @@
       "id": "35315eb44cfc4cd480c25794c0623c04"
     }
   ],
-  // Every 6 hours the Worker's scheduled() handler tops up API_CACHE so
-  // visitors never pay for a cold UN Comtrade query. warmComtradeCache()
-  // skips any commodity whose KV entry is still fresh, so this frequency
-  // does not mean four full re-fetches a day: oil/gas (48h TTL) and
-  // gold/silver/copper (24h TTL) end up refreshed several times a day,
-  // while the weekly-TTL commodities (most metals, all agri) are still
-  // re-fetched roughly once a week -- just whichever of the four daily
-  // ticks first finds them stale, not always the same time of day. The
-  // real win from four ticks instead of one: after a change that
-  // invalidates every cache key at once (a new HS code, a new reporter
-  // list), the 8-per-run budget below clears the backlog in about a day
-  // instead of three or four.
+  // The Worker's scheduled() handler tops up API_CACHE so visitors never pay
+  // for a cold UN Comtrade query. warmComtradeCache() skips any commodity
+  // whose KV entry is still fresh, so each commodity is re-fetched once per
+  // its own TTL (COMTRADE_TTL in _worker.js), whichever tick first finds it
+  // stale -- not once per tick.
   "triggers": {
-    "crons": ["0 */6 * * *"]
+    // Hourly since 2026-09-24. A tick that finds everything cached costs one
+    // KV listing and no upstream call, so the steady-state Comtrade spend is
+    // unchanged; what the extra ticks buy is catch-up. Walking the annual
+    // year forward (2023 -> 2024 -> 2025) needs every commodity cached for the
+    // next year first, and at 8 fetches per tick four ticks a day made each
+    // step take a day or more.
+    "crons": ["0 * * * *"]
   }
 }

@@ -136,7 +136,7 @@ def predict(year: int = None) -> dict:
             },
             {
                 "title_ko": "날씨는 무관한가",
-                "body_ko": "아닙니다. 농가 패널 연구에서는 Robusta에 강수의 양(+) 효과와 고온의 비선형 손실이 관측됐습니다. 다만 그 관계가 FAOSTAT 국가 연간 단수에서는 관리·수종·두 수확 주기와 섞여 시간순 예측력으로 재현되지 않았습니다. CHIRPS·ERA5 지표는 예측값이 아니라 위험 모니터로만 유지합니다.",
+                "body_ko": "아닙니다. 농가 패널 연구에서는 Robusta에 강수의 양(+) 효과와 고온의 비선형 손실이 관측됐습니다. 다만 그 관계가 FAOSTAT 국가 연간 단수에서는 관리·수종·두 수확 주기와 섞여 시간순 예측력으로 재현되지 않았습니다. 기상 지표는 예측값이 아니라 위험 모니터로만 유지합니다.",
                 "links": [
                     {"label": "Lwiza & Barkley (2025)", "url": "https://doi.org/10.1007/s10113-025-02370-4"}
                 ],
@@ -167,7 +167,7 @@ def predict(year: int = None) -> dict:
             {"name": "FAOSTAT QCL via Our World in Data", "url": "https://ourworldindata.org/grapher/coffee-yields", "supports": "1961~2024 국가 생두 단수"},
             {"name": "USDA FAS Uganda Coffee Annual 2025", "url": "https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Coffee+Annual_Nairobi_Uganda_UG2025-0001", "supports": "생산·면적 전망, 수종 비중, 관리·묘목 요인"},
             {"name": "Lwiza & Barkley (2025)", "url": "https://doi.org/10.1007/s10113-025-02370-4", "supports": "Robusta 강수·고온 반응"},
-            {"name": "Google Earth Engine CHIRPS and ERA5-Land", "url": "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY", "supports": "산지 기후 위험 지표"},
+            {"name": "NASA POWER daily", "url": "https://power.larc.nasa.gov/", "supports": "산지 기후 위험 지표"},
         ],
         "regions": {BELT_KEY: {"label": "Uganda national coffee belt", "label_ko": "우간다 커피 벨트", "note": "Robusta 85% · Arabica 15% fixed species proxy", "zones": list(dict.fromkeys(point["zone"] for point in POINTS)), "crops": {"coffee": crop}}},
     }

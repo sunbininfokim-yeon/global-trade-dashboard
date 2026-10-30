@@ -62,4 +62,11 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -f "$reg"   # gitignore 되어 있으므로 -f 필요
           git commit -m "chore: rebuild climate registry from manifests"
+          # Non-fast-forward race: a bare push drops this refresh when another
+          # scheduled job lands a commit on main first. Rebase and retry.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

@@ -1,0 +1,47 @@
+name: Refresh T-bill auction sizes (QRA maturity tab)
+
+# The TBAC financing table only recommends coupon sizes, so the 만기별 tab had
+# no bill row. Bill auction sizes come from Fiscal Data (auctions_query), which
+# needs no key. Auctions are announced about a week ahead, so the running
+# quarter is always partial; the block says which date it runs through.
+#
+# Weekly, Friday after the Thursday bill auctions have settled into the data
+# (Sat 06:30 KST). refresh_qra_quarters_in_pack.py re-applies the stored file
+# after a QRA refresh, and qra_refresh.yml runs this once more when a new
+# refunding quarter starts so the tab is never without its bill rows for a week.
+
+on:
+  schedule:
+    - cron: '30 21 * * 5'
+  workflow_dispatch:
+
+jobs:
+  refresh-tbill:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        working-directory: New for anti/scripts/macro_monitor
+        # qra/__init__ imports the PDF/HTML parsers even though bills need neither.
+        run: pip install pytest beautifulsoup4 pypdf
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m pytest tests/test_tbill.py -v
+      - name: Fetch bill auctions and graft
+        working-directory: New for anti/scripts/macro_monitor
+        # Exits non-zero (and commits nothing) when the quarter label is
+        # unreadable or Fiscal Data returns no auctions -- never writes zeros.
+        run: python refresh_tbill_in_pack.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/tbill_issuance_v1.json" \
+                  "New for anti/public/data/macro_monitor_v1.json"
+          git commit -m "chore: refresh T-bill auction sizes" || exit 0
+          git push

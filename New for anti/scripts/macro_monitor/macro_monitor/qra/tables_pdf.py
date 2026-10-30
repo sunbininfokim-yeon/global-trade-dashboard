@@ -423,7 +423,18 @@ def parse_tbac_financing_pdf(path: Path) -> TbacFinancingTable:
 def extract_pdf_links_from_html(html: str, *, base: str = "https://home.treasury.gov") -> List[Tuple[str, str]]:
     """Return (kind, url) for Sources-Uses / TBAC / Presentation PDFs."""
     out: List[Tuple[str, str]] = []
-    for href in re.findall(r'href="([^"]+\.pdf[^"]*)"', html, re.I):
+    # A real HTML parser, not a quoted-href regex: Treasury serves these pages
+    # minified with unquoted attributes (href=/system/files/...pdf), which the
+    # regex matched zero times -- every event silently lost its Sources & Uses
+    # table on a from-scratch rebuild.
+    from bs4 import BeautifulSoup
+
+    hrefs = [
+        a["href"]
+        for a in BeautifulSoup(html, "html.parser").find_all("a", href=True)
+        if re.search(r"\.pdf", a["href"], re.I)
+    ]
+    for href in hrefs:
         full = href if href.startswith("http") else base + href
         low = full.lower()
         if "sources" in low and "use" in low:

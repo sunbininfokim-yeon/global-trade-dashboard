@@ -1,0 +1,914 @@
+{
+  "schema_version": "commodity-trade-board-v1",
+  "as_of": "2026-08-14",
+  "calendar_month_now": "2026-08",
+  "purpose_ko": "작황(수율) 모니터 제외. 트레이딩 뷰 1단계=국가×연도, 2단계=월별(가능 시). 수출통제 국가는 1단계에서 색칠.",
+  "ui_contract": {
+    "exclude_panels": [
+      "crop_yield_monitor",
+      "yield_forecast"
+    ],
+    "stage1": {
+      "grain": "country",
+      "metric_default": "annual_export_or_trade",
+      "time": "year",
+      "color_by": "export_control_level",
+      "color_map": {
+        "none": null,
+        "watch": "#d4a017",
+        "restricted": "#ea580c",
+        "prohibited": "#c45c5c"
+      },
+      "control_source": "export_controls_v1.json",
+      "click": "opens stage2 for that country × commodity",
+      "color_reference": "crop_yield_monitor_alert_tiers",
+      "tier_map_ko": {
+        "watch": "관찰",
+        "restricted": "주의",
+        "prohibited": "경계"
+      },
+      "css_tokens": {
+        "watch": "--warn",
+        "restricted": "--caution",
+        "prohibited": "--danger"
+      },
+      "legend_ko": [
+        {
+          "tier_ko": "관찰",
+          "level": "watch",
+          "hex": "#d4a017",
+          "meaning": "전략·검토·운영 리스크 (수출금수 아님)"
+        },
+        {
+          "tier_ko": "주의",
+          "level": "restricted",
+          "hex": "#ea580c",
+          "meaning": "허가·쿼터·화이트리스트 등 제한"
+        },
+        {
+          "tier_ko": "경계",
+          "level": "prohibited",
+          "hex": "#c45c5c",
+          "meaning": "수출 금지"
+        },
+        {
+          "tier_ko": "없음",
+          "level": "none",
+          "hex": null,
+          "meaning": "해당 상품 통제 없음 — 지도 기본색"
+        }
+      ]
+    },
+    "stage2": {
+      "grain": "month",
+      "window_rule": "from latest_available_month back 12 months inclusive",
+      "example_ko": "최신 확보월이 2026-05이면 기본 선택=2026-05, 선택 가능 구간=2025-06~2026-05",
+      "default_selection": "latest_available_month",
+      "fallback_if_no_monthly": "show annual series only + badge monthly_unavailable",
+      "max_points": 12
+    },
+    "honesty_rules_ko": [
+      "월별 원문이 없으면 연도만 표시. 가짜 월별 보간 금지",
+      "수출통제 색은 정책 레벨이지 수출량 크기가 아님",
+      "latest_available_month는 상품·국가마다 다를 수 있음 — 글로벌 단일 월로 강제하지 말 것",
+      "수출통제 색 체계는 작황 모니터 관찰/주의/경계와 동일 톤을 쓴다",
+      "색 = 정책 강도. 작황의 단수·날씨 이상치 색과 의미가 다름을 범례에 구분"
+    ]
+  },
+  "sectors": [
+    {
+      "id": "energy",
+      "label_ko": "에너지",
+      "label_en": "Energy",
+      "commodities": [
+        "crude_oil",
+        "lng",
+        "coal",
+        "uranium",
+        "petroleum_products"
+      ]
+    },
+    {
+      "id": "minerals",
+      "label_ko": "광물·핵심광물",
+      "label_en": "Minerals / critical",
+      "commodities": [
+        "nickel",
+        "copper",
+        "lithium",
+        "cobalt",
+        "graphite",
+        "rare_earths",
+        "bauxite",
+        "aluminum",
+        "gallium",
+        "germanium",
+        "tungsten",
+        "antimony",
+        "iron_ore"
+      ]
+    },
+    {
+      "id": "agri_trade",
+      "label_ko": "농산물 무역(작황 제외)",
+      "label_en": "Agri trade (not yields)",
+      "commodities": [
+        "wheat",
+        "corn",
+        "soybeans",
+        "rice",
+        "sunflowerseed_oil",
+        "palm_oil",
+        "sugar",
+        "cotton",
+        "soybean_meal",
+        "barley"
+      ]
+    }
+  ],
+  "commodities": {
+    "crude_oil": {
+      "label_ko": "원유",
+      "sector": "energy",
+      "hs_hints": [
+        "2709"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_available",
+      "latest_available_month": "2026-05",
+      "notes_ko": "해운 persian_gulf_*_crude 항로·Hormuz 초크와 연동. Comtrade 월별 연결 전 연/시나리오만",
+      "related_shipping_routes": [
+        "persian_gulf_east_asia_crude",
+        "persian_gulf_europe_crude"
+      ],
+      "export_control_commodities": []
+    },
+    "lng": {
+      "label_ko": "LNG",
+      "sector": "energy",
+      "hs_hints": [
+        "271111"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_available",
+      "latest_available_month": "2026-06",
+      "notes_ko": "월별 물량 파이프 미연결",
+      "related_shipping_routes": [],
+      "export_control_commodities": []
+    },
+    "coal": {
+      "label_ko": "석탄",
+      "sector": "energy",
+      "hs_hints": [
+        "2701"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "notes_ko": "월별 파이프 미연결",
+      "related_shipping_routes": [],
+      "export_control_commodities": []
+    },
+    "uranium": {
+      "label_ko": "우라늄",
+      "sector": "energy",
+      "hs_hints": [
+        "284410",
+        "284420"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "notes_ko": "무역은 연간·계약 중심(EIA Uranium Marketing 등). 월별 HS 공개가 얇음. 정책 색: USA 러 LEU 수입제한, KAZ JV, NER 운영 리스크",
+      "related_shipping_routes": [],
+      "export_control_commodities": [
+        "uranium"
+      ],
+      "key_countries_stage1": [
+        "KAZ",
+        "CAN",
+        "AUS",
+        "UZB",
+        "RUS",
+        "NAM",
+        "NER",
+        "USA",
+        "FRA"
+      ]
+    },
+    "petroleum_products": {
+      "label_ko": "석유제품",
+      "sector": "energy",
+      "hs_hints": [
+        "2710"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_available",
+      "latest_available_month": "2026-05",
+      "notes_ko": "러 제품 수출금지 시드는 policy_events에 있으나 공식 고시 채우기 전 needs_source",
+      "related_shipping_routes": [],
+      "export_control_commodities": []
+    },
+    "nickel": {
+      "label_ko": "니켈",
+      "sector": "minerals",
+      "hs_hints": [
+        "2604",
+        "7501",
+        "7502"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "nickel"
+      ],
+      "key_countries_stage1": [
+        "IDN",
+        "PHL",
+        "AUS",
+        "RUS",
+        "CAN"
+      ]
+    },
+    "copper": {
+      "label_ko": "구리",
+      "sector": "minerals",
+      "hs_hints": [
+        "2603",
+        "7403"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_partial",
+      "latest_available_month": "2026-02",
+      "export_control_commodities": [
+        "copper"
+      ],
+      "key_countries_stage1": [
+        "CHL",
+        "PER",
+        "COD",
+        "CHN",
+        "IDN",
+        "AUS"
+      ]
+    },
+    "lithium": {
+      "label_ko": "리튬",
+      "sector": "minerals",
+      "hs_hints": [
+        "283691",
+        "282520"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "lithium"
+      ],
+      "key_countries_stage1": [
+        "AUS",
+        "CHL",
+        "CHN",
+        "ARG",
+        "ZWE"
+      ]
+    },
+    "cobalt": {
+      "label_ko": "코발트",
+      "sector": "minerals",
+      "hs_hints": [
+        "2605",
+        "8105"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "cobalt"
+      ],
+      "key_countries_stage1": [
+        "COD",
+        "IDN",
+        "AUS",
+        "RUS"
+      ]
+    },
+    "graphite": {
+      "label_ko": "흑연",
+      "sector": "minerals",
+      "hs_hints": [
+        "2504"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "graphite"
+      ],
+      "key_countries_stage1": [
+        "CHN",
+        "MOZ",
+        "MDG",
+        "BRA"
+      ]
+    },
+    "rare_earths": {
+      "label_ko": "희토류",
+      "sector": "minerals",
+      "hs_hints": [
+        "2805",
+        "2846"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "rare_earths"
+      ],
+      "key_countries_stage1": [
+        "CHN",
+        "USA",
+        "AUS",
+        "MMR"
+      ]
+    },
+    "bauxite": {
+      "label_ko": "보크사이트",
+      "sector": "minerals",
+      "hs_hints": [
+        "2606"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "bauxite",
+        "aluminum"
+      ],
+      "key_countries_stage1": [
+        "AUS",
+        "GIN",
+        "IDN",
+        "BRA",
+        "CHN"
+      ]
+    },
+    "aluminum": {
+      "label_ko": "알루미늄",
+      "sector": "minerals",
+      "hs_hints": [
+        "7601"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "aluminum",
+        "bauxite"
+      ]
+    },
+    "gallium": {
+      "label_ko": "갈륨",
+      "sector": "minerals",
+      "hs_hints": [
+        "811292"
+      ],
+      "stage1_data_status": "policy_only",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "gallium"
+      ]
+    },
+    "germanium": {
+      "label_ko": "게르마늄",
+      "sector": "minerals",
+      "hs_hints": [
+        "811292"
+      ],
+      "stage1_data_status": "policy_only",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "germanium"
+      ]
+    },
+    "tungsten": {
+      "label_ko": "텅스텐",
+      "sector": "minerals",
+      "hs_hints": [
+        "2611",
+        "8101"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "tungsten"
+      ]
+    },
+    "antimony": {
+      "label_ko": "안티몬",
+      "sector": "minerals",
+      "hs_hints": [
+        "2617",
+        "8110"
+      ],
+      "stage1_data_status": "policy_plus_annual",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "antimony"
+      ]
+    },
+    "iron_ore": {
+      "label_ko": "철광",
+      "sector": "minerals",
+      "hs_hints": [
+        "2601"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_partial",
+      "latest_available_month": "2026-06",
+      "notes_ko": "해운 C3/C5 항로 선복 모델과 연동. 광산 출하 월별은 Comtrade 대기",
+      "related_shipping_routes": [
+        "c3_tubarao_qingdao",
+        "c5_west_australia_qingdao"
+      ],
+      "export_control_commodities": []
+    },
+    "wheat": {
+      "label_ko": "밀",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "1001"
+      ],
+      "stage1_data_status": "annual_available",
+      "stage2_data_status": "monthly_partial",
+      "latest_available_month": "2026-06",
+      "notes_ko": "러 수출은 USDA PSD 마케팅연도. Comtrade 월별 키 있으면 stage2 채움. 작황 수율 패널과 분리",
+      "related": [
+        "russia_export_pulse_v1.json"
+      ],
+      "export_control_commodities": [
+        "wheat"
+      ],
+      "key_countries_stage1": [
+        "RUS",
+        "USA",
+        "CAN",
+        "AUS",
+        "ARG",
+        "UKR",
+        "IND",
+        "FRA"
+      ]
+    },
+    "corn": {
+      "label_ko": "옥수수",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "1005"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_partial",
+      "latest_available_month": "2026-06",
+      "export_control_commodities": [
+        "corn"
+      ],
+      "key_countries_stage1": [
+        "USA",
+        "BRA",
+        "ARG",
+        "UKR"
+      ]
+    },
+    "soybeans": {
+      "label_ko": "대두",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "1201"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_partial",
+      "latest_available_month": "2026-06",
+      "related_shipping_routes": [
+        "brazil_china_soy"
+      ],
+      "export_control_commodities": [
+        "soybeans"
+      ],
+      "key_countries_stage1": [
+        "BRA",
+        "USA",
+        "ARG"
+      ]
+    },
+    "rice": {
+      "label_ko": "쌀",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "1006"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "export_control_commodities": [
+        "rice"
+      ],
+      "key_countries_stage1": [
+        "IND",
+        "THA",
+        "VNM",
+        "PAK"
+      ]
+    },
+    "sunflowerseed_oil": {
+      "label_ko": "해바라기유",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "1512"
+      ],
+      "stage1_data_status": "annual_available",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "related": [
+        "russia_export_pulse_v1.json"
+      ],
+      "export_control_commodities": []
+    },
+    "palm_oil": {
+      "label_ko": "팜유",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "151110",
+        "151190"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "notes_ko": "인니·말레이 핵심. Comtrade HS 월별 적합. 바이오디젤·식품 수요 연동",
+      "export_control_commodities": [],
+      "key_countries_stage1": [
+        "IDN",
+        "MYS",
+        "THA",
+        "COL"
+      ]
+    },
+    "sugar": {
+      "label_ko": "설탕",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "1701"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "notes_ko": "브라질·인도·태국. WASDE/PSD 연·시즌 + Comtrade 월별",
+      "export_control_commodities": [],
+      "key_countries_stage1": [
+        "BRA",
+        "IND",
+        "THA",
+        "AUS"
+      ]
+    },
+    "cotton": {
+      "label_ko": "면화",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "5201",
+        "5203"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_partial",
+      "latest_available_month": "2026-06",
+      "notes_ko": "섬유 공급망. WASDE 면화 + Comtrade 월별",
+      "export_control_commodities": [],
+      "key_countries_stage1": [
+        "USA",
+        "BRA",
+        "IND",
+        "CHN",
+        "AUS"
+      ]
+    },
+    "soybean_meal": {
+      "label_ko": "대두박",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "2304"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "notes_ko": "사료·가공 체인. 원두(soybeans)와 구분. 브라질·아르헨·미국",
+      "export_control_commodities": [],
+      "key_countries_stage1": [
+        "BRA",
+        "ARG",
+        "USA",
+        "IND"
+      ]
+    },
+    "barley": {
+      "label_ko": "보리",
+      "sector": "agri_trade",
+      "hs_hints": [
+        "1003"
+      ],
+      "stage1_data_status": "annual_partial",
+      "stage2_data_status": "monthly_planned",
+      "latest_available_month": null,
+      "notes_ko": "사료·맥아. 호주·EU·러·우크. 한국 수입 민감",
+      "export_control_commodities": [],
+      "key_countries_stage1": [
+        "AUS",
+        "RUS",
+        "UKR",
+        "FRA",
+        "DEU"
+      ]
+    }
+  },
+  "data_status_legend": {
+    "annual_available": "연도 시계열 사용 가능",
+    "annual_partial": "일부 국가·연도만",
+    "policy_only": "수출통제 색만 (물량 없음)",
+    "policy_plus_annual": "통제 색 + 연도 일부",
+    "monthly_available": "월별 12개월 윈도 가능",
+    "monthly_partial": "일부 국가만 월별",
+    "monthly_planned": "Comtrade 등 연결 후 채움 예정",
+    "monthly_unavailable": "월별 공개 한계 — 연/정책만"
+  },
+  "stage2_window_helper": {
+    "rule": "latest_available_month 기준 과거 11개월 + 당월 = 12포인트",
+    "pseudo_code": "end = commodity.latest_available_month or country.latest; start = end - 11 months; default = end",
+    "if_latest_is_2026_05": {
+      "start": "2025-06",
+      "end": "2026-05",
+      "default": "2026-05"
+    }
+  },
+  "export_control_join": {
+    "file": "export_controls_v1.json",
+    "join_on": "iso + commodities overlap with commodity.export_control_commodities",
+    "stage1_paint": "max rank among matching controls for that country",
+    "rank": {
+      "prohibited": 3,
+      "restricted": 2,
+      "watch": 1
+    }
+  },
+  "sources_planned": {
+    "monthly_trade": "UN Comtrade freq=M (subscription key)",
+    "annual_agri": "USDA FAS PSD",
+    "uranium_annual": "EIA Uranium Marketing Annual / national yearbooks",
+    "shipping_stress": "shipping_capacity_v1.json chokepoints + routes"
+  },
+  "ui_handoff_ko": "Claude: 작황 패널과 분리된 트레이딩 보드. 1단계 지도 색=수출통제를 작황 알림과 같은 관찰/주의/경계 팔레트(#d4a017 / #ea580c / #c45c5c). 클릭 2단계=월별 12개월(latest 기본). monthly_unavailable|planned 이면 연도만+뱃지. 우라늄=energy. 숫자 발명 금지.",
+  "monthly_feasibility": {
+    "as_of": "2026-08-09",
+    "note_ko": "무료·준무료 기준. Comtrade 월별은 구독 키 필요 시 표시. lag는 보고국마다 1~6개월+",
+    "by_sector": {
+      "energy": [
+        {
+          "id": "crude_oil",
+          "monthly_trade_volume": "high",
+          "primary_source": "UN Comtrade HS 2709",
+          "alt": "IEA MODS(유료), 해운 항로 프록시",
+          "typical_lag_months": "2-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "petroleum_products",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 2710",
+          "alt": null,
+          "typical_lag_months": "2-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "lng",
+          "monthly_trade_volume": "medium",
+          "primary_source": "Comtrade HS 271111",
+          "alt": "국가 통계·Kpler(유료)",
+          "typical_lag_months": "2-5",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "coal",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 2701",
+          "alt": null,
+          "typical_lag_months": "2-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "uranium",
+          "monthly_trade_volume": "low",
+          "primary_source": "연간 EIA/국가 연감",
+          "alt": "HS 2844 일부이나 은폐·지연 큼",
+          "typical_lag_months": "n/a",
+          "stage2_now": "unavailable"
+        }
+      ],
+      "minerals": [
+        {
+          "id": "iron_ore",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 2601",
+          "alt": "C3/C5 선복 프록시",
+          "typical_lag_months": "2-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "copper",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 2603/7403",
+          "alt": null,
+          "typical_lag_months": "2-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "nickel",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 2604/7502",
+          "alt": "IDN 정책 레이어",
+          "typical_lag_months": "2-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "aluminum",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 7601",
+          "alt": null,
+          "typical_lag_months": "2-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "bauxite",
+          "monthly_trade_volume": "medium",
+          "primary_source": "Comtrade HS 2606",
+          "alt": "IDN 금수 후 구조 변화",
+          "typical_lag_months": "2-5",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "lithium",
+          "monthly_trade_volume": "medium",
+          "primary_source": "Comtrade HS 283691/282520",
+          "alt": "등급 혼재",
+          "typical_lag_months": "2-6",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "cobalt",
+          "monthly_trade_volume": "medium",
+          "primary_source": "Comtrade HS 2605/8105",
+          "alt": "COD 쿼터",
+          "typical_lag_months": "2-6",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "graphite",
+          "monthly_trade_volume": "medium",
+          "primary_source": "Comtrade HS 2504",
+          "alt": "CHN/MOZ 통제",
+          "typical_lag_months": "2-5",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "rare_earths",
+          "monthly_trade_volume": "low",
+          "primary_source": "Comtrade 2805/2846 부분",
+          "alt": "분류·은폐",
+          "typical_lag_months": "3-6+",
+          "stage2_now": "unavailable"
+        },
+        {
+          "id": "tungsten",
+          "monthly_trade_volume": "medium",
+          "primary_source": "Comtrade HS 2611/8101",
+          "alt": "CHN 화이트리스트",
+          "typical_lag_months": "2-5",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "antimony",
+          "monthly_trade_volume": "medium",
+          "primary_source": "Comtrade HS 8110",
+          "alt": "CHN 통제",
+          "typical_lag_months": "2-5",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "gallium",
+          "monthly_trade_volume": "low",
+          "primary_source": "정책 위주",
+          "alt": "소량·HS 혼재",
+          "typical_lag_months": "n/a",
+          "stage2_now": "unavailable"
+        },
+        {
+          "id": "germanium",
+          "monthly_trade_volume": "low",
+          "primary_source": "정책 위주",
+          "alt": "소량·HS 혼재",
+          "typical_lag_months": "n/a",
+          "stage2_now": "unavailable"
+        }
+      ],
+      "agri_trade": [
+        {
+          "id": "wheat",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 1001",
+          "alt": "USDA PSD 연도(러 펄스)",
+          "typical_lag_months": "1-4",
+          "stage2_now": "partial"
+        },
+        {
+          "id": "corn",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 1005",
+          "alt": "PSD 연도",
+          "typical_lag_months": "1-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "soybeans",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 1201",
+          "alt": "브라질 선복 항로",
+          "typical_lag_months": "1-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "rice",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 1006",
+          "alt": "PSD/GAIN",
+          "typical_lag_months": "1-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "sunflowerseed_oil",
+          "monthly_trade_volume": "medium",
+          "primary_source": "Comtrade HS 1512",
+          "alt": "PSD 연도",
+          "typical_lag_months": "2-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "palm_oil",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 1511",
+          "alt": "MPOB 등 국가 월보",
+          "typical_lag_months": "1-3",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "sugar",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 1701",
+          "alt": "WASDE/PSD",
+          "typical_lag_months": "1-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "cotton",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 5201",
+          "alt": "WASDE",
+          "typical_lag_months": "1-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "soybean_meal",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 2304",
+          "alt": "PSD oilseed",
+          "typical_lag_months": "1-4",
+          "stage2_now": "planned"
+        },
+        {
+          "id": "barley",
+          "monthly_trade_volume": "high",
+          "primary_source": "Comtrade HS 1003",
+          "alt": "PSD coarse grains",
+          "typical_lag_months": "1-4",
+          "stage2_now": "planned"
+        }
+      ]
+    },
+    "legend": {
+      "high": "주요 수출입국이 월별 HS 보고 — Comtrade 연결 시 stage2 1순위",
+      "medium": "가능하나 분류·누락·지연 주의",
+      "low": "월별 물량 비현실적 — 연/정책만"
+    },
+    "comtrade_note_ko": "공개 검색은 가능. 대량·자동 월별은 구독 키(COMTRADE_SUBSCRIPTION_KEY) 필요할 수 있음. 최신월은 보고국 제출에 따라 2026-05~06 수준이 흔함(오늘 2026-08 기준)."
+  }
+}

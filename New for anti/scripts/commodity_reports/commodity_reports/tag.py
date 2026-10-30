@@ -10,7 +10,7 @@ only a fallback for releases that name no country at all (CONAB's
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 # Words that make a bare metal or crop noun a market statement rather than a
@@ -23,9 +23,27 @@ CONTEXT_TERMS = [
     "bushel", "bushels", "barrel", "barrels", "metric", "mine", "mining",
     "smelter", "refinery", "refined", "concentrate", "reserves", "forecast",
     "estimate", "estimates", "outlook", "balance sheet", "consumption",
+    "statistics", "statistical", "surplus", "deficit", "tariff", "tariffs",
+    "traded", "trading", "commodity exchange", "futures", "offtake", "smelting",
+    "estadística", "estadísticas", "mercado", "pasar",
+    # Portuguese (CONAB): public-stock purchases and auctions are market news.
+    "estoques", "estoque", "toneladas", "leilão", "leilões", "leilao", "leiloes",
+    "oferta", "demanda", "exportações", "exportacoes", "importações", "preços", "precos",
+    # Policy moves a market as much as a harvest does.
+    "regulation", "regulations", "regulatory", "rulebook", "policy", "sanctions", "ban",
+    "critical mineral", "critical minerals", "strategic reserve",
+    "levy", "export ban", "export duty", "export tax", "quota", "quotas",
+    "pungutan", "bea keluar", "harga referensi",
     "생산", "수확", "수출", "수입", "재고", "가격", "전망", "출하",
-    "produção", "safra", "colheita", "exportação", "produccion", "producción",
-    "cosecha", "exportaciones", "добыч", "урожа", "экспорт",
+    "produção", "producao", "safra", "colheita", "exportação", "exportacao",
+    "estimada", "estimativa", "produccion", "producción",
+    "cosecha", "exportaciones", "exportación", "precio", "precios", "preço", "mercado",
+    "добыч", "урожа", "экспорт",
+    # Producer-country languages of the rubber and palm-oil windows, whose
+    # boards publish in them (ANRPC members, MPOB, GAPKI, RAOT, VRA).
+    "ekspor", "impor", "eksport", "produksi", "pengeluaran", "harga", "stok",
+    "ส่งออก", "ราคา", "ผลผลิต", "xuất khẩu", "sản lượng", "giá cả",
+    "出口", "进口", "产量", "价格", "库存",
 ]
 
 
@@ -44,7 +62,10 @@ def compile_terms(terms: Sequence[str]) -> List[re.Pattern[str]]:
         if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 .'\-/]*", term):
             out.append(re.compile(rf"(?<![A-Za-z0-9]){re.escape(term)}(?![A-Za-z0-9])", re.I))
         else:
-            out.append(re.compile(re.escape(term)))
+            # IGNORECASE matters beyond Latin script: "Việt Nam", "Thái Lan"
+            # and "Нефть" are capitalized in headlines, the aliases are not.
+            # CJK and Hangul have no case, so it changes nothing there.
+            out.append(re.compile(re.escape(term), re.I))
     return out
 
 
@@ -65,25 +86,63 @@ class CommodityTagger:
     requires_context: Dict[str, bool]
     labels_ko: Dict[str, str]
     context_pats: List[re.Pattern[str]]
+    # Aliases that count only next to a market term, on a commodity whose
+    # other aliases are unambiguous ("cao su" is always rubber, "rubber" is
+    # also a stamp).
+    context_patterns: Dict[str, List[re.Pattern[str]]] = field(default_factory=dict)
+    # Phrases that contain an alias but name another market: "crude steel"
+    # and "crude palm oil" are not crude oil.
+    not_when: Dict[str, List[re.Pattern[str]]] = field(default_factory=dict)
+    # Windows that share one alias list (uranium / uranium_ore: two menus on
+    # the same market news) -> the first such key. They count as one slot
+    # against max_commodities, so a cap can never keep one and drop its twin.
+    slots: Dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def from_config(cls, cfg: Dict[str, Any]) -> "CommodityTagger":
-        pats, need, labels = {}, {}, {}
+        pats, need, labels, ctx, excl, slots = {}, {}, {}, {}, {}, {}
+        first_by_aliases: Dict[Tuple[str, ...], str] = {}
         for key, meta in (cfg.get("commodities") or {}).items():
+            alias_key = tuple(sorted(a.strip().lower() for a in meta.get("aliases") or [] if a.strip()))
+            slots[key] = first_by_aliases.setdefault(alias_key, key) if alias_key else key
             pats[key] = compile_terms(meta.get("aliases") or [])
             need[key] = bool(meta.get("require_context"))
             labels[key] = meta.get("label_ko") or key
-        return cls(pats, need, labels, compile_terms(CONTEXT_TERMS))
+            ctx[key] = compile_terms(meta.get("context_aliases") or [])
+            # Longest first: "crude palm oil" must go before "palm oil" or
+            # "crude palm", or the leftover "crude"/"oil exports" still matches.
+            excl[key] = compile_terms(sorted(meta.get("not_when") or [], key=len, reverse=True))
+        return cls(pats, need, labels, compile_terms(CONTEXT_TERMS), ctx, excl, slots)
+
+    def cap(self, commodities: Sequence[str], limit: int) -> List[str]:
+        """The first `limit` windows, twins (same alias list) counted once."""
+        kept: List[str] = []
+        used: List[str] = []
+        for key in commodities:
+            slot = self.slots.get(key, key)
+            if slot not in used:
+                if len(used) >= limit:
+                    continue
+                used.append(slot)
+            kept.append(key)
+        return kept
+
+    def has_context(self, text: str) -> bool:
+        return any(p.search(text) for p in self.context_pats)
 
     def tag(self, text: str) -> List[str]:
-        has_context = any(p.search(text) for p in self.context_pats)
+        has_context = self.has_context(text)
         hits = []
         for key, pats in self.patterns.items():
-            if not any(p.search(text) for p in pats):
-                continue
-            if self.requires_context[key] and not has_context:
-                continue
-            hits.append(key)
+            own = text
+            for p in self.not_when.get(key, []):
+                own = p.sub(" ", own)
+            plain = any(p.search(own) for p in pats)
+            if plain and self.requires_context[key] and not has_context:
+                plain = False
+            contextual = has_context and any(p.search(own) for p in self.context_patterns.get(key, []))
+            if plain or contextual:
+                hits.append(key)
         return hits
 
 
@@ -147,6 +206,20 @@ class Tagged:
 # trying to enumerate every possible collocation up front.
 _FALSE_COUNTRY_COLLOCATIONS = [
     re.compile(r"british\s+thermal\s+units?", re.I),
+    # New Mexico and New England are not stripped here: they are USA regions
+    # in countries.json, and the longer alias claims the span before
+    # "mexico"/"england" can. Stripping them lost the US as well, so a world
+    # publisher's "New Mexico uranium mine" story fell to _global (2026-10-16).
+    #
+    # A sea and an island, not Guinea the country -- both landed on GIN, now
+    # a bauxite window that matters (2026-10-16). "Papua New Guinea" is a
+    # country alias of its own and must survive, hence the lookbehind.
+    re.compile(r"gulf\s+of\s+guinea", re.I),
+    re.compile(r"(?<!papua\s)new\s+guinea", re.I),
+    # The dollar sign, not the country: "US$50 billion" matched the cased
+    # alias "US" (8 reports on 2026-10-21, from Cochilco to a nickel export
+    # target). Case-sensitive on purpose -- "us$" is not a word anyone writes.
+    re.compile(r"\bUS\s?\$"),
 ]
 
 
@@ -166,6 +239,7 @@ def tag_report(
     default_country: Optional[str] = None,
     max_countries: int = 3,
     max_commodities: int = 3,
+    commodity_text: str = "text",
 ) -> Tagged:
     """Tag one report.
 
@@ -179,8 +253,17 @@ def tag_report(
     summary = summary or ""
     both = f"{title}\n{summary}"
 
-    commodities = commodity_tagger.tag(both)
-    if not commodities:
+    # "title": the headline alone names the commodities (EU DG AGRI's egg
+    # supply-chain story mentions soy feed in its body; it is not a soybean
+    # report). Countries still come from both.
+    commodities = commodity_tagger.tag(title if commodity_text == "title" else both)
+    # A source's prior (ANRPC is about rubber, ITA about tin) applies only to
+    # a market story. Without that, every speech, workshop and membership
+    # notice a commodity body posts filed as a report on the commodity -- a
+    # secretary general's forum keynote was sitting on the rubber board.
+    # Named reports that carry no market word ("Monthly NR Statistical
+    # Report") still land through the series catalog (build.py).
+    if not commodities and commodity_tagger.has_context(both):
         commodities = [c for c in commodity_hint if c in commodity_tagger.patterns]
 
     in_title = country_tagger.tag(_strip_false_country_collocations(title))
@@ -195,7 +278,7 @@ def tag_report(
         scope, origin = "global", "none"
 
     return Tagged(
-        commodities=commodities[:max_commodities],
+        commodities=commodity_tagger.cap(commodities, max_commodities),
         countries=countries,
         scope=scope,
         country_source=origin,

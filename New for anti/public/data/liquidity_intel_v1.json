@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-09-16T11:29:08.489175+00:00",
+  "generated_at": "2026-10-30T05:43:26.554756+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -18,12 +18,11 @@
   },
   "liquidity": {
     "bias": "tightening",
-    "score": 1.75,
-    "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
+    "score": 1.6,
+    "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음",
     "drivers": [
       "qra_net_borrowing_up",
-      "tga_cash_high",
-      "reporter_fima_focus"
+      "tga_cash_high"
     ],
     "qra": {
       "title": "Treasury Announces Marketable Borrowing Estimates | U.S. Department of the Treasury",
@@ -67,6 +66,41 @@
       "beige_book": null,
       "items": [
         {
+          "title": "Federal Reserve issues FOMC statement",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+          "published": "Wed, 28 Oct 2026 18:00:00 GMT",
+          "event_type": "fomc",
+          "tone": null
+        },
+        {
+          "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+          "published": "Tue, 13 Oct 2026 18:00:00 GMT",
+          "event_type": "press",
+          "tone": null
+        },
+        {
+          "title": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+          "published": "Thu, 8 Oct 2026 20:30:00 GMT",
+          "event_type": "press",
+          "tone": null
+        },
+        {
+          "title": "Federal Reserve issues FOMC statement",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+          "published": "Wed, 16 Sep 2026 18:00:00 GMT",
+          "event_type": "fomc",
+          "tone": null
+        },
+        {
+          "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
+          "published": "Wed, 16 Sep 2026 18:00:00 GMT",
+          "event_type": "fomc",
+          "tone": null
+        },
+        {
           "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
           "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
           "published": "Tue, 25 Aug 2026 18:00:00 GMT",
@@ -107,34 +141,6 @@
           "published": "Tue, 26 May 2026 18:00:00 GMT",
           "event_type": "press",
           "tone": null
-        },
-        {
-          "title": "Federal Reserve issues FOMC statement",
-          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
-          "published": "Wed, 29 Apr 2026 18:00:00 GMT",
-          "event_type": "fomc",
-          "tone": null
-        },
-        {
-          "title": "Minutes of the Board’s discount rate meetings on February 9 and March 18, 2026",
-          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260414a.htm",
-          "published": "Tue, 14 Apr 2026 18:00:00 GMT",
-          "event_type": "press",
-          "tone": null
-        },
-        {
-          "title": "Federal Reserve issues FOMC statement",
-          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
-          "published": "Wed, 18 Mar 2026 18:00:00 GMT",
-          "event_type": "fomc",
-          "tone": null
-        },
-        {
-          "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
-          "published": "Wed, 18 Mar 2026 18:00:00 GMT",
-          "event_type": "fomc",
-          "tone": null
         }
       ]
     },
@@ -142,56 +148,81 @@
       {
         "author": "양영빈",
         "articles_scanned": 8,
-        "articles_with_hits": 1,
+        "articles_with_hits": 2,
         "top_indicators": [
           {
-            "id": "fima",
-            "score": 1.2,
-            "label_ko": "FIMA 레포",
+            "id": "usd_jpy",
+            "score": 1.8,
+            "label_ko": "달러/엔",
             "evidence": [
-              "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
+              "[이코노미21 양영빈] 7월말 전세계 금융시장의 뜨거운 관심을 모았던던 달러엔 환율은 일본 재무성의 개입과 미국 베센트 재무장관이 언론에 고의로 흘린 메모(50억~100억달러치 엔화매입"
+            ]
+          },
+          {
+            "id": "fomc_liquidity",
+            "score": 0.85,
+            "label_ko": "FOMC·금리 유동성",
+            "evidence": [
+              "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까 [이코노미21 양영빈] 이번 9월 30일 발표된 PCE는 많은 관심을 받았다. 향후 금리 경로"
             ]
           }
         ],
         "themes_ko": [
-          "FIMA 레포 (점수 1.2)"
+          "달러/엔 (점수 1.8)",
+          "FOMC·금리 유동성 (점수 0.85)"
         ],
         "hint_weights": {
-          "mixed": 1.2
+          "fx_pair": 1.8,
+          "policy": 0.85
         },
-        "reporter_signals": [
-          "reporter_fima_focus"
-        ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포",
+        "reporter_signals": [],
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: 달러/엔 · 외 1개 테마",
         "per_article": [
           {
-            "title": "164엔의 벼랑 끝, 미 국채와 맞바꾼 엔화 방어의 내막",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
-            "published": "2026-09-08 16:45",
+            "title": "베센트와 일본 재무성의 환율 공조에 대해",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017306",
+            "published": "2026-10-20 16:52",
             "author": "양영빈",
             "indicators": [
               {
-                "id": "fima",
-                "label_ko": "FIMA 레포",
-                "mentions": 1,
-                "hint": "mixed",
+                "id": "usd_jpy",
+                "label_ko": "달러/엔",
+                "mentions": 2,
+                "hint": "fx_pair",
                 "evidence": [
-                  "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
+                  "[이코노미21 양영빈] 7월말 전세계 금융시장의 뜨거운 관심을 모았던던 달러엔 환율은 일본 재무성의 개입과 미국 베센트 재무장관이 언론에 고의로 흘린 메모(50억~100억달러치 엔화매입",
+                  "매입)로 달러당 165원을 눈앞에 두고 크게 하락했다.다음은 5월 이후 달러엔 환율의 움직임과 중요 사건을 보여준다.최근 발표된 미국 재무부 외환 운용자료를 보면 미국 재무부가 7월말에"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017236",
+            "published": "2026-10-02 16:43",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "fomc_liquidity",
+                "label_ko": "FOMC·금리 유동성",
+                "mentions": 1,
+                "hint": "policy",
+                "evidence": [
+                  "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까 [이코노미21 양영빈] 이번 9월 30일 발표된 PCE는 많은 관심을 받았다. 향후 금리 경로"
                 ]
               }
             ]
           }
         ],
         "finance_panel_fields": {
-          "reporter_liquidity_primary": "fima",
-          "reporter_liquidity_primary_ko": "FIMA 레포",
+          "reporter_liquidity_primary": "usd_jpy",
+          "reporter_liquidity_primary_ko": "달러/엔",
           "reporter_liquidity_themes": [
-            "FIMA 레포 (점수 1.2)"
+            "달러/엔 (점수 1.8)",
+            "FOMC·금리 유동성 (점수 0.85)"
           ],
-          "reporter_liquidity_signals": [
-            "reporter_fima_focus"
-          ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포"
+          "reporter_liquidity_signals": [],
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: 달러/엔 · 외 1개 테마"
         }
       }
     ],
@@ -200,22 +231,21 @@
       "qra_end_cash_bn": 950.0,
       "qra_vs_prior_bn": 68.0,
       "liquidity_bias": "tightening",
-      "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
+      "liquidity_headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음",
       "beige_tone": null,
-      "reporter_liquidity_primary": "fima",
-      "reporter_liquidity_primary_ko": "FIMA 레포",
+      "reporter_liquidity_primary": "usd_jpy",
+      "reporter_liquidity_primary_ko": "달러/엔",
       "reporter_liquidity_themes": [
-        "FIMA 레포 (점수 1.2)"
+        "달러/엔 (점수 1.8)",
+        "FOMC·금리 유동성 (점수 0.85)"
       ],
-      "reporter_liquidity_signals": [
-        "reporter_fima_focus"
-      ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포"
+      "reporter_liquidity_signals": [],
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: 달러/엔 · 외 1개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-569438304243",
+      "id": "qra-387031546206",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -248,7 +278,100 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-119131192058",
+      "id": "fed-234998081608",
+      "published_at": "Wed, 28 Oct 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[FOMC] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:fomc"
+      ],
+      "translation_status": "ok",
+      "event_type": "fomc"
+    },
+    {
+      "id": "fed-296304296239",
+      "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Federal Reserve issues FOMC statement",
+        "original_lang": "en",
+        "ko": "[FOMC] Federal Reserve issues FOMC statement"
+      },
+      "summary": "Federal Reserve issues FOMC statement",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:fomc"
+      ],
+      "translation_status": "ok",
+      "event_type": "fomc"
+    },
+    {
+      "id": "fed-91986558774",
+      "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
+      "source": {
+        "id": "federal_reserve",
+        "name": "Federal Reserve",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
+      "category": "liquidity_official",
+      "commodities": [],
+      "title": {
+        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+        "original_lang": "en",
+        "ko": "[FOMC] Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting"
+      },
+      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0,
+        "region_weight": 1.0,
+        "freshness": 1.0,
+        "final": 8.5
+      },
+      "rank_reasons": [
+        "event:fomc"
+      ],
+      "translation_status": "ok",
+      "event_type": "fomc"
+    },
+    {
+      "id": "fed-890442093653",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -279,7 +402,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-77458904266",
+      "id": "fed-802610501771",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -310,7 +433,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-434095761684",
+      "id": "fed-415648010336",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -341,23 +464,23 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-939733448160",
-      "published_at": "Wed, 29 Apr 2026 18:00:00 GMT",
+      "id": "fed-115211543128",
+      "published_at": "Tue, 13 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
         "name": "Federal Reserve",
         "region": "west",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
       "category": "liquidity_official",
       "commodities": [],
       "title": {
-        "original": "Federal Reserve issues FOMC statement",
+        "original": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
         "original_lang": "en",
-        "ko": "[FOMC] Federal Reserve issues FOMC statement"
+        "ko": "[연준] Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
       },
-      "summary": "Federal Reserve issues FOMC statement",
+      "summary": "Minutes of the Board&#39;s discount rate meetings on August 17, September 9, and September 16, 2026",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -366,29 +489,29 @@
         "final": 8.5
       },
       "rank_reasons": [
-        "event:fomc"
+        "event:press"
       ],
       "translation_status": "ok",
-      "event_type": "fomc"
+      "event_type": "press"
     },
     {
-      "id": "fed-254812594881",
-      "published_at": "Wed, 18 Mar 2026 18:00:00 GMT",
+      "id": "fed-785935048670",
+      "published_at": "Thu, 8 Oct 2026 20:30:00 GMT",
       "source": {
         "id": "federal_reserve",
         "name": "Federal Reserve",
         "region": "west",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
       "category": "liquidity_official",
       "commodities": [],
       "title": {
-        "original": "Federal Reserve issues FOMC statement",
+        "original": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
         "original_lang": "en",
-        "ko": "[FOMC] Federal Reserve issues FOMC statement"
+        "ko": "[연준] Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering"
       },
-      "summary": "Federal Reserve issues FOMC statement",
+      "summary": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -397,44 +520,13 @@
         "final": 8.5
       },
       "rank_reasons": [
-        "event:fomc"
+        "event:press"
       ],
       "translation_status": "ok",
-      "event_type": "fomc"
+      "event_type": "press"
     },
     {
-      "id": "fed-39409171047",
-      "published_at": "Wed, 18 Mar 2026 18:00:00 GMT",
-      "source": {
-        "id": "federal_reserve",
-        "name": "Federal Reserve",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318b.htm",
-      "category": "liquidity_official",
-      "commodities": [],
-      "title": {
-        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-        "original_lang": "en",
-        "ko": "[FOMC] Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting"
-      },
-      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the March 17-18 FOMC meeting",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0,
-        "region_weight": 1.0,
-        "freshness": 1.0,
-        "final": 8.5
-      },
-      "rank_reasons": [
-        "event:fomc"
-      ],
-      "translation_status": "ok",
-      "event_type": "fomc"
-    },
-    {
-      "id": "fed-298339080342",
+      "id": "fed-182849832936",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -465,7 +557,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-927623594168",
+      "id": "fed-741106384133",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -496,7 +588,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-75165775827",
+      "id": "fed-217632241595",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -527,38 +619,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-234502811840",
-      "published_at": "Tue, 14 Apr 2026 18:00:00 GMT",
-      "source": {
-        "id": "federal_reserve",
-        "name": "Federal Reserve",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260414a.htm",
-      "category": "liquidity_official",
-      "commodities": [],
-      "title": {
-        "original": "Minutes of the Board’s discount rate meetings on February 9 and March 18, 2026",
-        "original_lang": "en",
-        "ko": "[연준] Minutes of the Board’s discount rate meetings on February 9 and March 18, 2026"
-      },
-      "summary": "Minutes of the Board’s discount rate meetings on February 9 and March 18, 2026",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0,
-        "region_weight": 1.0,
-        "freshness": 1.0,
-        "final": 8.5
-      },
-      "rank_reasons": [
-        "event:press"
-      ],
-      "translation_status": "ok",
-      "event_type": "press"
-    },
-    {
-      "id": "liq-ind-359276006786",
+      "id": "liq-ind-778123417149",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -566,15 +627,15 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017135",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017306",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "FIMA 레포",
+        "original": "달러/엔 · FOMC·금리 유동성",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] FIMA 레포"
+        "ko": "[유동성지표·양영빈] 달러/엔 · FOMC·금리 유동성"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: FIMA 레포",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: 달러/엔 · 외 1개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -583,18 +644,25 @@
         "final": 7.5
       },
       "rank_reasons": [
-        "indicator:fima",
-        "reporter_fima_focus"
+        "indicator:usd_jpy"
       ],
       "translation_status": "ok",
       "event_type": "liquidity_indicator",
       "indicators": [
         {
-          "id": "fima",
-          "score": 1.2,
-          "label_ko": "FIMA 레포",
+          "id": "usd_jpy",
+          "score": 1.8,
+          "label_ko": "달러/엔",
           "evidence": [
-            "어의 내막 일본의 외환 개입, '총알 고갈'이 부른 미·일 금융 공조와 FIMA 레포의 비밀[이코노미21 양영빈] 2026년 7월말 뜨거운 여름, 글로벌 외환 시장은 전례 없는 긴장감에"
+            "[이코노미21 양영빈] 7월말 전세계 금융시장의 뜨거운 관심을 모았던던 달러엔 환율은 일본 재무성의 개입과 미국 베센트 재무장관이 언론에 고의로 흘린 메모(50억~100억달러치 엔화매입"
+          ]
+        },
+        {
+          "id": "fomc_liquidity",
+          "score": 0.85,
+          "label_ko": "FOMC·금리 유동성",
+          "evidence": [
+            "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까 [이코노미21 양영빈] 이번 9월 30일 발표된 PCE는 많은 관심을 받았다. 향후 금리 경로"
           ]
         }
       ]
@@ -633,10 +701,10 @@
     }
   ],
   "stats": {
-    "ticker_items": 12,
+    "ticker_items": 13,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 1,
+    "reporter_indicator_hits": 2,
     "sources_ok": 5,
     "sources_failed": 0
   }

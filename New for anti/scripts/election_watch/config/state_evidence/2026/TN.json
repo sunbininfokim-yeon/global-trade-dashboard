@@ -1,0 +1,327 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "TN",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "gov202spra0828d65"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-23",
+        "reviewed_at": "2026-10-23T02:00:00+00:00",
+        "provider_record_sha256": "283f85490d47dd191f3079ab60774079638d0d117e5af1d733872107c2807877",
+        "sources": [
+          "https://www.spryresearch.com/post/tennessee-statewide-survey-october-2026"
+        ],
+        "primary_toplines": {
+          "Marsha Blackburn": 43.5,
+          "Jerri Green": 32.0,
+          "David Hatley": 11.9,
+          "Lauren Pinkston": 1.4
+        },
+        "question_sample_n": 635,
+        "admission": {
+          "pollster": "Spry Strategies",
+          "provider_url": "https://www.spryresearch.com/post/tennessee-statewide-survey-october-2026",
+          "group": "spry-strategies",
+          "methodology_url": "https://www.spryresearch.com/post/tennessee-statewide-survey-october-2026",
+          "source_role": "pollster_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 635,
+          "field_dates": [
+            "2026-10-10",
+            "2026-10-16"
+          ],
+          "primary_release_date": "2026-10-20",
+          "provider_record_date": "2026-10-20",
+          "sponsors": [],
+          "sampling_method": "Spry Strategies statewide survey (mode per release methodology)",
+          "sampling_frame": "likely Tennessee voters",
+          "weighting": "per release methodology (not independently verified)",
+          "question_wording_checked": false,
+          "question": "Tennessee governor vote intention, Blackburn (R) vs Green (D) vs Hatley (I) vs Pinkston (I)",
+          "provider_pollster_label": "Spry Strategies",
+          "primary_pollster_name": "Spry Strategies",
+          "source_fetch_receipt": "source-fetch/a-src2-20261023-39883622912"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 3.89,
+          "confidence_level_pct": null,
+          "scope": "whole_study_635",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [],
+          "provider_sponsors": [],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "commissioner",
+          "full_questionnaire"
+        ],
+        "limitations_ko": "Spry Strategies 원문 대조: LV 635명, 2026-10-10~2026-10-16, 표본오차 ±3.89. 원문 소수점 수치(43.5/32.0/11.9/1.4)로 대조, VoteHub는 반올림. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "4ac5956458c520797cbe181d34b7701d1e67934ef29b0f904c9316773d741334"
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-23",
+    "fetched_at": "2026-10-23T01:42:20.313286+00:00",
+    "receipt": {
+      "state": "TN",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+      "captured_at": "2026-10-23T01:42:20.313286+00:00",
+      "capture_kind": "provider_transport_only",
+      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
+      "provider_records": 7,
+      "primary_rechecked_ids": [
+        "gov202tar2b53cae7",
+        "us-202tara610e9e2",
+        "gov202tar141bada4",
+        "us-202harc3982bab"
+      ],
+      "reviewed_on": "2026-10-08",
+      "governor_audit_captured_at": "2026-10-08T06:53:37.586432+00:00",
+      "governor_audit_file": "usa_governor_finance_audits/2026/TN.json",
+      "primary_supplement_receipts": [],
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "http_status": 200,
+        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+      }
+    },
+    "provider_records": [
+      {
+        "id": "gov202quaf29f068d",
+        "poll_type": "governor",
+        "sample_size": 600,
+        "population": "rv",
+        "url": "https://drive.google.com/file/d/1e3buxlVGdwvx-2H11FwX9XI_y1EWvzu6/view",
+        "created_at": "2026-04-27",
+        "start_date": "2025-08-05",
+        "end_date": "2025-08-07",
+        "pollster": "Quantus Insights",
+        "answers": [
+          {
+            "choice": "Marsha Blackburn",
+            "pct": 49.0
+          },
+          {
+            "choice": "Jerri Green",
+            "pct": 28.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Tennessee"
+      },
+      {
+        "id": "gov202tar4629c6a8",
+        "poll_type": "governor",
+        "sample_size": 1157,
+        "population": "rv",
+        "url": "https://tennsight.com/wp-content/uploads/2026/05/Crosstabs-Party-Ideology-Region-5.pdf",
+        "created_at": "2026-05-28",
+        "start_date": "2026-04-20",
+        "end_date": "2026-04-27",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "Marsha Blackburn",
+            "pct": 51.0
+          },
+          {
+            "choice": "Jerri Green",
+            "pct": 27.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Beacon Center"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Tennessee"
+      },
+      {
+        "id": "gov202tar2b53cae7",
+        "poll_type": "governor",
+        "sample_size": 1149,
+        "population": "rv",
+        "url": "https://tennsight.com/polls/august-2026/",
+        "created_at": "2026-09-03",
+        "start_date": "2026-08-15",
+        "end_date": "2026-08-26",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "Marsha Blackburn",
+            "pct": 46.0
+          },
+          {
+            "choice": "Jerri Green",
+            "pct": 33.0
+          },
+          {
+            "choice": "Independent",
+            "pct": 8.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Beacon Center of Tennessee"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Tennessee"
+      },
+      {
+        "id": "us-202tara610e9e2",
+        "poll_type": "us-senator",
+        "sample_size": 1157,
+        "population": "rv",
+        "url": "https://tennsight.com/polls/august-2026/",
+        "created_at": "2026-09-03",
+        "start_date": "2026-08-15",
+        "end_date": "2026-08-26",
+        "pollster": "Targoz Market Research",
+        "answers": [
+          {
+            "choice": "Bill Hagerty",
+            "pct": 51.0
+          },
+          {
+            "choice": "Marquita Bradshaw",
+            "pct": 31.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Beacon Center of Tennessee"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Tennessee"
+      },
+      {
+        "id": "us-202harc3982bab",
+        "poll_type": "us-representative",
+        "sample_size": 400,
+        "population": "lv",
+        "url": "https://drive.google.com/file/d/13E6k34GmPoJLpQuFn4E-BRFI49esOBoQ/view",
+        "created_at": "2026-09-10",
+        "start_date": "2026-09-01",
+        "end_date": "2026-09-03",
+        "pollster": "Hart Research Associates",
+        "answers": [
+          {
+            "choice": "Justin Pearson",
+            "pct": 44.0
+          },
+          {
+            "choice": "Brent Taylor",
+            "pct": 48.0
+          }
+        ],
+        "seat_name": "TN-09",
+        "sponsors": [
+          "Tennessee Rise"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 TN-09"
+      },
+      {
+        "id": "gov202tar141bada4",
+        "poll_type": "governor",
+        "sample_size": 600,
+        "population": "lv",
+        "url": "https://www.tnprogressfund.com/polling",
+        "created_at": "2026-09-18",
+        "start_date": "2026-09-09",
+        "end_date": "2026-09-12",
+        "pollster": "TargetSmart",
+        "answers": [
+          {
+            "choice": "Marsha Blackburn",
+            "pct": 45.0
+          },
+          {
+            "choice": "Jerri Green",
+            "pct": 36.0
+          },
+          {
+            "choice": "David Hatley",
+            "pct": 19.0
+          },
+          {
+            "choice": "Lauren Pinkston",
+            "pct": 2.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Progress Fund"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Tennessee"
+      },
+      {
+        "id": "gov202spra0828d65",
+        "poll_type": "governor",
+        "sample_size": 635,
+        "population": "lv",
+        "url": "https://www.spryresearch.com/post/tennessee-statewide-survey-october-2026",
+        "created_at": "2026-10-20",
+        "start_date": "2026-10-10",
+        "end_date": "2026-10-16",
+        "pollster": "Spry Strategies",
+        "answers": [
+          {
+            "choice": "Marsha Blackburn",
+            "pct": 44.0
+          },
+          {
+            "choice": "Jerri Green",
+            "pct": 32.0
+          },
+          {
+            "choice": "David Hatley",
+            "pct": 12.0
+          },
+          {
+            "choice": "Lauren Pinkston",
+            "pct": 1.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Tennessee"
+      }
+    ],
+    "provider_records_sha256": "0136624da225186acd9589d8c77b5e8ef98a45cabfdd2dab175b379c6ddd01df",
+    "primary_records": []
+  }
+}

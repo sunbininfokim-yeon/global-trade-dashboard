@@ -17,9 +17,10 @@ measurements instead.
 
 Source
 ------
-NOAA OISST v2.1 daily anomaly (0.25°) via NOAA CoastWatch ERDDAP, subsampled
-server-side with a stride so we never download the full grid. ERDDAP serves the
-axis in 0-360 longitude; output is converted to -180..180 for the map.
+NOAA OISST v2.1 daily anomaly (0.25°) via NOAA PSL THREDDS (OPeNDAP), subsampled
+server-side with a stride so we never download the full grid. The file axis is
+0-360 longitude; output is converted to -180..180 for the map. (Was NOAA
+CoastWatch ERDDAP until it blacklisted GitHub runners -- see psl_oisst.py.)
 
 Resolution is a deliberate trade. Stride 6 gives 1.5°, about 11k wet points and
 ~250KB of JSON -- fine enough that the Mediterranean and the subpolar Atlantic
@@ -33,65 +34,44 @@ Usage:
 import json
 import os
 import sys
-import urllib.parse
-import urllib.request
 from datetime import datetime, timezone
+
+import psl_oisst
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.abspath(os.path.join(HERE, "..", "public", "data", "sst_anomaly_v1.json"))
 
-ERDDAP = "https://coastwatch.pfeg.noaa.gov/erddap/griddap/ncdcOisst21Agg.csv"
 STRIDE = 6           # 0.25° * 6 = 1.5°
 LAT_MIN, LAT_MAX = -78, 88
 
 
-def build_url():
-    # [(last)] rather than today's date: OISST runs about two weeks behind, and
-    # asking for a date past the axis maximum is a 404, not an empty result.
-    q = (f"anom[(last)][(0.0)]"
-         f"[({LAT_MIN}):{STRIDE}:({LAT_MAX})]"
-         f"[(0.125):{STRIDE}:(359.875)]")
-    return f"{ERDDAP}?{urllib.parse.quote(q, safe='()[]:,.-')}"
-
-
-def fetch_csv(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "global-trade-dashboard"})
-    with urllib.request.urlopen(req, timeout=240) as r:
-        return r.read().decode("utf-8", "replace")
-
-
 def main():
     check = "--check" in sys.argv
-    text = fetch_csv(build_url())
-    lines = text.splitlines()
-    if not lines or not lines[0].startswith("time"):
-        print("ERDDAP 응답이 CSV가 아님:\n" + text[:400], file=sys.stderr)
-        return 1
+    # Newest day only. OISST runs about two weeks behind, so "today" is not
+    # on the axis; the file's own length says which day is.
+    year, n = psl_oisst.latest_year()
+    dates, _, _, rows = psl_oisst.fetch(
+        year, (n - 1, 1, n - 1),
+        (psl_oisst.lat_index(LAT_MIN), STRIDE, psl_oisst.lat_index(LAT_MAX)),
+        (0, STRIDE, psl_oisst.NLON - 1))
+    as_of = dates[0].isoformat()
 
-    as_of = None
     points = []
     lo = hi = 0.0
-    for line in lines[2:]:                       # row 0 header, row 1 units
-        parts = line.split(",")
-        if len(parts) < 5:
-            continue
-        value = parts[4].strip()
-        if not value or value == "NaN":          # land, and ice-covered cells
-            continue
-        try:
-            lat = float(parts[2])
-            lon = float(parts[3])
-            anom = float(value)
-        except ValueError:
-            continue
-        as_of = as_of or parts[0][:10]
-        if lon > 180:
-            lon -= 360                            # ERDDAP axis is 0-360
-        # One decimal is 0.1°C, finer than the colour ramp can show, and halves
-        # the file next to full precision.
-        points.append([round(lon, 2), round(lat, 2), round(anom, 1)])
-        lo = min(lo, anom)
-        hi = max(hi, anom)
+    i0 = psl_oisst.lat_index(LAT_MIN)
+    for (_, ii), vals in sorted(rows.items()):
+        lat = psl_oisst.lat_of(i0 + ii * STRIDE)
+        for jj, anom in enumerate(vals):
+            if anom is None:                     # land, and ice-covered cells
+                continue
+            lon = psl_oisst.lon_of(jj * STRIDE)
+            if lon > 180:
+                lon -= 360                        # file axis is 0-360
+            # One decimal is 0.1°C, finer than the colour ramp can show, and
+            # halves the file next to full precision.
+            points.append([round(lon, 2), round(lat, 2), round(anom, 1)])
+            lo = min(lo, anom)
+            hi = max(hi, anom)
 
     if not points:
         print("유효 격자점 없음", file=sys.stderr)
@@ -101,12 +81,12 @@ def main():
         "schema_version": "sst-anomaly-v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "as_of": as_of,
-        "source": "NOAA OISST v2.1 (NOAA CoastWatch ERDDAP)",
-        "source_url": ERDDAP,
+        "source": psl_oisst.SOURCE,
+        "source_url": psl_oisst.year_url(year),
         "variable": "sea surface temperature anomaly",
         "unit": "degree_C",
         "resolution_deg": round(0.25 * STRIDE, 2),
-        "baseline": "1971-2000 climatology (OISST v2.1)",
+        "baseline": psl_oisst.BASELINE,
         "count": len(points),
         "range": [round(lo, 1), round(hi, 1)],
         # [lon, lat, anomaly] rather than objects: 11k points, and the key names

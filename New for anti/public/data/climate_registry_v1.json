@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-registry-v1",
-  "generated_at": "2026-09-05T13:54:32.254327+00:00",
+  "generated_at": "2026-10-30T04:40:35.765450+00:00",
   "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
   "countries": {
     "Argentina": {
@@ -466,6 +466,50 @@
         "note_ko": "주요 곡물 수출 제한 seed (2+ → 적)"
       }
     },
+    "Colombia": {
+      "country": "colombia",
+      "iso": "COL",
+      "label_ko": "콜롬비아",
+      "label_en": "Colombia",
+      "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "USDA PSD 생산 추세와 USDA 추정치를 함께 보여준다. 기상 조건 판정은 참고용이고 숫자에 반영하지 않는다.",
+      "data_file": "colombia_yield_forecast.json",
+      "model_name": "Colombia palm oil (USDA PSD trend + weather read-out)",
+      "view": {
+        "longitude": -73.5,
+        "latitude": 5.5,
+        "zoom": 4.8
+      },
+      "regions": [
+        {
+          "key": "colombia_palm_oil",
+          "label_ko": "팜유(CPO) 생산",
+          "ui_name": "colombia_palm_oil",
+          "coordinates": [
+            -73.0,
+            4.0
+          ],
+          "crops_region_keys": [
+            "colombia_palm_oil"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "USDA FAS PSD (Oil, Palm)",
+          "url": "https://apps.fas.usda.gov/psdonline/",
+          "updated": "2026-10-09"
+        },
+        "climate": {
+          "name": "NASA POWER (daily) · NOAA OISST v2.1 Niño3.4",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-10-27"
+        }
+      },
+      "method_refs": "Corley & Tinker (2015) The Oil Palm · Oettli et al. (2018) Sci Rep (ENSO and palm oil)",
+      "notes_ko": "|"
+    },
     "Ethiopia": {
       "country": "ethiopia",
       "iso": "ETH",
@@ -625,6 +669,18 @@
           ]
         },
         {
+          "key": "indonesia_palm_oil",
+          "label_ko": "팜유(CPO) 생산",
+          "ui_name": "Indonesia palm oil",
+          "coordinates": [
+            101.45,
+            0.5
+          ],
+          "crops_region_keys": [
+            "indonesia_palm_oil"
+          ]
+        },
+        {
           "key": "indonesia_coffee",
           "label_ko": "커피",
           "ui_name": "Indonesia coffee",
@@ -669,6 +725,94 @@
         "note_ko": "팜 등 통제 seed (1품목 금지 → 주황 우선)"
       }
     },
+    "Malaysia": {
+      "country": "malaysia",
+      "iso": "MYS",
+      "label_ko": "말레이시아",
+      "label_en": "Malaysia",
+      "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "USDA PSD 생산 추세와 USDA 추정치를 함께 보여준다. 기상 조건 판정은 참고용이고 숫자에 반영하지 않는다.",
+      "data_file": "malaysia_yield_forecast.json",
+      "model_name": "Malaysia palm oil (USDA PSD trend + weather read-out)",
+      "view": {
+        "longitude": 109.5,
+        "latitude": 3.8,
+        "zoom": 4.6
+      },
+      "regions": [
+        {
+          "key": "malaysia_palm_oil",
+          "label_ko": "팜유(CPO) 생산",
+          "ui_name": "malaysia_palm_oil",
+          "coordinates": [
+            103.3,
+            2.6
+          ],
+          "crops_region_keys": [
+            "malaysia_palm_oil"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "USDA FAS PSD (Oil, Palm)",
+          "url": "https://apps.fas.usda.gov/psdonline/",
+          "updated": "2026-10-09"
+        },
+        "climate": {
+          "name": "NASA POWER (daily) · NOAA OISST v2.1 Niño3.4",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-10-27"
+        }
+      },
+      "method_refs": "Corley & Tinker (2015) The Oil Palm · Oettli et al. (2018) Sci Rep (ENSO and palm oil)",
+      "notes_ko": "|"
+    },
+    "Nigeria": {
+      "country": "nigeria",
+      "iso": "NGA",
+      "label_ko": "나이지리아",
+      "label_en": "Nigeria",
+      "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "USDA PSD 생산 추세와 USDA 추정치를 함께 보여준다. 기상 조건 판정은 참고용이고 숫자에 반영하지 않는다.",
+      "data_file": "nigeria_yield_forecast.json",
+      "model_name": "Nigeria palm oil (USDA PSD trend + weather read-out)",
+      "view": {
+        "longitude": 7.0,
+        "latitude": 7.0,
+        "zoom": 5.0
+      },
+      "regions": [
+        {
+          "key": "nigeria_palm_oil",
+          "label_ko": "팜유 생산",
+          "ui_name": "nigeria_palm_oil",
+          "coordinates": [
+            7.0,
+            5.5
+          ],
+          "crops_region_keys": [
+            "nigeria_palm_oil"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "USDA FAS PSD (Oil, Palm)",
+          "url": "https://apps.fas.usda.gov/psdonline/",
+          "updated": "2026-10-09"
+        },
+        "climate": {
+          "name": "NASA POWER (daily) · NOAA OISST v2.1 Niño3.4",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-10-27"
+        }
+      },
+      "method_refs": "Corley & Tinker (2015) The Oil Palm · Oettli et al. (2018) Sci Rep (ENSO and palm oil)",
+      "notes_ko": "|"
+    },
     "Russia": {
       "country": "russia",
       "iso": "RUS",
@@ -676,8 +820,8 @@
       "label_en": "Russia",
       "panel_mode": "forecast",
       "data_file": "russia_yield_forecast.json",
-      "model_status": "provisional",
-      "status_note_ko": "산지 5곳 검증 통과 / 3곳은 추세를 이기지 못함.",
+      "model_status": "training",
+      "status_note_ko": "검증 연도가 5~6개(2022~2023 라벨 공백)뿐이라 11개 모델 모두 저신뢰. 라벨 보강 전까지 숫자는 참고용.",
       "view": {
         "longitude": 42.0,
         "latitude": 50.5,
@@ -912,6 +1056,18 @@
           ]
         },
         {
+          "key": "thailand_palm_oil",
+          "label_ko": "남부 팜유(CPO) 생산",
+          "ui_name": "thailand_palm_oil",
+          "coordinates": [
+            99.1,
+            9.0
+          ],
+          "crops_region_keys": [
+            "thailand_palm_oil"
+          ]
+        },
+        {
           "key": "isan_cassava",
           "label_ko": "이산 카사바 (참고)",
           "ui_name": "isan_cassava",
@@ -1099,6 +1255,18 @@
           ],
           "crops_region_keys": [
             "mekong_rice_ws"
+          ]
+        },
+        {
+          "key": "central_highlands_coffee",
+          "label_ko": "중부 고원 (로부스타 커피)",
+          "ui_name": "central_highlands_coffee",
+          "coordinates": [
+            108.04,
+            12.67
+          ],
+          "crops_region_keys": [
+            "central_highlands_coffee"
           ]
         }
       ],

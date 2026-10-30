@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import calendar
+import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -151,15 +153,35 @@ def build_net_borrowing_compare(
                 "value": float(current_q["net_borrowing_bn"]),
                 "end_cash_bn": current_q.get("end_cash_balance_bn"),
                 "vs_prior_bn": current_q.get("vs_prior_bn"),
+                "announcement_date": _latest_announcement(event, current_q.get("period") or ""),
                 "kind": "estimate",
             }
         )
+    if current_q and len(estimates) >= 2:
+        next_q = estimates[1]
+        next_period = next_q.get("period") or ""
+        if (
+            next_q.get("net_borrowing_bn") is not None
+            and _period_key(next_period) != _period_key(current_q.get("period") or "")
+        ):
+            series.append(
+                {
+                    "id": "next_estimate",
+                    "label_ko": "다음 분기 예상",
+                    "period": next_period,
+                    "value": float(next_q["net_borrowing_bn"]),
+                    "end_cash_bn": next_q.get("end_cash_balance_bn"),
+                    "vs_prior_bn": next_q.get("vs_prior_bn"),
+                    "announcement_date": _latest_announcement(event, next_period),
+                    "kind": "estimate",
+                }
+            )
 
     return {
         "metric": "privately_held_net_marketable_bn",
         "unit": "bn_usd",
         "chart_type": "bar",
-        "title_ko": "순발행 비교 (전분실적 · 직전예측 · 당기공시)",
+        "title_ko": "순발행 비교 (전분실적 · 직전예측 · 당기공시 · 다음분기)",
         "series": series,
         "table": [
             {
@@ -172,10 +194,22 @@ def build_net_borrowing_compare(
             for s in series
         ],
         "note_ko": (
-            "클릭 시 기본 뷰. 만기별 바는 components / TBAC. "
-            "세 막대 모두 있으면 표+그룹 바; 일부만 있으면 있는 것만 표시."
+            "같은 발표에서 당기 공시와 다음 분기 예상을 나눴다. "
+            "직전 공시 예측은 그 전 발표가 같은 분기에 적어 둔 값이다."
         ),
     }
+
+
+def _latest_announcement(event: Dict[str, Any], period: str) -> Optional[str]:
+    """Latest Sources & Uses date for this quarter. Same announcement can cover two quarters."""
+    key = _period_key(period)
+    dated = [
+        r for r in _su_estimates(event)
+        if _period_key(r.get("period") or "") == key and r.get("announcement_date")
+    ]
+    if not dated:
+        return None
+    return max(dated, key=lambda r: _parse_announce(r.get("announcement_date"))).get("announcement_date")
 
 
 def _period_key(period: str) -> str:
@@ -205,3 +239,83 @@ def build_quarter_history(events: List[Dict[str, Any]], *, limit: int = 16) -> L
             }
         )
     return pts[-limit:]
+
+
+_PERIOD_END = re.compile(r"[\u2013\u2014-]\s*([A-Za-z]+)\s+(\d{4})\s*$")
+
+
+def _period_end_date(period: Optional[str]) -> Optional[str]:
+    """'October\u2013December 2022' -> '2022-12-31' (None when the period does not read that way)."""
+    m = _PERIOD_END.search((period or "").strip())
+    if not m:
+        return None
+    try:
+        month = datetime.strptime(m.group(1)[:3], "%b").month
+    except ValueError:
+        return None
+    year = int(m.group(2))
+    return f"{year:04d}-{month:02d}-{calendar.monthrange(year, month)[1]:02d}"
+
+
+def apply_real_history(ind: Dict[str, Any], rows: Optional[List[Dict[str, Any]]]) -> bool:
+    """Give the QRA indicator's trend tab the real quarterly series.
+
+    The pack builder seeds every indicator with a synthetic monthly walk around
+    its base value; for qra_issuance that base was the sum of the fixture
+    maturity bars (~1,410), so the trend tab drew 60 identical bars under a
+    "live" badge while the headline said 739. The real series is the net
+    borrowing Treasury announced for each quarter (history_net_borrowing),
+    which is an announced estimate made at each refunding, not an outturn.
+
+    Rows without a readable period end or a number are skipped, never filled.
+    With no usable rows the trend is emptied rather than left synthetic.
+    Returns True when a real series was written.
+    """
+    pts = []
+    for r in rows or []:
+        end = _period_end_date(r.get("period"))
+        val = r.get("net_borrowing_bn")
+        if end is None or not isinstance(val, (int, float)):
+            continue
+        pts.append((end, round(float(val), 1)))
+    pts.sort()
+    if not pts:
+        ind["history"] = {}
+        ind.pop("history_note_ko", None)
+        return False
+    series = {"dates": [d for d, _ in pts], "values": [v for _, v in pts]}
+    ind["history"] = {"5y": series, "10y": series}  # the record starts in 2022; both windows hold all of it
+    ind["history_note_ko"] = (
+        f"분기별 순발행입니다 ({pts[0][0][:7]}~{pts[-1][0][:7]}, {len(pts)}개 분기, 분기말 날짜에 표시). "
+        "각 분기 값은 재무부가 그 분기 재융자 발표 때 낸 예상치이고 실제 집행액이 아닙니다."
+    )
+    return True
+
+
+def split_summary_ko(compare: Dict[str, Any], bill: Optional[str] = None, coupon: Optional[str] = None) -> Optional[str]:
+    """One-line note for an announcement that covers this quarter and the next.
+
+    Built from the compare block and the stances parsed out of that same
+    release -- never a fixed string: the refresh script used to hardcode
+    "T-bill 스탠스=maintain · 쿠폰 스탠스=change_bias" from the August 2026
+    release, which would have been stamped onto every later announcement.
+    """
+    by_id = {s.get("id"): s for s in compare.get("series") or []}
+    cur, nxt = by_id.get("current"), by_id.get("next_estimate")
+    if not cur or not nxt:
+        return None
+
+    def money(series: Dict[str, Any]) -> str:
+        text = f"순발행 {series['value']:.0f}B"
+        if series.get("end_cash_bn") is not None:
+            text += f", 기말현금 {float(series['end_cash_bn']):.0f}B"
+        return text
+
+    parts = [
+        f"{cur.get('announcement_date') or '최근'} 발표. 당기 {cur.get('period')} {money(cur)}.",
+        f"다음 분기 {nxt.get('period')} 예상 {money(nxt)}.",
+    ]
+    stances = [f"{label}={value}" for label, value in (("T-bill 스탠스", bill), ("쿠폰 스탠스", coupon)) if value]
+    if stances:
+        parts.append(" · ".join(stances))
+    return " ".join(parts)

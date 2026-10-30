@@ -19,15 +19,16 @@
       2022,
       2023,
       2024,
-      2025
+      2025,
+      2026
     ]
   },
   "trained_years": [
     1994,
-    2025
+    2026
   ],
-  "n_seasons": 32,
-  "detrended_residual_cv": 0.12641482959353081,
+  "n_seasons": 33,
+  "detrended_residual_cv": 0.12500429209110023,
   "anomaly": {
     "window_years": 20,
     "minimum_prior_years": 10,
@@ -87,97 +88,97 @@
   "trend": {
     "form": "log_linear",
     "log_poly_coef": [
-      0.01944881689903472,
-      -31.552104546919647
+      0.01887861004785666,
+      -30.40921994820839
     ]
   },
   "scaler": {
     "mean": [
-      -0.11713625627556949,
-      0.4035341284438759,
-      0.3828229410234969,
-      -0.22493765728272275,
-      0.05513344977809151,
-      0.08288670028865283,
-      0.2311596661868319,
-      -0.054999459204562964
+      -0.06492146042416796,
+      0.39406485299793476,
+      0.37662480810966714,
+      -0.23663884343731545,
+      0.05521166116370298,
+      0.1274091143872397,
+      0.27609523366123817,
+      0.024098450543705716
     ],
     "scale": [
-      1.0707373298000296,
-      1.462619999307184,
-      1.4028304186931957,
-      1.1242625963955557,
-      1.220201201396359,
-      1.2950940188123485,
-      1.1233309148159343,
-      1.0401746393456295
+      1.0949798974521425,
+      1.4412843697219315,
+      1.3818567885151434,
+      1.1090742726279295,
+      1.2015711628508403,
+      1.2999515568969435,
+      1.1350102887079159,
+      1.1177584053436664
     ]
   },
   "ridge": {
-    "alpha": 24.244620170823307,
+    "alpha": 0.04124626382901352,
     "coef": [
-      0.008188180641404651,
-      -0.029298123602956028,
-      -0.02829329080005697,
-      0.0009287945325249501,
-      0.005826513874677883,
-      -0.0035894642471206942,
-      -0.003811108398483248,
-      -0.0036489724789591105
+      0.05227044156791485,
+      -0.20475423390252648,
+      0.09746673280364694,
+      -0.010832467910619875,
+      0.09241013256141396,
+      -0.10870804443900033,
+      -0.028225132365040623,
+      -0.01005946550936119
     ],
-    "intercept": 1.3042134082585305e-14
+    "intercept": -2.2000904666520733e-14
   },
   "top_effects": [
     {
       "feature": "hsu_flower_z20",
-      "effect_pct_per_sd": -2.89
-    },
-    {
-      "feature": "heat_dry_stress_z20",
-      "effect_pct_per_sd": -2.79
-    },
-    {
-      "feature": "rain_growing_z20",
-      "effect_pct_per_sd": 0.82
-    },
-    {
-      "feature": "sm_preseason_z20",
-      "effect_pct_per_sd": 0.58
-    },
-    {
-      "feature": "rain_winter_z20",
-      "effect_pct_per_sd": -0.38
-    },
-    {
-      "feature": "oni_summer_z20",
-      "effect_pct_per_sd": -0.36
+      "effect_pct_per_sd": -18.52
     },
     {
       "feature": "sm_flowering_z20",
-      "effect_pct_per_sd": -0.36
+      "effect_pct_per_sd": -10.3
+    },
+    {
+      "feature": "heat_dry_stress_z20",
+      "effect_pct_per_sd": 10.24
+    },
+    {
+      "feature": "sm_preseason_z20",
+      "effect_pct_per_sd": 9.68
+    },
+    {
+      "feature": "rain_growing_z20",
+      "effect_pct_per_sd": 5.37
+    },
+    {
+      "feature": "rain_winter_z20",
+      "effect_pct_per_sd": -2.78
     },
     {
       "feature": "frost_sep_z20",
-      "effect_pct_per_sd": 0.09
+      "effect_pct_per_sd": -1.08
+    },
+    {
+      "feature": "oni_summer_z20",
+      "effect_pct_per_sd": -1.0
     }
   ],
   "uncertainty": {
     "basis": "absolute errors from forward-chaining predictions",
-    "absolute_error_q68_kg_ha": 394.87713963142505,
-    "absolute_error_q95_kg_ha": 840.2109447153348,
-    "n_forward_errors": 14
+    "absolute_error_q68_kg_ha": 394.87713963140686,
+    "absolute_error_q95_kg_ha": 840.2109447153307,
+    "n_forward_errors": 15
   },
   "validation": {
     "weather": {
-      "rmse": 356.09529787354904,
-      "mae": 275.81610700738065,
-      "baseline_rmse": 355.5384612569483,
-      "skill_vs_trend": -0.001566178282462305,
-      "recent_rmse": 392.1514420224231,
-      "recent_baseline_rmse": 398.8461190918619,
-      "recent_skill_vs_trend": 0.01678511272638683,
-      "detrended_r2": -0.7287021655413211,
-      "recent_trend_bias": 285.3621763486546,
+      "rmse": 353.52313333475325,
+      "mae": 278.44952315236117,
+      "baseline_rmse": 349.9722091205373,
+      "skill_vs_trend": -0.010146303396887602,
+      "recent_rmse": 404.1812113264328,
+      "recent_baseline_rmse": 406.04145173737714,
+      "recent_skill_vs_trend": 0.004581405181625531,
+      "detrended_r2": -0.8240798911617311,
+      "recent_trend_bias": 321.1348738423106,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
@@ -198,19 +199,20 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     },
     "weather_soil": {
-      "rmse": 358.8797654399202,
-      "mae": 285.1868954310911,
-      "baseline_rmse": 355.5384612569483,
-      "skill_vs_trend": -0.009397869842714845,
-      "recent_rmse": 397.55267774596064,
-      "recent_baseline_rmse": 398.8461190918619,
-      "recent_skill_vs_trend": 0.0032429583340219947,
-      "detrended_r2": -0.7558428475377164,
-      "recent_trend_bias": 285.3621763486546,
+      "rmse": 349.28650338337303,
+      "mae": 277.1066139461675,
+      "baseline_rmse": 349.9722091205373,
+      "skill_vs_trend": 0.0019593148235610425,
+      "recent_rmse": 400.4553914153365,
+      "recent_baseline_rmse": 406.04145173737714,
+      "recent_skill_vs_trend": 0.01375736466840738,
+      "detrended_r2": -0.7806222229326165,
+      "recent_trend_bias": 321.1348738423106,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
@@ -234,19 +236,20 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     },
     "weather_soil_drivers": {
-      "rmse": 352.42077110176575,
-      "mae": 278.89429225261387,
-      "baseline_rmse": 355.5384612569483,
-      "skill_vs_trend": 0.008768925151333762,
-      "recent_rmse": 391.048694870176,
-      "recent_baseline_rmse": 398.8461190918619,
-      "recent_skill_vs_trend": 0.019549956357704956,
-      "detrended_r2": -0.6932094835125711,
-      "recent_trend_bias": 285.3621763486546,
+      "rmse": 347.6739016036237,
+      "mae": 278.47965731282665,
+      "baseline_rmse": 349.9722091205373,
+      "skill_vs_trend": 0.006567114350848446,
+      "recent_rmse": 400.18450484042773,
+      "recent_baseline_rmse": 406.04145173737714,
+      "recent_skill_vs_trend": 0.014424504867393773,
+      "detrended_r2": -0.7642184623904447,
+      "recent_trend_bias": 321.1348738423106,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
@@ -271,7 +274,8 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ]
     }
   }

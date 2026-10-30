@@ -76,4 +76,11 @@ jobs:
                   "New for anti/scripts/yield_model/china/training" \
                   "New for anti/scripts/yield_model/china/models"
           git commit -m "chore: weekly China regional yield forecast refresh" || exit 0
+          # Non-fast-forward race: a bare push drops this refresh when another
+          # scheduled job lands a commit on main first. Rebase and retry.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

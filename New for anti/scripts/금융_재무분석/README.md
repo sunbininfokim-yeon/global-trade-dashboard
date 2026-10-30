@@ -134,7 +134,7 @@ portfolio JSON
 ## 투자 성향
 
 ```bash
-python3 run_pipeline.py --portfolio samples/user_balanced_portfolio.json --risk-profile balanced
+python3 run_pipeline.py --portfolio samples/demo_portfolio.json --risk-profile balanced
 ```
 
 `conservative` / `balanced` / `aggressive` — 현금·VaR 한도만 다르고, 기대수익률 가정은 없습니다.

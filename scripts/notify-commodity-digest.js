@@ -13,26 +13,47 @@
 // per-favorite state comparison.
 const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const {
   requireEnv, supabaseGet, supabaseUpsert, fetchJson,
 } = require('./lib/sync-utils');
 
-requireEnv('SUPABASE_URL');
-requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-const RESEND_API_KEY = requireEnv('RESEND_API_KEY');
+// DRY_RUN=1: read Supabase and the reports file, print what each favorite
+// would receive (counts only -- no addresses), send nothing, record nothing.
+// For checking the Supabase wiring without mailing anyone.
+const DRY_RUN = process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true';
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = process.env.NOTIFY_FROM_EMAIL || 'alerts@chokemonitor.com';
 const REPORTS_JSON = path.join(__dirname, '..', 'New for anti', 'public', 'data', 'commodity_reports_v1.json');
 const WINDOW_DAYS = 8; // a little over a week, so a cadence slip never silently drops a report
+const MAX_PER_COMMODITY = 8; // newest first; keeps one busy board from swamping the mail
 const SITE_URL = 'https://chokemonitor.com/';
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// When a report became news for the digest. A dated report counts from its
+// publication date. A list-page report has no date (ANRPC, VRA, CONAB, USGS)
+// and a GAIN page may only have its month; those count from when the
+// pipeline first saw them (first_seen_at), and a month-only one must also be
+// from the last ~6 weeks so an old report newly linked is not mailed as new.
+function newsTime(item) {
+  const first = item.first_seen_at ? new Date(item.first_seen_at).getTime() : NaN;
+  if (item.published_at && item.published_precision !== 'month') return new Date(item.published_at).getTime();
+  if (item.published_at && item.published_precision === 'month') {
+    const month = new Date(item.published_at).getTime();
+    return Date.now() - month > 45 * 86_400_000 ? NaN : first;
+  }
+  return first;
+}
+
 function loadRecentReports() {
   const data = JSON.parse(fs.readFileSync(REPORTS_JSON, 'utf8'));
   const cutoff = Date.now() - WINDOW_DAYS * 86_400_000;
-  const items = (data.items || []).filter((item) => item.published_at && new Date(item.published_at).getTime() >= cutoff);
+  const items = (data.items || [])
+    .filter((item) => newsTime(item) >= cutoff)
+    .sort((a, b) => newsTime(b) - newsTime(a));
   return { items, labels: data.commodity_labels || {} };
 }
 
@@ -64,7 +85,33 @@ async function fetchProfiles(userIds) {
   return new Map(rows.map((row) => [row.id, row.email]));
 }
 
-function sendDigestEmail(email, groups) {
+function digestIdempotencyKey(userId, groups) {
+  const ids = [...new Set(groups.flatMap(g => g.items.map(i => String(i.id))))].sort();
+  return 'commodity-legacy/' + crypto.createHash('sha256').update(JSON.stringify([userId, ids])).digest('hex');
+}
+
+// One user's picks: commodity key -> items, newest first, at most
+// MAX_PER_COMMODITY per commodity. News headlines (publisher_type "news")
+// are shown on the site only and never mailed.
+function pickDigestItems(items, commodityKeys, disabledSources, sentIds, userId) {
+  const byCommodity = new Map();
+  const seenItemIds = new Set(); // an item tagged with 2 favorited commodities lists once
+  for (const item of items) {
+    if (item.publisher_type === 'news') continue;
+    if (disabledSources && disabledSources.has(item.source_id)) continue;
+    const matchedKey = item.commodities.find((c) => commodityKeys.has(c));
+    if (!matchedKey || seenItemIds.has(item.id)) continue;
+    if (sentIds.has(`${userId}:${item.id}`)) continue;
+    seenItemIds.add(item.id);
+    const picked = byCommodity.get(matchedKey) || [];
+    if (picked.length >= MAX_PER_COMMODITY) continue;
+    picked.push(item);
+    byCommodity.set(matchedKey, picked);
+  }
+  return byCommodity;
+}
+
+async function sendDigestEmail(email, groups, userId) {
   const sections = groups.map(({ label, items }) => `
     <h3 style="margin:20px 0 8px;font-size:15px;">${esc(label)}</h3>
     <ul style="padding-left:20px;margin:0;">
@@ -77,13 +124,13 @@ function sendDigestEmail(email, groups) {
   const html = `
     <div style="font-family:-apple-system,sans-serif;max-width:560px;">
       <h2 style="margin:0 0 4px;">이번 주 즐겨찾기 원자재 리포트</h2>
-      <p style="color:#4a5a61;margin:0 0 12px;">최근 ${WINDOW_DAYS}일 내 발행된, 아직 안 보내드린 리포트입니다.</p>
+      <p style="color:#4a5a61;margin:0 0 12px;">최근 ${WINDOW_DAYS}일 내 발행되었거나 새로 확인된, 아직 안 보내드린 리포트입니다.</p>
       ${sections}
       <p style="margin-top:24px;"><a href="${SITE_URL}">ChokePoint Monitor에서 전체 보기 →</a></p>
     </div>`;
-  return fetchJson('https://api.resend.com/emails', {
+  const accepted = await fetchJson('https://api.resend.com/emails', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': digestIdempotencyKey(userId, groups) },
     body: JSON.stringify({
       from: FROM_EMAIL,
       to: email,
@@ -91,9 +138,14 @@ function sendDigestEmail(email, groups) {
       html,
     }),
   }, { label: 'Resend send' });
+  if (!accepted?.id || typeof accepted.id !== 'string') throw Error('resend_acceptance_unconfirmed');
+  return accepted.id;
 }
 
 async function run() {
+  requireEnv('SUPABASE_URL');
+  requireEnv('SUPABASE_SERVICE_ROLE_KEY');
+  if (!DRY_RUN) requireEnv('RESEND_API_KEY');
   const { items, labels } = loadRecentReports();
   if (!items.length) {
     console.log(`No commodity reports published in the last ${WINDOW_DAYS} days.`);
@@ -117,23 +169,21 @@ async function run() {
     fetchDisabledSourcesByUser(),
   ]);
   const digestByUser = new Map(); // user_id -> Map(commodityKey -> [item])
-  const sentInserts = [];
 
   for (const [userId, commodityKeys] of favoritesByUser) {
-    const disabledSources = disabledSourcesByUser.get(userId);
-    const seenItemIds = new Set(); // an item tagged with 2 favorited commodities lists once
-    for (const item of items) {
-      if (disabledSources && disabledSources.has(item.source_id)) continue;
-      const matchedKey = item.commodities.find((c) => commodityKeys.has(c));
-      if (!matchedKey || seenItemIds.has(item.id)) continue;
-      if (sentIds.has(`${userId}:${item.id}`)) continue;
-      seenItemIds.add(item.id);
-      if (!digestByUser.has(userId)) digestByUser.set(userId, new Map());
-      const byCommodity = digestByUser.get(userId);
-      if (!byCommodity.has(matchedKey)) byCommodity.set(matchedKey, []);
-      byCommodity.get(matchedKey).push(item);
-      sentInserts.push({ user_id: userId, report_id: item.id });
-    }
+    const byCommodity = pickDigestItems(items, commodityKeys, disabledSourcesByUser.get(userId), sentIds, userId);
+    if (byCommodity.size) digestByUser.set(userId, byCommodity);
+  }
+
+  if (DRY_RUN) {
+    const favCount = {};
+    for (const keys of favoritesByUser.values()) for (const k of keys) favCount[k] = (favCount[k] || 0) + 1;
+    const recentCount = {};
+    for (const item of items) for (const c of item.commodities) recentCount[c] = (recentCount[c] || 0) + 1;
+    console.log(`[dry-run] Supabase reachable: ${favorites.length} commodity favorites from ${favoritesByUser.size} user(s).`);
+    console.log(`[dry-run] favorites by commodity: ${JSON.stringify(favCount)}`);
+    console.log(`[dry-run] reports new in the last ${WINDOW_DAYS} days by commodity: ${JSON.stringify(recentCount)}`);
+    console.log(`[dry-run] already-sent log rows: ${sentIds.size}; users with a source turned off: ${disabledSourcesByUser.size}`);
   }
 
   if (!digestByUser.size) {
@@ -145,21 +195,36 @@ async function run() {
   let sent = 0;
   for (const [userId, byCommodity] of digestByUser) {
     const email = emails.get(userId);
+    // No address, no mail -- and no sent-log row, so the report is still
+    // mailed if the address turns up within the window.
     if (!email) continue;
     const groups = [...byCommodity.entries()].map(([key, groupItems]) => ({
       label: labels[key] || key,
       items: groupItems,
     }));
-    await sendDigestEmail(email, groups);
+    if (DRY_RUN) {
+      const summary = groups.map((g) => `${g.label} ${g.items.length}`).join(', ');
+      console.log(`[dry-run] user ${userId.slice(0, 8)}… would get: ${summary}`);
+      continue;
+    }
+    await sendDigestEmail(email, groups, userId);
+    const sentInserts = [];
+    for (const groupItems of byCommodity.values()) {
+      for (const item of groupItems) sentInserts.push({ user_id: userId, report_id: item.id });
+    }
+    // Record each accepted recipient immediately: a later user's failure
+    // must not erase the receipt of an already accepted message.
+    await supabaseUpsert('commodity_report_notifications', sentInserts, 'user_id,report_id', 'resolution=ignore-duplicates,return=minimal');
     sent += 1;
+  }
+  if (DRY_RUN) {
+    console.log('[dry-run] nothing sent, nothing recorded.');
+    return;
   }
   console.log(`Sent ${sent} weekly commodity digest(s).`);
 
-  if (sentInserts.length) {
-    // ignore-duplicates, not merge: a retry after a partial failure must not
-    // error on rows a prior attempt already recorded.
-    await supabaseUpsert('commodity_report_notifications', sentInserts, 'user_id,report_id', 'resolution=ignore-duplicates,return=minimal');
-  }
+
 }
 
-run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });
+module.exports = { digestIdempotencyKey, sendDigestEmail, pickDigestItems, run };
+if (require.main === module) run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });

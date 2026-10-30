@@ -2,7 +2,7 @@ name: Sync US Government Policy Data
 
 on:
   schedule:
-    - cron: '17 2 * * *'
+    - cron: '17 */4 * * *'
   workflow_dispatch:
     inputs:
       congress_mode:
@@ -33,6 +33,12 @@ on:
         default: '50'
         type: string
 
+      max_search_documents:
+        description: 'Maximum changed/pending policy documents to index; each has at most 24 passage vectors.'
+        required: false
+        default: '100'
+        type: string
+
 permissions:
   contents: read
 
@@ -44,6 +50,9 @@ concurrency:
 
 jobs:
   sync-government-policy:
+    # 운영 DB 키를 쓰는 job: main 에서만 돈다. 브랜치에서 수동 실행하면 건너뛴다
+    # (2026-10-22 브랜치 수집이 운영 메일 대기열을 만든 사고 후속).
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     # Was 55: two bootstrap dispatches in a row (2026-09-05, 2026-09-08) got
     # cancelled mid-run by this ceiling, not by the Congress.gov/GovInfo rate
@@ -60,15 +69,16 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       GEMINI_API_KEY: ${{ secrets.AI_STUDIO_API_KEY }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      # Scheduled work tracks changes, and automatically continues an already
-      # started bootstrap cursor until it is complete.
+      # Incremental uses its own resumable cursor; bootstrap requires explicit dispatch.
       SYNC_MODE: ${{ inputs.congress_mode || 'incremental' }}
       PUBLIC_LAW_MODE: ${{ inputs.public_law_mode || 'incremental' }}
       MAX_BILLS: ${{ inputs.max_bills || '100' }}
       MAX_PUBLIC_LAWS: ${{ inputs.max_public_laws || '50' }}
       MAX_FR_DOCUMENTS: ${{ inputs.max_fr_documents || '50' }}
-      MAX_EMBEDDINGS: '25'
+      POLICY_SEARCH_DB_BUDGET_BYTES: '6442450944'
+      CONGRESS_NUMBERS: '119'
+      MAX_DISCOVERY_PAGES: '4'
+      MAX_EMBEDDINGS: '100'
       CONGRESS_REQUEST_INTERVAL_MS: '850'
       NODE_OPTIONS: --max-old-space-size=2048
     steps:
@@ -84,11 +94,13 @@ jobs:
         run: |
           node --check scripts/lib/sync-utils.js
           node --check scripts/sync-congress.js
+          node --test scripts/lib/congress-incremental.test.cjs
           node --check scripts/sync-federal-register.js
           node --check scripts/backfill-eo-text-relations.js
           node --check scripts/sync-public-laws.js
           node --check scripts/sync-us-code.js
           node --check scripts/notify-favorites.js
+          node --check scripts/sync-policy-search.js
           node scripts/lib/eo-authorities.test.js
           node scripts/lib/eo-agency-directives.test.js
 
@@ -107,6 +119,18 @@ jobs:
         if: ${{ !cancelled() }}
         run: node scripts/sync-public-laws.js
 
+      - name: Refresh policy document embeddings
+        if: ${{ success() }}
+        env:
+          MAX_SEARCH_DOCUMENTS: ${{ inputs.max_search_documents || '100' }}
+          POLICY_SEARCH_CACHE_DIR: ${{ runner.temp }}/policy-search-cache
+        run: |
+          node -e 'const n=Number(process.env.MAX_SEARCH_DOCUMENTS); if(!Number.isInteger(n)||n<1||n>1000)throw Error("max_search_documents must be an integer between 1 and 1000")'
+          node scripts/sync-policy-search.js --limit "$MAX_SEARCH_DOCUMENTS" --max-minutes 20
+
+      # Collection handoff does not authorize mail delivery. Enable separately.
       - name: Notify favorited bill/EO changes
-        if: ${{ !cancelled() }}
+        if: ${{ success() && vars.POLICY_FAVORITES_MAIL_ENABLED == 'true' }}
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: node scripts/notify-favorites.js

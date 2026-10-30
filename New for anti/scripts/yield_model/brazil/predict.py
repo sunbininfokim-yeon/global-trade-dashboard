@@ -127,6 +127,10 @@ def _prior_yield(year, history, predicted):
     return np.nan, [f"no yield or forecast available for {year}"]
 
 
+# Training inputs are standardised; nothing real sits six sigmas out.
+MAX_INPUT_Z = 6.0
+
+
 def predict_one(cfg, year, oni, predicted):
     model_path = os.path.join(MODELS, f"{cfg.key}.json")
     if not os.path.exists(model_path):
@@ -139,23 +143,24 @@ def predict_one(cfg, year, oni, predicted):
     dailies = {p["name"]: recent_weather(p, year) for p in cfg.points}
     coverage = max(d.date.max() for d in dailies.values())
 
-    feats = blend_features(cfg, dailies, year)
-    if not feats:
-        return None
+    # Empty until the season's weather window opens; the climatology fill
+    # below still gives a projection then.
+    feats = blend_features(cfg, dailies, year) or {}
     feats["oni_season"] = oni_for(oni, year, ONI_WINDOW.get(cfg.key, ONI_SUMMER))
 
     notes = panel_features(cfg, feats, year, history, predicted)
 
     missing = [f for f in model["features"]
                if f not in feats or feats[f] is None or pd.isna(feats[f])]
-    if missing:
+    lags_missing = [f for f in missing if f in ("lag1", "lag2")]
+    if lags_missing:
         return {"key": cfg.key, "year": year, "error":
-                f"features unavailable: {', '.join(missing)}",
+                f"features unavailable: {', '.join(lags_missing)}",
                 "weather_through": str(coverage.date())}
 
     trend_log = float(np.polyval(model["trend"]["log_poly_coef"], year))
 
-    x = np.array([feats[f] for f in model["features"]], dtype=float)
+    x = np.array([feats.get(f, np.nan) for f in model["features"]], dtype=float)
     # Lag features enter as log deviations from trend, matching training.
     for i, f in enumerate(model["features"]):
         if f in ("lag1", "lag2"):
@@ -163,13 +168,57 @@ def predict_one(cfg, year, oni, predicted):
             x[i] = np.log(max(x[i], 1.0)) - np.polyval(
                 model["trend"]["log_poly_coef"], year - lag)
 
-    z = (x - np.array(model["scaler"]["mean"])) / np.array(model["scaler"]["scale"])
-    weather_log = float(model["ridge"]["intercept"]
-                        + np.dot(z, model["ridge"]["coef"]))
-
+    # Weather not yet observed is filled from climatology: one scenario per
+    # training season, each taking that season's values for the missing
+    # features and this season's for the rest (the scenario method the US
+    # models use). Before the window opens this collapses to roughly the
+    # trend; as months come in, the observed ones start to move it. Without
+    # this every summer crop dropped off the dashboard from September until
+    # its critical months began.
+    mean = np.array(model["scaler"]["mean"])
+    scale = np.array(model["scaler"]["scale"])
+    coef = np.array(model["ridge"]["coef"])
+    unk = np.array([f in missing for f in model["features"]])
+    if unk.any():
+        past = history[[f for f, u in zip(model["features"], unk) if u]].dropna()
+        if past.empty:
+            return {"key": cfg.key, "year": year, "error":
+                    f"features unavailable: {', '.join(missing)}",
+                    "weather_through": str(coverage.date())}
+        X = np.repeat(x[None, :], len(past), axis=0)
+        X[:, unk] = past.values
+        logs = model["ridge"]["intercept"] + ((X - mean) / scale) @ coef
+        weather_log = float(np.mean(logs))
+        notes = notes + [f"{len(missing)} of {len(model['features'])} features not "
+                         f"yet observed, filled from {len(past)} past seasons: "
+                         + ", ".join(missing)]
+    else:
+        weather_log = float(model["ridge"]["intercept"]
+                            + np.dot((x - mean) / scale, coef))
     trend_kg = float(np.exp(trend_log))
+    model_effect_pct = (np.exp(weather_log) - 1) * 100
+    # A model that lost to the trend out of sample does not get to move the
+    # published number: its adjustment made past forecasts worse, not
+    # better. The point falls back to the trend (sigma is already the trend's
+    # own error) and the model's would-be adjustment is kept for reference.
+    if not model["beats_trend"]:
+        weather_log = 0.0
+    # An observed input this far outside training is a data fault, not a
+    # season: SP oranges published +2,681% on 2026-10-23. Fall back to the
+    # trend and name the inputs, so the next run's log says which one.
+    z = np.where(unk, 0.0, (x - mean) / scale)
+    wild = [f"{f} z={v:+.1f}" for f, v in zip(model["features"], z)
+            if abs(v) > MAX_INPUT_Z]
+    if wild:
+        weather_log = 0.0
+        notes = notes + ["inputs outside training range, trend shown: " + ", ".join(wild)]
+        log(f"{cfg.key} {year}: inputs outside training range -> trend: {', '.join(wild)}")
     point_kg = float(np.exp(trend_log + weather_log))
     sigma = model["uncertainty"]["sigma_kg_ha"]
+    if unk.any():
+        # Validation scored the model on complete seasons. With part of the
+        # season still unknown the honest band is at least the trend's own.
+        sigma = max(sigma, model.get("best_trend_baseline_rmse") or sigma)
 
     last = history.dropna(subset=["yield_kg_ha"]).iloc[-1]
 
@@ -195,6 +244,9 @@ def predict_one(cfg, year, oni, predicted):
         "unit": "kg/ha",
         "trend": trend_kg,
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
+        "model_weather_effect_pct": model_effect_pct,
+        "point_basis": "model" if model["beats_trend"] and not wild else "trend",
+        "inputs_out_of_range": wild,
         "point": point_kg,
         "range_68": [point_kg - sigma, point_kg + sigma],
         "range_95": [point_kg - 1.96 * sigma, point_kg + 1.96 * sigma],
@@ -205,7 +257,9 @@ def predict_one(cfg, year, oni, predicted):
         "non_weather_features": model.get("non_weather_features", []),
         "top_effects": model.get("top_effects", []),
         "last_actual": {"year": int(last.year), "yield": float(last.yield_kg_ha)},
-        "features": {f: float(feats[f]) for f in model["features"]},
+        "features": {f: (None if f in missing else float(feats[f]))
+                     for f in model["features"]},
+        "features_filled": missing,
         "weather_through": str(coverage.date()),
         "critical_window_observed": share,
         "season_complete": bool(share is not None and share >= 0.999),
@@ -214,6 +268,28 @@ def predict_one(cfg, year, oni, predicted):
         "non_weather_drivers": model.get("non_weather_drivers", ""),
         "notes": notes,
     }
+
+
+def predict_with_lags(cfg, season, oni, max_gap=3):
+    """Forecast `season`, first filling unpublished prior seasons for the lags.
+
+    The lag features (coffee lag1/lag2, cane and orange lag1) need the yield
+    of the seasons before the one being forecast. IBGE publishes a year or
+    more late, so those seasons are forecast first, oldest first, each
+    standing on the one before. The chain is this crop's own: a shared
+    year-keyed dict once let orange's lag pick up coffee's 1,900 kg/ha and
+    publish a -72% weather effect.
+    """
+    history = pd.read_csv(os.path.join(TRAINING, f"{cfg.key}.csv"))
+    published = history.dropna(subset=["yield_kg_ha"]).year
+    last = int(published.max()) if len(published) else season - 1
+    own = {}
+    if any(v in ("__yield__", "__yield2__") for v in cfg.panel.values()):
+        for y in range(max(last + 1, season - max_gap), season):
+            r = predict_one(cfg, y, oni, own)
+            if r and "error" not in r:
+                own[y] = r["point"]
+    return predict_one(cfg, season, oni, own)
 
 
 def main():
@@ -227,20 +303,11 @@ def main():
     configs = [BY_KEY[k] for k in args] if args else ALL
     oni = load_oni()
 
-    # Predict the prior season first so coffee's lag has something to stand on
-    # when SIDRA has not caught up.
-    predicted = {}
     results = []
-    for offset in (-1, 0):
-        for cfg in configs:
-            target = (year or current_season(cfg)) + offset
-            r = predict_one(cfg, target, oni, predicted)
-            if r and "error" not in r:
-                predicted[target] = r["point"]
-                if offset == 0:
-                    results.append(r)
-            elif r and offset == 0:
-                results.append(r)
+    for cfg in configs:
+        r = predict_with_lags(cfg, year or current_season(cfg), oni)
+        if r:
+            results.append(r)
 
     log(f"season {year or 'per-crop (' + str(current_season()) + ')'}"
         "  -- beyond the last published SIDRA actual, so genuinely unseen")

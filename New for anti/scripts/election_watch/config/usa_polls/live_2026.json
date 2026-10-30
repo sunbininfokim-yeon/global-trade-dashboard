@@ -1,0 +1,2233 @@
+{
+  "schema": "usa_live_poll_policy_v1",
+  "cycle": 2026,
+  "states": [
+    "NY",
+    "TN",
+    "GA",
+    "FL",
+    "PA",
+    "MI",
+    "WI",
+    "AZ",
+    "NV",
+    "NC",
+    "TX"
+  ],
+  "selection_criteria_ko": [
+    "대학 조사센터 또는 지역 언론 공동 조사이며 원문과 조사 방법을 공개하는 기관을 우선 선정",
+    "수치적 정확도 순위가 아니라 출처 공개·지역 선거 보도 연속성에 따른 편입 기준",
+    "기관 등록은 우선 수집 경로. 미등록 기관·공유 문서도 개별 원문 수치·방법·대진·레코드 검토로 편입 가능. 정당·후보 의뢰 조사도 정확한 원문 검토를 거치면 집계하며, 미검증 출처와 다른 문항은 제외",
+    "VoteHub API는 발견·전송 수단이며 원문 재전사 검증과 구분",
+    "미등록 표기·대체 발표 경로 중 확인된 대학/조사기관/의뢰 언론의 API 수치는 참고로 자동 수집. 개별 원문 검토 전 우세 합계 제외. 공유 저장소는 검토한 URL/경로만 허용.",
+    "발표기관 직접 자료와 확인된 언론 중계의 참고 경로를 구분. 중계 기사는 조사기관 신원·개별 문항 검증 완료로 표시하지 않으며 우세 집계 제외."
+  ],
+  "pollsters": {
+    "Emerson College": {
+      "group": "emerson",
+      "hosts": [
+        "emersoncollegepolling.com"
+      ],
+      "methodology_url": "https://emersoncollegepolling.com/about/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "Quinnipiac University": {
+      "group": "quinnipiac",
+      "hosts": [
+        "poll.qu.edu"
+      ],
+      "methodology_url": "https://poll.qu.edu/methodology/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "Siena University": {
+      "group": "siena",
+      "hosts": [
+        "sri.siena.edu"
+      ],
+      "methodology_url": "https://sri.siena.edu/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "Siena College": {
+      "group": "siena",
+      "hosts": [
+        "sri.siena.edu"
+      ],
+      "methodology_url": "https://sri.siena.edu/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "The New York Times/Siena University": {
+      "group": "siena",
+      "hosts": [
+        "sri.siena.edu",
+        "www.nytimes.com"
+      ],
+      "methodology_url": "https://sri.siena.edu/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "Marquette University Law School": {
+      "group": "marquette",
+      "hosts": [
+        "law.marquette.edu"
+      ],
+      "methodology_url": "https://law.marquette.edu/poll/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "University of North Florida": {
+      "group": "unf",
+      "hosts": [
+        "www.unfporl.org",
+        "static1.squarespace.com"
+      ],
+      "methodology_url": "https://www.unfporl.org/statewidepolls",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "Franklin & Marshall College": {
+      "group": "fandm",
+      "hosts": [
+        "www.fandmpoll.org"
+      ],
+      "methodology_url": "https://www.fandmpoll.org/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "Suffolk University": {
+      "group": "suffolk",
+      "hosts": [
+        "www.suffolk.edu"
+      ],
+      "methodology_url": "https://www.suffolk.edu/academics/research-at-suffolk/political-research-center",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "High Point University Survey Research Center": {
+      "group": "hpu",
+      "hosts": [
+        "www.highpoint.edu"
+      ],
+      "methodology_url": "https://www.highpoint.edu/src/hpupoll/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "East Carolina University": {
+      "group": "ecu",
+      "hosts": [
+        "surveyresearch-ecu.reportablenews.com"
+      ],
+      "methodology_url": "https://surveyresearch.ecu.edu/",
+      "selection_reason_ko": "대학 조사센터의 공개 방법론·원문. 지역 선거 조사를 지속 발표. 기관별 정확도 보증은 아님."
+    },
+    "Marist University": {
+      "group": "marist",
+      "hosts": [
+        "maristpoll.marist.edu"
+      ],
+      "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+      "selection_reason_ko": "대학 조사센터가 조사 기간·표본·방법·원문을 공개하고 주별 선거를 지속 발표. 2026-10-05 Ohio 원문 검토. 정확도 보증은 아님."
+    },
+    "Marist College": {
+      "group": "marist",
+      "hosts": [
+        "maristpoll.marist.edu"
+      ],
+      "methodology_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/",
+      "selection_reason_ko": "대학 조사센터가 조사 기간·표본·방법·원문을 공개하고 주별 선거를 지속 발표. 2026-10-05 Ohio 원문 검토. 정확도 보증은 아님."
+    },
+    "ReconMR/Siena University": {
+      "group": "siena",
+      "hosts": [
+        "sri.siena.edu"
+      ],
+      "methodology_url": "https://sri.siena.edu/",
+      "selection_reason_ko": "Siena 원문 및 ReconMR 파트너 표기 확인. NYTimes/Siena와 같은 siena 그룹으로 중복 집계 방지."
+    },
+    "Stetson University Center for Public Opinion Research": {
+      "group": "stetson",
+      "hosts": [
+        "www.stetson.edu"
+      ],
+      "methodology_url": "https://www.stetson.edu/artsci/cpor/",
+      "selection_reason_ko": "2026-10-06 대학 공식 PDF의 결과·방법론 확인. 온라인 비확률 표본·LV 하위집단 표본 수 미공개 등은 개별 source_quality로 표시. 정확도 인증 아님."
+    },
+    "Targoz Market Research": {
+      "group": "targoz",
+      "hosts": [
+        "tennsight.com"
+      ],
+      "methodology_url": "https://tennsight.com/polls/august-2026/",
+      "selection_reason_ko": "Beacon/TennSight 의뢰기관의 원문 결과표·방법 공개 확인. RV/LV 및 전체/문항별 표본을 분리하며 의뢰자 표기. 정확도 인증 아님."
+    },
+    "Noble Predictive Insights": {
+      "group": "noble",
+      "hosts": [
+        "www.noblepredictiveinsights.com"
+      ],
+      "methodology_url": "https://www.noblepredictiveinsights.com/post/katie-hobbs-leads-andy-biggs-in-the-grand-canyon-state",
+      "selection_reason_ko": "2026-10-06 기관 또는 의뢰 매체의 원문 결과·기간·표본·방법 공개 확인. 이후 발표는 등록 도메인과 대진을 검사해 부분 검증으로 수집. 정확도 인증 아님."
+    },
+    "HighGround": {
+      "group": "highground",
+      "hosts": [
+        "azhighground.com"
+      ],
+      "methodology_url": "https://azhighground.com/hobbs-builds-double-digit-lead-in-arizona",
+      "selection_reason_ko": "2026-10-06 기관 또는 의뢰 매체의 원문 결과·기간·표본·방법 공개 확인. 이후 발표는 등록 도메인과 대진을 검사해 부분 검증으로 수집. 정확도 인증 아님."
+    },
+    "DHM Research": {
+      "group": "dhm",
+      "hosts": [
+        "www.opb.org",
+        "www.dhmresearch.com",
+        "www.oregonjournalismproject.org"
+      ],
+      "methodology_url": "https://www.opb.org/pdf/OPB%20Fall%202026%20Election%20Survey--Toplines%20(Washington%20Abridged)--September%202026_1790882419395.pdf",
+      "selection_reason_ko": "2026-10-06 기관 또는 의뢰 매체의 원문 결과·기간·표본·방법 공개 확인. 이후 발표는 등록 도메인과 대진을 검사해 부분 검증으로 수집. 정확도 인증 아님."
+    },
+    "Beacon Research/Shaw & Co. Research": {
+      "group": "beacon_shaw",
+      "hosts": [
+        "www.foxnews.com",
+        "static.foxnews.com"
+      ],
+      "methodology_url": "https://static.foxnews.com/foxnews.com/content/uploads/2026/10/fox_september-24-28-2026_texas_topline_october-1-release.pdf",
+      "selection_reason_ko": "2026-10-06 기관 또는 의뢰 매체의 원문 결과·기간·표본·방법 공개 확인. 이후 발표는 등록 도메인과 대진을 검사해 부분 검증으로 수집. 정확도 인증 아님."
+    },
+    "University of New Hampshire": {
+      "group": "unh",
+      "hosts": [
+        "scholars.unh.edu"
+      ],
+      "methodology_url": "https://cola.unh.edu/unh-survey-center",
+      "selection_reason_ko": "UNH 대학 조사센터 공식 저장소의 지역별 조사 원문·발표일·문항을 확인. 자동 API 값은 부분 검증으로 표기하고 개별 방법론·수치 대조는 별도. 정확도 등급 없음."
+    },
+    "SurveyUSA": {
+      "group": "surveyusa",
+      "hosts": [
+        "results.surveyusa.com",
+        "www.10news.com"
+      ],
+      "methodology_url": "https://results.surveyusa.com/client/methodology.aspx?g=28ed3f59-8986-4e1f-a5d1-a2e7fc8fff01",
+      "approved_sponsor_sets": [
+        [
+          "KOB-TV (Albuquerque)"
+        ],
+        [
+          "KGTV (San Diego)",
+          "The San Diego Union Tribune"
+        ],
+        [
+          "WNYT"
+        ]
+      ],
+      "selection_reason_ko": "조사기관 원문과 KOB-TV·KGTV/SD Union Tribune·WNYT 지역 언론 의뢰를 확인. 등록 도메인·검토한 의뢰자 조합만 자동 수집. 수치·표본 불일치 개별 레코드는 참고 전용. 정확도 등급 아님. ABC 10News의 직접 의뢰 원문·SurveyUSA 상세표도 확인."
+    },
+    "InsiderAdvantage": {
+      "group": "insideradvantage",
+      "hosts": [
+        "insideradvantage.com"
+      ],
+      "methodology_url": "https://insideradvantage.com/insideradvantage-georgia-survey-jackson-leads-by-two-in-race-for-governor-ossoff-leads-by-eight-in-senate-contest/",
+      "approved_sponsor_sets": [
+        []
+      ],
+      "selection_reason_ko": "2026-10-08 기관 원문 결과·표본·기간·방법 공개 확인. 책임 기관과 자체 공개 도메인만 연결. 새 API 발표는 내부/당파성·대진·기간 검사 후 부분 검증으로 수집하고 원문별 검증과 정확도 등급은 별도. 새 의뢰자와 공유 문서 호스트는 자동 허용하지 않습니다."
+    },
+    "Wick": {
+      "group": "wick",
+      "hosts": [
+        "wick.io"
+      ],
+      "methodology_url": "https://wick.io/research-georgia-election-survey-june-2026",
+      "approved_sponsor_sets": [
+        []
+      ],
+      "selection_reason_ko": "2026-10-08 기관 원문 결과·표본·기간·방법 공개 확인. 책임 기관과 자체 공개 도메인만 연결. 새 API 발표는 내부/당파성·대진·기간 검사 후 부분 검증으로 수집하고 원문별 검증과 정확도 등급은 별도. 새 의뢰자와 공유 문서 호스트는 자동 허용하지 않습니다."
+    },
+    "CNN/SSRS": {
+      "group": "cnn_ssrs",
+      "hosts": [
+        "www.cnn.com",
+        "edition.cnn.com",
+        "ssrs.com"
+      ],
+      "methodology_url": "https://ssrs.com/news/an-ohio-edge-and-iowa-tossup-heading-into-the-2026-election/",
+      "approved_sponsor_sets": [
+        []
+      ],
+      "selection_reason_ko": "CNN의의뢰기사와SSRS공식발표가직접연결한Ohio상세표·표본/모집/LV가중방법을검토. 미래API원문은등록호스트·대진·의뢰자·기간검사후부분검증수집. 정확도인증아님."
+    }
+  },
+  "races": {
+    "USA:NY:governor": {
+      "state": "NY",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 New York",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:NY:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Kathy Hochul",
+        "Bruce Blakeman"
+      ],
+      "candidates": {
+        "Kathy Hochul": {
+          "party": "DEM",
+          "source_url": "https://sri.siena.edu/wp-content/uploads/2026/08/SNY0826-Release-Crosstabs_Corrected.pdf"
+        },
+        "Bruce Blakeman": {
+          "party": "REP",
+          "source_url": "https://sri.siena.edu/wp-content/uploads/2026/08/SNY0826-Release-Crosstabs_Corrected.pdf"
+        }
+      },
+      "selection_reason_ko": "사용자 지정 관심 주",
+      "election_kind": "regular"
+    },
+    "USA:TN:senate": {
+      "state": "TN",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Tennessee",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:TN:senate:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Bill Hagerty",
+        "Marquita Bradshaw"
+      ],
+      "candidates": {
+        "Bill Hagerty": {
+          "party": "REP",
+          "source_url": "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf"
+        },
+        "Marquita Bradshaw": {
+          "party": "DEM",
+          "source_url": "https://tennsight.com/wp-content/uploads/2026/08/Beacon-Poll-of-TN-August-2026-Crosstabs-Party-Ideology-and-Region-1.pdf"
+        }
+      },
+      "selection_reason_ko": "의뢰기관 원문 p47 후보명·정당 확인. 8월 조사는 현재 기간 밖 참고 기록으로만 편입.",
+      "reviewed_on": "2026-10-06"
+    },
+    "USA:TN:governor": {
+      "state": "TN",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Tennessee",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:TN:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Marsha Blackburn",
+        "Jerri Green"
+      ],
+      "candidates": {
+        "Marsha Blackburn": {
+          "party": "REP",
+          "source_url": "https://www.nga.org/governors/elections/"
+        },
+        "Jerri Green": {
+          "party": "DEM",
+          "source_url": "https://www.nga.org/governors/elections/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:GA:senate": {
+      "state": "GA",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Georgia",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:GA:senate:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Jon Ossoff",
+        "Mike Collins"
+      ],
+      "candidates": {
+        "Jon Ossoff": {
+          "party": "DEM",
+          "source_url": "https://docs.google.com/spreadsheets/d/1WMIkxH0hZRhWe0dbY6wtuuqshJGChuhv/edit"
+        },
+        "Mike Collins": {
+          "party": "REP",
+          "source_url": "https://docs.google.com/spreadsheets/d/1WMIkxH0hZRhWe0dbY6wtuuqshJGChuhv/edit"
+        }
+      },
+      "selection_reason_ko": "사용자 지정 관심 주",
+      "election_kind": "regular"
+    },
+    "USA:GA:governor": {
+      "state": "GA",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Georgia",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:GA:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Keisha Lance Bottoms",
+        "Rick Jackson"
+      ],
+      "candidates": {
+        "Keisha Lance Bottoms": {
+          "party": "DEM",
+          "source_url": "https://www.nga.org/governors/elections/"
+        },
+        "Rick Jackson": {
+          "party": "REP",
+          "source_url": "https://www.nga.org/governors/elections/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:FL:senate": {
+      "state": "FL",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Florida",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:FL:senate:2026:general:special",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Ashley Moody",
+        "Angie Nixon"
+      ],
+      "candidates": {
+        "Ashley Moody": {
+          "party": "REP",
+          "source_url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/69e947e325a62208b4a7fc33/1776895971233/PORL%2B2026%2BSpring%2BStatewide%2BLV%2B-%2BEMBARGO%2B3.4.26.pdf"
+        },
+        "Angie Nixon": {
+          "party": "DEM",
+          "source_url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/69e947e325a62208b4a7fc33/1776895971233/PORL%2B2026%2BSpring%2BStatewide%2BLV%2B-%2BEMBARGO%2B3.4.26.pdf"
+        }
+      },
+      "selection_reason_ko": "사용자 지정 관심 주",
+      "election_kind": "special"
+    },
+    "USA:FL:governor": {
+      "state": "FL",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Florida",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:FL:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Byron Donalds",
+        "David Jolly"
+      ],
+      "candidates": {
+        "Byron Donalds": {
+          "party": "REP",
+          "source_url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/69e947e325a62208b4a7fc33/1776895971233/PORL%2B2026%2BSpring%2BStatewide%2BLV%2B-%2BEMBARGO%2B3.4.26.pdf"
+        },
+        "David Jolly": {
+          "party": "DEM",
+          "source_url": "https://static1.squarespace.com/static/6994d571bce3436c60d86870/t/69e947e325a62208b4a7fc33/1776895971233/PORL%2B2026%2BSpring%2BStatewide%2BLV%2B-%2BEMBARGO%2B3.4.26.pdf"
+        }
+      },
+      "selection_reason_ko": "사용자 지정 관심 주",
+      "election_kind": "regular"
+    },
+    "USA:PA:governor": {
+      "state": "PA",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Pennsylvania",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:PA:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Josh Shapiro",
+        "Stacy Garrity"
+      ],
+      "candidates": {
+        "Josh Shapiro": {
+          "party": "DEM",
+          "source_url": "https://sri.siena.edu/2026/09/24/nytimes-philadelphia-inquirer-siena-poll-of-likely-pennsylvania-voters/"
+        },
+        "Stacy Garrity": {
+          "party": "REP",
+          "source_url": "https://sri.siena.edu/2026/09/24/nytimes-philadelphia-inquirer-siena-poll-of-likely-pennsylvania-voters/"
+        }
+      },
+      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
+      "election_kind": "regular"
+    },
+    "USA:MI:senate": {
+      "state": "MI",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Michigan",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:MI:senate:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Abdul El-Sayed",
+        "Mike Rogers"
+      ],
+      "candidates": {
+        "Abdul El-Sayed": {
+          "party": "DEM",
+          "source_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/"
+        },
+        "Mike Rogers": {
+          "party": "REP",
+          "source_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/"
+        }
+      },
+      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
+      "election_kind": "regular"
+    },
+    "USA:MI:governor": {
+      "state": "MI",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Michigan",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:MI:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Jocelyn Benson",
+        "John James"
+      ],
+      "candidates": {
+        "Jocelyn Benson": {
+          "party": "DEM",
+          "source_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/"
+        },
+        "John James": {
+          "party": "REP",
+          "source_url": "https://emersoncollegepolling.com/michigan-2026-poll-el-sayed-and-rogers-locked-in-close-election/"
+        }
+      },
+      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
+      "election_kind": "regular"
+    },
+    "USA:WI:governor": {
+      "state": "WI",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Wisconsin",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:WI:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Tom Tiffany",
+        "David Crowley"
+      ],
+      "candidates": {
+        "Tom Tiffany": {
+          "party": "REP",
+          "source_url": "https://law.marquette.edu/poll/2026/08/26/marquette-law-poll-finds-crowley-leading-tiffany-among-likely-voters-tied-among-all-registered-voters/"
+        },
+        "David Crowley": {
+          "party": "DEM",
+          "source_url": "https://law.marquette.edu/poll/2026/08/26/marquette-law-poll-finds-crowley-leading-tiffany-among-likely-voters-tied-among-all-registered-voters/"
+        }
+      },
+      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
+      "election_kind": "regular"
+    },
+    "USA:AZ:governor": {
+      "state": "AZ",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Arizona",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:AZ:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Katie Hobbs",
+        "Andy Biggs"
+      ],
+      "candidates": {
+        "Katie Hobbs": {
+          "party": "DEM",
+          "source_url": "https://www.nga.org/governors/elections/"
+        },
+        "Andy Biggs": {
+          "party": "REP",
+          "source_url": "https://www.nga.org/governors/elections/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:NV:governor": {
+      "state": "NV",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Nevada",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:NV:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Aaron Ford",
+        "Joe Lombardo"
+      ],
+      "candidates": {
+        "Aaron Ford": {
+          "party": "DEM",
+          "source_url": "https://docs.google.com/spreadsheets/d/1GuSiLBi4ZfLNWy2ZnM2QkmrqBwN3oywj/edit"
+        },
+        "Joe Lombardo": {
+          "party": "REP",
+          "source_url": "https://docs.google.com/spreadsheets/d/1GuSiLBi4ZfLNWy2ZnM2QkmrqBwN3oywj/edit"
+        },
+        "Danielle Ford": {
+          "party": "NPP",
+          "source_url": "https://docs.google.com/spreadsheets/d/1GuSiLBi4ZfLNWy2ZnM2QkmrqBwN3oywj/edit"
+        }
+      },
+      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
+      "election_kind": "regular"
+    },
+    "USA:NC:senate": {
+      "state": "NC",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 North Carolina",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:NC:senate:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Roy Cooper",
+        "Michael Whatley"
+      ],
+      "candidates": {
+        "Roy Cooper": {
+          "party": "DEM",
+          "source_url": "https://surveyresearch-ecu.reportablenews.com/pr/ecu-poll-cooper-leads-whatley-by-7-points"
+        },
+        "Michael Whatley": {
+          "party": "REP",
+          "source_url": "https://surveyresearch-ecu.reportablenews.com/pr/ecu-poll-cooper-leads-whatley-by-7-points"
+        }
+      },
+      "selection_reason_ko": "초기 주요 주 감시 목록. 현재 경합 판정이나 기업 소재지 판정 아님",
+      "election_kind": "regular"
+    },
+    "USA:NY:house:10": {
+      "state": "NY",
+      "office": "house",
+      "district": "10",
+      "subject": "2026 NY-10",
+      "poll_type": "us-representative",
+      "seat_name": "NY-10",
+      "contest_id": "USA:NY:house:10:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "watch_slot_unverified",
+      "required_candidates": [],
+      "candidates": {},
+      "selection_reason_ko": "사용자가 지정한 뉴욕의 지역 언론 주요 경선 조사. 경합 본선 판정 아님"
+    },
+    "USA:NC:house:01": {
+      "state": "NC",
+      "office": "house",
+      "district": "01",
+      "subject": "2026 NC-01",
+      "poll_type": "us-representative",
+      "seat_name": "NC-01",
+      "contest_id": "USA:NC:house:01:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "watch_slot_unverified",
+      "required_candidates": [],
+      "candidates": {},
+      "selection_reason_ko": "지역 방송 WNCT·CBS17가 의뢰한 경선 조사. 선정 초기 표본이며 전체 중요 지역구 목록 아님"
+    },
+    "USA:PA:house:07": {
+      "state": "PA",
+      "office": "house",
+      "district": "07",
+      "subject": "2026 PA-07",
+      "poll_type": "us-representative",
+      "seat_name": "PA-07",
+      "contest_id": "USA:PA:house:07:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Bob Brooks",
+        "Ryan Mackenzie"
+      ],
+      "candidates": {
+        "Bob Brooks": {
+          "party": "DEM",
+          "source_url": "https://www.fandmpoll.org/franklin-marshall-college-poll-release-pa-7th-and-10th-congressional-districts-september-2026/"
+        },
+        "Ryan Mackenzie": {
+          "party": "REP",
+          "source_url": "https://www.fandmpoll.org/franklin-marshall-college-poll-release-pa-7th-and-10th-congressional-districts-september-2026/"
+        }
+      },
+      "selection_reason_ko": "지역 대학의 지역구별 본선 조사 공개·2024 대선 교차투표 지역(조사기관 설명)",
+      "election_kind": "regular"
+    },
+    "USA:PA:house:10": {
+      "state": "PA",
+      "office": "house",
+      "district": "10",
+      "subject": "2026 PA-10",
+      "poll_type": "us-representative",
+      "seat_name": "PA-10",
+      "contest_id": "USA:PA:house:10:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Janelle Stelson",
+        "Scott Perry"
+      ],
+      "candidates": {
+        "Janelle Stelson": {
+          "party": "DEM",
+          "source_url": "https://www.fandmpoll.org/franklin-marshall-college-poll-release-pa-7th-and-10th-congressional-districts-september-2026/"
+        },
+        "Scott Perry": {
+          "party": "REP",
+          "source_url": "https://www.fandmpoll.org/franklin-marshall-college-poll-release-pa-7th-and-10th-congressional-districts-september-2026/"
+        }
+      },
+      "selection_reason_ko": "지역 대학의 지역구별 본선 조사 공개·2024 대선 교차투표 지역(조사기관 설명)",
+      "election_kind": "regular"
+    },
+    "USA:TX:governor": {
+      "state": "TX",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Texas",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:TX:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Gina Hinojosa",
+        "Greg Abbott"
+      ],
+      "candidates": {
+        "Gina Hinojosa": {
+          "party": "DEM",
+          "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+        },
+        "Greg Abbott": {
+          "party": "REP",
+          "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:OH:governor": {
+      "state": "OH",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Ohio",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:OH:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Amy Acton",
+        "Vivek Ramaswamy"
+      ],
+      "candidates": {
+        "Amy Acton": {
+          "party": "DEM",
+          "source_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/"
+        },
+        "Vivek Ramaswamy": {
+          "party": "REP",
+          "source_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:IA:governor": {
+      "state": "IA",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Iowa",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:IA:governor:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Rob Sand",
+        "Zach Lahn"
+      ],
+      "candidates": {
+        "Rob Sand": {
+          "party": "DEM",
+          "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+        },
+        "Zach Lahn": {
+          "party": "REP",
+          "source_url": "https://sri.siena.edu/2026/10/04/nytimes-siena-poll-of-likely-voters-gubernatorial-races-2/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:OH:senate": {
+      "state": "OH",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Ohio",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:OH:senate:2026:general:special",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "special",
+      "required_candidates": [
+        "Sherrod Brown",
+        "Jon Husted"
+      ],
+      "candidates": {
+        "Sherrod Brown": {
+          "party": "DEM",
+          "source_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/"
+        },
+        "Jon Husted": {
+          "party": "REP",
+          "source_url": "https://maristpoll.marist.edu/polls/midterm-elections-in-ohio-september-2026/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:NY:house:17": {
+      "state": "NY",
+      "office": "house",
+      "district": "17",
+      "subject": "2026 NY-17",
+      "poll_type": "us-representative",
+      "seat_name": "NY-17",
+      "contest_id": "USA:NY:house:17:2026:general:regular",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "election_kind": "regular",
+      "required_candidates": [
+        "Cait Conley",
+        "Mike Lawler"
+      ],
+      "candidates": {
+        "Cait Conley": {
+          "party": "DEM",
+          "source_url": "https://emersoncollegepolling.com/ny-17-2026-poll/"
+        },
+        "Mike Lawler": {
+          "party": "REP",
+          "source_url": "https://emersoncollegepolling.com/ny-17-2026-poll/"
+        }
+      },
+      "selection_reason_ko": "사용자 관심 주 또는 검토한 경합 선거. 원문 대진·정당 확인 후 공개 API 수치 편입.",
+      "reviewed_on": "2026-10-05"
+    },
+    "USA:TX:senate": {
+      "state": "TX",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Texas",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:TX:senate:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "James Talarico",
+        "Ken Paxton"
+      ],
+      "candidates": {
+        "James Talarico": {
+          "party": "DEM",
+          "source_url": "https://emersoncollegepolling.com/texas-2026-poll-talarico-and-paxton-in-dead-heat-abbott-maintains-edge/"
+        },
+        "Ken Paxton": {
+          "party": "REP",
+          "source_url": "https://emersoncollegepolling.com/texas-2026-poll-talarico-and-paxton-in-dead-heat-abbott-maintains-edge/"
+        },
+        "Ted Brown": {
+          "party": "LIB",
+          "source_url": "https://emersoncollegepolling.com/texas-2026-poll-talarico-and-paxton-in-dead-heat-abbott-maintains-edge/"
+        }
+      },
+      "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
+      "reviewed_on": "2026-10-06"
+    },
+    "USA:IA:senate": {
+      "state": "IA",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Iowa",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:IA:senate:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Josh Turek",
+        "Ashley Hinson"
+      ],
+      "candidates": {
+        "Josh Turek": {
+          "party": "DEM",
+          "source_url": "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-iowa-september-2026/"
+        },
+        "Ashley Hinson": {
+          "party": "REP",
+          "source_url": "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-iowa-september-2026/"
+        }
+      },
+      "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
+      "reviewed_on": "2026-10-06"
+    },
+    "USA:KS:senate": {
+      "state": "KS",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Kansas",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:KS:senate:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Adam Hamilton",
+        "Roger Marshall"
+      ],
+      "candidates": {
+        "Adam Hamilton": {
+          "party": "DEM",
+          "source_url": "https://emersoncollegepolling.com/kansas-2026/"
+        },
+        "Roger Marshall": {
+          "party": "REP",
+          "source_url": "https://emersoncollegepolling.com/kansas-2026/"
+        },
+        "David Graham": {
+          "party": "LIB",
+          "source_url": "https://emersoncollegepolling.com/kansas-2026/"
+        }
+      },
+      "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
+      "reviewed_on": "2026-10-06"
+    },
+    "USA:KS:governor": {
+      "state": "KS",
+      "office": "governor",
+      "district": null,
+      "subject": "2026 Kansas",
+      "poll_type": "governor",
+      "seat_name": null,
+      "contest_id": "USA:KS:governor:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Cindy Holscher",
+        "Ty Masterson"
+      ],
+      "candidates": {
+        "Cindy Holscher": {
+          "party": "DEM",
+          "source_url": "https://emersoncollegepolling.com/kansas-2026/"
+        },
+        "Ty Masterson": {
+          "party": "REP",
+          "source_url": "https://emersoncollegepolling.com/kansas-2026/"
+        }
+      },
+      "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
+      "reviewed_on": "2026-10-06"
+    },
+    "USA:WA:house:03": {
+      "state": "WA",
+      "office": "house",
+      "district": "03",
+      "subject": "2026 WA-03",
+      "poll_type": "us-representative",
+      "seat_name": null,
+      "contest_id": "USA:WA:house:03:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Marie Gluesenkamp Perez",
+        "John Braun"
+      ],
+      "candidates": {
+        "Marie Gluesenkamp Perez": {
+          "party": "DEM",
+          "source_url": "https://www.opb.org/article/2026/10/01/gluesenkamp-perez-braun-southwest-washington-3rd-district/"
+        },
+        "John Braun": {
+          "party": "REP",
+          "source_url": "https://www.opb.org/article/2026/10/01/gluesenkamp-perez-braun-southwest-washington-3rd-district/"
+        }
+      },
+      "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
+      "reviewed_on": "2026-10-06"
+    },
+    "USA:FL:house:13": {
+      "state": "FL",
+      "office": "house",
+      "district": "13",
+      "subject": "2026 FL-13",
+      "poll_type": "us-representative",
+      "seat_name": "FL-13",
+      "contest_id": "USA:FL:house:13:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Leela Gray",
+        "Anna Paulina Luna"
+      ],
+      "candidates": {
+        "Leela Gray": {
+          "party": "DEM",
+          "source_url": "https://www.thehousemajoritypac.com/news/hmp-poll-leela-gray-leads-anna-paulina-luna-in-fl-13"
+        },
+        "Anna Paulina Luna": {
+          "party": "REP",
+          "source_url": "https://www.thehousemajoritypac.com/news/hmp-poll-leela-gray-leads-anna-paulina-luna-in-fl-13"
+        }
+      },
+      "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
+      "reviewed_on": "2026-10-06"
+    },
+    "USA:ME:senate": {
+      "state": "ME",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 Maine",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:ME:senate:2026:general",
+      "general_from": "2026-09-01",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Troy Jackson",
+        "Susan Collins"
+      ],
+      "candidates": {
+        "Troy Jackson": {
+          "party": "DEM",
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1007/"
+        },
+        "Susan Collins": {
+          "party": "REP",
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1007/"
+        }
+      },
+      "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
+      "reviewed_on": "2026-10-06"
+    },
+    "USA:NH:senate": {
+      "state": "NH",
+      "office": "senate",
+      "district": null,
+      "subject": "2026 New Hampshire",
+      "poll_type": "us-senator",
+      "seat_name": null,
+      "contest_id": "USA:NH:senate:2026:general",
+      "general_from": "2026-09-09",
+      "election_date": "2026-11-03",
+      "schedule_status": "reported_general_matchup",
+      "required_candidates": [
+        "Chris Pappas",
+        "John Sununu"
+      ],
+      "candidates": {
+        "Chris Pappas": {
+          "party": "DEM",
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1005/"
+        },
+        "John Sununu": {
+          "party": "REP",
+          "source_url": "https://scholars.unh.edu/survey_center_polls/1005/"
+        }
+      },
+      "selection_reason_ko": "사용자 우선순위·Cook 경합 선거. 원문 후보 이름과 정당을 확인한 본선 대진.",
+      "reviewed_on": "2026-10-06"
+    }
+  },
+  "official_result_hosts": {
+    "NY": [
+      "elections.ny.gov"
+    ],
+    "TN": [
+      "sos.tn.gov"
+    ],
+    "GA": [
+      "sos.ga.gov"
+    ],
+    "FL": [
+      "dos.fl.gov"
+    ],
+    "PA": [
+      "www.pa.gov"
+    ],
+    "MI": [
+      "www.michigan.gov"
+    ],
+    "WI": [
+      "elections.wi.gov"
+    ],
+    "AZ": [
+      "azsos.gov"
+    ],
+    "NV": [
+      "www.nvsos.gov"
+    ],
+    "NC": [
+      "www.ncsbe.gov"
+    ]
+  },
+  "excluded_records": {
+    "us-202easa9c1ac17": "forced_choice_question_not_comparable",
+    "us-202wed7f897488": "publisher_identity_unverified",
+    "gov202wed3b9968cd": "publisher_identity_unverified",
+    "us-202insad41796a": "provider_third_candidate_attribution_unverified",
+    "us-202bigf2db767c": "primary_provider_candidate_values_conflict",
+    "us-202elodaa5cffa": "primary_provider_field_dates_conflict",
+    "us-202elo069243f3": "primary_provider_field_dates_conflict",
+    "us-202nei29757f09": "primary_methodology_not_obtained",
+    "us-202insf80352ad": "primary_release_not_accessed",
+    "us-202quad5474d87": "primary_question_and_methods_not_obtained",
+    "us-202qua2790f813": "primary_question_and_methods_not_obtained",
+    "us-202tavd2d23773": "primary_provider_sample_mismatch",
+    "us-202big1f625134": "primary_geography_methodology_conflict",
+    "gov202big5e3239e4": "primary_geography_and_candidate_table_not_verified",
+    "us-202ins890b679a": "primary_release_not_accessed",
+    "us-202insea9816ae": "primary_release_not_accessed",
+    "us-202har67e7828b": "primary_methodology_not_obtained",
+    "us-202har2b87ea23": "primary_methodology_not_obtained",
+    "us-202beda3a16f8f": "commissioner_primary_not_obtained",
+    "us-202unke3b76dc0": "missing_pollster_sample_and_primary_methodology",
+    "us-202glob1380568": "missing_sample_and_primary_methodology",
+    "us-202the20e70677": "commissioner_primary_methodology_not_obtained",
+    "us-202pub4897124c": "pre_primary_historical_poll_not_general_signal",
+    "us-202texe83b516f": "primary_provider_field_dates_conflict",
+    "us-202tex35ec19da": "primary_provider_field_dates_conflict",
+    "us-202tex909ea2d7": "primary_provider_field_dates_conflict",
+    "us-202nor348bad95": "commissioner_primary_methodology_not_obtained",
+    "us-202norf7bc03a2": "commissioner_primary_methodology_not_obtained",
+    "us-202impbb787ecf": "commissioner_primary_methodology_not_obtained",
+    "us-202dcc0d4b0ded": "primary_methodology_and_reported_name_review_required",
+    "us-202fm396e2170a": "primary_methodology_not_obtained_pre_primary_reference",
+    "us-202pubc2e16fe9": "historical_pre_primary_poll_not_current_signal",
+    "us-202firaf458383": "primary_provider_population_conflict",
+    "us-202nor8d5759fc": "primary_methodology_sample_not_obtained",
+    "us-202rag5df93f4a": "commissioner_primary_methodology_not_obtained",
+    "us-202pubc9e98776": "historical_pre_primary_poll_not_current_signal",
+    "gov202bsp579091db": "primary_population_sample_mapping_required",
+    "us-202pub57d326b1": "pre_primary_historical_poll_primary_methodology_not_obtained",
+    "us-202pub781e29d3": "generic_party_ballot_not_named_race",
+    "us-202rage144569e": "generic_party_ballot_not_named_race",
+    "us-202tul81b19549": "commissioner_topline_found_sample_and_methods_not_obtained_pre_primary_reference",
+    "us-202the5a104154": "primary_provider_population_conflict",
+    "us-202the65a34aca": "primary_provider_population_conflict",
+    "us-202the592aeef5": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+    "us-202thecc936039": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+    "us-202the23cfbe50": "missing_lv_question_sample_and_pre_primary_hypothetical_field",
+    "us-202the5f79b2da": "primary_provider_population_conflict"
+  },
+  "excluded_watch_slots": [
+    {
+      "race_id": "USA:NY:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:PA:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:WI:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:AZ:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:NV:senate",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    },
+    {
+      "race_id": "USA:NC:governor",
+      "reason": "not_on_2026_regular_ballot",
+      "reviewed_on": "2026-10-05",
+      "basis_ko": "상원 Class II·FL/OH 보궐 일정과 NGA 2026 주지사 선거 일정에서 해당 선거 없음. 관심 주 전체에 선거 슬롯을 만들지 않음."
+    }
+  ],
+  "refresh_cadence": {
+    "interval_days": 1,
+    "weekday_ko": "매일",
+    "time_kst": "06:10",
+    "stale_after_hours": 48
+  },
+  "excluded_record_reviews": {
+    "GA:Wedgewood:2026-10-03": {
+      "reviewed_on": "2026-10-08",
+      "provider_ids": [
+        "us-202wed7f897488",
+        "gov202wed3b9968cd"
+      ],
+      "review_file": "usa_election_poll_release_reviews/2026/GA-wedgewood-20261003.json"
+    },
+    "us-202bigf2db767c": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/tar-heel-state-poll-roy-cooper-holds-solid-lead-over-michael-whatley-for-us-senate-in-north-carolina/"
+      ],
+      "reason": "primary_provider_candidate_values_conflict",
+      "note_ko": "API Bray7/Dublin4미검증; 초기47.4/35.2와leaned50.8/38.5 구분. 방법 본문은Texas로 기재, 후보별 전체 원표 미확보.",
+      "provider_record_sha256": "11cf04356d5c1a65cd16d681a854a8711f92157f2462614bb53a5863eedbf70d"
+    },
+    "us-202elodaa5cffa": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf"
+      ],
+      "reason": "primary_provider_field_dates_conflict",
+      "note_ko": "API7/21–23, 원문7/23–31 기간 충돌; RV717 값 일치만으로 기간 정정하지 않음.",
+      "provider_record_sha256": "39161a713a6e456315fa9d85d9aa02380bed8140de63618c51c96b42ba535d4a"
+    },
+    "us-202elo069243f3": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://eloncdn.blob.core.windows.net/eu3/sites/819/2026/08/Elon-University-Poll-Topline-8-12-26.pdf"
+      ],
+      "reason": "primary_provider_field_dates_conflict",
+      "note_ko": "API7/21–23, 원문7/23–31 기간 충돌; LV466 값 일치만으로 기간 정정하지 않음.",
+      "provider_record_sha256": "ec515cfb8d10523062104bd7db48fddab8352d5f1ae2993a6ebb4440ea9c3882"
+    },
+    "us-202nei29757f09": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/Shaftan/status/2107772933322277266"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "NC01 10/1–6 API303LV 51/41. 원문 전체문항·모집·가중치·의뢰자 미확보. 후보 alias를 고쳐도 승패색은 보류.",
+      "provider_record_sha256": "fa250032ec2fa9e95a08748ac6b31a75207e3025aca11a88a5eaf8dd36e3e6e0"
+    },
+    "us-202insf80352ad": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/nc-top-line-tabs/"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "기관 NC 이미지 원문 직접 연결 장애. API1200LV48.4/42.5는 보존하되 Georgia 일반 방법 링크로 NC 검증하지 않음.",
+      "provider_record_sha256": "a8d1f2f3da3e19f599576b6c0eb097fc8cbdd0824f267d606f4b5fcd2c23c15a"
+    },
+    "us-202easa9c1ac17": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://cdn.filestackcontent.com/midNvToaTnOmgDOk9qFC"
+      ],
+      "reason": "forced_choice_question_not_comparable",
+      "note_ko": "초기45.7/38.5·미정13.7과 강제 선택51.7/43.6을 구분. 기존 강제 문항 집계 제외 정책 유지.",
+      "provider_record_sha256": "5689f49a510cffed53825a890e779404599ccca658e9da8173210f7dcac44a3b"
+    },
+    "us-202quad5474d87": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://quantusinsights.org/polling/f/new-quantus-insights-survey-ohio%E2%80%99s-1st-district-is-up-for-grabs"
+      ],
+      "reason": "primary_question_and_methods_not_obtained",
+      "note_ko": "기관페이지응답200은게시제목/동적본문자리만반환. Ohio01 API47.9/44.6/509LV 원문질문·방법미확보.",
+      "provider_record_sha256": "59a45b030383bf04e821df921133288273bc392a0f661c07f3031c4e39dbc0d1"
+    },
+    "us-202qua2790f813": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://quantusinsights.org/polling/f/brown-and-husted-deadlocked-in-ohio-senate-race"
+      ],
+      "reason": "primary_question_and_methods_not_obtained",
+      "note_ko": "기관Senate게시물은동적본문미확보;695LV47.8/47.3만으로편입안함.",
+      "provider_record_sha256": "38694beb7c2b585d6b1286491c275248b625d5f6496b8b8bb28afc43c59a3b13"
+    },
+    "us-202tavd2d23773": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://242750075.fs1.hubspotusercontent-na2.net/hubfs/242750075/Toplines%20-%20OH-07%20General%2008_03%20Cint.pdf"
+      ],
+      "reason": "primary_provider_sample_mismatch",
+      "note_ko": "원문총635명, API560명. 본선54/46은leaners포함; 문항표본560으로확인할근거없음. 공개공유호스트의책임기관/의뢰자도미확인.",
+      "provider_record_sha256": "17bea0126aaa91bf29d6b835716c82ada6aaba0685d330601c96705d5cb604dd"
+    },
+    "us-202big1f625134": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/buckeye-state-poll-sherrod-brown-leads-jon-husted-for-us-senate-in-ohio/"
+      ],
+      "reason": "primary_geography_methodology_conflict",
+      "note_ko": "Ohio결과기사의방법본문은Texas735RV/680LV로기재. 초기45.5/41.6과API leaned46.3/42.6도분리;관할방법/전체원표미확보.",
+      "provider_record_sha256": "97fb1b76bc770f6f273cbde50fbadbf21c4a58954c0073e5a266d080a54ace41"
+    },
+    "gov202big5e3239e4": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.bigdatapoll.com/blog/buckeye-state-poll-sherrod-brown-leads-jon-husted-for-us-senate-in-ohio/"
+      ],
+      "reason": "primary_geography_and_candidate_table_not_verified",
+      "note_ko": "동일Ohio페이지방법은Texas기재·주지사전체후보값미확보. APIminor5.3을확인값으로사용안함.",
+      "provider_record_sha256": "3b0eeef97a2b9ed68a6e2e8b036fdd44ccf0eda774fcd892fabf571a17dd957f"
+    },
+    "us-202ins890b679a": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/top-line-tabs-ohio/"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "기관top-line원문접근미확인. 기존Georgia원문등록을Ohio개별원문검증으로대체하지않음.",
+      "provider_record_sha256": "a40d73ffc2d7fa893ff63673e280099bbdd61de1f5737c7c9abfb810602d34f0"
+    },
+    "us-202insea9816ae": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://insideradvantage.com/insideradvantage-ohio-senate-race-narrows-to-brown-up-by-one"
+      ],
+      "reason": "primary_release_not_accessed",
+      "note_ko": "최신Ohio기관원문요청timeout. Brown44/Husted43/BillRedpath4/GregLevy2의질문·방법확인보류.",
+      "provider_record_sha256": "9761871f70730f285fbe4ae0514fba8ec1c7d3af29ccaf2912c8b7f7b6bb381f"
+    },
+    "us-202har67e7828b": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/cjwarnke/status/2104619061556457603"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "OH15 9/22–24 HMP/Hart발표는X링크만확보. 문항/방법전체미확보.",
+      "provider_record_sha256": "06a903ea063bdcf0c3af0b1cebe1f2d575f17498f256148af1836387abea77a3"
+    },
+    "us-202har2b87ea23": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.thehousemajoritypac.com/news/hmp-poll-don-leonard-within-striking-distance-of-mike-carey-in-oh-15"
+      ],
+      "reason": "primary_methodology_not_obtained",
+      "note_ko": "HMP6월발표에서초기Carey45/Leonard40/Barrington3은확인되나표본550과방법본문없음.",
+      "provider_record_sha256": "36e55ff4f90254e91e567367e270139888b7078ad3fd164b2a2abe72b743cb89"
+    },
+    "us-202beda3a16f8f": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.axios.com/2026/08/11/max-miller-ohio-brian-poindexter-democrats-2026"
+      ],
+      "reason": "commissioner_primary_not_obtained",
+      "note_ko": "OH07 당파성조사Axios요약은의뢰기관원문표/방법과다름.",
+      "provider_record_sha256": "b9ffb46f24617022a11cf4e010304e1d74a2af9c0348a6470925b86ce134a6e1"
+    },
+    "us-202unke3b76dc0": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/IAPolls2022/status/2083970139574129144"
+      ],
+      "reason": "missing_pollster_sample_and_primary_methodology",
+      "note_ko": "OH07 NOTUS재인용/X링크. 기관명·표본·모집단미상.",
+      "provider_record_sha256": "a8529e2cbac459c7e1fc4526f18c2abd53eb38f4852eeeb088745f5f7aca6e16"
+    },
+    "us-202glob1380568": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://static.notus.org/27/58/c93f2d1946c0814f583fa25c7a31/hmp-ia-02-poll.pdf"
+      ],
+      "reason": "missing_sample_and_primary_methodology",
+      "note_ko": "IA02 HMP/GSG 원문에초기46/45는있으나표본·모집·가중·전체문항없음.",
+      "provider_record_sha256": "a44ee25b1983b7750f6fc9689ecb404c75e20b19dd890ad8e9117103b7212269"
+    },
+    "us-202the20e70677": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.semafor.com/article/07/28/2026/independent-group-eyes-delbenes-seat"
+      ],
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "note_ko": "IA01 Bullfinch/IndependentCenter7월 재인용. 현재공식후보3명일치하나원문방법미확보.",
+      "provider_record_sha256": "8c257f9b2beebceb5b5896a2358f40b2aa8669c09541cc77ce498bf1890642c9"
+    },
+    "us-202pub4897124c": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.politico.com/newsletters/weekly-score/2025/06/23/recruiting-candidates-in-an-age-of-political-violence-00417469"
+      ],
+      "reason": "pre_primary_historical_poll_not_general_signal",
+      "note_ko": "IA01 2025년6월 조사. 현본선 최신자료로쓰지않음.",
+      "provider_record_sha256": "659a3a529dfe4bb47f83b0c717d314a153b35248f3aaf3e21765ca1ffaeb241d"
+    },
+    "us-202impbb787ecf": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://bsky.app/profile/the-downballot.com/post/3mwyouhbwg22k"
+      ],
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "note_ko": "WI01 최신 HMP/Impact 발표 발견, API표본/기간만으로 원문 방법 공개 완료를 주장하지 않음.",
+      "provider_record_sha256": "e35fad6673c21620b64660e1823ede5d270c4ee48242e5dda90311e14305b983"
+    },
+    "us-202dcc0d4b0ded": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://hub.nationaljournal.com/dems-choosin-texas"
+      ],
+      "reason": "primary_methodology_and_reported_name_review_required",
+      "note_ko": "WI01 DCCC발표: API Brian Steil과본선 Bryan George Steil 철자 불일치, 원문/방법 검토 필요.",
+      "provider_record_sha256": "4464092148e965ef4f338cfc08442c6fa3c6a0dae830a45a124b69b286771e03"
+    },
+    "us-202fm396e2170a": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://x.com/cjwarnke/status/2074099699020128352?s=20"
+      ],
+      "reason": "primary_methodology_not_obtained_pre_primary_reference",
+      "note_ko": "WI03 HMP/FM3 6월발표, 원문방법 미확보·경선 이전. 최신 본선으로 승격하지 않음.",
+      "provider_record_sha256": "9cc9068574e4c5bd4a078606ce56bd9030a9756fcc88474af155cc944777537b"
+    },
+    "us-202pubc2e16fe9": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff233550000"
+      ],
+      "reason": "historical_pre_primary_poll_not_current_signal",
+      "note_ko": "WI03 PPP2025자료 원문방법 전체검토 미완료, 현재 우세 아님.",
+      "provider_record_sha256": "e94fff002e7bc3cdac6c9357da105cf8d60401a53390b04fb4754ea383d33651"
+    },
+    "us-202firaf458383": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://s3.documentcloud.org/documents/28722214/shahfeeley-poll-release.pdf"
+      ],
+      "reason": "primary_provider_population_conflict",
+      "note_ko": "API LV400 vs 원문 RV400. 초기44.4/41.6 동일, RV 원문 보완만 표시.",
+      "provider_record_sha256": "685cc00a1b329829e849e918b77e85529e3adf1f263164aa4b7cef8da7738c4a"
+    },
+    "us-202nor8d5759fc": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.thehousemajoritypac.com/news/new-hmp-poll-joanna-mendoza-leads-juan-ciscomani-in-az-06"
+      ],
+      "reason": "primary_methodology_sample_not_obtained",
+      "note_ko": "HMP 공식 원문 초기47/45와 정보제공후52/44 구분. 표본500/LV·방법은 해당 공개 원문에서 확인 못함.",
+      "provider_record_sha256": "5ab3e3ccaf5b1a8ddd8d6a9957de0dcd6cd492156fecdcd745cde5fe94764d84"
+    },
+    "us-202rag5df93f4a": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://punchbowl.news/article/campaigns/bad-gop-polls/"
+      ],
+      "reason": "commissioner_primary_methodology_not_obtained",
+      "note_ko": "Ragnar3월 조사·유료언론발견, 공식 의뢰자/원문방법 미확보. 새 접근권한 필요시 해당 수집중단.",
+      "provider_record_sha256": "bd07497c562b25a4e737ef47402a814d594733f92a4278140248a7e9634a1877"
+    },
+    "us-202pubc9e98776": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff2ed910000"
+      ],
+      "reason": "historical_pre_primary_poll_not_current_signal",
+      "note_ko": "2025 PPP 조사; 현재본선최근조사로 승격하지 않음.",
+      "provider_record_sha256": "3c49a69fa6f51128355614d8c731d7150c5049d1b86ce9ee23f1d777911bc0ca"
+    },
+    "gov202bsp579091db": {
+      "reviewed_on": "2026-10-08",
+      "sources": [
+        "https://linktr.ee/hrc_asu"
+      ],
+      "reason": "primary_population_sample_mapping_required",
+      "note_ko": "ASU 원문N1300 전체표본과 API LV/sample null 충돌. Q8초기47/34/2/1과 미정16 확인, LV문항N/전체모집단/가중 미검증.",
+      "provider_record_sha256": "76607b3585144ea518200982a6c91b24cbd8f4088ec862c6af504ce69d5f29a0"
+    }
+  },
+  "reference_sources": {
+    "Bowling Green State University": {
+      "group": "bgsu",
+      "hosts": [
+        "scholarworks.bgsu.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://scholarworks.bgsu.edu/depo/",
+          "checked_at": "2026-10-18T12:10:23.975595+00:00",
+          "sha256": "92ea4075ce606593bd1ef5f623972255434f3fd605c71adfb8afa2b6ede10413"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://scholarworks\\.bgsu\\.edu/cgi/viewcontent\\.cgi\\?article=\\d+&context=depo",
+        "https://scholarworks\\.bgsu\\.edu/depo/\\d+/?"
+      ]
+    },
+    "Bowling Green State University/YouGov": {
+      "group": "bgsu",
+      "hosts": [
+        "scholarworks.bgsu.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://scholarworks.bgsu.edu/depo/",
+          "checked_at": "2026-10-18T12:10:23.975595+00:00",
+          "sha256": "92ea4075ce606593bd1ef5f623972255434f3fd605c71adfb8afa2b6ede10413"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://scholarworks\\.bgsu\\.edu/cgi/viewcontent\\.cgi\\?article=\\d+&context=depo",
+        "https://scholarworks\\.bgsu\\.edu/depo/\\d+/?"
+      ]
+    },
+    "Saint Anselm": {
+      "group": "saint_anselm",
+      "hosts": [
+        "www.anselm.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.anselm.edu/about/offices-centers-institutes/centers-institutes/new-hampshire-institute-politics/programs/polling",
+          "checked_at": "2026-10-18T12:10:23.975951+00:00",
+          "sha256": "4f34cb6217cb6ec942203bbde79c6ff7acd393718b34cfdab376114a42a0391e"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Saint Anselm College Survey Center": {
+      "group": "saint_anselm",
+      "hosts": [
+        "www.anselm.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.anselm.edu/about/offices-centers-institutes/centers-institutes/new-hampshire-institute-politics/programs/polling",
+          "checked_at": "2026-10-18T12:10:23.975951+00:00",
+          "sha256": "4f34cb6217cb6ec942203bbde79c6ff7acd393718b34cfdab376114a42a0391e"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "University of Massachusetts Lowell Center for Public Opinion/YouGov": {
+      "group": "umass_lowell",
+      "hosts": [
+        "www.uml.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.uml.edu/research/public-opinion/",
+          "checked_at": "2026-10-18T12:10:23.976024+00:00",
+          "sha256": "524b168b36e70e8852ae95c88c64d221dde6d1ea398f4956315c9ce04ff0f4d9"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Texas Politics Project at the University of Texas/YouGov": {
+      "group": "ut_austin",
+      "hosts": [
+        "texaspolitics.utexas.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://texaspolitics.utexas.edu/polling",
+          "checked_at": "2026-10-18T12:10:23.976086+00:00",
+          "sha256": "e847c9fce2d1cb3c8639660ab242460ba43f9ebff7618fba428934efd3c466fa"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "The Texas Politics Project at the University of Texas at Austin/YouGov": {
+      "group": "ut_austin",
+      "hosts": [
+        "texaspolitics.utexas.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://texaspolitics.utexas.edu/polling",
+          "checked_at": "2026-10-18T12:10:23.976086+00:00",
+          "sha256": "e847c9fce2d1cb3c8639660ab242460ba43f9ebff7618fba428934efd3c466fa"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "University of Houston Hobby School of Public Affairs/YouGov": {
+      "group": "uh_hobby",
+      "hosts": [
+        "www.uh.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.uh.edu/hobby/txtrends/",
+          "checked_at": "2026-10-18T12:10:24.810612+00:00",
+          "sha256": "9b452f24ac09dad16957b9679ec8e4daf06cad8cb9d2463abaf978b2df211508"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "University of Houston/YouGov": {
+      "group": "uh_hobby",
+      "hosts": [
+        "www.uh.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.uh.edu/hobby/txtrends/",
+          "checked_at": "2026-10-18T12:10:24.810612+00:00",
+          "sha256": "9b452f24ac09dad16957b9679ec8e4daf06cad8cb9d2463abaf978b2df211508"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "University of Houston Hobby School of Public Affairs/Texas Southern University School of Public Affairs": {
+      "group": "uh_hobby",
+      "hosts": [
+        "www.uh.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://www.uh.edu/hobby/txtrends/",
+          "checked_at": "2026-10-18T12:10:24.810612+00:00",
+          "sha256": "9b452f24ac09dad16957b9679ec8e4daf06cad8cb9d2463abaf978b2df211508"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Michigan State University Institute for Public Policy and Social Research/YouGov": {
+      "group": "msu_ippsr",
+      "hosts": [
+        "ippsr.msu.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://ippsr.msu.edu/survey-research/state-state-survey-soss",
+          "checked_at": "2026-10-18T12:10:25.476862+00:00",
+          "sha256": "af029ceb24ca2c8bc61ceaba7f96de9a200ef809705b5367ce44f53ca34ade62"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Wesleyan University Survey Lab/YouGov": {
+      "group": "wesleyan",
+      "hosts": [
+        "surveylab.wescreates.wesleyan.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://surveylab.wescreates.wesleyan.edu/uncategorized/wesleyan-surveylab-ct-poll-lamont-leads-in-governors-race-while-connecticut-voters-express-concern-about-cost-of-living/",
+          "checked_at": "2026-10-18T12:10:26.221605+00:00",
+          "sha256": "aaaeb679c803195cb096b077f1756087076910d2f2d87a0aeaaa6331589276ea"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Hendrix College": {
+      "group": "hendrix",
+      "hosts": [
+        "talkbusiness.net"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://talkbusiness.net/2026/10/poll-cotton-takes-lead-over-shoffner/",
+          "checked_at": "2026-10-18T12:10:26.682121+00:00",
+          "sha256": "0592771cbbef378393fe8baa4120b0b4844956fa50435fc409ab417854e80e59"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://talkbusiness\\.net/2026/\\d{2}/poll-[a-z0-9-]+/?"
+      ]
+    },
+    "Research & Polling Inc.": {
+      "group": "research_polling_inc",
+      "hosts": [
+        "www.abqjournal.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.abqjournal.com/news/journal-poll-congressional-incumbents-stansbury-and-leger-fernandez-lead-challengers/3141828",
+          "checked_at": "2026-10-18T12:10:26.784939+00:00",
+          "sha256": "988360aa550ed0d8018b1499eaa272d04155f8d7e64b6a5d62cf311d4c3c5e03"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://www\\.abqjournal\\.com/news/journal-poll-[a-z0-9-]+/\\d+"
+      ]
+    },
+    "SurveyUSA": {
+      "group": "surveyusa",
+      "hosts": [
+        "kstp.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.surveyusa.com/",
+          "checked_at": "2026-10-18T12:10:27.696846+00:00",
+          "sha256": "c08bb8e09ff16d52e03ea2acd9899f24e5d67a0f7ce609d371109a266255ca8e"
+        },
+        {
+          "url": "https://kstp.com/kstp-news/top-news/kstp-surveyusa-poll-swing-in-senate-and-ag-races-klobuchar-up-slightly-on-demuth/",
+          "checked_at": "2026-10-18T12:10:27.941712+00:00",
+          "sha256": "69d2886e81b83ae99863efcc027e911f6fb6724140d54ed3fc0438d95e27cb96"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "approved_urls": [
+        "https://kstp.com/kstp-news/top-news/kstp-surveyusa-poll-swing-in-senate-and-ag-races-klobuchar-up-slightly-on-demuth/"
+      ]
+    },
+    "MassINC Polling Group": {
+      "group": "massinc",
+      "hosts": [
+        "commonwealthbeacon.org"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.massincpolling.com/",
+          "checked_at": "2026-10-18T12:10:28.210987+00:00",
+          "sha256": "82628a54e858b6fb48829ec78cb781507636e04cf4a4e83944f780bf799949d3"
+        },
+        {
+          "url": "https://commonwealthbeacon.org/wp-content/uploads/2026/09/Topline-2026-09-CWB-Ballot-Questions-TUES-RELEASE.pdf",
+          "checked_at": "2026-10-18T12:10:28.613686+00:00",
+          "sha256": "845d87079bdeba92583d95a3049cc3d9c0d971a2040d64b370c48cb79c7ae43c"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "approved_urls": [
+        "https://commonwealthbeacon.org/wp-content/uploads/2026/09/Topline-2026-09-CWB-Ballot-Questions-TUES-RELEASE.pdf"
+      ]
+    },
+    "co/efficient": {
+      "group": "coefficient",
+      "hosts": [
+        "battlegrounds.coefficient.org"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://battlegrounds.coefficient.org/oh",
+          "checked_at": "2026-10-18T12:10:30.380299+00:00",
+          "sha256": "2076e6ff23dfe17e0454c1ce56573f89640aa367ba8aab1aeb1730fe3f1ef418"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://battlegrounds\\.coefficient\\.org/[a-z]{2}/?"
+      ],
+      "alternate_routes": [
+        {
+          "group": "coefficient",
+          "hosts": [
+            "nypost.com"
+          ],
+          "reviewed_on": "2026-10-18",
+          "reference_only": true,
+          "source_role": "news_reporter_reference",
+          "evidence": [
+            {
+              "url": "https://nypost.com/2026/10/05/us-news/more-than-half-of-new-york-voters-concerned-about-rise-of-socialism-poll/",
+              "checked_at": "2026-10-18T16:41:33.023619+00:00",
+              "sha256": "8426f532830f1907d9aa06ef089b3526ac8e14f24237091d74422dc1ed8cc158"
+            }
+          ],
+          "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+          "approved_urls": [
+            "https://nypost.com/2026/10/05/us-news/more-than-half-of-new-york-voters-concerned-about-rise-of-socialism-poll/"
+          ]
+        }
+      ]
+    },
+    "ActiVote": {
+      "group": "activote",
+      "hosts": [
+        "www.activote.net"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://www.activote.net/polls/2026/tx-governor/",
+          "checked_at": "2026-10-18T12:10:30.795872+00:00",
+          "sha256": "23e50e2e26457045a669ef124748f0ef7bd9957cc63c35ee2656aa5d386cfe4b"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://www\\.activote\\.net/polls/2026/[a-z0-9/-]+/"
+      ]
+    },
+    "Targoz Market Research": {
+      "group": "targoz",
+      "hosts": [
+        "jmipoll.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://jmipoll.com",
+          "checked_at": "2026-10-18T12:10:31.350708+00:00",
+          "sha256": "02dc9fb886105c0660689ecf4c86de31809042498d243419dc97bb79b33f64ff"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "approved_urls": [
+        "https://jmipoll.com",
+        "https://jmipoll.com/"
+      ]
+    },
+    "Glengariff Group, Inc.": {
+      "group": "glengariff",
+      "hosts": [
+        "www.detroitchamber.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.detroitchamber.com/polls/",
+          "checked_at": "2026-10-18T12:10:32.228682+00:00",
+          "sha256": "81d0a61d40b4a0272f0556f8d1bb0579a36677fffc2fd423f5c98a67487cc7b9"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "url_patterns": [
+        "https://www\\.detroitchamber\\.com/wp-content/uploads/2026/\\d{2}/[A-Za-z0-9_.-]+\\.pdf"
+      ]
+    },
+    "YouGov": {
+      "group": "yougov",
+      "hosts": [
+        "d3nkl3psvxxpe9.cloudfront.net"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ia_20261006_lv.pdf",
+          "checked_at": "2026-10-18T12:10:32.234967+00:00",
+          "sha256": "86968315dabd82f898119fa650f277257dce2e37915cdea0772a3d4c4d4090d9"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음.",
+      "approved_urls": [
+        "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ia_20261006_lv.pdf"
+      ]
+    },
+    "University of Maryland Baltimore County Institute of Politics": {
+      "group": "umbc",
+      "hosts": [
+        "politics.umbc.edu"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "research_institution",
+      "evidence": [
+        {
+          "url": "https://politics.umbc.edu/wp-content/uploads/sites/778/2026/10/UMBC-Poll-Tuesday-Oct-6.pdf",
+          "checked_at": "2026-10-18T12:10:26.030452+00:00",
+          "sha256": "0ccbe24a497e316f2d0a30b9b73c3431eecf7b89fa51ec36a506f2c851a55aad"
+        }
+      ],
+      "selection_reason_ko": "발표 주체와 URL 범위를 확인한 참고 수집 경로. 개별 발표 문항·수치·방법 검토 전에는 우세 집계 제외. 원문 장애는 확인 완료로 바꾸지 않음."
+    },
+    "Mitchell Research & Communications": {
+      "group": "mitchell",
+      "hosts": [
+        "wwmt.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "news_reporter_reference",
+      "evidence": [
+        {
+          "url": "https://wwmt.com/news/michigan-politics/mitchell-poll-michigan-us-senate-election-abdul-el-sayed-mike-rogers-politics-government-vote-polls-state",
+          "checked_at": "2026-10-18T16:41:31.628311+00:00",
+          "sha256": "b5c60cd8e52e8e2d5721f839c8d2410ff29986131a34a1b1b650e11f7ac44e63"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://wwmt.com/news/michigan-politics/mitchell-poll-michigan-us-senate-election-abdul-el-sayed-mike-rogers-politics-government-vote-polls-state"
+      ]
+    },
+    "The Tyson Group": {
+      "group": "tyson",
+      "hosts": [
+        "www.breitbart.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "news_reporter_reference",
+      "evidence": [
+        {
+          "url": "https://www.breitbart.com/politics/2026/10/15/exclusive-poll-shows-mike-rogers-edging-out-abdul-el-sayed-in-michigan-senate-race/",
+          "checked_at": "2026-10-18T16:41:28.027718+00:00",
+          "sha256": "5d71e4861a528ec0ff26c7a6ea952c855caeb4ce99375205c4dbe6f105dd1b96"
+        },
+        {
+          "url": "https://betterfutureai.org/docs/mike-rogers-support-for-ai-security.pdf",
+          "checked_at": "2026-10-18T16:46:29.591804+00:00",
+          "sha256": "cbd1d9cb58f8e65ad83883be0cd63acdab2c75968d76285f00e8d39b10c1ec8d"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://www.breitbart.com/politics/2026/10/15/exclusive-poll-shows-mike-rogers-edging-out-abdul-el-sayed-in-michigan-senate-race/"
+      ]
+    },
+    "Public Policy Polling": {
+      "group": "public_policy_polling",
+      "hosts": [
+        "www.cnwmedia.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.cnwmedia.com/article/cnw-poll-pritzker-leads-bailey-by-20-points-democrats-ahead-in-four-other-statewide-races",
+          "checked_at": "2026-10-18T16:41:32.739232+00:00",
+          "sha256": "29599d642748b94c5ede80b2e7781f8cac2b8ed58d584b6579fbea5cf6b996ae"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://www.cnwmedia.com/article/cnw-poll-pritzker-leads-bailey-by-20-points-democrats-ahead-in-four-other-statewide-races"
+      ]
+    },
+    "RMG Research": {
+      "group": "rmg",
+      "hosts": [
+        "yellowhammernews.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "news_reporter_reference",
+      "evidence": [
+        {
+          "url": "https://yellowhammernews.com/report-doug-jones-is-polling-worse-than-2020-blowout-election/",
+          "checked_at": "2026-10-18T16:41:29.206992+00:00",
+          "sha256": "ce781ebc6e66dd5f0b0418d675ad89e9c0e0592f89aa8a5a7832eb623905c7f0"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://yellowhammernews.com/report-doug-jones-is-polling-worse-than-2020-blowout-election/"
+      ]
+    },
+    "Bravo Group": {
+      "group": "bravo_group",
+      "hosts": [
+        "mailchi.mp"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://mailchi.mp/thebravogroup.com/morning-scrapple-sept26-results-s?e=46e0e177e8",
+          "checked_at": "2026-10-18T16:41:30.373325+00:00",
+          "sha256": "34511d46a45ac7f2e611fd434ebd153ddf913c375ef2e1146d6fbd25fc07a1e8"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "url_patterns": [
+        "https://mailchi\\.mp/thebravogroup\\.com/morning-scrapple-[a-zA-Z0-9-]+(?:\\?[^#]+)?"
+      ]
+    },
+    "Slingshot Strategies": {
+      "group": "slingshot_tpor",
+      "hosts": [
+        "texaspublicopinionresearch.substack.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://texaspublicopinionresearch.substack.com/p/new-poll-in-texas-general-election-662",
+          "checked_at": "2026-10-18T16:41:28.028456+00:00",
+          "sha256": "dfd30ede3ee6fcd31470c751fe612ed7dff35d67aab82812e2554d599dc7380a"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "url_patterns": [
+        "https://texaspublicopinionresearch\\.substack\\.com/p/[a-z0-9-]+"
+      ]
+    },
+    "American Pulse Research & Polling": {
+      "group": "american_pulse",
+      "hosts": [
+        "www.montanarightnow.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://www.montanarightnow.com/elections/montana-senate-race-kurt-alme-tops-bodnar-and-bankhead-in-new-poll-findings/article_cd8401fb-0470-492c-a53a-c7dfe39552ff.html",
+          "checked_at": "2026-10-18T16:41:28.140263+00:00",
+          "sha256": "9d54b2d529861c585e5027ddc50c300ca25bc340f3e49da8759d019eba973dd9"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://www.montanarightnow.com/elections/montana-senate-race-kurt-alme-tops-bodnar-and-bankhead-in-new-poll-findings/article_cd8401fb-0470-492c-a53a-c7dfe39552ff.html"
+      ]
+    },
+    "Emerson College": {
+      "group": "emerson",
+      "hosts": [
+        "docs.google.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://emersoncollegepolling.com/iowa-2026-poll-u-s-senate-race-tightens-sand-maintains-edge-for-governor/",
+          "checked_at": "2026-10-18T16:46:29.591121+00:00",
+          "sha256": "0493d0414b438f125b785c7995dc754e5309bb914d2d29fb9f8bd3a89fe0fc71"
+        },
+        {
+          "url": "https://docs.google.com/spreadsheets/d/1mKToIlrAwY0ehEA60PVFemP5WjwxsTxN/edit?rtpof=true&sd=true",
+          "checked_at": "2026-10-18T16:41:33.773008+00:00",
+          "sha256": "f43a40e6a8975e07764525f23ee651c05a44fb431c0215b021afaed282e96c19"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "url_patterns": [
+        "https://docs\\.google\\.com/spreadsheets/d/1mKToIlrAwY0ehEA60PVFemP5WjwxsTxN/edit(?:\\?[^#]+)?"
+      ]
+    },
+    "Change Research": {
+      "group": "change_research",
+      "hosts": [
+        "carolinaforward.org"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "evidence": [
+        {
+          "url": "https://carolinaforward.org/news/the-october-2026-carolina-forward-poll/?emci=e7b29264-2cc4-f111-bf5b-000d3a4fbe83&emdi=beb3dd17-f1c6-f111-bf5b-000d3a4fbe83&ceid=27194997",
+          "checked_at": "2026-10-18T16:41:35.219093+00:00",
+          "sha256": "2b5fb04b4e55382198c5ef6eee6d961ab689f6e1c7fbeed27482592dd8aec3c4"
+        }
+      ],
+      "selection_reason_ko": "실제 공개 페이지의 발표·보도 경로만 확인. API 원문 수치·모집단·질문·의뢰자 대조 전 참고 전용; 기사 중계와 원발표 검토를 구분.",
+      "approved_urls": [
+        "https://carolinaforward.org/news/the-october-2026-carolina-forward-poll/?emci=e7b29264-2cc4-f111-bf5b-000d3a4fbe83&emdi=beb3dd17-f1c6-f111-bf5b-000d3a4fbe83&ceid=27194997"
+      ]
+    },
+    "Lighthouse Research": {
+      "group": "lighthouse",
+      "hosts": [
+        "utahdebatecommission.org"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "commissioner_primary",
+      "approved_urls": [
+        "https://utahdebatecommission.org/2026-polling/"
+      ],
+      "evidence": [
+        {
+          "url": "https://utahdebatecommission.org/2026-polling/",
+          "sha256": "e181c44446660dd67859969f68360b5d03cae611b65dc5ab1b0ebd97197760e6",
+          "checked_at": "2026-10-18T16:41:28.669347+00:00"
+        },
+        {
+          "url": "https://utahdebatecommission.org/wp-content/uploads/2026/09/CD2-Polling-Results-2026.jpg",
+          "sha256": "6743e4511227cc3d38831301b3bcfca617ed0f156584ea7ff2f16f4a51ba09c2",
+          "checked_at": "2026-10-18T16:50:13.257839+00:00"
+        },
+        {
+          "url": "https://utahdebatecommission.org/wp-content/uploads/2026/09/Hinckley-Institute-2026-Congressional-Poll-Methodology.jpg",
+          "sha256": "f39316e3a1ba57a26dde99350825d53cf92e8c71235c6e19db3de02e8ff10644",
+          "checked_at": "2026-10-18T16:50:14.269940+00:00"
+        }
+      ],
+      "selection_reason_ko": "위원회 공개 질문·방법론 이미지에서 Lighthouse 연구 수행 확인. API 문항별 표본·RV/LV·후보 대조 전 참고 전용."
+    },
+    "MDW": {
+      "group": "mdw_edge",
+      "hosts": [
+        "www.mdwcomm.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://www.mdwcomm.com/media/florida-statewide-poll-october-2026.html",
+          "checked_at": "2026-10-18T23:05:04.356463+00:00",
+          "sha256": "01e2822cce8859a0630cf475a1c656e861eefec6a17f0ab7acffd200a1427bfe"
+        }
+      ],
+      "approved_urls": [
+        "https://www.mdwcomm.com/media/florida-statewide-poll-october-2026.html"
+      ],
+      "url_patterns": [
+        "https://www\\.mdwcomm\\.com/media/florida-statewide-poll-[a-z]+-2026\\.html"
+      ],
+      "selection_reason_ko": "직접 확인한 공동 조사기관의 플로리다 주별 발표 경로. 새 API 발표는 참고 수집하며 개별 원문 검토 전 우세 집계 제외. 의뢰자·정밀도·정확도를 추정하지 않음."
+    },
+    "MDW Communications": {
+      "group": "mdw_edge",
+      "hosts": [
+        "www.mdwcomm.com"
+      ],
+      "reviewed_on": "2026-10-18",
+      "reference_only": true,
+      "source_role": "pollster_primary",
+      "evidence": [
+        {
+          "url": "https://www.mdwcomm.com/media/florida-statewide-poll-october-2026.html",
+          "checked_at": "2026-10-18T23:05:04.356463+00:00",
+          "sha256": "01e2822cce8859a0630cf475a1c656e861eefec6a17f0ab7acffd200a1427bfe"
+        }
+      ],
+      "approved_urls": [
+        "https://www.mdwcomm.com/media/florida-statewide-poll-october-2026.html"
+      ],
+      "url_patterns": [
+        "https://www\\.mdwcomm\\.com/media/florida-statewide-poll-[a-z]+-2026\\.html"
+      ],
+      "selection_reason_ko": "직접 확인한 공동 조사기관의 플로리다 주별 발표 경로. 새 API 발표는 참고 수집하며 개별 원문 검토 전 우세 집계 제외. 의뢰자·정밀도·정확도를 추정하지 않음."
+    }
+  },
+  "commissioned_poll_aggregation": {
+    "enabled": true,
+    "reviewed_on": "2026-10-18",
+    "basis_ko": "사용자 요청에 따라 정당·후보 측 의뢰 조사도 집계. 정확한 원문·대진·기간·표본·모집단·의뢰주체를 개별 검토한 최초 후보 선택 문항만 포함. 의뢰주체를 보존하고 같은 기관 파동은 한 번 계산.",
+    "publisher_reference_eligible": false,
+    "accuracy_grade": null
+  }
+}

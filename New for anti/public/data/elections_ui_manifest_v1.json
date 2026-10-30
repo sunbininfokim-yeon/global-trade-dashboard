@@ -1,8 +1,8 @@
 {
   "schema_version": "elections-ui-manifest-v1",
-  "generated_at": "2026-09-15T04:20:24.052760+00:00",
-  "board_generated_at": "2026-09-15T04:20:23.651893+00:00",
-  "calendar_generated_at": "2026-09-12T07:36:54.542923+00:00",
+  "generated_at": "2026-10-01T16:56:41.709216+00:00",
+  "board_generated_at": "2026-10-01T16:56:41.549449+00:00",
+  "calendar_generated_at": "2026-09-19T00:14:36.109195+00:00",
   "claude_handoff_gate": {
     "can_start_ui": true,
     "rule": "Render only ready/partial screens from declared paths. Disabled screens stay disabled.",
@@ -39,8 +39,8 @@
         "board.countries[].head"
       ],
       "missing": [],
-      "political_color_country_count": 19,
-      "tracked_country_count": 19
+      "political_color_country_count": 31,
+      "tracked_country_count": 31
     },
     "home_calendar": {
       "status": "ready",
@@ -49,7 +49,7 @@
         "calendar.world_national_highlights"
       ],
       "missing": [],
-      "board_tracked_event_rows": 108
+      "board_tracked_event_rows": 187
     },
     "country_navigation": {
       "status": "ready",
@@ -57,15 +57,23 @@
     }
   },
   "coverage": {
-    "tracked_countries": 19,
-    "countries_with_spectrum": 19,
-    "countries_with_admin1_geometry": 19,
+    "tracked_countries": 31,
+    "countries_with_spectrum": 31,
+    "countries_with_admin1_geometry": 24,
     "missing_spectrum": [],
-    "missing_admin1_geometry": [],
+    "missing_admin1_geometry": [
+      "CHL",
+      "COL",
+      "ITA",
+      "MEX",
+      "MYS",
+      "PHL",
+      "POL"
+    ],
     "screen_counts": {
-      "ready": 76,
-      "partial": 27,
-      "disabled": 76
+      "ready": 113,
+      "partial": 32,
+      "disabled": 142
     }
   },
   "countries": {
@@ -420,13 +428,11 @@
           "missing": []
         },
         "calendar": {
-          "status": "disabled",
+          "status": "ready",
           "paths": [
             "countries[CHN].events"
           ],
-          "missing": [
-            "events"
-          ]
+          "missing": []
         },
         "subnational_map": {
           "status": "partial",
@@ -532,6 +538,114 @@
       "hidden_navigation": [
         "national_peoples_congress"
       ]
+    },
+    "GBR": {
+      "iso3": "GBR",
+      "name_ko": "영국",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[GBR].head",
+            "countries[GBR].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[GBR].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/GBR.json",
+            "countries[GBR].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[GBR].executive_live",
+            "countries[GBR].head",
+            "countries[GBR].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "executive_core"
+        },
+        "legislature": {
+          "status": "ready",
+          "paths": [
+            "countries[GBR].legislature_live"
+          ],
+          "missing": [],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[GBR].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[GBR].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[GBR].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[GBR].leadership",
+            "countries[GBR].power",
+            "countries[GBR].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
     },
     "DEU": {
       "iso3": "DEU",
@@ -746,9 +860,9 @@
         }
       }
     },
-    "GBR": {
-      "iso3": "GBR",
-      "name_ko": "영국",
+    "ITA": {
+      "iso3": "ITA",
+      "name_ko": "이탈리아",
       "priority_tier": 2,
       "detail_profile": {
         "id": "tier2_national_core",
@@ -771,23 +885,134 @@
         "overview": {
           "status": "ready",
           "paths": [
-            "countries[GBR].head",
-            "countries[GBR].parties_tracked"
+            "countries[ITA].head",
+            "countries[ITA].parties_tracked"
           ],
           "missing": []
         },
         "calendar": {
           "status": "ready",
           "paths": [
-            "countries[GBR].events"
+            "countries[ITA].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "disabled",
+          "paths": [
+            "/public/data/admin1/ITA.json",
+            "countries[ITA].subnational_live"
+          ],
+          "missing": [
+            "admin1_geometry",
+            "political_overlay"
+          ],
+          "map_asset_exists": false,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[ITA].executive_live",
+            "countries[ITA].head",
+            "countries[ITA].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[ITA].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[ITA].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[ITA].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[ITA].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[ITA].leadership",
+            "countries[ITA].power",
+            "countries[ITA].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "CAN": {
+      "iso3": "CAN",
+      "name_ko": "캐나다",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[CAN].head",
+            "countries[CAN].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[CAN].events"
           ],
           "missing": []
         },
         "subnational_map": {
           "status": "partial",
           "paths": [
-            "/public/data/admin1/GBR.json",
-            "countries[GBR].subnational_live"
+            "/public/data/admin1/CAN.json",
+            "countries[CAN].subnational_live"
           ],
           "missing": [
             "political_overlay"
@@ -798,25 +1023,27 @@
         "executive": {
           "status": "ready",
           "paths": [
-            "countries[GBR].executive_live",
-            "countries[GBR].head",
-            "countries[GBR].prime_minister"
+            "countries[CAN].executive_live",
+            "countries[CAN].head",
+            "countries[CAN].prime_minister"
           ],
           "missing": [],
-          "display_mode": "executive_core"
+          "display_mode": "national_head_only"
         },
         "legislature": {
-          "status": "ready",
+          "status": "disabled",
           "paths": [
-            "countries[GBR].legislature_live"
+            "countries[CAN].legislature_live"
           ],
-          "missing": [],
+          "missing": [
+            "live_composition"
+          ],
           "display_mode": "party_composition_and_ruling_opposition_ratio"
         },
         "legislature_detail": {
           "status": "disabled",
           "paths": [
-            "countries[GBR].legislature_live"
+            "countries[CAN].legislature_live"
           ],
           "missing": [
             "outside_tier_scope"
@@ -825,7 +1052,7 @@
         "factions": {
           "status": "disabled",
           "paths": [
-            "countries[GBR].factions"
+            "countries[CAN].factions"
           ],
           "missing": [
             "outside_tier_scope"
@@ -834,7 +1061,7 @@
         "race_progress": {
           "status": "disabled",
           "paths": [
-            "countries[GBR].race_progress"
+            "countries[CAN].race_progress"
           ],
           "missing": [
             "active_race_progress"
@@ -843,9 +1070,119 @@
         "power_structure": {
           "status": "disabled",
           "paths": [
-            "countries[GBR].leadership",
-            "countries[GBR].power",
-            "countries[GBR].emirates"
+            "countries[CAN].leadership",
+            "countries[CAN].power",
+            "countries[CAN].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "THA": {
+      "iso3": "THA",
+      "name_ko": "태국",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[THA].head",
+            "countries[THA].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[THA].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/THA.json",
+            "countries[THA].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[THA].executive_live",
+            "countries[THA].head",
+            "countries[THA].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[THA].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[THA].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[THA].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[THA].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[THA].leadership",
+            "countries[THA].power",
+            "countries[THA].emirates"
           ],
           "missing": [
             "country_specific_power_dataset"
@@ -954,116 +1291,6 @@
             "countries[FRA].leadership",
             "countries[FRA].power",
             "countries[FRA].emirates"
-          ],
-          "missing": [
-            "country_specific_power_dataset"
-          ],
-          "display_mode": "country_specific_geopolitical_exception"
-        }
-      }
-    },
-    "IND": {
-      "iso3": "IND",
-      "name_ko": "인도",
-      "priority_tier": 2,
-      "detail_profile": {
-        "id": "tier2_national_core",
-        "max_depth": "national_plus_selected_major_subnational_summary",
-        "allow": [
-          "head_of_government_or_state",
-          "national_legislature_party_composition",
-          "ruling_opposition_ratio",
-          "major_election_calendar",
-          "selected_major_subnational_summary"
-        ],
-        "exclude": [
-          "subnational_legislator_rosters",
-          "basic_local_government_officials",
-          "municipal_councillor_rosters",
-          "committee_member_rosters_by_default"
-        ]
-      },
-      "screens": {
-        "overview": {
-          "status": "ready",
-          "paths": [
-            "countries[IND].head",
-            "countries[IND].parties_tracked"
-          ],
-          "missing": []
-        },
-        "calendar": {
-          "status": "ready",
-          "paths": [
-            "countries[IND].events"
-          ],
-          "missing": []
-        },
-        "subnational_map": {
-          "status": "partial",
-          "paths": [
-            "/public/data/admin1/IND.json",
-            "countries[IND].subnational_live"
-          ],
-          "missing": [
-            "political_overlay"
-          ],
-          "map_asset_exists": true,
-          "political_overlay_exists": false
-        },
-        "executive": {
-          "status": "ready",
-          "paths": [
-            "countries[IND].executive_live",
-            "countries[IND].head",
-            "countries[IND].prime_minister"
-          ],
-          "missing": [],
-          "display_mode": "executive_core"
-        },
-        "legislature": {
-          "status": "disabled",
-          "paths": [
-            "countries[IND].legislature_live"
-          ],
-          "missing": [
-            "live_composition"
-          ],
-          "display_mode": "party_composition_and_ruling_opposition_ratio"
-        },
-        "legislature_detail": {
-          "status": "disabled",
-          "paths": [
-            "countries[IND].legislature_live"
-          ],
-          "missing": [
-            "outside_tier_scope"
-          ]
-        },
-        "factions": {
-          "status": "disabled",
-          "paths": [
-            "countries[IND].factions"
-          ],
-          "missing": [
-            "outside_tier_scope"
-          ]
-        },
-        "race_progress": {
-          "status": "disabled",
-          "paths": [
-            "countries[IND].race_progress"
-          ],
-          "missing": [
-            "active_race_progress"
-          ]
-        },
-        "power_structure": {
-          "status": "disabled",
-          "paths": [
-            "countries[IND].leadership",
-            "countries[IND].power",
-            "countries[IND].emirates"
           ],
           "missing": [
             "country_specific_power_dataset"
@@ -1182,6 +1409,117 @@
         }
       }
     },
+    "MYS": {
+      "iso3": "MYS",
+      "name_ko": "말레이시아",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[MYS].head",
+            "countries[MYS].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[MYS].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "disabled",
+          "paths": [
+            "/public/data/admin1/MYS.json",
+            "countries[MYS].subnational_live"
+          ],
+          "missing": [
+            "admin1_geometry",
+            "political_overlay"
+          ],
+          "map_asset_exists": false,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[MYS].executive_live",
+            "countries[MYS].head",
+            "countries[MYS].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[MYS].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[MYS].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[MYS].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[MYS].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[MYS].leadership",
+            "countries[MYS].power",
+            "countries[MYS].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
     "BRA": {
       "iso3": "BRA",
       "name_ko": "브라질",
@@ -1282,6 +1620,887 @@
             "countries[BRA].leadership",
             "countries[BRA].power",
             "countries[BRA].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "IND": {
+      "iso3": "IND",
+      "name_ko": "인도",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[IND].head",
+            "countries[IND].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[IND].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/IND.json",
+            "countries[IND].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[IND].executive_live",
+            "countries[IND].head",
+            "countries[IND].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "executive_core"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[IND].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[IND].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[IND].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[IND].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[IND].leadership",
+            "countries[IND].power",
+            "countries[IND].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "COL": {
+      "iso3": "COL",
+      "name_ko": "콜롬비아",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[COL].head",
+            "countries[COL].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[COL].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "disabled",
+          "paths": [
+            "/public/data/admin1/COL.json",
+            "countries[COL].subnational_live"
+          ],
+          "missing": [
+            "admin1_geometry",
+            "political_overlay"
+          ],
+          "map_asset_exists": false,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[COL].executive_live",
+            "countries[COL].head",
+            "countries[COL].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[COL].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[COL].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[COL].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[COL].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[COL].leadership",
+            "countries[COL].power",
+            "countries[COL].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "AUS": {
+      "iso3": "AUS",
+      "name_ko": "호주",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[AUS].head",
+            "countries[AUS].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[AUS].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/AUS.json",
+            "countries[AUS].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[AUS].executive_live",
+            "countries[AUS].head",
+            "countries[AUS].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[AUS].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[AUS].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[AUS].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[AUS].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[AUS].leadership",
+            "countries[AUS].power",
+            "countries[AUS].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "VNM": {
+      "iso3": "VNM",
+      "name_ko": "베트남",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[VNM].head",
+            "countries[VNM].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[VNM].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/VNM.json",
+            "countries[VNM].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[VNM].executive_live",
+            "countries[VNM].head",
+            "countries[VNM].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[VNM].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[VNM].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[VNM].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[VNM].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[VNM].leadership",
+            "countries[VNM].power",
+            "countries[VNM].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "ARG": {
+      "iso3": "ARG",
+      "name_ko": "아르헨티나",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[ARG].head",
+            "countries[ARG].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[ARG].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/ARG.json",
+            "countries[ARG].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[ARG].executive_live",
+            "countries[ARG].head",
+            "countries[ARG].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[ARG].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[ARG].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[ARG].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[ARG].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[ARG].leadership",
+            "countries[ARG].power",
+            "countries[ARG].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "ISR": {
+      "iso3": "ISR",
+      "name_ko": "이스라엘",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[ISR].head",
+            "countries[ISR].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[ISR].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/ISR.json",
+            "countries[ISR].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[ISR].executive_live",
+            "countries[ISR].head",
+            "countries[ISR].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "executive_core"
+        },
+        "legislature": {
+          "status": "ready",
+          "paths": [
+            "countries[ISR].legislature_live"
+          ],
+          "missing": [],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[ISR].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[ISR].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[ISR].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[ISR].leadership",
+            "countries[ISR].power",
+            "countries[ISR].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "CHL": {
+      "iso3": "CHL",
+      "name_ko": "칠레",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[CHL].head",
+            "countries[CHL].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[CHL].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "disabled",
+          "paths": [
+            "/public/data/admin1/CHL.json",
+            "countries[CHL].subnational_live"
+          ],
+          "missing": [
+            "admin1_geometry",
+            "political_overlay"
+          ],
+          "map_asset_exists": false,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[CHL].executive_live",
+            "countries[CHL].head",
+            "countries[CHL].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[CHL].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[CHL].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[CHL].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[CHL].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[CHL].leadership",
+            "countries[CHL].power",
+            "countries[CHL].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "POL": {
+      "iso3": "POL",
+      "name_ko": "폴란드",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[POL].head",
+            "countries[POL].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[POL].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "disabled",
+          "paths": [
+            "/public/data/admin1/POL.json",
+            "countries[POL].subnational_live"
+          ],
+          "missing": [
+            "admin1_geometry",
+            "political_overlay"
+          ],
+          "map_asset_exists": false,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[POL].executive_live",
+            "countries[POL].head",
+            "countries[POL].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[POL].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[POL].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[POL].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[POL].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[POL].leadership",
+            "countries[POL].power",
+            "countries[POL].emirates"
           ],
           "missing": [
             "country_specific_power_dataset"
@@ -1400,9 +2619,9 @@
         }
       }
     },
-    "ISR": {
-      "iso3": "ISR",
-      "name_ko": "이스라엘",
+    "MEX": {
+      "iso3": "MEX",
+      "name_ko": "멕시코",
       "priority_tier": 2,
       "detail_profile": {
         "id": "tier2_national_core",
@@ -1425,152 +2644,45 @@
         "overview": {
           "status": "ready",
           "paths": [
-            "countries[ISR].head",
-            "countries[ISR].parties_tracked"
+            "countries[MEX].head",
+            "countries[MEX].parties_tracked"
           ],
           "missing": []
         },
         "calendar": {
           "status": "ready",
           "paths": [
-            "countries[ISR].events"
+            "countries[MEX].events"
           ],
           "missing": []
         },
         "subnational_map": {
-          "status": "partial",
+          "status": "disabled",
           "paths": [
-            "/public/data/admin1/ISR.json",
-            "countries[ISR].subnational_live"
+            "/public/data/admin1/MEX.json",
+            "countries[MEX].subnational_live"
           ],
           "missing": [
+            "admin1_geometry",
             "political_overlay"
           ],
-          "map_asset_exists": true,
+          "map_asset_exists": false,
           "political_overlay_exists": false
         },
         "executive": {
           "status": "ready",
           "paths": [
-            "countries[ISR].executive_live",
-            "countries[ISR].head",
-            "countries[ISR].prime_minister"
+            "countries[MEX].executive_live",
+            "countries[MEX].head",
+            "countries[MEX].prime_minister"
           ],
           "missing": [],
-          "display_mode": "executive_core"
-        },
-        "legislature": {
-          "status": "ready",
-          "paths": [
-            "countries[ISR].legislature_live"
-          ],
-          "missing": [],
-          "display_mode": "party_composition_and_ruling_opposition_ratio"
-        },
-        "legislature_detail": {
-          "status": "disabled",
-          "paths": [
-            "countries[ISR].legislature_live"
-          ],
-          "missing": [
-            "outside_tier_scope"
-          ]
-        },
-        "factions": {
-          "status": "disabled",
-          "paths": [
-            "countries[ISR].factions"
-          ],
-          "missing": [
-            "outside_tier_scope"
-          ]
-        },
-        "race_progress": {
-          "status": "disabled",
-          "paths": [
-            "countries[ISR].race_progress"
-          ],
-          "missing": [
-            "active_race_progress"
-          ]
-        },
-        "power_structure": {
-          "status": "disabled",
-          "paths": [
-            "countries[ISR].leadership",
-            "countries[ISR].power",
-            "countries[ISR].emirates"
-          ],
-          "missing": [
-            "country_specific_power_dataset"
-          ],
-          "display_mode": "country_specific_geopolitical_exception"
-        }
-      }
-    },
-    "NGA": {
-      "iso3": "NGA",
-      "name_ko": "나이지리아",
-      "priority_tier": 2,
-      "detail_profile": {
-        "id": "tier2_national_core",
-        "max_depth": "national_plus_selected_major_subnational_summary",
-        "allow": [
-          "head_of_government_or_state",
-          "national_legislature_party_composition",
-          "ruling_opposition_ratio",
-          "major_election_calendar",
-          "selected_major_subnational_summary"
-        ],
-        "exclude": [
-          "subnational_legislator_rosters",
-          "basic_local_government_officials",
-          "municipal_councillor_rosters",
-          "committee_member_rosters_by_default"
-        ]
-      },
-      "screens": {
-        "overview": {
-          "status": "ready",
-          "paths": [
-            "countries[NGA].head",
-            "countries[NGA].parties_tracked"
-          ],
-          "missing": []
-        },
-        "calendar": {
-          "status": "ready",
-          "paths": [
-            "countries[NGA].events"
-          ],
-          "missing": []
-        },
-        "subnational_map": {
-          "status": "partial",
-          "paths": [
-            "/public/data/admin1/NGA.json",
-            "countries[NGA].subnational_live"
-          ],
-          "missing": [
-            "political_overlay"
-          ],
-          "map_asset_exists": true,
-          "political_overlay_exists": false
-        },
-        "executive": {
-          "status": "ready",
-          "paths": [
-            "countries[NGA].executive_live",
-            "countries[NGA].head",
-            "countries[NGA].prime_minister"
-          ],
-          "missing": [],
-          "display_mode": "executive_core"
+          "display_mode": "national_head_only"
         },
         "legislature": {
           "status": "disabled",
           "paths": [
-            "countries[NGA].legislature_live"
+            "countries[MEX].legislature_live"
           ],
           "missing": [
             "live_composition"
@@ -1580,7 +2692,7 @@
         "legislature_detail": {
           "status": "disabled",
           "paths": [
-            "countries[NGA].legislature_live"
+            "countries[MEX].legislature_live"
           ],
           "missing": [
             "outside_tier_scope"
@@ -1589,7 +2701,7 @@
         "factions": {
           "status": "disabled",
           "paths": [
-            "countries[NGA].factions"
+            "countries[MEX].factions"
           ],
           "missing": [
             "outside_tier_scope"
@@ -1598,7 +2710,7 @@
         "race_progress": {
           "status": "disabled",
           "paths": [
-            "countries[NGA].race_progress"
+            "countries[MEX].race_progress"
           ],
           "missing": [
             "active_race_progress"
@@ -1607,9 +2719,9 @@
         "power_structure": {
           "status": "disabled",
           "paths": [
-            "countries[NGA].leadership",
-            "countries[NGA].power",
-            "countries[NGA].emirates"
+            "countries[MEX].leadership",
+            "countries[MEX].power",
+            "countries[MEX].emirates"
           ],
           "missing": [
             "country_specific_power_dataset"
@@ -1617,170 +2729,6 @@
           "display_mode": "country_specific_geopolitical_exception"
         }
       }
-    },
-    "IRN": {
-      "iso3": "IRN",
-      "name_ko": "이란",
-      "priority_tier": 2,
-      "detail_profile": {
-        "id": "tier2_iran_china_style",
-        "max_depth": "national_elected_and_appointed_power_structures",
-        "allow": [
-          "supreme_leader_axis",
-          "elected_executive",
-          "majlis_and_election_system",
-          "assembly_of_experts",
-          "guardian_council_and_clerical_institutions",
-          "irgc_security_axis",
-          "analytical_factions_with_confidence",
-          "major_election_calendar"
-        ],
-        "exclude": [
-          "subnational_rosters",
-          "unverified_complete_faction_rosters",
-          "invented_election_dates_or_members"
-        ]
-      },
-      "screens": {
-        "overview": {
-          "status": "ready",
-          "paths": [
-            "countries[IRN].head",
-            "countries[IRN].parties_tracked"
-          ],
-          "missing": []
-        },
-        "calendar": {
-          "status": "ready",
-          "paths": [
-            "countries[IRN].events"
-          ],
-          "missing": []
-        },
-        "subnational_map": {
-          "status": "partial",
-          "paths": [
-            "/public/data/admin1/IRN.json",
-            "countries[IRN].subnational_live"
-          ],
-          "missing": [
-            "political_overlay"
-          ],
-          "map_asset_exists": true,
-          "political_overlay_exists": false
-        },
-        "executive": {
-          "status": "ready",
-          "paths": [
-            "countries[IRN].leadership.elected_executive"
-          ],
-          "missing": [],
-          "display_mode": "elected_executive_under_supreme_leader_axis"
-        },
-        "legislature": {
-          "status": "partial",
-          "paths": [
-            "countries[IRN].leadership.legislature",
-            "countries[IRN].leadership.election_system.institutions"
-          ],
-          "missing": [
-            "majlis_party_bloc_seats",
-            "member_roster",
-            "committees"
-          ],
-          "display_mode": "managed_election_legislature"
-        },
-        "legislature_detail": {
-          "status": "disabled",
-          "paths": [
-            "countries[IRN].legislature_live"
-          ],
-          "missing": [
-            "outside_tier_scope"
-          ]
-        },
-        "factions": {
-          "status": "partial",
-          "paths": [
-            "countries[IRN].leadership.analytical_factions"
-          ],
-          "missing": [
-            "complete_nonoverlapping_rosters",
-            "official_party_membership"
-          ],
-          "count_rule": "analytical blocs overlap; never sum groups"
-        },
-        "race_progress": {
-          "status": "disabled",
-          "paths": [
-            "countries[IRN].race_progress"
-          ],
-          "missing": [
-            "active_race_progress"
-          ]
-        },
-        "power_structure": {
-          "status": "ready",
-          "paths": [
-            "countries[IRN].leadership",
-            "countries[IRN].power",
-            "countries[IRN].emirates"
-          ],
-          "missing": [],
-          "display_mode": "country_specific_geopolitical_exception"
-        },
-        "supreme_leader": {
-          "status": "ready",
-          "paths": [
-            "countries[IRN].leadership.supreme_leader"
-          ],
-          "missing": []
-        },
-        "experts_assembly": {
-          "status": "partial",
-          "paths": [
-            "countries[IRN].leadership.clerical_institutions.assembly_of_experts"
-          ],
-          "missing": [
-            "member_roster",
-            "clerical_current_counts"
-          ]
-        },
-        "clerical_institutions": {
-          "status": "ready",
-          "paths": [
-            "countries[IRN].leadership.clerical_institutions.guardian_council",
-            "countries[IRN].leadership.clerical_institutions.expediency_council"
-          ],
-          "missing": []
-        },
-        "security_axis": {
-          "status": "partial",
-          "paths": [
-            "countries[IRN].leadership.security_axis"
-          ],
-          "missing": [
-            "official_current_irgc_and_quds_force_roster"
-          ]
-        },
-        "election_system": {
-          "status": "ready",
-          "paths": [
-            "countries[IRN].leadership.election_system",
-            "countries[IRN].events"
-          ],
-          "missing": []
-        }
-      },
-      "navigation": [
-        "supreme_leader",
-        "executive",
-        "majlis",
-        "assembly_of_experts",
-        "clerical_institutions",
-        "security_axis",
-        "factions"
-      ]
     },
     "IDN": {
       "iso3": "IDN",
@@ -2002,6 +2950,227 @@
         }
       }
     },
+    "PHL": {
+      "iso3": "PHL",
+      "name_ko": "필리핀",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[PHL].head",
+            "countries[PHL].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[PHL].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "disabled",
+          "paths": [
+            "/public/data/admin1/PHL.json",
+            "countries[PHL].subnational_live"
+          ],
+          "missing": [
+            "admin1_geometry",
+            "political_overlay"
+          ],
+          "map_asset_exists": false,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[PHL].executive_live",
+            "countries[PHL].head",
+            "countries[PHL].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "national_head_only"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[PHL].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[PHL].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[PHL].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[PHL].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[PHL].leadership",
+            "countries[PHL].power",
+            "countries[PHL].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
+    "NGA": {
+      "iso3": "NGA",
+      "name_ko": "나이지리아",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_national_core",
+        "max_depth": "national_plus_selected_major_subnational_summary",
+        "allow": [
+          "head_of_government_or_state",
+          "national_legislature_party_composition",
+          "ruling_opposition_ratio",
+          "major_election_calendar",
+          "selected_major_subnational_summary"
+        ],
+        "exclude": [
+          "subnational_legislator_rosters",
+          "basic_local_government_officials",
+          "municipal_councillor_rosters",
+          "committee_member_rosters_by_default"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[NGA].head",
+            "countries[NGA].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[NGA].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/NGA.json",
+            "countries[NGA].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[NGA].executive_live",
+            "countries[NGA].head",
+            "countries[NGA].prime_minister"
+          ],
+          "missing": [],
+          "display_mode": "executive_core"
+        },
+        "legislature": {
+          "status": "disabled",
+          "paths": [
+            "countries[NGA].legislature_live"
+          ],
+          "missing": [
+            "live_composition"
+          ],
+          "display_mode": "party_composition_and_ruling_opposition_ratio"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[NGA].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "disabled",
+          "paths": [
+            "countries[NGA].factions"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[NGA].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "disabled",
+          "paths": [
+            "countries[NGA].leadership",
+            "countries[NGA].power",
+            "countries[NGA].emirates"
+          ],
+          "missing": [
+            "country_specific_power_dataset"
+          ],
+          "display_mode": "country_specific_geopolitical_exception"
+        }
+      }
+    },
     "SAU": {
       "iso3": "SAU",
       "name_ko": "사우디아라비아",
@@ -2109,6 +3278,170 @@
           "display_mode": "country_specific_geopolitical_exception"
         }
       }
+    },
+    "IRN": {
+      "iso3": "IRN",
+      "name_ko": "이란",
+      "priority_tier": 2,
+      "detail_profile": {
+        "id": "tier2_iran_china_style",
+        "max_depth": "national_elected_and_appointed_power_structures",
+        "allow": [
+          "supreme_leader_axis",
+          "elected_executive",
+          "majlis_and_election_system",
+          "assembly_of_experts",
+          "guardian_council_and_clerical_institutions",
+          "irgc_security_axis",
+          "analytical_factions_with_confidence",
+          "major_election_calendar"
+        ],
+        "exclude": [
+          "subnational_rosters",
+          "unverified_complete_faction_rosters",
+          "invented_election_dates_or_members"
+        ]
+      },
+      "screens": {
+        "overview": {
+          "status": "ready",
+          "paths": [
+            "countries[IRN].head",
+            "countries[IRN].parties_tracked"
+          ],
+          "missing": []
+        },
+        "calendar": {
+          "status": "ready",
+          "paths": [
+            "countries[IRN].events"
+          ],
+          "missing": []
+        },
+        "subnational_map": {
+          "status": "partial",
+          "paths": [
+            "/public/data/admin1/IRN.json",
+            "countries[IRN].subnational_live"
+          ],
+          "missing": [
+            "political_overlay"
+          ],
+          "map_asset_exists": true,
+          "political_overlay_exists": false
+        },
+        "executive": {
+          "status": "ready",
+          "paths": [
+            "countries[IRN].leadership.elected_executive"
+          ],
+          "missing": [],
+          "display_mode": "elected_executive_under_supreme_leader_axis"
+        },
+        "legislature": {
+          "status": "partial",
+          "paths": [
+            "countries[IRN].leadership.legislature",
+            "countries[IRN].leadership.election_system.institutions"
+          ],
+          "missing": [
+            "majlis_party_bloc_seats",
+            "member_roster",
+            "committees"
+          ],
+          "display_mode": "managed_election_legislature"
+        },
+        "legislature_detail": {
+          "status": "disabled",
+          "paths": [
+            "countries[IRN].legislature_live"
+          ],
+          "missing": [
+            "outside_tier_scope"
+          ]
+        },
+        "factions": {
+          "status": "partial",
+          "paths": [
+            "countries[IRN].leadership.analytical_factions"
+          ],
+          "missing": [
+            "complete_nonoverlapping_rosters",
+            "official_party_membership"
+          ],
+          "count_rule": "analytical blocs overlap; never sum groups"
+        },
+        "race_progress": {
+          "status": "disabled",
+          "paths": [
+            "countries[IRN].race_progress"
+          ],
+          "missing": [
+            "active_race_progress"
+          ]
+        },
+        "power_structure": {
+          "status": "ready",
+          "paths": [
+            "countries[IRN].leadership",
+            "countries[IRN].power",
+            "countries[IRN].emirates"
+          ],
+          "missing": [],
+          "display_mode": "country_specific_geopolitical_exception"
+        },
+        "supreme_leader": {
+          "status": "ready",
+          "paths": [
+            "countries[IRN].leadership.supreme_leader"
+          ],
+          "missing": []
+        },
+        "experts_assembly": {
+          "status": "partial",
+          "paths": [
+            "countries[IRN].leadership.clerical_institutions.assembly_of_experts"
+          ],
+          "missing": [
+            "member_roster",
+            "clerical_current_counts"
+          ]
+        },
+        "clerical_institutions": {
+          "status": "ready",
+          "paths": [
+            "countries[IRN].leadership.clerical_institutions.guardian_council",
+            "countries[IRN].leadership.clerical_institutions.expediency_council"
+          ],
+          "missing": []
+        },
+        "security_axis": {
+          "status": "partial",
+          "paths": [
+            "countries[IRN].leadership.security_axis"
+          ],
+          "missing": [
+            "official_current_irgc_and_quds_force_roster"
+          ]
+        },
+        "election_system": {
+          "status": "ready",
+          "paths": [
+            "countries[IRN].leadership.election_system",
+            "countries[IRN].events"
+          ],
+          "missing": []
+        }
+      },
+      "navigation": [
+        "supreme_leader",
+        "executive",
+        "majlis",
+        "assembly_of_experts",
+        "clerical_institutions",
+        "security_axis",
+        "factions"
+      ]
     },
     "ARE": {
       "iso3": "ARE",

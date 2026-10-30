@@ -357,14 +357,26 @@ def build_ticker_levels(
         "n_days": len(days),
         "date_start": days[0]["date"] if days else None,
         "date_end": days[-1]["date"] if days else None,
-        "unit": "shares + KRW(= shares × that-day close; both from live prints)",
+        "unit": "shares + estimated KRW (= net shares × that-day close)",
         "quality": "observed",
+        "net_shares_quality": "observed",
+        "net_krw_quality": "estimated",
+        "net_krw_method": "net_shares_times_close",
+        "actor_scope": list(ACTORS),
+        "actor_scope_note_ko": (
+            "개인·외국인·기관만 포함. 기타법인·기타외국인은 미포함이므로 "
+            "세 주체 합계가 0일 필요는 없음. 미포함 주체의 값은 추정해 채우지 않음."
+        ),
         "bin_attribution": "daily_close",
-        "data_policy_ko": "실측만(네이버 수급·FDR OHLC). demo/시드/합성 금지. 실패면 missing.",
+        "data_policy_ko": (
+            "네이버 순매수 수량·FDR OHLC는 실측. 원화 금액은 수량×종가 추정값. "
+            "demo/시드/합성 금지. 실패면 missing."
+        ),
         "method_ko": (
             "실측 일별 개인/외국인/기관 순매수(네이버) + 실측 종가(FDR)를 "
             "종가 빈에 귀속해 표로 만든 것. 틱/호가 단위 매집은 공개되지 않음. "
-            "숫자는 모두 실측; 빈 배정만 일별 종가 기준."
+            "순매수 수량·종가는 실측이고, 원화 금액은 순매수 수량×종가 추정값이며 "
+            "KRX 실제 순매수 거래대금과 다름."
         ),
         "source": [
             "https://m.stock.naver.com/api/stock/{ticker}/trend?pageSize= (live)",
@@ -379,21 +391,54 @@ def build_ticker_levels(
     }
 
 
-def default_kospi_universe(*, top_n: int = 10) -> list[tuple[str, str]]:
-    """KOSPI ordinary shares by Marcap (skip 우선주). Live listing."""
+class KospiUniverseError(RuntimeError):
+    """The requested KOSPI ranking could not be observed completely."""
+
+
+def _kospi_common_listing(*, minimum_n: int) -> pd.DataFrame:
+    """Fetch and validate the ordinary-share listing; never invent a universe."""
     import FinanceDataReader as fdr
 
-    kospi = fdr.StockListing("KOSPI")
+    try:
+        kospi = fdr.StockListing("KOSPI")
+    except Exception as exc:  # noqa: BLE001
+        raise KospiUniverseError(f"KOSPI listing failed: {type(exc).__name__}: {exc}") from exc
     if kospi is None or kospi.empty:
-        return [("000660", "SK하이닉스"), ("005930", "삼성전자")]
+        raise KospiUniverseError("KOSPI listing is empty")
+    missing = {"Marcap", "Code", "Name"} - set(kospi.columns)
+    if missing:
+        raise KospiUniverseError(f"KOSPI listing missing columns: {', '.join(sorted(missing))}")
     df = kospi.dropna(subset=["Marcap", "Code", "Name"]).copy()
+    df["Marcap"] = pd.to_numeric(df["Marcap"], errors="coerce")
+    df["Code"] = df["Code"].astype(str).str.strip().str.zfill(6)
     names = df["Name"].astype(str)
-    df = df[~names.str.endswith("우") & ~names.str.contains("우선", na=False)]
+    df = df[
+        np.isfinite(df["Marcap"]) & (df["Marcap"] > 0)
+        & df["Code"].str.fullmatch(r"\d{6}")
+        & names.str.strip().ne("")
+        & ~names.str.endswith("우") & ~names.str.contains("우선", na=False)
+    ].drop_duplicates(subset=["Code"])
+    if len(df) < minimum_n:
+        raise KospiUniverseError(
+            f"KOSPI listing has {len(df)} valid ordinary shares; need {minimum_n}"
+        )
+    return df.sort_values("Marcap", ascending=False).reset_index(drop=True)
+
+
+def default_kospi_universe(
+    *, top_n: int = 10, listing: pd.DataFrame | None = None,
+) -> list[tuple[str, str]]:
+    """KOSPI ordinary shares by Marcap; fail if the requested top-N is unavailable."""
+    if top_n < 1:
+        raise ValueError("top_n must be positive")
+    df = listing if listing is not None else _kospi_common_listing(minimum_n=top_n)
+    if len(df) < top_n:
+        raise KospiUniverseError(f"KOSPI listing has {len(df)} shares; need {top_n}")
     df = df.sort_values("Marcap", ascending=False).head(int(top_n))
     out: list[tuple[str, str]] = []
     for _, row in df.iterrows():
         out.append((str(row["Code"]).zfill(6), str(row["Name"])))
-    return out or [("000660", "SK하이닉스"), ("005930", "삼성전자")]
+    return out
 
 
 def high_vol_kospi_universe(
@@ -401,45 +446,58 @@ def high_vol_kospi_universe(
     top_n: int = 10,
     pool: int = 100,
     lookback_days: int = 40,
+    listing: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
-    """시총 pool위(기본 100) 보통주 중 실현변동성 상위 top_n. 실측 FDR only."""
+    """Rank eligible shares; known history exclusions are not source failures.
+
+    Empty/malformed responses and exceptions remain unresolved source errors.
+    Retry only those tickers once, sequentially after the initial pool closes.
+    A valid short history or a full zero-volume window is a normal exclusion;
+    neither proves the listing date or the legal suspension status.
+    """
     import FinanceDataReader as fdr
     from concurrent.futures import ThreadPoolExecutor, as_completed
+    import time
 
-    kospi = fdr.StockListing("KOSPI")
-    if kospi is None or kospi.empty:
-        pairs = default_kospi_universe(top_n=top_n)
-        return {
-            "pairs": pairs,
-            "pool": pool,
-            "ranks": [],
-            "quality": "missing",
-            "note_ko": "KOSPI listing empty — fallback marcap",
-        }
-    df = kospi.dropna(subset=["Marcap", "Code", "Name"]).copy()
-    names = df["Name"].astype(str)
-    df = df[~names.str.endswith("우") & ~names.str.contains("우선", na=False)]
+    if top_n < 1 or pool < top_n or lookback_days < 2:
+        raise ValueError("pool must be at least top_n; top_n positive; lookback_days >= 2")
+    df = listing if listing is not None else _kospi_common_listing(minimum_n=pool)
+    if len(df) < pool:
+        raise KospiUniverseError(f"KOSPI listing has {len(df)} shares; need pool={pool}")
     df = df.sort_values("Marcap", ascending=False).head(int(pool)).reset_index(drop=True)
     start = (pd.Timestamp.now().normalize() - pd.Timedelta(days=lookback_days + 20)).strftime(
         "%Y-%m-%d"
     )
 
-    def _one(code: str, name: str, marcap_rank: int) -> tuple[float, str, str, int] | None:
+    def _one(code: str, name: str, marcap_rank: int) -> dict[str, Any]:
         try:
             px = fdr.DataReader(code, start)
             if px is None or px.empty or "Close" not in px.columns:
-                return None
-            r = px["Close"].astype(float).pct_change().dropna()
+                return {"status": "error", "reason": "empty_or_missing_close"}
+            close = pd.to_numeric(px["Close"], errors="coerce")
+            if not np.isfinite(close).all() or (close < 0).any():
+                return {"status": "error", "reason": "invalid_close"}
+            if "Volume" in px.columns:
+                volume = pd.to_numeric(px["Volume"], errors="coerce")
+                if not np.isfinite(volume).all() or (volume < 0).any():
+                    return {"status": "error", "reason": "invalid_volume"}
+                if len(px) >= 16 and (volume == 0).all():
+                    return {"status": "excluded", "reason": "no_trading_volume",
+                            "close_observations": len(px)}
+            if (close == 0).any():
+                return {"status": "error", "reason": "invalid_close"}
+            r = close.pct_change(fill_method=None).dropna()
             if len(r) < 15:
-                return None
+                return {"status": "excluded", "reason": "insufficient_history",
+                        "close_observations": len(px), "return_observations": len(r)}
             vol = float(r.tail(lookback_days).std(ddof=1) * np.sqrt(252))
             if not np.isfinite(vol):
-                return None
-            return (vol, code, name, marcap_rank)
-        except Exception:  # noqa: BLE001
-            return None
+                return {"status": "error", "reason": "invalid_volatility"}
+            return {"status": "scored", "score": (vol, code, name, marcap_rank)}
+        except Exception as exc:  # noqa: BLE001
+            return {"status": "error", "reason": f"{type(exc).__name__}: {exc}"}
 
-    scored: list[tuple[float, str, str, int]] = []
+    outcomes: dict[str, dict[str, Any]] = {}
     jobs = [
         (str(row["Code"]).zfill(6), str(row["Name"]), int(i) + 1)
         for i, row in df.iterrows()
@@ -447,10 +505,33 @@ def high_vol_kospi_universe(
     with ThreadPoolExecutor(max_workers=16) as ex:
         futs = {ex.submit(_one, c, n, rk): c for c, n, rk in jobs}
         for fut in as_completed(futs):
-            got = fut.result()
-            if got:
-                scored.append(got)
-    scored.sort(key=lambda x: x[0], reverse=True)
+            outcomes[futs[fut]] = fut.result()
+    retries = []
+    # No second executor, no listing re-fetch, no retry of successful/skipped stocks.
+    for code, name, rank in jobs:
+        if outcomes[code]["status"] != "error":
+            continue
+        first_reason = outcomes[code]["reason"]
+        time.sleep(1)
+        outcomes[code] = _one(code, name, rank)
+        retries.append({"ticker": code, "attempts": 2, "first_reason": first_reason,
+                        "final_status": outcomes[code]["status"]})
+    scored = [outcomes[c]["score"] for c, _, _ in jobs if outcomes[c]["status"] == "scored"]
+    excluded = [{"ticker": c, "label_ko": n, **outcomes[c]} for c, n, _ in jobs
+                if outcomes[c]["status"] == "excluded"]
+    failures = [f"{c} ({outcomes[c]['reason']})" for c, _, _ in jobs
+                if outcomes[c]["status"] == "error"]
+    if failures:
+        raise KospiUniverseError(
+            f"KOSPI high-vol screen incomplete: scored {len(scored)}/{len(jobs)}; "
+            f"excluded {len(excluded)}; unavailable after one sequential retry: {', '.join(failures)}"
+        )
+    if len(scored) < top_n:
+        raise KospiUniverseError(
+            f"KOSPI high-vol screen has {len(scored)} eligible scores; need {top_n}; "
+            f"excluded {len(excluded)}/{len(jobs)}"
+        )
+    scored.sort(key=lambda x: (-x[0], x[3]))
     top = scored[: int(top_n)]
     pairs = [(c, n) for _, c, n, _ in top]
     ranks = [
@@ -465,14 +546,20 @@ def high_vol_kospi_universe(
         for i, (v, c, n, rk) in enumerate(top)
     ]
     return {
-        "pairs": pairs or default_kospi_universe(top_n=top_n),
+        "pairs": pairs,
         "pool": int(pool),
         "lookback_days": lookback_days,
         "scored_n": len(scored),
+        "excluded_n": len(excluded),
+        "excluded": excluded,
+        "retried_n": len(retries),
+        "retries": retries,
         "ranks": ranks,
-        "quality": "observed" if pairs else "missing",
+        "quality": "observed",
         "source": "FinanceDataReader KOSPI Marcap + Close returns (live)",
-        "note_ko": f"코스피 시총 {pool}위 내 보통주 → 실현변동성 상위 {top_n}",
+        "note_ko": (f"코스피 시총 {pool}위 내 보통주 → 산출 가능 {len(scored)}종목의 "
+                    f"실현변동성 상위 {top_n}. 이력 부족·거래량 없는 기간 {len(excluded)}종목 제외. "
+                    f"조회 오류 {len(retries)}종목만 순차 1회 재시도."),
     }
 
 
@@ -487,8 +574,84 @@ def _parse_naver_flow_date(raw: str) -> pd.Timestamp | None:
     return m
 
 
-def fetch_kospi_market_investor_history(*, max_days: int = 60) -> pd.DataFrame:
-    """KOSPI cash market 개인/외국인/기관계 순매수 (억원)."""
+# The contract for this block is the KOSPI *stock* market (scope kospi_cash,
+# the Naver investorDealTrendDay definition documented in DATA_SOURCES.md).
+# KRX 12008 as first collected into krx-month-paste (krx_12008_kospi_investor)
+# counts every listed security, ETF/ETN included, so 개인·기관 differ from the
+# stock figure by the day's ETF flow -- a different quantity, not a stand-in.
+# Only a 12008 export restricted to 주식 is accepted: the dataset below, with
+# every row marked security_scope == "stock" (CURSOR_HANDOFF_KOSPI_STOCK_FLOW.md).
+KRX_12008_STOCK_DATASET = "krx_12008_kospi_stock_investor"
+KRX_12008_STOCK_SOURCE = "KRX 12008 투자자별 거래실적 (유가증권·주식·거래대금) · krx-month-paste"
+KOSPI_STOCK_SCOPE_KO = "유가증권시장 주식 투자자별 순매수 (ETF·ETN 제외)."
+# Sources whose days are the same stock-only quantity and may be carried
+# forward together; anything else in a previous file is not reused.
+STOCK_FLOW_SOURCES = {None, "naver", "krx_12008_stock"}
+
+
+def load_krx_12008_kospi_flows(root: Any) -> pd.DataFrame:
+    """KRX 12008 KOSPI *stock* investor nets in 억원 from krx-month-paste.
+
+    Reads only the stock-scoped dataset and only rows that say so
+    (security_scope == "stock"); the ETF-inclusive 12008 hive is ignored.
+    Re-collected days appear more than once; the latest collection wins. An
+    actor whose buy - sell does not reproduce its own net (beyond KRX's
+    1 백만원 rounding) is left empty rather than trusted.
+    """
+    import gzip
+    import json
+    from pathlib import Path
+
+    base = Path(root) / "data" / "normalized" / KRX_12008_STOCK_DATASET
+    latest: dict[str, dict[str, Any]] = {}
+    for part in sorted(base.glob("year=*/month=*/part.jsonl.gz")):
+        with gzip.open(part, "rt", encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                day = row.get("date")
+                if not day or row.get("security_scope") != "stock":
+                    continue
+                prev = latest.get(day)
+                if prev is None or str(row.get("collected_at") or "") >= str(prev.get("collected_at") or ""):
+                    latest[day] = row
+    recs: list[dict[str, Any]] = []
+    for day, row in latest.items():
+        vals: dict[str, Any] = {}
+        for actor in ACTORS:
+            b, s_, n = (row.get(f"{actor}_{side}_krw") for side in ("buy", "sell", "net"))
+            ok = all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in (b, s_, n)) \
+                and abs((b - s_) - n) <= 1_000_000
+            vals[f"{actor}_net_eok"] = round(float(n) / 1e8, 2) if ok else None
+        if vals["retail_net_eok"] is None and vals["foreign_net_eok"] is None:
+            continue
+        recs.append({"date": pd.Timestamp(day), **vals})
+    if not recs:
+        return pd.DataFrame()
+    return pd.DataFrame(recs).set_index("date").sort_index()
+
+
+def fetch_kospi_market_investor_history(*, max_days: int = 60, krx_root: Any = None) -> pd.DataFrame:
+    """KOSPI cash (stock) market 개인/외국인/기관계 순매수 (억원).
+
+    The stock-scoped KRX 12008 export in krx-month-paste when present; the
+    Naver page otherwise. Both are the same stock-only quantity.
+    """
+    if krx_root:
+        krx = load_krx_12008_kospi_flows(krx_root)
+        if not krx.empty:
+            out = krx.tail(max_days).copy()
+            out.attrs["source_key"] = "krx_12008_stock"
+            return out
+    out = _fetch_naver_kospi_market_investor_history(max_days=max_days)
+    out.attrs["source_key"] = "naver"
+    return out
+
+
+def _fetch_naver_kospi_market_investor_history(*, max_days: int = 60) -> pd.DataFrame:
+    """Naver investorDealTrendDay (stock-only). Empty since 2026-09-17."""
     import requests
     from datetime import timedelta
     from io import StringIO
@@ -556,23 +719,74 @@ def fetch_kospi_market_investor_history(*, max_days: int = 60) -> pd.DataFrame:
     return out.tail(max_days)
 
 
-def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0) -> dict[str, Any]:
-    """Infomax-style: KOSPI close level × market investor nets (억원)."""
-    import FinanceDataReader as fdr
+_NET_COLS = ("retail_net_eok", "foreign_net_eok", "institution_net_eok")
 
-    flows = fetch_kospi_market_investor_history(max_days=max_days)
+
+def _frame_from_previous(previous: dict[str, Any] | None) -> pd.DataFrame | None:
+    """The previously published stock-only days, reusable as observations."""
+    if not isinstance(previous, dict) or previous.get("quality") != "observed":
+        return None
+    if previous.get("flow_source") not in STOCK_FLOW_SOURCES:
+        return None
+    recs = []
+    for d in previous.get("days") or []:
+        try:
+            dt = pd.Timestamp(d["date"])
+            close_v = float(d["close"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        recs.append({"date": dt, "close": close_v, **{c: d.get(c) for c in _NET_COLS},
+                     "_src": previous.get("flow_source") or "naver"})
+    if not recs:
+        return None
+    return pd.DataFrame(recs).set_index("date").sort_index()
+
+
+def build_kospi_index_levels(
+    *, max_days: int = 60, step: float = 250.0, krx_root: Any = None,
+    previous: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Infomax-style: KOSPI close level × market investor nets (억원).
+
+    When today's source returns nothing (the Naver page has been empty since
+    2026-09-17), the previously published stock-only days are kept and the
+    block says how far they run, instead of blanking to "missing".
+    """
+    flows = fetch_kospi_market_investor_history(max_days=max_days, krx_root=krx_root)
+    source_key = flows.attrs.get("source_key", "naver")
+    frames: list[pd.DataFrame] = []
+    fetch_note = None
     if flows.empty:
-        return {"quality": "missing", "note_ko": "코스피 시장 수급 히스토리 없음"}
+        fetch_note = "오늘 수집 소스에서 코스피 시장 수급을 받지 못함"
+    else:
+        try:
+            import FinanceDataReader as fdr
 
-    start = (flows.index.min() - pd.Timedelta(days=5)).strftime("%Y-%m-%d")
-    idx = fdr.DataReader("KS11", start)
-    if idx is None or idx.empty:
-        return {"quality": "missing", "note_ko": "KS11 지수 없음"}
-    close = idx.rename(columns={"Close": "close", "High": "high", "Low": "low", "Open": "open"})
-    close.index = pd.to_datetime(close.index).normalize()
-    joined = flows.join(close[["open", "high", "low", "close"]], how="inner")
-    if joined.empty:
-        return {"quality": "missing", "note_ko": "지수·수급 조인 실패"}
+            start = (flows.index.min() - pd.Timedelta(days=5)).strftime("%Y-%m-%d")
+            idx = fdr.DataReader("KS11", start)
+        except Exception as exc:  # noqa: BLE001
+            idx, fetch_note = None, f"KS11 지수 조회 실패: {type(exc).__name__}"
+        if idx is not None and not idx.empty:
+            close = idx.rename(columns={"Close": "close"})
+            close.index = pd.to_datetime(close.index).normalize()
+            joined = flows.join(close[["close"]], how="inner")
+            if not joined.empty:
+                frames.append(joined[["close", *_NET_COLS]].assign(_src=source_key))
+        elif fetch_note is None:
+            fetch_note = "KS11 지수 없음"
+    prev = _frame_from_previous(previous)
+    fresh_dates = set(frames[0].index) if frames else set()
+    if prev is not None:
+        # Fresh observations win on the same date; frames[0] goes last.
+        frames.insert(0, prev)
+    if not frames:
+        return {"quality": "missing", "note_ko": fetch_note or "코스피 시장 수급 히스토리 없음",
+                "flow_source": source_key}
+    joined = pd.concat(frames)
+    joined = joined[~joined.index.duplicated(keep="last")].sort_index().tail(max_days)
+    carried_days = int(sum(1 for d in joined.index if d not in fresh_dates))
+    source_key = str(joined["_src"].iloc[-1])
+    flow_date_end = joined.index.max().strftime("%Y-%m-%d")
 
     # Psychological step bins (e.g. 250pt): floor to step
     lo = float(np.floor(joined["close"].min() / step) * step)
@@ -675,18 +889,27 @@ def build_kospi_index_levels(*, max_days: int = 60, step: float = 250.0) -> dict
     elif retail_buy:
         headline = retail_buy["label_ko"] + " (실측)"
 
+    is_krx = source_key == "krx_12008_stock"
     return {
         "schema": "kospi-index-investor-levels-v1",
         "quality": "observed",
         "bin_attribution": "daily_close_step",
-        "data_policy_ko": "실측만(네이버 시장수급·FDR KS11). demo 금지.",
+        "data_policy_ko": (
+            "실측만(KRX 12008 시장수급·FDR KS11). demo 금지." if is_krx
+            else "실측만(네이버 시장수급·FDR KS11). demo 금지."
+        ),
         "unit": "억원 (시장 전체 순매수)",
         "step": step,
         "method_ko": (
             "실측 코스피 종가(KS11) 레벨(심리적 step)에 실측 시장 개인·외인·기관 순매수(억원)를 귀속."
         ),
+        "flow_source": source_key,
+        "flow_date_end": flow_date_end,
+        "carried_forward_days": carried_days,
+        "fetch_note_ko": fetch_note,
+        "scope_ko": KOSPI_STOCK_SCOPE_KO,
         "source": [
-            "https://finance.naver.com/sise/investorDealTrendDay.naver (live)",
+            KRX_12008_STOCK_SOURCE if is_krx else "https://finance.naver.com/sise/investorDealTrendDay.naver",
             "FinanceDataReader KS11 (live)",
             "ref framing: https://news.einfomax.co.kr/news/articleView.html?idxno=4427169",
         ],
@@ -734,6 +957,8 @@ def build_investor_price_levels_report(
     kospi_top_n: int | None = 10,
     universe_mode: str = "both",
     high_vol_pool: int = 100,
+    krx_root: Any = None,
+    previous_index_levels: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """universe_mode: both | high_vol | marcap | custom(tickers). Real data only."""
     universe_meta: dict[str, Any] = {}
@@ -741,8 +966,14 @@ def build_investor_price_levels_report(
     high_vol_set: set[str] = set()
 
     if tickers is None:
+        # Both rankings must use the same observed listing. A source outage must
+        # propagate to the CLI before a reduced universe can replace the snapshot.
+        listing = _kospi_common_listing(
+            minimum_n=max(kospi_top_n or 10, high_vol_pool)
+            if universe_mode in ("high_vol", "both") else kospi_top_n or 10
+        )
         if universe_mode in ("marcap", "both"):
-            marcap_pairs = default_kospi_universe(top_n=kospi_top_n or 10)
+            marcap_pairs = default_kospi_universe(top_n=kospi_top_n or 10, listing=listing)
             marcap_set = {c for c, _ in marcap_pairs}
             universe_meta["marcap_top"] = {
                 "n": len(marcap_pairs),
@@ -755,7 +986,7 @@ def build_investor_price_levels_report(
 
         if universe_mode in ("high_vol", "both"):
             hv = high_vol_kospi_universe(
-                top_n=kospi_top_n or 10, pool=high_vol_pool
+                top_n=kospi_top_n or 10, pool=high_vol_pool, listing=listing
             )
             high_vol_pairs = list(hv["pairs"])
             high_vol_set = {c for c, _ in high_vol_pairs}
@@ -802,7 +1033,8 @@ def build_investor_price_levels_report(
             }
 
     try:
-        index_levels = build_kospi_index_levels(max_days=max(page_size, 40))
+        index_levels = build_kospi_index_levels(max_days=max(page_size, 40), krx_root=krx_root,
+                                                previous=previous_index_levels)
     except Exception as e:  # noqa: BLE001
         index_levels = {"quality": "missing", "error": f"{type(e).__name__}: {e}"}
         errors.append(f"KS11: {type(e).__name__}: {e}")
@@ -817,7 +1049,10 @@ def build_investor_price_levels_report(
         "as_of": datetime.now(timezone.utc).date().isoformat(),
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "market": "KOSPI",
-        "data_policy_ko": "무조건 실측 공개 데이터. demo/시드/합성/프록시 숫자 금지. 실패=missing.",
+        "data_policy_ko": (
+            "공개 실측 수량·가격 기반. 개별주 원화 금액은 수량×종가 추정값. "
+            "코스피 시장 순매수 금액은 출처 거래대금. demo/시드/합성 금지. 실패=missing."
+        ),
         "universe": uni_name,
         "universe_mode": universe_mode,
         "universe_n": len(tickers),
@@ -862,6 +1097,13 @@ def markdown_investor_price_levels(rep: dict[str, Any]) -> str:
     ]
     meta = rep.get("universe_meta") or {}
     hv = meta.get("high_vol_in_marcap_top") or {}
+    if hv:
+        lines.extend([hv.get("note_ko") or "", ""])
+        for exclusion in hv.get("excluded", []):
+            lines.append(f"- 제외: {exclusion['ticker']} {exclusion['label_ko']} — {exclusion['reason']}")
+        for retry in hv.get("retries", []):
+            lines.append(f"- 재시도 1회: {retry['ticker']} — {retry['final_status']}")
+        lines.append("")
     if hv.get("ranks"):
         lines.append(
             f"### 시총 {hv.get('pool')}위 내 고변동 top "
@@ -911,6 +1153,8 @@ def markdown_investor_price_levels(rep: dict[str, Any]) -> str:
 
     def _day_section(title: str, rows: list[dict[str, Any]]) -> None:
         lines.append(f"## {title}")
+        lines.append("")
+        lines.append("원화 금액은 순매수 수량×종가 추정값. 세 주체 합계는 기타법인·기타외국인을 포함하지 않음.")
         lines.append("")
         lines.append("| 종목 | 종가 | 개인(주) | 외인(주) | 기관(주) | 개인(원) | 외인(원) |")
         lines.append("|------|-----:|--------:|--------:|--------:|--------:|--------:|")

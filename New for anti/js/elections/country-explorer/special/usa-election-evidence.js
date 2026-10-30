@@ -1,0 +1,172 @@
+import { escapeHtml } from '../../ui.js';
+import { pollPresentationContext, pollPrecision, pollSummaryNote } from '../../data/poll-presentation.js';
+import { normalizeParty, pollSignal, pollSourceReady, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
+import { originLink } from './usa-candidate-context.js';
+
+const money = (cents) => {
+    if (cents == null) return '관측 없음';
+    const dollars = cents / 100;
+    if (Math.abs(dollars) >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(1)}M`;
+    if (Math.abs(dollars) >= 1_000) return `$${(dollars / 1_000).toFixed(0)}K`;
+    return `$${Math.round(dollars).toLocaleString('en-US')}`;
+};
+
+const sumObserved = (totals, categories, field) => {
+    let sum = null;
+    for (const category of categories) {
+        const value = totals?.[category]?.[field];
+        if (value != null) sum = (sum ?? 0) + value;
+    }
+    return sum;
+};
+
+export const financeEvidence = (race, contract) => {
+    if (!race) return { label: '외부 독립지출', support: null, oppose: null };
+    const governor = race.office === 'governor';
+    const categories = governor
+        ? (contract?.governor_independent_expenditure_categories || [])
+        : (contract?.federal_superpac_categories || ['super_pac']);
+    return {
+        label: governor ? (contract?.governor_label_ko || '주 공시 독립지출') : '연방 슈퍼팩 독립지출',
+        support: sumObserved(race.totals_by_category, categories, 'support_cents'),
+        oppose: sumObserved(race.totals_by_category, categories, 'oppose_cents'),
+    };
+};
+
+export const financeEvidenceHtml = (race, contract) => {
+    const evidence = financeEvidence(race, contract);
+    if (!race) return '<div class="elections-evidence-finance"><strong>외부 독립지출</strong><span>자료 연결 대기</span></div>';
+    if (race?.status === 'unsupported') return `<div class="elections-evidence-finance">
+        <strong>${escapeHtml(evidence.label)}</strong><span>주 공시 미수집</span>
+        <small>금액을 0 또는 지출 없음으로 해석할 수 없습니다.</small></div>`;
+    if (race?.status === 'not_applicable') return `<div class="elections-evidence-finance">
+        <strong>${escapeHtml(evidence.label)}</strong><span>해당 선거 없음</span></div>`;
+    return `<div class="elections-evidence-finance">
+        <strong>${escapeHtml(evidence.label)}</strong>
+        <span>후보 지지 ${escapeHtml(money(evidence.support))}</span>
+        <span>후보 반대 ${escapeHtml(money(evidence.oppose))}</span>
+        <small>캠프 후원금이 아니며, 반대 지출을 상대 지지액에 더하지 않습니다.</small>
+    </div>`;
+};
+
+const sourceLink = (url) => {
+    try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== 'https:') return '';
+        return `<a href="${escapeHtml(parsed.href)}" target="_blank" rel="noopener noreferrer">원문 ↗</a>`;
+    } catch {
+        return '';
+    }
+};
+
+const referenceReasons = {
+    party_commissioned_reference: '정당 의뢰 조사', outside_reviewed_general_period: '검토한 본선 기간 밖',
+    forced_choice_after_undecided_probe: '미정층 재질문 문항', forced_choice_question_not_comparable: '문항 비교 제한',
+    primary_sample_size_conflict: '원문 표본 수 상충', commissioner_affiliation_unverified: '의뢰자 성격 미확인',
+    historical_matchup: '과거 후보 대진',
+    methodology_incomplete_reference: '방법론 미확인', party_internal_reference: '정파 내부 조사',
+};
+export const pollAnswersHtml = (row) => {
+    const rank = (p) => normalizeParty(p) === 'DEM' ? 0 : normalizeParty(p) === 'REP' ? 1 : 2;
+    return `<div class="elections-poll-scoreboard">${[...(row.answers || [])].sort((a,b) => rank(a.party) - rank(b.party)).map((answer) => {
+        const party = normalizeParty(answer.party);
+        const label = party === 'REP' ? 'GOP' : party || '기타·정당 미확인';
+        const primary = row.source_quality?.primary_toplines;
+        const unchecked = primary && primary[answer.canonical_name || answer.name] !== answer.pct;
+        return `<div class="elections-poll-score ${party === 'DEM' ? 'is-dem' : party === 'REP' ? 'is-gop' : 'is-other'}"><small>${escapeHtml(label)}</small><strong>${escapeHtml(answer.name)}</strong><b>${Number.isFinite(answer.pct) && answer.pct >= 0 && answer.pct <= 100 ? escapeHtml(answer.pct) + '%' : '수치 미확인'}</b>${unchecked ? '<small class="elections-primary-unchecked">API 전달값 · 원문 수치 미대조</small>' : ''}</div>`;
+    }).join('')}</div>`;
+};
+export const observationHtml = (row) => {
+    const sponsorNames = row.commissioning?.sponsors || row.sponsors || [];
+    const sponsors = sponsorNames.length ? ` · 의뢰 ${sponsorNames.join(', ')}` : '';
+    const reference = row.aggregation_eligibility?.eligible === false;
+    const quality = row.source_quality;
+    const review = quality?.verification_level === 'primary_toplines_checked' ? '원문 수치 대조' : quality?.label_ko || '수집 출처 기록 · 원문 추가 검토 전';
+    const method = quality?.methodological_quality === 'unrated' ? ' · 정확도 미등급' : '';
+    const exclusions = reference ? ` · 참고 전용: ${(row.aggregation_eligibility.reasons || []).map((reason) => referenceReasons[reason] || '집계 제외 · 출처 검토 메모').join(', ')}` : '';
+    const precision = pollPrecision(row);
+    const checkedSources = [...new Set((quality?.review_sources || []).map((s) => typeof s === 'string' ? s : s?.url || s?.source_url).filter(Boolean))].slice(0,10);
+    const origins = checkedSources.map((url, i) => originLink(url, `검토 원문${checkedSources.length > 1 ? ` ${i+1}` : ''} ↗`)).join(' ');
+    return `<li class="elections-poll-observation${reference ? ' is-reference' : ''}">${pollAnswersHtml(row)}
+        <small>${escapeHtml(row.pollster || '조사기관 미기재')} · ${escapeHtml(row.field_start || '')}~${escapeHtml(row.field_end || '')}
+        · ${escapeHtml((row.population || '').toUpperCase())} · n=${escapeHtml(row.sample_n ?? '?')}${escapeHtml(sponsors)}</small>
+        <small>${escapeHtml(review + method + exclusions)} · ${precision ? `후보별 표본오차 ±${escapeHtml(precision.halfWidth)}%p` : '해당 문항 표본오차 미확인'}</small>
+        <small class="elections-origin-links">${origins}${!checkedSources.includes(row.source_url) ? originLink(row.source_url, '수집에 기록된 출처 ↗') : ''}${row.methodology_url && !checkedSources.includes(row.methodology_url) ? originLink(row.methodology_url, '방법론 ↗') : ''}${quality?.reviewed_on ? `<span>원문 검토 ${escapeHtml(quality.reviewed_on)}</span>` : ''}</small>
+        ${quality?.limitations_ko ? `<details class="elections-disclosure"><summary>이 조사의 검토 범위</summary><p>${escapeHtml(quality.limitations_ko)}</p></details>` : ''}</li>`;
+};
+
+export const latestAdmittedPoll = (race, now = Date.now()) => {
+    if (race?.phase !== 'pre_election' || raceClosedByDate(race,now) || race.schedule_status !== 'reported_general_matchup') return null;
+    const rows = (race.observations || []).filter((row) => row.aggregation_eligibility?.eligible === true
+        && ['primary_toplines_checked','partial'].includes(row.source_quality?.verification_level)
+        && row.display_group === 'general' && row.contest_id === race.contest_id
+        && /^\d{4}-\d{2}-\d{2}$/.test(row.field_end || '') && row.field_end <= new Date(now).toISOString().slice(0,10)
+        && (race.required_candidates || []).every((n) => row.answers?.some((a) => a.name === n))
+        && row.answers?.length >= 2 && row.answers.every((a) => Number.isFinite(a.pct) && a.pct >= 0 && a.pct <= 100));
+    return rows.filter((r) => !rows.some((other) => other.pollster_group === r.pollster_group && other.field_end === r.field_end
+        && JSON.stringify([...other.answers].sort((a,b)=>a.name.localeCompare(b.name))) !== JSON.stringify([...r.answers].sort((a,b)=>a.name.localeCompare(b.name)))))
+        .sort((a,b) => b.field_end.localeCompare(a.field_end) || (b.source_quality.verification_level === 'primary_toplines_checked') - (a.source_quality.verification_level === 'primary_toplines_checked') || String(a.id).localeCompare(String(b.id)))[0] || null;
+};
+export const latestPollHtml = (race, board, health, now = Date.now()) => {
+    if (race?.phase === 'certified_result' || race?.phase === 'awaiting_certified_result' || raceClosedByDate(race,now)) return '';
+    const context = pollPresentationContext(board,health,now);
+    const row = latestAdmittedPoll(race,context.available ? context.now : now);
+    const stale = !pollSourceReady(board,health,now);
+    return `<div class="elections-latest-poll"><strong>보유 조사 중 최신 채택 자료${stale ? ' · 갱신 대기' : ''}</strong>
+        ${row ? observationHtml(row).replace(/^<li/, '<div').replace(/<\/li>$/, '</div>') + '<small>최신 보유 조사이며 오늘 발표된 조사라는 뜻은 아닙니다. 기관 정확도·당선 확률은 별도 평가하지 않았습니다.</small>' : '<span>검증·집계 조건을 충족한 본선 조사 미연결</span>'}</div>`;
+};
+
+const statusLabel = {
+    poll_lead: '복수 기관 조사상 우세', single_poll_lead: '단일 기관 수치상 앞섬 · 참고', no_recent_poll: '최근 조사 없음',
+    insufficient_pollsters: '독립 조사기관 부족', tie: '조사 우세 동률',
+    unknown_leader_party: '우세 정당 확인 대기', stale: '수집 자료 갱신 대기',
+    unavailable: '여론조사 데이터 연결 대기', awaiting_certified_result: '선거 종료 · 공식 결과 대기',
+    certified_result: '공식 확정 결과', election_closed: '선거 종료',
+};
+
+export const pollEvidenceHtml = (race, board, health, days = 7, { now = Date.now(), showLatest = true } = {}) => {
+    const signal = pollSignal(race, board, health, days, now);
+    const observations = race?.phase === 'pre_election' && signal.status !== 'awaiting_certified_result'
+        && signal.status !== 'certified_result' ? (race.observations || []) : [];
+    const hasPoll = observations.length > 0;
+    const summary = hasPoll ? pollSummaryNote(race, pollPresentationContext(board, health, now), days) : null;
+    const name = signal.leader ? ` · ${signal.leader}` : '';
+    const party = normalizeParty(signal.party);
+    const partyLabel = party === 'DEM' ? '민주' : party === 'REP' ? '공화' : '';
+    const counts = signal.window?.pollster_count
+        ? ` · 독립 기관 ${signal.window.pollster_count}곳` : '';
+    const leads = Object.entries(signal.window?.lead_counts || {});
+    const leadCountText = leads.length ? `조사별 우세 횟수: ${leads.map(([candidate, count]) => `${candidate} ${count}회`).join(' · ')}${signal.window?.tie_count ? ` · 동률 ${signal.window.tie_count}회` : ''}` : '';
+    const coverage = board?.monitoring?.race_coverage?.[race?.race_id];
+    const coverageLabel = !coverage ? '' : !coverage.matchup_reviewed ? '여론조사 후보 대진 대조 대기 · 새 조사 자동 채택 보류'
+        : coverage.status === 'no_provider_record' ? '현재 수집 API 미발견 · 조사 자체의 부재를 뜻하지 않음'
+        : coverage.status === 'review_required' ? '발견한 조사 출처·문항 검토 대기' : '';
+    const note = race?.schedule_status === 'watch_slot_unverified' && !hasPoll
+        ? '<small>선거 일정·본선 대진 확인 전 감시 슬롯입니다. 이 목록만으로 실제 선거를 뜻하지 않습니다.</small>' : '';
+    return `<div class="elections-evidence-poll">
+        <strong>여론조사 · 최근 ${days}일</strong>
+        <span class="${partyLabel ? (party === 'DEM' ? 'is-dem' : 'is-gop') : ''}">
+            ${escapeHtml(statusLabel[signal.status] || signal.status)}
+            ${partyLabel ? ` · ${partyLabel}` : ''}${escapeHtml(name + counts)}
+        </span>
+        ${signal.status === 'certified_result' ? `<small>확정 ${escapeHtml(race?.result?.certified_on || '')} ${sourceLink(race?.result?.source_url)}</small>` : ''}
+        ${leadCountText ? `<small>${escapeHtml(leadCountText)}</small>` : ''}
+        ${summary ? `<p class="elections-panel-note" data-poll-summary-status="${escapeHtml(summary.status)}"><strong>${escapeHtml(summary.label)}</strong><br>${escapeHtml(summary.detail)}</p>` : ''}
+        ${showLatest ? latestPollHtml(race, board, health, now) : ''}
+        ${note}
+        ${coverageLabel ? `<small>${escapeHtml(coverageLabel)}</small>` : ''}
+        ${signal.window?.status_note_ko ? `<small>${escapeHtml(signal.window.status_note_ko)}</small>` : ''}
+        ${hasPoll ? `<details class="elections-disclosure">
+            <summary>누적 조사 ${observations.length}건 보기</summary>
+            <ol class="elections-poll-observations">${[...observations].sort((a,b) => String(b.field_end).localeCompare(String(a.field_end)) || String(a.id).localeCompare(String(b.id))).map(observationHtml).join('')}</ol>
+            <small>원문 대조·자동 수입·참고 전용을 조사별로 구분합니다. 참고 전용 자료는 우세 횟수에서 제외하며, 단일 조사와 수치상 격차를 당선확률로 해석하지 않습니다.</small>
+        </details>` : ''}
+    </div>`;
+};
+
+export const raceLabel = (race) => {
+    if (!race) return '선거 미확인';
+    const office = race.office === 'house' ? `하원 ${Number(race.district)}구`
+        : race.office === 'senate' ? '상원' : '주지사';
+    return `${race.state} · ${office}`;
+};

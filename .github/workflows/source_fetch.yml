@@ -1,0 +1,58 @@
+name: Source fetch for manual review
+
+# The cloud agent sandbox only reaches an allowlist of hosts, so publisher
+# pages (Cook ratings, poll releases) are fetched here and pushed to a
+# throwaway review branch. Never main: nothing is deployed or published.
+# Reviewers read the files and cite receipts.json in their own input PRs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: Whitespace-separated https URLs
+        required: true
+        type: string
+      label:
+        description: Short label for the review branch (a-z, 0-9, -)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: source-fetch-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install headless browser
+        run: |
+          python3 -m pip install --quiet playwright==1.47.0
+          python3 -m playwright install --with-deps chromium
+      - name: Fetch
+        env:
+          URLS: ${{ inputs.urls }}
+          LABEL: ${{ inputs.label }}
+        run: |
+          case "$LABEL" in (*[!a-z0-9-]*|'') echo "invalid label"; exit 1;; esac
+          python3 tools/ops/fetch_sources.py --urls "$URLS" --out "source_fetch/$LABEL"
+      - name: Push review branch
+        env:
+          LABEL: ${{ inputs.label }}
+        run: |
+          branch="source-fetch/${LABEL}-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898281+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add "source_fetch/$LABEL"
+          git commit -m "source fetch: $LABEL (run $GITHUB_RUN_ID)"
+          git push origin "$branch"
+          echo "branch=$branch" >> "$GITHUB_STEP_SUMMARY"

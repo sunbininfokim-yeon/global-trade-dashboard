@@ -1,0 +1,511 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "MS",
+  "cycle": 2026,
+  "source_ref": "codex/poll-national-source-coverage-20261018",
+  "source_commit": "52546e0a14efb5189dccaa93f92e849bf30480e0",
+  "config_operations": [
+    {
+      "file": "usa_polls/ballot_reviews_2026.json",
+      "path": [
+        "races",
+        "USA:MS:senate"
+      ],
+      "action": "set",
+      "before_exists": true,
+      "before_sha256": "14a53edbeba3621bd1b987c2cee16a095dfa9fd5f89d198d1b5a419d3e679516",
+      "value": {
+        "race_id": "USA:MS:senate",
+        "state": "MS",
+        "office": "senate",
+        "district": null,
+        "election_date": "2026-11-03",
+        "status": "reported_general_matchup",
+        "coverage": "official_sample_ballot_named_candidates",
+        "reviewed_on": "2026-10-18",
+        "source_url": "https://sos.ms.gov/content/documents/Elections/2026/Sample%20Ballot%209-9-26.pdf",
+        "candidates": [
+          {
+            "name": "Scott Colom",
+            "party": "DEM",
+            "source_url": "https://sos.ms.gov/content/documents/Elections/2026/Sample%20Ballot%209-9-26.pdf",
+            "candidate_id": null,
+            "ballot_access": "official_sample_ballot_named_candidate"
+          },
+          {
+            "name": "Cindy Hyde-Smith",
+            "party": "REP",
+            "source_url": "https://sos.ms.gov/content/documents/Elections/2026/Sample%20Ballot%209-9-26.pdf",
+            "candidate_id": null,
+            "ballot_access": "official_sample_ballot_named_candidate"
+          },
+          {
+            "name": "Ty Pinkins",
+            "party": "IND",
+            "source_url": "https://sos.ms.gov/content/documents/Elections/2026/Sample%20Ballot%209-9-26.pdf",
+            "candidate_id": null,
+            "ballot_access": "official_sample_ballot_named_candidate"
+          }
+        ],
+        "source_role": "official_sample_ballot",
+        "limitations_ko": "주 선거당국 견본 투표용지의 상원 후보를 확인. 결과 인증·전국 모든 기명후보 완결을 뜻하지 않음. 웹 도구로 원문 확인; 직접 HTTP403과 구분."
+      }
+    },
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "MS",
+        "reviewed_on": "2026-10-21",
+        "record_sha256": "805e012a5158c2fb59024e7c7c17871ea2c308c99ba38cc50cbcf6a1478eebf1",
+        "record": {
+          "id": "primary-dfp-ms-senate-20260815",
+          "subject": "2026 Mississippi",
+          "poll_type": "us-senator",
+          "pollster": "Data for Progress",
+          "url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+          "start_date": "2026-08-05",
+          "end_date": "2026-08-15",
+          "created_at": "2026-08-28",
+          "population": "lv",
+          "sample_size": 1018,
+          "sponsors": [
+            "Way to Lead PAC",
+            "Democracy Alliance",
+            "Democracy Strategy Partners"
+          ],
+          "partisan": "DEM",
+          "internal": false,
+          "seat_name": null,
+          "answers": [
+            {
+              "choice": "Scott Colom",
+              "pct": 38
+            },
+            {
+              "choice": "Cindy Hyde-Smith",
+              "pct": 44
+            },
+            {
+              "choice": "Ty Pinkins",
+              "pct": 7
+            }
+          ]
+        },
+        "documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+            "sha256": "7c7e34816f6dd351f014cdcfcc1e6170caec5187e1e7ac670fcf431097eab649"
+          }
+        ],
+        "same_wave_separate_question_reviews": [
+          {
+            "id": "us-202dat084dfba9",
+            "reason": "different_initial_ballot_question",
+            "provider_snapshot_sha256": "9eb4bebbb5d36c2e7b49c8e1457e024e90fb56dce414054d2e51e9eae8a58d05",
+            "primary_record_sha256": "805e012a5158c2fb59024e7c7c17871ea2c308c99ba38cc50cbcf6a1478eebf1",
+            "reviewed_on": "2026-10-21",
+            "wave_id": "ms-dfp-20260805-20260815",
+            "primary_question": "Q3 initial three-candidate Senate ballot, PDF p4",
+            "question": "Q4 initial two-candidate Senate ballot, PDF p5",
+            "primary_ballot_format": "initial_named_multicandidate",
+            "provider_ballot_format": "initial_named_two_candidate",
+            "source_document": {
+              "url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+              "sha256": "7c7e34816f6dd351f014cdcfcc1e6170caec5187e1e7ac670fcf431097eab649"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-dfp-ms-senate-20260815"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-21",
+        "provider_record_sha256": "805e012a5158c2fb59024e7c7c17871ea2c308c99ba38cc50cbcf6a1478eebf1",
+        "primary_supplement_record_sha256": "805e012a5158c2fb59024e7c7c17871ea2c308c99ba38cc50cbcf6a1478eebf1",
+        "snapshot_sha256": "b7be4b077073d3d0d259453ad0aba8b05b213a67d73b9dd2341547158c25d081",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+          "https://chartingthewayforward.substack.com/p/research-release-fresh-polling-from"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+            "sha256": "7c7e34816f6dd351f014cdcfcc1e6170caec5187e1e7ac670fcf431097eab649"
+          }
+        ],
+        "primary_toplines": {
+          "Scott Colom": 38,
+          "Cindy Hyde-Smith": 44,
+          "Ty Pinkins": 7
+        },
+        "question_sample_n": 1018,
+        "reported_precision": {
+          "kind": "margin_of_error",
+          "half_width_pp": 3.0
+        },
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 1018,
+          "field_dates": [
+            "2026-08-05",
+            "2026-08-15"
+          ],
+          "mode": "SMS_live_caller_web_panel",
+          "weighting": "age_gender_education_race_geography_recalled_presidential_vote",
+          "language": "English",
+          "question_wording_checked": true,
+          "question": "Q3 initial named three-candidate Senate vote intention",
+          "not_sure_refused_pct": 11,
+          "excluded_same_wave_forced_pair": {
+            "Scott Colom": 41,
+            "Cindy Hyde-Smith": 47
+          },
+          "commissioner": [
+            "Way to Lead PAC",
+            "Democracy Alliance",
+            "Democracy Strategy Partners"
+          ],
+          "publication_date": "2026-08-28",
+          "created_at_basis": "publisher dated release; review date kept separately",
+          "memo_dated_on": "2026-08-24",
+          "wave_id": "ms-dfp-20260805-20260815",
+          "question_number": "Q3",
+          "question_document_page": 4
+        },
+        "ballot_format": "initial_named_multicandidate_vote_intention",
+        "sponsor_review": {
+          "primary_internal": false,
+          "primary_commissioners": [
+            "Way to Lead PAC",
+            "Democracy Alliance",
+            "Democracy Strategy Partners"
+          ],
+          "provider_partisan": "DEM",
+          "source_url": "https://chartingthewayforward.substack.com/p/research-release-fresh-polling-from"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+          "group": "data_for_progress",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "historical_reference"
+          ],
+          "allow_historical_reference": true,
+          "allow_partisan_reference": true,
+          "reviewed_partisan": "DEM",
+          "reviewed_sponsors": [
+            "Way to Lead PAC",
+            "Democracy Alliance",
+            "Democracy Strategy Partners"
+          ]
+        },
+        "limitations_ko": "8월 동일 파동의 초기3자 Q3. 초기양자 Q4와 정보제공 후 문항은 별도이며 최신7/14일·당선확률·2개 독립조사로 사용하지 않음."
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "us-202dat084dfba9"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-21",
+        "provider_record_sha256": "9eb4bebbb5d36c2e7b49c8e1457e024e90fb56dce414054d2e51e9eae8a58d05",
+        "snapshot_sha256": "ca9f251b52e4862fce29fee637b4c71a59910326a5a43c2f4075972127541352",
+        "sources": [
+          "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+          "https://chartingthewayforward.substack.com/p/research-release-fresh-polling-from"
+        ],
+        "primary_documents": [
+          {
+            "url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+            "sha256": "7c7e34816f6dd351f014cdcfcc1e6170caec5187e1e7ac670fcf431097eab649"
+          }
+        ],
+        "primary_toplines": {
+          "Cindy Hyde-Smith": 47.0,
+          "Scott Colom": 41.0
+        },
+        "question_sample_n": 1018,
+        "reported_precision": {
+          "kind": "margin_of_error",
+          "half_width_pp": 3.0
+        },
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 1018,
+          "field_dates": [
+            "2026-08-05",
+            "2026-08-15"
+          ],
+          "mode": "SMS_live_caller_web_panel",
+          "weighting": "age_gender_education_race_geography_recalled_presidential_vote",
+          "language": "English",
+          "question_wording_checked": true,
+          "question": "Initial named two-candidate Senate ballot; Ty Pinkins omitted",
+          "not_sure_refused_pct": 11,
+          "excluded_same_wave_forced_pair": {
+            "Scott Colom": 41,
+            "Cindy Hyde-Smith": 47
+          },
+          "commissioner": [
+            "Way to Lead PAC",
+            "Democracy Alliance",
+            "Democracy Strategy Partners"
+          ],
+          "publication_date": "2026-08-28",
+          "created_at_basis": "publisher dated release; review date kept separately",
+          "memo_dated_on": "2026-08-24",
+          "wave_id": "ms-dfp-20260805-20260815",
+          "question_number": "Q4",
+          "question_document_page": 5,
+          "provider_record_date_preserved": "2026-08-29"
+        },
+        "ballot_format": "initial_named_two_candidate_omits_ballot_minor_candidate",
+        "sponsor_review": {
+          "primary_internal": false,
+          "primary_commissioners": [
+            "Way to Lead PAC",
+            "Democracy Alliance",
+            "Democracy Strategy Partners"
+          ],
+          "provider_partisan": "DEM",
+          "source_url": "https://chartingthewayforward.substack.com/p/research-release-fresh-polling-from"
+        },
+        "admission": {
+          "pollster": "Data for Progress",
+          "provider_url": "https://chartingthewayforward.substack.com/p/research-release-fresh-polling-from",
+          "methodology_url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+          "group": "data_for_progress",
+          "source_role": "pollster_primary",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "historical_reference",
+            "two_candidate_question_omits_reviewed_minor_candidate"
+          ],
+          "allow_historical_reference": true,
+          "allow_partisan_reference": true,
+          "reviewed_partisan": "DEM",
+          "reviewed_sponsors": [
+            "Way to Lead PAC"
+          ]
+        },
+        "limitations_ko": "Q4 양자 문항은 원문 대조했지만 현행 본선 제3후보가 없어 normalize 전체후보 검사에서 보류. API 원래 발표일·의뢰자 표기는 보존."
+      }
+    },
+    {
+      "file": "usa_polls/live_2026.json",
+      "path": [
+        "excluded_records",
+        "us-202dat084dfba9"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": "reviewed_initial_two_candidate_question_omits_ballot_minor_candidate"
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-21",
+    "fetched_at": "2026-10-21T11:38:30.434498+00:00",
+    "receipt": {
+      "state": "MS",
+      "cycle": 2026,
+      "captured_at": "2026-10-21T11:38:30.434498+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-21",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "new_provider_collection": true,
+      "provider_records": 3,
+      "new_primary_document_checked_at": "2026-10-18T22:36:50.356810+00:00",
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-dfp-ms-senate-20260815",
+          "state": "MS",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-21",
+          "checked_at": "2026-10-21T11:38:38.016536+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+              "status": "unchanged",
+              "sha256": "7c7e34816f6dd351f014cdcfcc1e6170caec5187e1e7ac670fcf431097eab649"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "us-202dat084dfba9"
+          ]
+        }
+      ],
+      "serialized_provider_response_sha256": "230c3316fa94b9083c3a99a411fb71d2b9b7a107f5bafb1a32a82ac174ecc789",
+      "federal_finance_recollected": false,
+      "prior_capture_receipt": {
+        "state": "MS",
+        "cycle": 2026,
+        "captured_at": "2026-10-18T16:20:04.208175+00:00",
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-18",
+        "capture_kind": "saved_provider_replay_with_new_primary_document_review",
+        "new_provider_collection": false,
+        "provider_records": 3,
+        "new_primary_document_checked_at": "2026-10-18T22:36:50.356810+00:00"
+      }
+    },
+    "provider_records": [
+      {
+        "id": "us-202imp28c38a71",
+        "poll_type": "us-senator",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://www.splcactionfund.org/wp-content/uploads/sites/2/2026/04/2026-04-IMPACT-Baseline-MS-Statewide-Senate-GE-Bench-Apr-2026.pdf",
+        "created_at": "2026-04-21",
+        "start_date": "2026-04-08",
+        "end_date": "2026-04-12",
+        "pollster": "Impact Research",
+        "answers": [
+          {
+            "choice": "Scott Colom",
+            "pct": 44.0
+          },
+          {
+            "choice": "Cindy Hyde-Smith",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "SPLC Action Fund"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Mississippi"
+      },
+      {
+        "id": "us-202weda6e4ad64",
+        "poll_type": "us-senator",
+        "sample_size": 511,
+        "population": "lv",
+        "url": "https://drive.google.com/file/d/16nLOQEszQimue_N2O6G42brKUXopDLcu/view",
+        "created_at": "2026-10-15",
+        "start_date": "2026-10-12",
+        "end_date": "2026-10-14",
+        "pollster": "Wedgewood Polls",
+        "answers": [
+          {
+            "choice": "Cindy Hyde-Smith",
+            "pct": 52.0
+          },
+          {
+            "choice": "Scott Colom",
+            "pct": 48.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Mississippi"
+      },
+      {
+        "id": "us-202dat084dfba9",
+        "poll_type": "us-senator",
+        "sample_size": 1018,
+        "population": "lv",
+        "url": "https://chartingthewayforward.substack.com/p/research-release-fresh-polling-from",
+        "created_at": "2026-08-29",
+        "start_date": "2026-08-05",
+        "end_date": "2026-08-15",
+        "pollster": "Data for Progress",
+        "answers": [
+          {
+            "choice": "Cindy Hyde-Smith",
+            "pct": 47.0
+          },
+          {
+            "choice": "Scott Colom",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Way to Lead PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Mississippi"
+      }
+    ],
+    "provider_records_sha256": "69b79a9b7c66b7026d8ebd08f68c2467052096ce73f17da3171980f67fceba6b",
+    "primary_records": [
+      {
+        "id": "primary-dfp-ms-senate-20260815",
+        "subject": "2026 Mississippi",
+        "poll_type": "us-senator",
+        "pollster": "Data for Progress",
+        "url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+        "start_date": "2026-08-05",
+        "end_date": "2026-08-15",
+        "created_at": "2026-08-28",
+        "population": "lv",
+        "sample_size": 1018,
+        "sponsors": [
+          "Way to Lead PAC",
+          "Democracy Alliance",
+          "Democracy Strategy Partners"
+        ],
+        "partisan": "DEM",
+        "internal": false,
+        "seat_name": null,
+        "answers": [
+          {
+            "choice": "Scott Colom",
+            "pct": 38
+          },
+          {
+            "choice": "Cindy Hyde-Smith",
+            "pct": 44
+          },
+          {
+            "choice": "Ty Pinkins",
+            "pct": 7
+          }
+        ],
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-21",
+          "checked_at": "2026-10-21T11:38:38.016536+00:00",
+          "documents": [
+            {
+              "url": "https://www.filesforprogress.org/datasets/2026/8/dfp_ms_ge26_aug2026_crosstabs.pdf",
+              "status": "unchanged",
+              "sha256": "7c7e34816f6dd351f014cdcfcc1e6170caec5187e1e7ac670fcf431097eab649"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": [
+            "us-202dat084dfba9"
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -31,10 +31,14 @@ jobs:
         run: |
           python -m russia.run_forecast
 
-      - name: Rebuild models if USDA published a new season
+      - name: Rebuild models if a new season was published
         working-directory: "New for anti/scripts/yield_model"
         run: |
           set -e
+          # Oblast labels come from tochno.st's republication of Rosstat
+          # (rosstat.gov.ru itself is geo-blocked). A failed fetch keeps the
+          # committed CSVs rather than failing the forecast.
+          python -m russia.tochno || echo "tochno.st refresh failed; keeping committed oblast labels"
           if [ ! -f russia/training/russia_winter_wheat.csv ]; then
             echo "no training table yet — first-time collect + train"
             python -m russia.collect
@@ -43,14 +47,17 @@ jobs:
             exit 0
           fi
           LATEST_TRAINED=$(python -c "import pandas as pd; d=pd.read_csv('russia/training/russia_winter_wheat.csv').dropna(subset=['target']); print(int(d.year.max()))")
+          # Collectors log to stdout; keep only the printed year.
           LATEST_PUBLISHED=$(python -c "
           import os, russia.labels as L
           p = os.path.join(L.CACHE, 'psd_grains_russia.csv')
           if os.path.exists(p):
               os.remove(p)
           print(int(L.psd_yield_kg_ha('Wheat').year.max()))
-          ")
-          echo "trained through $LATEST_TRAINED, USDA published through $LATEST_PUBLISHED"
+          " | tail -n 1)
+          OBLAST_PUBLISHED=$(python -c "import pandas as pd; print(int(pd.read_csv('russia/training/oblast_yields.csv').year.max()))")
+          if [ "$OBLAST_PUBLISHED" -gt "$LATEST_PUBLISHED" ]; then LATEST_PUBLISHED=$OBLAST_PUBLISHED; fi
+          echo "trained through $LATEST_TRAINED, published through $LATEST_PUBLISHED (USDA or oblast)"
           if [ "$LATEST_PUBLISHED" -gt "$LATEST_TRAINED" ]; then
             echo "new season published — rebuilding"
             python -m russia.collect
@@ -68,4 +75,11 @@ jobs:
                   "New for anti/scripts/yield_model/russia/training" \
                   "New for anti/scripts/yield_model/russia/models"
           git commit -m "chore: weekly Russia winter-wheat yield forecast refresh" || exit 0
+          # Non-fast-forward race: a bare push drops this refresh when another
+          # scheduled job lands a commit on main first. Rebase and retry.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push

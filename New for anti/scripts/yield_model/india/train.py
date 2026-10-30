@@ -41,6 +41,7 @@ import pandas as pd
 from sklearn.linear_model import RidgeCV
 from sklearn.preprocessing import StandardScaler
 
+from brazil.train import nested_selection
 from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -148,6 +149,28 @@ def evaluate(y_true, y_pred, baseline):
             "recent_trend_bias": trend_bias}
 
 
+# Evidence floor for calling a model usable (same rule as russia.train):
+# Vidarbha cotton scored +47% on five forward folds, which is noise.
+MIN_FORWARD_FOLDS = 8
+SEASONS_PER_FEATURE = 5
+
+
+def window_rows(years, mask, degree, window):
+    """
+    Narrow a training mask to the rows the trend was actually fitted to.
+
+    Port of brazil.train.window_rows (2026-08-03): residuals against a
+    trailing-window trend computed over the whole record carry a non-zero
+    mean, and RidgeCV's intercept takes it as a free level correction that
+    scores as skill against a baseline that never received it.
+    """
+    if not window:
+        return mask
+    cutoff = years[mask].max() - window + 1
+    narrowed = mask & (years >= cutoff)
+    return narrowed if narrowed.sum() >= max(degree + 2, 8) else mask
+
+
 def run_cv(df, features, mode, degree, window, min_train):
     years = df.year.values.astype(float)
     yields = df.yield_kg_ha.values.astype(float)
@@ -167,10 +190,11 @@ def run_cv(df, features, mode, degree, window, min_train):
         trend = fit_trend(years[train], yields[train], degree, window)
         X = prepare(df, features, years, trend)
 
-        resid_train = np.log(yields[train]) - trend(years[train])
+        fit = window_rows(years, train, degree, window)
+        resid_train = np.log(yields[fit]) - trend(years[fit])
 
-        scaler = StandardScaler().fit(X[train])
-        model = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[train]), resid_train)
+        scaler = StandardScaler().fit(X[fit])
+        model = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[fit]), resid_train)
         pred = float(model.predict(scaler.transform(X[i:i + 1]))[0])
 
         preds.append(float(np.exp(trend(target) + pred)))
@@ -236,6 +260,7 @@ def train_one(cfg):
             f"{', '.join(dropped)}")
 
     results = {}
+    paths = {}   # forward key -> {year: (truth, pred, trend)}
     sets = [("all", candidates)]
     if core:
         sets.append(("core", core))
@@ -248,6 +273,9 @@ def train_one(cfg):
                     continue
                 truth, pred, base, yrs = out
                 key = f"{label}_{tlabel}_{mode}"
+                if mode == "forward":
+                    paths[key] = {y: (t, pr, b) for y, t, pr, b
+                                  in zip(yrs, truth, pred, base)}
                 results[key] = evaluate(truth, pred, base)
                 results[key]["n"] = len(truth)
                 results[key]["years"] = [yrs[0], yrs[-1]]
@@ -292,11 +320,41 @@ def train_one(cfg):
 
     trend = fit_trend(df.year.values, df.yield_kg_ha.values, degree, window)
 
-    recent_skill = (1 - best["recent_rmse"] / best_baseline_recent
-                    if best_baseline_recent > 0 else float("nan"))
-    full_skill = (1 - best["rmse"] / best_baseline
-                  if best_baseline > 0 else float("nan"))
+    # Skill from nested selection (see brazil/train.py): each season is
+    # forecast by the combination that scored best on the seasons before it,
+    # so picking the winner on the test years no longer inflates the number.
+    in_sample = {
+        "full_skill": float(1 - best["rmse"] / best_baseline
+                            if best_baseline > 0 else float("nan")),
+        "recent_skill": float(1 - best["recent_rmse"] / best_baseline_recent
+                              if best_baseline_recent > 0 else float("nan")),
+    }
+    nested = nested_selection(paths, baseline_form)
+    if nested is not None:
+        honest = evaluate(*nested["arrays"])
+        full_skill = 1 - honest["rmse"] / honest["baseline_rmse"]
+        recent_skill = 1 - honest["recent_rmse"] / honest["recent_baseline_rmse"]
+        best_baseline_recent = honest["recent_baseline_rmse"]
+        model_recent_rmse = honest["recent_rmse"]
+        log(f"  nested selection over {len(nested['years'])} seasons: "
+            f"{full_skill:+.1%} all, {recent_skill:+.1%} recent "
+            f"(in-sample pick: {in_sample['full_skill']:+.1%}, "
+            f"{in_sample['recent_skill']:+.1%})")
+    else:
+        full_skill, recent_skill = in_sample["full_skill"], in_sample["recent_skill"]
+        model_recent_rmse = best["recent_rmse"]
     beats_trend = full_skill > 0 and recent_skill > 0
+    raw_beats_trend = bool(beats_trend)
+    thin_evidence = []
+    if n_folds < MIN_FORWARD_FOLDS:
+        thin_evidence.append(f"{n_folds} forward folds < {MIN_FORWARD_FOLDS}")
+    if len(best_feats) > len(df) // SEASONS_PER_FEATURE:
+        thin_evidence.append(f"{len(best_feats)} features > {len(df)} seasons / "
+                             f"{SEASONS_PER_FEATURE}")
+    if thin_evidence and beats_trend:
+        log("  NOTE: positive skill on thin evidence ("
+            + "; ".join(thin_evidence) + ") — not usable.")
+        beats_trend = False
 
     # Isolate the weather contribution where non-weather features are present.
     nw_feats = [f for f in best_feats if f in NON_WEATHER_FEATURES]
@@ -306,7 +364,7 @@ def train_one(cfg):
         if nw is not None:
             nw_eval = evaluate(nw[0], nw[1], nw[2])
             nw_rmse = min(nw_eval["recent_rmse"], best_baseline_recent)
-            weather_skill = (1 - best["recent_rmse"] / nw_rmse
+            weather_skill = (1 - model_recent_rmse / nw_rmse
                              if nw_rmse > 0 else float("nan"))
             log(f"  vs trend+lags baseline (weather's own contribution): "
                 f"{weather_skill:+.1%}")
@@ -333,13 +391,14 @@ def train_one(cfg):
     # Final fit on every season, for forecasting the live one.
     years = df.year.values.astype(float)
     X = prepare(df, best_feats, years, trend)
-    scaler = StandardScaler().fit(X)
-    resid = np.log(df.yield_kg_ha.values) - trend(years)
-    final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X), resid)
+    fit = window_rows(years, np.ones(len(years), dtype=bool), degree, window)
+    scaler = StandardScaler().fit(X[fit])
+    resid = np.log(df.yield_kg_ha.values[fit]) - trend(years[fit])
+    final = RidgeCV(alphas=ALPHAS).fit(scaler.transform(X[fit]), resid)
 
     # Uncertainty from out-of-sample error, never in-sample. Where the model
     # loses to the trend, the honest band is the trend's own error.
-    sigma = best["recent_rmse"] if beats_trend else best_baseline_recent
+    sigma = model_recent_rmse if beats_trend else best_baseline_recent
 
     # Coefficients are log-space effects of a one-standard-deviation move;
     # exp() - 1 turns them into the percentage yield change, which is the form
@@ -378,9 +437,18 @@ def train_one(cfg):
                   "coef": final.coef_.tolist(),
                   "intercept": float(final.intercept_)},
         "beats_trend": bool(beats_trend),
+        "raw_beats_trend": raw_beats_trend,
+        "thin_evidence": thin_evidence,
         "recent_skill_vs_trend": float(recent_skill),
         "skill_vs_best_trend": float(full_skill),
         "best_trend_baseline_rmse": float(best_baseline),
+        "skill_basis": "nested" if nested is not None else "in_sample",
+        "nested": (None if nested is None else {
+            "n": len(nested["years"]),
+            "years": [nested["years"][0], nested["years"][-1]],
+            "picks": nested["picks"],
+        }),
+        "skill_in_sample": in_sample,
         "weather_skill": float(weather_skill),
         "non_weather_features": nw_feats,
         "trend_plus_lags_rmse": nw_rmse,

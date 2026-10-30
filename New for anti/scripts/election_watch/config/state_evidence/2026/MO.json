@@ -1,0 +1,221 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "MO",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "MO",
+        "reviewed_on": "2026-10-18",
+        "record_sha256": "9566bbb11cbb0bfdc185611a9697efd380739e71bdb0d8453842c74b53de91d6",
+        "record": {
+          "id": "primary-fm3-mo-house02-20260531",
+          "subject": "2026 MO-02",
+          "poll_type": "us-representative",
+          "pollster": "FM3 Research",
+          "url": "https://themissouritimes.com/wp-content/uploads/2026/06/220-7670-Wellman-MO-02-Summary-Memo.pdf",
+          "created_at": "2026-06-03",
+          "start_date": "2026-05-26",
+          "end_date": "2026-05-31",
+          "sample_size": 600,
+          "population": "lv",
+          "seat_name": "MO-02",
+          "sponsors": [],
+          "internal": false,
+          "partisan": null,
+          "answers": [
+            {
+              "choice": "Fred Wellman",
+              "pct": 41
+            },
+            {
+              "choice": "Ann Wagner",
+              "pct": 44
+            }
+          ]
+        },
+        "documents": [
+          {
+            "url": "https://themissouritimes.com/wp-content/uploads/2026/06/220-7670-Wellman-MO-02-Summary-Memo.pdf",
+            "sha256": "fba8b335b1b686942b527e2143236ef44f1426702559d17d447a6b4fa12393eb"
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-fm3-mo-house02-20260531"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-18",
+        "provider_record_sha256": "9566bbb11cbb0bfdc185611a9697efd380739e71bdb0d8453842c74b53de91d6",
+        "snapshot_sha256": "ac793789fe6aad00f83c08a91bc0136b1e99f309a9934c1a9f9d908d04b93cb6",
+        "primary_toplines": {
+          "Fred Wellman": 41,
+          "Ann Wagner": 44
+        },
+        "sources": [
+          "https://themissouritimes.com/wp-content/uploads/2026/06/220-7670-Wellman-MO-02-Summary-Memo.pdf"
+        ],
+        "question_sample_n": 600,
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 600,
+          "field_dates": [
+            "2026-05-26",
+            "2026-05-31"
+          ],
+          "mode": "live_cell_landline_and_text_to_web",
+          "question_scope": "initial_named_head_to_head_explicitly_separate_from_positive_profiles",
+          "question_wording_checked": false,
+          "commissioner": "not_disclosed",
+          "other_undecided_pct": 15,
+          "excluded_informed_question": {
+            "Fred Wellman": 48,
+            "Ann Wagner": 41
+          },
+          "excluded_generic_ballot": true,
+          "geography": "district_as_defined_at_fieldwork; no remapping to later proposed boundaries",
+          "primary_memo_date": "2026-06-03"
+        },
+        "ballot_format": "initial_named_head_to_head",
+        "reported_precision": {
+          "kind": "reported_margin_of_error",
+          "half_width_pp": 4,
+          "confidence_level_pct": 95
+        },
+        "sponsor_review": {
+          "primary_internal": false,
+          "provider_sponsors": [],
+          "commissioner": null,
+          "primary_commissioners": []
+        },
+        "admission": {
+          "pollster": "FM3 Research",
+          "provider_url": "https://themissouritimes.com/wp-content/uploads/2026/06/220-7670-Wellman-MO-02-Summary-Memo.pdf",
+          "methodology_url": "https://themissouritimes.com/wp-content/uploads/2026/06/220-7670-Wellman-MO-02-Summary-Memo.pdf",
+          "source_role": "pollster_primary",
+          "group": "fm3",
+          "signal_eligible": false,
+          "signal_exclusion_reasons": [
+            "historical_reference",
+            "commissioner_not_disclosed"
+          ],
+          "allow_historical_reference": true
+        },
+        "limitations_ko": "개별 원문의 후보 수치·기간·표본·모집단을 검토. 누락된 문항/표집/가중치는 추정하지 않으며 보고된 정밀도를 당선확률·격차 유의성·기관 정확도 등급으로 바꾸지 않음. 이후 다른 발표는 이 검토를 자동 상속하지 않음.",
+        "primary_supplement_record_sha256": "9566bbb11cbb0bfdc185611a9697efd380739e71bdb0d8453842c74b53de91d6",
+        "primary_documents": [
+          {
+            "url": "https://themissouritimes.com/wp-content/uploads/2026/06/220-7670-Wellman-MO-02-Summary-Memo.pdf",
+            "sha256": "fba8b335b1b686942b527e2143236ef44f1426702559d17d447a6b4fa12393eb"
+          }
+        ],
+        "missing_fields": [
+          "full_question_wording",
+          "sampling_frame",
+          "weighting",
+          "external_commissioner_or_funder"
+        ]
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-18",
+    "fetched_at": "2026-10-18T23:03:56.165943+00:00",
+    "receipt": {
+      "state": "MO",
+      "cycle": 2026,
+      "captured_at": "2026-10-18T23:03:56.165943+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-18",
+      "capture_kind": "new_provider_request_with_individual_source_review",
+      "new_provider_collection": true,
+      "provider_records": 1,
+      "response_sha256": "892f70157b46bf040ac728d511ffa2ddf88b2be3a56c7cee8912f9d25040fedb",
+      "serialized_provider_response_sha256": "0f6396ebeb3253c4f67c849cd8dd30af2b519f6b680eaa778822d0e44e7e9937"
+    },
+    "provider_records": [
+      {
+        "id": "us-202rem24458257",
+        "poll_type": "us-representative",
+        "sample_size": 565,
+        "population": "lv",
+        "url": "https://x.com/MarkMaxwellTV/status/2103501820840534440?s=20",
+        "created_at": "2026-09-25",
+        "start_date": "2026-09-14",
+        "end_date": "2026-09-15",
+        "pollster": "Remington Research Group",
+        "answers": [
+          {
+            "choice": "Ann Wagner",
+            "pct": 43.0
+          },
+          {
+            "choice": "Fred Wellman",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": "MO-02",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 MO-02"
+      }
+    ],
+    "provider_records_sha256": "e9308f2afcf9f455a96bcb3cf3eb1b8b9c628f157eee156b7ecaf300306e5da1",
+    "primary_records": [
+      {
+        "id": "primary-fm3-mo-house02-20260531",
+        "subject": "2026 MO-02",
+        "poll_type": "us-representative",
+        "pollster": "FM3 Research",
+        "url": "https://themissouritimes.com/wp-content/uploads/2026/06/220-7670-Wellman-MO-02-Summary-Memo.pdf",
+        "created_at": "2026-06-03",
+        "start_date": "2026-05-26",
+        "end_date": "2026-05-31",
+        "sample_size": 600,
+        "population": "lv",
+        "seat_name": "MO-02",
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "answers": [
+          {
+            "choice": "Fred Wellman",
+            "pct": 41
+          },
+          {
+            "choice": "Ann Wagner",
+            "pct": 44
+          }
+        ],
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-18",
+          "checked_at": "2026-10-18T23:05:04.356818+00:00",
+          "documents": [
+            {
+              "url": "https://themissouritimes.com/wp-content/uploads/2026/06/220-7670-Wellman-MO-02-Summary-Memo.pdf",
+              "status": "unchanged",
+              "sha256": "fba8b335b1b686942b527e2143236ef44f1426702559d17d447a6b4fa12393eb"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": []
+        }
+      }
+    ]
+  },
+  "source_ref": "codex/poll-national-source-coverage-20261018",
+  "source_commit": "f0878e183670c5c7c6f888468c05e303bc9e4883"
+}

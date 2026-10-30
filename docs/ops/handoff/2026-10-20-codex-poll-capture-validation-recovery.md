@@ -1,0 +1,46 @@
+# Daily polling capture / validation recovery — 2026-10-20
+
+User explicitly prioritized fixing broken collection/validation, with manual source research delegated to Cursor as an acceptable input route. This PR is a packet-free fix on main1888e017c, independent of unmerged #644/#649/#647. Branch codex/poll-capture-validation-recovery-20261020; workspace reused sequentially at us-ne-research-integration-20261020. Prior branches/commits remain saved and pushed. No state inputs/reviews/national JSON/UI/workflow/ownership exception are changed. Main merge, deployment and production workflow dispatch remain held.
+
+## Confirmed root causes
+
+Actions39346678472 on main34defb24: capture fetched1511 API records and saved their checkpoint, then failed `primary_and_provider_wave_conflict`. The exact MS Data for Progress Aug5–15 wave has provider1018LV, two candidates47/41, DEM/Way to Lead PAC, while the reviewed primary is three candidates44/38/7 with different commissioning metadata. No evidence permits treating these as the same ordinary question or choosing one as correct. Previously that one conflict aborted the entire nationwide supplement merge.
+
+Validation ran678 cases with2 failures: Iowa finance-route work_status and Suffolk7/14-day tie were asserted against mutable published national JSON. The actual fixed reviewed survey audits still normalize correctly. New collection replaces state receipts and changes the set of observations, so these historical expectations need explicit reviewed fixtures rather than whatever the current live asset happens to contain.
+
+Saved failed-run inputs: /private/tmp/poll-recovery-39346678472 (downloaded original GitHub artifact), log /private/tmp/poll-failure-20261020.log. These are audit/replay inputs, not newly collected or published data.
+
+## Fix and safeguards
+
+Production refresh opts into supplement-conflict isolation. Default strict callers still raise; no wholesale weakening of record validation. An isolated conflicting wave stores both exact provider record(s) and reviewed primary values in the receipt, removes the duplicate provider wave from normal input, and admits the primary observation only as `primary_provider_conflict_reference_only` with explicit exclusion reason. Neither conflicting version counts as a vote signal. Other healthy races continue. Original field/review/capture dates and primary values remain unchanged. This does not resolve or silently correct the MS questionnaire/commissioner discrepancy.
+
+The two Iowa tests now normalize their existing original reviewed audit rows with a fixed historical date and an explicit source-review receipt. All prior tie/count/precision/missing-money assertions are retained. No live percentage or party rating is altered to make a test pass.
+
+Focused recovery/primary/normalization49, Iowa15, finance33, election JS114, ownership14 pass; deploy-chain42 workflows pass. Added regressions demonstrate strict default conflict failure, production isolation with retained opposing versions and an unaffected healthy race, and unchanged exact-wave deduplication. Full local offline suite completed:830 tests passed in322.797s (log /private/tmp/poll-recovery-full-tests.log). The same unchanged production code also passed actual non-publishing capture and checkpoint regeneration; remote CI is a separate status.
+
+Actual local live capture runs `--capture-only` to /private/tmp/poll-recovery-live-20261020/capture.json, never into public/data. No new API key is needed. A validated checkpoint may be replayed locally with --retry-capture and a temporary output directory. Publication is not authorized by local success. Cursor research inputs can continue to use state packets; source research, collector health, data review and deployed freshness remain separate statuses.
+
+## Actual non-publishing recovery result
+
+Real capture-only succeeded: captured_at2026-10-20T12:12:22.801429+00:00, API1511 records,1545 with supplements. The sole primary/API conflict is MS and its complete opposing provider snapshot is retained in the receipt. Replaying that exact checkpoint with --retry-capture into a temporary directory succeeded without new requests or advanced timestamps:86 races /212 observations,134 eligible historical observations and78 reference observations. Recent7-day comparison covers2 races and14-day18 races. The deployed165→local212 increase is pending reviewed input backfill, not47 newly released polls. The captured_at equality and MS conflict's explicit ineligibility were asserted. Production public assets and workflows remain unchanged.
+
+Full suite subsequently passed all830 cases. Recovery PR is #651; merge and deployment remain unperformed. No requirement to merge earlier unmerged election expansions before this recovery: its base is current main and its diff contains no state packets.
+
+## Additional pre-deployment hardening
+
+User requested one more hardening pass while retaining the deployment hold. This continues #651 on the same clean, dedicated recovery branch.
+
+- Capture/publication failures now record `stage`, exception type and an allowlisted `error_code`. Configuration reads are inside capture failure handling, so invalid configuration also produces an attempt receipt. Arbitrary exception text, URLs and query secrets are not copied by these new diagnostics. Provider-only raw checkpoints and the last valid public polling file retain their existing protection.
+- `primary_source_health` is additive to capture status, the regenerated polling board and publication health. It distinguishes conflicted releases, carried-forward references, document problems, first-time unavailable HTML contracts and unrecognized receipt statuses. No receipt is `not_observed`, rather than a claim that every source succeeded. Successful transport can coexist with `review_required`; this does not block healthy races or promote references into counts.
+- HTML table conflicts now retain both the complete conflicting provider records and the original primary values, like finite-document supplements. A subsequent HTML outage preserves the conflict evidence and both exclusion reasons. Conflict plus changed/unavailable documents cannot be silently promoted by offline checkpoint replay.
+- The remaining Iowa assertion that all House races must stay empty now uses the fixed reviewed statewide/Senate audits. It checks that statewide questions do not become district polls; a real future Iowa House poll can enter the national asset without breaking this historical test. The missing-money assertions remain unchanged.
+
+Actual saved capture was replayed without any network calls into /private/tmp/poll-hardening-replay-20261020. Its212 observations, every pre-existing board/history value, dates and state provenance exactly equal the previous recovery replay after removing only the new additive health field. The new health correctly reports40 receipts, one MS conflict and two CA document problems; all three releases remain reference-only. The original collected timestamp remains2026-10-20T12:12:22.801429+00:00. This is revalidation of the saved acquisition, not a new collection or deployment.
+
+Focused regression113, election JS114, ownership14 and deploy-chain42 pass. Full-suite revalidation completed:835 Python cases passed in331.469s, including the added checkpoint/conflict/outage regression. Logs: /private/tmp/poll-hardening-full-tests.log, /private/tmp/poll-hardening-focused.log, /private/tmp/poll-hardening-js.log, /private/tmp/poll-hardening-replay.log. The JS command uses Node24's supported `node --test` invocation; the removed `--experimental-default-type=module` option was rejected before tests ran and was corrected. No workflow change is needed. Local validation is complete; remote PR checks and production operation are separate states.
+
+Operator review: inspect `primary_source_health` in capture.status.json or the temporary replay's usa_election_live_polls_status_v1.json. Resolve listed conflicts by reviewing the exact question/commissioner/sample and committing an explicit review; do not remove exclusion reasons to increase totals. For a failed capture, use `stage` and `error_code` to locate provider transport, configuration, supplement merge, ballot review or checkpoint failure. A provider-only audit remains insufficient for publication, and a validated retry retains its original acquisition date. MS questionnaire/commissioning reconciliation and the two original CA document checks remain outstanding, separate from collector recovery.
+
+## 2026-10-21 state refresh clock regression
+
+The independent Alaska packet refresh exposed two more historical test clocks: `test_poll_state_inputs` used October11/12 as a supposedly newer manual collection, even after the packet advanced to October20. The assertions now derive a timestamp one day after the selected packet's actual capture. The rollback rejection and newer-manual-receipt preservation assertions remain intact; production comparison logic and all source data stay unchanged. This common fixture fix belongs to #651, not the AK state PR. Validation with the updated AK packet is recorded in its dedicated 2026-10-21 handoff. Merge, deployment and production workflow dispatch remain held.

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -17,6 +18,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from market_microstructure.investor_price_levels import (  # noqa: E402
+    KospiUniverseError,
     build_investor_price_levels_report,
     markdown_investor_price_levels,
 )
@@ -47,6 +49,12 @@ def main() -> int:
         default=None,
         help="Optional override code:label,... (skips universe)",
     )
+    p.add_argument(
+        "--krx-month-paste",
+        default=os.environ.get("KRX_MONTH_PASTE_DIR") or None,
+        help="krx-month-paste checkout; KOSPI market flow then comes from the stock-scoped "
+        "KRX 12008 export when present (default: $KRX_MONTH_PASTE_DIR, else the Naver page)",
+    )
     p.add_argument("--print-stats", action="store_true")
     args = p.parse_args()
 
@@ -67,14 +75,34 @@ def main() -> int:
                 code, label = part, part
             pairs.append((code.strip(), label.strip()))
 
-    rep = build_investor_price_levels_report(
-        pairs,
-        page_size=args.page_size,
-        n_bins=args.bins,
-        kospi_top_n=args.top,
-        universe_mode=args.universe if not pairs else "custom",
-        high_vol_pool=args.pool,
-    )
+    # The published index block: its stock-only days are carried forward when
+    # today's source returns nothing, instead of the block blanking to missing.
+    out = ROOT / "../../public/data" / "investor_price_levels_v1.json"
+    previous_index_levels = None
+    if out.is_file():
+        try:
+            previous_index_levels = json.loads(out.read_text(encoding="utf-8")).get("kospi_index_levels")
+        except (json.JSONDecodeError, OSError, AttributeError):
+            previous_index_levels = None
+
+    try:
+        rep = build_investor_price_levels_report(
+            pairs,
+            page_size=args.page_size,
+            n_bins=args.bins,
+            kospi_top_n=args.top,
+            universe_mode=args.universe if not pairs else "custom",
+            high_vol_pool=args.pool,
+            krx_root=args.krx_month_paste,
+            previous_index_levels=previous_index_levels,
+        )
+    except KospiUniverseError as exc:
+        message = f"{exc}; existing investor-price snapshot kept unchanged"
+        print(f"ERROR: {message}", file=sys.stderr)
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            escaped = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+            print(f"::error title=KOSPI universe unavailable::{escaped}", file=sys.stderr)
+        return 1
     # Refuse to ship if everything missing
     ok_n = sum(1 for t in (rep.get("tickers") or {}).values() if t.get("quality") == "observed")
     if ok_n == 0 and (rep.get("kospi_index_levels") or {}).get("quality") != "observed":
@@ -83,7 +111,6 @@ def main() -> int:
 
     pub = ROOT / "../../public/data"
     pub.mkdir(parents=True, exist_ok=True)
-    out = pub / "investor_price_levels_v1.json"
     out.write_text(json.dumps(rep, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     md = markdown_investor_price_levels(rep)
     (ROOT / "INVESTOR_PRICE_LEVELS.md").write_text(md + "\n", encoding="utf-8")

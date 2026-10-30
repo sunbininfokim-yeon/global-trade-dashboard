@@ -72,7 +72,7 @@
     "interest_coverage": {
       "label": "이자보상배율",
       "label_en": "Interest Coverage",
-      "formula": ["OPERATING_INCOME", "/", "INTEREST_EXPENSE"],
+      "formula": ["OPERATING_INCOME", "/", ["abs", "INTEREST_EXPENSE"]],
       "unit": "x",
       "scale": 1,
       "polarity": "higher_better",

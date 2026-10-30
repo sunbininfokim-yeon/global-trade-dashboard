@@ -1,0 +1,147 @@
+# Keep the existing workflow_run identifier in deploy.yml; schedule is daily.
+name: US election polls weekly
+run-name: US election polls daily (${{ github.event_name }})
+
+on:
+  schedule:
+    - cron: '10 21 * * *' # Daily 06:10 KST; includes post-election health/results refresh
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/election_watch/**'
+      - '.github/workflows/us_election_polls_refresh.yml'
+      - 'New for anti/js/elections/**'
+      # Source-only state research must run the same isolation check.
+      - 'New for anti/public/data/usa_election_poll_release_reviews/**'
+      - 'New for anti/public/data/usa_governor_finance_audits/**'
+      - 'New for anti/public/data/usa_governor_finance_audit_status/**'
+      - 'New for anti/public/data/usa_governor_source_access/**'
+      - 'New for anti/public/data/usa_governor_ie_report_indexes/**'
+      - 'New for anti/public/data/usa_governor_ie_report_index_status/**'
+      - 'New for anti/public/data/usa_governor_ie_report_reviews/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: us-election-polls-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    # Fetch actual source data even if a historical regression fixture fails.
+    # This job cannot commit/publish. Both validation and capture gate refresh.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Capture polling source without changing published data
+        id: capture
+        continue-on-error: true
+        working-directory: New for anti/scripts/election_watch
+        run: python3 refresh_live_polls.py --capture-only --capture-output "$RUNNER_TEMP/us-polls-capture.json"
+      - name: Discover supplemental individual poll links
+        if: always()
+        continue-on-error: true
+        working-directory: New for anti/scripts/election_watch
+        # Discovery cannot alter or block the primary polling publication.
+        run: >-
+          python3 discover_poll_sources.py
+          --output "$RUNNER_TEMP/us-polls-capture.discovery.json"
+          --provider-capture "$RUNNER_TEMP/us-polls-capture.provider.json"
+      - name: Preserve source checkpoint and attempt status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-polls-source-capture
+          path: ${{ runner.temp }}/us-polls-capture*.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Report capture failure
+        if: steps.capture.outcome == 'failure'
+        run: exit 1
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rebuild pending state inputs for offline validation
+        run: |
+          python3 'New for anti/scripts/election_watch/publish_state_packets.py' --pending
+          python3 'New for anti/scripts/election_watch/publish_packet_projections.py'
+      - name: Validate polling contracts without network
+        working-directory: New for anti/scripts/election_watch
+        run: python3 -m unittest discover -s tests -p 'test*poll*.py' -v
+      - name: State input PRs cannot edit national generated data
+        if: github.event_name == 'pull_request'
+        env:
+          PACKET_BASE: ${{ github.event.pull_request.base.sha }}
+          PACKET_HEAD: ${{ github.event.pull_request.head.sha }}
+          PACKET_BRANCH: ${{ github.head_ref }}
+        run: >-
+          python3 'New for anti/scripts/election_watch/check_state_packet_changes.py'
+          --base-ref "$PACKET_BASE" --head-ref "$PACKET_HEAD" --branch "$PACKET_BRANCH"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate polling UI contracts when present
+        run: |
+          if [ -d 'New for anti/js/elections/tests' ]; then
+            node --experimental-default-type=module --test 'New for anti/js/elections/tests/'*.test.mjs
+          fi
+
+  refresh:
+    needs: [validate, capture]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Load actual collection checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          name: us-polls-source-capture
+          path: ${{ runner.temp }}
+      - name: Refresh selected polls and reviewed official results
+        id: collect
+        continue-on-error: true
+        run: |
+          python3 'New for anti/scripts/election_watch/publish_packet_projections.py'
+          python3 'New for anti/scripts/election_watch/refresh_live_polls.py' --retry-capture "$RUNNER_TEMP/us-polls-capture.json"
+      - name: Retain reviewable output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-election-polls
+          path: |
+            New for anti/public/data/usa_election_live_polls*.json
+            New for anti/public/data/usa_election_poll_history_2026.json
+            New for anti/public/data/usa_midterms_forecast_v1.json
+            ${{ runner.temp }}/us-polls-capture.json
+      - name: Publish data and source health
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 'New for anti/scripts/election_watch/publish_polling_run.py' --checkpoint "$RUNNER_TEMP/us-polls-capture.json"
+      - name: Report collection failure after preserving last good data
+        if: steps.collect.outcome == 'failure'
+        run: exit 1

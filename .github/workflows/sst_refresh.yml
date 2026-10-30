@@ -1,7 +1,8 @@
 name: Refresh SST anomaly grid
 
 # NOAA OISST v2.1 은 약 2주 지연으로 매일 갱신된다. 주 1회면 화면이 뒤처지지
-# 않으면서 ERDDAP 에 부담도 없다.
+# 않으면서 원본 서버에 부담도 없다. 출처는 NOAA PSL THREDDS -- 2026-09-24 부터
+# CoastWatch ERDDAP 이 GitHub 러너 IP 를 차단 목록에 올려 옮겼다(psl_oisst.py).
 #
 # 이 격자가 생기기 전에는 지도가 ONI·DMI·AMO 세 지수에서 파생한 원 16개였다.
 # 파생값으로는 북대서양 한랭역(blue blob)이나 지중해처럼 지수가 대변하지 않는
@@ -16,6 +17,9 @@ on:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # build_sst_regions.py makes ~450 small requests (10 regions x 45 yearly
+    # files). Cap the job well below the 6h default.
+    timeout-minutes: 90
     permissions:
       contents: write
     steps:
@@ -28,12 +32,35 @@ jobs:
         working-directory: "New for anti/scripts"
         run: python3 build_sst.py
 
+      # 해역 클릭 시 뜨는 월별 추이(sst_regions_v1.json). 2026-08-07 수동 생성 이후
+      # 이 파일을 돌리는 워크플로가 없어 7월에서 멈춰 있었다.
+      # 여기서 실패해도 위 격자는 커밋되도록 계속 진행하고, 맨 끝에서 잡을 빨간불로 만든다.
+      - name: Rebuild monthly region series
+        id: regions
+        continue-on-error: true
+        working-directory: "New for anti/scripts"
+        run: python3 build_sst_regions.py
+
       - name: Commit if the grid moved
         run: |
           f="New for anti/public/data/sst_anomaly_v1.json"
-          if git diff --quiet -- "$f"; then exit 0; fi
+          r="New for anti/public/data/sst_regions_v1.json"
+          if git diff --quiet -- "$f" "$r"; then exit 0; fi
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$f"
+          git add "$f" "$r"
           git commit -m "chore: refresh SST anomaly grid (NOAA OISST)"
+          # Non-fast-forward race: a bare push drops this refresh when another
+          # scheduled job lands a commit on main first. Rebase and retry.
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
           git push
+
+      - name: Fail if the region series did not rebuild
+        if: steps.regions.outcome == 'failure'
+        run: |
+          echo "::error::build_sst_regions.py failed -- sst_regions_v1.json was not refreshed"
+          exit 1

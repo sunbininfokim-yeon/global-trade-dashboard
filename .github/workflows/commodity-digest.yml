@@ -10,12 +10,20 @@ on:
     # Monday 08:00 KST (UTC+9) = Sunday 23:00 UTC.
     - cron: '0 23 * * 0'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Read Supabase and print what would be sent; send and record nothing"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
 
 jobs:
   send-digest:
+    # 운영 DB 키를 쓰는 job: main 에서만 돈다. 브랜치에서 수동 실행하면 건너뛴다
+    # (2026-10-22 브랜치 수집이 운영 메일 대기열을 만든 사고 후속).
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -34,5 +42,9 @@ jobs:
       - name: Validate script
         run: node --check scripts/notify-commodity-digest.js
 
+      # A manual run defaults to a dry run (counts only, nothing mailed); the
+      # Monday schedule has no inputs and always sends.
       - name: Send weekly commodity digest
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '' }}
         run: node scripts/notify-commodity-digest.js

@@ -34,15 +34,6 @@
   ],
   "events": [
     {
-      "id": "deu-2026-spd-leadership",
-      "type": "party_leadership",
-      "party_id": "spd",
-      "label_ko": "SPD 당대표 교체 경선",
-      "date": "불명",
-      "status": "없음",
-      "notes": "2026 중 대규모 공개 당대표 교체 대회 미확인 → 없음; 확인 시 갱신"
-    },
-    {
       "id": "deu-2026-cdu-parteitag-38",
       "type": "party_leadership",
       "party_id": "cdu",
@@ -62,19 +53,10 @@
       "sources": [
         "https://www.cdu.de/38-parteitag/",
         "https://www.dw.com/en/merz-cdu-party-congress-germany-deutschland/live-76052837"
-      ]
-    },
-    {
-      "id": "deu-2026-bundestag",
-      "type": "general",
-      "label_ko": "연방하원(Bundestag)",
-      "date": "없음",
-      "status": "없음",
-      "sources": [
-        "bundeswahlleiterin"
       ],
-      "system_id": "deu-bundestag",
-      "contested_ko": "없음 — 2026년 연방하원 총선 없음 (다음 주기는 2029)"
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "CDU 제38차 연방전당대회 (당대표 재신임)"
     },
     {
       "id": "deu-2026-bw-landtag",
@@ -88,6 +70,8 @@
         "https://im.baden-wuerttemberg.de/de/land-kommunen/lebendige-demokratie/wahlen/landtagswahl-2026"
       ],
       "system_id": "deu-landtag-bw",
+      "level": "subnational",
+      "chamber": "landtag",
       "contested_ko": "법정 정수 120 (지역구 70). 초과·보정으로 확대 가능",
       "previous": {
         "date": "2021-03-14",
@@ -173,7 +157,9 @@
         "https://www.wahlen.rlp.de/nachrichten/nachrichtendetailseite/endgueltiges-ergebnis-der-landtagswahl-2026-steht-fest"
       ],
       "system_id": "deu-landtag-rlp",
-      "contested_ko": "주의회 정수 101",
+      "level": "subnational",
+      "chamber": "landtag",
+      "contested_ko": "해당 주 주의회 의석 전원",
       "previous": {
         "date": "2021-03-14",
         "turnout_pct": 64.3,
@@ -238,7 +224,9 @@
         "https://www.landtag.sachsen-anhalt.de/artikel/sachsen-anhalt-waehlte-einen-neuen-landtag"
       ],
       "system_id": "deu-landtag-st",
-      "contested_ko": "주의회 정수 97",
+      "level": "subnational",
+      "chamber": "landtag",
+      "contested_ko": "해당 주 주의회 의석 전원",
       "previous": {
         "date": "2021-06-06",
         "turnout_pct": 60.3,
@@ -304,6 +292,8 @@
         "https://www.berlin.de/wahlen/pressemitteilungen/2026/20260921_vorlaeufiges-ergebnis-festgestellt.pdf"
       ],
       "system_id": "deu-landtag-berlin",
+      "level": "subnational",
+      "chamber": "landtag",
       "contested_ko": "법정 정수 130. 초과·보정으로 확대 가능",
       "previous": {
         "date": "2023-02-12",
@@ -363,6 +353,8 @@
         "https://bundeswahlleiterin.de/service/landtagswahlen/land-13.html"
       ],
       "system_id": "deu-landtag-mv",
+      "level": "subnational",
+      "chamber": "landtag",
       "contested_ko": "법정 정수 71. 초과로 확대 가능",
       "previous": {
         "date": "2021-09-26",
@@ -414,6 +406,34 @@
       "result": "AfD 32 · SPD 29 · LINKE 5 · GRÜNE 5 (71석)",
       "result_summary": "2026-09-20 투표, 2026-09-30 주선거위원회 확정. 투표율 78.0%. 제2표: AfD 38.2, SPD 35.5, LINKE 6.5, GRÜNE 5.7. CDU 4.9·FDP 1.0은 5% 봉쇄 미달이라 의석 없음. 잠정 의석과 동일.",
       "notes": "previous.vote_pct 는 2021년 제2표. 연방선거관리인 표의 의석 합계는 71."
+    },
+    {
+      "id": "deu-2026-bundestag",
+      "type": "general",
+      "label_ko": "연방하원(Bundestag)",
+      "date": "2029-02",
+      "status": "outside_year",
+      "sources": [
+        "bundeswahlleiterin"
+      ],
+      "date_note": "2025-02-23 총선 다음 정기. 임기 4년, 해산 시 앞당겨질 수 있음. 연방선거관리장 일정표 2029.",
+      "system_id": "deu-bundestag",
+      "level": "national",
+      "chamber": "bundestag",
+      "contested_ko": "없음 — 2026년 연방하원 총선 없음 (다음 주기는 2029)",
+      "notes": "2026년 연방 총선 회차 아님."
+    },
+    {
+      "id": "deu-2026-spd-leadership",
+      "type": "party_leadership",
+      "party_id": "spd",
+      "label_ko": "SPD 당대표 교체 경선",
+      "date": "불명",
+      "status": "없음",
+      "notes": "2026 중 대규모 공개 당대표 교체 대회 미확인 → 없음; 확인 시 갱신",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "SPD 당대표 교체 경선"
     }
   ]
 }

@@ -8,70 +8,105 @@
   ],
   "n_seasons": 34,
   "trend": {
-    "slope_per_year": 2.2982792207791904,
-    "intercept": -4457.793447287943
+    "slope_per_year": 2.298279220779247,
+    "intercept": -4457.79344728806
   },
+  "selected": "core",
   "features": [
-    "july_edd_anom",
-    "julaug_edd_anom",
-    "julaug_vpd_anom",
-    "julaug_precip_anom",
     "preseason_precip_anom",
-    "julaug_soil_anom",
-    "oni_growing"
+    "june_edd_anom",
+    "june_precip_anom",
+    "june_vpd_anom",
+    "july_edd_anom",
+    "july_precip_anom",
+    "july_vpd_anom",
+    "july_soil_anom",
+    "august_edd_anom",
+    "august_precip_anom",
+    "august_vpd_anom",
+    "august_soil_anom"
   ],
+  "feature_months": {
+    "preseason_precip_anom": "preseason",
+    "june_edd_anom": "june",
+    "june_precip_anom": "june",
+    "june_vpd_anom": "june",
+    "july_edd_anom": "july",
+    "july_precip_anom": "july",
+    "july_vpd_anom": "july",
+    "july_soil_anom": "july",
+    "august_edd_anom": "august",
+    "august_precip_anom": "august",
+    "august_vpd_anom": "august",
+    "august_soil_anom": "august"
+  },
   "scaler": {
     "mean": [
-      0.030618450433167715,
-      -0.008927331297397732,
-      -0.0426885671288948,
-      0.07742526546143924,
       0.006734766768197044,
-      0.1122566102257569,
-      0.015999999999999983
+      0.14062802806397698,
+      0.10013639105788386,
+      0.05883809936657863,
+      0.03061845043316774,
+      0.12271051212781367,
+      -0.014081943678388577,
+      0.08547299842973304,
+      -0.03628250611006667,
+      0.019041887781481137,
+      -0.05186281956311951,
+      0.1301017995852544
     ],
     "scale": [
-      1.0780944772178145,
-      0.9374818465993829,
-      0.9178844802783346,
-      0.7684340912942637,
       0.7681207222989079,
-      0.98484582294804,
-      0.6172285304678725
+      0.9540925813291612,
+      0.8662106740515207,
+      0.9169137276363067,
+      1.0780944772178147,
+      0.9579519124074583,
+      1.002627743528784,
+      0.9487401660767962,
+      0.7602318991466589,
+      0.6110120233042495,
+      0.8051683371975343,
+      0.9684085404312907
     ]
   },
   "ridge": {
-    "alpha": 0.24244620170823283,
+    "alpha": 0.345510729459222,
     "coef": [
-      -2.6812398262729147,
-      -11.846226254960726,
-      1.7209574441232682,
-      4.132360478370601,
-      1.1099898303140843,
-      -12.426601122698912,
-      -0.7980805997101587
+      1.242812505335662,
+      -2.12710155260217,
+      1.5706470725408463,
+      0.7698930491022722,
+      -8.587699665541376,
+      4.399163758470467,
+      -0.01404568133663986,
+      -3.9791597310196245,
+      -5.110928034565678,
+      2.956024023650917,
+      1.3516783309313851,
+      -10.095405987124519
     ],
-    "intercept": -1.892523301281453e-12
+    "intercept": 1.2673191665076004e-12
   },
   "uncertainty": {
-    "sigma": 4.370986396673975,
+    "sigma": 4.679509955022779,
     "basis": "out-of-sample forward-chaining RMSE"
   },
   "validation": {
     "all_loo": {
-      "rmse": 8.195394111688135,
-      "baseline_rmse": 12.189722918190977,
-      "skill_vs_trend": 0.3276800328694939,
-      "detrended_r2": 0.5479854888168298,
-      "detrended_r": 0.7415238542255844,
+      "rmse": 8.44606021733823,
+      "baseline_rmse": 12.18972291819146,
+      "skill_vs_trend": 0.30711630821947034,
+      "detrended_r2": 0.5199117935187048,
+      "detrended_r": 0.7240473580964432,
       "n": 34
     },
     "all_forward": {
-      "rmse": 9.707976513673207,
-      "baseline_rmse": 14.239205498770106,
-      "skill_vs_trend": 0.31822203742254285,
-      "detrended_r2": 0.5350819919175167,
-      "detrended_r": 0.7781893231734751,
+      "rmse": 9.173387741925884,
+      "baseline_rmse": 14.239205498771007,
+      "skill_vs_trend": 0.35576547843784934,
+      "detrended_r2": 0.5848754327409476,
+      "detrended_r": 0.8203722213265531,
       "n": 14,
       "years": [
         2012,
@@ -79,19 +114,19 @@
       ]
     },
     "core_loo": {
-      "rmse": 6.77313307185217,
-      "baseline_rmse": 12.189722918190977,
-      "skill_vs_trend": 0.4443570934869666,
-      "detrended_r2": 0.6912607056848152,
-      "detrended_r": 0.8340426683431124,
+      "rmse": 6.8678842193587855,
+      "baseline_rmse": 12.18972291819146,
+      "skill_vs_trend": 0.4365840581077174,
+      "detrended_r2": 0.6825622144871188,
+      "detrended_r": 0.826659898049006,
       "n": 34
     },
     "core_forward": {
-      "rmse": 4.370986396673975,
-      "baseline_rmse": 14.239205498770106,
-      "skill_vs_trend": 0.69303158121768,
-      "detrended_r2": 0.9057507627400888,
-      "detrended_r": 0.9679682928744877,
+      "rmse": 4.679509955022779,
+      "baseline_rmse": 14.239205498771007,
+      "skill_vs_trend": 0.6713643921055377,
+      "detrended_r2": 0.8919761415687524,
+      "detrended_r": 0.9478698071941455,
       "n": 14,
       "years": [
         2012,
@@ -99,10 +134,42 @@
       ]
     }
   },
+  "inseason": {
+    "method": "forward-chaining; months after the cutoff filled from every earlier year in turn, mean of scenarios scored against trend-only",
+    "forecast_skill_threshold": 0.2,
+    "n_test": 14,
+    "cutoffs": {
+      "06-01": {
+        "skill_vs_trend": -0.02839018842021379,
+        "rmse": 14.64345922583526,
+        "coverage_68": 0.7857142857142857,
+        "coverage_90": 0.9285714285714286
+      },
+      "06-30": {
+        "skill_vs_trend": 0.0930266028859229,
+        "rmse": 12.914580583425787,
+        "coverage_68": 0.7857142857142857,
+        "coverage_90": 0.9285714285714286
+      },
+      "07-31": {
+        "skill_vs_trend": 0.5050742502756582,
+        "rmse": 7.04734945695821,
+        "coverage_68": 0.8571428571428571,
+        "coverage_90": 1.0
+      },
+      "08-31": {
+        "skill_vs_trend": 0.6713643921055368,
+        "rmse": 4.679509955022793,
+        "coverage_68": 0.7857142857142857,
+        "coverage_90": 1.0
+      }
+    }
+  },
   "methodology": {
     "trend": "Thompson (1969, 1986) via FAO review: regression on time absorbs technology (genetics, management, fertiliser); weather is related to deviations from that trend.",
     "heat": "Schlenker & Roberts (2009): nonlinear damage, entered as extreme degree days above the crop threshold rather than counts of hot days.",
     "vpd": "Urban et al. (2015), Roberts et al. (2012), Lobell et al. (2014): vapour pressure deficit as a combined heat/dryness predictor.",
+    "inseason": "UNL Yield Forecasting Center approach (Hybrid-Maize on historical weather): observed weather to date, a short-range forecast, then each past year's weather for the rest of the season; the spread of outcomes is the forecast range.",
     "anomalies": "All weather features are anomalies against a trailing 20-year climatology, so multi-decade climate drift is not read as a yield signal."
   },
   "sources": {

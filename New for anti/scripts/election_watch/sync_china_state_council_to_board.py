@@ -34,15 +34,17 @@ def replace_json_value(text: str, key: str, start: int, new_obj: object, key_ind
     idx = text.find(needle, start)
     if idx < 0:
         raise SystemExit(f"missing {key} after offset {start}")
-    brace = text.find("{", idx)
+    opener = "{" if isinstance(new_obj, dict) else "["
+    closer = "}" if opener == "{" else "]"
+    brace = text.find(opener, idx)
     if brace < 0 or brace > idx + len(needle) + 5:
-        raise SystemExit(f"{key} is not an object")
+        raise SystemExit(f"{key} is not a {opener}")
     depth = 0
     end = None
     for i, ch in enumerate(text[brace:], brace):
-        if ch == "{":
+        if ch == opener:
             depth += 1
-        elif ch == "}":
+        elif ch == closer:
             depth -= 1
             if depth == 0:
                 end = i + 1
@@ -80,7 +82,11 @@ def fill_chart(chart: dict, departments: list[dict]) -> int:
         if minister.get("note_ko"):
             ministry["note_ko"] = minister["note_ko"]
         pgs = row.get("party_group_secretary") or {}
+        for stale in ("party_secretary_ko", "party_secretary_en", "party_secretary_zh", "party_secretary_status"):
+            ministry.pop(stale, None)
         ministry["same_as_minister"] = bool(pgs.get("same_as_minister"))
+        if pgs.get("status") == "unknown":
+            ministry["party_secretary_status"] = "unknown"
         if pgs.get("title_ko"):
             ministry["party_title_ko"] = pgs["title_ko"]
         if pgs.get("organ"):
@@ -127,6 +133,11 @@ def main() -> None:
         + board_text[review_end + 1:]
     )
     board_text = replace_json_value(board_text, "party_state", leadership, party_state, 8)
+    if "cmc" in party_state:
+        raise SystemExit("party_state unexpectedly has a cmc key; cmc splice would hit it")
+    board_text = replace_json_value(board_text, "cmc", leadership, extract["cmc"], 8)
+    board_text = replace_json_value(board_text, "theater_commands", leadership, extract["theater_commands"], 8)
+    board_text = replace_json_value(board_text, "service_branches", leadership, extract["service_branches"], 8)
     BOARD.write_text(board_text, encoding="utf-8")
 
     chart = json.loads(CHART.read_text(encoding="utf-8"))

@@ -1,0 +1,9 @@
+# TX 최근 ReconMR·Quantus 조사 입력
+
+- 최근 보류7건 원문 검토의 TX만 독립 분리한다. checkout `/Users/yeoninair/Documents/해운 데이터/us-tx-poll-input-20261014`, branch `codex/tx-evidence-20261014`, base packet 없는 #554 `fbe255ba`. NC/MN/ME/WA PR과 독립이다.
+- 실제 API 캡처 `2026-10-14T05:14:02.840821+00:00`의 TX94행. 본선 후보·정당·지역구는 기존 검토 명부를 사용한다. 새 FEC/TEC 금액은 조회하지 않으며 과거 금융·여론조사 영수증은 바꾸지 않는다.
+- [ReconMR PDF](https://reconmr.com/wp-content/uploads/2026/10/TXP004-October-Press-Release.pdf):10/5–8 LV617, 상원 Talarico48/Paxton44, 주지사 Abbott48/Hinojosa47. dual-frame/voter file·217 text-to-web·가중·문항을 대조했다. API의 Siena 공동 표기는 원문에서 확인되지 않아 기관 그룹은 reconmr이고 미확인 표기를 source_quality에 명시했다. 발표 sampling error4.4pp를 후보 격차 유의성이나 승리 확률로 바꾸지 않는다.
+- [Quantus 발표](https://quantusinsights.org/polling/f/texas-senate-paxton-and-talarico-in-a-near-tie)는 최초 브라우저 접근 때 cookie/스크립트 뒤 본문이 보이지 않았으나 재확인 후 연결된 [공개 PDF](https://drive.google.com/file/d/1awt_8mANYVHZ0UlMxkit8QAVLpDe8k5R/view?usp=sharing)를 Drive connector로 읽었다. 문서명10/13, 원문 페이지 게시10/14, field10/9–11을 각각 보존한다. Q1 Paxton47.2/Talarico46.7/Brown2.2, 투표 의향 표본839명이다. 전체854명 중 would-not-vote15명을 제외한 문항 표본이므로 API854→839는 정확한 provider 지문에 묶인 sample correction으로만 적용했다. 전체854명 대상3.6pp/95% 발표 오차를 문항839명의 오차로 전용하지 않으며 자체 격차 유의성 주장도 검증 완료로 표시하지 않는다.
+- ReconMR PDF SHA256 `7ba2aafe683effd2082c32abce5009f8e6895c97e7fe6000a0d828b01f0e2d7f`; Quantus PDF `9b75165b57c65d6863dab51be10b266f073eedfd9d60dd0c00f61e1686a2f98d`. 원문 문서와 API 레코드의 수치·기간·모집단·표본을 묶는다. API 키나 authenticated download URL은 packet/PR에 넣지 않는다.
+- 최근 검토3문항은 집계 적격이며 같은 기관의 다른 직위는 별도다. 상원7일 기관별 우세 횟수는 ReconMR DEM1/Quantus GOP1로 동률이며 특정 정당 승리로 채우지 않는다. 새 파동·변경된 표본은 별도 검토 대상이고 기관 모든 미래 발표를 승인하지 않는다.
+- 전국 생성 JSON·공용 목록/코드·TASKS·UI·workflow diff가 없다. 재생성은 원래 캡처로 수행하고 타주 race/이력/날짜/focus를 보존하며 TX focus를 재계산한다. TX 계약4개와 전체 polling/CI는 PR에 기록한다. #554 뒤 독립 반영하며 공용 자동수집 안정성은 #557이다. 병합·production dispatch·배포 없음.

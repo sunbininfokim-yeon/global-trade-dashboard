@@ -58,6 +58,7 @@ CABINET_OFFICIAL_URLS: Dict[str, str] = {
     "Brooke Rollins": "https://www.usda.gov/our-agency/about-usda/our-secretary",
     "Marco Rubio": "https://www.state.gov/biographies/marco-rubio/",
     "Keith E. Sonderling": CABINET_URL,
+    "Keith Sonderling": CABINET_URL,
     "Scott Turner": CABINET_URL,
     "Russ Vought": "https://www.whitehouse.gov/omb/",
     "Chris Wright": "https://www.energy.gov/person/chris-wright",
@@ -791,7 +792,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         "errors": errors,
         "policy_ko": (
             "백악관 공식 HTML·WHO 연례 PDF만 인명을 갱신한다. "
-            "부통령 비서실장·CEQ/CEA 언론 보도는 자동 승격하지 않는다. "
+            "공식 원문에 이름이 없는 자리는 신뢰 매체 2곳 이상이 같은 이름을 댈 때만 "
+            "'보도 기준'(reported_reliable)으로 채운다. 공식 이름 칸(office_status.name_en)에는 넣지 않는다. "
             "주제별 보좌관은 WHO 급여명부 직함의 포트폴리오 키워드로만 분류한다."
         ),
     }

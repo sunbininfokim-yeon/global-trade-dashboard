@@ -1,4 +1,5 @@
-import { loadAdmin1 } from '../data/geo-service.js';
+import { loadAdmin1 } from '../data/geo-service.js?v=2';
+import { classColors, stateClass2024 } from '../data/usa-election-context.js?v=2';
 
 const neutral = [51, 65, 85, 235];
 const selected = [14, 116, 144, 245];
@@ -27,10 +28,21 @@ const wrapLon = (lon) => ((lon + 540) % 360) - 180;
 // the GeoJSON alone, so it needs no second deck.gl view (this app is one
 // _GlobeView -- see CLAUDE.md). Add an entry per country as its exclaves
 // come up; codes match the `code` property in public/data/admin1/<ISO3>.json.
+//
+// AK sits in the Pacific off WA/OR with the panhandle pointing at the WA
+// coast; HI sits off northern California, below AK. anchor = where the
+// shape's bounding-box centre lands. dropWestOf removes island polygons
+// lying wholly west of that longitude -- HI's admin1 shape carries the
+// Northwestern Hawaiian atolls out to -178°, which otherwise trail across
+// the inset and pull its centre off the eight main islands. rotate (degrees,
+// counter-clockwise) turns the shape about its centre: on the globe a
+// meridian away from the view centre leans, so AK's straight 141°W border
+// read as tilted; 21.8° stands it upright at the USA view's centre (~103°W).
+// AK's top is level on screen with Washington's northern border.
 const EXCLAVES = {
     USA: [
-        { code: 'US-AK', scale: 0.32, anchorLon: -134, anchorLat: 24 },
-        { code: 'US-HI', scale: 0.85, anchorLon: -122, anchorLat: 14 },
+        { code: 'US-AK', scale: 0.342, anchorLon: -134.33, anchorLat: 43.24, rotate: 21.8 },
+        { code: 'US-HI', scale: 1, anchorLon: -128, anchorLat: 37.5, dropWestOf: -161 },
     ],
 };
 
@@ -44,17 +56,45 @@ const boundsOf = (geometry) => {
     return { west, east, south, north };
 };
 
-const relocateExclave = (feature, { scale, anchorLon, anchorLat }) => {
-    const { west, east, south, north } = boundsOf(feature.geometry);
+const withoutFarWestIslands = (geometry, dropWestOf) => {
+    if (dropWestOf == null || geometry?.type !== 'MultiPolygon') return geometry;
+    const limit = unwrapLon(dropWestOf);
+    const kept = geometry.coordinates.filter((polygon) => {
+        let east = -Infinity;
+        eachCoordinate(polygon, ([lon]) => { east = Math.max(east, unwrapLon(lon)); });
+        return east >= limit;
+    });
+    return kept.length ? { ...geometry, coordinates: kept } : geometry;
+};
+
+const DEG = Math.PI / 180;
+
+const relocateExclave = (feature, { scale, anchorLon, anchorLat, dropWestOf, rotate = 0 }) => {
+    const geometry = withoutFarWestIslands(feature.geometry, dropWestOf);
+    const { west, east, south, north } = boundsOf(geometry);
     const centerLon = (west + east) / 2;
     const centerLat = (south + north) / 2;
     const anchorU = unwrapLon(anchorLon);
-    const project = ([lon, lat, ...rest]) => [
-        wrapLon(anchorU + (unwrapLon(lon) - centerLon) * scale),
-        anchorLat + (lat - centerLat) * scale,
-        ...rest,
-    ];
-    return { ...feature, geometry: { ...feature.geometry, coordinates: mapCoordinates(feature.geometry.coordinates, project) } };
+    // A degree of longitude is cos(lat) wide on the globe, so moving a shape
+    // to another latitude stretches or squeezes it sideways. Rescale longitude
+    // by the ratio so AK (61°N → ~47°N) keeps its true proportions instead of
+    // coming out ~1.4x too wide.
+    const anchorCos = Math.cos(anchorLat * DEG);
+    const lonScale = scale * Math.cos(centerLat * DEG) / anchorCos;
+    const cos = Math.cos(rotate * DEG);
+    const sin = Math.sin(rotate * DEG);
+    // Rotate in ground units (longitude times cos(lat)) so the turn doesn't
+    // shear the shape, then convert back to degrees of longitude.
+    const project = ([lon, lat, ...rest]) => {
+        const x = (unwrapLon(lon) - centerLon) * lonScale * anchorCos;
+        const y = (lat - centerLat) * scale;
+        return [
+            wrapLon(anchorU + (x * cos - y * sin) / anchorCos),
+            anchorLat + x * sin + y * cos,
+            ...rest,
+        ];
+    };
+    return { ...feature, geometry: { ...geometry, coordinates: mapCoordinates(geometry.coordinates, project) } };
 };
 
 // Applied before viewForGeometry runs, so the auto-fit viewport is computed
@@ -109,8 +149,20 @@ const stateIndex = (country) => new Map(
     (country?.ui_ready?.state_drilldown?.states || []).map((state) => [state.map_feature_code, state]),
 );
 
-export const renderCountryMap = async ({ host, country, selectedStateId = null, onStateOpen }) => {
-    const geo = withRelocatedExclaves(await loadAdmin1(country.iso3), country.iso3);
+// fitView:false 는 카메라를 건드리지 않고 색만 바꾼다. 주를 누른 직후 "눌렀다"는 표시를 지도에
+// 먼저 주려고 같은 지도를 다시 칠할 때 쓴다 -- 사용자가 확대해 둔 시점이 되돌아가면 안 된다.
+export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, fitView = true, onStateOpen }) => {
+    let raw;
+    try {
+        raw = await loadAdmin1(country.iso3);
+    } catch (error) {
+        // 경계 도형을 못 받았다. 예외를 올리면 이 지도를 기다리는 화면 전체가 멈춘다. 실패는
+        // 캐시되지 않으므로 나갔다 들어오면 다시 시도한다.
+        console.warn(`국가 경계 도형을 불러오지 못했습니다 (${country.iso3}):`, error?.message || error);
+        return false;
+    }
+    const geo = withRelocatedExclaves(raw, country.iso3);
+    if (isStale?.()) return false;
     const usaStates = country.iso3 === 'USA' ? stateIndex(country) : null;
     const layer = new host.layers.GeoJsonLayer({
         id: `elections-country-${country.iso3}`,
@@ -119,10 +171,15 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
         filled: true,
         pickable: country.iso3 === 'USA',
         lineWidthMinPixels: 1,
+        updateTriggers: { getFillColor: [selectedStateId, electionMode] },
         getLineColor: [203, 213, 225, 190],
         getFillColor: (feature) => {
             const state = usaStates?.get(feature.properties?.code);
             if (state?.id === selectedStateId) return selected;
+            if (country.iso3 === 'USA' && electionMode) {
+                const stateId = feature.properties?.code?.replace(/^US-/, '');
+                return classColors[stateClass2024(stateId)];
+            }
             return state ? partyColor(state.governor?.abbr) : neutral;
         },
     });
@@ -132,5 +189,6 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
     ], country.iso3 === 'USA' ? (info) => {
         const state = usaStates.get(info?.object?.properties?.code);
         if (state) onStateOpen(state.id);
-    } : null, viewForGeometry(geo));
+    } : null, fitView ? viewForGeometry(geo) : null);
+    return true;
 };

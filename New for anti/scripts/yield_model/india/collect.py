@@ -33,7 +33,7 @@ from datetime import date
 import pandas as pd
 
 from . import climate as C
-from . import icrisat
+from . import icrisat, idp
 from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -293,6 +293,15 @@ def build_region(cfg, oni, dmi):
         return df
 
     yields = icrisat.region_yield(cfg.crop, cfg.selector)
+    # ICRISAT stops in 2019; the DES/UPAg series from India Data Portal
+    # carries the same figures on (see india/idp.py) and extends them.
+    later = idp.region_yield(cfg.crop, cfg.selector)
+    if later is not None and len(later):
+        later = later[later.year > yields.year.max()]
+        yields = pd.concat([yields, later[yields.columns]], ignore_index=True)
+        if len(later):
+            log(f"  labels {int(later.year.min())}-{int(later.year.max())} "
+                "from India Data Portal (DES APY / UPAg)")
     df = df.merge(yields[["year", "yield_kg_ha"]], on="year", how="left")
 
     for name, source in cfg.panel.items():

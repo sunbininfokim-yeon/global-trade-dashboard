@@ -109,6 +109,8 @@ def _build_env(
 def compute_metrics(
     amounts: dict[str, float | None],
     spec: dict[str, Any] | None = None,
+    *,
+    entity_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     mspec = spec or load_metrics_spec()
     metrics_def: dict[str, Any] = mspec.get("metrics") or {}
@@ -150,6 +152,35 @@ def compute_metrics(
             "polarity": meta.get("polarity"),
             "reason": None,
         }
+        if mid in {"roe", "roa"}:
+            out[mid]["reason"] = "proxy:ending_balance_denominator"
+            out[mid]["policy_status"] = "proxy"
+        elif mid in {"asset_turnover", "inventory_turnover", "receivables_turnover"}:
+            out[mid]["reason"] = "proxy:ending_balance_denominator"
+            out[mid]["policy_status"] = "proxy"
+        elif mid == "interest_coverage":
+            out[mid]["reason"] = "proxy:operating_income_over_abs_interest_expense"
+            out[mid]["policy_status"] = "proxy"
+
+    # A strict ROIC needs average invested capital and an explicit tax policy.
+    # The current single-period balance-sheet proxy is retained in the spec for
+    # formula documentation but is not published as a computed result.
+    if "roic" in out and not (entity_policy or {}).get("is_financial_entity"):
+        out["roic"] = {
+            "value": None,
+            "unit": out["roic"].get("unit"),
+            "label": out["roic"].get("label"),
+            "reason": "unavailable:strict_roic_requires_average_invested_capital_and_tax_policy",
+            "policy_status": "unavailable",
+        }
+    if (entity_policy or {}).get("is_financial_entity"):
+        # Local import keeps this low-level declarative evaluator independent
+        # for callers that only use formula evaluation.
+        from .entity_policy import INDUSTRIAL_BASE_METRICS, not_applicable_cell
+
+        for mid in INDUSTRIAL_BASE_METRICS:
+            if mid in out:
+                out[mid] = not_applicable_cell(out[mid])
     return out
 
 

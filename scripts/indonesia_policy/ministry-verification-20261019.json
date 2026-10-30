@@ -1,0 +1,43 @@
+{
+  "country": "IDN",
+  "scope": "Live connectivity/list checks only; not five complete collections",
+  "sources": [
+    {
+      "source_id": "esdm-original",
+      "url": "https://jdih.esdm.go.id/",
+      "checked_at": "2026-10-19T14:31:59.775120+00:00",
+      "outcome": "dns_failed; official web reader separately returned maintenance",
+      "enumeration_verified": false,
+      "observed_listing_url": "https://jdih.esdm.go.id/dokumen/index"
+    },
+    {
+      "source_id": "kemendag-original",
+      "url": "https://jdih.kemendag.go.id/peraturan",
+      "checked_at": "2026-10-19T14:31:59.775120+00:00",
+      "outcome": "original_list_verified_partial",
+      "enumeration_verified": true
+    },
+    {
+      "source_id": "pertanian-original",
+      "url": "https://jdih.pertanian.go.id/",
+      "checked_at": "2026-10-19T14:31:59.775120+00:00",
+      "outcome": "http_403",
+      "enumeration_verified": false
+    },
+    {
+      "source_id": "kemenperin-original",
+      "url": "https://jdih.kemenperin.go.id/",
+      "checked_at": "2026-10-19T14:31:59.775120+00:00",
+      "outcome": "connect_timeout",
+      "enumeration_verified": false
+    },
+    {
+      "source_id": "kemenkeu-original",
+      "url": "https://jdih.kemenkeu.go.id/",
+      "checked_at": "2026-10-19T14:31:59.775120+00:00",
+      "outcome": "homepage_read_timeout; observed /search listing also read_timeout",
+      "enumeration_verified": false,
+      "observed_listing_url": "https://jdih.kemenkeu.go.id/search?bentuk=Peraturan+Menteri&order=desc&teu=Kementerian+Keuangan"
+    }
+  ]
+}

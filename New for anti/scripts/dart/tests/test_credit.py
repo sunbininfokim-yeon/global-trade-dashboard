@@ -32,7 +32,8 @@ class TestInterestCoverage(unittest.TestCase):
         ma = compute_ma_metrics(amounts)
         self.assertAlmostEqual(ma["interest_coverage"]["value"], 10.0)
         self.assertAlmostEqual(ma["interest_burden"]["value"], 0.1)
-        self.assertAlmostEqual(ma["effective_interest_rate_pct"]["value"], 5.0)
+        self.assertIsNone(ma["effective_interest_rate_pct"]["value"])
+        self.assertIn("gross_debt", ma["effective_interest_rate_pct"]["reason"])
 
     def test_null_without_interest(self):
         ma = compute_ma_metrics({"OPERATING_INCOME": 100.0, "LONG_TERM_DEBT": 50.0})
