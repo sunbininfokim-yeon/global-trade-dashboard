@@ -44,7 +44,10 @@ class NETests(unittest.TestCase):
         self.assertTrue(all(r==after['races'][rid] for rid,r in before['races'].items() if not rid.startswith('USA:NE:')))
         for rid,race in after['races'].items():
             if rid.startswith('USA:NE:'):
-                for window in race['windows'].values():self.assertIsNone(window['party'])
+                # Research-only primaries never lead; a lead may come only from the
+                # reviewed Echelon/NetChoice release admitted 2026-10-30.
+                for window in race['windows'].values():
+                    if window['party']:self.assertLessEqual(set(window['included_ids']),{'us-202ech8ce34abf','gov202ech6a54009b'})
         primary=[o for rid,r in hist['races'].items() if rid.startswith('USA:NE:') for o in r['observations'] if o['id'].startswith('primary-')]
         self.assertEqual(len(primary),4)
         self.assertTrue(all(not o['aggregation_eligibility']['eligible'] for o in primary))
