@@ -45,11 +45,12 @@ jobs:
         run: |
           set -e
           LATEST_TRAINED=$(python -c "import pandas as pd; d=pd.read_csv('argentina/training/pampas_soja.csv').dropna(subset=['yield_kg_ha']); print(int(d.year.max()))")
+          # Collectors log to stdout; keep only the printed year.
           LATEST_PUBLISHED=$(python -c "
           import argentina.magyp as m
           m.download(force=True)
           print(int(m.region_yield('soja', ['Buenos Aires','Córdoba','Santa Fe']).year.max()))
-          ")
+          " | tail -n 1)
           echo "trained through $LATEST_TRAINED, MAGyP published through $LATEST_PUBLISHED"
           if [ "$LATEST_PUBLISHED" -gt "$LATEST_TRAINED" ]; then
             echo "new season published -- rebuilding training tables and models"

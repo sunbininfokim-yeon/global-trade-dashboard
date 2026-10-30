@@ -43,10 +43,11 @@ jobs:
         run: |
           set -e
           LATEST_TRAINED=$(python -c "import pandas as pd; d=pd.read_csv('brazil/training/parana_soja.csv').dropna(subset=['yield_kg_ha']); print(int(d.year.max()))")
+          # Collectors log to stdout; keep only the printed year.
           LATEST_PUBLISHED=$(python -c "
           import brazil.sidra as s
           print(int(s.state_yield('soja','PR').year.max()))
-          ")
+          " | tail -n 1)
           echo "trained through $LATEST_TRAINED, IBGE published through $LATEST_PUBLISHED"
           if [ "$LATEST_PUBLISHED" -gt "$LATEST_TRAINED" ]; then
             echo "new season published -- rebuilding training tables and models"

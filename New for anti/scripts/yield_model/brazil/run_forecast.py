@@ -159,6 +159,7 @@ def main():
                     if r["critical_window_observed"] is not None else None),
                 "season_complete": r["season_complete"],
                 "notes": r["notes"],
+                "inputs_out_of_range": r.get("inputs_out_of_range", []),
             },
         }
         flag = "" if r["beats_trend"] else "  [no skill vs trend]"

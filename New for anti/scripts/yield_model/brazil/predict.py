@@ -127,6 +127,10 @@ def _prior_yield(year, history, predicted):
     return np.nan, [f"no yield or forecast available for {year}"]
 
 
+# Training inputs are standardised; nothing real sits six sigmas out.
+MAX_INPUT_Z = 6.0
+
+
 def predict_one(cfg, year, oni, predicted):
     model_path = os.path.join(MODELS, f"{cfg.key}.json")
     if not os.path.exists(model_path):
@@ -199,6 +203,16 @@ def predict_one(cfg, year, oni, predicted):
     # own error) and the model's would-be adjustment is kept for reference.
     if not model["beats_trend"]:
         weather_log = 0.0
+    # An observed input this far outside training is a data fault, not a
+    # season: SP oranges published +2,681% on 2026-10-23. Fall back to the
+    # trend and name the inputs, so the next run's log says which one.
+    z = np.where(unk, 0.0, (x - mean) / scale)
+    wild = [f"{f} z={v:+.1f}" for f, v in zip(model["features"], z)
+            if abs(v) > MAX_INPUT_Z]
+    if wild:
+        weather_log = 0.0
+        notes = notes + ["inputs outside training range, trend shown: " + ", ".join(wild)]
+        log(f"{cfg.key} {year}: inputs outside training range -> trend: {', '.join(wild)}")
     point_kg = float(np.exp(trend_log + weather_log))
     sigma = model["uncertainty"]["sigma_kg_ha"]
     if unk.any():
@@ -231,7 +245,8 @@ def predict_one(cfg, year, oni, predicted):
         "trend": trend_kg,
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
         "model_weather_effect_pct": model_effect_pct,
-        "point_basis": "model" if model["beats_trend"] else "trend",
+        "point_basis": "model" if model["beats_trend"] and not wild else "trend",
+        "inputs_out_of_range": wild,
         "point": point_kg,
         "range_68": [point_kg - sigma, point_kg + sigma],
         "range_95": [point_kg - 1.96 * sigma, point_kg + 1.96 * sigma],
