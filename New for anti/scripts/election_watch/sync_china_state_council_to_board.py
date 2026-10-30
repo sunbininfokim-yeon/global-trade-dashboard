@@ -137,6 +137,7 @@ def main() -> None:
         raise SystemExit("party_state unexpectedly has a cmc key; cmc splice would hit it")
     board_text = replace_json_value(board_text, "cmc", leadership, extract["cmc"], 8)
     board_text = replace_json_value(board_text, "theater_commands", leadership, extract["theater_commands"], 8)
+    board_text = replace_json_value(board_text, "service_branches", leadership, extract["service_branches"], 8)
     BOARD.write_text(board_text, encoding="utf-8")
 
     chart = json.loads(CHART.read_text(encoding="utf-8"))
