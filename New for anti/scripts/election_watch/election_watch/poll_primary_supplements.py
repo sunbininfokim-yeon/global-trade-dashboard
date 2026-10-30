@@ -209,31 +209,67 @@ def merge_primary_supplements(rows, snapshot, as_of, states=None, opener=urlopen
     return output,receipts
 
 
+def _network_only(failures):
+    """Failures that only say a page could not be fetched (no evidence it changed)."""
+    return bool(failures) and all(f.get('error_type') and 'id' not in f for f in failures)
+
+
 def keep_unreachable_primary_receipts(previous_capture, receipts, records):
     """Offline packet replay must not erase an earlier successful recheck.
 
     When every publisher document of a reviewed release is merely unreachable
     (no body fetched, so no evidence it changed), keep the previous packet's
-    receipt and primary record for that ID. A changed digest, a different
-    document set or a new review date is real news and is never masked.
-    Returns (receipts, records, kept_ids).
+    receipt and primary record for that ID. The same holds for reviewed HTML
+    tables (kind html_table) whose page could not be fetched, and for their
+    table health line. A record that dropped out of the replay while its
+    receipt is kept is put back in the previous packet's order. A changed
+    digest, a different document set, a changed same-wave table row or a new
+    review date is real news and is never masked. Returns (receipts, records, kept_ids).
     """
     previous_capture = previous_capture or {}
-    old_receipts = {r.get('id'): r for r in (previous_capture.get('receipt') or {}).get('primary_supplement_receipts', [])}
-    old_records = {r.get('id'): r for r in previous_capture.get('primary_records', [])}
+    prev_list = (previous_capture.get('receipt') or {}).get('primary_supplement_receipts', [])
+    old_receipts = {r.get('id'): r for r in prev_list if r.get('id')}
+    old_health = {r.get('contract_id'): r for r in prev_list if r.get('kind') == 'html_table_health'}
+    prev_records = previous_capture.get('primary_records', [])
+    old_records = {r.get('id'): r for r in prev_records}
     kept = set()
     out = []
     for receipt in receipts:
         prev = old_receipts.get(receipt.get('id'))
         docs = receipt.get('documents') or []
-        if (prev and docs and receipt['id'] in old_records
-                and all(d.get('status') == 'unavailable' for d in docs)
-                and prev.get('status') == 'primary_documents_rechecked'
-                and prev.get('original_reviewed_on') == receipt.get('original_reviewed_on')
-                and sorted(d.get('url') for d in prev.get('documents', [])) == sorted(d.get('url') for d in docs)):
+        if receipt.get('kind') == 'html_table':
+            ok = (prev and prev.get('contract_sha256') == receipt.get('contract_sha256')
+                  and receipt['record']['primary_source_capture']['status'] == 'carried_forward_reference_only'
+                  and prev['record']['primary_source_capture']['status'] != 'carried_forward_reference_only'
+                  and _network_only(receipt.get('failures')))
+        else:
+            ok = (prev and docs and receipt['id'] in old_records
+                  and all(d.get('status') == 'unavailable' for d in docs)
+                  and prev.get('status') == 'primary_documents_rechecked'
+                  and prev.get('original_reviewed_on') == receipt.get('original_reviewed_on')
+                  and sorted(d.get('url') for d in prev.get('documents', [])) == sorted(d.get('url') for d in docs))
+        if ok:
             out.append(deepcopy(prev))
             kept.add(receipt['id'])
         else:
             out.append(receipt)
-    records = [deepcopy(old_records[r['id']]) if r.get('id') in kept else r for r in records]
+    # Table health follows its rows: restore it only when every carried row was kept.
+    for i, receipt in enumerate(out):
+        prev = old_health.get(receipt.get('contract_id')) if receipt.get('kind') == 'html_table_health' else None
+        rows = [r for r in out if r.get('kind') == 'html_table' and r.get('contract_id') == receipt.get('contract_id')]
+        if prev and receipt.get('status') == 'partial_last_good_preserved' and _network_only(receipt.get('failures')) \
+                and rows and all(r['id'] in kept for r in rows):
+            out[i] = deepcopy(prev)
+    records = [deepcopy(old_records[r['id']]) if r.get('id') in kept and r['id'] in old_records else r for r in records]
+    have = {r.get('id') for r in records}
+    for rid in [r['id'] for r in prev_records if r['id'] in kept and r['id'] not in have] + \
+               [r['id'] for r in prev_records if r['id'] not in have and old_receipts.get(r['id']) in
+                [x for x in out if x.get('id') == r['id']]]:
+        if rid in {r.get('id') for r in records}:
+            continue
+        # Insert just before the record that followed it in the previous packet.
+        order = [r['id'] for r in prev_records]
+        after = order[order.index(rid) + 1:]
+        pos = next((i for i, r in enumerate(records) if r.get('id') in after), len(records))
+        records.insert(pos, deepcopy(old_records[rid]))
     return out, records, kept

@@ -43,5 +43,34 @@ class KeepUnreachablePrimaryReceiptsTests(unittest.TestCase):
         self.assertFalse(keep_unreachable_primary_receipts(carried, [new], [])[2])
 
 
+def html(status, failures, sha='c1'):
+    return {'id': 'h1', 'kind': 'html_table', 'state': 'NE', 'contract_id': 'k', 'contract_sha256': sha, 'failures': failures,
+            'record': {'id': 'h1', 'primary_source_capture': {'status': status}}}
+
+
+HEALTH_OK = {'kind': 'html_table_health', 'contract_id': 'k', 'status': 'ok_reference_only', 'failures': []}
+NET = [{'error_type': 'URLError', 'reason': 'offline'}]
+
+
+class KeepUnreachableHtmlTableTests(unittest.TestCase):
+    def setUp(self):
+        self.old = {'receipt': {'primary_supplement_receipts': [html('primary_documents_rechecked', []), HEALTH_OK]},
+                    'primary_records': [{'id': 'p0'}, {'id': 'h1', 'primary_source_capture': {'status': 'primary_documents_rechecked'}}, {'id': 'p2'}]}
+
+    def test_unreachable_table_keeps_row_health_and_record_order(self):
+        new = [html('carried_forward_reference_only', NET), {**HEALTH_OK, 'status': 'partial_last_good_preserved', 'failures': NET}]
+        receipts, records, kept = keep_unreachable_primary_receipts(self.old, new, [{'id': 'p0'}, {'id': 'p2'}])
+        self.assertEqual(kept, {'h1'})
+        self.assertEqual(receipts, self.old['receipt']['primary_supplement_receipts'])
+        self.assertEqual([r['id'] for r in records], ['p0', 'h1', 'p2'])
+
+    def test_changed_table_row_or_contract_is_not_masked(self):
+        for new in ([html('carried_forward_reference_only', [{'reason': 'same_wave_changed_review_required', 'id': 'h1'}])],
+                    [html('carried_forward_reference_only', NET, sha='c2')]):
+            receipts, _, kept = keep_unreachable_primary_receipts(self.old, new, [])
+            self.assertFalse(kept)
+            self.assertEqual(receipts[0]['record']['primary_source_capture']['status'], 'carried_forward_reference_only')
+
+
 if __name__ == '__main__':
     unittest.main()
