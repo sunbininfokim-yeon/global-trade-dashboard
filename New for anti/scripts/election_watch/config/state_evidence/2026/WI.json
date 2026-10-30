@@ -1,0 +1,1141 @@
+{
+  "schema": "usa_state_evidence_packet_v1",
+  "state": "WI",
+  "cycle": 2026,
+  "config_operations": [
+    {
+      "file": "usa_polls/primary_supplements_2026.json",
+      "path": [
+        "records"
+      ],
+      "action": "append_item",
+      "value": {
+        "state": "WI",
+        "reviewed_on": "2026-10-30",
+        "record_sha256": "9d14eafa6a6e2bbe77b7e1008eeaae4ca69feb987a118b4c522a5c544a04c318",
+        "record": {
+          "id": "primary-marquette-wi-governor-lv-20261028",
+          "subject": "2026 Wisconsin",
+          "poll_type": "governor",
+          "pollster": "Marquette University Law School",
+          "start_date": "2026-10-14",
+          "end_date": "2026-10-22",
+          "created_at": "2026-10-28",
+          "population": "lv",
+          "sample_size": 668,
+          "answers": [
+            {
+              "choice": "David Crowley",
+              "pct": 51.0
+            },
+            {
+              "choice": "Tom Tiffany",
+              "pct": 44.0
+            }
+          ],
+          "sponsors": [],
+          "internal": false,
+          "partisan": null,
+          "seat_name": null,
+          "url": "https://law.marquette.edu/poll/2026/10/28/mlsp92-detail/"
+        },
+        "documents": [
+          {
+            "url": "https://law.marquette.edu/assets/community/poll/MLSP92/MLSP92PressRelease.pdf",
+            "sha256": "6b1f4aed0977152af0c29aac18769d418f70138ad49b2c0ee705c166aea62867",
+            "relevant_pages": [
+              1,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "primary-marquette-wi-governor-lv-20261028"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-30",
+        "reviewed_at": "2026-10-30T05:00:00+00:00",
+        "sources": [
+          "https://law.marquette.edu/poll/2026/10/28/mlsp92-detail/",
+          "https://law.marquette.edu/poll/2026/10/28/mlsp92-press-release/",
+          "https://law.marquette.edu/assets/community/poll/MLSP92/MLSP92PressRelease.pdf",
+          "https://law.marquette.edu/assets/community/poll/MLSP92/MLSP92ToplinesLV.html"
+        ],
+        "primary_toplines": {
+          "David Crowley": 51.0,
+          "Tom Tiffany": 44.0
+        },
+        "question_sample_n": null,
+        "disclosure_review": {
+          "mode": "web and live telephone",
+          "field_dates": [
+            "2026-10-14",
+            "2026-10-22"
+          ],
+          "population": "LV",
+          "sample_n": 668,
+          "total_registered_n": 818,
+          "likely_voter_n": 668,
+          "sampling_frame": {
+            "L2_registration_sample": 613,
+            "SSRS_probability_address_panel": 205
+          },
+          "mode_n": {
+            "online": 747,
+            "telephone": 71
+          },
+          "weighting": "source-specific design/base weights, nonresponse adjustment, compositing and calibration to voter benchmarks; SSRS published method",
+          "question": "Governor initial vote intention (Tiffany vs. Crowley); undecided-only lean question excluded",
+          "question_wording_checked": true,
+          "question_sample_n_not_inferred_from_weighted_frequency": true,
+          "phase": "post_primary_general_matchup",
+          "undecided_pct": 4,
+          "source_fetch_receipt": "source-fetch/wi-marquette-20261030-41041042921",
+          "not_in_provider_feed": "VoteHub 10-30 full response has no Marquette Oct 14-22 row"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 4.7,
+          "confidence_level_pct": null,
+          "validated_here": false
+        },
+        "ballot_format": "two_candidate_initial_with_undecided",
+        "sponsor_review": {
+          "commissioner": "Marquette University Law School",
+          "conducted_by": "SSRS"
+        },
+        "missing_fields": [
+          "accuracy_grade",
+          "statistical_significance",
+          "question_sample_n"
+        ],
+        "limitations_ko": "Marquette 10/28 최종 발표(PDF) 대조. VoteHub에 없는 조사라 원문을 직접 추가. 초기 투표의향(미정 후속 lean 제외), LV 668. 정확도 등급 아님.",
+        "provider_record_sha256": "9d14eafa6a6e2bbe77b7e1008eeaae4ca69feb987a118b4c522a5c544a04c318",
+        "primary_supplement_record_sha256": "9d14eafa6a6e2bbe77b7e1008eeaae4ca69feb987a118b4c522a5c544a04c318",
+        "admission": {
+          "pollster": "Marquette University Law School",
+          "provider_url": "https://law.marquette.edu/poll/2026/10/28/mlsp92-detail/",
+          "group": "marquette",
+          "methodology_url": "https://law.marquette.edu/assets/community/poll/MLSP92/MLSP92PressRelease.pdf",
+          "source_role": "pollster_primary",
+          "signal_eligible": true
+        },
+        "primary_documents": [
+          {
+            "url": "https://law.marquette.edu/assets/community/poll/MLSP92/MLSP92PressRelease.pdf",
+            "sha256": "6b1f4aed0977152af0c29aac18769d418f70138ad49b2c0ee705c166aea62867"
+          }
+        ],
+        "snapshot_sha256": "429a7b54ab200e47409dd7138374a970d77dd8aba3c66cbae00c67fcefc8dfef"
+      }
+    }
+  ],
+  "capture": {
+    "as_of": "2026-10-30",
+    "fetched_at": "2026-10-30T10:32:20.041719+00:00",
+    "receipt": {
+      "state": "WI",
+      "cycle": 2026,
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-30",
+      "captured_at": "2026-10-30T10:32:20.041719+00:00",
+      "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+      "serialized_provider_response_sha256": "e41cfcfbbee351cb0da1908dc3195a92401064d19262c2a0c6004e5a0af19918",
+      "provider_records": 33,
+      "primary_supplement_receipts": [
+        {
+          "id": "primary-marquette-wi-governor-lv-20261028",
+          "state": "WI",
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-30",
+          "checked_at": "2026-10-30T10:32:27.398168+00:00",
+          "documents": [
+            {
+              "url": "https://law.marquette.edu/assets/community/poll/MLSP92/MLSP92PressRelease.pdf",
+              "status": "unchanged",
+              "sha256": "6b1f4aed0977152af0c29aac18769d418f70138ad49b2c0ee705c166aea62867"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      ],
+      "primary_rechecked_ids": [
+        "gov202mar6e84a0e7",
+        "gov202mare9ac6d63",
+        "gov202mar91835a0d",
+        "primary-marquette-wi-governor-rv-20260930",
+        "gov202plab53c0b38",
+        "primary-dccc-wi-house01-20260929"
+      ],
+      "primary_rechecked_at": "2026-10-08T19:29:04.987345+00:00",
+      "primary_review_data_file": "usa_election_poll_release_reviews/2026/WI-primary-20261009.json",
+      "governor_source_checked_at": "2026-10-08T19:30:41.462501+00:00",
+      "governor_source_access_data_file": "usa_governor_source_access/2026/WI.json",
+      "provider_fetch": {
+        "via": "source_fetch.yml (GitHub Actions runner)",
+        "fetch_branch": "source-fetch/votehub-full-20261030-40999144298",
+        "fetched_at": "2026-10-30T03:46:38.238312+00:00",
+        "http_status": 200,
+        "raw_sha256": "3758903074d7cfd080f0509a6f6fb260b3870d4778b61d729a26b25cae87ec20"
+      }
+    },
+    "provider_records": [
+      {
+        "id": "gov202tip0fe8c207",
+        "poll_type": "governor",
+        "sample_size": 1175,
+        "population": "lv",
+        "url": "https://x.com/IAPolls2022/status/2036258027725025698",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-19",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Mandela Barnes",
+            "pct": 43.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tip144605dc",
+        "poll_type": "governor",
+        "sample_size": 1495,
+        "population": "rv",
+        "url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-19",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Mandela Barnes",
+            "pct": 40.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202imp31a6ee87",
+        "poll_type": "governor",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://www.documentcloud.org/documents/26204970-wi-gov-impact-research-for-long-run-pac-oct-2025/",
+        "created_at": "2026-04-27",
+        "start_date": "2025-10-02",
+        "end_date": "2025-10-08",
+        "pollster": "Impact Research",
+        "answers": [
+          {
+            "choice": "Mandela Barnes",
+            "pct": 50.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tipd4dc9765",
+        "poll_type": "governor",
+        "sample_size": 1175,
+        "population": "lv",
+        "url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-19",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 42.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tipb3a73643",
+        "poll_type": "governor",
+        "sample_size": 1495,
+        "population": "rv",
+        "url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-19",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 39.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 38.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tip8ecaf354",
+        "poll_type": "governor",
+        "sample_size": 1175,
+        "population": "lv",
+        "url": "https://x.com/IAPolls2022/status/2036258027725025698",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-19",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Francesca Hong",
+            "pct": 40.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tipe4c2582a",
+        "poll_type": "governor",
+        "sample_size": 1495,
+        "population": "rv",
+        "url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-19",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Francesca Hong",
+            "pct": 37.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202pateb69f263",
+        "poll_type": "governor",
+        "sample_size": 812,
+        "population": "lv",
+        "url": "https://drive.google.com/file/d/1RPTJ7lVbPnf35orAIGiwW9TRZthViZY5/view",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-10",
+        "end_date": "2026-03-16",
+        "pollster": "Patriot Polling",
+        "answers": [
+          {
+            "choice": "Francesca Hong",
+            "pct": 42.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tipe51755b1",
+        "poll_type": "governor",
+        "sample_size": 1175,
+        "population": "lv",
+        "url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-19",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Sara Rodriguez",
+            "pct": 44.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tipf7f3dea3",
+        "poll_type": "governor",
+        "sample_size": 1495,
+        "population": "rv",
+        "url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-3/",
+        "created_at": "2026-04-27",
+        "start_date": "2026-03-13",
+        "end_date": "2026-03-19",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "Sara Rodriguez",
+            "pct": 40.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "us-202pubc2e16fe9",
+        "poll_type": "us-representative",
+        "sample_size": 609,
+        "population": "lv",
+        "url": "https://www.politico.com/f/?id=00000199-fd60-dc69-abd9-fff233550000",
+        "created_at": "2026-04-27",
+        "start_date": "2025-10-14",
+        "end_date": "2025-10-15",
+        "pollster": "Public Policy Polling",
+        "answers": [
+          {
+            "choice": "Derrick Van Orden",
+            "pct": 42.0
+          },
+          {
+            "choice": "Rebecca Cooke",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": "WI-03",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 WI-03"
+      },
+      {
+        "id": "gov202the4e176460",
+        "poll_type": "governor",
+        "sample_size": 880,
+        "population": "rv",
+        "url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
+        "created_at": "2026-05-19",
+        "start_date": "2026-05-13",
+        "end_date": "2026-05-15",
+        "pollster": "The Public Sentiment Institute",
+        "answers": [
+          {
+            "choice": "Francesca Hong",
+            "pct": 35.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 36.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Great Lakes Perspective"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202thea822b210",
+        "poll_type": "governor",
+        "sample_size": 877,
+        "population": "lv",
+        "url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
+        "created_at": "2026-05-19",
+        "start_date": "2026-05-13",
+        "end_date": "2026-05-15",
+        "pollster": "The Public Sentiment Institute",
+        "answers": [
+          {
+            "choice": "Francesca Hong",
+            "pct": 41.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 40.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Great Lakes Perspective"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202the67fea2f7",
+        "poll_type": "governor",
+        "sample_size": 880,
+        "population": "rv",
+        "url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
+        "created_at": "2026-05-19",
+        "start_date": "2026-05-13",
+        "end_date": "2026-05-15",
+        "pollster": "The Public Sentiment Institute",
+        "answers": [
+          {
+            "choice": "Mandela Barnes",
+            "pct": 39.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 37.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Great Lakes Perspective"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202thee37da0db",
+        "poll_type": "governor",
+        "sample_size": 877,
+        "population": "lv",
+        "url": "https://tpsiofficial.substack.com/p/new-wisconsin-poll-shows-political",
+        "created_at": "2026-05-19",
+        "start_date": "2026-05-13",
+        "end_date": "2026-05-15",
+        "pollster": "The Public Sentiment Institute",
+        "answers": [
+          {
+            "choice": "Mandela Barnes",
+            "pct": 45.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "The Great Lakes Perspective"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "us-202fm396e2170a",
+        "poll_type": "us-representative",
+        "sample_size": 535,
+        "population": "lv",
+        "url": "https://x.com/cjwarnke/status/2074099699020128352?s=20",
+        "created_at": "2026-07-06",
+        "start_date": "2026-06-20",
+        "end_date": "2026-06-25",
+        "pollster": "FM3 Research",
+        "answers": [
+          {
+            "choice": "Derrick Van Orden",
+            "pct": 46.0
+          },
+          {
+            "choice": "Rebecca Cooke",
+            "pct": 50.0
+          }
+        ],
+        "seat_name": "WI-03",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 WI-03"
+      },
+      {
+        "id": "gov202mar00c0ea71",
+        "poll_type": "governor",
+        "sample_size": 695,
+        "population": "lv",
+        "url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
+        "created_at": "2026-07-23",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-16",
+        "pollster": "Marquette University Law School",
+        "answers": [
+          {
+            "choice": "Mandela Barnes",
+            "pct": 47.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 42.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202mard33a2b56",
+        "poll_type": "governor",
+        "sample_size": 695,
+        "population": "lv",
+        "url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
+        "created_at": "2026-07-23",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-16",
+        "pollster": "Marquette University Law School",
+        "answers": [
+          {
+            "choice": "Francesca Hong",
+            "pct": 44.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202marf8010a9d",
+        "poll_type": "governor",
+        "sample_size": 695,
+        "population": "lv",
+        "url": "https://law.marquette.edu/assets/community/poll/MLSP89/MLSP89PressRelease.pdf",
+        "created_at": "2026-07-23",
+        "start_date": "2026-07-08",
+        "end_date": "2026-07-16",
+        "pollster": "Marquette University Law School",
+        "answers": [
+          {
+            "choice": "Kelda Roys",
+            "pct": 42.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202rmg094af3ba",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
+        "created_at": "2026-07-30",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-24",
+        "pollster": "RMG Research",
+        "answers": [
+          {
+            "choice": "Francesca Hong",
+            "pct": 44.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Napolitan Institute",
+          "Institute for Reforming Government"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202rmg47f9f31c",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
+        "created_at": "2026-07-30",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-24",
+        "pollster": "RMG Research",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 46.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Napolitan Institute",
+          "Institute for Reforming Government"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202rmg75d397b8",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "rv",
+        "url": "https://reforminggovernment.org/irg-poll-inflation-still-rules-free-markets-still-win-race-still-open/",
+        "created_at": "2026-07-30",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-24",
+        "pollster": "RMG Research",
+        "answers": [
+          {
+            "choice": "Mandela Barnes",
+            "pct": 47.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Napolitan Institute",
+          "Institute for Reforming Government"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202gbaf1f6f960",
+        "poll_type": "governor",
+        "sample_size": 800,
+        "population": "lv",
+        "url": "https://www.politico.com/newsletters/playbook-pm/2026/08/12/trumps-cost-of-living-crunch-01035189",
+        "created_at": "2026-08-13",
+        "start_date": "2026-07-30",
+        "end_date": "2026-08-03",
+        "pollster": "GBAO Strategies",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 47.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Protect Our Wisconsin"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202plab53c0b38",
+        "poll_type": "governor",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://www.wpr.org/wp-content/uploads/2026/08/Badger-Battleground-Poll-Memo-August-2026-Final.pdf",
+        "created_at": "2026-08-17",
+        "start_date": "2026-08-12",
+        "end_date": "2026-08-13",
+        "pollster": "Platform Communications",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 48.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tip3799a38e",
+        "poll_type": "governor",
+        "sample_size": 1119,
+        "population": "lv",
+        "url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-4",
+        "created_at": "2026-08-26",
+        "start_date": "2026-08-14",
+        "end_date": "2026-08-18",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 47.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 43.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202tip71a0dd14",
+        "poll_type": "governor",
+        "sample_size": 1434,
+        "population": "rv",
+        "url": "https://tippinsights.com/league-of-american-workers-survey-wisconsin-4",
+        "created_at": "2026-08-26",
+        "start_date": "2026-08-14",
+        "end_date": "2026-08-18",
+        "pollster": "TIPP Insights",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 43.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 41.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202mare9ac6d63",
+        "poll_type": "governor",
+        "sample_size": 738,
+        "population": "lv",
+        "url": "https://law.marquette.edu/poll/2026/08/26/detailed-results-of-the-marquette-law-school-wisconsin-poll-august-12-20-2026/",
+        "created_at": "2026-08-27",
+        "start_date": "2026-08-12",
+        "end_date": "2026-08-20",
+        "pollster": "Marquette University Law School",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 49.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202mar91835a0d",
+        "poll_type": "governor",
+        "sample_size": 891,
+        "population": "rv",
+        "url": "https://law.marquette.edu/poll/2026/08/26/detailed-results-of-the-marquette-law-school-wisconsin-poll-august-12-20-2026/",
+        "created_at": "2026-08-27",
+        "start_date": "2026-08-12",
+        "end_date": "2026-08-20",
+        "pollster": "Marquette University Law School",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 44.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "us-202dcc0d4b0ded",
+        "poll_type": "us-representative",
+        "sample_size": 495,
+        "population": "lv",
+        "url": "https://hub.nationaljournal.com/dems-choosin-texas",
+        "created_at": "2026-09-29",
+        "start_date": "2026-09-21",
+        "end_date": "2026-09-23",
+        "pollster": "DCCC Targeting and Analytics Department",
+        "answers": [
+          {
+            "choice": "Brian Steil",
+            "pct": 48.0
+          },
+          {
+            "choice": "Mitchell Berman",
+            "pct": 48.0
+          }
+        ],
+        "seat_name": "WI-01",
+        "sponsors": [],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 WI-01"
+      },
+      {
+        "id": "gov202mar6e84a0e7",
+        "poll_type": "governor",
+        "sample_size": 692,
+        "population": "lv",
+        "url": "https://law.marquette.edu/poll/2026/09/30/detailed-results-of-the-marquette-law-school-wisconsin-poll-september-16-23-2026/",
+        "created_at": "2026-10-01",
+        "start_date": "2026-09-16",
+        "end_date": "2026-09-23",
+        "pollster": "Marquette University Law School",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 49.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 46.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "us-202impbb787ecf",
+        "poll_type": "us-representative",
+        "sample_size": 500,
+        "population": "lv",
+        "url": "https://bsky.app/profile/the-downballot.com/post/3mwyouhbwg22k",
+        "created_at": "2026-10-04",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-01",
+        "pollster": "Impact Research",
+        "answers": [
+          {
+            "choice": "Bryan Steil",
+            "pct": 47.0
+          },
+          {
+            "choice": "Mitchell Berman",
+            "pct": 48.0
+          }
+        ],
+        "seat_name": "WI-01",
+        "sponsors": [
+          "House Majority PAC"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 WI-01"
+      },
+      {
+        "id": "gov202z t813ce1f2",
+        "poll_type": "governor",
+        "sample_size": 662,
+        "population": "lv",
+        "url": "https://x.com/rbrtraining/status/2108302504446337272",
+        "created_at": "2026-10-09",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-01",
+        "pollster": "Z to A Research",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 49.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Rust Belt Rising"
+        ],
+        "internal": false,
+        "partisan": "DEM",
+        "subject": "2026 Wisconsin"
+      },
+      {
+        "id": "gov202wic9e236335",
+        "poll_type": "governor",
+        "sample_size": 1213,
+        "population": "lv",
+        "url": "https://stevecortes.substack.com/p/breaking-news-wisconsin-heads-for",
+        "created_at": "2026-10-29",
+        "start_date": "2026-10-19",
+        "end_date": "2026-10-23",
+        "pollster": "Wick",
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 48.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "League of American Workers"
+        ],
+        "internal": false,
+        "partisan": "REP",
+        "subject": "2026 Wisconsin"
+      }
+    ],
+    "provider_records_sha256": "5f8d00d60afa3bec1ff99bd2c221c3e17109384bdac9ada4268aff6d46c1196b",
+    "primary_records": [
+      {
+        "id": "primary-marquette-wi-governor-lv-20261028",
+        "subject": "2026 Wisconsin",
+        "poll_type": "governor",
+        "pollster": "Marquette University Law School",
+        "start_date": "2026-10-14",
+        "end_date": "2026-10-22",
+        "created_at": "2026-10-28",
+        "population": "lv",
+        "sample_size": 668,
+        "answers": [
+          {
+            "choice": "David Crowley",
+            "pct": 51.0
+          },
+          {
+            "choice": "Tom Tiffany",
+            "pct": 44.0
+          }
+        ],
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "seat_name": null,
+        "url": "https://law.marquette.edu/poll/2026/10/28/mlsp92-detail/",
+        "primary_source_capture": {
+          "status": "primary_documents_rechecked",
+          "original_reviewed_on": "2026-10-30",
+          "checked_at": "2026-10-30T10:32:27.398168+00:00",
+          "documents": [
+            {
+              "url": "https://law.marquette.edu/assets/community/poll/MLSP92/MLSP92PressRelease.pdf",
+              "status": "unchanged",
+              "sha256": "6b1f4aed0977152af0c29aac18769d418f70138ad49b2c0ee705c166aea62867"
+            }
+          ],
+          "provider_duplicate_ids": [],
+          "reviewed_replaced_provider_ids": [],
+          "separate_question_provider_ids": []
+        }
+      }
+    ]
+  }
+}
