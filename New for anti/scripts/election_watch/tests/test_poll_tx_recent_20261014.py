@@ -64,6 +64,7 @@ class TexasRecentTests(unittest.TestCase):
         for rid,race in old['house_poll_focus']['races'].items():
             if race['state']!='TX':self.assertEqual(new['house_poll_focus']['races'][rid],race,rid)
         self.assertEqual(new['house_poll_focus']['race_count'],104)
-        self.assertEqual(new['state_captures']['TX']['captured_at'],'2026-10-14T05:14:02.840821+00:00')
+        # The board's TX capture time follows the committed packet (10-14 first, later refreshes since).
+        self.assertEqual(new['state_captures']['TX']['captured_at'],self.packet['capture']['fetched_at'])
 
 if __name__=='__main__':unittest.main()
