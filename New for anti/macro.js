@@ -1054,6 +1054,63 @@ const mmContribView = (c, side = '') => {
         </div>`;
 };
 
+// Release-frequency official series (Japan growth diagnostics): the actual
+// quarterly observations as lines -- the main series plus any comparison or
+// component lines -- with the formula, sign rule, vintage and sources.
+const MM_OFFICIAL_COLORS = ['#38bdf8', '#fbbf24', '#a78bfa', '#34d399'];
+const mmOfficialView = (ind) => {
+    const oh = ind.official_history || {};
+    const lines = [{ id: 'main', label_ko: oh.label_ko || ind.label_ko, dates: oh.dates || [], values: oh.values || [] },
+        ...(oh.extra_lines || [])];
+    const cutoff = (() => { const d = new Date(); d.setFullYear(d.getFullYear() - 12); return d.toISOString().slice(0, 10); })();
+    const pts = lines.map((l) => (l.dates || []).map((d, i) => [d, l.values[i]]).filter(([d, v]) => d >= cutoff && v != null && Number.isFinite(Number(v))));
+    const all = pts.flat();
+    if (!all.length) return '<p class="fin-note">원자료가 없습니다.</p>';
+    const W = 640, H = 230, pl = 36, pr = 10, pt = 10, pb = 24;
+    const t = (d) => new Date(d).getTime();
+    const x0 = Math.min(...all.map(([d]) => t(d))), x1 = Math.max(...all.map(([d]) => t(d)));
+    let lo = Math.min(0, ...all.map(([, v]) => Number(v))), hi = Math.max(0, ...all.map(([, v]) => Number(v)));
+    const pad = (hi - lo || 1) * 0.08; lo -= pad; hi += pad;
+    const X = (d) => pl + (t(d) - x0) / ((x1 - x0) || 1) * (W - pl - pr);
+    const Y = (v) => pt + (hi - v) / (hi - lo) * (H - pt - pb);
+    const paths = pts.map((p, k) => {
+        if (!p.length) return '';
+        const stepLine = lines[k].step;
+        let dstr = '';
+        p.forEach(([d, v], i) => {
+            const x = X(d).toFixed(1), y = Y(Number(v)).toFixed(1);
+            if (i === 0) dstr += `M${x},${y}`;
+            else dstr += stepLine ? `H${x}V${y}` : `L${x},${y}`;
+        });
+        const [ld, lv] = p[p.length - 1];
+        return `<path d="${dstr}" fill="none" stroke="${MM_OFFICIAL_COLORS[k % 4]}" stroke-width="${k ? 1.4 : 2}" ${k ? 'stroke-dasharray="4 3"' : ''}/>
+            <circle cx="${X(ld).toFixed(1)}" cy="${Y(Number(lv)).toFixed(1)}" r="3" fill="${MM_OFFICIAL_COLORS[k % 4]}"><title>${finEsc(lines[k].label_ko)} ${finEsc(ld)} ${Number(lv).toFixed(2)}</title></circle>`;
+    }).join('');
+    const years = [];
+    for (let y = new Date(x0).getFullYear() + 1; y <= new Date(x1).getFullYear(); y += 2) years.push(y);
+    const axis = years.map((y) => `<text x="${X(`${y}-01-01`).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#64748b">${y}</text>`).join('')
+        + [lo, 0, hi].map((v) => `<text x="${pl - 4}" y="${(Y(v) + 3).toFixed(1)}" text-anchor="end" font-size="10" fill="#64748b">${v.toFixed(1)}</text>`).join('')
+        + `<line x1="${pl}" x2="${W - pr}" y1="${Y(0).toFixed(1)}" y2="${Y(0).toFixed(1)}" stroke="#334155"/>`;
+    const legend = lines.map((l, k) => pts[k].length ? `<span class="mm-contrib-key"><i style="background:${MM_OFFICIAL_COLORS[k % 4]}"></i>${finEsc(l.label_ko)}</span>` : '').join('');
+    const rows = lines.map((l, k) => {
+        const p = pts[k];
+        if (!p.length) return '';
+        const [d, v] = p[p.length - 1];
+        return `<tr><td><i class="mm-contrib-sw" style="background:${MM_OFFICIAL_COLORS[k % 4]}"></i>${finEsc(l.label_ko)}</td><td>${finEsc(d)}</td><td>${Number(v).toFixed(2)}</td></tr>`;
+    }).join('');
+    const links = (ind.source_urls || []).map((u, k) => `<a class="mm-quality-link" href="${finEsc(u)}" target="_blank" rel="noopener noreferrer">원자료 ${k + 1} ↗</a>`).join(' ');
+    return `
+        <div class="mm-offdata">
+            <p class="mm-view-title">${finEsc(ind.label_ko)} · 분기 원자료 (최근 12년)</p>
+            <div class="mm-contrib-legend">${legend}</div>
+            <svg viewBox="0 0 ${W} ${H}" class="mm-contrib-chart" role="img" aria-label="${finEsc(ind.label_ko)} 원자료">${axis}${paths}</svg>
+            <table class="mm-contrib-table"><thead><tr><th>계열</th><th>기준</th><th>%</th></tr></thead><tbody>${rows}</tbody></table>
+            ${ind.formula_ko ? `<p class="fin-note"><b>산식</b> ${finEsc(ind.formula_ko)}</p>` : ''}
+            ${ind.sign_convention_ko ? `<p class="fin-note"><b>부호</b> ${finEsc(ind.sign_convention_ko)}</p>` : ''}
+            <p class="fin-note">출처: ${finEsc(ind.source || '')}${ind.esri_vintage ? ` · 내각부 GDP 회차 ${finEsc(ind.esri_vintage)}` : ''}${ind.retrieved_at ? ` · 수집 ${finEsc(String(ind.retrieved_at).slice(0, 10))}` : ''}. ${links}</p>
+        </div>`;
+};
+
 const mmBars = (rows, opts = {}) => {
     const vals = rows.map((r) => Number(r.value)).filter(Number.isFinite);
     if (!vals.length) return '<p class="fin-note">표시할 값이 없습니다.</p>';
@@ -1497,6 +1554,7 @@ const mmViewsFor = (ind) => {
                && ind.chart_type === 'line+components') {
         views.push({ id: 'components', label: '구성' });
     }
+    if (ind.official_history && has(ind.official_history.values)) views.push({ id: 'official', label: '원자료·산식' });
     if (ind.contrib && has(ind.contrib.parts)) views.push({ id: 'contrib', label: ind.contrib_industry ? '지출 기여도' : '기여도' });
     if (ind.contrib_industry && has(ind.contrib_industry.parts)) views.push({ id: 'contrib_ind', label: '산업 기여도' });
     return views.length ? views : [{ id: 'history', label: '추이' }];
@@ -1636,6 +1694,7 @@ const mmChartDrawer = () => {
     else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
     else if (view === 'contrib') body = mmContribView(ind.contrib);
     else if (view === 'contrib_ind') body = mmContribView(ind.contrib_industry, '산업별');
+    else if (view === 'official') body = mmOfficialView(ind);
     else if (view === 'components') body = mmComponentsView(ind, ind.components_note_ko || (ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.'));
     else {
         const src = modeSeries || ind;

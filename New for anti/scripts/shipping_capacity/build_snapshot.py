@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -985,9 +986,16 @@ def build_snapshot(
         client = PortWatchClient()
         for chokepoint in chokepoints:
             try:
-                live_status[chokepoint["id"]] = normalize_status_contract(
+                candidate = normalize_status_contract(
                     client.fetch_status(chokepoint["portwatch_id"])
                 )
+                previous_date = live_status.get(chokepoint["id"], {}).get("latest_date")
+                if previous_date and candidate.get("latest_date", "") < previous_date:
+                    raise RuntimeError(
+                        f"PortWatch observation regressed from {previous_date} "
+                        f"to {candidate.get('latest_date')}"
+                    )
+                live_status[chokepoint["id"]] = candidate
                 freshly_fetched_ids.add(chokepoint["id"])
             except Exception as exc:  # A partial upstream outage must not erase the snapshot.
                 live_errors.append({"chokepoint_id": chokepoint["id"], "error": str(exc)})
@@ -1428,6 +1436,11 @@ def main() -> None:
         default=Path(__file__).resolve().parent / "generated" / "shipping_capacity_v1.json",
     )
     parser.add_argument("--fetch-portwatch", action="store_true")
+    parser.add_argument(
+        "--allow-partial-portwatch",
+        action="store_true",
+        help="Diagnostic use only: allow publishing cached fallbacks after live fetch errors.",
+    )
     parser.add_argument("--fetch-official-cargo", action="store_true")
     parser.add_argument("--fetch-reconstruction", action="store_true")
     parser.add_argument("--previous-snapshot", type=Path)
@@ -1490,6 +1503,25 @@ def main() -> None:
         fallback_reconstruction=fallback_reconstruction,
         fallback_bypass=fallback_bypass,
     )
+    if args.fetch_portwatch and snapshot.get("live_fetch_errors"):
+        failed_ids = ", ".join(
+            row["chokepoint_id"] for row in snapshot["live_fetch_errors"]
+        )
+        message = (
+            f"PortWatch collection incomplete ({failed_ids}). "
+            "Existing published artifacts must be retained."
+        )
+        print(f"::{'warning' if args.allow_partial_portwatch else 'error'}::{message}")
+        for row in snapshot["live_fetch_errors"]:
+            print(f"PortWatch {row['chokepoint_id']}: {row['error']}")
+        summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary_path:
+            with open(summary_path, "a", encoding="utf-8") as handle:
+                handle.write(f"\n### PortWatch collection incomplete\n\n{message}\n")
+        if not args.allow_partial_portwatch:
+            # The scheduled workflow already stops on a nonzero build exit.
+            # Check before writing ANY of the four interdependent artifacts.
+            raise SystemExit(1)
     bundle = build_artifact_bundle(snapshot)
     scenario_grid_output = args.scenario_grid_output or (
         args.output.parent / "shipping_capacity_scenario_grid_v1.json"

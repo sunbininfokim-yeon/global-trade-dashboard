@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT))
 from market_microstructure.investor_price_levels import (  # noqa: E402
     KospiUniverseError,
     build_investor_price_levels_report,
+    build_kospi_index_levels,
     markdown_investor_price_levels,
 )
 
@@ -27,6 +28,8 @@ from market_microstructure.investor_price_levels import (  # noqa: E402
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--live", action="store_true")
+    p.add_argument("--index-only", action="store_true",
+                   help="Refresh only KOSPI index flows in an existing report; preserve ticker data")
     # 180 trading days ~ 8 months, so the UI's 6-month window is fully covered.
     # Naver serves 60 rows a request, so this costs 3 paged calls per ticker.
     p.add_argument("--page-size", type=int, default=180)
@@ -53,7 +56,7 @@ def main() -> int:
         "--krx-month-paste",
         default=os.environ.get("KRX_MONTH_PASTE_DIR") or None,
         help="krx-month-paste checkout; KOSPI market flow then comes from the stock-scoped "
-        "KRX 12008 export when present (default: $KRX_MONTH_PASTE_DIR, else the Naver page)",
+        "KRX 12008 export when present (default: $KRX_MONTH_PASTE_DIR, else Naver mobile JSON)",
     )
     p.add_argument("--print-stats", action="store_true")
     args = p.parse_args()
@@ -78,12 +81,32 @@ def main() -> int:
     # The published index block: its stock-only days are carried forward when
     # today's source returns nothing, instead of the block blanking to missing.
     out = ROOT / "../../public/data" / "investor_price_levels_v1.json"
+    previous_report = None
     previous_index_levels = None
     if out.is_file():
         try:
-            previous_index_levels = json.loads(out.read_text(encoding="utf-8")).get("kospi_index_levels")
+            previous_report = json.loads(out.read_text(encoding="utf-8"))
+            previous_index_levels = previous_report.get("kospi_index_levels")
         except (json.JSONDecodeError, OSError, AttributeError):
+            previous_report = None
             previous_index_levels = None
+
+    if args.index_only:
+        if not isinstance(previous_report, dict) or not previous_report.get("tickers"):
+            print("ERROR: --index-only requires an existing report with ticker data", file=sys.stderr)
+            return 1
+        index = build_kospi_index_levels(max_days=args.page_size, krx_root=args.krx_month_paste,
+                                         previous=previous_index_levels)
+        if index.get("quality") != "observed" or index.get("carried_forward_days", 0) >= index.get("n_days", 0):
+            print("ERROR: no fresh index observations; existing report kept unchanged", file=sys.stderr)
+            return 1
+        # Do not refresh report-wide timestamps: ticker observations did not run.
+        previous_report["kospi_index_levels"] = index
+        out.write_text(json.dumps(previous_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        (ROOT / "INVESTOR_PRICE_LEVELS.md").write_text(
+            markdown_investor_price_levels(previous_report) + "\n", encoding="utf-8")
+        print(f"Wrote KOSPI index only: {index['n_days']} days through {index['date_end']}; ticker data unchanged")
+        return 0
 
     try:
         rep = build_investor_price_levels_report(
