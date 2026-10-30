@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 import sys
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -193,7 +193,20 @@ class Collected(unittest.TestCase):
 class Assembled(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.b = assemble_ecb(json.loads(CONFIG.read_text(encoding="utf-8")), today=date(2026, 9, 25))
+        # The collected file keeps growing; replay it as it stood on the pinned day, or a later
+        # meeting or account reads as already out and these checks fail on every run after it.
+        today = date(2026, 9, 25)
+        doc = json.loads(CONFIG.read_text(encoding="utf-8"))
+        later = [m["meeting_date"] for m in doc["meetings"] if m["meeting_date"] > today.isoformat()]
+        doc["meetings"] = [m for m in doc["meetings"] if m["meeting_date"] <= today.isoformat()]
+        # the calendar drops a meeting once it is held; put those back as still upcoming
+        held = [{"decision_date": d, "day1": (date.fromisoformat(d) - timedelta(days=1)).isoformat()} for d in later]
+        doc["calendar"] = held + [c for c in doc["calendar"] if c["decision_date"] not in later]
+        for m in doc["meetings"]:
+            account = m.get("account")
+            if account and (account.get("released_on") or "") > today.isoformat():
+                m["account"] = None
+        cls.b = assemble_ecb(doc, today=today)
 
     def test_no_votes_are_invented(self):
         v = self.b["votes"]

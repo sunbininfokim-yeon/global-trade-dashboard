@@ -83,6 +83,10 @@ _RATE_RE = re.compile(
     r"uncollateralized\s+overnight\s+call\s+rate\s+to\s+remain\s+at\s+around\s+(minus\s+)?(\d+(?:\.\d+)?)\s+percent", re.I)
 _VOTE_RE = re.compile(
     r"decided,\s+by\s+(?:an?\s+)?(?:(\d+)\s*-\s*(\d+)\s+majority\s+vote|(unanimous)\s+vote),\s+to\s+(?:set|change)", re.I)
+# From October 2026 the statement numbers its decisions and puts each vote in the heading:
+# "1. Guideline for money market operations (an 8-1 majority vote)". Same groups as _VOTE_RE.
+_VOTE_HEAD_RE = re.compile(
+    r"Guideline\s+for\s+money\s+market\s+operations\s*\(\s*(?:an?\s+)?(?:(\d+)\s*-\s*(\d+)\s+majority\s+vote|(unanimous)\s+vote)\s*\)", re.I)
 _FOR_RE = re.compile(r"Voting\s+for\s+the\s+action:\s*(.*?)\s*Voting\s+against\s+the\s+action:\s*", re.S)
 _AGAINST_START = re.compile(r"Voting\s+against\s+the\s+action:\s*")
 
@@ -226,7 +230,7 @@ def parse_statement(text: str, *, meeting_date: str, source_url: str, title: str
     flat = flatten(text)
     d = date.fromisoformat(meeting_date)
 
-    vote = _VOTE_RE.search(flat)
+    vote = _VOTE_RE.search(flat) or _VOTE_HEAD_RE.search(flat)
     if not vote:
         raise ValueError(f"{meeting_date}: no policy-rate vote sentence at {source_url}")
     unanimous = bool(vote.group(3))
