@@ -1,7 +1,7 @@
 {
   "iso3": "JPN",
   "year": 2026,
-  "as_of": "2026-10-01",
+  "as_of": "2026-10-30",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "발표·확정 전 또는 출처에 날짜 없음"
@@ -101,55 +101,27 @@
   ],
   "events": [
     {
-      "id": "jpn-2027-shugiin-invest-lens",
-      "type": "general",
-      "label_ko": "중의원 (Invest Lens 추정 — 비정본)",
-      "date": "2027-10-20",
-      "status": "outside_year",
-      "notes": "충돌: 우리 정본 2026-02-08 51회 완료",
-      "sources": [
-        "invest_lens_elections"
-      ],
-      "conflict_with": "jpn-2026-shugiin-51",
-      "market_significance_invest_lens": 2,
-      "system_id": "jpn-shugiin",
-      "level": "national",
-      "chamber": "shugiin",
-      "contested_ko": "중의원 정수 전원 (Invest Lens 추정, 비정본)"
-    },
-    {
       "id": "jpn-2025-sangiin",
       "type": "general",
       "label_ko": "참의원 선거 (Invest Lens)",
-      "date": "2025-07-13",
+      "date": "2025-07-20",
       "status": "completed",
       "board_include_years": [
         2026
       ],
-      "notes": "IL: 자민 과반 유지",
+      "notes": "IL 라벨 유지. 투표일은 총무성 발표 2025-07-20 으로 정정(기존 캘린더 2025-07-13은 Invest Lens 날짜).",
       "sources": [
-        "invest_lens_elections"
+        "invest_lens_elections",
+        "https://www.soumu.go.jp/senkyo/27sansokuhou/index.html",
+        "https://www.sangiin.go.jp/japanese/gianjoho/old_gaiyo/218/2180000-1-n.pdf"
       ],
       "market_significance_invest_lens": 2,
       "system_id": "jpn-sangiin",
       "level": "national",
       "chamber": "sangiin",
-      "contested_ko": "참의원 절반 改選"
-    },
-    {
-      "id": "jpn-2026-ldp-president",
-      "type": "party_leadership",
-      "party_id": "ldp",
-      "label_ko": "자민당 총재 정기교체(2026)",
-      "date": "없음",
-      "status": "없음",
-      "notes": "2025-10 선출 임기 중; 별도 2026 총재전 없음(현재 기준)",
-      "level": "party",
-      "chamber": "없음",
-      "contested_ko": "자민당 총재 1인",
-      "sources": [
-        "https://www.jimin.jp/"
-      ]
+      "contested_ko": "통상 改選 124석 + 도쿄 보궐 1석 (정수 248의 절반 주기)",
+      "result": "자민 39 · 입헌 21(+도쿄보궐 1) · 국민 17 · 참정 14 · 공명 8 · 유신 7 (개헌 124+보궐1)",
+      "result_summary": "투표일 2025-07-20. 비례·선거구 투표율 각 58.51%. 자민·공명 개헌 47 + 비개헌 75 = 122로 참의원 과반(125) 실패. 출처: 참의원 개요(총무성 결과조)."
     },
     {
       "id": "jpn-2025-ldp-president",
@@ -192,20 +164,19 @@
       "contested_ko": "도도부현 지사 1인"
     },
     {
-      "id": "jpn-2026-shugiin-51",
-      "type": "general",
-      "label_ko": "제51회 중의원 총선거",
+      "id": "jpn-2026-gov-nagasaki",
+      "type": "local",
+      "label_ko": "나가사키현 지사",
       "date": "2026-02-08",
-      "chamber": "shugiin",
-      "notes": "해산 2026-01-23 · 공시 2026-01-27 · 투개표 2026-02-08.",
-      "result": "LDP 316 seats (고시 전 198→316)",
+      "level": "prefecture_governor",
+      "notes": "중의원 총선과 동시.",
       "sources": [
-        "wiki_shugiin_51"
+        "local_senkyo_2026"
       ],
       "status": "completed",
-      "system_id": "jpn-shugiin",
-      "level": "national",
-      "contested_ko": "중의원 정수 전원 (소선거구+비례)"
+      "system_id": "jpn-prefecture-governor",
+      "chamber": "없음",
+      "contested_ko": "도도부현 지사 1인"
     },
     {
       "id": "jpn-2026-gov-osaka",
@@ -238,19 +209,147 @@
       "contested_ko": "도도부현 지사 1인"
     },
     {
-      "id": "jpn-2026-gov-nagasaki",
-      "type": "local",
-      "label_ko": "나가사키현 지사",
+      "id": "jpn-2026-shugiin-51",
+      "type": "general",
+      "label_ko": "제51회 중의원 총선거",
       "date": "2026-02-08",
-      "level": "prefecture_governor",
-      "notes": "중의원 총선과 동시.",
+      "chamber": "shugiin",
+      "notes": "해산 2026-01-23 · 공시 2026-01-27 · 투개표 2026-02-08. 2026 의석과 비례 득표는 총무성 결과조. 득표율은 표가 당마다 반올림했고 합이 100이 안 될 수 있다고 적는다. 소선거구 득표는 더하지 않음. 레이와 6년 PDF는 2024년 직전 선거라 이 행의 출처에서 뺐다.",
+      "result": "자민 315 · 중도개혁연합 49 · 유신 36 · 국민 28 · 참정 15 · 팀미래 11 · 공산 4 · 무소속 5 · 레이와 1 · 감세일본 1 (465석)",
       "sources": [
-        "local_senkyo_2026"
+        "wiki_shugiin_51",
+        "https://www.soumu.go.jp/senkyo/senkyo_s/data/shugiin51/index.html",
+        "https://www.soumu.go.jp/main_content/001061475.xlsx",
+        "https://www.soumu.go.jp/main_content/001061479.xlsx",
+        "https://www.soumu.go.jp/main_content/001061471.xlsx",
+        "https://www.soumu.go.jp/main_content/001061472.xlsx"
       ],
       "status": "completed",
-      "system_id": "jpn-prefecture-governor",
-      "chamber": "없음",
-      "contested_ko": "도도부현 지사 1인"
+      "system_id": "jpn-shugiin",
+      "level": "national",
+      "contested_ko": "전체 465석 (소선거구 289 + 비례 176)",
+      "result_summary": "자민 316(소 249·비 67) · 중도개혁연합 49 · 유신 36 · 국민 28 · 참정 15 · 팀미라이 11 · 공산 4 · 레이와 1 · 감세일본 1 · 무소속 4. 정수 465.",
+      "previous": {
+        "date": "2024-10-27",
+        "turnout_pct": 53.85,
+        "seats_total": 465,
+        "by_party": [
+          {
+            "abbr": "LDP",
+            "name_ko": "자유민주당",
+            "vote_pct": 26.73,
+            "seats": 191
+          },
+          {
+            "abbr": "CDP",
+            "name_ko": "입헌민주당",
+            "vote_pct": 21.2,
+            "seats": 148
+          },
+          {
+            "abbr": "Ishin",
+            "name_ko": "일본유신회",
+            "vote_pct": 9.36,
+            "seats": 38
+          },
+          {
+            "abbr": "DPP",
+            "name_ko": "국민민주당",
+            "vote_pct": 11.32,
+            "seats": 28
+          },
+          {
+            "abbr": "Komeito",
+            "name_ko": "공명당",
+            "vote_pct": 10.93,
+            "seats": 24
+          },
+          {
+            "abbr": "Reiwa",
+            "name_ko": "레이와 신선정",
+            "vote_pct": 6.98,
+            "seats": 9
+          },
+          {
+            "abbr": "JCP",
+            "name_ko": "일본공산당",
+            "vote_pct": 6.16,
+            "seats": 8
+          },
+          {
+            "abbr": "Sanseito",
+            "name_ko": "참정당",
+            "vote_pct": 3.43,
+            "seats": 3
+          },
+          {
+            "abbr": "CPJ",
+            "name_ko": "일본보수당",
+            "vote_pct": 2.1,
+            "seats": 3
+          },
+          {
+            "abbr": "SDP",
+            "name_ko": "사민당",
+            "vote_pct": 1.71,
+            "seats": 1
+          },
+          {
+            "abbr": "IND",
+            "name_ko": "무소속",
+            "seats": 12
+          }
+        ],
+        "government_formed_ko": "자민·공명 215석으로 과반(233) 실패. 이시바 내각이 소수 여당으로 출범.",
+        "sources": [
+          "https://www.shugiin.go.jp/internet/itdb_annai.nsf/html/statics/ugoki/r6ugoki32_04-3_kokuseisenkyokekka.pdf/$File/r6ugoki32_04-3_kokuseisenkyokekka.pdf",
+          "https://www.soumu.go.jp/senkyo/senkyo_s/news/senkyo/shuugiin/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "LDP",
+          "name_ko": "자유민주당",
+          "leader_ko": "다카이치 사나에",
+          "incumbent": true
+        },
+        {
+          "abbr": "Ishin",
+          "name_ko": "일본유신회",
+          "incumbent": true
+        },
+        {
+          "abbr": "Chudo",
+          "name_ko": "중도개혁연합",
+          "leader_ko": "노다 요시히코 · 사이토 데쓰오",
+          "incumbent": false
+        },
+        {
+          "abbr": "DPP",
+          "name_ko": "국민민주당",
+          "incumbent": false
+        },
+        {
+          "abbr": "Sanseito",
+          "name_ko": "참정당",
+          "incumbent": false
+        },
+        {
+          "abbr": "TeamMirai",
+          "name_ko": "팀 미라이",
+          "incumbent": false
+        },
+        {
+          "abbr": "JCP",
+          "name_ko": "일본공산당",
+          "incumbent": false
+        },
+        {
+          "abbr": "Reiwa",
+          "name_ko": "레이와 신선정",
+          "incumbent": false
+        }
+      ]
     },
     {
       "id": "jpn-2026-gov-ishikawa",
@@ -358,17 +457,61 @@
       "notes": "임기만료 선거. 고시 2026-08-27, 투개표 2026-09-13. 현 개표속보 최종(9월16일 정정): 고자 423,124 · 다마키 276,060 · 겸도 4,657 · 히가 3,542 · 야라 2,467 · 스에요시 2,270. 유효 712,120 · 무효 5,584 · 투표총수 717,704.",
       "sources": [
         "okinawa_gov_2026_count",
-        "https://ja.wikipedia.org/wiki/2026年沖縄県知事選挙"
+        "https://ja.wikipedia.org/wiki/2026年沖縄県知事選挙",
+        "go2senkyo_2026",
+        "https://www.pref.okinawa.lg.jp/_res/projects/default_project/_page_/001/040/303/chijisenkaihyou_teisei.pdf"
       ],
       "system_id": "jpn-prefecture-governor",
       "chamber": "없음",
       "contested_ko": "도도부현 지사 1인",
-      "result": "古謝玄太 당선 (423,124 / 유효 712,120)",
+      "result": "古謝玄太 423,124 · 玉城デニー 276,060. 유효 712,120.",
       "winner": {
         "name_ja": "古謝玄太",
         "name_ko": "고자 겐타",
         "party": "無所属"
-      }
+      },
+      "result_summary": "2026-09-13 투개표. 현 선관위 개표속보(2026-09-16 오키나와시 보고 정정): 유효 712,120. 고사 겐타(무소속) 423,124, 다마키 데니(무소속) 276,060. 투표율 퍼센트는 이 속보 PDF에 없어 적지 않음."
+    },
+    {
+      "id": "jpn-2026-fukushima-assembly-by",
+      "type": "by_election",
+      "label_ko": "후쿠시마현의회 보궐(3선거구)",
+      "date": "2026-10-25",
+      "notes": "현 선관위 2026-10-08 갱신. 고시 2026-10-16, 투표 2026-10-25. 선거구 표의 정수는 후쿠시마시 8·고리야마시 10·이와키시 10이고, 공고의 定数1은 이번 보궐 인원. 의회 표는 전체 58인·19구. 개표 파일은 선거구마다 확정이라고 적는다. 세 선거구 득표를 합쳐 현 전체 의석으로 만들지 않는다.",
+      "sources": [
+        "fukushima_gov_2026",
+        "https://koukai.senkyosokuho.pref.fukushima.lg.jp/23tiji/sokuhou/20261025/index.html",
+        "https://koukai.senkyosokuho.pref.fukushima.lg.jp/23tiji/sokuhou/20261025/xlsx/KE01.xlsx",
+        "https://koukai.senkyosokuho.pref.fukushima.lg.jp/23tiji/sokuhou/20261025/xlsx/TE01.xlsx"
+      ],
+      "status": "completed",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "후쿠시마시·고리야마시·이와키시 각 결원 1",
+      "system_id": "jpn-fukushima-assembly",
+      "result": "후쿠시마 한자와 66,523 · 고리야마 가와마에 48,766 · 이와키 아카쓰 50,523",
+      "result_summary": "후쿠시마현 선관위 보궐 개표 파일, 2026-10-25, 선거구별 확정. 후쿠시마시 한자와 마사노리 66,523, 다카하시 쇼 13,231. 유효 79,754, 무효 5,896, 투표자 85,651, 투표율 38.52%. 고리야마시 가와마에 미쓰노리 48,766, 와타베 류지 15,851, 나나우미 시오리 15,627, 오사카 8,157. 유효 88,401, 무효 6,231, 투표자 94,632, 투표율 36.41%. 이와키시 아카쓰 신타로 50,523, 사사키 다케오 33,174. 유효 83,697, 무효 4,773, 투표자 88,470, 투표율 35.07%."
+    },
+    {
+      "id": "jpn-2026-fukushima-governor",
+      "type": "local",
+      "label_ko": "후쿠시마현 지사 선거",
+      "date": "2026-10-25",
+      "level": "prefecture_governor",
+      "notes": "임기만료. 고시 2026-10-08. 현 선관위 속보 페이지의 개표 파일은 확정이라고 적는다. 투표율 파일의 투표자 650,859와 개표 파일의 투표 총수 650,854는 5표가 다르다. 맞추지 않는다. 현 홈페이지 본문은 2026-10-16 갱신으로 남아 확정 게시를 예고한다.",
+      "sources": [
+        "fukushima_gov_2026",
+        "jiji_fukushima_2026",
+        "https://koukai.senkyosokuho.pref.fukushima.lg.jp/23tiji/sokuhou/20261025/index.html",
+        "https://koukai.senkyosokuho.pref.fukushima.lg.jp/23tiji/sokuhou/20261025/xlsx/KD01.xlsx",
+        "https://koukai.senkyosokuho.pref.fukushima.lg.jp/23tiji/sokuhou/20261025/xlsx/TD01.xlsx"
+      ],
+      "status": "completed",
+      "system_id": "jpn-prefecture-governor",
+      "chamber": "없음",
+      "contested_ko": "도도부현 지사 1인",
+      "result": "우치보리 마사오 585,641. 유효 645,250.",
+      "result_summary": "후쿠시마현 선관위 개표 파일, 확정, 2026-10-25. 우치보리 마사오 585,641, 오야마다 도모코 36,839, 엔도 유다이 9,460, 츠카코시 4,391, 가나야마 준 3,005, 하세누마 구니히코 2,987, 후지모토 2,927. 합 645,250이 유효표다. 무효 5,604. 투표 총수 650,854. 투표율 파일의 현 합계는 유권자 1,477,389, 투표자 650,859, 투표율 44.05%."
     },
     {
       "id": "jpn-2026-national-by-oct",
@@ -376,7 +519,7 @@
       "label_ko": "국정 재보궐(10월 통일창)",
       "date": "2026-10-25",
       "status": "tentative",
-      "notes": "10월 제4일요일 창. 대상 좌석·실시 여부는 제2기간(3/16–9/15) 결원 확정 전까지 불명. 결원 없으면 없음.",
+      "notes": "10월 제4일요일 창. 대상 원(중의원·참의원)이 확정되지 않아 기존 제도에 붙이지 않음. 총무성 보궐 결과 목록의 최근 항목은 2024년이고, 2026-10-25 실시 공고는 확인하지 못함.",
       "sources": [
         "kouhou_33_2",
         "mic_hoketsu",
@@ -385,37 +528,7 @@
       "level": "national",
       "chamber": "shugiin",
       "contested_ko": "국정 재보궐 (10월 통일창)",
-      "system_id": "jpn-shugiin"
-    },
-    {
-      "id": "jpn-2026-fukushima-governor",
-      "type": "local",
-      "label_ko": "후쿠시마현 지사 선거",
-      "date": "2026-10-25",
-      "level": "prefecture_governor",
-      "notes": "임기만료. 고시 2026-10-08.",
-      "sources": [
-        "fukushima_gov_2026",
-        "jiji_fukushima_2026"
-      ],
-      "status": "scheduled",
-      "system_id": "jpn-prefecture-governor",
-      "chamber": "없음",
-      "contested_ko": "도도부현 지사 1인"
-    },
-    {
-      "id": "jpn-2026-fukushima-assembly-by",
-      "type": "by_election",
-      "label_ko": "후쿠시마현의회 보궐(3선거구)",
-      "date": "2026-10-25",
-      "notes": "후쿠시마시·고리야마시·이와키시 각 결원1. 고시 2026-10-16.",
-      "sources": [
-        "fukushima_gov_2026"
-      ],
-      "status": "scheduled",
-      "level": "subnational",
-      "chamber": "없음",
-      "contested_ko": "후쿠시마현의회 보궐 3선거구"
+      "system_id": "불명"
     },
     {
       "id": "jpn-2026-gov-ehime",
@@ -463,6 +576,71 @@
       "contested_ko": "도도부현 지사 1인"
     },
     {
+      "id": "jpn-2027-shugiin-invest-lens",
+      "type": "general",
+      "label_ko": "중의원 (Invest Lens 추정 — 비정본)",
+      "date": "2027-10-20",
+      "status": "outside_year",
+      "notes": "충돌: 우리 정본 2026-02-08 51회 완료",
+      "sources": [
+        "invest_lens_elections"
+      ],
+      "conflict_with": "jpn-2026-shugiin-51",
+      "market_significance_invest_lens": 2,
+      "system_id": "jpn-shugiin",
+      "level": "national",
+      "chamber": "shugiin",
+      "contested_ko": "중의원 정수 전원 (Invest Lens 추정, 비정본)"
+    },
+    {
+      "id": "jpn-2026-sangiin-regular",
+      "type": "general",
+      "label_ko": "참의원 통상선거",
+      "date": "2028-07",
+      "status": "outside_year",
+      "chamber": "sangiin",
+      "notes": "2026년 통상선거 없음. 직전 회차는 2025-07-13(jpn-2025-sangiin).",
+      "sources": [
+        "kouhou_33_2"
+      ],
+      "date_note": "현 改選조 임기만료 2028-07-25. 공직선거법상 만료 전 30일 이내 일요일, 공고 전. 해산 대상이 아닌 통상선거.",
+      "system_id": "jpn-sangiin",
+      "level": "national",
+      "contested_ko": "없음 — 2026년 통상선거 일정 없음"
+    },
+    {
+      "id": "jpn-2026-cdp-leader",
+      "type": "party_leadership",
+      "party_id": "cdp",
+      "party_abbr": "CDP",
+      "label_ko": "입헌민주당 대표 선거",
+      "label_en": "CDP leadership",
+      "date": "없음",
+      "status": "없음",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "입헌민주당 대표 1인",
+      "notes": "2026년 당대표 정기교체 공고를 찾지 못함. 제1야당 현 대표는 별도 조사.",
+      "sources": [
+        "https://cdp-japan.jp/"
+      ]
+    },
+    {
+      "id": "jpn-2026-ldp-president",
+      "type": "party_leadership",
+      "party_id": "ldp",
+      "label_ko": "자민당 총재 정기교체(2026)",
+      "date": "없음",
+      "status": "없음",
+      "notes": "2025-10 선출 임기 중; 별도 2026 총재전 없음(현재 기준)",
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "자민당 총재 1인",
+      "sources": [
+        "https://www.jimin.jp/"
+      ]
+    },
+    {
       "id": "jpn-2026-national-by-apr",
       "type": "by_election",
       "label_ko": "국정 재보궐(4월 통일창)",
@@ -480,22 +658,6 @@
       "system_id": "jpn-shugiin"
     },
     {
-      "id": "jpn-2026-sangiin-regular",
-      "type": "general",
-      "label_ko": "참의원 통상선거",
-      "date": "2028-07",
-      "status": "outside_year",
-      "chamber": "sangiin",
-      "notes": "2026년 통상선거 없음. 직전 회차는 2025-07-13(jpn-2025-sangiin).",
-      "sources": [
-        "kouhou_33_2"
-      ],
-      "date_note": "현 改選조 임기만료 2028-07-25. 공직선거법상 만료 전 30일 이내 일요일, 공고 전. 해산 대상이 아닌 통상선거.",
-      "system_id": "jpn-sangiin",
-      "level": "national",
-      "contested_ko": "참의원 절반 改選"
-    },
-    {
       "id": "jpn-presidential",
       "type": "presidential",
       "label_ko": "대통령 선거",
@@ -508,23 +670,6 @@
       "notes": "의원내각제라 대통령 선거가 없다. 천황은 세습이고, 내각총리대신은 국회가 지명한다.",
       "sources": [
         "https://www.soumu.go.jp/senkyo/senkyo_s/news/senkyo/shuugiin/"
-      ]
-    },
-    {
-      "id": "jpn-2026-cdp-leader",
-      "type": "party_leadership",
-      "party_id": "cdp",
-      "party_abbr": "CDP",
-      "label_ko": "입헌민주당 대표 선거",
-      "label_en": "CDP leadership",
-      "date": "없음",
-      "status": "없음",
-      "level": "party",
-      "chamber": "없음",
-      "contested_ko": "입헌민주당 대표 1인",
-      "notes": "2026년 당대표 정기교체 공고를 찾지 못함. 제1야당 현 대표는 별도 조사.",
-      "sources": [
-        "https://cdp-japan.jp/"
       ]
     }
   ]

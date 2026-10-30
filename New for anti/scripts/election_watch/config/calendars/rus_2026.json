@@ -1,7 +1,7 @@
 {
   "iso3": "RUS",
   "year": 2026,
-  "as_of": "2026-10-01",
+  "as_of": "2026-10-12",
   "null_policy": {
     "없음": "해당 일정/선거 없음",
     "불명": "발표·확정 전 또는 출처에 날짜 없음"
@@ -70,13 +70,20 @@
   ],
   "events": [
     {
-      "id": "rus-2026-ur-congress",
-      "type": "party_leadership",
-      "party_id": "ur",
-      "label_ko": "통합러시아 전당·명부 절차",
-      "date": "불명",
-      "status": "tentative",
-      "notes": "두마 전 당 명부; 공개 경쟁적 당대표 교체와 다름. CIKRF/UR 공고 todo"
+      "id": "rus-2026-duma-voting-start",
+      "type": "general",
+      "label_ko": "국가두마 투표 개시",
+      "date": "2026-09-18",
+      "date_end": "2026-09-20",
+      "status": "completed",
+      "system_id": "rus-duma",
+      "contested_ko": "전체 450석 — 3일 투표(18–20)의 첫날",
+      "notes": "정본 선거일(대통령령)은 rus-2026-duma 의 2026-09-20. 의석 결과는 그 행. 이 행은 world_by_month (iso3, date) 조인용.",
+      "sources": [
+        "kremlin_decree_2026-06-16",
+        "cikrf",
+        "tass_2026-06-16"
+      ]
     },
     {
       "id": "rus-2026-duma",
@@ -88,20 +95,113 @@
         "2026-09-20"
       ],
       "status": "completed",
-      "notes": "투표 2026-09-18–20. ЦИК 2026-09-25 결과 확정(의장 팜필로바 발표, TASS). 국가두마 공지 같은 좌석. 소·비 구분 숫자는 이 출처에 없어 넣지 않음. 득표율은 TASS 본문이 DEG와 전체 집계를 섞어 보여 의석만 적음.",
+      "notes": "투표 2026-09-18–20. ЦИК 2026-09-25 결과 확정(의장 팜필로바 발표, TASS). 국가두마 공지 같은 좌석. 소·비 구분 숫자는 이 출처에 없어 넣지 않음. 득표율은 TASS 본문이 DEG와 전체 집계를 섞어 보여 의석만 적음. 450 seats; decree day 09-20; voting 18–20 Sep. previous.vote_pct 는 2021 연방명부 득표율. 2026 연방명부 225명은 중앙선관위 결의 53/356-9 부속서. 정당별 전체 의석과 투표율은 국가두마 보도. 소선거구 이름에는 정당이 없어 빼서 나누지 않음. 세계 타임라인 2026-09-18 행은 rus-2026-duma-voting-start 로 조인.",
       "sources": [
         "kremlin_decree_2026-06-16",
         "cikrf",
         "tass_duma_results_2026-09-25",
         "duma_news_64124",
-        "kommersant_cik_2026-09-25"
+        "kommersant_cik_2026-09-25",
+        "https://pravo.ppt.ru/postanovlenie/tsik/n-53-356-9-355643",
+        "https://pravo.ppt.ru/postanovlenie/tsik/n-53-357-9-355641",
+        "http://duma.gov.ru/news/64124/",
+        "tass_2026-06-16",
+        "invest_lens_elections"
       ],
       "market_significance_invest_lens": 1,
       "system_id": "rus-duma",
       "level": "national",
       "chamber": "duma",
-      "contested_ko": "국가두마 450석 전원",
-      "result": "UR 349 · CPRF 37 · LDPR 23 · NL 19 · SR 17 · Rodina 1 · 무소속 4 (450). 투표율 59.80%."
+      "contested_ko": "전체 450석 (소선거구 225 + 연방명부 225)",
+      "result": "UR 349 · CPRF 37 · LDPR 23 · NL 19 · SR 17 · Rodina 1 · 무소속 4 (450). 투표율 59.80%.",
+      "result_summary": "투표 2026-09-18..20. 중앙선관위 결의 53/356-9(2026-09-25)는 연방명부 선거를 유효로 보고 225명을 확정했다. 부속서는 통합러시아 140, 공산 32, 자민 21, 새로운 사람들 19, 정의러시아 13이다. 합은 225. 조국은 이 명부에 없다. 결의 53/357-9는 당선 450명, 연방명부 225와 소선거구 225라고 적고 1번부터 225번까지 이름을 붙인다. 그 이름 옆에는 정당이 없다. 정당별 전체 의석과 투표율 59.80%는 같은 날 국가두마 보도다. 통합러시아 349, 공산 37, 자민 23, 새로운 사람들 19, 정의러시아 17, 조국 1, 무소속 4. 합은 450. 소선거구 의석을 빼서 다시 나누지 않는다.",
+      "previous": {
+        "date": "2021-09-19",
+        "seats_total": 450,
+        "by_party": [
+          {
+            "abbr": "UR",
+            "name_ko": "통합러시아",
+            "vote_pct": 49.82,
+            "seats": 324
+          },
+          {
+            "abbr": "CPRF",
+            "name_ko": "러시아연방공산당",
+            "vote_pct": 18.93,
+            "seats": 57
+          },
+          {
+            "abbr": "SR",
+            "name_ko": "정의러시아–진실을 위하여",
+            "vote_pct": 7.46,
+            "seats": 27
+          },
+          {
+            "abbr": "LDPR",
+            "name_ko": "자유민주당",
+            "vote_pct": 7.55,
+            "seats": 21
+          },
+          {
+            "abbr": "NL",
+            "name_ko": "새로운 사람들",
+            "vote_pct": 5.32,
+            "seats": 13
+          },
+          {
+            "abbr": "Rodina",
+            "name_ko": "조국",
+            "seats": 1
+          },
+          {
+            "abbr": "CP",
+            "name_ko": "시민플랫폼",
+            "seats": 1
+          },
+          {
+            "abbr": "PG",
+            "name_ko": "성장당",
+            "seats": 1
+          },
+          {
+            "abbr": "IND",
+            "name_ko": "무소속",
+            "seats": 5
+          }
+        ],
+        "sources": [
+          "https://tass.com/politics/1341997",
+          "https://www.consultant.ru/document/cons_doc_LAW_396198/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "UR",
+          "name_ko": "통합러시아",
+          "incumbent": true
+        },
+        {
+          "abbr": "CPRF",
+          "name_ko": "러시아연방공산당",
+          "incumbent": false
+        },
+        {
+          "abbr": "LDPR",
+          "name_ko": "자유민주당",
+          "incumbent": false
+        },
+        {
+          "abbr": "SR",
+          "name_ko": "정의러시아–진실을 위하여",
+          "incumbent": false
+        },
+        {
+          "abbr": "NL",
+          "name_ko": "새로운 사람들",
+          "incumbent": false
+        }
+      ]
     },
     {
       "id": "rus-2026-single-voting-day-regions",
@@ -130,7 +230,7 @@
       "label_ko": "대선",
       "date": "2030-03",
       "status": "outside_year",
-      "notes": "2026년 대선 회차 아님.",
+      "notes": "Next after 2024 cycle — not in 2026.",
       "sources": [
         "kremlin_decree_2026-06-16"
       ],
@@ -138,6 +238,15 @@
       "level": "national",
       "chamber": "없음",
       "contested_ko": "대통령 1인"
+    },
+    {
+      "id": "rus-2026-ur-congress",
+      "type": "party_leadership",
+      "party_id": "ur",
+      "label_ko": "통합러시아 전당·명부 절차",
+      "date": "불명",
+      "status": "tentative",
+      "notes": "두마 전 당 명부; 공개 경쟁적 당대표 교체와 다름. CIKRF/UR 공고 todo"
     }
   ]
 }

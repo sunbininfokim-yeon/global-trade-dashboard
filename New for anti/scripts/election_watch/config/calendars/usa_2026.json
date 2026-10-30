@@ -54,25 +54,6 @@
   ],
   "events": [
     {
-      "id": "usa-2026-rnc-midterm-convention",
-      "type": "party_convention",
-      "party_id": "gop",
-      "party_abbr": "GOP",
-      "label_ko": "공화당 중간선거 전국대회 (댈러스)",
-      "date": "2026-09-09",
-      "date_end": "2026-09-10",
-      "status": "scheduled",
-      "venue": "American Airlines Center, Dallas",
-      "notes": "정책상 party_leadership 제외이나 캘린더 추적용. 후보 지명 없음 랠리/메시징.",
-      "sources": [
-        "https://apnews.com/article/rnc-republican-midterm-convention-donald-trump-fb02b785fb38362f99d7991a97e969d2"
-      ],
-      "level": "party",
-      "chamber": "없음",
-      "contested_ko": "후보 지명 없는 중간선거 전국대회",
-      "electorate_ko": "당 전당대회 대의원 (지명 투표 없음)"
-    },
-    {
       "id": "usa-2026-tx18-special-runoff",
       "type": "by_election",
       "label_ko": "하원 재보궐 TX-18 결선",
@@ -259,6 +240,157 @@
       "contested_ko": "연방하원 잔여임기 1석 (GA-13)"
     },
     {
+      "id": "usa-2026-rnc-midterm-convention",
+      "type": "party_convention",
+      "party_id": "gop",
+      "party_abbr": "GOP",
+      "label_ko": "공화당 중간선거 전국대회 (댈러스)",
+      "date": "2026-09-09",
+      "date_end": "2026-09-10",
+      "status": "scheduled",
+      "venue": "American Airlines Center, Dallas",
+      "notes": "정책상 party_leadership 제외이나 캘린더 추적용. 후보 지명 없음 랠리/메시징.",
+      "sources": [
+        "https://apnews.com/article/rnc-republican-midterm-convention-donald-trump-fb02b785fb38362f99d7991a97e969d2"
+      ],
+      "level": "party",
+      "chamber": "없음",
+      "contested_ko": "후보 지명 없는 중간선거 전국대회",
+      "electorate_ko": "당 전당대회 대의원 (지명 투표 없음)"
+    },
+    {
+      "id": "usa-2026-governors",
+      "type": "local",
+      "label_ko": "주지사 선거(36개주+자치령)",
+      "date": "2026-11-03",
+      "notes": "NGA: general election 2026-11-03 for 36 states and listed territories.",
+      "sources": [
+        "nga_governors_2026",
+        "invest_lens_elections"
+      ],
+      "status": "scheduled",
+      "market_significance_invest_lens": 3,
+      "system_id": "usa-governor",
+      "level": "subnational",
+      "chamber": "없음",
+      "contested_ko": "주지사 36개 주 + 자치령 (NGA 공고 기준)",
+      "parties_running": [
+        {
+          "abbr": "GOP",
+          "name_ko": "공화당",
+          "incumbent": true
+        },
+        {
+          "abbr": "DEM",
+          "name_ko": "민주당",
+          "incumbent": false
+        }
+      ]
+    },
+    {
+      "id": "usa-2026-midterms",
+      "type": "general",
+      "label_ko": "중간선거(상·하원)",
+      "date": "2026-11-03",
+      "notes": "House all 435 + Senate Class 1 regulars. No presidential race. 상원 제도는 system_id usa-senate. previous.by_party 는 2024 하원 본선 의석만 (전국 득표율은 Clerk 통계 원문 합산을 하지 않아 생략).",
+      "sources": [
+        "fec_specials_2026",
+        "invest_lens_elections"
+      ],
+      "status": "scheduled",
+      "market_significance_invest_lens": 3,
+      "system_id": "usa-house",
+      "level": "national",
+      "chamber": "house",
+      "contested_ko": "하원 435석 전원 · 상원 Class 1 정기 33석 · 상원 재보궐 플로리다·오하이오(같은 날)",
+      "previous": {
+        "date": "2024-11-05",
+        "seats_total": 435,
+        "by_party": [
+          {
+            "abbr": "GOP",
+            "name_ko": "공화당",
+            "seats": 220
+          },
+          {
+            "abbr": "DEM",
+            "name_ko": "민주당",
+            "seats": 215
+          }
+        ],
+        "sources": [
+          "https://clerk.house.gov/member_info/electionInfo/2024election/",
+          "https://history.house.gov/Institution/Election-Statistics/2024election/"
+        ]
+      },
+      "parties_running": [
+        {
+          "abbr": "GOP",
+          "name_ko": "공화당",
+          "incumbent": true
+        },
+        {
+          "abbr": "DEM",
+          "name_ko": "민주당",
+          "incumbent": false
+        }
+      ]
+    },
+    {
+      "id": "usa-2026-senate-special-fl",
+      "type": "by_election",
+      "label_ko": "상원 재보궐 플로리다(Rubio 잔여임기)",
+      "date": "2026-11-03",
+      "chamber": "senate",
+      "state": "FL",
+      "notes": "Concurrent with midterms; Rubio → Secretary of State vacancy.",
+      "sources": [
+        "wiki_us_senate_2026",
+        "invest_lens_elections"
+      ],
+      "status": "scheduled",
+      "market_significance_invest_lens": 3,
+      "system_id": "usa-house-special",
+      "level": "national",
+      "contested_ko": "플로리다 상원 1석 (루비오 잔여임기)"
+    },
+    {
+      "id": "usa-2026-senate-special-oh",
+      "type": "by_election",
+      "label_ko": "상원 재보궐 오하이오(Vance 잔여임기)",
+      "date": "2026-11-03",
+      "chamber": "senate",
+      "state": "OH",
+      "notes": "Concurrent with midterms; Vance → VP vacancy.",
+      "sources": [
+        "wiki_us_senate_2026",
+        "invest_lens_elections"
+      ],
+      "status": "scheduled",
+      "market_significance_invest_lens": 3,
+      "system_id": "usa-house-special",
+      "level": "national",
+      "contested_ko": "오하이오 상원 1석 (밴스 잔여임기)"
+    },
+    {
+      "id": "usa-2028-presidential",
+      "type": "presidential",
+      "label_ko": "대선 (다음 정기)",
+      "label_en": "Presidential election",
+      "date": "2028-11-07",
+      "date_note": "11월 첫 월요일 다음 화요일(연방 법정). 2026년 회차가 아님. 예비경선 일정은 별도.",
+      "status": "outside_year",
+      "system_id": "usa-president",
+      "level": "national",
+      "chamber": "없음",
+      "contested_ko": "대통령 1인 (선거인단 538, 당선선 270)",
+      "notes": "2026은 중간선거 해. 대선 본선은 2028.",
+      "sources": [
+        "https://www.archives.gov/electoral-college/about",
+        "https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/"
+      ]
+    },
+    {
       "id": "usa-2026-fl20-special",
       "type": "by_election",
       "label_ko": "하원 재보궐 FL-20",
@@ -291,94 +423,6 @@
       "system_id": "usa-house-special",
       "level": "national",
       "contested_ko": "연방하원 잔여임기 1석 (TX-23)"
-    },
-    {
-      "id": "usa-2026-midterms",
-      "type": "general",
-      "label_ko": "중간선거(상·하원)",
-      "date": "2026-11-03",
-      "notes": "House all 435 + Senate Class 1 regulars. No presidential race.",
-      "sources": [
-        "fec_specials_2026",
-        "invest_lens_elections"
-      ],
-      "status": "scheduled",
-      "market_significance_invest_lens": 3,
-      "system_id": "usa-house",
-      "level": "national",
-      "chamber": "house",
-      "contested_ko": "연방하원 435석 전원 + 상원 35석 (Class II 정기 33석 + FL·OH 특별선거 2석)"
-    },
-    {
-      "id": "usa-2026-senate-special-fl",
-      "type": "by_election",
-      "label_ko": "상원 재보궐 플로리다(Rubio 잔여임기)",
-      "date": "2026-11-03",
-      "chamber": "senate",
-      "state": "FL",
-      "notes": "Concurrent with midterms; Rubio → Secretary of State vacancy.",
-      "sources": [
-        "wiki_us_senate_2026",
-        "invest_lens_elections"
-      ],
-      "status": "scheduled",
-      "market_significance_invest_lens": 3,
-      "system_id": "usa-senate",
-      "level": "national",
-      "contested_ko": "해당 주 연방상원 잔여임기 1석"
-    },
-    {
-      "id": "usa-2026-senate-special-oh",
-      "type": "by_election",
-      "label_ko": "상원 재보궐 오하이오(Vance 잔여임기)",
-      "date": "2026-11-03",
-      "chamber": "senate",
-      "state": "OH",
-      "notes": "Concurrent with midterms; Vance → VP vacancy.",
-      "sources": [
-        "wiki_us_senate_2026",
-        "invest_lens_elections"
-      ],
-      "status": "scheduled",
-      "market_significance_invest_lens": 3,
-      "system_id": "usa-senate",
-      "level": "national",
-      "contested_ko": "해당 주 연방상원 잔여임기 1석"
-    },
-    {
-      "id": "usa-2026-governors",
-      "type": "local",
-      "label_ko": "주지사 선거(36개주+자치령)",
-      "date": "2026-11-03",
-      "notes": "NGA: general election 2026-11-03 for 36 states and listed territories.",
-      "sources": [
-        "nga_governors_2026",
-        "invest_lens_elections"
-      ],
-      "status": "scheduled",
-      "market_significance_invest_lens": 3,
-      "system_id": "usa-governor",
-      "level": "subnational",
-      "chamber": "없음",
-      "contested_ko": "주지사 36개 주 + 공고된 자치령"
-    },
-    {
-      "id": "usa-2028-presidential",
-      "type": "presidential",
-      "label_ko": "대선 (다음 정기)",
-      "label_en": "Presidential election",
-      "date": "2028-11-07",
-      "date_note": "11월 첫 월요일 다음 화요일(연방 법정). 2026년 회차가 아님. 예비경선 일정은 별도.",
-      "status": "outside_year",
-      "system_id": "usa-president",
-      "level": "national",
-      "chamber": "없음",
-      "contested_ko": "대통령 1인 (선거인단 538, 당선선 270)",
-      "notes": "2026은 중간선거 해. 대선 본선은 2028.",
-      "sources": [
-        "https://www.archives.gov/electoral-college/about",
-        "https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/"
-      ]
     },
     {
       "id": "usa-party-leadership-national",
