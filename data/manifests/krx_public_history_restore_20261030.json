@@ -1,0 +1,513 @@
+{
+  "schema": "krx-public-history-restore-v1",
+  "generated_at": "2026-10-30T06:27:35Z",
+  "board": {
+    "call_rows": 1920,
+    "put_rows": 1920,
+    "first": "2019-01-02",
+    "last": "2026-10-29",
+    "duplicate": false,
+    "date_sets_equal": true,
+    "foreign_net_fail": 0,
+    "kr_as_of": "2026-10-29",
+    "flows_kospi_market": {
+      "quality": "carried_forward",
+      "as_of": "2026-09-16",
+      "carried_at": "2026-10-29"
+    },
+    "short_interest_meta": {
+      "quality": "missing",
+      "as_of": null
+    },
+    "market_letf_derivatives_ratios": {
+      "quality": "carried_forward",
+      "as_of": "2026-10-23",
+      "carried_at": "2026-10-29"
+    },
+    "letf_category_share": {
+      "quality": "carried_forward",
+      "as_of": "2026-10-23",
+      "carried_at": "2026-10-29"
+    }
+  },
+  "activity": {
+    "file": "derivatives_activity_history_v1.jsonl",
+    "local_rows": 910,
+    "main_rows": 143,
+    "merged_rows": 913,
+    "first": "2023-01-02",
+    "last": "2026-09-30",
+    "only_local": 770,
+    "only_main": 3,
+    "overlap": 140,
+    "conflicts": [
+      {
+        "date": "2026-09-03",
+        "decision": "unresolved_kept_published_main",
+        "local_source": "KRX OpenAPI drv/fut_bydd_trd; KRX OpenAPI drv/opt_bydd_trd",
+        "main_source": "KRX OpenAPI drv/fut_bydd_trd; KRX OpenAPI drv/opt_bydd_trd",
+        "local_numbers": [
+          {
+            "volume": 210200.0,
+            "trading_value_krw": 77400356857500.0
+          },
+          {
+            "call_volume": 284276.0,
+            "put_volume": 258205.0,
+            "call_trading_value_krw": 275869475000.0,
+            "put_trading_value_krw": 194691100000.0,
+            "put_call_volume": 0.9083,
+            "put_call_trading_value": 0.7057
+          }
+        ],
+        "main_numbers": [
+          {
+            "volume": 210361.0,
+            "trading_value_krw": 49493597307500.0
+          },
+          {
+            "call_volume": 609613.0,
+            "put_volume": 465749.0,
+            "call_trading_value_krw": 351564552500.0,
+            "put_trading_value_krw": 188916190000.0,
+            "put_call_volume": 0.764,
+            "put_call_trading_value": 0.5374
+          }
+        ],
+        "regenerated_numbers": null
+      }
+    ],
+    "october_added": []
+  },
+  "leverage": {
+    "file": "leverage_direction_history_v1.jsonl",
+    "local_rows": 910,
+    "main_rows": 152,
+    "merged_rows": 918,
+    "first": "2023-01-02",
+    "last": "2026-10-23",
+    "only_local": 766,
+    "only_main": 8,
+    "overlap": 144,
+    "conflicts": [
+      {
+        "date": "2026-09-11",
+        "decision": "unresolved_kept_published_main",
+        "local_source": "KRX OpenAPI sto/stk_bydd_trd + etp/etf_bydd_trd basDd=20260911; ETF Name classify",
+        "main_source": "FinanceDataReader ETF/KR Amount(백만원) + KOSPI Amount(KRW) + Name classify",
+        "local_numbers": [
+          19674135931129.0,
+          24.003904,
+          {
+            "long": {
+              "n_products": 62,
+              "trading_value_krw": 3154134657733.0,
+              "share_of_lev_tv_pct": 66.788654,
+              "share_of_kospi_tv_pct": 16.031884
+            },
+            "inverse": {
+              "n_products": 31,
+              "trading_value_krw": 1057264943507.0,
+              "share_of_lev_tv_pct": 22.387536,
+              "share_of_kospi_tv_pct": 5.373882
+            },
+            "inverse_2x": {
+              "n_products": 2,
+              "trading_value_krw": 113088751099.0,
+              "share_of_lev_tv_pct": 2.394649,
+              "share_of_kospi_tv_pct": 0.574809
+            },
+            "gobus_inverse_2x": {
+              "n_products": 8,
+              "trading_value_krw": 398072252562.0,
+              "share_of_lev_tv_pct": 8.429161,
+              "share_of_kospi_tv_pct": 2.023328
+            }
+          }
+        ],
+        "main_numbers": [
+          19674135931129.0,
+          23.865,
+          {
+            "long": {
+              "trading_value_krw": 3140082000000.0,
+              "share_of_lev_tv_pct": 66.88,
+              "share_of_kospi_tv_pct": 15.96
+            },
+            "inverse": {
+              "trading_value_krw": 1049151000000.0,
+              "share_of_lev_tv_pct": 22.35,
+              "share_of_kospi_tv_pct": 5.333
+            },
+            "inverse_2x": {
+              "trading_value_krw": 112857000000.0,
+              "share_of_lev_tv_pct": 2.4,
+              "share_of_kospi_tv_pct": 0.574
+            },
+            "gobus_inverse_2x": {
+              "trading_value_krw": 393101000000.0,
+              "share_of_lev_tv_pct": 8.37,
+              "share_of_kospi_tv_pct": 1.998
+            }
+          }
+        ],
+        "regenerated_numbers": null
+      },
+      {
+        "date": "2026-09-17",
+        "decision": "unresolved_kept_published_main",
+        "local_source": "KRX OpenAPI sto/stk_bydd_trd + etp/etf_bydd_trd basDd=20260917; ETF Name classify",
+        "main_source": "FinanceDataReader ETF/KR Amount(백만원) + KOSPI Amount(KRW) + Name classify",
+        "local_numbers": [
+          17144039218537.0,
+          24.242647,
+          {
+            "long": {
+              "n_products": 62,
+              "trading_value_krw": 2811177834550.0,
+              "share_of_lev_tv_pct": 67.638681,
+              "share_of_kospi_tv_pct": 16.397407
+            },
+            "inverse": {
+              "n_products": 31,
+              "trading_value_krw": 662394753251.0,
+              "share_of_lev_tv_pct": 15.937628,
+              "share_of_kospi_tv_pct": 3.863703
+            },
+            "inverse_2x": {
+              "n_products": 2,
+              "trading_value_krw": 80221920534.0,
+              "share_of_lev_tv_pct": 1.930189,
+              "share_of_kospi_tv_pct": 0.467929
+            },
+            "gobus_inverse_2x": {
+              "n_products": 8,
+              "trading_value_krw": 602374403859.0,
+              "share_of_lev_tv_pct": 14.493502,
+              "share_of_kospi_tv_pct": 3.513608
+            }
+          }
+        ],
+        "main_numbers": [
+          28104963033556.0,
+          12.563,
+          {
+            "long": {
+              "trading_value_krw": 2616721000000.0,
+              "share_of_lev_tv_pct": 74.11,
+              "share_of_kospi_tv_pct": 9.311
+            },
+            "inverse": {
+              "trading_value_krw": 586115000000.0,
+              "share_of_lev_tv_pct": 16.6,
+              "share_of_kospi_tv_pct": 2.085
+            },
+            "inverse_2x": {
+              "trading_value_krw": 123944000000.0,
+              "share_of_lev_tv_pct": 3.51,
+              "share_of_kospi_tv_pct": 0.441
+            },
+            "gobus_inverse_2x": {
+              "trading_value_krw": 203928000000.0,
+              "share_of_lev_tv_pct": 5.78,
+              "share_of_kospi_tv_pct": 0.726
+            }
+          }
+        ],
+        "regenerated_numbers": null
+      },
+      {
+        "date": "2026-09-22",
+        "decision": "unresolved_kept_published_main",
+        "local_source": "KRX OpenAPI sto/stk_bydd_trd + etp/etf_bydd_trd basDd=20260922; ETF Name classify",
+        "main_source": "FinanceDataReader ETF/KR Amount(백만원) + KOSPI Amount(KRW) + Name classify",
+        "local_numbers": [
+          23594110841842.0,
+          19.126908,
+          {
+            "long": {
+              "n_products": 62,
+              "trading_value_krw": 3557825192893.0,
+              "share_of_lev_tv_pct": 78.838113,
+              "share_of_kospi_tv_pct": 15.079293
+            },
+            "inverse": {
+              "n_products": 31,
+              "trading_value_krw": 573005904833.0,
+              "share_of_lev_tv_pct": 12.69728,
+              "share_of_kospi_tv_pct": 2.428597
+            },
+            "inverse_2x": {
+              "n_products": 2,
+              "trading_value_krw": 107852797299.0,
+              "share_of_lev_tv_pct": 2.389918,
+              "share_of_kospi_tv_pct": 0.457117
+            },
+            "gobus_inverse_2x": {
+              "n_products": 8,
+              "trading_value_krw": 274139996538.0,
+              "share_of_lev_tv_pct": 6.074689,
+              "share_of_kospi_tv_pct": 1.1619
+            }
+          }
+        ],
+        "main_numbers": [
+          22072595521288.0,
+          17.022,
+          {
+            "long": {
+              "trading_value_krw": 2794438000000.0,
+              "share_of_lev_tv_pct": 74.38,
+              "share_of_kospi_tv_pct": 12.66
+            },
+            "inverse": {
+              "trading_value_krw": 626166000000.0,
+              "share_of_lev_tv_pct": 16.67,
+              "share_of_kospi_tv_pct": 2.837
+            },
+            "inverse_2x": {
+              "trading_value_krw": 79357000000.0,
+              "share_of_lev_tv_pct": 2.11,
+              "share_of_kospi_tv_pct": 0.36
+            },
+            "gobus_inverse_2x": {
+              "trading_value_krw": 257216000000.0,
+              "share_of_lev_tv_pct": 6.85,
+              "share_of_kospi_tv_pct": 1.165
+            }
+          }
+        ],
+        "regenerated_numbers": null
+      },
+      {
+        "date": "2026-09-23",
+        "decision": "unresolved_kept_published_main",
+        "local_source": "KRX OpenAPI sto/stk_bydd_trd + etp/etf_bydd_trd basDd=20260923; ETF Name classify",
+        "main_source": "FinanceDataReader ETF/KR Amount(백만원) + KOSPI Amount(KRW) + Name classify",
+        "local_numbers": [
+          22622748935927.0,
+          16.608174,
+          {
+            "long": {
+              "n_products": 62,
+              "trading_value_krw": 2794468547621.0,
+              "share_of_lev_tv_pct": 74.375853,
+              "share_of_kospi_tv_pct": 12.352471
+            },
+            "inverse": {
+              "n_products": 31,
+              "trading_value_krw": 626179244260.0,
+              "share_of_lev_tv_pct": 16.666001,
+              "share_of_kospi_tv_pct": 2.767918
+            },
+            "inverse_2x": {
+              "n_products": 2,
+              "trading_value_krw": 79357928997.0,
+              "share_of_lev_tv_pct": 2.112142,
+              "share_of_kospi_tv_pct": 0.350788
+            },
+            "gobus_inverse_2x": {
+              "n_products": 8,
+              "trading_value_krw": 257219826085.0,
+              "share_of_lev_tv_pct": 6.846004,
+              "share_of_kospi_tv_pct": 1.136996
+            }
+          }
+        ],
+        "main_numbers": [
+          22622748935927.0,
+          16.608,
+          {
+            "long": {
+              "trading_value_krw": 2794438000000.0,
+              "share_of_lev_tv_pct": 74.38,
+              "share_of_kospi_tv_pct": 12.352
+            },
+            "inverse": {
+              "trading_value_krw": 626166000000.0,
+              "share_of_lev_tv_pct": 16.67,
+              "share_of_kospi_tv_pct": 2.768
+            },
+            "inverse_2x": {
+              "trading_value_krw": 79357000000.0,
+              "share_of_lev_tv_pct": 2.11,
+              "share_of_kospi_tv_pct": 0.351
+            },
+            "gobus_inverse_2x": {
+              "trading_value_krw": 257216000000.0,
+              "share_of_lev_tv_pct": 6.85,
+              "share_of_kospi_tv_pct": 1.137
+            }
+          }
+        ],
+        "regenerated_numbers": null
+      }
+    ],
+    "october_added": []
+  },
+  "activity_regen_notes_summary": "KRX OpenAPI drv/fut_bydd_trd returned 401, so October activity was not invented. Overlap conflicts stay on the published main row.",
+  "activity_regen_notes": [
+    "activity 2026-09-03 skip RuntimeError",
+    "activity 2026-10-01 skip RuntimeError",
+    "activity 2026-10-02 skip RuntimeError",
+    "activity 2026-10-06 skip RuntimeError",
+    "activity 2026-10-07 skip RuntimeError",
+    "activity 2026-10-08 skip RuntimeError",
+    "activity 2026-10-12 skip RuntimeError",
+    "activity 2026-10-13 skip JSONDecodeError",
+    "activity 2026-10-14 skip RuntimeError",
+    "activity 2026-10-15 skip RuntimeError",
+    "activity 2026-10-16 skip RuntimeError",
+    "activity 2026-10-19 skip RuntimeError",
+    "activity 2026-10-20 skip RuntimeError",
+    "activity 2026-10-21 skip RuntimeError",
+    "activity 2026-10-22 skip RuntimeError",
+    "activity 2026-10-23 skip RuntimeError",
+    "activity 2026-10-26 skip RuntimeError",
+    "activity 2026-10-27 skip RuntimeError",
+    "activity 2026-10-28 skip RuntimeError",
+    "activity 2026-10-29 skip RuntimeError"
+  ],
+  "leverage_regen_notes_summary": "KRX OpenAPI returned 401 on the first leverage day, so missing October leverage days were not invented. The four overlap conflicts stay on the published main row.",
+  "leverage_regen_notes": [
+    "leverage 2026-09-11 stopped: KRXAuthError"
+  ],
+  "investor_price_levels": {
+    "as_of": "2026-10-29",
+    "added": {
+      "005930": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "000660": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "402340": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "373220": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "009150": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "207940": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "005380": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "105560": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "032830": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "028260": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "000500": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "000990": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "000150": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "011070": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "353200": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "062040": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "096770": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "272210": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "007660": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "047040": [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ]
+    },
+    "old_rows_unchanged": true,
+    "kospi_index_levels_date_end": "2026-09-16",
+    "kospi_index_levels_quality": "observed"
+  },
+  "kospi_stock_flow": {
+    "restored": false,
+    "reason": "krx_12008_kospi_stock_investor is absent. Existing 12008 includes ETF/ETN and is a different quantity, so it was not substituted.",
+    "kept": {
+      "quality": "carried_forward",
+      "as_of": "2026-09-16",
+      "carried_at": "2026-10-29"
+    }
+  },
+  "short_interest": "left missing"
+}
