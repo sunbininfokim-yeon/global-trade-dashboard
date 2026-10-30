@@ -1,7 +1,7 @@
 import { createElectionState } from './state.js';
 import { loadElectionBundle } from './data/core-service.js?v=2';
 import { initialMonth } from './data/selectors.js';
-import { createCountryExplorer } from './country-explorer/index.js?v=27';
+import { createCountryExplorer } from './country-explorer/index.js?v=28';
 import { renderTimeline } from './timeline/index.js?v=2';
 import { briefKeyFor, openBrief } from './briefs/index.js?v=2';
 

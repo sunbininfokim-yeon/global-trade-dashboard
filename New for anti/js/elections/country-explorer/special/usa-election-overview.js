@@ -1,15 +1,20 @@
 import { escapeHtml } from '../../ui.js';
-import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_OFFICES } from '../../data/election-overview.js?v=5';
+import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_OFFICES, mediaCall } from '../../data/election-overview.js?v=6';
 import { normalizeParty, pollSignal, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
 import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
 import { governorContextHtml, governorElectionSummaryHtml } from './usa-candidate-context.js';
 import { stateFundraisingHtml } from './usa-state-fundraising.js';
-import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=3';
+import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=4';
 
 const number = (value) => Number.isFinite(value) ? String(value) : '—';
 const tile = (label, value, cls, key, office) => `<button type="button" class="elections-rating-tile ${cls}" data-rating-filter="${key}" aria-expanded="false" aria-controls="elections-${office}-${key}"><span>${label}</span><strong>${number(value)}</strong></button>`;
 const ratingLabel = (value) => ({solid_dem:'DEM Solid',likely_dem:'DEM Likely',lean_dem:'DEM Lean',solid_rep:'GOP Solid',likely_rep:'GOP Likely',lean_rep:'GOP Lean',toss_up:'Toss-Up'}[value] || value);
 const groupFor = (value) => ['solid_dem','likely_dem'].includes(value) ? 'dem' : ['solid_rep','likely_rep'].includes(value) ? 'gop' : value.startsWith('lean_') ? 'lean' : 'toss';
+const partyShort = (p) => ({ DEM: 'DEM', REP: 'GOP', GOP: 'GOP', IND: '무소속' }[p] || p || '');
+// 선거 당일 밤 언론 당선 선언(비공식). 주 인증 결과가 나오면 그쪽이 우선합니다.
+export const callLine = (call) => !call ? '' : call.status === 'runoff'
+    ? `<small class="elections-media-call">결선 투표로 · ${escapeHtml(call.called_by.join('·'))} 선언 · 비공식</small>`
+    : `<small class="elections-media-call ${call.party === 'DEM' ? 'is-dem' : call.party === 'IND' ? 'is-ind' : 'is-gop'}">${escapeHtml(call.called_by.join('·'))} 당선 선언 · ${escapeHtml(partyShort(call.party))} ${escapeHtml(call.winner)} · 비공식</small>`;
 const contestList = (races, country, board, health, days, now) => races.map((race) => {
     const state = country?.ui_ready?.state_drilldown?.states?.find((s) => s.id === race.state);
     const office = race.race_id.includes(':house:') ? 'house' : race.race_id.endsWith(':senate') ? 'senate' : 'governor';
@@ -28,7 +33,7 @@ const contestList = (races, country, board, health, days, now) => races.map((rac
         <small>현재 의원${office === 'senate' ? ' · 2석' : matchup?.incumbent_ballot_status === 'not_running' ? ' · 이번 본선 불출마' : ''}</small>
         <span class="elections-contest-pair">${currentMembers.length ? currentMembers.map((m) => personBox(m.abbr,m.name,office === 'senate' ? senateTenureLabel(m) : '') + (office === 'senate' ? `<small>${m.up_in_2026 === true ? '이번 선거' : m.up_in_2026 === false ? '비선거' : '일정 확인 필요'}</small>` : '')).join('') : '<span>공석·현직 명부 확인 필요</span>'}</span>
         <small>이번 선거 구도${matchup?.status === 'certified_ballot' ? ' · 공식 본선 명부' : matchup ? ' · 공개 주요 후보 명부' : ''}</small><span class="elections-contest-pair">${field}</span>
-        <small>${poll ? poll.required_candidates?.length && !pollMatchesMatchup(poll,matchup) ? '조사 후보와 본선 명부 대조 대기' : escapeHtml(compactPollLabel(poll, board, health, days)) : '여론조사 감시 미연결'}</small></button>`;
+        ${callLine(mediaCall(board, race.race_id))}<small>${poll ? poll.required_candidates?.length && !pollMatchesMatchup(poll,matchup) ? '조사 후보와 본선 명부 대조 대기' : escapeHtml(compactPollLabel(poll, board, health, days)) : '여론조사 감시 미연결'}</small></button>`;
 }).join('') || '<p class="elections-muted">해당 분류의 선거가 없습니다.</p>';
 
 export const bindElectionOverview = (root, onOpen) => {
@@ -84,6 +89,7 @@ export const electionOverviewHtml = (country, ratings, { state = null, board = n
                 ${office === 'senate' && outlook ? `<p class="elections-seat-extras">선거 후 전체 ${outlook.total}석 = 비선거 ${outlook.retained} + 이번 선거 ${resultUniverse.contested}</p>` : ''}
                 ${outlook?.counts.IND ? `<p class="elections-seat-extras">전망 무소속 ${outlook.counts.IND}</p>` : ''}
                 ${outlook?.single ? `<p class="elections-seat-extras">단일 기관 참고 ${outlook.single}${office === 'governor' ? '곳' : '석'} 포함</p>` : ''}
+                ${outlook?.called || outlook?.runoff ? `<p class="elections-seat-extras is-media-call">언론 당선 선언 ${outlook.called}${office === 'governor' ? '곳' : '석'} 포함${outlook.runoff ? ` · 결선 ${outlook.runoff}` : ''} · 비공식(주 인증 전)</p>` : ''}
                 ${outlook?.unreviewed ? `<p class="elections-seat-extras is-low-confidence">원문 미검토·참고 조사로 판정 ${outlook.unreviewed}${office === 'governor' ? '곳' : '석'} 포함 · 신뢰도 낮음</p>` : ''}
                 ${rating ? `<p class="elections-rating-heading">${office === 'senate' ? '전망 · ' : ''}이번 선거 ${rating.contested}${office === 'governor' ? '곳' : '석'} 분류 <small>칩을 눌러 목록 보기</small></p>
                 <div class="elections-rating-grid" aria-label="2026 선거 분류">

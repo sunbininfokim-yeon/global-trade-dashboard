@@ -1,6 +1,14 @@
 import { normalizeParty, stateClass2024, STATE_CLASSIFICATION_SOURCES, pollSignal, raceClosedByDate } from './usa-election-context.js?v=2';
 import { electionMatchup, pollMatchesMatchup } from './election-matchups.js';
 
+// Election-night media call for one race (AP 등, 비공식). Certified results win.
+export const mediaCall = (board, raceId) => {
+    const call = (board?.mediaCalls?.calls || []).find((c) => c.race_id === raceId);
+    if (!call || !['called', 'runoff'].includes(call.status)) return null;
+    if (call.status === 'called' && !['DEM', 'REP', 'IND'].includes(call.party)) return null;
+    return call;
+};
+
 export const ELECTION_OFFICES = [['governor', '주지사'], ['senate', '연방 상원'], ['house', '연방 하원']];
 const DAY = 86400000;
 export const FRESH_RATING_DAYS = 21;
@@ -152,14 +160,17 @@ export const electionOutlook = (country, office, rating, { state = null, board =
     }
     let pending = counts.unknown;
     delete counts.unknown;
-    let single = 0, pollResolved = 0, certified = 0, unreviewed = 0;
+    let single = 0, pollResolved = 0, certified = 0, unreviewed = 0, called = 0, runoff = 0;
     for (const race of rating.races) {
         const pollRace = board?.races?.[race.race_id];
         const raceState = state || country?.ui_ready?.state_drilldown?.states?.find((s) => s.id === race.state);
         const ballot = electionMatchup(raceState, race.race_id, pollRace, now);
         const signal = pollSignal(pollRace || { election_date: '2026-11-03' }, board, health, days, now);
         const party = partyKey(signal.party);
+        const call = signal.status === 'certified_result' ? null : mediaCall(board, race.race_id);
         if (signal.status === 'certified_result' && ['DEM', 'GOP', 'IND'].includes(party)) { counts[party]++; certified++; }
+        else if (call?.status === 'called') { counts[partyKey(call.party)]++; called++; }
+        else if (call?.status === 'runoff') { pending++; runoff++; }
         else if (signal.status === 'awaiting_certified_result') pending++;
         else if (stableParty(race.effective_rating)) counts[stableParty(race.effective_rating)]++;
         else if (pollMatchesMatchup(pollRace, ballot) && ['poll_lead', 'single_poll_lead'].includes(signal.status) && ['DEM', 'GOP'].includes(party)) {
@@ -176,5 +187,5 @@ export const electionOutlook = (country, office, rating, { state = null, board =
     }
     const total = retained.length + rating.contested;
     if (!state && total !== { house: 435, senate: 100, governor: 50 }[office]) return null;
-    return { counts, pending, total, retained: retained.length, retainedCounts, contestedCurrentCounts, single, pollResolved, certified, unreviewed };
+    return { counts, pending, total, retained: retained.length, retainedCounts, contestedCurrentCounts, single, pollResolved, certified, unreviewed, called, runoff };
 };
