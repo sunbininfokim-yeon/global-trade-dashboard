@@ -42,6 +42,13 @@
 
 ## 무료 데이터 파이프라인
 
+PortWatch 실수집은 일시적인 HTTP/ArcGIS 오류에 최대 3회 시도합니다.
+`build_snapshot.py --fetch-portwatch`는 최종 수집 오류가 하나라도 남으면
+공개 산출물 4종을 쓰기 전에 실패하므로 기존 게시값이 보존됩니다.
+실패 해협은 Actions 오류와 실행 요약에 표시됩니다. 진단용으로 부분 bundle이
+필요할 때만 `--allow-partial-portwatch`를 추가하세요. 같은 관측일이 다시
+조회되는 것은 허용하지만 캐시보다 오래된 관측으로의 후퇴는 거부합니다.
+
 - 세계 선대 기준: UNCTAD Review of Maritime Transport 2025, Table II.5.
 - 항로 화물톤: 공식 UN Comtrade API의 연간 양자 `netWgt`. reporter-partner-flow-HS 셀마다 Water 운송수단을 우선하고, 없을 때만 전체 운송수단 합계를 사용해 중복을 막습니다.
 - 현재 초크포인트 이상: IMF PortWatch ArcGIS REST API의 `capacity_container`, `capacity_dry_bulk`, `capacity_tanker`. 이 필드는 선박 DWT와 추정 적재율로 산출한 일일 **추정 교역량(metric tonnes)**이며 관측 DWT가 아닙니다. 최근 7일 평균을 직전 28일 평균과 비교합니다.
