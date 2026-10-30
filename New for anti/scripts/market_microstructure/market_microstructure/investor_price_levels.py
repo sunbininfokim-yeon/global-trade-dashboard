@@ -584,6 +584,7 @@ def _parse_naver_flow_date(raw: str) -> pd.Timestamp | None:
 KRX_12008_STOCK_DATASET = "krx_12008_kospi_stock_investor"
 KRX_12008_STOCK_SOURCE = "KRX 12008 투자자별 거래실적 (유가증권·주식·거래대금) · krx-month-paste"
 KOSPI_STOCK_SCOPE_KO = "유가증권시장 주식 투자자별 순매수 (ETF·ETN 제외)."
+NAVER_KOSPI_TREND_URL = "https://m.stock.naver.com/api/index/KOSPI/trend"
 # Sources whose days are the same stock-only quantity and may be carried
 # forward together; anything else in a previous file is not reused.
 STOCK_FLOW_SOURCES = {None, "naver", "krx_12008_stock"}
@@ -637,7 +638,7 @@ def fetch_kospi_market_investor_history(*, max_days: int = 60, krx_root: Any = N
     """KOSPI cash (stock) market 개인/외국인/기관계 순매수 (억원).
 
     The stock-scoped KRX 12008 export in krx-month-paste when present; the
-    Naver page otherwise. Both are the same stock-only quantity.
+    Naver mobile JSON otherwise. Both are the same stock-only quantity.
     """
     if krx_root:
         krx = load_krx_12008_kospi_flows(krx_root)
@@ -651,72 +652,69 @@ def fetch_kospi_market_investor_history(*, max_days: int = 60, krx_root: Any = N
 
 
 def _fetch_naver_kospi_market_investor_history(*, max_days: int = 60) -> pd.DataFrame:
-    """Naver investorDealTrendDay (stock-only). Empty since 2026-09-17."""
+    """Stock-only market nets in 억원, keyed by actual KS11 trading dates.
+
+    The retired HTML page is HTTP 410. The mobile API returns one day and
+    echoes even a holiday/future bizdate with zero amounts, so a successful
+    response alone is not a trading-day observation. Use the same KS11
+    calendar/closes as the price-bin join; never request or fill holidays.
+    """
+    import FinanceDataReader as fdr
     import requests
-    from datetime import timedelta
-    from io import StringIO
 
-    UA = {"User-Agent": "Mozilla/5.0"}
-    seen: set[str] = set()
-    recs: list[dict[str, Any]] = []
-    for i in range(0, max_days + 40):
-        d = (datetime.now() - timedelta(days=i)).strftime("%Y%m%d")
-        url = f"https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate={d}&page=1"
-        try:
-            r = requests.get(url, headers=UA, timeout=25)
-            r.raise_for_status()
-            r.encoding = "euc-kr"
-            tables = pd.read_html(StringIO(r.text))
-        except Exception:  # noqa: BLE001
-            continue
-        if not tables:
-            continue
-        df = tables[0].copy()
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = [
-                "|".join([str(x) for x in tup if str(x) != "nan"]) for tup in df.columns.values
-            ]
-        date_col = df.columns[0]
-        for _, row in df.iterrows():
-            raw = str(row[date_col])
-            if raw in seen or not raw or not raw[0].isdigit():
-                continue
-            dt = _parse_naver_flow_date(raw)
-            if dt is None:
-                continue
-            seen.add(raw)
-
-            def _num(col_substr: str) -> float | None:
-                cols = [c for c in df.columns if col_substr in str(c)]
-                if not cols:
-                    return None
-                v = row.get(cols[0])
-                if v is None or (isinstance(v, float) and np.isnan(v)):
-                    return None
-                try:
-                    return float(str(v).replace(",", ""))
-                except ValueError:
-                    return None
-
-            retail = _num("개인")
-            foreign = _num("외국인")
-            inst = _num("기관계")
-            if retail is None and foreign is None:
-                continue
-            recs.append(
-                {
-                    "date": dt,
-                    "retail_net_eok": retail,
-                    "foreign_net_eok": foreign,
-                    "institution_net_eok": inst,
-                }
-            )
-        if len(seen) >= max_days:
-            break
-    if not recs:
+    if max_days < 1:
         return pd.DataFrame()
-    out = pd.DataFrame(recs).drop_duplicates("date").set_index("date").sort_index()
-    return out.tail(max_days)
+    today = pd.Timestamp.now(tz="Asia/Seoul").normalize().tz_localize(None)
+    start = (today - pd.Timedelta(days=max_days * 2 + 40)).strftime("%Y-%m-%d")
+    try:
+        prices = fdr.DataReader("KS11", start, today.strftime("%Y-%m-%d"))
+        close = pd.to_numeric(prices["Close"], errors="coerce")
+        close.index = pd.to_datetime(close.index).normalize()
+        close = close[~close.index.duplicated(keep="last")].sort_index()
+        close = close[(close.index <= today) & np.isfinite(close) & (close > 0)].tail(max_days)
+    except Exception as exc:  # noqa: BLE001
+        out = pd.DataFrame()
+        out.attrs["fetch_note_ko"] = f"KS11 거래일 조회 실패: {type(exc).__name__}"
+        return out
+
+    recs: list[dict[str, Any]] = []
+    failed: list[str] = []
+    consecutive_failures = 0
+    with requests.Session() as session:
+        dates = list(reversed(close.index))
+        for i, dt in enumerate(dates):
+            day = dt.strftime("%Y%m%d")
+            try:
+                response = session.get(NAVER_KOSPI_TREND_URL, params={"bizdate": day},
+                                       headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
+                response.raise_for_status()
+                row = response.json()
+                if not isinstance(row, dict) or row.get("bizdate") != day:
+                    raise ValueError("unexpected KOSPI trend date/payload")
+                values = {}
+                for actor, field in (("retail", "personalValue"), ("foreign", "foreignValue"),
+                                     ("institution", "institutionalValue")):
+                    raw = row.get(field)
+                    try:
+                        value = float(str(raw).strip().replace(",", ""))
+                        values[f"{actor}_net_eok"] = value if np.isfinite(value) else None
+                    except (TypeError, ValueError):
+                        values[f"{actor}_net_eok"] = None
+                if not any(v is not None for v in values.values()):
+                    raise ValueError("no numeric investor nets")
+                recs.append({"date": dt, **values})
+                consecutive_failures = 0
+            except Exception:  # noqa: BLE001
+                failed.append(dt.strftime("%Y-%m-%d"))
+                consecutive_failures += 1
+                if consecutive_failures >= 3:
+                    failed.extend(day.strftime("%Y-%m-%d") for day in dates[i + 1:])
+                    break  # Bound an unavailable endpoint to three failed calls.
+    out = pd.DataFrame(recs).set_index("date").sort_index() if recs else pd.DataFrame()
+    out.attrs["index_close_by_date"] = {dt.strftime("%Y-%m-%d"): float(v) for dt, v in close.items()}
+    if failed:
+        out.attrs["fetch_note_ko"] = f"Naver KOSPI 수급 조회 실패 {len(failed)}일: {', '.join(failed)}"
+    return out
 
 
 _NET_COLS = ("retail_net_eok", "foreign_net_eok", "institution_net_eok")
@@ -748,22 +746,25 @@ def build_kospi_index_levels(
 ) -> dict[str, Any]:
     """Infomax-style: KOSPI close level × market investor nets (억원).
 
-    When today's source returns nothing (the Naver page has been empty since
-    2026-09-17), the previously published stock-only days are kept and the
-    block says how far they run, instead of blanking to "missing".
+    When today's source returns nothing, previously published stock-only days
+    are kept and the block says how far they run instead of blanking to missing.
     """
     flows = fetch_kospi_market_investor_history(max_days=max_days, krx_root=krx_root)
     source_key = flows.attrs.get("source_key", "naver")
     frames: list[pd.DataFrame] = []
-    fetch_note = None
+    fetch_note = flows.attrs.get("fetch_note_ko")
     if flows.empty:
-        fetch_note = "오늘 수집 소스에서 코스피 시장 수급을 받지 못함"
+        fetch_note = fetch_note or "오늘 수집 소스에서 코스피 시장 수급을 받지 못함"
     else:
         try:
-            import FinanceDataReader as fdr
+            cached_close = flows.attrs.get("index_close_by_date")
+            if cached_close:
+                idx = pd.DataFrame({"Close": cached_close})
+            else:
+                import FinanceDataReader as fdr
 
-            start = (flows.index.min() - pd.Timedelta(days=5)).strftime("%Y-%m-%d")
-            idx = fdr.DataReader("KS11", start)
+                start = (flows.index.min() - pd.Timedelta(days=5)).strftime("%Y-%m-%d")
+                idx = fdr.DataReader("KS11", start)
         except Exception as exc:  # noqa: BLE001
             idx, fetch_note = None, f"KS11 지수 조회 실패: {type(exc).__name__}"
         if idx is not None and not idx.empty:
@@ -904,12 +905,13 @@ def build_kospi_index_levels(
             "실측 코스피 종가(KS11) 레벨(심리적 step)에 실측 시장 개인·외인·기관 순매수(억원)를 귀속."
         ),
         "flow_source": source_key,
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
         "flow_date_end": flow_date_end,
         "carried_forward_days": carried_days,
         "fetch_note_ko": fetch_note,
         "scope_ko": KOSPI_STOCK_SCOPE_KO,
         "source": [
-            KRX_12008_STOCK_SOURCE if is_krx else "https://finance.naver.com/sise/investorDealTrendDay.naver",
+            KRX_12008_STOCK_SOURCE if is_krx else NAVER_KOSPI_TREND_URL,
             "FinanceDataReader KS11 (live)",
             "ref framing: https://news.einfomax.co.kr/news/articleView.html?idxno=4427169",
         ],

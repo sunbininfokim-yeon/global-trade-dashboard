@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 import fetch_kr_public_extras  # noqa: E402
+import build_investor_price_levels as cli  # noqa: E402
 import pandas as pd  # noqa: E402
 
 import market_microstructure.investor_price_levels as ipl  # noqa: E402
@@ -132,6 +133,140 @@ class TestKospiMarketFlowKrx(unittest.TestCase):
         live = {"history": [{"date_raw": "26.09.23"}], "latest": {"date_raw": "26.09.23"}, "quality": "observed"}
         with mock.patch.object(fetch_kr_public_extras, "_fetch_naver_kospi_investor_flows", return_value=live):
             self.assertIs(fetch_kr_public_extras.fetch_naver_kospi_investor_flows(), live)
+
+
+class TestKospiMobileApi(unittest.TestCase):
+    def setUp(self):
+        # A real trading calendar need not include holidays. Even a legitimate
+        # all-zero trading day must survive; missing/malformed data must not.
+        self.prices = pd.DataFrame({"Close": [5900.0, 6000.0, 6100.0]},
+                                   index=pd.to_datetime(["2026-10-23", "2026-10-26", "2026-10-27"]))
+
+    @staticmethod
+    def response(day, **override):
+        return mock.Mock(json=mock.Mock(return_value={
+            "bizdate": day, "personalValue": "-10,197", "foreignValue": "+8,448",
+            "institutionalValue": "+2,474", **override,
+        }))
+
+    def test_signed_eok_and_calendar_without_zero_filled_holidays(self):
+        responses = [self.response("20261027"), self.response("20261026", personalValue="0",
+                     foreignValue="0", institutionalValue="0"), self.response("20261023")]
+        # Duplicated/future/invalid price rows must not create API observations.
+        extra = pd.DataFrame({"Close": [6100.0, 0.0, 6200.0]},
+                             index=pd.to_datetime(["2026-10-27", "2026-10-22", "2099-01-01"]))
+        with mock.patch("FinanceDataReader.DataReader", return_value=pd.concat([self.prices, extra])), \
+             mock.patch("requests.Session") as factory:
+            session = factory.return_value.__enter__.return_value
+            session.get.side_effect = responses
+            out = ipl._fetch_naver_kospi_market_investor_history(max_days=3)
+        self.assertEqual([c.kwargs["params"]["bizdate"] for c in session.get.call_args_list],
+                         ["20261027", "20261026", "20261023"])
+        self.assertEqual(list(out.index), list(self.prices.index))
+        self.assertEqual(out.loc["2026-10-27", "retail_net_eok"], -10197.0)
+        self.assertEqual(out.loc["2026-10-27", "foreign_net_eok"], 8448.0)
+        self.assertEqual(out.loc["2026-10-26", "foreign_net_eok"], 0.0)
+
+    def test_missing_and_nonfinite_actor_stay_null_and_wrong_date_is_rejected(self):
+        with mock.patch("FinanceDataReader.DataReader", return_value=self.prices), \
+             mock.patch("requests.Session") as factory:
+            session = factory.return_value.__enter__.return_value
+            session.get.side_effect = [
+                self.response("20261027", personalValue="NaN", institutionalValue=None),
+                self.response("20261025"), self.response("20261023"),
+            ]
+            out = ipl._fetch_naver_kospi_market_investor_history(max_days=3)
+        self.assertTrue(pd.isna(out.loc["2026-10-27", "retail_net_eok"]))
+        self.assertTrue(pd.isna(out.loc["2026-10-27", "institution_net_eok"]))
+        self.assertNotIn(pd.Timestamp("2026-10-26"), out.index)
+        self.assertIn("2026-10-26", out.attrs["fetch_note_ko"])
+
+    def test_failed_date_keeps_previous_and_reuses_same_index_closes(self):
+        previous = {"quality": "observed", "flow_source": "naver", "days": [
+            {"date": "2026-10-26", "close": 6000.0, "retail_net_eok": 10.0,
+             "foreign_net_eok": -20.0, "institution_net_eok": 5.0},
+        ]}
+        with mock.patch("FinanceDataReader.DataReader", return_value=self.prices) as prices, \
+             mock.patch("requests.Session") as factory:
+            session = factory.return_value.__enter__.return_value
+            session.get.side_effect = [self.response("20261027"), ValueError("offline"), self.response("20261023")]
+            out = build_kospi_index_levels(max_days=3, previous=previous)
+        prices.assert_called_once()
+        self.assertEqual(out["date_end"], "2026-10-27")
+        self.assertEqual(out["carried_forward_days"], 1)
+        self.assertEqual(out["days"][1]["foreign_net_eok"], -20.0)
+        self.assertIn(ipl.NAVER_KOSPI_TREND_URL, out["source"])
+        self.assertEqual(sum(b["foreign_net_krw"] for b in out["bins_by_close"]), 8448 * 2 - 20)
+
+    def test_calendar_failure_carries_previous_without_guessing_weekdays(self):
+        previous = {"quality": "observed", "flow_source": "naver", "days": [
+            {"date": "2026-10-26", "close": 6000.0, "retail_net_eok": 10.0,
+             "foreign_net_eok": -20.0, "institution_net_eok": 5.0},
+        ]}
+        with mock.patch("FinanceDataReader.DataReader", side_effect=RuntimeError("offline")), \
+             mock.patch("requests.Session") as session:
+            out = build_kospi_index_levels(max_days=3, previous=previous)
+        session.assert_not_called()
+        self.assertEqual(out["date_end"], "2026-10-26")
+        self.assertEqual(out["carried_forward_days"], 1)
+        self.assertIn("KS11 거래일 조회 실패", out["fetch_note_ko"])
+
+    def test_outage_stops_after_three_failed_calls(self):
+        prices = pd.concat([self.prices, pd.DataFrame({"Close": [5800.0]},
+                           index=pd.to_datetime(["2026-10-22"]))])
+        with mock.patch("FinanceDataReader.DataReader", return_value=prices), \
+             mock.patch("requests.Session") as factory:
+            session = factory.return_value.__enter__.return_value
+            session.get.side_effect = ValueError("offline")
+            out = ipl._fetch_naver_kospi_market_investor_history(max_days=4)
+        self.assertEqual(session.get.call_count, 3)
+        self.assertTrue(out.empty)
+        self.assertIn("4일", out.attrs["fetch_note_ko"])
+
+    def test_public_extras_uses_same_amounts_and_converts_eok_to_krw(self):
+        frame = pd.DataFrame({"retail_net_eok": [1.0], "foreign_net_eok": [-2.0],
+                              "institution_net_eok": [None]}, index=pd.to_datetime(["2026-10-27"]))
+        with mock.patch.object(ipl, "_fetch_naver_kospi_market_investor_history", return_value=frame):
+            out = fetch_kr_public_extras._fetch_naver_kospi_investor_flows()
+        self.assertEqual(out["latest"]["foreign_net_krw"], -200_000_000.0)
+        self.assertIsNone(out["latest"]["institution_net_krw"])
+        self.assertEqual(out["latest"]["date_raw"], "26.10.27")
+        self.assertEqual(out["source"], ipl.NAVER_KOSPI_TREND_URL)
+
+
+class TestIndexOnlyRecovery(unittest.TestCase):
+    def test_index_only_preserves_tickers_timestamps_and_failed_run_bytes(self):
+        for fresh in (True, False):
+            with self.subTest(fresh=fresh), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp) / "scripts" / "market_microstructure"
+                root.mkdir(parents=True)
+                path = Path(tmp) / "public" / "data" / "investor_price_levels_v1.json"
+                path.parent.mkdir(parents=True)
+                before = {"as_of": "2026-10-29", "tickers": {"005930": {"quality": "observed"}},
+                          "errors": ["previous diagnostic"], "kospi_index_levels": {"date_end": "2026-09-16"}}
+                original = json.dumps(before)
+                path.write_text(original, encoding="utf-8")
+                md = root / "INVESTOR_PRICE_LEVELS.md"
+                md.write_text("old report", encoding="utf-8")
+                index = {"quality": "observed", "n_days": 180, "date_end": "2026-10-30",
+                         "carried_forward_days": 0 if fresh else 180}
+                with mock.patch.object(cli, "ROOT", root), \
+                     mock.patch.object(sys, "argv", ["build", "--live", "--index-only"]), \
+                     mock.patch.object(cli, "build_kospi_index_levels", return_value=index), \
+                     mock.patch.object(cli, "build_investor_price_levels_report") as full, \
+                     mock.patch.object(cli, "markdown_investor_price_levels", return_value="updated report"):
+                    status = cli.main()
+                full.assert_not_called()
+                if fresh:
+                    self.assertEqual(status, 0)
+                    after = json.loads(path.read_text(encoding="utf-8"))
+                    self.assertEqual(after.pop("kospi_index_levels"), index)
+                    before.pop("kospi_index_levels")
+                    self.assertEqual(after, before)
+                else:
+                    self.assertEqual(status, 1)
+                    self.assertEqual(path.read_text(encoding="utf-8"), original)
+                    self.assertEqual(md.read_text(encoding="utf-8"), "old report")
 
 
 if __name__ == "__main__":

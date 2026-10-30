@@ -14,8 +14,7 @@ number, because these values feed the turnover-history charts.
 from __future__ import annotations
 
 import os
-from datetime import datetime, timedelta
-from io import StringIO
+from datetime import datetime
 from typing import Any
 
 import pandas as pd
@@ -183,8 +182,8 @@ def fetch_letf_category_share() -> dict[str, Any]:
 def fetch_naver_kospi_investor_flows(*, lookback_days: int = 7) -> dict[str, Any]:
     """KOSPI stock-market investor net flows in 억원: Naver, else stock-scoped KRX 12008.
 
-    The Naver page has returned an empty table since 2026-09-17. When it
-    does, and a krx-month-paste checkout named in $KRX_MONTH_PASTE_DIR holds
+    If the Naver mobile JSON is unavailable and a krx-month-paste checkout
+    named in $KRX_MONTH_PASTE_DIR holds
     the stock-scoped 12008 export, those days are used instead. The
     ETF-inclusive 12008 hive is never used here (different quantity); with
     neither, the caller keeps the previous observation (carried_forward).
@@ -229,52 +228,31 @@ def fetch_naver_kospi_investor_flows(*, lookback_days: int = 7) -> dict[str, Any
 
 
 def _fetch_naver_kospi_investor_flows(*, lookback_days: int = 7) -> dict[str, Any]:
-    """Best-effort KOSPI aggregate investor net flows, reported in 억원."""
+    """Reuse the stock-only mobile API and its actual-trading-day filter."""
+    from market_microstructure.investor_price_levels import (
+        KOSPI_STOCK_SCOPE_KO,
+        NAVER_KOSPI_TREND_URL,
+        _fetch_naver_kospi_market_investor_history,
+    )
+
+    frame = _fetch_naver_kospi_market_investor_history(max_days=lookback_days)
     history: list[dict[str, Any]] = []
-    for offset in range(lookback_days):
-        target = (datetime.now() - timedelta(days=offset)).strftime("%Y%m%d")
-        url = f"https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate={target}&page=1"
-        response = requests.get(url, headers=UA, timeout=25)
-        response.raise_for_status()
-        response.encoding = "euc-kr"
-        tables = pd.read_html(StringIO(response.text))
-        if not tables:
-            continue
-        frame = tables[0].dropna(how="all")
-        if frame.empty:
-            continue
-        if isinstance(frame.columns, pd.MultiIndex):
-            frame.columns = [str(column[0]) for column in frame.columns]
-        date_column = next((column for column in frame.columns if "날짜" in str(column)), None)
-        if date_column is None:
-            continue
-        for _, row in frame.iterrows():
-            retail = _number(row.get("개인"))
-            foreign = _number(row.get("외국인"))
-            institution = _number(row.get("기관계"))
-            if retail is None and foreign is None and institution is None:
-                continue
-            history.append(
-                {
-                    "date_raw": str(row[date_column]),
-                    "retail_net_eok": retail,
-                    "foreign_net_eok": foreign,
-                    "institution_net_eok": institution,
-                    "retail_net_krw": None if retail is None else retail * 1e8,
-                    "foreign_net_krw": None if foreign is None else foreign * 1e8,
-                    "institution_net_krw": None if institution is None else institution * 1e8,
-                }
-            )
-        if history:
-            break
+    for day, row in frame.tail(10).iloc[::-1].iterrows():
+        vals = {key: None if pd.isna(row[key]) else float(row[key])
+                for key in ("retail_net_eok", "foreign_net_eok", "institution_net_eok")}
+        history.append({
+            "date_raw": day.strftime("%y.%m.%d"), **vals,
+            **{key.replace("_eok", "_krw"): None if v is None else v * 1e8 for key, v in vals.items()},
+        })
     return {
         "scope": "kospi_cash",
         "unit_native": "억원",
         "latest": history[0] if history else None,
         "history": history[:10],
         "quality": "observed" if history else "missing",
-        "source": "https://finance.naver.com/sise/investorDealTrendDay.naver",
-        "note_ko": "코스피 시장 전체 투자자별 순매수. 종목별 수급과 별도.",
+        "source": NAVER_KOSPI_TREND_URL,
+        "note_ko": KOSPI_STOCK_SCOPE_KO,
+        "fetch_note_ko": frame.attrs.get("fetch_note_ko"),
     }
 
 
