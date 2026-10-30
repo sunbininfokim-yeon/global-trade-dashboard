@@ -236,3 +236,33 @@ summary. First run (2013–2025, 13 scored seasons):
 
 `run_forecast` applies a live window through `ndvi_blend.py` and publishes it
 under `ndvi` in each region; nothing changes until half the window is observed.
+
+## ENSO-weighted pre-season fill (`enso_analog.py`)
+
+Before the critical window opens every weather feature is filled from past
+seasons, and averaged evenly that is just the trend. Pampas soy and maize now
+weight those past seasons by how close their Niño3.4 at sowing (Aug-Sep, from
+`public/data/sst_regions_v1.json`) was to this season's, with a 0.5 °C Gaussian
+kernel fixed before scoring. Observed features still replace filled ones as
+the season comes in.
+
+```bash
+python3 -m argentina.enso_analog   # -> condition/enso_analog_backtest.json
+```
+
+Pre-season forward chaining, skill vs trend-only (26 seasons, 2000-2025):
+
+| region-crop | even fill | ENSO fill | last 10 even → ENSO | switched |
+|---|---:|---:|---:|---|
+| pampas_maiz | 0.0% | **+7.8%** | 0.0% → +8.9% | on |
+| pampas_soja | 0.0% | **+4.0%** | 0.0% → +5.2% | on |
+| chaco_algodon | 0.0% | −1.3% | 0.0% → −1.8% | off |
+| norte_soja | 0.0% | −0.9% | 0.0% → −2.6% | off |
+
+Wheat is not covered (sown May-June, different index window). The script
+fails if the `ON` set and the backtest disagree.
+
+2026/27 caveat: Niño3.4 at sowing is +2.6 °C, beyond anything since 1982
+(next highest +1.7 °C, 1997 and 2015). The fill then rests on about three
+seasons (1998, 2016, 2024), so `enso.analog_fill.beyond_record` is set and the
+band stays at the trend's own width.

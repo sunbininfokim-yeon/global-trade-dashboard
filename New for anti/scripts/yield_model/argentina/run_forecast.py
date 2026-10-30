@@ -166,6 +166,13 @@ def main():
 
         label, value = enso_label(r.get("oni"))
         iod = r.get("iod")
+        analog = r.get("enso_analog")
+        # Before the growing-season ONI exists, say what ENSO looked like at
+        # sowing instead of "unknown" -- it is what the analog fill used.
+        basis = "oni_growing_season"
+        if value is None and analog:
+            label, _ = enso_label(analog["nino34_sowing"])
+            basis = "nino34_sowing"
 
         payload["regions"][cfg.key] = {
             "label": r["label"],
@@ -188,6 +195,7 @@ def main():
             "ndvi": nd,
             "enso": {
                 "state": label,
+                "state_basis": basis,
                 "oni_growing_season": value,
                 "iod_spring": round(iod, 3) if iod is not None else None,
                 # The guide's own conjunction, surfaced so a reader can see
@@ -195,6 +203,9 @@ def main():
                 "la_nina_positive_iod": bool(
                     value is not None and iod is not None
                     and value < -0.5 and iod > 0.4),
+                # ENSO-weighted climatology for the unobserved weather
+                # (enso_analog.py); None where off or once the window is in.
+                "analog_fill": analog,
             },
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
