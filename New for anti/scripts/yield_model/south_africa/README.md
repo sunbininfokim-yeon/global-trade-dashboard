@@ -78,3 +78,17 @@ not committed.
 - [South Africa Crop Estimates](https://www.nda.gov.za/index.php/publication/320-crop-estimates)
 - [Earth Engine CHIRPS Daily](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY)
 - [Earth Engine ERA5-Land Daily Aggregated](https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_DAILY_AGGR)
+
+## Pre-season outlook (`enso_preseason.py`)
+
+From October `run_forecast` publishes the next harvest year. Its January-February
+critical window has not happened, so `predict` runs every past season's
+anomalies through the model and weights them by Niño3.4 at planting
+(Aug-Sep, `public/data/sst_regions_v1.json`, 0.5 °C kernel fixed before scoring).
+
+Pre-season forward chaining 2007-2025 (19 seasons) vs trend-only: even average
+0.0%, ENSO-weighted **+6.2%** (+9.3% last ten). The band is widened to the
+trend-only RMSE. Rerun with `python3 -m south_africa.enso_preseason`.
+
+2026/27: Niño3.4 at planting +2.6 °C is beyond the record; the outlook rests on
+1997/98, 2015/16 and 2023/24 (`beyond_record: true`).
