@@ -3433,6 +3433,9 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null, cropK
         // Optional favourable/unfavourable/neutral read-out that does not
         // move the number (see indonesia/palm_conditions.py).
         weatherConditions: entry.weather_conditions || null,
+        // Pre-season fill weighted by Niño3.4 at sowing (argentina/enso_analog.py,
+        // south_africa/enso_preseason.py); null once the season is observed.
+        ensoOutlook: entry.enso?.analog_fill || entry.enso_preseason || null,
         // Four ways to say "do not trust this as weather skill":
         // low_confidence flag, beats_trend false, skill_vs_trend < 0.20,
         // climate_gate stopped for short sample (Indonesia).
@@ -4885,6 +4888,18 @@ const renderStageConditionSummary = (sc) => {
         </div>`;
 };
 
+// Before the critical window is observed, the number leans on past seasons
+// with a similar Niño3.4 at sowing. Say which ones, so +14% reads as "1998 and
+// 2016 went this way" rather than as a measured season.
+const renderEnsoOutlook = (o) => {
+    const n34 = num(o?.nino34_sowing ?? o?.nino34_planting);
+    if (!o || n34 === null) return '';
+    const years = (o.analogs || []).filter(a => (a.weight ?? 0) >= 0.05).map(a => a.year);
+    return `<div class="climate-sub">파종 전 전망 · 파종기 Niño3.4 ${n34 >= 0 ? '+' : ''}${n34.toFixed(1)}°C
+        ${years.length ? ` · 유사 연도 ${years.join('·')}` : ''}
+        ${o.beyond_record ? ' · 관측 기록 밖 수온이라 표본이 적음' : ''}</div>`;
+};
+
 // Region yield numbers stay on the right; left holds model provenance.
 const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = null) => {
     fc = fc || await loadClimateForecast(cfg);
@@ -4927,6 +4942,7 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
                             ${c.pct != null ? ` (${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%)` : ''}</span>
                     </div>
                     ${c.pct != null ? `<div class="climate-sub">기상 효과(추세 대비) ${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%</div>` : ''}
+                    ${renderEnsoOutlook(c.ensoOutlook)}
                     ${c.reason ? `<div class="climate-sub">${c.reason}</div>` : ''}`}
                 ${c.weatherConditions
                     ? renderWeatherConditions(c.weatherConditions)
