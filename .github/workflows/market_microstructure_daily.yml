@@ -165,12 +165,12 @@ jobs:
         continue-on-error: true
         run: python build_krx_deriv_flow.py --source "${{ github.workspace }}/krx-month-paste" --print-stats
 
-      - name: Investor × price levels (real data; marcap + high-vol in top100)
-        id: investor_levels
-        continue-on-error: true
-        env:
-          KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
-        run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
+      # Investor × price levels moved to investor_price_levels_daily.yml, which
+      # runs after the KRX close. This job's schedule lands anywhere between
+      # 08:50 and 10:00 KST (GitHub delays a 06:13 KST cron by 2.5-3.7h), i.e.
+      # across the open, and four runs in a row (2026-10-27..30) got a KOSPI
+      # listing with no usable market caps in that window and failed closed.
+      # The same listing call after the close returned all 939 caps.
 
       - name: Deposit · credit overlay
         run: python publish_deposit_credit.py
@@ -209,13 +209,11 @@ jobs:
             "New for anti/public/data/derivatives_activity_history_v1.jsonl" \
             "New for anti/public/data/leverage_direction_history_v1.jsonl" \
             "New for anti/public/data/stock_letf_history_v1.jsonl" \
-            "New for anti/public/data/investor_price_levels_v1.json" \
             "New for anti/scripts/market_microstructure/US_KR_L3.md" \
             "New for anti/scripts/market_microstructure/DERIVATIVES_BOARD.md" \
             "New for anti/scripts/market_microstructure/TABLES.md" \
             "New for anti/scripts/market_microstructure/AI_CASINO_BRIEF.md" \
             "New for anti/scripts/market_microstructure/ALERT_LEVELS.md" \
-            "New for anti/scripts/market_microstructure/INVESTOR_PRICE_LEVELS.md" \
             "New for anti/scripts/market_microstructure/tests/fixtures/us_day.json"
           git commit -m "chore: refresh market microstructure daily snapshots" || exit 0
           # A bare push loses the whole day's snapshot if any other scheduled
@@ -243,7 +241,6 @@ jobs:
           MICRO_SNAPSHOT: ${{ steps.micro_snapshot.outcome }}
           KRX_CHECKOUT: ${{ steps.krx15007_checkout.outcome }}
           KRX_FLOW: ${{ steps.krx_flow.outcome }}
-          INVESTOR_LEVELS: ${{ steps.investor_levels.outcome }}
           ALERT_LEVELS: ${{ steps.alert_levels.outcome }}
         run: |
           failed=()
@@ -251,7 +248,6 @@ jobs:
           [ "$MICRO_SNAPSHOT" = "failure" ]  && failed+=("Market microstructure snapshot")
           [ "$KRX_CHECKOUT" = "failure" ]    && failed+=("Checkout krx-month-paste")
           [ "$KRX_FLOW" = "failure" ]        && failed+=("KRX derivatives microstructure history")
-          [ "$INVESTOR_LEVELS" = "failure" ] && failed+=("Investor × price levels")
           [ "$ALERT_LEVELS" = "failure" ]    && failed+=("Alert levels")
           if [ "${#failed[@]}" -eq 0 ]; then
             echo "No continue-on-error step failed."
