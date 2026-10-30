@@ -1016,27 +1016,107 @@
         },
         "snapshot_sha256": "9294fd210dcdf5b5620b0bf51b8d7a9f0b5a2dfe3063c313a39c9c56a8a3cd06"
       }
+    },
+    {
+      "file": "usa_polls/quality_reviews_2026.json",
+      "path": [
+        "reviews",
+        "gov202ech161b28e4"
+      ],
+      "action": "set",
+      "before_exists": false,
+      "before_sha256": null,
+      "value": {
+        "reviewed_on": "2026-10-30",
+        "reviewed_at": "2026-10-30T02:00:00+00:00",
+        "provider_record_sha256": "6a63854d202dcaed2b5dca4470b5765babcdb92a90cb6d8ddd6f2b439f29bf7b",
+        "sources": [
+          "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "https://netchoice.org/wp-content/uploads/2026/10/Echelon-Insights-Release-Memo.pdf"
+        ],
+        "primary_toplines": {
+          "Hannah Pingree": 51.0,
+          "Bobby Charles": 38.0,
+          "Rick Bennett": 7.0
+        },
+        "question_sample_n": 413,
+        "admission": {
+          "pollster": "Echelon Insights",
+          "provider_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "group": "echelon_insights",
+          "methodology_url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+          "source_role": "commissioner_primary",
+          "signal_eligible": true
+        },
+        "ballot_format": "ordinary_named_candidate_ballot",
+        "disclosure_review": {
+          "population": "LV",
+          "sample_n": 413,
+          "field_dates": [
+            "2026-10-16",
+            "2026-10-23"
+          ],
+          "primary_release_date": "2026-10-27",
+          "provider_record_date": "2026-10-27",
+          "sponsors": [
+            "NetChoice"
+          ],
+          "sampling_method": "Echelon Insights for NetChoice, Oct 16-23; online via L2 voter-file text invitations and matched online sample",
+          "sampling_frame": "ME likely voters (state oversample n=413)",
+          "weighting": "modeled 2026 likely electorate; state oversamples weighted down",
+          "question_wording_checked": false,
+          "question": "ME governor vote intention, state oversample of likely voters",
+          "provider_pollster_label": "Echelon Insights",
+          "primary_pollster_name": "Echelon Insights",
+          "commissioner": "NetChoice",
+          "source_fetch_receipt": "source-fetch/bg-final2-20261030-40999761846"
+        },
+        "reported_precision": {
+          "kind": "publisher_reported_margin_of_sampling_error",
+          "half_width_pp": 6.3,
+          "confidence_level_pct": null,
+          "scope": "whole_study_413",
+          "model_details_verified": false
+        },
+        "sponsor_review": {
+          "primary_sponsors": [
+            "NetChoice"
+          ],
+          "provider_sponsors": [
+            "NetChoice"
+          ],
+          "provider_partisan_flag": null,
+          "affiliation_independently_verified": null,
+          "primary_internal": false
+        },
+        "missing_fields": [
+          "historical_accuracy_rating",
+          "full_questionnaire"
+        ],
+        "limitations_ko": "Echelon Insights 원문 대조: LV 413명, 2026-10-16~2026-10-23, 표본오차 ±6.3. NetChoice 발표 ME governor 수치 대조. 의뢰처는 기술업계 단체(정당 아님). 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다.",
+        "snapshot_sha256": "aae367b5467acaa49ce61fd0649b83fd3d5a688c3e6cd8874d62b4c693f4337b"
+      }
     }
   ],
   "capture": {
-    "as_of": "2026-10-23",
-    "fetched_at": "2026-10-23T02:32:01.138221+00:00",
+    "as_of": "2026-10-30",
+    "fetched_at": "2026-10-30T04:04:20.927092+00:00",
     "receipt": {
       "state": "ME",
       "cycle": 2026,
-      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
-      "captured_at": "2026-10-23T02:32:01.138221+00:00",
+      "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-30",
+      "captured_at": "2026-10-30T04:04:20.927092+00:00",
       "capture_kind": "provider_transport_only",
-      "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
-      "provider_records": 65,
+      "serialized_provider_response_sha256": "e41cfcfbbee351cb0da1908dc3195a92401064d19262c2a0c6004e5a0af19918",
+      "provider_records": 73,
       "primary_supplement_receipts": [],
       "collection_checkpoint_sha256": "00c16d477074d0b0be50f8cd58cedbe84083f380000c8617ca5a6c2a5f31c276",
       "provider_fetch": {
         "via": "source_fetch.yml (GitHub Actions runner)",
-        "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
-        "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+        "fetch_branch": "source-fetch/votehub-full-20261030-40999144298",
+        "fetched_at": "2026-10-30T03:46:38.238312+00:00",
         "http_status": 200,
-        "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+        "raw_sha256": "3758903074d7cfd080f0509a6f6fb260b3870d4778b61d729a26b25cae87ec20"
       }
     },
     "provider_records": [
@@ -2816,9 +2896,237 @@
         "internal": false,
         "partisan": null,
         "subject": "2026 Maine"
+      },
+      {
+        "id": "us-202bea00f453c2",
+        "poll_type": "us-senator",
+        "sample_size": 1514,
+        "population": "lv",
+        "url": "https://www.foxnews.com/politics/fox-news-poll-nail-biter-maine-senate-race",
+        "created_at": "2026-10-23",
+        "start_date": "2026-10-16",
+        "end_date": "2026-10-20",
+        "pollster": "Beacon Research/Shaw & Co. Research",
+        "answers": [
+          {
+            "choice": "Troy Jackson",
+            "pct": 49.0
+          },
+          {
+            "choice": "Susan Collins",
+            "pct": 49.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Fox News"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Maine"
+      },
+      {
+        "id": "gov202bea65109344",
+        "poll_type": "governor",
+        "sample_size": 1514,
+        "population": "lv",
+        "url": "https://www.foxnews.com/politics/fox-news-poll-nail-biter-maine-senate-race",
+        "created_at": "2026-10-23",
+        "start_date": "2026-10-16",
+        "end_date": "2026-10-20",
+        "pollster": "Beacon Research/Shaw & Co. Research",
+        "answers": [
+          {
+            "choice": "Hannah Pingree",
+            "pct": 49.0
+          },
+          {
+            "choice": "Bobby Charles",
+            "pct": 39.0
+          },
+          {
+            "choice": "Rick Bennett",
+            "pct": 9.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "Fox News"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Maine"
+      },
+      {
+        "id": "us-202mar84640418",
+        "poll_type": "us-senator",
+        "sample_size": 1449,
+        "population": "lv",
+        "url": "https://maristpoll.marist.edu/polls/the-midterm-elections-in-maine-october-2026/",
+        "created_at": "2026-10-27",
+        "start_date": "2026-10-22",
+        "end_date": "2026-10-25",
+        "pollster": "Marist University",
+        "answers": [
+          {
+            "choice": "Troy Jackson",
+            "pct": 49.0
+          },
+          {
+            "choice": "Susan Collins",
+            "pct": 47.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Maine"
+      },
+      {
+        "id": "gov202mare4c178b5",
+        "poll_type": "governor",
+        "sample_size": 1449,
+        "population": "lv",
+        "url": "https://maristpoll.marist.edu/polls/the-midterm-elections-in-maine-october-2026/",
+        "created_at": "2026-10-27",
+        "start_date": "2026-10-22",
+        "end_date": "2026-10-25",
+        "pollster": "Marist University",
+        "answers": [
+          {
+            "choice": "Hannah Pingree",
+            "pct": 44.0
+          },
+          {
+            "choice": "Bobby Charles",
+            "pct": 44.0
+          },
+          {
+            "choice": "Rick Bennett",
+            "pct": 6.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Maine"
+      },
+      {
+        "id": "gov202ech161b28e4",
+        "poll_type": "governor",
+        "sample_size": 413,
+        "population": "lv",
+        "url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+        "created_at": "2026-10-27",
+        "start_date": "2026-10-16",
+        "end_date": "2026-10-23",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Hannah Pingree",
+            "pct": 51.0
+          },
+          {
+            "choice": "Bobby Charles",
+            "pct": 38.0
+          },
+          {
+            "choice": "Rick Bennett",
+            "pct": 7.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Maine"
+      },
+      {
+        "id": "us-202ech31fe342b",
+        "poll_type": "us-senator",
+        "sample_size": 413,
+        "population": "lv",
+        "url": "https://netchoice.org/netchoice-echelon-insights-poll-voters-rank-ai-regulation-far-behind-cost-of-living-want-one-national-ai-standard/",
+        "created_at": "2026-10-27",
+        "start_date": "2026-10-16",
+        "end_date": "2026-10-23",
+        "pollster": "Echelon Insights",
+        "answers": [
+          {
+            "choice": "Troy Jackson",
+            "pct": 51.0
+          },
+          {
+            "choice": "Susan Collins",
+            "pct": 44.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [
+          "NetChoice"
+        ],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Maine"
+      },
+      {
+        "id": "gov202cnnfa688c18",
+        "poll_type": "governor",
+        "sample_size": 783,
+        "population": "lv",
+        "url": "https://www.cnn.com/2026/10/29/politics/cnn-polls-michigan-maine-texas-kansas-senate-races-midterms-vis",
+        "created_at": "2026-10-29",
+        "start_date": "2026-10-20",
+        "end_date": "2026-10-26",
+        "pollster": "CNN/SSRS",
+        "answers": [
+          {
+            "choice": "Hannah Pingree",
+            "pct": 53.0
+          },
+          {
+            "choice": "Bobby Charles",
+            "pct": 39.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Maine"
+      },
+      {
+        "id": "us-202cnn450b1a6b",
+        "poll_type": "us-senator",
+        "sample_size": 783,
+        "population": "lv",
+        "url": "https://www.cnn.com/2026/10/29/politics/cnn-polls-michigan-maine-texas-kansas-senate-races-midterms-vis",
+        "created_at": "2026-10-29",
+        "start_date": "2026-10-20",
+        "end_date": "2026-10-26",
+        "pollster": "CNN/SSRS",
+        "answers": [
+          {
+            "choice": "Troy Jackson",
+            "pct": 49.0
+          },
+          {
+            "choice": "Susan Collins",
+            "pct": 45.0
+          }
+        ],
+        "seat_name": null,
+        "sponsors": [],
+        "internal": false,
+        "partisan": null,
+        "subject": "2026 Maine"
       }
     ],
-    "provider_records_sha256": "0e9d98860fe6e7964d94e56d21ab0bc920e151f229c3e1bfab28a9a2baa4dd9f",
+    "provider_records_sha256": "051a8f84a27e91e343f28bbe0b19af411531fe13c9265acefceba56bf32eda20",
     "primary_records": []
   },
   "federal_finance_review": {
