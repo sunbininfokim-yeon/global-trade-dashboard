@@ -246,6 +246,9 @@ def summary(target, items, score, verdict, history):
     good = [i["label_ko"] for i in items if i["status"] == "favorable"]
     if verdict == "unfavorable":
         reason = "불리 신호 {}개: {}".format(len(bad), ", ".join(bad))
+    elif bad and good:
+        reason = "불리 신호 {}개({})가 유리 신호({})와 상쇄돼 판정 기준(점수 -2)에 못 미친다".format(
+            len(bad), ", ".join(bad), ", ".join(good))
     elif bad:
         reason = "불리 신호 {}개({})뿐이라 판정 기준(2개 이상)에 못 미친다".format(
             len(bad), ", ".join(bad))
@@ -326,7 +329,10 @@ def main(argv):
             build(producer, date.today().year + 1)
         elif command == "backtest":
             frame = pd.read_csv(features_path(producer))
-            result = backtest(producer, frame, psd.labels(producer))
+            # Only finished marketing years: the running one is USDA's projection.
+            labels = psd.labels(producer)
+            labels = labels[[date(int(y), 9, 30) < date.today() for y in labels.year]]
+            result = backtest(producer, frame, labels)
             with open(backtest_path(producer), "w", encoding="utf-8") as f:
                 json.dump(result, f, indent=2, ensure_ascii=False)
                 f.write("\n")
