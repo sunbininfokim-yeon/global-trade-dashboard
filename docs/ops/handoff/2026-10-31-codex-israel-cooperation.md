@@ -27,7 +27,7 @@ External-support offers in the previous context remain dated, conditional and
 one-sided; they are not represented as cabinet acceptance. Changed disclosure
 state replay now retains both open and closed state across anchor/group switches.
 
-Validation: Israel Python 32; all election JS 142; translation check 234, API
+Validation: Israel Python 32; Israel JS 41; all election JS 143; translation check 234, API
 not called; builder as-of 2026-10-20 replay/check. Chrome 1100/390/320px verifies
 Ra'am's first partner is Democrats, Joint List–YB refusal stays scoped, closed
 spectrum stays closed after selection, history stays open after grouping, and no

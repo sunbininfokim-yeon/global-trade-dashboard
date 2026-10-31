@@ -34,3 +34,9 @@ test('labels escape markup and unsupported event promotion, source failure and s
   const d=structuredClone(board.cooperation_review);change(d);assert.throws(()=>validateCooperation(d,board,'2026-10-31'));
  }
 });
+
+test('past-evidence disclosures have distinct identities across partners',()=>{
+ const html=israelCooperationHtml(board,'k26:ודם');
+ const keys=[...html.matchAll(/data-israel-details="(cooperation-history-[^"]+)"/g)].map(m=>m[1]);
+ assert(keys.length>1);assert.equal(new Set(keys).size,keys.length);
+});
