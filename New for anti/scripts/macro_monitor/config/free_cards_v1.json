@@ -48,6 +48,8 @@
   {
    "iso3": "EMU",
    "id": "ifo_business",
+   "enabled": false,
+   "reason_ko": "ifo 시계열 엑셀은 무료로 내려받을 수 있지만 재배포 조건이 명시돼 있지 않습니다. 이전 모듈 메모도 '라이선스 자료'로 적었습니다. 조건이 확인되기 전까지 끕니다(2026-10-31).",
    "label_ko": "ifo 기업환경(독일)",
    "category": "growth",
    "cadence": "monthly",
@@ -923,7 +925,7 @@
    "iso3": "GBR",
    "id": "boe_total_assets",
    "enabled": false,
-   "reason_ko": "영란은행 데이터베이스(IADB) 코드를 아직 찾지 못했습니다(후보)."
+   "reason_ko": "영란은행 데이터베이스(IADB)에서 주간 Bank Return의 항목별 코드(RPWZ4TJ~TN, RPWB54A~59A)는 확인했지만 총자산 합계 코드는 찾지 못했습니다(2026-10-31, 후보)."
   },
   {
    "iso3": "GBR",
@@ -952,14 +954,48 @@
   {
    "iso3": "CAN",
    "id": "hh_debt_income",
-   "enabled": false,
-   "reason_ko": "캐나다 통계청 표(11-10-0065-01)의 벡터를 아직 확인하지 않았습니다(후보)."
+   "label_ko": "가계부채/가처분소득",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct1",
+   "note_ko": "가계 신용시장부채를 가처분소득으로 나눈 비율(계절조정)입니다. 캐나다 통계청 표 38-10-0238-01. G7 최고 수준이라 BOC 금리정책의 제약으로 꼽힙니다.",
+   "source": "statcan:v1038036698",
+   "url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810023801",
+   "read": {
+    "reader": "statcan",
+    "params": {
+     "args": [
+      1038036698
+     ]
+    }
+   }
   },
   {
    "iso3": "CAN",
    "id": "foreign_securities_ca",
-   "enabled": false,
-   "reason_ko": "캐나다 통계청 표의 벡터를 아직 확인하지 않았습니다(후보)."
+   "label_ko": "외국인 유가증권 순투자",
+   "category": "equity",
+   "cadence": "monthly",
+   "unit": "bn_cad",
+   "format": "bn1s",
+   "note_ko": "비거주자의 캐나다 증권(채권·단기증권·주식) 순매입입니다(캐나다달러 10억). 캐나다 통계청 표 36-10-0028-01. 플러스는 해외자본 유입입니다.",
+   "source": "statcan:v61915649",
+   "url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3610002801",
+   "read": {
+    "reader": "statcan",
+    "params": {
+     "args": [
+      61915649
+     ]
+    }
+   },
+   "ops": [
+    [
+     "scale",
+     1e-09
+    ]
+   ]
   },
   {
    "iso3": "CAN",

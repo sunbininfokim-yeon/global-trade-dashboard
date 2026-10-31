@@ -42,5 +42,25 @@ class Flags(unittest.TestCase):
         self.assertTrue(c["indicators"][1]["hidden"])
 
 
+class BrokenFreeCards(unittest.TestCase):
+    def setUp(self):
+        self.pack = {"countries": [{"iso3": "EMU", "indicators": [
+            {"id": "ifo", "data_status": "live", "source": "ifo:gsk"},
+            {"id": "pmi", "data_status": "live", "source": "other:pipeline"},
+            {"id": "hkma", "data_status": "live", "source": "hkma:x"}]}]}
+        self.reg = [{"iso3": "EMU", "id": "ifo", "enabled": False, "source": "ifo:gsk"},
+                    {"iso3": "EMU", "id": "pmi", "enabled": False, "source": "pmi:licensed"},
+                    {"iso3": "EMU", "id": "hkma", "source": "hkma:x"}]
+
+    def test_switched_off_after_going_live_is_hidden_but_another_pipelines_card_is_not(self):
+        self.assertEqual(ahf.broken_free_cards(self.reg, {}, self.pack), ["EMU:ifo"])
+
+    def test_failing_for_days_is_hidden_and_comes_back_after_a_read(self):
+        bad = {"EMU/hkma": {"consecutive_failures": ahf.FREE_CARD_FAIL_HIDE}}
+        self.assertIn("EMU:hkma", ahf.broken_free_cards(self.reg, bad, self.pack))
+        ok = {"EMU/hkma": {"consecutive_failures": ahf.FREE_CARD_FAIL_HIDE - 1}}
+        self.assertNotIn("EMU:hkma", ahf.broken_free_cards(self.reg, ok, self.pack))
+
+
 if __name__ == "__main__":
     unittest.main()
