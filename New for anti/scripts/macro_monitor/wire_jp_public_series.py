@@ -39,8 +39,15 @@ def main() -> int:
         except Exception as exc:  # noqa: BLE001 -- one series failing must not block the others
             failures.append(f"{spec_id}: {exc}")
 
+    jgb_ops = []
+    try:
+        from datetime import date
+        jgb_ops = jps.jgb_ops_rows(jps.fetch_boj_ope_months(date.today()), src.boj("BS01", "MABJMA5B"))
+    except Exception as exc:  # noqa: BLE001 -- the purchases card keeps what it had
+        failures.append(f"boj_jgb_ops: {exc}")
+
     cache_written = jps.save_estat_cache(cache, estat_updates, retrieved) if estat_updates else False
-    result = jps.apply_all(jpn, patches, retrieved_at=retrieved)
+    result = jps.apply_all(jpn, patches, retrieved_at=retrieved, jgb_ops=jgb_ops)
     if result["changed"] or result["summary_changed"]:
         PACK.write_text(json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     print(f"JPN public series: {len(patches)} fetched, changed {result['changed'] or 'none'}"
