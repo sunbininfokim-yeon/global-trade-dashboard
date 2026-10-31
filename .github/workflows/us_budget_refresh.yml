@@ -39,6 +39,8 @@ jobs:
       - name: Test refresh rules
         working-directory: New for anti/scripts/us_budget
         run: python -m unittest -v test_refresh_mts
+      - name: Test published data and page guard
+        run: node --test 'New for anti/scripts/us_budget/us_budget_data.test.mjs'
       - name: Verify parsing against the reviewed snapshot
         if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.verify_snapshot)
         working-directory: New for anti/scripts/us_budget
@@ -46,6 +48,8 @@ jobs:
       - name: Fetch newer MTS months
         working-directory: New for anti/scripts/us_budget
         run: python refresh_mts.py ${{ (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && (inputs.dry_run || inputs.verify_snapshot))) && '--dry-run' || '' }}
+      - name: Re-check the refreshed file against the page guard
+        run: node --test 'New for anti/scripts/us_budget/us_budget_data.test.mjs'
       - name: Commit refreshed months
         # Only main publishes; a branch dispatch is a check, never a data commit.
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && !(github.event_name == 'workflow_dispatch' && (inputs.dry_run || inputs.verify_snapshot))
