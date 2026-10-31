@@ -2,6 +2,7 @@ import { escapeHtml } from '../../ui.js';
 import { canCalculate, dayAge, koreaToday, seatPolls, selectedSeatSum, sourceHref } from '../../data/israel-analysis.js';
 import { koreanText, partyProfile, personProfile, groupingGroups, groupSeatSummary, presetSeatSum, selectionRelationships } from '../../data/israel-context.js?v=2';
 
+import { israelResultsHtml } from './israel-analysis.results.js';
 import { weeklySeatRows } from '../../data/israel-trend.js';
 
 const e = escapeHtml;
@@ -97,6 +98,8 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
             <small>${value.pct == null ? '비율 미확인' : value.pct < 3.25 ? `보도상 봉쇄선 3.25%보다 ${(3.25 - value.pct).toFixed(2)}%p 낮음` : '보도상 봉쇄선 이상'} · 의석 역산 없음</small><footer>${sourceLinks(board,p.sourceIds)}</footer></article>`;
     };
     return `<section class="israel-analysis">
+        ${israelResultsHtml(board)}
+        ${board.post_election ? '<details id="israel-history" class="israel-history" data-israel-details="history"><summary><span>선거 전 자료</span><small>여론조사·협력 관계·봉쇄선 기록 보기</small></summary><p class="israel-notice">아래는 선거 전 검토 스냅샷입니다. 예상 의석과 당시 협력 입장은 개표 결과·현재 연정 합의와 구분해 읽어 주세요.</p>' : ''}
         <header class="israel-heading"><p class="israel-eyebrow">이스라엘 · 26대 크네세트</p><h4>누가 누구와 함께할 수 있나</h4>
             <p>누가 같은 편이고, 정치색은 얼마나 비슷할까요? 협력 관계와 정치 성향을 나눠 살펴보세요.</p>
             <div class="israel-status-line"><span>의석 자료 ${e(board.evidence_as_of)}${age > 0 ? ` · ${age}일 경과` : ''}</span><span>관계 검토 ${e(context.reviewed_on || '미확인')}</span><span>자동 갱신 미설치</span></div>
@@ -108,7 +111,7 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
         <p class="israel-data-note">원문 채택 ${board.coverage.accepted_seat_polls}건 · 부분 ${board.coverage.partial_seat_polls}건 · 최근 30일 전수 미완료 · 현직 의석·공식 후보 순위 보류</p>
         ${poll ? `<section id="israel-seats" class="israel-section">
             ${sectionHeading('01 / 정당 지도', '정당을 묶어 보는 두 가지 기준', '정당명 아래 대표 인물과 다른 기준의 분류를 함께 표시합니다.')}
-            <div class="israel-grouping-control" role="group" aria-label="정당 묶음 기준">${[['cooperation','연합·협력','지금 누구와 손잡았나'],['ideology','정치 성향','어떤 정치색이 비슷한가']].map(([id,label,note]) => `<button type="button" data-israel-grouping="${id}" aria-pressed="${grouping === id}"><b>${label}</b><small>${note}</small></button>`).join('')}</div>
+            <div class="israel-grouping-control" role="group" aria-label="정당 묶음 기준">${[['cooperation','연합·협력','검토 당시 협력 관계'],['ideology','정치 성향','어떤 정치색이 비슷한가']].map(([id,label,note]) => `<button type="button" data-israel-grouping="${id}" aria-pressed="${grouping === id}"><b>${label}</b><small>${note}</small></button>`).join('')}</div>
             <div class="israel-grouping-note" role="status">${grouping === 'ideology' ? `<b>정치 성향으로 다시 묶었습니다</b><p>${e(context.ideology_basis_ko)}</p><small>예: 리쿠드와 베이테누는 우파 계열이지만 협력 진영은 다릅니다.</small>` : `<b>검토한 연합·협력 현황 · ${e(context.reviewed_on)}</b><p>공동 원칙 발표와 선거 협약을 표시합니다. 리쿠드 중심은 보도상 블록이며 통합토라유다의 참여 조건이 남아 있습니다.</p><small>잉여표 협약은 정부 구성 합의와 별개입니다. 위원회 접수 원문은 보류 중입니다.</small>`}</div>
             <details class="israel-method"><summary>${e(pollLabel(board, poll))} · ${poll.n_respondents == null ? '표본 미확인' : `응답 ${e(poll.n_respondents)}명`} · 조사방법·원문</summary><p>조사기관 ${e(ko(poll.pollster))}</p><p>현장 ${e(poll.field_start || '미확인')} ~ ${e(poll.field_end || '미확인')} · 발표 ${e(poll.published_at || '미확인')}</p>
                 <p>표본오차 ${e(poll.sampling_error_as_printed || (poll.sampling_error_pp == null ? '미확인' : `±${poll.sampling_error_pp}%p`))} · 의석 오차범위로 사용하지 않습니다. ${safeLink(poll.source_url)}</p>${poll.hold_reason ? `<p>${e(ko(poll.hold_reason))}</p>` : ''}</details>
@@ -144,6 +147,7 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
             ${board.lists.map((list) => {const p=partyProfile(board,list.id);return `<div class="israel-roster-row"><b>${e(p.name)}</b><span>${e(p.leader)}</span><details><summary>원문 표기</summary><span lang="he" dir="auto">${e(list.ballot)} · ${e(list.name_he)}</span></details></div>`;}).join('')}</details>
         <details class="israel-details"><summary>일정 · 공식 확인 공백 · 번역 정보</summary>${board.calendar.map((row) => `<p>${e(row.label_ko)} · ${e(row.date || '미확인')} · ${row.official_source_opened ? '공식 확인' : row.date ? '보도·잠정 근거 / 공식 확인 보류' : '보류'}</p>`).join('')}<p>판결은 방송사 보관 요약 사본 확인 · 법원 공식 원문·전체 이유 보류.</p>
             <p>한국어 문구: Gemini API 사전 번역 · 기계 번역 · ${e(board.localization?.model || '모델 미확인')} · ${board.localization?.translations?.length || 0}개. 번역은 정치적 분류와 조사 수치를 결정하지 않습니다.</p><p>의석 배분·총리 승률·평균 계산은 연결하지 않았습니다.</p></details>
+        ${board.post_election ? '</details>' : ''}
     </section>`;
 };
 
@@ -170,7 +174,7 @@ export const mountIsraelAnalysis = (root, result, { today = koreaToday() } = {})
         root.querySelectorAll('[data-israel-preset]').forEach((button) => button.addEventListener('click',() => {const p=result.board.coalition_context.presets.find((row)=>row.id===button.dataset.israelPreset);state.selected=[...p.list_ids];state.presetId=p.id;render(`[data-israel-preset="${p.id}"]`);}));
         root.querySelectorAll('[data-israel-grouping]').forEach((button) => button.addEventListener('click',() => {state.grouping=button.dataset.israelGrouping;render(`[data-israel-grouping="${state.grouping}"]`);}));
         root.querySelectorAll('[data-israel-relation-filter]').forEach((button) => button.addEventListener('click',() => {state.relationFilter=button.dataset.israelRelationFilter;render(`[data-israel-relation-filter="${state.relationFilter}"]`);}));
-        root.querySelectorAll('.israel-section-nav a').forEach((link) => link.addEventListener('click',(ev)=>{ev.preventDefault();root.querySelector(link.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'});}));
+        root.querySelectorAll('.israel-section-nav a').forEach((link) => link.addEventListener('click',(ev)=>{ev.preventDefault();const target=root.querySelector(link.getAttribute('href'));if(target?.tagName==='DETAILS')target.open=true;target?.scrollIntoView({behavior:'smooth',block:'start'});}));
         root.querySelector('[data-israel-clear]')?.addEventListener('click',()=>{reset();render('[data-israel-clear]');});
         if (focusSelector) root.querySelector(focusSelector)?.focus({preventScroll:true});
         if (container && scroll !== undefined) container.scrollTop=scroll;

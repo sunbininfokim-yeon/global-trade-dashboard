@@ -1,0 +1,266 @@
+{
+  "schema": "israel_post_election_v1",
+  "cycle": "knesset-26",
+  "evidence_as_of": "2026-10-31",
+  "result_as_of": "2026-10-30",
+  "review_status": "partial",
+  "official_table_verified": false,
+  "official_certification_date": null,
+  "mandate_holder": null,
+  "mandate_date": null,
+  "government_formed": null,
+  "government_status": "unverified",
+  "status_note_ko": "보도로 확인한 개표 결과 · 선관위 결과표 직접 확인 보류 · 점검에 따른 소폭 수정 가능",
+  "result_record": {
+    "record_type": "observation",
+    "draft": true,
+    "poll_id": "cec-count-reported-2026-10-30",
+    "question_id": "official_results",
+    "scenario": "committee_count_after_double_envelopes",
+    "cycle": "knesset-26",
+    "geography": "national",
+    "publisher": "i24NEWS, reporting the Central Elections Committee",
+    "unit": "seats",
+    "published_at": "2026-10-29T22:50:00Z",
+    "values": [
+      {
+        "list_id": "k26:מחל",
+        "name_as_published": "הליכוד",
+        "seats": 27
+      },
+      {
+        "list_id": "k26:דרך",
+        "name_as_published": "ישר!",
+        "seats": 21
+      },
+      {
+        "list_id": "k26:רק",
+        "name_as_published": "ביחד",
+        "seats": 12
+      },
+      {
+        "list_id": "k26:ודם",
+        "name_as_published": "הרשימה המשותפת",
+        "seats": 11
+      },
+      {
+        "list_id": "k26:אמת",
+        "name_as_published": "הדמוקרטים",
+        "seats": 8
+      },
+      {
+        "list_id": "k26:עם",
+        "name_as_published": "רע״ם",
+        "seats": 8
+      },
+      {
+        "list_id": "k26:ל",
+        "name_as_published": "ישראל ביתנו",
+        "seats": 7
+      },
+      {
+        "list_id": "k26:ב",
+        "name_as_published": "עוצמה יהודית",
+        "seats": 7
+      },
+      {
+        "list_id": "k26:ג",
+        "name_as_published": "יהדות התורה",
+        "seats": 7
+      },
+      {
+        "list_id": "k26:שס",
+        "name_as_published": "ש״ס",
+        "seats": 6
+      },
+      {
+        "list_id": "k26:ט",
+        "name_as_published": "הציונות הדתית",
+        "seats": 6
+      }
+    ],
+    "seat_sum": 120,
+    "votes": {
+      "counted": 5716665,
+      "valid": 5690778,
+      "invalid": 25887,
+      "turnout_pct": 77.9,
+      "threshold_pct_as_published": 3.25,
+      "threshold_votes_as_published": 184947
+    },
+    "bloc_as_published": {
+      "current_coalition": 53,
+      "opposition": 48,
+      "arab": 19,
+      "note": "53 plus 48 plus 19 is 120. Israel National News uses the same seat numbers and the same vote totals. The Ynet count blog prints the same seats and writes Religious Zionism and Zehut for the 6-seat list. 53 is not a formed government. The committee says minor corrections can still be made and that these figures, subject to that review, go to the president on 4 November 2026."
+    },
+    "below_threshold": "i24 says the other contesting lists did not cross 184,947 votes. No vote share for those lists is printed in the opened i24 or Israel National News articles.",
+    "source_url": "https://www.i24news.tv/he/news/israel-elections-2026/artc-35525138",
+    "also_opened": [
+      "https://www.israelnationalnews.com/news/435375",
+      "https://www.ynet.co.il/news/blogs/article/sj60fvepze"
+    ],
+    "official_page": {
+      "url": "https://votes26.bechirot.gov.il/nationalresults?lang=he",
+      "local_get": "HTTP 202, 2028 bytes, no result table"
+    },
+    "review_status": "partial",
+    "average_eligible": false,
+    "hold_reason": "The committee results page did not return a table. The seat numbers are the committee figures as printed by opened news. The committee itself says they are still subject to the routine integrity check before the 4 November submission to the president."
+  },
+  "upstream": {
+    "path": "New for anti/public/data/isr_knesset26_research_2026-10-30/poll_observations.jsonl",
+    "sha256": "8513c6d6972ecae4540b451c1961df90327787390d35f8d50dbc3ec0e822671d",
+    "poll_id": "cec-count-reported-2026-10-30"
+  },
+  "sources": [
+    {
+      "id": "i24-count",
+      "url": "https://www.i24news.tv/he/news/israel-elections-2026/artc-35525138",
+      "body_opened": true,
+      "kind": "report",
+      "checked_on": "2026-10-31",
+      "note_ko": "본문의 11개 명부·의석과 투표 집계 확인. 선거 무결성 점검에 따른 소폭 수정 가능, 11월 4일 대통령 제출 예정."
+    },
+    {
+      "id": "inn-flash",
+      "url": "https://www.israelnationalnews.com/flashes/696394",
+      "body_opened": true,
+      "kind": "report",
+      "checked_on": "2026-10-31",
+      "note_ko": "단신 본문의 11개 명부·의석과 투표 집계 교차 확인. 기존 /news/435375 본문은 이번 확인에서 열리지 않음."
+    },
+    {
+      "id": "tps-count",
+      "url": "https://israel.fm/politics/final-official-results-seat-distribution-26th-knesset/",
+      "body_opened": true,
+      "kind": "wire_republication",
+      "checked_on": "2026-10-31",
+      "note_ko": "TPS 재수록 본문 확인. 선관위 공식 표와 구분."
+    },
+    {
+      "id": "acri-procedure",
+      "url": "https://www.english.acri.org.il/post/after-the-elections-faq",
+      "body_opened": true,
+      "kind": "legal_explainer",
+      "checked_on": "2026-10-31",
+      "note_ko": "11월 10일 개원 예상·대통령 협의와 지명·28일 및 연장·신임 절차 확인. 실패 경로는 기본법 재수록 조문과 함께 검토."
+    },
+    {
+      "id": "wipo-law",
+      "url": "https://www.wipo.int/wipolex/en/legislation/details/16941",
+      "body_opened": true,
+      "kind": "law_republication",
+      "checked_on": "2026-10-31",
+      "note_ko": "히브리어 2016년 통합본 제7~11·13조 확인. 영어본은 2003년 참고본. 현행 공식 통합본 확인은 보류."
+    },
+    {
+      "id": "cec-table",
+      "url": "https://votes26.bechirot.gov.il/nationalresults?lang=he",
+      "body_opened": false,
+      "kind": "official",
+      "checked_on": "2026-10-31",
+      "note_ko": "JavaScript·로봇 확인 화면만 반환. 숫자 표를 열지 못함. 우회하지 않음."
+    },
+    {
+      "id": "knesset-law",
+      "url": "https://main.knesset.gov.il/EN/activity/documents/BasicLawsPDF/BasicLawTheGovernment.pdf",
+      "body_opened": false,
+      "kind": "official",
+      "checked_on": "2026-10-31",
+      "note_ko": "지역 제한 안내로 이동. 현행 공식 법문 확인 보류."
+    },
+    {
+      "id": "crs-report",
+      "url": "https://www.congress.gov/crs-product/IN12751",
+      "body_opened": false,
+      "kind": "official",
+      "checked_on": "2026-10-31",
+      "note_ko": "본문 접근 실패. 수치·절차 근거로 채택하지 않음."
+    }
+  ],
+  "steps": [
+    {
+      "id": "submission",
+      "when_ko": "11월 4일 예정",
+      "title_ko": "결과 제출·공식 확인",
+      "description_ko": "보도에 따르면 선관위는 점검을 거쳐 결과를 대통령에게 제출할 예정입니다. 직접 확인한 공식 결과표는 아직 없습니다.",
+      "date": "2026-11-04",
+      "status": "reported_scheduled",
+      "source_ids": [
+        "i24-count"
+      ]
+    },
+    {
+      "id": "mandate",
+      "when_ko": "공식 결과 발표 뒤 7일 이내",
+      "title_ko": "대통령 협의와 총리 후보 지명",
+      "description_ko": "각 정당 대표와 협의해 정부 구성 임무를 맡길 의원을 정합니다. 최다 의석 정당 대표의 자동 취임은 아닙니다.",
+      "date": null,
+      "status": "conditional",
+      "source_ids": [
+        "acri-procedure",
+        "wipo-law"
+      ]
+    },
+    {
+      "id": "knesset",
+      "when_ko": "11월 10일 예상",
+      "title_ko": "새 크네세트 개원·선서",
+      "description_ko": "새 의회의 출범과 새 정부의 출범은 별도입니다. 개원 예상일은 법률 해설 자료 기준이며 공식 개원 공고는 확인하지 못했습니다.",
+      "date": "2026-11-10",
+      "status": "reported_expected",
+      "source_ids": [
+        "acri-procedure"
+      ]
+    },
+    {
+      "id": "formation",
+      "when_ko": "지명일부터 28일",
+      "title_ko": "정부 구성 협상",
+      "description_ko": "첫 지명자는 28일 동안 협상하며 대통령 재량으로 합계 최대 14일 연장이 가능합니다. 지명일 미확인으로 종료일은 계산하지 않습니다.",
+      "date": null,
+      "status": "conditional",
+      "source_ids": [
+        "acri-procedure",
+        "wipo-law"
+      ]
+    },
+    {
+      "id": "confidence",
+      "when_ko": "합의 성립 뒤",
+      "title_ko": "의회 신임과 정부 출범",
+      "description_ko": "정책·장관 구성 등을 의회에 제시하고 신임을 얻으면 새 정부가 출범합니다. 의석 블록의 합계만으로 정부가 구성되지는 않습니다.",
+      "date": null,
+      "status": "conditional",
+      "source_ids": [
+        "acri-procedure",
+        "wipo-law"
+      ]
+    }
+  ],
+  "fallback": [
+    {
+      "title_ko": "첫 시도 실패",
+      "description_ko": "대통령은 3일 이내 다른 의원에게 임무를 주거나, 정부 구성이 어렵다고 의장에게 알릴 수 있습니다. 다른 지명자에게는 28일이 주어집니다.",
+      "source_ids": [
+        "wipo-law"
+      ]
+    },
+    {
+      "title_ko": "의회 다수의 마지막 기회",
+      "description_ko": "두 번째 시도 실패 또는 대통령의 구성 불가 통보 뒤 21일 안에 의원 과반이 동의한 후보를 요청할 수 있습니다. 대통령의 2일 이내 지명 뒤 해당 후보에게 14일이 주어집니다.",
+      "source_ids": [
+        "wipo-law"
+      ]
+    },
+    {
+      "title_ko": "마지막 경로도 실패",
+      "description_ko": "의회 해산·재선거 절차로 넘어갑니다. 실제 단계가 발생하기 전에는 재선거 날짜를 계산하지 않습니다.",
+      "source_ids": [
+        "wipo-law"
+      ]
+    }
+  ],
+  "procedure_note_ko": "절차는 ACRI 해설과 WIPO의 2016년 기본법 재수록을 대조했습니다. 현행 공식 법문·대통령 지명·정부 출범 확인은 보류합니다. 일정은 이스라엘 현지 날짜 기준입니다. 결과·절차 설명은 출처 대조 후 한국어로 정리했습니다."
+}

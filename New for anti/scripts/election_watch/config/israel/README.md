@@ -134,3 +134,33 @@ it performs no source collection, translation API call, publication or deploymen
 
 The unnamed Panel4All/Maariv 2026-10-15 poll remains `partial`. A named pollster
 is still required for `accepted`; the regression suite enforces this rule.
+
+## Post-election count and government formation (2026-10-31)
+
+`2026/post_election.json` is an optional, independently dated review input. It
+preserves #719's `official_results` record byte-for-value, its upstream file hash,
+and this review's successful/failed body-access receipts. It is **partial,
+media-reported**, not a directly verified CEC table or a government-formation
+announcement. No accepted polling rows, old receipt hashes, translations, or
+historical fixtures are replaced. A missing optional file retains the earlier UI.
+
+The builder includes this input in `input_digests` and the existing board/status
+hash pair. Its result/review dates are separate from polling `evidence_as_of`;
+the existing polling replay command remains `--as-of 2026-10-20`.
+`israel_results.py` and the browser contract validate counts, null political events,
+source receipts and conditional deadlines. A later certified result or mandate
+requires a newly reviewed state transition and corresponding validation changes;
+do not simply change a null or `partial` flag.
+
+The result and next-step panels precede a closed pre-election disclosure. Dates
+for 4 November submission and expected 10 November swearing-in remain attributed
+reports, not completed official events. Relative government-formation periods do
+not acquire calendar deadlines without a verified mandate. The official statute
+was geographically unavailable; the accessible WIPO Hebrew consolidation is from
+2016 (its English reference is from 2003), so current official-law verification
+remains held. New Korean explanations are source-reviewed editorial summaries;
+the preserved Gemini cache still covers only the earlier pre-election material.
+
+Run `python3 -m unittest discover -s tests -p 'test_israel_*.py'` and Israel JS
+contracts explicitly. The 2026-10-31 reported-count regression fixture is frozen;
+current publication replay is tested separately.
