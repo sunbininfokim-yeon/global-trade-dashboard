@@ -15,17 +15,17 @@ and cannot disagree.
 from __future__ import annotations
 
 import argparse
-import csv
-import io
 import json
-import urllib.request
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from macro_monitor import us_public_series as ups  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_OUT = ROOT.parent.parent / "public" / "data" / "us_pce_history_v1.json"
 
-FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
 
 SERIES = [
     {"id": "headline", "series_id": "PCEPI", "label_ko": "PCE", "label_en": "PCE price index"},
@@ -33,23 +33,9 @@ SERIES = [
 ]
 
 
-def fetch_fred_csv(series_id: str, timeout: int = 30) -> list[tuple[str, float]]:
-    url = FRED_CSV.format(series_id=series_id)
-    req = urllib.request.Request(url, headers={"User-Agent": "macro-monitor/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        text = resp.read().decode("utf-8")
-    rows: list[tuple[str, float]] = []
-    for row in csv.DictReader(io.StringIO(text)):
-        date = (row.get("observation_date") or row.get("DATE") or "").strip()
-        # FRED writes "." for a missing observation; skip rather than zero-fill.
-        raw = (row.get(series_id) or "").strip()
-        if not date or not raw or raw == ".":
-            continue
-        try:
-            rows.append((date[:7], float(raw)))
-        except ValueError:
-            continue
-    return rows
+def fetch_fred_csv(series_id: str) -> list[tuple[str, float]]:
+    """Monthly (YYYY-MM, index). Retries and falls back to the Worker -- see us_public_series.fetch_fred."""
+    return [(d[:7], v) for d, v in ups.fetch_fred(series_id)]
 
 
 def to_observations(points: list[tuple[str, float]]) -> list[dict]:
