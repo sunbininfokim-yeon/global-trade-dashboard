@@ -7,6 +7,7 @@
 
 | id | task | owner | files / scope | branch | status | note |
 |----|------|-------|---------------|--------|--------|------|
+| US-BUDGET-HANDOFF-20261031 | 정책·미국 예산 시안·공개 데이터·Claude 통합 인수 | codex | `docs/prototypes/us-budget/**`, `tests/us-budget-preview.test.cjs`, 전용 handoff | `codex/us-budget-preview-handoff-20261031` | review | 사용자 PR 인수 요청. FY2022–2026 실적·36개월·FY2027 정부안, 정렬·국방 계정 시안과 데이터 계약. production UI·수집 예약·DB·병합·배포 제외. |
 | MAIL-ARCHIVE-AUDIT-20261024 | #665 사고 정리 검증·보관 방어·브랜치 운영 DB 경로 감사 | codex | `scripts/archive-mailing-reports.js`, 관련 tests, 전용 handoff | `codex/mailing-archive-audit-20261024` | review | 운영 사고47건 차단·미선점·미발송 및 receipt0 확인. 뉴스 카탈로그 보완·Actions 문맥 방어·삭제/재수집 회귀검사93+62·소유권15 통과. 다른 workflow의 활성3/비활성2 운영 경로는 전용 handoff에 인계. 병합·배포·실발송 없음. |
 | RSS-EDITIONS-20261021 | 같은 URL 보고서의 새 발행본 보관·알림 중복 방지 | codex | `scripts/archive-mailing-reports.js`, 관련 tests, 새 SQL migration, 메일 계약·전용 handoff | `codex/rss-report-editions-20261021` + `codex/rss-mail-recovery-record-20261022` | review | PR #657 병합 및 운영 DB 복구 완료. 새 판·중복 방지·접수 trigger를 실제 DB rollback으로 검증. 사용자 승인 후 적용 이력 기록 완료. 후속 PR은 운영 권한 제한 SQL과 설치 검증·완료 기록만 보존. 실메일 발송 없음. |
 | POLL-CAPTURE-RECOVERY-20261020 | 일일 수집 충돌 격리·갱신 의존 검사 복구 | codex | election_watch 공용 capture/정규화·고정 검토 fixture 검사·전용 인수 | `codex/poll-capture-validation-recovery-20261020` | review | #651 추가 보강 완료. Python835·집중113·JS114·소유권14·배포연결42 통과. 실패 단계/오류 코드·원문/HTML 충돌 근거·참고 상태 요약, IA 잔여 가변 검사 고정. 비게시 replay212건의 기존 값/날짜/주별 출처 전부 동일. workflow/UI/주별 입력/전국 JSON/병합/배포 제외. |
