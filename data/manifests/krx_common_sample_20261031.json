@@ -1,0 +1,37 @@
+{
+  "schema_version": "krx-common-sample-20261031-v1",
+  "generated_at_kst": "2026-10-31T18:10:00+09:00",
+  "public_repo": "sunbininfokim-yeon/global-trade-dashboard",
+  "raw_xlsx_in_public_repo": false,
+  "raw_csv_in_public_repo": false,
+  "investor_price_levels": {
+    "file": "New for anti/public/data/investor_price_levels_v1.json",
+    "added_date": "2026-10-30",
+    "tickers_added": 19,
+    "older_day_dicts_unchanged": true,
+    "duplicate_dates": 0,
+    "close_day_table_membership_unchanged": true,
+    "kospi_index_levels_unchanged": true,
+    "source": [
+      "https://m.stock.naver.com/api/stock/{ticker}/trend",
+      "FinanceDataReader OHLC"
+    ],
+    "quality": "observed"
+  },
+  "derivatives_activity": {
+    "written": false,
+    "reason": "KRX 15001 quote totals for 2026-10-29 are a different quantity from the published OpenAPI activity row, so the workbooks were not converted into derivatives_activity_history_v1.jsonl.",
+    "published_2026_10_29": {
+      "futures_volume": 174126,
+      "futures_trading_value_krw": 39112406950000,
+      "call_volume": 270664,
+      "put_volume": 187370
+    },
+    "screen_15001_2026_10_29": {
+      "futures_regular_front_volume": 175807,
+      "call_regular_plus_night_volume": 68086,
+      "put_regular_plus_night_volume": 38850
+    }
+  },
+  "not_collected": ["2026-11-02"]
+}
