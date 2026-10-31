@@ -42,6 +42,7 @@ def test_runs_split_at_gaps_and_at_the_api_limit():
 def test_sites_move_only_the_valley_towns_and_union_the_months():
     s = N.sites()
     assert len(s) == 19
+    assert s["Ribeirao Preto"][:2] == N.SITES["Ribeirao Preto"]
     assert s["Barreiras"][:2] == N.SITES["Barreiras"]
     assert s["Pedro Afonso"][:2] == (-8.97, -48.17)
     # Barreiras serves soy (Dec-Feb) and cotton (Feb-Apr).
