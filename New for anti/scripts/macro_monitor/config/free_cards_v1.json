@@ -1,0 +1,383 @@
+{
+ "schema_version": "free-cards-v1",
+ "note_ko": "카드 하나 = 항목 하나. enabled 항목은 매일 갱신되고, 실데이터가 들어오면 숨김이 자동으로 풀립니다. enabled:false 항목은 무료 출처가 없거나 아직 검증하지 않은 카드와 그 이유입니다. 형식은 macro_monitor/free_cards.py 참고.",
+ "cards": [
+  {
+   "iso3": "JPN",
+   "id": "foreign_equity_flow",
+   "label_ko": "외국인 주식순매수(월)",
+   "category": "equity",
+   "cadence": "monthly",
+   "unit": "tn_jpy",
+   "format": "tn1s",
+   "note_ko": "비거주자의 일본 주식·투자펀드 지분 순취득(월, 조엔)입니다. 재무성 '대외 및 대내 증권매매계약 등의 상황'(지정 대형 투자자 보고 기준). 양수는 순매수.",
+   "source": "mof:itn_securities",
+   "url": "https://www.mof.go.jp/english/policy/international_policy/reference/itn_transactions_in_securities/index.htm",
+   "read": {
+    "reader": "mof_securities",
+    "params": {
+     "file": "montha1",
+     "column": 16
+    }
+   },
+   "ops": [
+    [
+     "scale",
+     0.0001
+    ]
+   ]
+  },
+  {
+   "iso3": "KAZ",
+   "id": "uranium",
+   "label_ko": "우라늄",
+   "category": "growth",
+   "cadence": "monthly",
+   "unit": "usd_lb",
+   "format": "usd1",
+   "note_ko": "우라늄 현물 가격(파운드당 달러, 월평균)입니다. IMF 1차 상품가격(PCPS, PURAN). 카자흐스탄은 세계 최대 우라늄 생산국입니다.",
+   "source": "imf:PCPS:PURAN",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf_pcps",
+    "params": {
+     "indicator": "PURAN"
+    }
+   }
+  },
+  {
+   "iso3": "EMU",
+   "id": "ifo_business",
+   "label_ko": "ifo 기업환경(독일)",
+   "category": "growth",
+   "cadence": "monthly",
+   "unit": "index",
+   "format": "num1",
+   "note_ko": "ifo 기업환경지수(독일, 2015=100, 계절조정)입니다. ifo 연구소 공개 시계열. 유로존 최대 경제의 선행 심리지표입니다.",
+   "source": "ifo:gsk",
+   "url": "https://www.ifo.de/en/ifo-time-series",
+   "read": {
+    "reader": "ifo",
+    "params": {
+     "prefix": "gsk-e",
+     "column": 1
+    }
+   }
+  },
+  {
+   "iso3": "CHE",
+   "id": "kof_barometer",
+   "enabled": false,
+   "reason_ko": "KOF 데이터 서비스(datenservice.kof.ethz.ch)가 2026-10-31 접속을 거부했습니다. 응답 형식을 확인한 뒤 켭니다.",
+   "label_ko": "KOF 경기선행지수",
+   "category": "growth",
+   "cadence": "monthly",
+   "unit": "index",
+   "format": "num1",
+   "note_ko": "KOF 경기선행지수(ETH 취리히)입니다.",
+   "source": "kof:barometer",
+   "url": "https://kof.ethz.ch/en/forecasts-and-indicators/indicators/kof-economic-barometer.html",
+   "read": {
+    "reader": "kof",
+    "params": {
+     "key": "ch.kof.barometer"
+    }
+   }
+  },
+  {
+   "iso3": "VNM",
+   "id": "m2_yoy",
+   "enabled": false,
+   "reason_ko": "IMF 통화금융통계(MFS_DC)에 베트남 광의통화 자료가 없습니다(2026-10-31 확인). 매일 다시 시도합니다.",
+   "label_ko": "M2 전년비",
+   "category": "liquidity",
+   "cadence": "monthly",
+   "unit": "%",
+   "format": "pct1",
+   "note_ko": "광의통화(IMF 통화금융통계) 전년 같은 달 대비 증가율입니다.",
+   "source": "imf:MFS",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "MFS_DC",
+      "VNM",
+      [
+       [
+        "INDICATOR",
+        "DCORP_L_BM"
+       ],
+       [
+        "TYPE_OF_TRANSFORMATION",
+        "SA_XDC"
+       ],
+       [
+        "FREQUENCY",
+        "M"
+       ]
+      ]
+     ]
+    }
+   },
+   "ops": [
+    [
+     "pct_change",
+     12
+    ]
+   ]
+  },
+  {
+   "iso3": "KOR",
+   "id": "fx_intervention",
+   "enabled": false,
+   "reason_ko": "한국은행은 외환당국 순거래를 분기 보도자료로만 내고 ECOS API에는 없습니다."
+  },
+  {
+   "iso3": "KOR",
+   "id": "pf_loan_balance",
+   "enabled": false,
+   "reason_ko": "금융감독원 보도자료(PDF)로만 공표됩니다."
+  },
+  {
+   "iso3": "KOR",
+   "id": "pf_delinquency",
+   "enabled": false,
+   "reason_ko": "금융감독원 보도자료(PDF)로만 공표됩니다."
+  },
+  {
+   "iso3": "KOR",
+   "id": "vkospi",
+   "enabled": false,
+   "reason_ko": "KRX 정보데이터시스템은 일회용 토큰을 요구해 안정적인 무료 API가 없습니다."
+  },
+  {
+   "iso3": "JPN",
+   "id": "shunto_wage",
+   "enabled": false,
+   "reason_ko": "렌고 집계는 연 1회 PDF로만 나옵니다."
+  },
+  {
+   "iso3": "JPN",
+   "id": "boj_etf_share",
+   "enabled": false,
+   "reason_ko": "ETF 시장 전체 잔액의 무료 출처가 없습니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "omo_net",
+   "enabled": false,
+   "reason_ko": "인민은행 공개시장조작 공고는 문장형 일일 공지뿐이라 파서를 따로 만들어야 합니다(후보)."
+  },
+  {
+   "iso3": "CHN",
+   "id": "lgfv_spread",
+   "enabled": false,
+   "reason_ko": "지방정부융자기구 스프레드는 유료 데이터입니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "cn_hy_prop_spread",
+   "enabled": false,
+   "reason_ko": "달러 하이일드 지수는 유료 데이터입니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "northbound_flow",
+   "enabled": false,
+   "reason_ko": "HKEX가 2024-08부터 북향 순매수 일별 공표를 중단했습니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "southbound_flow",
+   "enabled": false,
+   "reason_ko": "HKEX 남향 거래 자료에 기계 판독용 API가 없습니다(후보)."
+  },
+  {
+   "iso3": "CHN",
+   "id": "li_keqiang",
+   "enabled": false,
+   "reason_ko": "합성 지수라 전력·철도화물·대출 세 시계열을 따로 확보해야 합니다(후보)."
+  },
+  {
+   "iso3": "ZAF",
+   "id": "foreign_bond_share",
+   "enabled": false,
+   "reason_ko": "재무부 월간 엑셀이 있으나 아직 형식을 확인하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "SGP",
+   "id": "neer_slope",
+   "enabled": false,
+   "reason_ko": "MAS는 NEER 정책 밴드 기울기를 공표하지 않습니다."
+  },
+  {
+   "iso3": "SGP",
+   "id": "neer_band_width",
+   "enabled": false,
+   "reason_ko": "MAS는 NEER 밴드 폭을 공표하지 않습니다."
+  },
+  {
+   "iso3": "SGP",
+   "id": "sg_total_liquidity",
+   "enabled": false,
+   "reason_ko": "공식 정의가 있는 지표가 아닙니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "nwf_liquid",
+   "enabled": false,
+   "reason_ko": "재무부 사이트가 해외 요청을 자주 차단합니다(후보)."
+  },
+  {
+   "iso3": "RUS",
+   "id": "ofz_auction_cover",
+   "enabled": false,
+   "reason_ko": "재무부 입찰 결과 페이지가 해외 요청을 자주 차단합니다(후보)."
+  },
+  {
+   "iso3": "CAN",
+   "id": "wcs_oil",
+   "enabled": false,
+   "reason_ko": "앨버타 경제 대시보드 API의 WCS 코드가 확인되지 않았습니다(후보)."
+  },
+  {
+   "iso3": "CAN",
+   "id": "wcs_wti_spread",
+   "enabled": false,
+   "reason_ko": "WCS 시계열이 확보되면 WTI와의 차이로 계산합니다(후보)."
+  },
+  {
+   "iso3": "CAN",
+   "id": "ivey_pmi",
+   "enabled": false,
+   "reason_ko": "Ivey PMI는 보도자료 웹페이지로만 나옵니다(후보)."
+  },
+  {
+   "iso3": "VNM",
+   "id": "ip_yoy",
+   "enabled": false,
+   "reason_ko": "통계총국 보도자료로만 공표됩니다."
+  },
+  {
+   "iso3": "VNM",
+   "id": "fdi_registered",
+   "enabled": false,
+   "reason_ko": "기획투자부 보도자료로만 공표됩니다."
+  },
+  {
+   "iso3": "VNM",
+   "id": "fdi_disbursed",
+   "enabled": false,
+   "reason_ko": "기획투자부 보도자료로만 공표됩니다."
+  },
+  {
+   "iso3": "VNM",
+   "id": "vnindex",
+   "enabled": false,
+   "reason_ko": "무료 시세 피드를 찾지 못했습니다."
+  },
+  {
+   "iso3": "VNM",
+   "id": "sbv_refinancing",
+   "enabled": false,
+   "reason_ko": "중앙은행 공지문으로만 바뀌는 금리입니다(후보)."
+  },
+  {
+   "iso3": "VNM",
+   "id": "sbv_discount",
+   "enabled": false,
+   "reason_ko": "중앙은행 공지문으로만 바뀌는 금리입니다(후보)."
+  },
+  {
+   "iso3": "VNM",
+   "id": "vn_deposit_rate",
+   "enabled": false,
+   "reason_ko": "IMF 금리 통계(MFS_IR)에 베트남 자료가 없습니다(2026-10-31 확인)."
+  },
+  {
+   "iso3": "VNM",
+   "id": "vn_lending_rate",
+   "enabled": false,
+   "reason_ko": "IMF 금리 통계(MFS_IR)에 베트남 자료가 없습니다(2026-10-31 확인)."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "bond_10y",
+   "enabled": false,
+   "reason_ko": "국채 10년 수익률의 무료 시계열을 찾지 못했습니다."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "nfrk_assets",
+   "enabled": false,
+   "reason_ko": "국가기금 잔액은 중앙은행 월간 PDF로만 나옵니다(후보)."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "kase_index",
+   "enabled": false,
+   "reason_ko": "KASE 지수의 무료 시세 피드를 찾지 못했습니다."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "fdi_net_kz",
+   "enabled": false,
+   "reason_ko": "중앙은행 국제수지 엑셀(분기)이 후보입니다."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "mining_ip_yoy",
+   "enabled": false,
+   "reason_ko": "통계청(stat.gov.kz) API 형식을 아직 확인하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "mfg_ip_yoy",
+   "enabled": false,
+   "reason_ko": "통계청(stat.gov.kz) API 형식을 아직 확인하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "TWN",
+   "id": "fx_intervention",
+   "enabled": false,
+   "reason_ko": "중앙은행이 반기별 보도자료로만 공표합니다."
+  },
+  {
+   "iso3": "TWN",
+   "id": "fii_flow_tw",
+   "enabled": false,
+   "reason_ko": "TWSE 외국인 매매 API가 2026-10-31 점검 중이었습니다(후보)."
+  },
+  {
+   "iso3": "TWN",
+   "id": "excess_savings",
+   "enabled": false,
+   "reason_ko": "국민계정에서 계산해야 하는 지표입니다(후보)."
+  },
+  {
+   "iso3": "IND",
+   "id": "laf_balance",
+   "enabled": false,
+   "reason_ko": "RBI 일일 보도자료로만 공표됩니다(후보)."
+  },
+  {
+   "iso3": "IND",
+   "id": "fpi_flow",
+   "enabled": false,
+   "reason_ko": "NSDL FPI 사이트가 2026-10-31 응답하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "IND",
+   "id": "two_wheeler_sales",
+   "enabled": false,
+   "reason_ko": "SIAM 회원 전용 자료입니다."
+  },
+  {
+   "iso3": "IND",
+   "id": "tractor_sales",
+   "enabled": false,
+   "reason_ko": "TMA 회원 전용 자료입니다."
+  }
+ ]
+}
