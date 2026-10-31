@@ -1,6 +1,6 @@
 {
   "schema_version": "krx-common-sample-20261031-v1",
-  "generated_at_kst": "2026-10-31T18:10:00+09:00",
+  "generated_at_kst": "2026-10-31T19:10:00+09:00",
   "public_repo": "sunbininfokim-yeon/global-trade-dashboard",
   "raw_xlsx_in_public_repo": false,
   "raw_csv_in_public_repo": false,
@@ -17,6 +17,40 @@
       "FinanceDataReader OHLC"
     ],
     "quality": "observed"
+  },
+  "detailed_15007": {
+    "file": "New for anti/public/data/derivatives_board_v1.json",
+    "added_date": "2026-10-30",
+    "source": "KRX 15007 authenticated export",
+    "quality": "observed",
+    "call_put_date_sets_equal": true,
+    "duplicate_dates": 0,
+    "foreign_net_is_buy_minus_sell": true,
+    "older_rows_unchanged": true,
+    "futures_unchanged": true,
+    "kr_as_of": "2026-10-30"
+  },
+  "leverage_direction": {
+    "file": "New for anti/public/data/leverage_direction_history_v1.jsonl",
+    "added_dates": [
+      "2026-10-01",
+      "2026-10-07",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-21",
+      "2026-10-22",
+      "2026-10-26",
+      "2026-10-27",
+      "2026-10-28"
+    ],
+    "source": "KRX 13101 ETF snapshot trading value (백만원) + FinanceDataReader KS11 Amount(KRW) + Name classify",
+    "quality": "observed",
+    "existing_rows_unchanged": true,
+    "duplicate_dates": 0
   },
   "derivatives_activity": {
     "written": false,
