@@ -1,3 +1,5 @@
+import { validateIsraelResults } from './israel-results.js';
+
 // A reviewed research snapshot. No seat-to-vote inversion, averaging or forecast.
 export const koreaToday = (now = Date.now()) => new Intl.DateTimeFormat('sv-SE', {
     timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit',
@@ -53,6 +55,7 @@ export const validateIsraelBoard = (board, status, today = koreaToday()) => {
     if (polls.some((row) => row.review_status !== 'held' && !validSeatPoll(row, board))) {
         throw new Error('의석 조사 자료를 검증하지 못했습니다.');
     }
+    validateIsraelResults(board.post_election, board, today);
     return board;
 };
 

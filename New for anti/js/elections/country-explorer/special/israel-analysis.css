@@ -232,3 +232,44 @@
     .israel-weekly-axis { margin-left:0; }
     .israel-weekly-bar { height:30px; }
 }
+
+/* Post-election evidence precedes the preserved pre-election snapshot. */
+.israel-results { padding-top:20px; scroll-margin-top:12px; }
+.israel-result-topline { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.israel-result-topline h5 { font-size:19px; }
+.israel-result-badge { color:#e7c993; background:#302b22; border:1px solid #665238; border-radius:5px; padding:3px 8px; font-size:10px; }
+.israel-result-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:18px 0; }
+.israel-result-metrics > div { background:#142034; border:1px solid var(--isr-border); border-radius:9px; padding:12px; min-width:0; }
+.israel-result-metrics span { display:block; color:var(--isr-muted); font-size:11px; }
+.israel-result-metrics strong { display:block; font-size:clamp(24px,4vw,32px); line-height:1.4; font-weight:650; }
+.israel-result-metrics small { margin-left:3px; color:var(--isr-muted); font-size:12px; font-weight:400; }
+.israel-result-blocs { padding:0 0 14px; }
+.israel-result-legend { display:flex; flex-wrap:wrap; gap:6px 18px; font-size:11px; }
+.israel-result-legend > span { display:flex; align-items:center; gap:6px; }
+.israel-result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 22px; border-top:1px solid var(--isr-border); }
+.israel-result-party { display:flex; align-items:center; gap:10px; min-width:0; padding:10px 0; border-bottom:1px solid var(--isr-border); }
+.israel-result-party > div { flex:1; min-width:0; }
+.israel-result-party b { font-size:12px; }
+.israel-result-party small { display:block; color:var(--isr-muted); font-size:10px; }
+.israel-result-party > strong { min-width:35px; text-align:right; font-size:23px; font-weight:650; }
+.israel-result-party > strong small { display:inline; margin-left:2px; }
+.israel-result-party-track { width:80px; height:5px; background:#24354b; border-radius:3px; overflow:hidden; }
+.israel-result-party-track i { display:block; height:100%; background:#83b4d8; }
+.israel-next-steps { list-style:none; padding:0; margin:0; }
+.israel-next-steps li { display:flex; align-items:flex-start; gap:13px; padding:12px 0; border-bottom:1px solid var(--isr-border); }
+.israel-step-number { display:flex; align-items:center; justify-content:center; flex-shrink:0; width:26px; height:26px; margin-top:2px; border:1px solid #405675; border-radius:50%; color:#93c9e1; font-size:11px; }
+.israel-next-steps h6 { font-size:14px; margin-top:3px; }
+.israel-next-steps p { color:#bac8da; font-size:12px; }
+.israel-step-when { color:#8facc7; font-size:11px; }
+.israel-next-steps footer { font-size:10px; }
+.israel-history { margin-top:28px; border-top:1px solid #40516a; padding-top:14px; }
+.israel-history > summary { cursor:pointer; color:#c1cee0; display:list-item; padding:8px 0; font-size:14px; }
+.israel-history > summary small { display:block; margin:4px 0 0 16px; color:var(--isr-muted); font-size:11px; }
+.israel-history > .israel-heading { margin-top:20px; }
+@media(max-width:580px) {
+    .israel-result-grid { grid-template-columns:minmax(0,1fr); }
+    .israel-result-metrics { gap:6px; }
+    .israel-result-metrics > div { padding:10px 8px; }
+    .israel-result-metrics span { font-size:10px; }
+    .israel-result-party-track { width:100px; }
+}
