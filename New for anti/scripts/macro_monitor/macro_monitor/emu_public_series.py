@@ -7,7 +7,7 @@ HICP moved to ECOICOP ver. 2 in 2026: the old datasets (prc_hicp_manr, ECB ICP) 
 the live one is Eurostat prc_hicp_minr (coicop18 TOTAL / TOT_X_NRG_FOOD).
 
 Not here, and why: APP/PEPP split, TLTRO, TPI (no single keyless series mapped), negotiated wages (the
-ECB series stops at 2025-Q3), HCOB PMIs and IFO (licensed), bank lending survey, CDS.
+ECB series stops at 2025-Q3), HCOB PMIs (licensed; the ifo climate is wired through config/free_cards_v1.json), bank lending survey, CDS.
 """
 
 from __future__ import annotations

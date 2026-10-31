@@ -45,6 +45,28 @@ class Ops(unittest.TestCase):
             fc.apply_ops([("2026-01-01", 1.0)], [["guess"]], None)
 
 
+class Cache(unittest.TestCase):
+    def test_merge_keeps_old_months_and_takes_revisions(self):
+        cache = {"X/y": [["2026-08-01", 1.0], ["2026-09-01", 2.0]]}
+        merged = fc.merge_cache(cache, "X/y", [("2026-09-01", 2.5), ("2026-10-01", 3.0)])
+        self.assertEqual(merged, [("2026-08-01", 1.0), ("2026-09-01", 2.5), ("2026-10-01", 3.0)])
+        self.assertEqual(cache["X/y"][-1], ["2026-10-01", 3.0])
+
+    def test_hkma_records_are_read_once_per_endpoint(self):
+        calls = []
+        orig = fc.wps._get
+        fc._HKMA_RECORDS.clear()
+        try:
+            fc.wps._get = lambda url: calls.append(url) or json.dumps({"header": {"success": True}, "result": {"records": [
+                {"end_of_date": "2026-10-30", "closing_balance": 53999, "disc_win_base_rate": 4.25}]}}).encode()
+            self.assertEqual(fc.read_hkma("ep", "closing_balance"), [("2026-10-30", 53999.0)])
+            self.assertEqual(fc.read_hkma("ep", "disc_win_base_rate"), [("2026-10-30", 4.25)])
+            self.assertEqual(len(calls), 1)
+        finally:
+            fc.wps._get = orig
+            fc._HKMA_RECORDS.clear()
+
+
 class Registry(unittest.TestCase):
     def test_every_entry_is_valid_and_unique(self):
         entries = fc.load_registry()

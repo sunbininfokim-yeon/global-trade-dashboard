@@ -39,6 +39,11 @@ def check(entries: list[dict]) -> int:
             print(f"  {key}: {'; '.join(errs)}")
     on = sum(1 for e in entries if e.get("enabled", True))
     print(f"registry: {len(entries)} entries, {on} enabled, {bad} invalid")
+    pack = json.loads(PACK.read_text(encoding="utf-8"))
+    missing = [f"{c['iso3']}/{i['id']}" for c in pack["countries"] for i in c["indicators"]
+               if i.get("hidden") and f"{c['iso3']}/{i['id']}" not in seen]
+    if missing:                                   # not an error: a new fixture card simply has no entry yet
+        print(f"  hidden cards with no registry entry ({len(missing)}): {', '.join(missing[:20])}")
     return 1 if bad else 0
 
 
@@ -70,6 +75,7 @@ def main(argv: list[str]) -> int:
     pack = json.loads(text)
     by_iso = {c["iso3"]: c for c in pack["countries"]}
     status = json.loads(fc.STATUS.read_text(encoding="utf-8")) if fc.STATUS.exists() else {}
+    cache = json.loads(fc.CACHE.read_text(encoding="utf-8")) if fc.CACHE.exists() else {}
     fetch, now, failures = wps.Fetch(), ups.now_iso(), []
     for iso, group in fc.enabled_by_country(entries).items():
         country = by_iso.get(iso)
@@ -80,7 +86,10 @@ def main(argv: list[str]) -> int:
         for c in cards:
             key = f"{iso}/{c.spec.id}"
             try:
-                patches[c.spec.id] = wps.build_patch(c, c.read(fetch), retrieved_at=now)
+                got = c.read(fetch)
+                pts, last_day = got if isinstance(got, tuple) else (got, None)
+                pts = fc.merge_cache(cache, key, pts)
+                patches[c.spec.id] = wps.build_patch(c, (pts, last_day) if last_day else pts, retrieved_at=now)
                 fc.update_status(status, key, ok=True, now=now, patch=patches[c.spec.id])
             except Exception as exc:  # noqa: BLE001 -- one card must not block the others
                 fc.update_status(status, key, ok=False, now=now, error=str(exc))
@@ -92,6 +101,9 @@ def main(argv: list[str]) -> int:
     out = json.dumps(pack, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     if out != text:
         PACK.write_text(out, encoding="utf-8")
+    # one card per line: a day that adds a month changes one line of the diff
+    lines = [f"{json.dumps(k)}:{json.dumps(v, separators=(',', ':'))}" for k, v in sorted(cache.items())]
+    fc.CACHE.write_text("{\n" + ",\n".join(lines) + "\n}\n", encoding="utf-8")
     fc.STATUS.write_text(json.dumps(dict(sorted(status.items())), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     for f in failures:
         print(f"  FAILED {f}", file=sys.stderr)
