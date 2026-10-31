@@ -58,6 +58,10 @@ SITES = {
     "Balsas": (-8.30, -46.60),
     # Serra do Urucui plateau south-west of the town (Baixa Grande do Ribeiro side).
     "Urucui": (-7.95, -45.05),
+    # Cane between Dumont and Pradopolis, south-west of the city: a box on
+    # Ribeirao Preto itself read 0.45 in the cane window against 0.61-0.64
+    # at Piracicaba and Aracatuba, the city's 700k people filling the box.
+    "Ribeirao Preto": (-21.30, -47.98),
 }
 
 
