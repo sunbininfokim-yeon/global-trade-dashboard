@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import re
 import random
 from datetime import date, timedelta
 from typing import Any
@@ -322,6 +323,23 @@ def _merge_ui(spec: dict[str, Any], country_cfg: dict[str, Any]) -> dict[str, An
     if isinstance(country_cfg.get("ui"), dict):
         ui.update(country_cfg["ui"])
     return ui or None
+
+
+_US_QUERY = re.compile(r"^(?:US|U\.S\.)\s+")
+_US_ONLY_WORDS = {"BLS", "BEA", "Fed", "FOMC"}
+
+
+def localize_news_query(query: str | None, iso3: str, name_en: str) -> str | None:
+    """The spec's default news queries are written for the U.S. card ("US CPI inflation consumer prices
+    BLS"); another country that inherits one would be shown U.S. news. Swap the country in and drop
+    the U.S. agencies. A query a country configured itself never starts with "US" and is left alone."""
+    if not query or iso3 == "USA":
+        return query
+    m = _US_QUERY.match(query)
+    if not m:
+        return query
+    rest = [w for w in query[m.end():].split() if w not in _US_ONLY_WORDS]
+    return " ".join([name_en, *rest])
 
 
 def build_indicator(
