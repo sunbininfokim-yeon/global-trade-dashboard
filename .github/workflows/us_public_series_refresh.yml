@@ -19,6 +19,8 @@ name: Refresh macro public series
 # 사이트가 막히면(봇 방어) 그 캐시를 쓴다.
 # 홍콩·싱가포르·대만(wire_asia_public_series.py): 통계처 CSV, SingStat, 대만 중앙은행 통계DB API. 모두 키 없음.
 # 스위스(wire_che_public_series.py): SNB 데이터 포털(정책금리·10년물·CPI·M3·대차대조표·요구불예금·경상수지·외환거래·REER)과 FRED(실질GDP·독일 10년물). 키 없음.
+# 무료 카드 레지스트리(wire_free_cards.py): config/free_cards_v1.json 의 항목 하나가 카드 하나. 출처·변환·단위를 적으면 매일
+# 붙고, 실데이터가 들어오면 apply_hidden_flags.py 가 숨김을 푼다. 카드별 상태는 config/free_cards_status_v1.json.
 # CPI 항목별(wire_cpi_items.py): 한국(ECOS)·일본(통계국 CSV)·유로존(Eurostat)·영국(ONS)·캐나다(StatCan)·브라질(SIDRA)
 # 하위 지수의 전월비 순위를 각 나라 CPI 카드의 '항목별' 탭에 붙인다. 읽은 값은 config/cpi_items_v1.json 에 남는다.
 # 호주(wire_aus_public_series.py): ABS Data API(CPI·절사평균·노동력·국민계정·국제수지·상품교역·건축승인), FRED(OECD 금리), 세계은행 Pink Sheet(철광석·석탄). 키 없음. RBA는 접근 불가(403).
@@ -72,7 +74,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_free_cards.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
           }
           for attempt in 1 2 3; do
             refresh
@@ -82,6 +84,7 @@ jobs:
                     "New for anti/scripts/macro_monitor/config/za_sarb_series_v1.json" \
                     "New for anti/scripts/macro_monitor/config/ru_cbr_series_v1.json" \
                     "New for anti/scripts/macro_monitor/config/cn_cfets_cache_v1.json" \
+                    "New for anti/scripts/macro_monitor/config/free_cards_status_v1.json" \
                     "New for anti/scripts/macro_monitor/config/cpi_items_v1.json" \
                     "New for anti/public/data/us_cpi_api_history_v1.json" \
                     "New for anti/public/data/us_pce_history_v1.json" \
