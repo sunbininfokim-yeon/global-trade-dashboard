@@ -1,0 +1,62 @@
+name: Refresh US budget monthly actuals
+
+# 정책 › 미국 › 예산: appends each new Treasury MTS month to
+# public/data/us_budget/mts_live_v1.json (rolling 36 months + fiscal year to
+# date). The reviewed annual snapshot (annual_v1.json) is never rewritten here;
+# a newer OMB budget is only reported as a warning. MTS comes out around the
+# 8th business day, 2pm ET -- a weekday evening check catches it the same day
+# and commits only when a newer report exists.
+on:
+  schedule:
+    - cron: '23 21 * * 1-5'
+  # A change to the collector re-proves its parsing on the live API before merge.
+  pull_request:
+    paths:
+      - 'New for anti/scripts/us_budget/**'
+      - 'New for anti/public/data/us_budget/**'
+      - '.github/workflows/us_budget_refresh.yml'
+  workflow_dispatch:
+    inputs:
+      verify_snapshot:
+        description: 'Re-derive the reviewed 2026-09-30 months from the live API (no write)'
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Fetch and validate only; commit nothing'
+        type: boolean
+        default: false
+
+jobs:
+  refresh-us-budget:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test refresh rules
+        working-directory: New for anti/scripts/us_budget
+        run: python -m unittest -v test_refresh_mts
+      - name: Verify parsing against the reviewed snapshot
+        if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.verify_snapshot)
+        working-directory: New for anti/scripts/us_budget
+        run: python refresh_mts.py --verify-snapshot
+      - name: Fetch newer MTS months
+        working-directory: New for anti/scripts/us_budget
+        run: python refresh_mts.py ${{ (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && (inputs.dry_run || inputs.verify_snapshot))) && '--dry-run' || '' }}
+      - name: Commit refreshed months
+        # Only main publishes; a branch dispatch is a check, never a data commit.
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && !(github.event_name == 'workflow_dispatch' && (inputs.dry_run || inputs.verify_snapshot))
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/us_budget/mts_live_v1.json"
+          git commit -m "chore: refresh US budget monthly actuals (Treasury MTS)" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push
