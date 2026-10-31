@@ -15,6 +15,8 @@ from __future__ import annotations
 import calendar
 import csv
 import io
+import json
+import subprocess
 import time
 import urllib.error
 import urllib.request
@@ -41,7 +43,35 @@ def fetch_fred(series_id: str, *, timeout: int = 40, tries: int = 3) -> Points:
         except (urllib.error.URLError, TimeoutError, ValueError) as exc:
             last = exc
             time.sleep(2 * (attempt + 1))
-    raise RuntimeError(f"FRED {series_id}: {last}")
+    try:                    # GitHub's runners often time out on fred.stlouisfed.org; the Worker's API route does not
+        return fetch_fred_worker(series_id)
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(f"FRED {series_id}: {last}; worker: {exc}") from exc
+
+
+WORKER_FRED = "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/macro?source=fred&limit=400&series_id={sid}"
+
+
+def fetch_fred_worker(series_id: str, *, timeout: int = 40) -> Points:
+    """The newest 400 observations through the dashboard Worker (FRED API, KV-cached). curl, not urllib:
+    the Worker answers Python's default client with 403."""
+    proc = subprocess.run(["curl", "-sS", "-L", "-m", str(timeout), "-A", USER_AGENT, WORKER_FRED.format(sid=series_id)],
+                          check=False, capture_output=True)
+    if proc.returncode != 0 or not proc.stdout:
+        raise RuntimeError(f"curl rc={proc.returncode}")
+    return parse_fred_worker(json.loads(proc.stdout.decode("utf-8")), series_id)
+
+
+def parse_fred_worker(doc: Any, series_id: str = "") -> Points:
+    if isinstance(doc, dict) and "body" in doc:
+        if not doc.get("ok"):
+            raise ValueError(f"worker FRED {series_id}: {doc.get('status')}")
+        doc = doc["body"]
+    out = [(o["date"][:10], float(o["value"])) for o in (doc or {}).get("observations") or []
+           if o.get("value") not in (None, "", ".")]
+    if not out:
+        raise ValueError(f"worker FRED {series_id} has no observations")
+    return sorted(out)
 
 
 def parse_fred_csv(text: str, series_id: str = "") -> Points:
