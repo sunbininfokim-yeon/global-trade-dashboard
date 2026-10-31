@@ -33,6 +33,8 @@ Points = list[tuple[str, float]]
 
 REGISTRY = Path(__file__).resolve().parent.parent / "config" / "free_cards_v1.json"
 STATUS = Path(__file__).resolve().parent.parent / "config" / "free_cards_status_v1.json"
+CACHE = Path(__file__).resolve().parent.parent / "config" / "free_cards_cache_v1.json"
+CACHE_POINTS = 180                     # 15 years of months: more than any card's 10-year window
 
 CADENCES = {"monthly", "quarterly", "annual", "weekly"}
 CATEGORIES = {"liquidity", "rates", "fx", "equity", "growth", "inflation"}
@@ -137,7 +139,52 @@ def read_kof(key: str) -> Points:
     return sorted((r["date"][:7] + "-01", float(r["value"])) for r in rows if r.get("value") is not None)
 
 
+HKMA_API = "https://api.hkma.gov.hk/public/market-data-and-statistics/{endpoint}"
+
+
+_HKMA_RECORDS: dict[tuple[str, int], list[dict[str, Any]]] = {}
+
+
+def _hkma_records(endpoint: str, pages: int) -> list[dict[str, Any]]:
+    """Newest first, 1000 records a page; read once per run however many cards use the endpoint."""
+    if (endpoint, pages) not in _HKMA_RECORDS:
+        recs: list[dict[str, Any]] = []
+        for page in range(pages):
+            url = HKMA_API.format(endpoint=endpoint) + f"?pagesize=1000&offset={page * 1000}&sortorder=desc"
+            doc = json.loads(wps._get(url))
+            if not (doc.get("header") or {}).get("success"):
+                raise ValueError(f"HKMA {endpoint}: {(doc.get('header') or {}).get('err_msg')}")
+            got = (doc.get("result") or {}).get("records") or []
+            recs += got
+            if len(got) < 1000:
+                break
+        _HKMA_RECORDS[(endpoint, pages)] = recs
+    return _HKMA_RECORDS[(endpoint, pages)]
+
+
+def read_hkma(endpoint: str, field: str, date_field: str = "end_of_date", pages: int = 4) -> Points:
+    """HKMA open API. Its firewall throttles bursts, so a run reads at most `pages` pages and the cache
+    keeps the older history."""
+    out = [(str(r[date_field])[:10], v) for r in _hkma_records(endpoint, pages)
+           for v in [wps._num(r.get(field))] if v is not None and r.get(date_field)]
+    if not out:
+        raise ValueError(f"HKMA {endpoint}: no {field}")
+    return sorted(out)
+
+
+def read_yahoo_close(symbol: str) -> Points:
+    """Yahoo monthly closes. For some symbols Yahoo now returns only the latest bar; the cache below
+    keeps every month seen, so such a card grows its own history."""
+    from .live_overlay import fetch_yahoo
+    pts, _ = fetch_yahoo(symbol)
+    if not pts:
+        raise ValueError(f"Yahoo {symbol}: no bars")
+    return [(d.replace(day=1).isoformat(), v) for d, v in pts]
+
+
 CUSTOM_READERS: dict[str, Callable[..., Points]] = {
+    "hkma": read_hkma,
+    "yahoo_close": read_yahoo_close,
     "imf_pcps": read_imf_pcps,
     "mof_securities": read_mof_securities,
     "ifo": read_ifo,
@@ -237,6 +284,15 @@ def enabled_by_country(entries: list[dict[str, Any]]) -> dict[str, list[dict[str
         if e.get("enabled", True):
             out.setdefault(e["iso3"], []).append(e)
     return out
+
+
+def merge_cache(cache: dict[str, Any], key: str, points: Points) -> Points:
+    """Union of what was stored and what was just read; a re-read month takes the new value (revisions)."""
+    by = {d: v for d, v in cache.get(key) or []}
+    by.update(dict(points))
+    merged = sorted(by.items())[-CACHE_POINTS:]
+    cache[key] = [[d, round(v, 6)] for d, v in merged]
+    return merged
 
 
 def update_status(status: dict[str, Any], key: str, *, ok: bool, now: str, patch: dict[str, Any] | None = None,

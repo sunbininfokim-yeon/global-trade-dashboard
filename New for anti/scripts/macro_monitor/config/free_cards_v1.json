@@ -378,6 +378,816 @@
    "id": "tractor_sales",
    "enabled": false,
    "reason_ko": "TMA 회원 전용 자료입니다."
+  },
+  {
+   "iso3": "BRA",
+   "id": "primary_fiscal_balance",
+   "label_ko": "기초재정수지/GDP",
+   "category": "liquidity",
+   "cadence": "monthly",
+   "unit": "%",
+   "format": "pct1",
+   "note_ko": "통합 공공부문 기초재정수지(최근 12개월, GDP 대비 %)입니다. 브라질 중앙은행 SGS 5793은 차입소요(NFSP) 기준이라 적자가 양수로 나와, 부호를 바꿔 흑자를 양수로 표시합니다.",
+   "source": "bcb:sgs5793",
+   "url": "https://www3.bcb.gov.br/sgspub/",
+   "read": {
+    "reader": "bcb",
+    "params": {
+     "args": [
+      5793
+     ]
+    }
+   },
+   "ops": [
+    [
+     "scale",
+     -1
+    ]
+   ]
+  },
+  {
+   "iso3": "CHN",
+   "id": "usdcnh",
+   "label_ko": "USD/CNH 역외",
+   "category": "fx",
+   "cadence": "monthly",
+   "unit": "FX",
+   "format": "fx4",
+   "note_ko": "역외 위안화 환율(월말 종가, 이번 달은 최신 종가)입니다. Yahoo Finance CNH=X. 과거 월은 매일 읽은 값이 쌓여 늘어납니다.",
+   "source": "Yahoo Finance CNH=X",
+   "url": "https://finance.yahoo.com/quote/CNH=X/",
+   "read": {
+    "reader": "yahoo_close",
+    "params": {
+     "symbol": "CNH=X"
+    }
+   }
+  },
+  {
+   "iso3": "CHN",
+   "id": "csi300",
+   "label_ko": "CSI 300 (A주)",
+   "category": "equity",
+   "cadence": "monthly",
+   "unit": "index",
+   "format": "num0",
+   "note_ko": "CSI 300 지수(월말 종가, 이번 달은 최신 종가)입니다. Yahoo Finance 000300.SS. 과거 월은 매일 읽은 값이 쌓여 늘어납니다.",
+   "source": "Yahoo Finance 000300.SS",
+   "url": "https://finance.yahoo.com/quote/000300.SS/",
+   "read": {
+    "reader": "yahoo_close",
+    "params": {
+     "symbol": "000300.SS"
+    }
+   }
+  },
+  {
+   "iso3": "HKG",
+   "id": "usdcnh",
+   "label_ko": "USD/CNH 역외",
+   "category": "fx",
+   "cadence": "monthly",
+   "unit": "FX",
+   "format": "fx4",
+   "note_ko": "역외 위안화 환율(월말 종가, 이번 달은 최신 종가)입니다. Yahoo Finance CNH=X. 과거 월은 매일 읽은 값이 쌓여 늘어납니다.",
+   "source": "Yahoo Finance CNH=X",
+   "url": "https://finance.yahoo.com/quote/CNH=X/",
+   "read": {
+    "reader": "yahoo_close",
+    "params": {
+     "symbol": "CNH=X"
+    }
+   }
+  },
+  {
+   "iso3": "HKG",
+   "id": "hstech",
+   "label_ko": "항셍테크",
+   "category": "equity",
+   "cadence": "monthly",
+   "unit": "index",
+   "format": "num0",
+   "note_ko": "항셍테크 지수(월말 종가, 이번 달은 최신 종가)입니다. Yahoo Finance HSTECH.HK. 과거 월은 매일 읽은 값이 쌓여 늘어납니다.",
+   "source": "Yahoo Finance HSTECH.HK",
+   "url": "https://finance.yahoo.com/quote/HSTECH.HK/",
+   "read": {
+    "reader": "yahoo_close",
+    "params": {
+     "symbol": "HSTECH.HK"
+    }
+   }
+  },
+  {
+   "iso3": "HKG",
+   "id": "aggregate_balance",
+   "label_ko": "총결제잔액",
+   "category": "liquidity",
+   "cadence": "monthly",
+   "unit": "bn_hkd",
+   "format": "num1",
+   "note_ko": "은행 시스템 총결제잔액(Aggregate Balance, 월말 마감 잔액, 십억 홍콩달러)입니다. HKMA 일일 은행간 유동성 통계.",
+   "source": "hkma:interbank-liquidity",
+   "url": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/",
+   "read": {
+    "reader": "hkma",
+    "params": {
+     "endpoint": "daily-monetary-statistics/daily-figures-interbank-liquidity",
+     "field": "closing_balance"
+    }
+   },
+   "ops": [
+    [
+     "monthly_last"
+    ],
+    [
+     "scale",
+     0.001
+    ]
+   ]
+  },
+  {
+   "iso3": "HKG",
+   "id": "hk_base_rate",
+   "label_ko": "HKMA Base Rate",
+   "category": "rates",
+   "cadence": "monthly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "HKMA 할인창구 기준금리(Base Rate, 월말)입니다. 미국 정책금리에 연동됩니다. HKMA 일일 은행간 유동성 통계.",
+   "source": "hkma:interbank-liquidity",
+   "url": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/",
+   "read": {
+    "reader": "hkma",
+    "params": {
+     "endpoint": "daily-monetary-statistics/daily-figures-interbank-liquidity",
+     "field": "disc_win_base_rate"
+    }
+   },
+   "ops": [
+    [
+     "monthly_last"
+    ]
+   ]
+  },
+  {
+   "iso3": "AUS",
+   "id": "m3_vs_2019",
+   "enabled": false,
+   "reason_ko": "RBA 통계표(rba.gov.au)가 자동 요청에 403을 돌려주고, FRED의 호주 M3는 2023-11에서 끊겼습니다."
+  },
+  {
+   "iso3": "AUS",
+   "id": "m3_yoy",
+   "enabled": false,
+   "reason_ko": "RBA 통계표가 403을 돌려줍니다."
+  },
+  {
+   "iso3": "AUS",
+   "id": "hh_debt_income",
+   "enabled": false,
+   "reason_ko": "RBA 통계표(E2)가 403을 돌려줍니다."
+  },
+  {
+   "iso3": "AUS",
+   "id": "rba_total_assets",
+   "enabled": false,
+   "reason_ko": "RBA 통계표(A1)가 403을 돌려줍니다."
+  },
+  {
+   "iso3": "AUS",
+   "id": "acgb_3y",
+   "enabled": false,
+   "reason_ko": "RBA 통계표(F2)가 403을 돌려줍니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "m2_vs_2019",
+   "enabled": false,
+   "reason_ko": "국가통계국·인민은행 데이터가 해외 자동 요청을 막고, IMF에도 중국 통화 자료가 없습니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "m2_yoy",
+   "enabled": false,
+   "reason_ko": "국가통계국·인민은행이 자동 요청을 막습니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "m1_yoy",
+   "enabled": false,
+   "reason_ko": "국가통계국·인민은행이 자동 요청을 막습니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "m1_m2_spread",
+   "enabled": false,
+   "reason_ko": "국가통계국·인민은행이 자동 요청을 막습니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "tsf_yoy",
+   "enabled": false,
+   "reason_ko": "인민은행 무키 API가 없습니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "ppi_yoy",
+   "enabled": false,
+   "reason_ko": "국가통계국이 자동 요청을 막습니다(403)."
+  },
+  {
+   "iso3": "CHN",
+   "id": "nbs_pmi",
+   "enabled": false,
+   "reason_ko": "국가통계국이 자동 요청을 막습니다(403)."
+  },
+  {
+   "iso3": "CHN",
+   "id": "new_home_price",
+   "enabled": false,
+   "reason_ko": "국가통계국이 자동 요청을 막습니다(403)."
+  },
+  {
+   "iso3": "CHN",
+   "id": "property_fai",
+   "enabled": false,
+   "reason_ko": "국가통계국이 자동 요청을 막습니다(403)."
+  },
+  {
+   "iso3": "CHN",
+   "id": "youth_unemployment",
+   "enabled": false,
+   "reason_ko": "국가통계국이 자동 요청을 막습니다(403)."
+  },
+  {
+   "iso3": "CHN",
+   "id": "rrr",
+   "enabled": false,
+   "reason_ko": "인민은행 공지문으로만 바뀌는 비율입니다(후보)."
+  },
+  {
+   "iso3": "HKG",
+   "id": "hk_fx_reserves",
+   "enabled": false,
+   "reason_ko": "HKMA 월간 통계 API 경로를 찾지 못했고, IMF 홍콩 외환보유액은 2024-02에서 끊겼습니다."
+  },
+  {
+   "iso3": "GBR",
+   "id": "bond_2y",
+   "enabled": false,
+   "reason_ko": "영란은행 데이터베이스에 2년물 명목 수익률 시계열이 없습니다(5·10·20년만 제공)."
+  },
+  {
+   "iso3": "GBR",
+   "id": "bond_30y",
+   "enabled": false,
+   "reason_ko": "영란은행 데이터베이스에 30년물 명목 수익률 시계열이 없습니다."
+  },
+  {
+   "iso3": "GBR",
+   "id": "spread_10y2y",
+   "enabled": false,
+   "reason_ko": "2년물 수익률이 없어 계산할 수 없습니다."
+  },
+  {
+   "iso3": "EMU",
+   "id": "negotiated_wages",
+   "enabled": false,
+   "reason_ko": "ECB 협약임금 시계열(STS)이 2025년 3분기에서 끊겼습니다(후보: 새 지표 확인)."
+  },
+  {
+   "iso3": "EMU",
+   "id": "bls_credit",
+   "enabled": false,
+   "reason_ko": "ECB 은행대출조사(BLS) 시리즈 키를 아직 확인하지 못했습니다(후보)."
+  },
+  {
+   "iso3": "USA",
+   "id": "fedwatch",
+   "enabled": false,
+   "reason_ko": "CME FedWatch는 CME의 독점 자료입니다."
+  },
+  {
+   "iso3": "USA",
+   "id": "ism_mfg",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "USA",
+   "id": "ism_services",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "USA",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "KOR",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "JPN",
+   "id": "ism_mfg",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "JPN",
+   "id": "topix",
+   "enabled": false,
+   "reason_ko": "TOPIX 무료 시세 피드가 없습니다(Yahoo에 지수 심볼 없음)."
+  },
+  {
+   "iso3": "JPN",
+   "id": "nikkei_vi",
+   "enabled": false,
+   "reason_ko": "닛케이 VI는 '복제·배포 금지' 고지가 붙어 있습니다."
+  },
+  {
+   "iso3": "JPN",
+   "id": "pmi_services_jp",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "JPN",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "CHN",
+   "id": "caixin_pmi",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "EMU",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "EMU",
+   "id": "tltro_repay",
+   "enabled": false,
+   "reason_ko": "TLTRO 상환을 하나로 묶은 무키 시계열이 없습니다."
+  },
+  {
+   "iso3": "EMU",
+   "id": "tpi_active",
+   "enabled": false,
+   "reason_ko": "TPI는 가동 여부(상태)라 수치 시계열이 아닙니다."
+  },
+  {
+   "iso3": "EMU",
+   "id": "stoxx_banks",
+   "enabled": false,
+   "reason_ko": "STOXX 지수는 라이선스 자료입니다."
+  },
+  {
+   "iso3": "EMU",
+   "id": "hcob_pmi_mfg",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "EMU",
+   "id": "hcob_pmi_svc",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "ZAF",
+   "id": "core_cpi_yoy",
+   "enabled": false,
+   "reason_ko": "SARB API에 근원 CPI가 없고 통계청(StatsSA) 기계판독 파일을 찾지 못했습니다."
+  },
+  {
+   "iso3": "ZAF",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "ZAF",
+   "id": "m3_vs_2019",
+   "enabled": false,
+   "reason_ko": "SARB API는 M3 증가율만 주고 잔액은 주지 않습니다."
+  },
+  {
+   "iso3": "ZAF",
+   "id": "sarb_total_assets",
+   "enabled": false,
+   "reason_ko": "SARB API에 총자산 시계열이 없습니다."
+  },
+  {
+   "iso3": "ZAF",
+   "id": "absa_pmi",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "SGP",
+   "id": "m2_vs_2019",
+   "enabled": false,
+   "reason_ko": "MAS 포털 약관이 재게시를 금지하고 SingStat에 해당 표가 없습니다."
+  },
+  {
+   "iso3": "SGP",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "SGP",
+   "id": "fx_deposits",
+   "enabled": false,
+   "reason_ko": "공개 표를 찾지 못했습니다."
+  },
+  {
+   "iso3": "SGP",
+   "id": "sreit_index",
+   "enabled": false,
+   "reason_ko": "iEdge S-REIT 지수 무료 출처가 없습니다."
+  },
+  {
+   "iso3": "HKG",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "ism_mfg",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "ism_services",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "unemployment",
+   "enabled": false,
+   "reason_ko": "로스스타트가 해외 요청에 응답하지 않고 FRED/OECD는 2021-22년에 러시아 자료를 끊었습니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "core_cpi_yoy",
+   "enabled": false,
+   "reason_ko": "로스스타트가 해외 요청에 응답하지 않습니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "gdp_qoq",
+   "enabled": false,
+   "reason_ko": "로스스타트가 해외 요청에 응답하지 않습니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "cbr_total_assets",
+   "enabled": false,
+   "reason_ko": "러시아 중앙은행 대차대조표의 기계판독 파일을 찾지 못했습니다(후보)."
+  },
+  {
+   "iso3": "RUS",
+   "id": "fx_reserves_usable",
+   "enabled": false,
+   "reason_ko": "분석가 추정치이지 공표 수치가 아닙니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "fx_frozen_share",
+   "enabled": false,
+   "reason_ko": "분석가 추정치이지 공표 수치가 아닙니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "urals_brent_spread",
+   "enabled": false,
+   "reason_ko": "Urals 가격은 Argus 등 유료 자료입니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "labor_shortage",
+   "enabled": false,
+   "reason_ko": "공식 지수가 아닙니다."
+  },
+  {
+   "iso3": "RUS",
+   "id": "gdp",
+   "enabled": false,
+   "reason_ko": "로스스타트가 해외 요청에 응답하지 않습니다."
+  },
+  {
+   "iso3": "GBR",
+   "id": "ism_mfg",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "GBR",
+   "id": "ism_services",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "GBR",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "GBR",
+   "id": "boe_total_assets",
+   "enabled": false,
+   "reason_ko": "영란은행 데이터베이스(IADB) 코드를 아직 찾지 못했습니다(후보)."
+  },
+  {
+   "iso3": "GBR",
+   "id": "apf_balance",
+   "enabled": false,
+   "reason_ko": "APF 잔고는 분기 보고서로만 나옵니다(후보)."
+  },
+  {
+   "iso3": "GBR",
+   "id": "boe_emergency_facility",
+   "enabled": false,
+   "reason_ko": "시장안정화 창구는 일회성 조치라 시계열이 없습니다."
+  },
+  {
+   "iso3": "GBR",
+   "id": "boe_gilt_ops",
+   "enabled": false,
+   "reason_ko": "APF 매입·매도 결과의 기계판독 파일을 아직 연결하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "CAN",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "CAN",
+   "id": "hh_debt_income",
+   "enabled": false,
+   "reason_ko": "캐나다 통계청 표(11-10-0065-01)의 벡터를 아직 확인하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "CAN",
+   "id": "foreign_securities_ca",
+   "enabled": false,
+   "reason_ko": "캐나다 통계청 표의 벡터를 아직 확인하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "CAN",
+   "id": "teranet_hpi",
+   "enabled": false,
+   "reason_ko": "Teranet 주택가격지수는 라이선스 자료입니다."
+  },
+  {
+   "iso3": "AUS",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "AUS",
+   "id": "corelogic_hpi",
+   "enabled": false,
+   "reason_ko": "CoreLogic 주택가격지수는 유료 자료입니다."
+  },
+  {
+   "iso3": "CHE",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "CHE",
+   "id": "swiss_banks",
+   "enabled": false,
+   "reason_ko": "스위스 금융업종 지수의 무료 피드가 없습니다."
+  },
+  {
+   "iso3": "CHE",
+   "id": "procure_pmi",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "BRA",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "BRA",
+   "id": "foreign_portfolio_br",
+   "enabled": false,
+   "reason_ko": "SGS 코드를 메타데이터로 확인하지 못했습니다(후보)."
+  },
+  {
+   "iso3": "BRA",
+   "id": "pmi_mfg_br",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "BRA",
+   "id": "pmi_svc_br",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "VNM",
+   "id": "m2_vs_2019",
+   "enabled": false,
+   "reason_ko": "무료 공식 출처를 아직 확인하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "VNM",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "VNM",
+   "id": "credit_growth_quota",
+   "enabled": false,
+   "reason_ko": "무료 공식 출처를 아직 확인하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "VNM",
+   "id": "pmi_mfg_vn",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "ip_yoy",
+   "enabled": false,
+   "reason_ko": "통계청(stat.gov.kz) API 형식을 아직 확인하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "cpc_blend",
+   "enabled": false,
+   "reason_ko": "CPC Blend 가격은 Argus 등 유료 자료입니다."
+  },
+  {
+   "iso3": "KAZ",
+   "id": "nbk_base_rate",
+   "enabled": false,
+   "reason_ko": "카자흐스탄 중앙은행 무키 데이터 API가 없습니다(후보: 공지문)."
+  },
+  {
+   "iso3": "TWN",
+   "id": "gdp_yoy",
+   "enabled": false,
+   "reason_ko": "주계총처 기계판독 시계열을 아직 연결하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "TWN",
+   "id": "core_cpi_yoy",
+   "enabled": false,
+   "reason_ko": "주계총처 기계판독 시계열을 아직 연결하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "TWN",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "TWN",
+   "id": "life_fx_assets",
+   "enabled": false,
+   "reason_ko": "금융감독위원회 생보 통계는 기계판독 파일이 없습니다."
+  },
+  {
+   "iso3": "TWN",
+   "id": "hedge_ratio",
+   "enabled": false,
+   "reason_ko": "생보 환헤지비율은 공식 시계열이 없습니다."
+  },
+  {
+   "iso3": "TWN",
+   "id": "ca_gdp_tw",
+   "enabled": false,
+   "reason_ko": "중앙은행 국제수지 파일을 아직 연결하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "TWN",
+   "id": "export_orders_yoy",
+   "enabled": false,
+   "reason_ko": "경제부 수출주문 통계를 아직 연결하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "TWN",
+   "id": "pmi_mfg_tw",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "IND",
+   "id": "ism_mfg",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "IND",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "IND",
+   "id": "crr",
+   "enabled": false,
+   "reason_ko": "RBI DBIE에 무키 API가 없습니다(정책 변경 시 공지)."
+  },
+  {
+   "iso3": "IND",
+   "id": "cad_gdp",
+   "enabled": false,
+   "reason_ko": "RBI DBIE에 무키 API가 없습니다."
+  },
+  {
+   "iso3": "IND",
+   "id": "pmi_services_in",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "IND",
+   "id": "bank_credit_yoy",
+   "enabled": false,
+   "reason_ko": "RBI DBIE에 무키 API가 없습니다."
+  },
+  {
+   "iso3": "IND",
+   "id": "wpi_yoy",
+   "enabled": false,
+   "reason_ko": "상공부 경제자문실 WPI 파일을 아직 연결하지 않았습니다(후보)."
+  },
+  {
+   "iso3": "ISR",
+   "id": "ism_mfg",
+   "enabled": false,
+   "reason_ko": "민간 PMI(S&P Global·HCOB·Caixin·ISM 등)는 유료 라이선스 자료입니다."
+  },
+  {
+   "iso3": "ISR",
+   "id": "sovereign_cds_5y",
+   "enabled": false,
+   "reason_ko": "국가 CDS 시세는 유료 데이터입니다."
+  },
+  {
+   "iso3": "ISR",
+   "id": "fiscal_deficit_gdp",
+   "enabled": false,
+   "reason_ko": "연간 지표이며 재정 파이프라인(sovereign_fiscal)이 부채를 따로 다룹니다."
+  },
+  {
+   "iso3": "ISR",
+   "id": "debt_to_gdp",
+   "enabled": false,
+   "reason_ko": "연간 지표이며 재정 파이프라인(sovereign_fiscal)이 부채를 따로 다룹니다."
+  },
+  {
+   "iso3": "ISR",
+   "id": "boi_total_assets",
+   "enabled": false,
+   "reason_ko": "BOI SDMX 코드를 아직 확인하지 않았습니다(후보)."
   }
  ]
 }
