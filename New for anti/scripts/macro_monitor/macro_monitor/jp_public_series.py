@@ -600,6 +600,140 @@ def build_patch(spec_id: str, points: Points, *, retrieved_at: str) -> dict[str,
 
 
 # --------------------------------------------------------------------------
+# BOJ outright JGB purchases (monthly market-operations workbook)
+# --------------------------------------------------------------------------
+
+BOJ_OPE_MONTH = "https://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/{y}/ope{yymm}.xlsx"
+BOJ_OPE_PAGE = "https://www.boj.or.jp/en/statistics/boj/fm/ope/index.htm"
+
+# residual-maturity labels in the workbook -> the card's buckets
+JGB_BUCKETS = (
+    ("jgb_le_1y", "≤1년 매입", ("Up to 1 year",)),
+    ("jgb_1_5y", "1–5년 매입", ("More than 1 year and up to 3 years", "More than 3 years and up to 5 years")),
+    ("jgb_5_10y", "5–10년 매입", ("More than 5 years and up to 10 years",)),
+    ("jgb_gt_10y", ">10년 매입", ("More than 10 years and up to 25 years", "More than 25 years")),
+    ("jgb_linkers", "물가연동·변동금리채 매입", ("Inflation-indexed bonds", "Floating-rate bonds")),
+)
+
+
+def parse_boj_ope_month(rows: list[tuple]) -> dict[str, Any]:
+    """Rows of the monthly workbook's sheets. Inside each 'Outright Purchases of JGBs' block, a row whose
+    first cell is a date is one auction: offer date, exercise date, offered, bids, successful, ..., and
+    the residual-maturity label in English as the last cell. Amounts are 100 million yen."""
+    offered = bought = 0.0
+    by_bucket: dict[str, float] = {b: 0.0 for b, _, _ in JGB_BUCKETS}
+    in_block, n = False, 0
+    for row in rows:
+        cells = [c for c in row if c not in (None, "")]
+        if not cells:
+            continue
+        head = cells[0]
+        if isinstance(head, str):
+            if head.startswith("Outright Purchases of JGBs"):
+                in_block = True
+            elif head.startswith("■"):
+                in_block = False
+            continue
+        if not in_block or not hasattr(head, "year") or len(cells) < 5:
+            continue
+        label = str(cells[-1]).strip()
+        bucket = next((b for b, _, names in JGB_BUCKETS if label in names), None)
+        if bucket is None:
+            raise ValueError(f"unknown JGB purchase bucket {label!r}")
+        offered += float(cells[2])
+        bought += float(cells[4])
+        by_bucket[bucket] += float(cells[4])
+        n += 1
+    if not n:
+        raise ValueError("no JGB purchase auctions in the workbook")
+    return {"offered": offered, "bought": bought, "buckets": by_bucket, "auctions": n}
+
+
+def fetch_boj_ope_months(today, months: int = 14) -> dict[str, dict[str, Any]]:
+    """Month (YYYY-MM-01) -> parsed purchases for the last `months` published months (a month not out yet
+    is skipped)."""
+    import openpyxl
+    out: dict[str, dict[str, Any]] = {}
+    y, m = today.year, today.month
+    for _ in range(months + 1):
+        url = BOJ_OPE_MONTH.format(y=y, yymm=f"{y % 100:02d}{m:02d}")
+        try:
+            wb = openpyxl.load_workbook(io.BytesIO(_get(url, tries=1)), data_only=True, read_only=True)
+            rows = [r for ws in wb.worksheets for r in ws.iter_rows(values_only=True)]
+            out[f"{y:04d}-{m:02d}-01"] = parse_boj_ope_month(rows)
+        except RuntimeError:
+            pass                                                   # not published yet (404)
+        y, m = (y - 1, 12) if m == 1 else (y, m - 1)
+    if not out:
+        raise RuntimeError("no BOJ monthly operations workbook could be read")
+    return out
+
+
+def jgb_ops_rows(ops: dict[str, dict[str, Any]], holdings: Points) -> list[dict[str, Any]]:
+    """Per month: offered, bought, the change in the BOJ's JGB holdings (BS01, month-end) and the runoff
+    that implies -- bought minus the change, i.e. what matured and was not replaced. All 100 million yen."""
+    hold = dict(holdings)
+    rows = []
+    for d in sorted(ops):
+        y, m = int(d[:4]), int(d[5:7])
+        prev = f"{y - 1:04d}-12-01" if m == 1 else f"{y:04d}-{m - 1:02d}-01"
+        if d not in hold or prev not in hold:
+            continue
+        delta = hold[d] - hold[prev]
+        rows.append({"month": d, **ops[d], "delta": delta, "runoff": ops[d]["bought"] - delta})
+    return rows
+
+
+def apply_jgb_ops(by_id: dict[str, dict[str, Any]], rows: list[dict[str, Any]], retrieved_at: str) -> list[str]:
+    """Fill boj_jgb_ops (net by bucket with runoff) and the target/actual cards from observed months."""
+    if not rows:
+        return []
+    tn = lambda v: round(v * 1e-4, 4)                              # 100 million yen -> trillion yen
+    last = rows[-1]
+    asof = ups.month_end(last["month"])
+    period = last["month"][:7]
+    urls = [BOJ_OPE_PAGE, _BOJ_PAGE]
+    common = {"asof": asof, "observed_at": asof, "reference_period": period, "source_urls": urls,
+              "quality": "live", "data_status": "live", "retrieved_at": retrieved_at,
+              "change_1m_pct": None, "change_1y_pct": None}
+    hist = lambda key: ups.history_block([(r["month"], tn(r[key])) for r in rows], "monthly")
+    changed = []
+
+    card = by_id.get("boj_jgb_ops")
+    if card:
+        comps = [{"id": b, "label_ko": label, "value": tn(last["buckets"][b]), "display": f"{tn(last['buckets'][b]):.2f}T", "unit": "tn_jpy"}
+                 for b, label, _ in JGB_BUCKETS if last["buckets"][b] or b != "jgb_linkers"]
+        comps.append({"id": "jgb_runoff", "label_ko": "만기 상환(재매입 안 함)", "value": -tn(last["runoff"]),
+                      "display": f"{-tn(last['runoff']):.2f}T", "unit": "tn_jpy", "side": "sell"})
+        net = tn(last["delta"])
+        patch = {**common, "value": net, "display": f"{net:+.2f}T", "display_chip": f"순매입 {net:+.2f}T",
+                 "components": comps, "history": hist("delta"), "source": "boj:ope+BS01",
+                 "ui": {**(card.get("ui") or {}), "secondary_view": "maturity_components"},
+                 "components_note_ko": f"{period} 잔존만기별 매입 낙찰액과 만기 상환분(음수)입니다. 합계가 순매입입니다.",
+                 "note_ko": ("일본은행 월간 오퍼레이션 결과의 국채 매입 낙찰액을 잔존만기별로 더했습니다. "
+                             "만기 상환분은 '매입액 − 일본은행 장기국채 보유 잔액(BS01) 월간 증감'으로 계산했고, "
+                             "막대 합계(순매입)는 보유 잔액의 증감과 같습니다. "
+                             "국채 만기가 몰리는 3·6·9·12월은 상환이 커서 순매입이 크게 음수로 나옵니다. 단위 조엔.")}
+        if any(card.get(k) != v for k, v in ups._data_of(patch).items()):
+            card.update(patch)
+            changed.append("boj_jgb_ops")
+    for cid, key, note in (
+        ("boj_jgb_purchase_target", "offered", "그 달 국채 매입 오퍼(예정액) 합계입니다. 일본은행 월간 오퍼레이션 결과. 단위 조엔."),
+        ("boj_jgb_purchase_actual", "bought", "그 달 국채 매입 낙찰(실제 매입) 합계입니다. 일본은행 월간 오퍼레이션 결과. 단위 조엔."),
+    ):
+        c = by_id.get(cid)
+        if not c:
+            continue
+        v = tn(last[key])
+        patch = {**common, "value": v, "display": f"{v:.2f}T", "display_chip": f"{v:.2f}T", "history": hist(key),
+                 "source": "boj:ope", "note_ko": note}
+        if any(c.get(k) != val for k, val in ups._data_of(patch).items()):
+            c.update(patch)
+            changed.append(cid)
+    return changed
+
+
+# --------------------------------------------------------------------------
 # Applying to the pack
 # --------------------------------------------------------------------------
 
@@ -646,9 +780,11 @@ def apply_etf_holdings(by_id: dict[str, dict[str, Any]], retrieved_at: str) -> b
     return False
 
 
-def apply_all(jpn: dict[str, Any], patches: dict[str, dict[str, Any]], *, retrieved_at: str) -> dict[str, Any]:
+def apply_all(jpn: dict[str, Any], patches: dict[str, dict[str, Any]], *, retrieved_at: str,
+              jgb_ops: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     by_id = {i["id"]: i for i in jpn["indicators"]}
     changed = [k for k, p in patches.items() if k in by_id and ups.apply_patch(by_id[k], p)]
+    changed += apply_jgb_ops(by_id, jgb_ops or [], retrieved_at)
     if apply_gdp_composite(by_id, retrieved_at):
         changed.append("gdp")
     if apply_etf_holdings(by_id, retrieved_at):
