@@ -125,6 +125,12 @@
     .then(async (module) => { await module.prepare(); return module; })
     .catch((err) => { simulatorPromise = null; throw err; }));
 
+  // 예산 (PR #758 handoff): static public data, loads only on entry.
+  let budgetPromise = null;
+  const loadBudget = () => (budgetPromise ||= import('/policy-budget/view.mjs?v=1')
+    .then(async (module) => { await module.prepare(); return module; })
+    .catch((err) => { budgetPromise = null; throw err; }));
+
   // Chair/ranking-member/agency-jurisdiction/official-URL for the USA
   // standing committees don't come from the /congress API at all -- they're
   // pre-joined onto the election board by the election_watch pipeline
@@ -435,7 +441,7 @@
   const modeTabs = () => `
     <div class="policy-modes" style="flex-wrap:wrap">
       <span class="policy-country">미국</span>
-      ${[['congress', '의회'], ['executive', '행정부'], ['simulator', '관세 시뮬레이터']].map(([id, label]) => `
+      ${[['congress', '의회'], ['executive', '행정부'], ['simulator', '관세 시뮬레이터'], ['budget', '예산']].map(([id, label]) => `
         <button type="button" class="policy-mode-btn${trailHas(id) ? ' active' : ''}" data-view="${id}" aria-pressed="${trailHas(id)}">${label}</button>
       `).join('')}
       ${searchBox()}
@@ -1198,6 +1204,7 @@
     congress: null,
     executive: null,
     simulator: null,
+    budget: null,
     search: null,
     committee: 'congress',
     area: 'congress',
@@ -1217,6 +1224,7 @@
       case 'congress': return '의회';
       case 'executive': return '행정부';
       case 'simulator': return '관세 시뮬레이터';
+      case 'budget': return '예산';
       case 'committee': {
         // usCommitteeDetail resolves an old alias id (e.g. a bookmarked JEC
         // code) to its canonical committee_id -- the overview list only ever
@@ -1249,6 +1257,7 @@
   // the same shape the mock-fixture version had.
   async function fetchViewData(view, id) {
     if (view === 'simulator') return { simulator: await loadSimulator() };
+    if (view === 'budget') return { budget: await loadBudget() };
     if (!overview) {
       [overview] = await Promise.all([loadOverview(), loadFavorites()]);
       rebuildPolicySlugs();
@@ -1287,6 +1296,9 @@
     simulator: (_id, _overview, data) => shell(data.simulator
       ? `<div data-tariff-simulator>${data.simulator.markup()}</div>`
       : empty('시뮬레이터를 불러오지 못했습니다. 다시 선택해 주세요.')),
+    budget: (_id, _overview, data) => shell(data.budget
+      ? `<div data-us-budget>${data.budget.markup()}</div>`
+      : empty('예산 화면을 불러오지 못했습니다. 다시 선택해 주세요.')),
     committee: viewCommittee,
     agency: viewAgency,
     area: viewPolicyArea,
@@ -1302,15 +1314,16 @@
   let viewData = {};
   // Guards a render() call whose async work resolves after a newer one started.
   let renderToken = 0;
-  let simulatorCleanup = null;
+  let viewCleanup = null;
 
   function paint() {
     if (!host) return;
-    simulatorCleanup?.();
-    simulatorCleanup = null;
+    viewCleanup?.();
+    viewCleanup = null;
     const { view, id } = current();
     host.innerHTML = (VIEWS[view] || viewCongress)(id, overview, viewData);
-    if (view === 'simulator' && viewData.simulator) simulatorCleanup = viewData.simulator.mount(host.querySelector('[data-tariff-simulator]'));
+    if (view === 'simulator' && viewData.simulator) viewCleanup = viewData.simulator.mount(host.querySelector('[data-tariff-simulator]'));
+    if (view === 'budget' && viewData.budget) viewCleanup = viewData.budget.mount(host.querySelector('[data-us-budget]'));
     host.scrollTop = 0;
   }
 
@@ -1405,6 +1418,7 @@
   function pathForLeaf(view, id) {
     if (view === 'congress') return POLICY_BASE_PATH;
     if (view === 'simulator') return `${POLICY_BASE_PATH}/simulator`;
+    if (view === 'budget') return `${POLICY_BASE_PATH}/budget`;
     if (view === 'executive' && id === undefined) return `${POLICY_BASE_PATH}/executive`;
     const segment = view === 'committee' ? (committeeSlugById.get(id) || id)
       : view === 'agency' ? (agencySlugById.get(id) || id)
@@ -1430,6 +1444,7 @@
     if (!rest || rest === 'congress') return null; // default congress leaf, nothing to restore
     if (rest === 'executive') return { view: 'executive', id: undefined };
     if (rest === 'simulator' || rest === 'simulator/') return { view: 'simulator', id: undefined };
+    if (rest === 'budget' || rest === 'budget/') return { view: 'budget', id: undefined };
     const slashIdx = rest.indexOf('/');
     const view = slashIdx < 0 ? rest : rest.slice(0, slashIdx);
     if (!VIEWS[view]) return null;
@@ -1454,8 +1469,8 @@
       if (!overview) overviewPromise = null;
       state.trail = trailTo(view, id, extra);
       viewData = {};
-      simulatorCleanup?.();
-      simulatorCleanup = null;
+      viewCleanup?.();
+      viewCleanup = null;
       host.innerHTML = shell(empty('데이터를 불러오지 못했습니다'));
       return;
     }
@@ -1569,8 +1584,8 @@
   };
 
   async function render(target, surface) {
-    simulatorCleanup?.();
-    simulatorCleanup = null;
+    viewCleanup?.();
+    viewCleanup = null;
     host = surface;
     const token = ++renderToken;
     host.classList.add('policy-surface');
@@ -1590,7 +1605,8 @@
     try {
       // Favorites ride along rather than gating the screen: signed out it is a
       // no-op, and a failure only leaves the stars unset.
-      if (parseLeafFromPath(window.location.pathname)?.view !== 'simulator') {
+      // The simulator and 예산 need no policy API; skip the overview round trip.
+      if (!['simulator', 'budget'].includes(parseLeafFromPath(window.location.pathname)?.view)) {
         [overview] = await Promise.all([loadOverview(), loadFavorites()]);
       }
     } catch (err) {
@@ -1610,15 +1626,15 @@
     // browser back/forward button landing back on this same path).
     state.trail = [];
     const leaf = parseLeafFromPath(window.location.pathname);
-    const restored = leaf && VIEWS[leaf.view] && (['executive', 'simulator'].includes(leaf.view) ? true : leaf.id);
+    const restored = leaf && VIEWS[leaf.view] && (['executive', 'simulator', 'budget'].includes(leaf.view) ? true : leaf.id);
     await go(restored ? leaf.view : (TARGET_VIEWS[target] || 'congress'), restored ? leaf.id : undefined, { replace: true });
   }
 
   function unmount(surface) {
     if (!surface) return;
     renderToken += 1; // invalidate any in-flight fetch from this render
-    simulatorCleanup?.();
-    simulatorCleanup = null;
+    viewCleanup?.();
+    viewCleanup = null;
     searchToken += 1;
     clearTimeout(searchTimer);
     surface.removeEventListener('click', onClick);
