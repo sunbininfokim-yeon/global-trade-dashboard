@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import sys
 import unittest
+from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -250,6 +251,36 @@ class Series(unittest.TestCase):
                                     "cgpi", "current_account", "gdp_yoy", "gdp_qoq", "fx_reserves", "bond_2y", "bond_10y", "bond_30y",
                                     "spread_10y2y", "spread_30y10y", "yen_imm_net", "core_cpi_jp", "core_core_cpi", "tokyo_cpi",
                                     "job_applicant_ratio", "real_wage_yoy", "boj_jgb_share"})
+
+
+class JgbPurchases(unittest.TestCase):
+    ROWS = [
+        ("Outright Purchases of JGBs (Excluding Floating-rate Bonds and Inflation-indexed Bonds) (Competitive Auction Method)",),
+        ("Date of", "Date of", "Amounts"),
+        (date(2026, 9, 2), date(2026, 9, 3), 1000, 4534, 1002, 0.022, 0.028, 60.7, "1年以下", "Up to 1 year"),
+        (date(2026, 9, 9), date(2026, 9, 10), 3350, 7862, 3354, -0.006, -0.005, 67.9, "5年超10年以下", "More than 5 years and up to 10 years"),
+        ("■国債買入（変動利付債、物価連動債）",),
+        ("Outright Purchases of JGBs (Floating-rate Bonds and Inflation-indexed Bonds)",),
+        (date(2026, 9, 28), date(2026, 9, 29), 300, 1481, 300, -0.73, -0.767, 84.6, "物価連動債", "Inflation-indexed bonds"),
+        ("■共通担保資金供給",),
+        (date(2026, 9, 30), date(2026, 10, 1), 9999, 9999, 9999, "x", "Up to 1 year"),     # another operation
+    ]
+
+    def test_month_sums_offered_and_bought_by_bucket(self):
+        r = jps.parse_boj_ope_month(self.ROWS)
+        self.assertEqual((r["offered"], r["bought"], r["auctions"]), (4650.0, 4656.0, 3))
+        self.assertEqual((r["buckets"]["jgb_le_1y"], r["buckets"]["jgb_5_10y"], r["buckets"]["jgb_linkers"]), (1002.0, 3354.0, 300.0))
+
+    def test_unknown_bucket_is_an_error(self):
+        rows = self.ROWS[:2] + [(date(2026, 9, 2), date(2026, 9, 3), 1, 1, 1, "Up to 40 years")]
+        with self.assertRaises(ValueError):
+            jps.parse_boj_ope_month(rows)
+
+    def test_runoff_is_purchases_minus_the_change_in_holdings(self):
+        ops = {"2026-09-01": {"offered": 25000.0, "bought": 25000.0, "buckets": {}, "auctions": 12}}
+        rows = jps.jgb_ops_rows(ops, [("2026-08-01", 5_000_000.0), ("2026-09-01", 4_840_800.0)])
+        self.assertEqual((rows[0]["delta"], rows[0]["runoff"]), (-159_200.0, 184_200.0))
+        self.assertEqual(jps.jgb_ops_rows(ops, [("2026-09-01", 1.0)]), [])          # no prior month-end
 
 
 class Apply(unittest.TestCase):
