@@ -273,3 +273,30 @@
     .israel-result-metrics span { font-size:10px; }
     .israel-result-party-track { width:100px; }
 }
+
+.israel-arab-comparison,.israel-partner-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+.israel-arab-comparison>article,.israel-partner-card { min-width:0;border:1px solid var(--isr-border);border-radius:9px;background:#111e30;padding:13px; }
+.israel-arab-comparison h6,.israel-partner-card h6 { font-size:14px; }
+.israel-arab-comparison p,.israel-partner-card p { font-size:12px;color:#b8c7db; }
+.israel-feature-tags { display:flex;flex-wrap:wrap;gap:5px;margin:8px 0; }
+.israel-feature-tags span { font-size:10px;color:#bbcee3;background:#1b2c43;border-radius:4px;padding:3px 7px; }
+.israel-arab-comparison details,.israel-partner-card details { border-top:1px solid var(--isr-border);margin-top:10px;padding-top:8px;font-size:11px; }
+.israel-arab-comparison summary,.israel-partner-card summary { cursor:pointer; }
+.israel-arab-comparison footer,.israel-partner-card footer,.israel-partner-selector footer { font-size:10px; }
+.israel-spectrum-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px; }
+.israel-spectrum-grid>div { border-top:3px solid var(--spectrum-color);background:#142238;padding:9px;min-width:0; }
+.israel-spectrum-grid h6 { color:var(--spectrum-color);font-size:12px;margin-bottom:8px; }
+.israel-spectrum-grid button { display:block;width:100%;text-align:left;color:#dbe7f5;background:#101b2e;border:1px solid #33455e;border-radius:6px;padding:8px;margin:5px 0;font-size:11px; }
+.israel-spectrum-grid button small { display:block;color:var(--isr-muted);font-size:10px;margin-top:4px; }
+.israel-spectrum-grid button[aria-pressed=true] { border-color:#8dd7f4; }
+.israel-partner-selector { display:grid;grid-template-columns:1fr 2fr;gap:14px;margin:20px 0;padding:13px;border:1px solid #405675;border-radius:9px; }
+.israel-partner-selector label { font-size:11px;min-width:0; }
+.israel-partner-selector select { display:block;margin-top:6px;max-width:100%;width:100%;padding:10px;background:#16243a;color:#e2e8f0;border:1px solid #405675;border-radius:6px;font:inherit; }
+.israel-partner-selector small { display:block;color:var(--isr-muted); }
+.israel-partner-selector p { font-size:11px; }
+.israel-partner-card header>span { display:block;font-size:10px;color:#8cb4d3;margin-top:5px; }
+.israel-partner-evidence { border-left:2px solid #75b6d5;padding-left:10px;margin-top:12px; }
+.israel-evidence-refusal { border-color:#e9a4a4; }
+.israel-partner-evidence>b { font-size:11px; }
+.israel-partner-evidence time { display:block;color:var(--isr-muted);font-size:10px; }
+@media(max-width:580px) { .israel-arab-comparison,.israel-partner-grid,.israel-partner-selector { grid-template-columns:minmax(0,1fr); } .israel-spectrum-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
