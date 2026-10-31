@@ -71,7 +71,7 @@ const groupCards = (board, poll, grouping, selected, canSelect) => groupingGroup
 }).join('');
 
 export const israelAnalysisPlaceholder = () => '<div data-israel-analysis></div>';
-export const israelAnalysisHtml = (board, { pollId = null, days = null, selected = [], presetId = null, grouping = 'cooperation', relationFilter = 'all', today = koreaToday() } = {}) => {
+export const israelAnalysisHtml = (board, { pollId = null, days = null, selected = [], presetId = null, grouping = 'cooperation', relationFilter = 'all', cooperationAnchor = 'k26:עם', today = koreaToday() } = {}) => {
     if (!board) return '<p class="elections-muted" role="status">이스라엘 검토 자료를 불러오지 못했습니다. 조사 없음이나 0석으로 대체하지 않습니다.</p>';
     const ko = (source, fallback) => koreanText(board, source, fallback);
     const polls = seatPolls(board, { days, today });
@@ -98,7 +98,7 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
             <small>${value.pct == null ? '비율 미확인' : value.pct < 3.25 ? `보도상 봉쇄선 3.25%보다 ${(3.25 - value.pct).toFixed(2)}%p 낮음` : '보도상 봉쇄선 이상'} · 의석 역산 없음</small><footer>${sourceLinks(board,p.sourceIds)}</footer></article>`;
     };
     return `<section class="israel-analysis">
-        ${israelResultsHtml(board)}
+        ${israelResultsHtml(board,cooperationAnchor)}
         ${board.post_election ? '<details id="israel-history" class="israel-history" data-israel-details="history"><summary><span>선거 전 자료</span><small>여론조사·협력 관계·봉쇄선 기록 보기</small></summary><p class="israel-notice">아래는 선거 전 검토 스냅샷입니다. 예상 의석과 당시 협력 입장은 개표 결과·현재 연정 합의와 구분해 읽어 주세요.</p>' : ''}
         <header class="israel-heading"><p class="israel-eyebrow">이스라엘 · 26대 크네세트</p><h4>누가 누구와 함께할 수 있나</h4>
             <p>누가 같은 편이고, 정치색은 얼마나 비슷할까요? 협력 관계와 정치 성향을 나눠 살펴보세요.</p>
@@ -154,18 +154,18 @@ export const israelAnalysisHtml = (board, { pollId = null, days = null, selected
 export const mountIsraelAnalysis = (root, result, { today = koreaToday() } = {}) => {
     if (!root) return;
     root.closest('.elections-modal-host')?.classList.add('israel-analysis-host');
-    const state = { days: null, pollId: null, selected: [], presetId: null, grouping: 'cooperation', relationFilter: 'all', today };
+    const state = { days: null, pollId: null, selected: [], presetId: null, grouping: 'cooperation', relationFilter: 'all', cooperationAnchor: 'k26:עם', today };
     const css = document.createElement('link');
     css.rel='stylesheet'; css.href=new URL('./israel-analysis.css',import.meta.url).href;
     if (!document.querySelector('link[data-israel-style]')) {css.dataset.israelStyle='1';document.head.append(css);}
     const render = (focusSelector = null) => {
         const detailKey = (el) => el.dataset.israelDetails || el.querySelector('summary')?.textContent;
-        const details = new Set([...root.querySelectorAll('details[open]')].map(detailKey));
+        const details = new Map([...root.querySelectorAll('details')].map(el=>[detailKey(el),el.open]));
         const container = root.closest('.elections-modal-body');
         const scroll = container?.scrollTop;
         root.innerHTML=israelAnalysisHtml(result?.board,state);
         if (!result?.board) return;
-        root.querySelectorAll('details').forEach((el) => {if(details.has(detailKey(el))) el.open=true;});
+        root.querySelectorAll('details').forEach((el) => {if(details.has(detailKey(el))) el.open=details.get(detailKey(el));});
         state.pollId=root.querySelector('[data-israel-poll]')?.value || null;
         const reset = () => {state.selected=[];state.presetId=null;};
         root.querySelector('[data-israel-window]')?.addEventListener('change',(ev) => {state.days=ev.target.value?Number(ev.target.value):null;state.pollId=null;reset();render('[data-israel-window]');});
@@ -175,6 +175,8 @@ export const mountIsraelAnalysis = (root, result, { today = koreaToday() } = {})
         root.querySelectorAll('[data-israel-grouping]').forEach((button) => button.addEventListener('click',() => {state.grouping=button.dataset.israelGrouping;render(`[data-israel-grouping="${state.grouping}"]`);}));
         root.querySelectorAll('[data-israel-relation-filter]').forEach((button) => button.addEventListener('click',() => {state.relationFilter=button.dataset.israelRelationFilter;render(`[data-israel-relation-filter="${state.relationFilter}"]`);}));
         root.querySelectorAll('.israel-section-nav a').forEach((link) => link.addEventListener('click',(ev)=>{ev.preventDefault();const target=root.querySelector(link.getAttribute('href'));if(target?.tagName==='DETAILS')target.open=true;target?.scrollIntoView({behavior:'smooth',block:'start'});}));
+        root.querySelector('[data-israel-cooperation-anchor]')?.addEventListener('change',ev=>{state.cooperationAnchor=ev.target.value;render('[data-israel-cooperation-anchor]');});
+        root.querySelectorAll('[data-israel-anchor]').forEach(button=>button.addEventListener('click',()=>{state.cooperationAnchor=button.dataset.israelAnchor;render('[data-israel-cooperation-anchor]');}));
         root.querySelector('[data-israel-clear]')?.addEventListener('click',()=>{reset();render('[data-israel-clear]');});
         if (focusSelector) root.querySelector(focusSelector)?.focus({preventScroll:true});
         if (container && scroll !== undefined) container.scrollTop=scroll;
