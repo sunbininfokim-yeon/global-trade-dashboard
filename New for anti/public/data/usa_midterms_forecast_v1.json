@@ -1,8 +1,8 @@
 {
   "schema": "usa_midterms_forecast_v1",
   "cycle": 2026,
-  "as_of": "2026-10-31",
-  "generated_at": "2026-10-31T00:43:18.460435+00:00",
+  "as_of": "2026-11-01",
+  "generated_at": "2026-11-01T00:04:00.059848+00:00",
   "default_window_days": 7,
   "refresh_seconds": 3600,
   "method_ko": "비선거 현직 + Solid/Likely 유지 가정. Toss-up/Lean은 최근 7일 조사만으로 판단, 14일 별도. 단일 기관은 참고 집계로 분리. 조사 없음·동률은 보류.",
@@ -1097,7 +1097,7 @@
     },
     "senate": {
       "lead_abbr": "없음",
-      "margin_note_ko": "조건부 집계 민주 35 · 공화 31 · 무소속 2 · 미정 32. 단일 기관 참고 0곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+      "margin_note_ko": "조건부 집계 민주 35 · 공화 31 · 무소속 2 · 미정 32. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
       "total_seats": 100,
       "scenario_counts": {
         "DEM": 35,
@@ -1113,22 +1113,24 @@
         },
         "rated_baseline_assumption": {},
         "recent_poll_lead": {
-          "DEM": 3
+          "DEM": 2
         },
-        "single_poll_lead": {},
+        "single_poll_lead": {
+          "DEM": 1
+        },
         "certified_result": {}
       },
       "single_poll_lead_counts": {
-        "DEM": 0,
+        "DEM": 1,
         "GOP": 0,
         "IND": 0
       },
       "scenario_counts_without_single_polls": {
-        "DEM": 35,
+        "DEM": 34,
         "GOP": 31,
         "IND": 2
       },
-      "unresolved_without_single_polls": 32,
+      "unresolved_without_single_polls": 33,
       "conditional_bounds": {
         "DEM": {
           "min": 35,
@@ -1689,17 +1691,17 @@
           "race_id": "USA:TX:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "recent_poll_lead",
+          "basis": "single_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 조사상 우세",
-          "poll_status": "poll_lead",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "multiple_sources",
-            "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -1728,72 +1730,10 @@
               },
               "leading_margin_pp": 6.0,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "us-202tex39cdaf4f",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "historical_accuracy_rating",
-                  "margin_of_error",
-                  "minor_candidate_values_not_in_release"
-                ],
-                "review_method": "manual_primary_review",
-                "reviewed_on": "2026-10-30",
-                "review_sources": [
-                  "https://www.jordanresearchcenter.org/publications/tsuoct2026-txelections-statewide2026"
-                ],
-                "primary_toplines": {
-                  "James Talarico": 49.0,
-                  "Ken Paxton": 47.0
-                },
-                "question_sample_n": 2000,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 2000,
-                  "field_dates": [
-                    "2026-10-21",
-                    "2026-10-25"
-                  ],
-                  "primary_release_date": "2026-10-29",
-                  "provider_record_date": "2026-10-29",
-                  "sponsors": [],
-                  "sampling_method": "Barbara Jordan Public Policy Research and Survey Center, Oct 21-25",
-                  "sampling_frame": "Texas likely voters (2,000)",
-                  "weighting": "per full report (not independently verified)",
-                  "question_wording_checked": false,
-                  "question": "U.S. Senate vote intention, likely voters",
-                  "provider_pollster_label": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-                  "primary_pollster_name": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
-                },
-                "reported_precision": null,
-                "ballot_format": "ordinary_named_candidate_ballot",
-                "sponsor_review": {
-                  "primary_sponsors": [],
-                  "provider_sponsors": [],
-                  "provider_partisan_flag": null,
-                  "affiliation_independently_verified": null,
-                  "primary_internal": false
-                },
-                "limitations_ko": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center 원문 대조: LV 2000명, 2026-10-21~2026-10-25, 표본오차 원문 미기재. 발표 요약 Talarico 49 · Paxton 47 대조. 군소 후보 Brown 3은 요약에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
-              },
-              "commissioning": {
-                "internal": false,
-                "partisan": null,
-                "sponsors": []
-              },
-              "leading_margin_pp": 2.0,
-              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "us-202cnn4329221b",
-            "us-202tex39cdaf4f"
+            "us-202cnn4329221b"
           ]
         },
         {
@@ -2459,16 +2399,16 @@
           "basis": "pending",
           "party_abbr": "없음",
           "conclusion_ko": "판정 보류",
-          "poll_status": "tie",
+          "poll_status": "no_recent_poll",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "single_source",
-            "coverage_label_ko": "단일 기관 참고",
-            "independent_pollster_count": 1,
+            "coverage": "none",
+            "coverage_label_ko": "조사 없음",
+            "independent_pollster_count": 0,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 0.0,
+            "agreement_fraction": null,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -4359,7 +4299,7 @@
         },
         "senate": {
           "lead_abbr": "없음",
-          "margin_note_ko": "조건부 집계 민주 35 · 공화 31 · 무소속 2 · 미정 32. 단일 기관 참고 0곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
+          "margin_note_ko": "조건부 집계 민주 35 · 공화 31 · 무소속 2 · 미정 32. 단일 기관 참고 1곳 포함. 평가상 우세 유지 가정이며 확정·당선 예측 아님.",
           "total_seats": 100,
           "scenario_counts": {
             "DEM": 35,
@@ -4375,22 +4315,24 @@
             },
             "rated_baseline_assumption": {},
             "recent_poll_lead": {
-              "DEM": 3
+              "DEM": 2
             },
-            "single_poll_lead": {},
+            "single_poll_lead": {
+              "DEM": 1
+            },
             "certified_result": {}
           },
           "single_poll_lead_counts": {
-            "DEM": 0,
+            "DEM": 1,
             "GOP": 0,
             "IND": 0
           },
           "scenario_counts_without_single_polls": {
-            "DEM": 35,
+            "DEM": 34,
             "GOP": 31,
             "IND": 2
           },
-          "unresolved_without_single_polls": 32,
+          "unresolved_without_single_polls": 33,
           "conditional_bounds": {
             "DEM": {
               "min": 35,
@@ -4951,17 +4893,17 @@
               "race_id": "USA:TX:senate",
               "rating": "toss_up",
               "competitive": true,
-              "basis": "recent_poll_lead",
+              "basis": "single_poll_lead",
               "party_abbr": "DEM",
-              "conclusion_ko": "민주당 조사상 우세",
-              "poll_status": "poll_lead",
+              "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+              "poll_status": "single_poll_lead",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "multiple_sources",
-                "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 2,
+                "coverage": "single_source",
+                "coverage_label_ko": "단일 기관 참고",
+                "independent_pollster_count": 1,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
                 "agreement_fraction": 1.0,
                 "conflicting_pollsters": [],
@@ -4990,72 +4932,10 @@
                   },
                   "leading_margin_pp": 6.0,
                   "significance": "not_evaluated"
-                },
-                {
-                  "id": "us-202tex39cdaf4f",
-                  "source_quality": {
-                    "verification_level": "primary_toplines_checked",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                    "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                    "missing_fields": [
-                      "historical_accuracy_rating",
-                      "margin_of_error",
-                      "minor_candidate_values_not_in_release"
-                    ],
-                    "review_method": "manual_primary_review",
-                    "reviewed_on": "2026-10-30",
-                    "review_sources": [
-                      "https://www.jordanresearchcenter.org/publications/tsuoct2026-txelections-statewide2026"
-                    ],
-                    "primary_toplines": {
-                      "James Talarico": 49.0,
-                      "Ken Paxton": 47.0
-                    },
-                    "question_sample_n": 2000,
-                    "disclosure_review": {
-                      "population": "LV",
-                      "sample_n": 2000,
-                      "field_dates": [
-                        "2026-10-21",
-                        "2026-10-25"
-                      ],
-                      "primary_release_date": "2026-10-29",
-                      "provider_record_date": "2026-10-29",
-                      "sponsors": [],
-                      "sampling_method": "Barbara Jordan Public Policy Research and Survey Center, Oct 21-25",
-                      "sampling_frame": "Texas likely voters (2,000)",
-                      "weighting": "per full report (not independently verified)",
-                      "question_wording_checked": false,
-                      "question": "U.S. Senate vote intention, likely voters",
-                      "provider_pollster_label": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-                      "primary_pollster_name": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-                      "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
-                    },
-                    "reported_precision": null,
-                    "ballot_format": "ordinary_named_candidate_ballot",
-                    "sponsor_review": {
-                      "primary_sponsors": [],
-                      "provider_sponsors": [],
-                      "provider_partisan_flag": null,
-                      "affiliation_independently_verified": null,
-                      "primary_internal": false
-                    },
-                    "limitations_ko": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center 원문 대조: LV 2000명, 2026-10-21~2026-10-25, 표본오차 원문 미기재. 발표 요약 Talarico 49 · Paxton 47 대조. 군소 후보 Brown 3은 요약에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
-                  },
-                  "commissioning": {
-                    "internal": false,
-                    "partisan": null,
-                    "sponsors": []
-                  },
-                  "leading_margin_pp": 2.0,
-                  "significance": "not_evaluated"
                 }
               ],
               "included_poll_ids": [
-                "us-202cnn4329221b",
-                "us-202tex39cdaf4f"
+                "us-202cnn4329221b"
               ]
             },
             {
@@ -5721,16 +5601,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "tie",
+              "poll_status": "no_recent_poll",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "none",
+                "coverage_label_ko": "조사 없음",
+                "independent_pollster_count": 0,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 0.0,
+                "agreement_fraction": null,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -7847,17 +7727,17 @@
           "race_id": "USA:TX:senate",
           "rating": "toss_up",
           "competitive": true,
-          "basis": "recent_poll_lead",
+          "basis": "single_poll_lead",
           "party_abbr": "DEM",
-          "conclusion_ko": "민주당 조사상 우세",
-          "poll_status": "poll_lead",
+          "conclusion_ko": "민주당 단일 조사에서 수치상 앞섬 · 참고",
+          "poll_status": "single_poll_lead",
           "evidence_quality": {
             "level": "unrated",
             "grade": null,
             "label_ko": "품질 등급 미평가",
-            "coverage": "multiple_sources",
-            "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 2,
+            "coverage": "single_source",
+            "coverage_label_ko": "단일 기관 참고",
+            "independent_pollster_count": 1,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
             "agreement_fraction": 1.0,
             "conflicting_pollsters": [],
@@ -7886,72 +7766,10 @@
               },
               "leading_margin_pp": 6.0,
               "significance": "not_evaluated"
-            },
-            {
-              "id": "us-202tex39cdaf4f",
-              "source_quality": {
-                "verification_level": "primary_toplines_checked",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "원문 수치 대조 완료 · 정확도 등급 미평가",
-                "basis_ko": "수기 검토한 원문과 현 집계 레코드 대조. 공개 항목 검토이며 AAPOR 인증·정확도·통계적 유의성 평가가 아닙니다.",
-                "missing_fields": [
-                  "historical_accuracy_rating",
-                  "margin_of_error",
-                  "minor_candidate_values_not_in_release"
-                ],
-                "review_method": "manual_primary_review",
-                "reviewed_on": "2026-10-30",
-                "review_sources": [
-                  "https://www.jordanresearchcenter.org/publications/tsuoct2026-txelections-statewide2026"
-                ],
-                "primary_toplines": {
-                  "James Talarico": 49.0,
-                  "Ken Paxton": 47.0
-                },
-                "question_sample_n": 2000,
-                "disclosure_review": {
-                  "population": "LV",
-                  "sample_n": 2000,
-                  "field_dates": [
-                    "2026-10-21",
-                    "2026-10-25"
-                  ],
-                  "primary_release_date": "2026-10-29",
-                  "provider_record_date": "2026-10-29",
-                  "sponsors": [],
-                  "sampling_method": "Barbara Jordan Public Policy Research and Survey Center, Oct 21-25",
-                  "sampling_frame": "Texas likely voters (2,000)",
-                  "weighting": "per full report (not independently verified)",
-                  "question_wording_checked": false,
-                  "question": "U.S. Senate vote intention, likely voters",
-                  "provider_pollster_label": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-                  "primary_pollster_name": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center",
-                  "source_fetch_receipt": "source-fetch/bg-final-20261030-40999150719"
-                },
-                "reported_precision": null,
-                "ballot_format": "ordinary_named_candidate_ballot",
-                "sponsor_review": {
-                  "primary_sponsors": [],
-                  "provider_sponsors": [],
-                  "provider_partisan_flag": null,
-                  "affiliation_independently_verified": null,
-                  "primary_internal": false
-                },
-                "limitations_ko": "Texas Southern University Barbara Jordan Public Policy Research and Survey Center 원문 대조: LV 2000명, 2026-10-21~2026-10-25, 표본오차 원문 미기재. 발표 요약 Talarico 49 · Paxton 47 대조. 군소 후보 Brown 3은 요약에 없어 미대조. 이 발표의 원문 검토이며 기관의 미래 발표 전체 승인이 아닙니다."
-              },
-              "commissioning": {
-                "internal": false,
-                "partisan": null,
-                "sponsors": []
-              },
-              "leading_margin_pp": 2.0,
-              "significance": "not_evaluated"
             }
           ],
           "included_poll_ids": [
-            "us-202cnn4329221b",
-            "us-202tex39cdaf4f"
+            "us-202cnn4329221b"
           ]
         },
         {
@@ -10389,9 +10207,9 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 5,
+                "independent_pollster_count": 4,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 0.8,
+                "agreement_fraction": 0.75,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -10522,28 +10340,6 @@
                   "significance": "not_evaluated"
                 },
                 {
-                  "id": "us-202mar3b19e64d",
-                  "source_quality": {
-                    "verification_level": "partial",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "출처 연결 · 집계값 부분 검증",
-                    "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
-                    "missing_fields": [
-                      "margin_of_error_pp",
-                      "question_sample_n",
-                      "primary_values_rechecked"
-                    ]
-                  },
-                  "commissioning": {
-                    "internal": false,
-                    "partisan": null,
-                    "sponsors": []
-                  },
-                  "leading_margin_pp": 4.0,
-                  "significance": "not_evaluated"
-                },
-                {
                   "id": "us-202vot936927b5",
                   "source_quality": {
                     "verification_level": "primary_toplines_checked",
@@ -10624,7 +10420,6 @@
                 "us-202bea80ab32e9",
                 "us-202ech01f06c61",
                 "us-202ins6e5f29f2",
-                "us-202mar3b19e64d",
                 "us-202vot936927b5"
               ]
             },
@@ -11404,16 +11199,16 @@
               "basis": "pending",
               "party_abbr": "없음",
               "conclusion_ko": "판정 보류",
-              "poll_status": "single_poll_lead",
+              "poll_status": "no_recent_poll",
               "evidence_quality": {
                 "level": "unrated",
                 "grade": null,
                 "label_ko": "품질 등급 미평가",
-                "coverage": "single_source",
-                "coverage_label_ko": "단일 기관 참고",
-                "independent_pollster_count": 1,
+                "coverage": "none",
+                "coverage_label_ko": "조사 없음",
+                "independent_pollster_count": 0,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 1.0,
+                "agreement_fraction": null,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -11979,9 +11774,9 @@
                 "label_ko": "품질 등급 미평가",
                 "coverage": "multiple_sources",
                 "coverage_label_ko": "복수 기관 집계",
-                "independent_pollster_count": 4,
+                "independent_pollster_count": 3,
                 "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-                "agreement_fraction": 0.75,
+                "agreement_fraction": 0.6666666666666666,
                 "conflicting_pollsters": [],
                 "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
                 "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -12089,28 +11884,6 @@
                   "significance": "not_evaluated"
                 },
                 {
-                  "id": "gov202mar01928469",
-                  "source_quality": {
-                    "verification_level": "partial",
-                    "methodological_quality": "unrated",
-                    "accuracy_grade": null,
-                    "label_ko": "출처 연결 · 집계값 부분 검증",
-                    "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
-                    "missing_fields": [
-                      "margin_of_error_pp",
-                      "question_sample_n",
-                      "primary_values_rechecked"
-                    ]
-                  },
-                  "commissioning": {
-                    "internal": false,
-                    "partisan": null,
-                    "sponsors": []
-                  },
-                  "leading_margin_pp": 7.0,
-                  "significance": "not_evaluated"
-                },
-                {
                   "id": "gov202vot834ec374",
                   "source_quality": {
                     "verification_level": "primary_toplines_checked",
@@ -12189,7 +11962,6 @@
               "included_poll_ids": [
                 "gov202beafcf8ece3",
                 "gov202ech0acb366e",
-                "gov202mar01928469",
                 "gov202vot834ec374"
               ]
             },
@@ -14442,9 +14214,9 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 5,
+            "independent_pollster_count": 4,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 0.8,
+            "agreement_fraction": 0.75,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -14575,28 +14347,6 @@
               "significance": "not_evaluated"
             },
             {
-              "id": "us-202mar3b19e64d",
-              "source_quality": {
-                "verification_level": "partial",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "출처 연결 · 집계값 부분 검증",
-                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
-                "missing_fields": [
-                  "margin_of_error_pp",
-                  "question_sample_n",
-                  "primary_values_rechecked"
-                ]
-              },
-              "commissioning": {
-                "internal": false,
-                "partisan": null,
-                "sponsors": []
-              },
-              "leading_margin_pp": 4.0,
-              "significance": "not_evaluated"
-            },
-            {
               "id": "us-202vot936927b5",
               "source_quality": {
                 "verification_level": "primary_toplines_checked",
@@ -14677,7 +14427,6 @@
             "us-202bea80ab32e9",
             "us-202ech01f06c61",
             "us-202ins6e5f29f2",
-            "us-202mar3b19e64d",
             "us-202vot936927b5"
           ]
         },
@@ -15304,9 +15053,9 @@
             "label_ko": "품질 등급 미평가",
             "coverage": "multiple_sources",
             "coverage_label_ko": "복수 기관 집계",
-            "independent_pollster_count": 4,
+            "independent_pollster_count": 3,
             "count_basis": "distinct_pollster_groups_not_independent_commissioners",
-            "agreement_fraction": 0.75,
+            "agreement_fraction": 0.6666666666666666,
             "conflicting_pollsters": [],
             "basis_ko": "기간 내 기관별 최신 1건의 수와 동일 후보 수치상 우세 비율. LV/RV 분리.",
             "limitations_ko": "기관 수·일치도만으로 조사 품질·정확도·통계적 신뢰수준·당선확률을 평가하지 않습니다."
@@ -15414,28 +15163,6 @@
               "significance": "not_evaluated"
             },
             {
-              "id": "gov202mar01928469",
-              "source_quality": {
-                "verification_level": "partial",
-                "methodological_quality": "unrated",
-                "accuracy_grade": null,
-                "label_ko": "출처 연결 · 집계값 부분 검증",
-                "basis_ko": "기관·원문 도메인·대진·기간·표본·모집단 검사 통과. 원문별 방법론과 수치 재검증 미완료.",
-                "missing_fields": [
-                  "margin_of_error_pp",
-                  "question_sample_n",
-                  "primary_values_rechecked"
-                ]
-              },
-              "commissioning": {
-                "internal": false,
-                "partisan": null,
-                "sponsors": []
-              },
-              "leading_margin_pp": 7.0,
-              "significance": "not_evaluated"
-            },
-            {
               "id": "gov202vot834ec374",
               "source_quality": {
                 "verification_level": "primary_toplines_checked",
@@ -15514,7 +15241,6 @@
           "included_poll_ids": [
             "gov202beafcf8ece3",
             "gov202ech0acb366e",
-            "gov202mar01928469",
             "gov202vot834ec374"
           ]
         },
