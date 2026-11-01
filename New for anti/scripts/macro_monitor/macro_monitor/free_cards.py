@@ -22,6 +22,7 @@ import csv
 import io
 import json
 import re
+import subprocess
 from pathlib import Path
 from typing import Any, Callable
 
@@ -145,13 +146,34 @@ HKMA_API = "https://api.hkma.gov.hk/public/market-data-and-statistics/{endpoint}
 _HKMA_RECORDS: dict[tuple[str, int], list[dict[str, Any]]] = {}
 
 
+HKMA_WORKER = ("https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/macro?source=hkma"
+               "&endpoint={endpoint}&pagesize=1000&offset={offset}")
+
+
+def _hkma_page(endpoint: str, offset: int) -> dict[str, Any]:
+    """Direct first; HKMA's firewall answers bursts and GitHub's runners with 405, so then through the
+    dashboard Worker (allow-listed endpoints, KV-cached for an hour). curl: the Worker refuses urllib."""
+    try:
+        return json.loads(wps._get(HKMA_API.format(endpoint=endpoint) + f"?pagesize=1000&offset={offset}&sortorder=desc",
+                                   tries=1))
+    except Exception as direct:  # noqa: BLE001
+        proc = subprocess.run(["curl", "-sS", "-m", "60", "-A", ups.USER_AGENT,
+                               HKMA_WORKER.format(endpoint=endpoint, offset=offset)], check=False, capture_output=True)
+        try:
+            doc = json.loads(proc.stdout.decode("utf-8"))
+        except ValueError:
+            raise RuntimeError(f"HKMA {endpoint}: direct {direct}; worker rc={proc.returncode}") from direct
+        if "error" in doc:
+            raise RuntimeError(f"HKMA {endpoint}: direct {direct}; worker {doc['error']}") from direct
+        return doc
+
+
 def _hkma_records(endpoint: str, pages: int) -> list[dict[str, Any]]:
     """Newest first, 1000 records a page; read once per run however many cards use the endpoint."""
     if (endpoint, pages) not in _HKMA_RECORDS:
         recs: list[dict[str, Any]] = []
         for page in range(pages):
-            url = HKMA_API.format(endpoint=endpoint) + f"?pagesize=1000&offset={page * 1000}&sortorder=desc"
-            doc = json.loads(wps._get(url))
+            doc = _hkma_page(endpoint, page * 1000)
             if not (doc.get("header") or {}).get("success"):
                 raise ValueError(f"HKMA {endpoint}: {(doc.get('header') or {}).get('err_msg')}")
             got = (doc.get("result") or {}).get("records") or []
