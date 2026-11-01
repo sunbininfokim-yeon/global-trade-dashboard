@@ -1,0 +1,267 @@
+{
+ "schema_version": "coal_weather_risk_v1",
+ "generated_at": "2026-11-01T09:11:48+00:00",
+ "status": "not_validated",
+ "method_ko": "석탄 산지(동·남칼리만탄, 남수마트라) 6곳의 월 강수를 같은 달 평년(2001~2020)과 비교한 z값. 인도네시아 월별 석탄 수출(UN Comtrade, HS 2701)의 추세 대비 편차와의 관계를 사전에 정한 기준으로 검증.",
+ "points": [
+  {
+   "name": "kutai_timur",
+   "region": "East Kalimantan",
+   "lat": 0.55,
+   "lon": 117.45,
+   "w": 0.25
+  },
+  {
+   "name": "kutai_kartanegara",
+   "region": "East Kalimantan",
+   "lat": -0.4,
+   "lon": 117.0,
+   "w": 0.25
+  },
+  {
+   "name": "tabalong_balangan",
+   "region": "South Kalimantan (BSSR)",
+   "lat": -2.05,
+   "lon": 115.45,
+   "w": 0.15
+  },
+  {
+   "name": "tanah_bumbu",
+   "region": "South Kalimantan",
+   "lat": -3.4,
+   "lon": 115.8,
+   "w": 0.1
+  },
+  {
+   "name": "barito_lower",
+   "region": "South Kalimantan barge route",
+   "lat": -3.1,
+   "lon": 114.7,
+   "w": 0.1
+  },
+  {
+   "name": "muara_enim",
+   "region": "South Sumatra",
+   "lat": -3.7,
+   "lon": 103.8,
+   "w": 0.15
+  }
+ ],
+ "test": {
+  "pass_rule": "corr <= -0.15, circular-shift p < 0.05, leave-one-year-out all negative",
+  "excluded_months": [
+   "2020-04",
+   "2020-05",
+   "2020-06",
+   "2022-01",
+   "2022-02"
+  ],
+  "results": {
+   "idn_exports": {
+    "n": 145,
+    "first": "2013-05",
+    "last": "2026-01",
+    "corr": 0.072,
+    "corr_prev_month_rain": 0.051,
+    "circular_p": 0.76,
+    "rotations": 24,
+    "loyo_max": 0.127,
+    "loyo": {
+     "2013": 0.127,
+     "2014": 0.08,
+     "2015": 0.019,
+     "2016": 0.118,
+     "2017": 0.099,
+     "2018": 0.064,
+     "2019": 0.102,
+     "2020": 0.085,
+     "2021": 0.047,
+     "2022": 0.013,
+     "2023": 0.073,
+     "2024": 0.073,
+     "2025": 0.025,
+     "2026": 0.077
+    },
+    "wet_months": 21,
+    "wet_mean_pct": 1.5,
+    "other_mean_pct": 1.0,
+    "slope_pct_per_z": 0.7,
+    "corr_wet_season": -0.015,
+    "enso": {
+     "corr_nino_rain": -0.312,
+     "corr_nino_exports": 0.014,
+     "la_nina_months": 35,
+     "la_nina_mean_pct": 1.4
+    },
+    "passed": false
+   },
+   "chn_from_idn": {
+    "n": 120,
+    "first": "2010-05",
+    "last": "2024-08",
+    "corr": -0.1,
+    "corr_prev_month_rain": 0.119,
+    "circular_p": 0.28,
+    "rotations": 24,
+    "loyo_max": -0.039,
+    "loyo": {
+     "2010": -0.091,
+     "2011": -0.105,
+     "2012": -0.098,
+     "2016": -0.12,
+     "2017": -0.136,
+     "2018": -0.099,
+     "2019": -0.14,
+     "2020": -0.07,
+     "2021": -0.119,
+     "2022": -0.039,
+     "2023": -0.089,
+     "2024": -0.11
+    },
+    "wet_months": 19,
+    "wet_mean_pct": -5.1,
+    "other_mean_pct": 1.2,
+    "slope_pct_per_z": -6.22,
+    "corr_wet_season": -0.072,
+    "enso": {
+     "corr_nino_rain": -0.312,
+     "corr_nino_exports": -0.025,
+     "la_nina_months": 47,
+     "la_nina_mean_pct": 1.3
+    },
+    "passed": false
+   },
+   "ind_from_idn": {
+    "n": 174,
+    "first": "2011-05",
+    "last": "2026-04",
+    "corr": 0.13,
+    "corr_prev_month_rain": 0.085,
+    "circular_p": 0.92,
+    "rotations": 24,
+    "loyo_max": 0.161,
+    "loyo": {
+     "2011": 0.146,
+     "2012": 0.135,
+     "2013": 0.16,
+     "2014": 0.12,
+     "2015": 0.067,
+     "2016": 0.161,
+     "2017": 0.151,
+     "2018": 0.128,
+     "2019": 0.147,
+     "2020": 0.133,
+     "2021": 0.123,
+     "2022": 0.063,
+     "2023": 0.129,
+     "2024": 0.143,
+     "2025": 0.133,
+     "2026": 0.13
+    },
+    "wet_months": 23,
+    "wet_mean_pct": 6.4,
+    "other_mean_pct": 0.8,
+    "slope_pct_per_z": 3.3,
+    "corr_wet_season": 0.05,
+    "enso": {
+     "corr_nino_rain": -0.312,
+     "corr_nino_exports": 0.066,
+     "la_nina_months": 42,
+     "la_nina_mean_pct": -1.4
+    },
+    "passed": false
+   }
+  }
+ },
+ "latest": {
+  "month": "2026-09",
+  "rain_z": -1.33,
+  "by_point": {
+   "kutai_timur": 44.3,
+   "kutai_kartanegara": 28.3,
+   "tabalong_balangan": 6.8,
+   "tanah_bumbu": 1.4,
+   "barito_lower": 1.8,
+   "muara_enim": 28.4
+  },
+  "risk": null
+ },
+ "recent": [
+  {
+   "month": "2026-04",
+   "rain_z": -1.2,
+   "by_point": {
+    "kutai_timur": 93.8,
+    "kutai_kartanegara": 90.2,
+    "tabalong_balangan": 214.4,
+    "tanah_bumbu": 281.2,
+    "barito_lower": 285.9,
+    "muara_enim": 317.6
+   }
+  },
+  {
+   "month": "2026-05",
+   "rain_z": 0.44,
+   "by_point": {
+    "kutai_timur": 254.1,
+    "kutai_kartanegara": 270.0,
+    "tabalong_balangan": 203.9,
+    "tanah_bumbu": 202.8,
+    "barito_lower": 222.3,
+    "muara_enim": 224.0
+   }
+  },
+  {
+   "month": "2026-06",
+   "rain_z": -0.41,
+   "by_point": {
+    "kutai_timur": 194.3,
+    "kutai_kartanegara": 199.1,
+    "tabalong_balangan": 151.9,
+    "tanah_bumbu": 59.9,
+    "barito_lower": 66.5,
+    "muara_enim": 95.2
+   }
+  },
+  {
+   "month": "2026-07",
+   "rain_z": -0.47,
+   "by_point": {
+    "kutai_timur": 185.4,
+    "kutai_kartanegara": 153.0,
+    "tabalong_balangan": 48.9,
+    "tanah_bumbu": 22.4,
+    "barito_lower": 23.3,
+    "muara_enim": 79.3
+   }
+  },
+  {
+   "month": "2026-08",
+   "rain_z": -1.41,
+   "by_point": {
+    "kutai_timur": 21.0,
+    "kutai_kartanegara": 11.2,
+    "tabalong_balangan": 2.8,
+    "tanah_bumbu": 0.7,
+    "barito_lower": 0.7,
+    "muara_enim": 42.4
+   }
+  },
+  {
+   "month": "2026-09",
+   "rain_z": -1.33,
+   "by_point": {
+    "kutai_timur": 44.3,
+    "kutai_kartanegara": 28.3,
+    "tabalong_balangan": 6.8,
+    "tanah_bumbu": 1.4,
+    "barito_lower": 1.8,
+    "muara_enim": 28.4
+   }
+  }
+ ],
+ "nino34_latest": {
+  "month": "2026-09",
+  "value": 2.76
+ }
+}
