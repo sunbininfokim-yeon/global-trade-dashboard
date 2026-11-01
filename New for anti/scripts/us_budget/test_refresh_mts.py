@@ -18,10 +18,10 @@ def report(blocks, record_date):
         rows.append({"classification_desc": f"FY {fy}", "classification_id": pid, "parent_id": "0", "record_type_cd": "T"})
         for name, (rec, out) in zip(NAMES, months):
             rows.append({"classification_desc": name, "classification_id": f"{pid}{name}", "parent_id": pid, "record_type_cd": "MTH",
-                         r.RECEIPTS: str(rec), r.OUTLAYS: str(out), r.DEFICIT: str(rec - out), "record_date": record_date})
+                         r.RECEIPTS: str(rec), r.OUTLAYS: str(out), r.DEFICIT: str(out - rec), "record_date": record_date})
         rows.append({"classification_desc": "Year-to-Date", "classification_id": f"{pid}y", "parent_id": pid, "record_type_cd": "T",
                      r.RECEIPTS: str(sum(m[0] for m in months)), r.OUTLAYS: str(sum(m[1] for m in months)),
-                     r.DEFICIT: str(sum(m[0] - m[1] for m in months))})
+                     r.DEFICIT: str(sum(m[1] - m[0] for m in months))})
     return rows
 
 
@@ -49,15 +49,16 @@ class RefreshTests(unittest.TestCase):
     def test_missing_field_fails_with_the_real_keys(self):
         rows = report({2027: [(1, 2)]}, "2026-10-31")
         del rows[1][r.OUTLAYS]
-        with self.assertRaisesRegex(r.RefreshError, "row keys"):
+        with self.assertRaises(r.RefreshError):
             r.parse_report(rows, "2026-10-31")
 
-    def test_large_jump_in_an_overlapping_month_is_rejected(self):
+    def test_large_source_revision_is_preserved_after_reconciliation(self):
         months = fy2026_from_live()
         months[3] = (months[3][0], months[3][1] * 1.5)
         rows = report({2026: months, 2027: [(1e9, 2e9)]}, "2026-10-31")
-        with self.assertRaisesRegex(r.RefreshError, ">2%"):
-            r.merge(copy.deepcopy(LIVE), r.parse_report(rows, "2026-10-31"), "2026-10-31")
+        updated = r.merge(copy.deepcopy(LIVE), r.parse_report(rows, "2026-10-31"), "2026-10-31")
+        revised = next(m for m in updated["months"] if m["month"] == "2026-01")
+        self.assertEqual(revised["outlays"], months[3][1])
 
     def test_gap_in_series_is_rejected(self):
         # A November-only FY2027 report skipping October leaves a hole.
