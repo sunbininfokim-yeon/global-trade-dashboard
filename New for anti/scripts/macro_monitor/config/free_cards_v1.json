@@ -1042,8 +1042,28 @@
   {
    "iso3": "BRA",
    "id": "foreign_portfolio_br",
-   "enabled": false,
-   "reason_ko": "SGS 코드를 메타데이터로 확인하지 못했습니다(후보)."
+   "label_ko": "외국인 포트폴리오 순유입",
+   "category": "equity",
+   "cadence": "monthly",
+   "unit": "bn_usd",
+   "format": "bn1s",
+   "note_ko": "국제수지 금융계정의 증권투자 부채(비거주자의 브라질 주식·채권·펀드 순투자)입니다. 브라질 중앙은행 SGS 22924, 미 달러 10억. 플러스는 해외자본 유입입니다.",
+   "source": "bcb:sgs:22924",
+   "url": "https://dadosabertos.bcb.gov.br/dataset/22924-investimentos-em-carteira---passivos---mensal---liquido",
+   "read": {
+    "reader": "bcb",
+    "params": {
+     "args": [
+      22924
+     ]
+    }
+   },
+   "ops": [
+    [
+     "scale",
+     0.001
+    ]
+   ]
   },
   {
    "iso3": "BRA",
@@ -1109,13 +1129,13 @@
    "iso3": "TWN",
    "id": "gdp_yoy",
    "enabled": false,
-   "reason_ko": "주계총처 기계판독 시계열을 아직 연결하지 않았습니다(후보)."
+   "reason_ko": "주계총처(DGBAS) 사이트와 통계 API가 자동 요청에 Cloudflare 확인 페이지를 돌려줍니다. 중앙은행 통계DB(EF07M01)에는 이 지표가 없습니다(2026-10-31 확인)."
   },
   {
    "iso3": "TWN",
    "id": "core_cpi_yoy",
    "enabled": false,
-   "reason_ko": "주계총처 기계판독 시계열을 아직 연결하지 않았습니다(후보)."
+   "reason_ko": "주계총처(DGBAS) 사이트와 통계 API가 자동 요청에 Cloudflare 확인 페이지를 돌려줍니다. 중앙은행 통계DB(EF07M01)에는 이 지표가 없습니다(2026-10-31 확인)."
   },
   {
    "iso3": "TWN",
@@ -1145,7 +1165,7 @@
    "iso3": "TWN",
    "id": "export_orders_yoy",
    "enabled": false,
-   "reason_ko": "경제부 수출주문 통계를 아직 연결하지 않았습니다(후보)."
+   "reason_ko": "경제부(MOEA) 통계 사이트가 자동 요청에 Cloudflare 확인 페이지를 돌려줍니다(2026-10-31 확인)."
   },
   {
    "iso3": "TWN",
@@ -1193,7 +1213,7 @@
    "iso3": "IND",
    "id": "wpi_yoy",
    "enabled": false,
-   "reason_ko": "상공부 경제자문실 WPI 파일을 아직 연결하지 않았습니다(후보)."
+   "reason_ko": "통계부 API(api.mospi.gov.in) WPI는 2011-12 기준 시계열이 2026년 4월에서 멈춰 있습니다(2026-10-31 확인). 새 기준 시계열이 API에 올라오면 켭니다."
   },
   {
    "iso3": "ISR",
@@ -1223,7 +1243,7 @@
    "iso3": "ISR",
    "id": "boi_total_assets",
    "enabled": false,
-   "reason_ko": "BOI SDMX 코드를 아직 확인하지 않았습니다(후보)."
+   "reason_ko": "이스라엘 중앙은행 SDMX(41개 데이터흐름)에 중앙은행 대차대조표 총계가 없습니다. 통화량(MAG)·외환보유액만 있습니다(2026-10-31 확인)."
   }
  ]
 }
