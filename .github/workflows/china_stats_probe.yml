@@ -1,0 +1,12 @@
+name: China stats probe (temporary, not for merge)
+on:
+  pull_request:
+    paths: ['tools/probe/china_stats_probe.py', '.github/workflows/china_stats_probe.yml']
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python tools/probe/china_stats_probe.py A0D0F01 A0D0G01
