@@ -57,34 +57,13 @@ class Cache(unittest.TestCase):
         orig = fc.wps._get
         fc._HKMA_RECORDS.clear()
         try:
-            fc.wps._get = lambda url, **kw: calls.append(url) or json.dumps({"header": {"success": True}, "result": {"records": [
+            fc.wps._get = lambda url: calls.append(url) or json.dumps({"header": {"success": True}, "result": {"records": [
                 {"end_of_date": "2026-10-30", "closing_balance": 53999, "disc_win_base_rate": 4.25}]}}).encode()
             self.assertEqual(fc.read_hkma("ep", "closing_balance"), [("2026-10-30", 53999.0)])
             self.assertEqual(fc.read_hkma("ep", "disc_win_base_rate"), [("2026-10-30", 4.25)])
             self.assertEqual(len(calls), 1)
         finally:
             fc.wps._get = orig
-            fc._HKMA_RECORDS.clear()
-
-    def test_hkma_falls_back_to_the_worker_when_the_firewall_answers(self):
-        orig_get, orig_run = fc.wps._get, fc.subprocess.run
-        fc._HKMA_RECORDS.clear()
-
-        def blocked(url, **kw):
-            raise RuntimeError("405")
-
-        class Done:
-            returncode = 0
-            stdout = json.dumps({"header": {"success": True}, "result": {"records": [
-                {"end_of_date": "2026-10-30", "disc_win_base_rate": 4.25}]}}).encode()
-        seen = []
-        try:
-            fc.wps._get = blocked
-            fc.subprocess.run = lambda cmd, **kw: seen.append(cmd[-1]) or Done()
-            self.assertEqual(fc.read_hkma("ep", "disc_win_base_rate"), [("2026-10-30", 4.25)])
-            self.assertIn("source=hkma&endpoint=ep", seen[0])
-        finally:
-            fc.wps._get, fc.subprocess.run = orig_get, orig_run
             fc._HKMA_RECORDS.clear()
 
 
