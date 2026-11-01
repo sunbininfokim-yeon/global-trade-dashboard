@@ -1,0 +1,58 @@
+{
+  "schema_version": "option-direction-v1",
+  "features": [
+    "call_relative_60",
+    "put_relative_60",
+    "call_mean_5",
+    "put_mean_5"
+  ],
+  "target": "next XKRX session ETF 069500 close > open; DOWN includes flat",
+  "model": {
+    "kind": "option_only",
+    "mean": [
+      -0.0009499683343888549,
+      0.008665822250369427,
+      -0.0025143493717459655,
+      -0.0003871723740162584
+    ],
+    "scale": [
+      0.2960096516050183,
+      0.29763218981328493,
+      0.011212289377653542,
+      0.010911318969223597
+    ],
+    "coef": [
+      0.08279509147122553,
+      -0.09101077854535708,
+      -0.01958199785345896,
+      -0.017803593545832178
+    ],
+    "intercept": -0.011420107017939168
+  },
+  "trained_through": "2026-10-30",
+  "last_train_target": "2026-10-30",
+  "n_train": 1579,
+  "input_hashes": {
+    "board": "e6553d27059d2f2202c3d7a09e0cb73953febfba1ce59abd5524c156852c1956",
+    "prices": "eae506025fb06245727d71b342f063f822ba4f1eb58c260b068b672a10ee5852"
+  },
+  "status": "research_only",
+  "limitations": [
+    "Historical publication times unknown",
+    "Adjusted OHLC common factor unverified",
+    "Probabilities are not calibrated",
+    "Retrospective evaluation already explored",
+    "DOWN means nonpositive next-session close/open return, including flat"
+  ],
+  "training_policy": "explicit train only; predict never retrains",
+  "training_runtime": {
+    "numpy": "2.0.2",
+    "scikit_learn": "1.6.1"
+  },
+  "model_id": "a97b7256a462f9f7967fa558f034805a1cb54bcbcb388a3c0610b6eb29f1e7d2",
+  "calendar": {
+    "name": "XKRX",
+    "version": "4.5.6",
+    "source": "exchange_calendars; not an exchange-certified calendar"
+  }
+}
