@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-11-01T05:55:35.617472+00:00",
+  "generated_at": "2026-11-01T13:14:37.800123+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -75,18 +75,19 @@
   "stats": {
     "sources_ok": 33,
     "sources_failed": 5,
-    "raw_items": 801,
-    "scored_items": 75,
+    "raw_items": 818,
+    "scored_items": 89,
     "selected_items": 24,
     "region_histogram": {
-      "russia": 8,
-      "china": 3,
       "mena": 4,
-      "commodity_specialist": 2,
       "west": 1,
+      "russia": 8,
+      "commodity_specialist": 2,
       "turkey": 2,
+      "india": 2,
       "japan": 2,
-      "india": 2
+      "china": 2,
+      "taiwan": 1
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 186,
+      "elapsed_ms": 161,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 472,
+      "elapsed_ms": 483,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 186,
+      "elapsed_ms": 151,
       "error": null,
       "mode": "live"
     },
@@ -119,76 +120,12 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1308,
+      "elapsed_ms": 1234,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
-      "ok": true,
-      "count": 0,
-      "elapsed_ms": 193,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "aa_world",
-      "ok": true,
-      "count": 30,
-      "elapsed_ms": 2995,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "daily_sabah",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 777,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "hurriyet_daily",
-      "ok": true,
-      "count": 0,
-      "elapsed_ms": 595,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "the_hindu",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 199,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "indian_express_world",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 154,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
-      "mode": "live"
-    },
-    {
-      "source_id": "et_commodities",
-      "ok": true,
-      "count": 0,
-      "elapsed_ms": 463,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "business_standard_markets",
-      "ok": true,
-      "count": 35,
-      "elapsed_ms": 249,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
       "elapsed_ms": 240,
@@ -196,10 +133,74 @@
       "mode": "live"
     },
     {
+      "source_id": "aa_world",
+      "ok": true,
+      "count": 30,
+      "elapsed_ms": 3193,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "daily_sabah",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 687,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "hurriyet_daily",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 497,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "the_hindu",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 149,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "indian_express_world",
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 143,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "mode": "live"
+    },
+    {
+      "source_id": "et_commodities",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 567,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "business_standard_markets",
+      "ok": true,
+      "count": 35,
+      "elapsed_ms": 243,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ndtv_world",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 238,
+      "error": null,
+      "mode": "live"
+    },
+    {
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1563,
+      "elapsed_ms": 1354,
       "error": null,
       "mode": "live"
     },
@@ -207,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 779,
+      "elapsed_ms": 636,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -215,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 558,
+      "elapsed_ms": 351,
       "error": null,
       "mode": "live"
     },
@@ -223,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 641,
+      "elapsed_ms": 623,
       "error": null,
       "mode": "live"
     },
@@ -231,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 702,
+      "elapsed_ms": 762,
       "error": null,
       "mode": "live"
     },
@@ -239,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 108,
+      "elapsed_ms": 70,
       "error": null,
       "mode": "live"
     },
@@ -247,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1169,
+      "elapsed_ms": 429,
       "error": null,
       "mode": "live"
     },
@@ -255,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 179,
+      "elapsed_ms": 137,
       "error": null,
       "mode": "live"
     },
@@ -263,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 298,
+      "elapsed_ms": 121,
       "error": null,
       "mode": "live"
     },
@@ -271,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 175,
+      "elapsed_ms": 156,
       "error": null,
       "mode": "live"
     },
@@ -279,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 893,
+      "elapsed_ms": 489,
       "error": null,
       "mode": "live"
     },
@@ -287,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 323,
+      "elapsed_ms": 334,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 844,
+      "elapsed_ms": 1023,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1405,
+      "elapsed_ms": 1298,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 2193,
+      "elapsed_ms": 2532,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 4243,
+      "elapsed_ms": 5700,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 476,
+      "elapsed_ms": 577,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 1187,
+      "elapsed_ms": 485,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 230,
+      "elapsed_ms": 203,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 146,
+      "elapsed_ms": 127,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 284,
+      "elapsed_ms": 290,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 549,
+      "elapsed_ms": 621,
       "error": null,
       "mode": "live"
     },
@@ -375,15 +376,15 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 316,
+      "elapsed_ms": 159,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "bloomberg_markets",
       "ok": true,
-      "count": 19,
-      "elapsed_ms": 567,
+      "count": 16,
+      "elapsed_ms": 529,
       "error": null,
       "mode": "live"
     },
@@ -391,134 +392,220 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 369,
+      "elapsed_ms": 653,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
     {
-      "id": "f9461d075bb269a3",
-      "published_at": "2026-10-31T17:53:17+00:00",
+      "id": "5eedee74a72fa890",
+      "published_at": "2026-11-01T07:53:23+00:00",
       "source": {
-        "id": "tass_en",
-        "name": "TASS",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/morning-update-657",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Morning update",
+        "original_lang": "en",
+        "ko": "오전 업데이트"
+      },
+      "summary": "Morning update Good Morning Middle East Eye readers, If you are just joining us, here are key developments from across the region and beyond: *Iranian Foreign Minister Abbas Araghchi has said Hormuz could be reopened within two days if Washington agrees to a set of conditions, in",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 3.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.862,
+        "importance": 3.319,
+        "final": 3.916
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:shipping:1",
+        "diplomacy:3"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "2f7232745d019851",
+      "published_at": "2026-11-01T09:23:14+00:00",
+      "source": {
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
+        "slant": null
+      },
+      "url": "https://www.bloomberg.com/news/articles/2026-11-01/pakistan-lng-cargo-attacked-near-hormuz-had-iranian-approval",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "gas",
+        "shipping"
+      ],
+      "title": {
+        "original": "Pakistan LNG Cargo Attacked Near Hormuz Had Iranian Approval",
+        "original_lang": "en",
+        "ko": "호르무즈 근처에서 공격받은 파키스탄 LNG 화물은 이란의 승인을 받았습니다."
+      },
+      "summary": "Pakistan negotiated with Iran to secure safe passage for liquefied natural gas carrier Al Mayeda before the ship was attacked near the Strait of Hormuz on Friday, according to people with direct knowledge of the matter.",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 0.55,
+        "freshness": 0.899,
+        "importance": 3.653,
+        "final": 2.913
+      },
+      "rank_reasons": [
+        "region:west*0.55",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:gas:2",
+        "commodity:shipping:1",
+        "diplomacy:1",
+        "bridge:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "USA"
+    },
+    {
+      "id": "9ef4f192e83c7299",
+      "published_at": "2026-11-01T07:33:35+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/araghchi-says-hormuz-could-be-reopened-two-days-if-conditions-met",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Araghchi says Hormuz could be reopened within two days if conditions met",
+        "original_lang": "en",
+        "ko": "Araghchi는 Hormuz가 조건이 충족되면 2 일 이내에 재개 될 수 있다고 말합니다."
+      },
+      "summary": "Araghchi says Hormuz could be reopened within two days if conditions met Iranian Foreign Minister Abbas Araghchi has said Hormuz could be reopened within two days if Washington agrees to a set of conditions, including the formal recognition of the new shipping route designated by",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 3.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.854,
+        "importance": 2.05,
+        "final": 2.419
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:3"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "USA"
+    },
+    {
+      "id": "0854a432e9146152",
+      "published_at": "2026-11-01T12:06:00+00:00",
+      "source": {
+        "id": "interfax_ru",
+        "name": "Interfax",
         "region": "russia",
         "slant": null
       },
-      "url": "https://tass.com/world/2211397",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
+      "url": "https://www.interfax.ru/business/1126397",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil"
+      ],
       "title": {
-        "original": "Trump to decide later on whether to invite Zelensky to G20 summit — Rubio",
-        "original_lang": "en",
-        "ko": "트럼프, G20 정상회의에 젤렌스키 초청 여부 추후 결정 — 루비오"
+        "original": "\"Семерка\" ОПЕК+ начинает ежемесячное заседание",
+        "original_lang": "ru",
+        "ko": "OPEC + G7, 매월 회의 시작"
       },
-      "summary": "US Secretary of State was speaking at a press conference following the G20 foreign ministers’ meeting in Atlanta, Georgia",
+      "summary": "Министры семи стран ОПЕК+, ранее дополнительно к квотам всех участников ограничивавшие добычу нефти, начинают ежемесячную онлайн-встречу, на которой обсудят ситуацию на рынке и исполнение соглашения и примут решение об объемах нефтедобычи в декабре.",
       "scores": {
-        "commodity": 0,
+        "commodity": 1.0,
         "diplomacy": 1.0,
-        "election": 1.2,
+        "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.716,
-        "importance": 2.676,
-        "final": 2.977
+        "freshness": 0.969,
+        "importance": 2.145,
+        "final": 2.386
       },
       "rank_reasons": [
         "region:russia*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:oil:1",
         "diplomacy:1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS",
-      "election_type": "cabinet_reshuffle"
+      "info_grade": "2",
+      "country_hint": "RUS"
     },
     {
-      "id": "2d0cb1cdf74211e5",
-      "published_at": "2026-10-31T16:17:17+00:00",
+      "id": "19473cd5b20df54a",
+      "published_at": "2026-11-01T04:08:39+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.scmp.com/news/china/diplomacy/article/3372852/quad-diplomats-finalise-first-leaders-summit-two-years-trump-xi-meeting",
-      "category": "cabinet_reshuffle",
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/former-mossad-agent-facilitated-flavio-bolsonaros-escape-brazil-report",
+      "category": "election",
       "commodities": [],
       "title": {
-        "original": "Quad not ‘anti-China’, says Rubio as first summit in two years set before Trump-Xi talks",
+        "original": "Former Mossad agent facilitated Flavio Bolsonaro's escape from Brazil, report says",
         "original_lang": "en",
-        "ko": "트럼프-시진핑 회담 2년 만에 첫 정상회담으로 루비오, ‘반중’ 아냐"
+        "ko": "보고서는 전 모사드 요원이 플라비오 볼소나로의 브라질 탈출을 촉진했다고 전한다."
       },
-      "summary": "US Secretary of State Marco Rubio said on Saturday that the Quadrilateral Security Dialogue, or the Quad, was not an “anti-China” coalition, as the grouping’s top diplomats finalised preparations for the leaders’ summit in the Philippines next month. Rubio’s statement comes just ",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.685,
-        "importance": 2.56,
-        "final": 2.848
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "diplomacy:1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "CHN",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "ddf572bf4f5523df",
-      "published_at": "2026-10-31T19:32:58+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/china/diplomacy/article/3372855/g20-foreign-ministers-end-atlanta-meeting-without-consensus-key-issues",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "G20 foreign ministers end Atlanta meeting without consensus on key issues",
-        "original_lang": "en",
-        "ko": "G20 외무장관, 주요 현안에 대한 합의 없이 애틀랜타 회의 종료"
-      },
-      "summary": "As Washington seeks to loosen China’s dominance over critical minerals, US Secretary of State Marco Rubio urged other members of the Group of 20 (G20) to strengthen supply chains and secure strategic trade routes as the group’s foreign ministers’ meeting drew to a close in Atlant",
+      "summary": "Former Mossad agent facilitated Flavio Bolsonaro's escape from Brazil, report says A former Mossad agent who became a naturalised US citizen helped Brazilian Senator Flavio Bolsonaro leave the country in defiance of a judicial order barring him from travelling abroad, CNN Brasil ",
       "scores": {
         "commodity": 0,
         "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.75,
-        "importance": 2.37,
-        "final": 2.636
+        "election": 2.0,
+        "region_weight": 1.4,
+        "freshness": 0.777,
+        "importance": 1.713,
+        "final": 2.021
       },
       "rank_reasons": [
-        "region:china*1.25",
-        "category:cabinet_reshuffle",
+        "region:mena*1.40",
+        "category:election",
         "tier:A*1.00/g1",
-        "bridge:1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
+        "election:presidential:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA",
-      "election_type": "cabinet_reshuffle"
+      "election_type": "presidential"
     },
     {
       "id": "5aea452612a332e6",
@@ -543,9 +630,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.758,
-        "importance": 2.118,
-        "final": 2.357
+        "freshness": 0.619,
+        "importance": 1.729,
+        "final": 1.923
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -558,47 +645,6 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "RUS",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "c7ece6f5aca12395",
-      "published_at": "2026-10-31T18:55:52+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/middle-east/rubio-says-us-yet-to-decide-on-new-iran-strikes-3009159",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Rubio says US yet to decide on new Iran strikes",
-        "original_lang": "en",
-        "ko": "루비오 대변인은 미국이 아직 이란의 새로운 공격을 결정하지 않았다고 말했습니다."
-      },
-      "summary": "ATLANTA: US President Donald Trump has not made a decision about fresh strikes on Iran amid stalled peace talks, US Secretary of State Marco Rubio said Saturday. “We can achieve military objectives if we seek to,” Rubio told a press conference in Atlanta, Georgia, where he was ho",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 1.2,
-        "region_weight": 1.4,
-        "freshness": 0.737,
-        "importance": 1.983,
-        "final": 2.34
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:cabinet_reshuffle",
-        "tier:B*0.72/g1",
-        "diplomacy:1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU",
       "election_type": "cabinet_reshuffle"
     },
     {
@@ -624,9 +670,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.733,
-        "importance": 2.048,
-        "final": 2.278
+        "freshness": 0.598,
+        "importance": 1.671,
+        "final": 1.859
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -664,9 +710,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.724,
-        "importance": 2.023,
-        "final": 2.25
+        "freshness": 0.591,
+        "importance": 1.651,
+        "final": 1.837
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -704,9 +750,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.724,
-        "importance": 2.022,
-        "final": 2.249
+        "freshness": 0.591,
+        "importance": 1.65,
+        "final": 1.836
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -744,9 +790,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.25,
-        "freshness": 0.718,
-        "importance": 2.005,
-        "final": 2.23
+        "freshness": 0.586,
+        "importance": 1.636,
+        "final": 1.82
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -760,48 +806,6 @@
       "info_grade": "1",
       "country_hint": "RUS",
       "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "3a75ee2a357818c5",
-      "published_at": "2026-11-01T00:47:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1126348",
-      "category": "commodity_diplomacy",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "\"Семерка\" ОПЕК+ рассмотрит ситуацию на рынке",
-        "original_lang": "ru",
-        "ko": "\"7\" OPEC + 는 시장 상황을 고려할 것입니다"
-      },
-      "summary": "Министры семи стран ОПЕК+, ранее дополнительно к квотам всех участников ограничивавшие добычу нефти, на встрече 1 ноября обсудят ситуацию на рынке и исполнение соглашения и примут решение об объемах нефтедобычи в декабре.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.867,
-        "importance": 1.919,
-        "final": 2.135
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity_diplomacy",
-        "tier:A*1.00/g2",
-        "commodity:oil:1",
-        "diplomacy:1",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS"
     },
     {
       "id": "019a6bc28d2434ce",
@@ -829,9 +833,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.412,
-        "importance": 1.676,
-        "final": 1.94
+        "freshness": 0.35,
+        "importance": 1.423,
+        "final": 1.647
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -848,124 +852,47 @@
       "country_hint": "CHN"
     },
     {
-      "id": "d97f871bb6f8f93a",
-      "published_at": "2026-10-31T21:14:51+00:00",
+      "id": "644e4f5f0e229b89",
+      "published_at": "2026-11-01T12:09:10+00:00",
       "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
+        "id": "tass_ru",
+        "name": "ТАСС",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.arabnews.com/middle-east/iranian-envoys-meet-qatari-mediators-as-threat-looms-of-us-strikes-after-midterms-3009168",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Iranian envoys meet Qatari mediators as threat looms of US strikes after midterms",
-        "original_lang": "en",
-        "ko": "이란 사절단은 중간고사 이후 미국 공격의 위협 직기로 카타르 중재자를 만난다."
-      },
-      "summary": "DUBAI/ATLANTA: Iranian negotiators held talks in Doha with Qatari mediators on Saturday to discuss paths out of war in the Gulf, a source who was briefed on the negotiations told Reuters, as diplomats try to avert new fighting after the US midterm elections this week. US Secretar",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.4,
-        "freshness": 0.786,
-        "importance": 1.581,
-        "final": 1.865
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:cabinet_reshuffle",
-        "tier:B*0.72/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
+      "url": "https://tass.ru/politika/28276183",
+      "category": "commodity",
+      "commodities": [
+        "rice"
       ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "5d17e812b2ade505",
-      "published_at": "2026-10-31T11:00:12+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/china/diplomacy/article/3372823/kissinger-moment-over-us-and-china-urged-foster-new-bridge-builders",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
       "title": {
-        "original": "With ‘Kissinger moment’ over, US and China urged to foster new ‘bridge builders’",
-        "original_lang": "en",
-        "ko": "‘키신저의 순간’ 이 끝나자 미국과 중국은 새로운 '교량 건설업자‘ 를 육성할 것을 촉구했다."
+        "original": "РФ сожалеет об упразднении основы присутствия ООН в Западной Сахаре",
+        "original_lang": "ru",
+        "ko": "러시아 연방은 서사하라에서 유엔 주재의 기초가 폐지된 것을 유감스럽게 생각한다."
       },
-      "summary": "Beijing and Washington have been urged to foster a new generation of talent to bridge gaps between the countries and strengthen people-to-people exchanges amid growing frictions and concerns about a lack of China expertise in the US. Academics and experts from the two countries g",
+      "summary": "Москва рассчитывает на продолжение политического урегулирования в регионе и остается в контакте с местными партнерами, заявила официальный представитель МИД России Мария Захарова",
       "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.591,
-        "importance": 1.651,
-        "final": 1.837
+        "freshness": 0.97,
+        "importance": 1.444,
+        "final": 1.606
       },
       "rank_reasons": [
-        "region:china*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:rice:1",
+        "diplomacy:1",
+        "election:local:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "9c77d225bc5a8e7e",
-      "published_at": "2026-10-31T20:41:04+00:00",
-      "source": {
-        "id": "bloomberg_markets",
-        "name": "Bloomberg Markets",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.bloomberg.com/news/articles/2026-10-31/rubio-defends-russian-g20-presence-despite-criticism-from-allies",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "Rubio Defends Russian G20 Presence Despite Criticism From Allies",
-        "original_lang": "en",
-        "ko": "루비오는 동맹국들의 비판에도 불구하고 러시아의 G20 존재를 방어한다."
-      },
-      "summary": "Secretary of State Marco Rubio defended the US decision to include Russia in this year’s Group of 20 meetings after criticism from the European Union and other allies, calling dialogue the only way to end the war in Ukraine.",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 0.55,
-        "freshness": 0.774,
-        "importance": 2.161,
-        "final": 1.723
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
+      "info_grade": "3",
       "country_hint": "RUS",
-      "election_type": "cabinet_reshuffle"
+      "election_type": "local"
     },
     {
       "id": "4e11c9ea81f522ef",
@@ -990,9 +917,9 @@
         "diplomacy": 3.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.716,
-        "importance": 1.529,
-        "final": 1.701
+        "freshness": 0.585,
+        "importance": 1.248,
+        "final": 1.389
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -1029,9 +956,9 @@
         "diplomacy": 0.0,
         "election": 1.2,
         "region_weight": 1.3,
-        "freshness": 0.648,
-        "importance": 1.303,
-        "final": 1.479
+        "freshness": 0.529,
+        "importance": 1.063,
+        "final": 1.207
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1047,84 +974,84 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "fc968ea356eb1f25",
-      "published_at": "2026-10-31T21:40:26+00:00",
+      "id": "38a5703c4b281c51",
+      "published_at": "2026-11-01T11:26:15+00:00",
       "source": {
-        "id": "aa_world",
-        "name": "Anadolu Agency",
-        "region": "turkey",
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
         "slant": null
       },
-      "url": "https://www.aa.com.tr/en/world/rubio-says-g20-focused-on-energy-security-critical-minerals-and-supply-chains/4107682",
-      "category": "diplomacy",
-      "commodities": [],
-      "title": {
-        "original": "Rubio says G20 focused on energy security, critical minerals, and supply chains",
-        "original_lang": "en",
-        "ko": "Rubio는 G20이 에너지 안보, 주요 광물 및 공급망에 중점을 두었다고 말합니다."
-      },
-      "summary": "‘We focused on core economic, energy, technology, and supply chain challenges, and we addressed practical solutions and real outcomes,’ says US secretary of state",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.795,
-        "importance": 1.062,
-        "final": 1.206
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:diplomacy",
-        "tier:B*0.72/g2",
-        "diplomacy:1",
-        "bridge:1",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "2",
-      "country_hint": "TUR"
-    },
-    {
-      "id": "a414a7aef3a593af",
-      "published_at": "2026-10-30T22:00:46+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/gibson-tanker-report-freight-squeezes-naphtha-arb/",
+      "url": "https://www.business-standard.com/markets/news/geopolitical-risks-crude-oil-and-earnings-to-steer-markets-this-week-126110100474_1.html",
       "category": "commodity",
       "commodities": [
-        "shipping"
+        "oil"
       ],
       "title": {
-        "original": "Gibson tanker report – Freight Squeezes Naphtha Arb",
+        "original": "Geopolitical risks, crude oil and earnings to steer markets this week",
         "original_lang": "en",
-        "ko": "깁슨 유조선 보고서 – 화물 압착기 Naphtha Arb"
+        "ko": "이번 주 시장 조종을 위한 지정학적 위험, 원유 및 수익"
       },
-      "summary": "The war in the Middle East has upended Asia’s naphtha market. With the Gulf normally supplying over half of Asia’s imports, the March Source: GIBSON SHIPBROKERS LTD",
+      "summary": "Geopolitical tensions, crude oil prices and September-quarter earnings are set to drive market sentiment, with US midterm elections and foreign investor flows also in focus.",
       "scores": {
         "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.412,
-        "importance": 0.948,
-        "final": 1.097
+        "region_weight": 1.3,
+        "freshness": 0.951,
+        "importance": 1.05,
+        "final": 1.192
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
+        "region:india*1.30",
         "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:2"
+        "tier:A*1.00/g3",
+        "commodity:oil:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "739b63a0bfed805d",
+      "published_at": "2026-11-01T10:19:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/politics/diplomacy/turkiye-pushes-for-russia-ukraine-peace-amid-warning-of-expansion",
+      "category": "commodity",
+      "commodities": [
+        "wheat"
+      ],
+      "title": {
+        "original": "Türkiye pushes for Russia-Ukraine peace amid warning of expansion",
+        "original_lang": "en",
+        "ko": "튀르키예, 확장의 경고 속에서 러시아-우크라이나 평화 추진"
+      },
+      "summary": "Ukrainian President Volodymyr Zelenskyy was in Istanbul on Saturday, where he met President Recep Tayyip Erdoğan for talks focusing on Black Sea grain corridor and maritime safety....",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.922,
+        "importance": 1.018,
+        "final": 1.156
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:wheat:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1167,44 +1094,44 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "e1c47d8ebfa6a209",
-      "published_at": "2026-10-31T20:09:18+00:00",
+      "id": "a414a7aef3a593af",
+      "published_at": "2026-10-30T22:00:46+00:00",
       "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://www.aljazeera.com/news/2026/10/31/turkiyes-erdogan-urges-russia-and-ukraine-to-stop-black-sea-attacks?traffic_source=rss",
+      "url": "https://www.hellenicshippingnews.com/gibson-tanker-report-freight-squeezes-naphtha-arb/",
       "category": "commodity",
       "commodities": [
-        "wheat"
+        "shipping"
       ],
       "title": {
-        "original": "Turkiye’s Erdogan urges Russia and Ukraine to stop Black Sea attacks",
+        "original": "Gibson tanker report – Freight Squeezes Naphtha Arb",
         "original_lang": "en",
-        "ko": "Turkiye의 Erdogan은 러시아와 우크라이나가 흑해 공격을 막을 것을 촉구합니다"
+        "ko": "깁슨 유조선 보고서 – 화물 압착기 Naphtha Arb"
       },
-      "summary": "Turkish president hosts Zelenskyy in Istanbul as the two leaders agree to work on a new Black Sea grain corridor.",
+      "summary": "The war in the Middle East has upended Asia’s naphtha market. With the Gulf normally supplying over half of Asia’s imports, the March Source: GIBSON SHIPBROKERS LTD",
       "scores": {
         "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.762,
-        "importance": 0.842,
-        "final": 0.993
+        "region_weight": 1.35,
+        "freshness": 0.35,
+        "importance": 0.805,
+        "final": 0.932
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:commodity_specialist*1.35",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:wheat:2"
+        "tier:A*1.00/g1",
+        "commodity:shipping:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
+      "info_grade": "1",
+      "country_hint": "USA"
     },
     {
       "id": "62fae3b884429cf7",
@@ -1247,34 +1174,76 @@
       "country_hint": "IND"
     },
     {
-      "id": "d5ecb6d89a2c1182",
-      "published_at": "2026-11-01T05:08:58+00:00",
+      "id": "63c6aa46f093c405",
+      "published_at": "2026-11-01T07:59:21+00:00",
       "source": {
-        "id": "the_hindu",
-        "name": "The Hindu",
-        "region": "india",
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.thehindu.com/news/national/tamil-nadu/1172-candidates-receive-offer-letters-at-job-fair-held-in-villupuram/article71652132.ece",
+      "url": "https://www.arabnews.com/middle-east/qatari-gas-tanker-struck-in-gulf-state-media-3009222",
+      "category": "commodity",
+      "commodities": [
+        "gas",
+        "shipping"
+      ],
+      "title": {
+        "original": "Qatari gas tanker struck in Gulf: state media",
+        "original_lang": "en",
+        "ko": "카타르 가스 유조선이 걸프만에서 충돌: 주 언론"
+      },
+      "summary": "A Qatari liquefied natural gas tanker, Al Mayeda, was attacked in Gulf waters with unidentified objects. The incident is part of ongoing tensions involving Iran in the region.",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.864,
+        "importance": 0.687,
+        "final": 0.811
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:gas:1",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "2c34be29592988d0",
+      "published_at": "2026-11-01T07:11:23+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/world/united-states-canada/article/3372874/us-midterms-near-trump-administration-ramps-rhetoric-bigoted-racist-memes",
       "category": "election",
       "commodities": [],
       "title": {
-        "original": "1,172 candidates receive offer letters at job fair held in Villupuram",
+        "original": "As US midterms near, Trump administration ramps up rhetoric with bigoted, racist memes",
         "original_lang": "en",
-        "ko": "1,172명의 지원자가 Villupuram에서 열린 취업 박람회에서 제안서를 받습니다."
+        "ko": "미국 중간고사가 가까워지자 트럼프 행정부는 편협하고 인종차별적인 밈으로 수사를 강화합니다."
       },
-      "summary": "More than 167 companies interviewed 4,214 candidates at the fair. Besides those selected for employment, as many as 163 candidates qualified for the second round of selection",
+      "summary": "The Trump administration’s online accounts are circulating images of a pumpkin carved with a sombrero design and a fake Halloween-themed background around a black man apparently accused of food assistance fraud, in social media posts slammed by critics as inflammatory rhetoric. O",
       "scores": {
         "commodity": 0,
         "diplomacy": 0.0,
         "election": 1.0,
-        "region_weight": 1.3,
-        "freshness": 0.979,
-        "importance": 0.755,
-        "final": 0.857
+        "region_weight": 1.25,
+        "freshness": 0.845,
+        "importance": 0.652,
+        "final": 0.726
       },
       "rank_reasons": [
-        "region:india*1.30",
+        "region:china*1.25",
         "category:election",
         "tier:A*1.00/g2",
         "election:general:1"
@@ -1282,48 +1251,48 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "2",
-      "country_hint": "IND",
+      "country_hint": "CHN",
       "election_type": "general"
     },
     {
-      "id": "8e931ae99482a712",
-      "published_at": "2026-11-01T00:00:51+00:00",
+      "id": "1bca64e7eb27f8f3",
+      "published_at": "2026-11-01T10:00:17+00:00",
       "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
         "slant": null
       },
-      "url": "https://www.aljazeera.com/news/liveblog/2026/11/1/iran-war-live-araghchi-says-talks-under-way-on-2-day-plan-to-reopen-hormuz?traffic_source=rss",
+      "url": "https://www.scmp.com/news/people-culture/china-personalities/article/3372882/97-chinas-first-female-conductor-still-performs-public-wowing-audiences",
       "category": "commodity",
       "commodities": [
-        "shipping"
+        "gold"
       ],
       "title": {
-        "original": "Iran war live: Tehran eyes 2-day Hormuz plan; Trump says talks ‘going fine’",
+        "original": "At 97, China’s first female conductor still performs in public, wowing audiences",
         "original_lang": "en",
-        "ko": "이란 전쟁 생중계: 테헤란의 눈 2일간의 호르무즈 계획; 트럼프는 회담이 ‘잘 진행되고 있다‘ 고 말한다"
+        "ko": "97세인 중국 최초의 여성 지휘자는 여전히 대중 앞에서 공연하며 청중을 놀라게 합니다."
       },
-      "summary": "Top diplomat says Iran and Qatar have reached a plan to reopen Hormuz in two days if the US meets Tehran's conditions.",
+      "summary": "China’s first female conductor, Zheng Xiaoying, is 97 years old, but she continues to give outstanding performances to audiences. In August, the nonagenarian conducted the Chinese-language version of the opera Carmen in Xiamen, in southeastern China’s Fujian province, where she l",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.849,
-        "importance": 0.703,
-        "final": 0.829
+        "region_weight": 1.25,
+        "freshness": 0.914,
+        "importance": 0.505,
+        "final": 0.561
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:china*1.25",
         "category:commodity",
-        "tier:B*0.72/g1",
-        "commodity:shipping:1"
+        "tier:A*1.00/g3",
+        "commodity:gold:1"
       ],
       "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU"
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
     },
     {
       "id": "c401d70d0db5c42a",
@@ -1350,9 +1319,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.867,
-        "importance": 0.479,
-        "final": 0.533
+        "freshness": 0.708,
+        "importance": 0.391,
+        "final": 0.435
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -1364,6 +1333,46 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "JPN"
+    },
+    {
+      "id": "a9938e76d9f09474",
+      "published_at": "2026-11-01T11:56:54+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://ec.ltn.com.tw/article/breakingnews/5626010",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "中油11月桶裝瓦斯不調價 今年已吸收137億元成本",
+        "original_lang": "zh-TW",
+        "ko": "CNPC의 11월 규제 없는 배럴 가스 가격은 올해 137억 위안의 비용을 흡수했습니다."
+      },
+      "summary": "台灣中油公司今（1）日宣布，自明（2）日凌晨零時起，11月份家庭用液化石油氣（桶裝瓦斯）、工業用丙烷、丁烷、混合丙丁烷及車用液化石油氣價格皆不調整。今年以來，中油液化石油...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.965,
+        "importance": 0.383,
+        "final": 0.427
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     }
   ]
 }
