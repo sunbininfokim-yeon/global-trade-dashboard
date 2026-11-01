@@ -164,3 +164,26 @@ the preserved Gemini cache still covers only the earlier pre-election material.
 Run `python3 -m unittest discover -s tests -p 'test_israel_*.py'` and Israel JS
 contracts explicitly. The 2026-10-31 reported-count regression fixture is frozen;
 current publication replay is tested separately.
+
+## Cooperation review (2026-10-31)
+
+Optional `cooperation_review.json` adds a separate evidence clock, qualitative
+party families, religious/secular descriptions, policy subjects and dated scoped
+relationships. It does not change the numerical input or old Gemini cache.
+IDI party profiles and opened reporting are recorded with access receipts. The
+failed AP body is held and is never used to support a relationship.
+
+Ra'am and the Joint List remain different election actors. Hadash/Ta'al/Balad
+are nested components; their seats stay null and are never added to the list total.
+Left/right families are editorial categories without numeric coordinates. Haredi
+community identity, Arab nationalism and social conservatism are not automatically
+translated to a single left/right score. Religious identity never implies a pact.
+
+The partner selector orders post-election evidence, pre-election statements,
+previously reviewed positions and unknown pairs. This is evidence priority, not
+compatibility ranking. A statement about one counterpart never propagates to a
+similar party: in particular Liberman's Joint List refusal is not a Ra'am refusal.
+Meetings remain meetings, and a joint principles document is not a formed cabinet.
+Older external-support proposals remain explicitly dated and distinguish the
+speaker's offer from the recipient's acceptance. Component seats and final
+participation agreements cannot be inferred from a political family.

@@ -9,6 +9,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 import re
 from .israel_results import validate_results
+from .israel_cooperation import validate_cooperation
 from .israel_translation import collect_input_texts, validate_translations
 
 CORE_FILES = ('sources.json', 'election_calendar.json', 'lists.json',
@@ -29,9 +30,10 @@ def read_inputs(root):
         text = (root / name).read_text(encoding='utf-8')
         result[name] = ([json.loads(line) for line in text.splitlines() if line.strip()]
                         if name.endswith('.jsonl') else json.loads(text))
-    post = root / 'post_election.json'
-    if post.exists():
-        result[post.name] = json.loads(post.read_text(encoding='utf-8'))
+    for name in ('post_election.json', 'cooperation_review.json'):
+        optional = root / name
+        if optional.exists():
+            result[name] = json.loads(optional.read_text(encoding='utf-8'))
     recorded = result['review_receipts.json']['input_sha256']
     for name in CORE_FILES[:-1]:
         if recorded.get(name) != hashlib.sha256((root / name).read_bytes()).hexdigest():
@@ -202,7 +204,12 @@ def build(inputs, as_of, built_at):
     post = inputs.get('post_election.json')
     if post is not None:
         validate_results(post, set(ids))
+    cooperation = inputs.get('cooperation_review.json')
+    if cooperation is not None:
+        validate_cooperation(cooperation, set(ids))
+    optional_files = tuple(name for name in ('post_election.json', 'cooperation_review.json') if name in inputs)
     return {
+        **({'cooperation_review': cooperation} if cooperation is not None else {}),
         **({'post_election': post} if post is not None else {}),
         'schema': 'israel_election_analysis_v1', 'iso3': 'ISR', 'cycle': 'knesset-26',
         'evidence_as_of': as_of, 'built_at': built_at, 'draft': True,
@@ -224,7 +231,7 @@ def build(inputs, as_of, built_at):
         'coalition_context': context, 'localization': translations,
         'coverage': {'accepted_seat_polls': counts['accepted'], 'partial_seat_polls': counts['partial'],
                      'held_seat_polls': counts['held'], 'reported_lists': len(ids), 'sources': len(sources)},
-        'input_digests': {name: digest(inputs[name]) for name in (*FILES, *(('post_election.json',) if post is not None else ()))},
+        'input_digests': {name: digest(inputs[name]) for name in (*FILES, *optional_files)},
         'limitations_ko': ['검토 입력 재생성 · 자동 수집 미설치', '최근 30일 전수 조사 미완료',
                            '현직 의석·후보 순위·공식 명부 원문 보류', '평균·총리 승률·연정 성립 확률 없음'],
     }

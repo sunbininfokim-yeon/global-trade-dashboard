@@ -1,9 +1,10 @@
+import { israelCooperationHtml } from './israel-analysis.cooperation.js';
 import { escapeHtml as e } from '../../ui.js';
 import { partyProfile } from '../../data/israel-context.js?v=2';
 import { sourceHref } from '../../data/israel-analysis.js';
 
 const link = (url, label) => sourceHref(url) ? `<a href="${e(sourceHref(url))}" target="_blank" rel="noopener noreferrer">${e(label)} ↗</a>` : '출처 미확인';
-export const israelResultsHtml = (board) => {
+export const israelResultsHtml = (board, cooperationAnchor = 'k26:עם') => {
     const data = board.post_election;
     if (!data) return '';
     const row = data.result_record;
@@ -17,7 +18,7 @@ export const israelResultsHtml = (board) => {
     ];
     const number = (n) => Number.isFinite(n) ? new Intl.NumberFormat('ko-KR').format(n) : '미확인';
     return `<header class="israel-heading israel-results-heading"><p class="israel-eyebrow">이스라엘 · 26대 크네세트</p><h4>선거 결과와 다음 단계</h4><p>120석의 분포를 확인하고, 새 정부가 출범하기까지의 절차를 살펴보세요.</p><div class="israel-status-line"><span>개표 보도 ${e(data.result_as_of)}</span><span>자료 검토 ${e(data.evidence_as_of)}</span><span>자동 갱신 미설치</span></div></header>
-    <nav class="israel-section-nav" aria-label="선거 결과 바로가기"><a href="#israel-results">개표 결과</a><a href="#israel-next-steps">앞으로의 절차</a><a href="#israel-history" data-israel-history-link>선거 전 자료</a></nav>
+    <nav class="israel-section-nav" aria-label="선거 결과 바로가기"><a href="#israel-results">개표 결과</a>${board.cooperation_review ? '<a href="#israel-cooperation">정당·협력 지도</a>' : ''}<a href="#israel-next-steps">앞으로의 절차</a><a href="#israel-history" data-israel-history-link>선거 전 자료</a></nav>
     <section id="israel-results" class="israel-results" aria-labelledby="israel-results-title">
         <div class="israel-result-topline"><h5 id="israel-results-title">보도로 확인한 개표 결과</h5><span class="israel-result-badge">공식 표 확인 보류</span></div>
         <p class="israel-data-note">${e(data.status_note_ko)}</p>
@@ -27,6 +28,7 @@ export const israelResultsHtml = (board) => {
         <p class="israel-data-note">인물 소개는 기존 검토 자료 기준입니다. 득표율·미확인 명부의 0석을 생성하지 않습니다.</p><p class="israel-source-line">${refs(['i24-count'])} · ${link(sources.get('inn-flash').url,'교차 확인 보도')}</p>
         <details class="israel-details" data-israel-details="result-evidence"><summary>투표 집계·검토 출처와 확인 공백</summary><p>집계 ${number(row.votes.counted)}표 · 유효 ${number(row.votes.valid)}표 · 무효 ${number(row.votes.invalid)}표</p><p>봉쇄선 보도값 ${e(row.votes.threshold_pct_as_published)}% · ${number(row.votes.threshold_votes_as_published)}표. 공식 법문 확인과 별개입니다.</p>${data.sources.map((s)=>`<p>${link(s.url,s.id)} · ${s.body_opened?'본문 확인':'접근·확인 보류'} · ${e(s.note_ko)}</p>`).join('')}</details>
     </section>
+    ${israelCooperationHtml(board,cooperationAnchor)}
     <section id="israel-next-steps" class="israel-section" aria-labelledby="israel-next-title"><div class="israel-section-heading"><span>다음으로 볼 것</span><h5 id="israel-next-title">대통령 지명에서 의회 신임까지</h5><p>총리 지명자·지명일·새 정부 출범은 이번 검토에서 확인하지 못했습니다.</p></div>
         <ol class="israel-next-steps">${data.steps.map((step,index)=>`<li><span class="israel-step-number" aria-hidden="true">${index+1}</span><div><span class="israel-step-when">${e(step.when_ko)}</span><h6>${e(step.title_ko)}</h6><p>${e(step.description_ko)}</p><footer>${refs(step.source_ids)}</footer></div></li>`).join('')}</ol>
         <details class="israel-details" data-israel-details="formation-fallback"><summary>정부 구성에 실패하면 어떻게 되나요?</summary>${data.fallback.map((step)=>`<p><b>${e(step.title_ko)}</b> · ${e(step.description_ko)}</p>`).join('')}<p>${refs(['wipo-law'])}</p></details><p class="israel-data-note">${e(data.procedure_note_ko)}</p>
