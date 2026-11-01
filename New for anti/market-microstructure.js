@@ -252,6 +252,31 @@ const msHistChart = (spec) => {
 
 // One window control per modal: the charts under it all read the same global,
 // so repeating the buttons per chart would imply they can be set separately.
+// The concentration history is appended once per scheduled run, so it carries
+// rows for days the exchange was closed and, when the listing came back empty,
+// rows of zeros still marked "observed" (2026-10-27..29: n_names 0, 0.0%).
+// Drawn as-is, a Saturday is a point and an empty listing is a 0% crash. This
+// keeps only rows that could be a trading day's real reading: not a weekend,
+// not an empty universe, and not a copy of the row before it (a holiday run
+// re-reads the previous close, so every field matches to the won). No calendar
+// is needed, so a stale calendar file cannot hide a real day. The rows are
+// left in the file; the count dropped is shown beside the chart.
+const MS_CONC_FIELDS = ['conc_top2_samsung_hynix_pct', 'conc_top5_pct', 'conc_top10_pct', 'universe_mcap_krw'];
+const msConcPoints = (pts) => {
+    const kept = [];
+    let prev = null;
+    (pts || []).forEach((p) => {
+        if (!p || !p.date) return;
+        const dow = new Date(`${String(p.date).slice(0, 10)}T00:00:00Z`).getUTCDay();
+        if (dow === 0 || dow === 6) return;
+        if (!(Number(p.n_names) > 0) || !(Number(p.conc_top5_pct) > 0)) return;
+        if (prev && MS_CONC_FIELDS.every((f) => p[f] === prev[f])) return;
+        kept.push(p);
+        prev = p;
+    });
+    return kept;
+};
+
 const msHistBlock = (specs) => {
     const list = specs.filter(Boolean);
     const drawable = list.some((s) => {
@@ -1921,7 +1946,8 @@ const msModalFor = (key, D) => {
                 + '<p class="fin-note">당일 거래 흐름의 추이입니다. 미결제약정(OI)이나 보유 포지션이 아닙니다.</p>', key };
     }
     if (key === 'conc' || key.startsWith('conc:')) {
-        const pts = (D.conc || {}).points || [];
+        const rawPts = (D.conc || {}).points || [];
+        const pts = msConcPoints(rawPts);
         const which = key.split(':')[1] || 'top2';
         const spec = {
             top2: { f: 'conc_top2_samsung_hynix_pct', ko: '상위 2 (삼성·하닉)' },
@@ -1953,8 +1979,10 @@ const msModalFor = (key, D) => {
                 + `<p class="fin-note">${pts.length}거래일 (${finEsc(dates[0] || '')} ~ ${finEsc(dates[dates.length - 1] || '')})`
                 + (which === 'top2' && Number.isFinite(st.conc_top2_chg_60d)
                     ? ` · 60일 변화 ${st.conc_top2_chg_60d > 0 ? '+' : ''}${st.conc_top2_chg_60d.toFixed(2)}%p` : '')
+                + (rawPts.length > pts.length
+                    ? ` · 휴장일·빈 목록 행 ${rawPts.length - pts.length}개 제외` : '')
                 + ` · quality ${finEsc(latest.quality || '—')} · 출처 ${finEsc(latest.source || '—')}`
-                + `. 유니버스 시가총액 대비 비중이며 지수 산출 가중치가 아닙니다. 구성 종목은 최신일(${finEsc(latest.date || '—')}) 기준입니다.</p>` };
+                + `. 유니버스 시가총액 대비 비중이며 지수 산출 가중치가 아닙니다. 구성 종목은 최신일(${finEsc(dates[dates.length - 1] || latest.date || '—')}) 기준입니다.</p>` };
     }
     if (key.startsWith('dir:')) {
         const which = key.slice(4);
