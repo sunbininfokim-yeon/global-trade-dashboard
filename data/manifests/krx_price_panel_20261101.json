@@ -1,0 +1,836 @@
+{
+  "schema_version": "krx-price-panel-manifest-v1",
+  "assembled_at": "2026-11-01T07:44:24.358333+00:00",
+  "strategy_target": null,
+  "scope_ko": "데이터 보강과 정합성 확인만 했다. 신호 임계값이나 실거래 연결은 하지 않았다.",
+  "inputs": {
+    "kospi200_index": {
+      "period_requested": [
+        "2019-01-02",
+        "2026-10-30"
+      ],
+      "period_observed": [
+        "2019-01-02",
+        "2026-10-28"
+      ],
+      "n_valid": 1868,
+      "n_duplicate_dates_identical_values": 7,
+      "duplicate_dates": [
+        {
+          "date": "2026-07-29",
+          "source_spans": [
+            "2026-07-01_2026-07-31",
+            "2026-07-29_2026-08-31"
+          ]
+        },
+        {
+          "date": "2026-07-30",
+          "source_spans": [
+            "2026-07-01_2026-07-31",
+            "2026-07-29_2026-08-31"
+          ]
+        },
+        {
+          "date": "2026-07-31",
+          "source_spans": [
+            "2026-07-01_2026-07-31",
+            "2026-07-29_2026-08-31"
+          ]
+        },
+        {
+          "date": "2026-09-01",
+          "source_spans": [
+            "2026-09-01",
+            "2026-09-01_2026-09-04"
+          ]
+        },
+        {
+          "date": "2026-09-02",
+          "source_spans": [
+            "2026-09-01_2026-09-04",
+            "2026-09-02"
+          ]
+        },
+        {
+          "date": "2026-09-03",
+          "source_spans": [
+            "2026-09-01_2026-09-04",
+            "2026-09-03"
+          ]
+        },
+        {
+          "date": "2026-09-04",
+          "source_spans": [
+            "2026-09-01_2026-09-04",
+            "2026-09-04"
+          ]
+        }
+      ],
+      "n_conflicts_withheld": 0,
+      "conflicts": [],
+      "missing_versus_15007_call": [
+        "2019-12-02",
+        "2019-12-03",
+        "2019-12-04",
+        "2019-12-05",
+        "2019-12-06",
+        "2019-12-09",
+        "2019-12-10",
+        "2019-12-11",
+        "2019-12-12",
+        "2019-12-13",
+        "2019-12-16",
+        "2019-12-17",
+        "2019-12-18",
+        "2019-12-19",
+        "2019-12-20",
+        "2019-12-23",
+        "2019-12-24",
+        "2019-12-26",
+        "2019-12-27",
+        "2019-12-30",
+        "2020-03-02",
+        "2020-03-03",
+        "2020-03-04",
+        "2020-03-05",
+        "2020-03-06",
+        "2020-03-09",
+        "2020-03-10",
+        "2020-03-11",
+        "2020-03-12",
+        "2020-03-13",
+        "2020-03-16",
+        "2020-03-17",
+        "2020-03-18",
+        "2020-03-19",
+        "2020-03-20",
+        "2020-03-23",
+        "2020-03-24",
+        "2020-03-25",
+        "2020-03-26",
+        "2020-03-27",
+        "2020-03-30",
+        "2020-03-31",
+        "2026-09-16",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-16",
+        "2026-10-22",
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "in_index_missing_from_15007_call": [],
+      "common_with_15007_call": 1868,
+      "quality": "observed",
+      "source": "KRX data.krx 개별지수 시세 추이 (screen index_kospi200, finder 코스피 200)",
+      "provider_published_at": "unknown",
+      "collection_note_ko": "2019-01-02부터 2026-10-30까지 한 번에 조회한 화면은 '데이터가 없습니다'였다. 이어서 2019-12, 2020-03, 2026-10을 같은 창에서 받으려 했으나 데이터 화면이 로그인으로 튕겼다. 세션 튕김은 재시도하지 않았다. 공개 시계열은 그 전에 받아 둔 월별 원본만 사용한다.",
+      "raw_retained_at": "private collector data/raw/index_kospi200"
+    },
+    "kospi200_etf_candidates": {
+      "n_candidates": 12,
+      "strategy_target": null,
+      "price_adjustment": "unknown",
+      "dividend_treatment": "unknown",
+      "trading_value_quality": "missing",
+      "provider_published_at": "unknown",
+      "collected_at": "2026-11-01T07:34:57.738622+00:00",
+      "source": "FinanceDataReader DataReader",
+      "per_ticker": {
+        "069500": {
+          "name": "KODEX 200",
+          "tracking_style": "price_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "102110": {
+          "name": "TIGER 200",
+          "tracking_style": "price_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "105190": {
+          "name": "ACE 200",
+          "tracking_style": "price_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "152100": {
+          "name": "PLUS 200",
+          "tracking_style": "price_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "293180": {
+          "name": "HANARO 200",
+          "tracking_style": "price_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "148020": {
+          "name": "RISE 200",
+          "tracking_style": "price_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "278530": {
+          "name": "KODEX 200TR",
+          "tracking_style": "total_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "295040": {
+          "name": "SOL 200TR",
+          "tracking_style": "total_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "310960": {
+          "name": "TIGER 200TR",
+          "tracking_style": "total_return",
+          "n": 1921,
+          "date_start": "2019-01-02",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1921,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "332930": {
+          "name": "HANARO 200TR",
+          "tracking_style": "total_return",
+          "n": 1759,
+          "date_start": "2019-08-28",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1759,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "332500": {
+          "name": "ACE 200TR",
+          "tracking_style": "total_return",
+          "n": 1759,
+          "date_start": "2019-08-28",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 1759,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        },
+        "491220": {
+          "name": "PLUS 200TR",
+          "tracking_style": "total_return",
+          "n": 517,
+          "date_start": "2024-09-10",
+          "date_end": "2026-10-30",
+          "common_with_15007_call": 517,
+          "in_15007_after_listing_missing_from_etf": [],
+          "in_etf_missing_from_15007": []
+        }
+      },
+      "official_screen_ko": "ETF 기간 시세 화면은 이번 크롬 세션에서 받지 못했다. 지수 조회가 빈 응답과 세션 튕김으로 끝났고, 두 번째 로그인은 열지 않았다."
+    },
+    "detailed_15007_call_put": {
+      "n_call": 1921,
+      "n_put": 1921,
+      "call_put_date_sets_equal": true,
+      "date_start": "2019-01-02",
+      "date_end": "2026-10-30",
+      "source": "derivatives_board_v1.json detailed_15007",
+      "changed": false
+    },
+    "stock_letf_history": {
+      "rows_kept_byte_for_byte": 182,
+      "rows_changed": [
+        {
+          "ticker": "000660",
+          "date": "2026-08-28",
+          "spot_trading_value_krw": 5984241623291.0,
+          "underlying_day_return_unchanged": -0.044500000000000005,
+          "product_count": 8
+        },
+        {
+          "ticker": "005930",
+          "date": "2026-08-28",
+          "spot_trading_value_krw": 3925852660500.0,
+          "underlying_day_return_unchanged": -0.0338,
+          "product_count": 8
+        },
+        {
+          "ticker": "000660",
+          "date": "2026-09-04",
+          "spot_trading_value_krw": 4660912821500.0,
+          "underlying_day_return_unchanged": 0.032,
+          "product_count": 8
+        },
+        {
+          "ticker": "005930",
+          "date": "2026-09-04",
+          "spot_trading_value_krw": 3586126499750.0,
+          "underlying_day_return_unchanged": 0.022000000000000002,
+          "product_count": 8
+        },
+        {
+          "ticker": "000660",
+          "date": "2026-09-11",
+          "spot_trading_value_krw": 4698316407000.0,
+          "underlying_day_return_unchanged": -0.022099999999999998,
+          "product_count": 8
+        },
+        {
+          "ticker": "005930",
+          "date": "2026-09-11",
+          "spot_trading_value_krw": 3605176833500.0,
+          "underlying_day_return_unchanged": -0.0353,
+          "product_count": 8
+        },
+        {
+          "ticker": "000660",
+          "date": "2026-09-23",
+          "spot_trading_value_krw": 5480333530143.0,
+          "underlying_day_return_unchanged": 0.012,
+          "product_count": 8
+        },
+        {
+          "ticker": "005930",
+          "date": "2026-09-23",
+          "spot_trading_value_krw": 5926486634990.0,
+          "underlying_day_return_unchanged": 0.0325,
+          "product_count": 8
+        },
+        {
+          "ticker": "000660",
+          "date": "2026-10-08",
+          "spot_trading_value_krw": 5457112818080.0,
+          "underlying_day_return_unchanged": -0.024399999999999998,
+          "product_count": 8
+        },
+        {
+          "ticker": "005930",
+          "date": "2026-10-08",
+          "spot_trading_value_krw": 5617134619618.0,
+          "underlying_day_return_unchanged": -0.0242,
+          "product_count": 8
+        },
+        {
+          "ticker": "000660",
+          "date": "2026-10-16",
+          "spot_trading_value_krw": 5866108181148.0,
+          "underlying_day_return_unchanged": 0.0079,
+          "product_count": 8
+        },
+        {
+          "ticker": "005930",
+          "date": "2026-10-16",
+          "spot_trading_value_krw": 4084933131254.0,
+          "underlying_day_return_unchanged": 0.0262,
+          "product_count": 8
+        },
+        {
+          "ticker": "000660",
+          "date": "2026-10-23",
+          "spot_trading_value_krw": 4851382937000.0,
+          "underlying_day_return_unchanged": 0.044199999999999996,
+          "product_count": 8
+        },
+        {
+          "ticker": "005930",
+          "date": "2026-10-23",
+          "spot_trading_value_krw": 3396837242750.0,
+          "underlying_day_return_unchanged": 0.004699999999999999,
+          "product_count": 8
+        },
+        {
+          "ticker": "000660",
+          "date": "2026-10-30",
+          "spot_trading_value_krw": 5456344703180.0,
+          "underlying_day_return_unchanged": -0.0708,
+          "product_count": 8
+        },
+        {
+          "ticker": "005930",
+          "date": "2026-10-30",
+          "spot_trading_value_krw": 4377894314750.0,
+          "underlying_day_return_unchanged": -0.0302,
+          "product_count": 8
+        }
+      ],
+      "underlying_day_return": "unchanged",
+      "reason_ko": "8개 날짜의 삼성전자·SK하이닉스 행은 거래대금이 있는데 상품 AUM이 전부 0이었다. 2026-08-31 삼성전자 AUM 합계는 약 2.536조 원, 2026-10-29는 약 1.845조 원이다. 0은 관측된 순자산이 아니라 누락으로 표시하고 리밸런싱 추정은 null로 뒀다.",
+      "return_mismatch": {
+        "definition_price_file": "investor_price_levels_v1.json 같은 종목 days의 직전 관측 종가 대비 종가 수익률",
+        "definition_letf_history": "stock_letf_history_v1.jsonl underlying_day_return. 수집 경로는 KRX FLUC_RT/100",
+        "threshold": "0.1 percentage point",
+        "by_ticker": {
+          "000660": {
+            "n": 29,
+            "sign_flips": 5,
+            "max_abs_difference_percentage_points": 4.512331288343563,
+            "dates": [
+              {
+                "date": "2026-09-14",
+                "price_file_close_to_close": -0.07119205298013243,
+                "letf_history_underlying_day_return": -0.0635,
+                "difference": -0.0076920529801324244,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-15",
+                "price_file_close_to_close": 0.01723113487819372,
+                "letf_history_underlying_day_return": -0.0040999999999999995,
+                "difference": 0.02133113487819372,
+                "sign_flip": true
+              },
+              {
+                "date": "2026-09-16",
+                "price_file_close_to_close": 0.026285046728971917,
+                "letf_history_underlying_day_return": 0.0408,
+                "difference": -0.014514953271028086,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-17",
+                "price_file_close_to_close": 0.00512236767216856,
+                "letf_history_underlying_day_return": -0.008,
+                "difference": 0.01312236767216856,
+                "sign_flip": true
+              },
+              {
+                "date": "2026-09-21",
+                "price_file_close_to_close": 0.016224986479177916,
+                "letf_history_underlying_day_return": 0.0059,
+                "difference": 0.010324986479177917,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-22",
+                "price_file_close_to_close": -0.020223523150612044,
+                "letf_history_underlying_day_return": -0.015,
+                "difference": -0.005223523150612044,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-28",
+                "price_file_close_to_close": -0.054750402576489554,
+                "letf_history_underlying_day_return": -0.050499999999999996,
+                "difference": -0.004250402576489558,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-29",
+                "price_file_close_to_close": 0.016467915956842605,
+                "letf_history_underlying_day_return": -0.0017000000000000001,
+                "difference": 0.018167915956842605,
+                "sign_flip": true
+              },
+              {
+                "date": "2026-09-30",
+                "price_file_close_to_close": -0.003910614525139633,
+                "letf_history_underlying_day_return": 0.0062,
+                "difference": -0.010110614525139634,
+                "sign_flip": true
+              },
+              {
+                "date": "2026-10-01",
+                "price_file_close_to_close": 0.025238362310712192,
+                "letf_history_underlying_day_return": 0.0321,
+                "difference": -0.006861637689287804,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-02",
+                "price_file_close_to_close": 0.007658643326039494,
+                "letf_history_underlying_day_return": 0.0044,
+                "difference": 0.0032586433260394934,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-06",
+                "price_file_close_to_close": -0.03148751357220414,
+                "letf_history_underlying_day_return": -0.0369,
+                "difference": 0.005412486427795862,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-07",
+                "price_file_close_to_close": -0.03867713004484308,
+                "letf_history_underlying_day_return": -0.0282,
+                "difference": -0.010477130044843078,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-08",
+                "price_file_close_to_close": -0.016909620991253593,
+                "letf_history_underlying_day_return": -0.024399999999999998,
+                "difference": 0.007490379008746405,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-12",
+                "price_file_close_to_close": -0.04804270462633453,
+                "letf_history_underlying_day_return": -0.0452,
+                "difference": -0.0028427046263345343,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-13",
+                "price_file_close_to_close": -0.09283489096573205,
+                "letf_history_underlying_day_return": -0.1009,
+                "difference": 0.00806510903426795,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-14",
+                "price_file_close_to_close": -0.021291208791208827,
+                "letf_history_underlying_day_return": -0.0166,
+                "difference": -0.004691208791208826,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-15",
+                "price_file_close_to_close": -0.13122807017543858,
+                "letf_history_underlying_day_return": -0.1106,
+                "difference": -0.02062807017543858,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-16",
+                "price_file_close_to_close": 0.021809369951534707,
+                "letf_history_underlying_day_return": 0.0079,
+                "difference": 0.013909369951534706,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-19",
+                "price_file_close_to_close": 0.030830039525691744,
+                "letf_history_underlying_day_return": 0.0039000000000000003,
+                "difference": 0.026930039525691743,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-20",
+                "price_file_close_to_close": -0.08742331288343563,
+                "letf_history_underlying_day_return": -0.042300000000000004,
+                "difference": -0.04512331288343563,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-21",
+                "price_file_close_to_close": 0.08235294117647052,
+                "letf_history_underlying_day_return": 0.0581,
+                "difference": 0.02425294117647052,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-22",
+                "price_file_close_to_close": -0.04192546583850931,
+                "letf_history_underlying_day_return": -0.054900000000000004,
+                "difference": 0.012974534161490692,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-23",
+                "price_file_close_to_close": 0.023500810372771408,
+                "letf_history_underlying_day_return": 0.044199999999999996,
+                "difference": -0.02069918962722859,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-26",
+                "price_file_close_to_close": 0.0213776722090262,
+                "letf_history_underlying_day_return": -0.0016,
+                "difference": 0.0229776722090262,
+                "sign_flip": true
+              },
+              {
+                "date": "2026-10-27",
+                "price_file_close_to_close": 0.06511627906976747,
+                "letf_history_underlying_day_return": 0.0518,
+                "difference": 0.01331627906976747,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-28",
+                "price_file_close_to_close": 0.09752547307132464,
+                "letf_history_underlying_day_return": 0.10890000000000001,
+                "difference": -0.011374526928675369,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-29",
+                "price_file_close_to_close": 0.0053050397877985045,
+                "letf_history_underlying_day_return": 0.0262,
+                "difference": -0.020894960212201497,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-30",
+                "price_file_close_to_close": -0.08245382585751981,
+                "letf_history_underlying_day_return": -0.0708,
+                "difference": -0.011653825857519812,
+                "sign_flip": false
+              }
+            ],
+            "action": "neither series overwritten"
+          },
+          "005930": {
+            "n": 27,
+            "sign_flips": 3,
+            "max_abs_difference_percentage_points": 3.507695749440714,
+            "dates": [
+              {
+                "date": "2026-09-14",
+                "price_file_close_to_close": -0.042389210019267876,
+                "letf_history_underlying_day_return": -0.0405,
+                "difference": -0.0018892100192678743,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-15",
+                "price_file_close_to_close": 0.008048289738430636,
+                "letf_history_underlying_day_return": -0.002,
+                "difference": 0.010048289738430636,
+                "sign_flip": true
+              },
+              {
+                "date": "2026-09-16",
+                "price_file_close_to_close": 0.011976047904191711,
+                "letf_history_underlying_day_return": 0.020099999999999996,
+                "difference": -0.008123952095808285,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-17",
+                "price_file_close_to_close": 0.009861932938856066,
+                "letf_history_underlying_day_return": -0.0039000000000000003,
+                "difference": 0.013761932938856067,
+                "sign_flip": true
+              },
+              {
+                "date": "2026-09-21",
+                "price_file_close_to_close": 0.05769230769230771,
+                "letf_history_underlying_day_return": 0.049800000000000004,
+                "difference": 0.007892307692307705,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-28",
+                "price_file_close_to_close": -0.05759162303664922,
+                "letf_history_underlying_day_return": -0.054299999999999994,
+                "difference": -0.003291623036649226,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-29",
+                "price_file_close_to_close": 0.0185185185185186,
+                "letf_history_underlying_day_return": 0.009300000000000001,
+                "difference": 0.0092185185185186,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-09-30",
+                "price_file_close_to_close": -0.020000000000000018,
+                "letf_history_underlying_day_return": -0.0147,
+                "difference": -0.005300000000000018,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-01",
+                "price_file_close_to_close": 0.01855287569573294,
+                "letf_history_underlying_day_return": 0.0279,
+                "difference": -0.009347124304267061,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-02",
+                "price_file_close_to_close": 0.005464480874316946,
+                "letf_history_underlying_day_return": 0.0,
+                "difference": 0.005464480874316946,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-06",
+                "price_file_close_to_close": -0.010869565217391353,
+                "letf_history_underlying_day_return": -0.014499999999999999,
+                "difference": 0.0036304347826086464,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-07",
+                "price_file_close_to_close": -0.0146520146520146,
+                "letf_history_underlying_day_return": -0.0129,
+                "difference": -0.0017520146520146,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-08",
+                "price_file_close_to_close": -0.022304832713754608,
+                "letf_history_underlying_day_return": -0.0242,
+                "difference": 0.0018951672862453917,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-12",
+                "price_file_close_to_close": -0.04562737642585546,
+                "letf_history_underlying_day_return": -0.043899999999999995,
+                "difference": -0.0017273764258554647,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-13",
+                "price_file_close_to_close": -0.0677290836653387,
+                "letf_history_underlying_day_return": -0.0739,
+                "difference": 0.006170916334661297,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-14",
+                "price_file_close_to_close": 0.002136752136752129,
+                "letf_history_underlying_day_return": 0.0,
+                "difference": 0.002136752136752129,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-15",
+                "price_file_close_to_close": -0.11513859275053306,
+                "letf_history_underlying_day_return": -0.09480000000000001,
+                "difference": -0.020338592750533055,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-16",
+                "price_file_close_to_close": 0.04578313253012056,
+                "letf_history_underlying_day_return": 0.0262,
+                "difference": 0.01958313253012056,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-19",
+                "price_file_close_to_close": 0.02995391705069128,
+                "letf_history_underlying_day_return": 0.0116,
+                "difference": 0.018353917050691282,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-20",
+                "price_file_close_to_close": -0.06487695749440714,
+                "letf_history_underlying_day_return": -0.0298,
+                "difference": -0.03507695749440714,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-21",
+                "price_file_close_to_close": 0.06937799043062198,
+                "letf_history_underlying_day_return": 0.0567,
+                "difference": 0.012677990430621983,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-23",
+                "price_file_close_to_close": -0.004662004662004615,
+                "letf_history_underlying_day_return": 0.004699999999999999,
+                "difference": -0.009362004662004614,
+                "sign_flip": true
+              },
+              {
+                "date": "2026-10-26",
+                "price_file_close_to_close": 0.0,
+                "letf_history_underlying_day_return": -0.0116,
+                "difference": 0.0116,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-27",
+                "price_file_close_to_close": 0.05386416861826704,
+                "letf_history_underlying_day_return": 0.042300000000000004,
+                "difference": 0.011564168618267034,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-28",
+                "price_file_close_to_close": 0.0888888888888888,
+                "letf_history_underlying_day_return": 0.0901,
+                "difference": -0.0012111111111112044,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-29",
+                "price_file_close_to_close": -0.0591836734693878,
+                "letf_history_underlying_day_return": -0.041299999999999996,
+                "difference": -0.017883673469387802,
+                "sign_flip": false
+              },
+              {
+                "date": "2026-10-30",
+                "price_file_close_to_close": -0.04338394793926248,
+                "letf_history_underlying_day_return": -0.0302,
+                "difference": -0.013183947939262478,
+                "sign_flip": false
+              }
+            ],
+            "action": "neither series overwritten"
+          }
+        }
+      }
+    },
+    "derivatives_activity_history": {
+      "changed": false,
+      "october_2026_dates_on_etf_calendar_missing_from_activity": [
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-12",
+        "2026-10-13",
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-19",
+        "2026-10-20",
+        "2026-10-21",
+        "2026-10-22",
+        "2026-10-23",
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-30"
+      ],
+      "result_ko": "기존 OpenAPI drv/fut_bydd_trd·opt_bydd_trd와 같은 정의의 원본을 확인하지 못했다. OpenAPI는 401이고, 15001 전종목 시세의 어떤 계약 묶음도 2026-10-29 공개 activity 행과 같지 않다. 15001 합계는 derivatives_activity_15001_quotes_v1.jsonl에만 있고 이 파일과 합치거나 대체하지 않았다. 결측은 그대로 둔다."
+    }
+  }
+}
