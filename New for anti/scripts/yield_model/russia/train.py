@@ -39,6 +39,15 @@ TREND_FORMS = [("deg1", 1, None), ("deg2", 2, None),
 MIN_FORWARD_FOLDS = 8
 SEASONS_PER_FEATURE = 5
 
+# The one route past that floor (2026-11-01): a single pre-registered spec --
+# the guide's core features with the best trend-only form, no selection over
+# feature sets or trend forms -- so there is no search for the few folds to
+# reward. It must beat the trend forward-chained (all and recent folds) and
+# under leave-one-out by PREREG_MIN_LOO, the 10% gate the Australian and
+# Canadian models use. Leave-one-out refits the trend without the held-out
+# season; it is the 25-season check that seven forward folds cannot give.
+PREREG_MIN_LOO = 0.10
+
 
 def log(msg):
     print(f"[train] {msg}", flush=True)
@@ -254,6 +263,38 @@ def train_one(cfg):
             + "; ".join(thin_evidence) + ") — not usable.")
         beats_trend = False
 
+    prereg, used_prereg = None, False
+    if core and not interim_labels:
+        base_form = min(fwd.values(), key=lambda v: v["baseline_rmse"])
+        f_out = run_cv(df, core, "forward", base_form["degree"], base_form["window"], min_train)
+        l_out = run_cv(df, core, "loo", base_form["degree"], base_form["window"], min_train)
+        if f_out is not None and l_out is not None:
+            fe, le = evaluate(*f_out[:3]), evaluate(*l_out[:3])
+            prereg = {
+                "features": core, "trend_form": base_form["trend_form"],
+                "n_forward": len(f_out[0]), "n_loo": len(l_out[0]),
+                "forward_skill": fe["skill_vs_trend"],
+                "recent_skill": 1 - fe["recent_rmse"] / fe["recent_baseline_rmse"],
+                "loo_skill": le["skill_vs_trend"],
+            }
+            prereg["passed"] = bool(prereg["forward_skill"] > 0
+                                    and prereg["recent_skill"] > 0
+                                    and prereg["loo_skill"] >= PREREG_MIN_LOO)
+            log(f"  pre-registered core/{base_form['trend_form']}: forward "
+                f"{prereg['forward_skill']:+.1%} (n={prereg['n_forward']}), "
+                f"LOO {prereg['loo_skill']:+.1%} (n={prereg['n_loo']}) -> "
+                f"{'usable' if prereg['passed'] else 'not usable'}")
+            if prereg["passed"] and not beats_trend:
+                best_key = f"core_{base_form['trend_form']}_forward"
+                best = results[best_key]
+                best_feats = core
+                degree, window = base_form["degree"], base_form["window"]
+                trend = fit_trend(df.year.values, df.target.values, degree, window)
+                full_skill, recent_skill = prereg["forward_skill"], prereg["recent_skill"]
+                model_recent_rmse = fe["recent_rmse"]
+                best_baseline_recent = fe["recent_baseline_rmse"]
+                beats_trend = used_prereg = True
+
     if not beats_trend:
         if interim_labels and raw_beats_trend:
             log("  VERDICT: INTERIM only — raw skill positive but NOT usable "
@@ -309,10 +350,12 @@ def train_one(cfg):
         "beats_trend": bool(beats_trend),
         "raw_beats_trend": raw_beats_trend,
         "thin_evidence": thin_evidence,
+        "preregistered": prereg,
         "recent_skill_vs_trend": float(recent_skill),
         "skill_vs_best_trend": float(full_skill),
         "best_trend_baseline_rmse": float(best_baseline),
-        "skill_basis": "nested" if nested is not None else "in_sample",
+        "skill_basis": ("preregistered" if used_prereg
+                        else "nested" if nested is not None else "in_sample"),
         "nested": (None if nested is None else {
             "n": len(nested["years"]),
             "years": [nested["years"][0], nested["years"][-1]],
