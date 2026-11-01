@@ -94,3 +94,12 @@ jobs:
 
           print("All monitored data files are fresh.")
           PY
+
+      - name: Check crop forecasts are fresh
+        # Reads each country's published forecast rather than its commit
+        # time: a crop job can keep committing every week while the weather
+        # feed under it has stopped (tools/ops/crop_watchdog.py).
+        if: always()
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 tools/ops/crop_watchdog.py
