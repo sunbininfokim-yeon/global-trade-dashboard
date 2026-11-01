@@ -164,6 +164,69 @@ def receipt_groups(rows):
     return [grouped[key] for key in sorted(grouped)]
 
 
+AGENCY_NAMES = {"001": "입법부", "002": "사법부", "005": "농무부 USDA", "006": "상무부",
+                "007": "국방부 군사사업", "009": "보건복지부 HHS", "010": "내무부", "011": "법무부",
+                "012": "노동부", "014": "국무부", "015": "재무부", "016": "사회보장청 SSA", "017": "사회보장청 SSA",
+                "018": "교육부", "019": "에너지부 DOE", "020": "환경보호청 EPA", "021": "교통부",
+                "023": "총무청 GSA", "024": "국토안보부", "025": "주택도시개발부 HUD", "026": "항공우주국 NASA",
+                "027": "인사관리처", "028": "중소기업청 SBA", "029": "보훈부 VA", "100": "대통령실",
+                "184": "국제원조 사업", "200": "기타 국방 민간사업", "202": "육군 공병대 민간사업",
+                "900": "계획 조정액", "902": "공통 차감 수입", "930": "보고 기준 미만 기타 수입"}
+
+
+def agency_accounts(rows, fy, estimate):
+    """Agency/bureau/account trees, separately for each BEA category.
+
+    Agency codes, not names, define identity. These are outlays, not enacted BA.
+    """
+    header = rows[0]
+    fields = ["Agency Code", "Agency Name", "Bureau Code", "Bureau Name", "Account Code", "Account Name", "Treasury Agency Code", "CGAC Agency Code", "BEA Category", str(fy), str(fy-1)]
+    if any(header.count(k) != 1 for k in fields):
+        raise AnnualError("OMB agency/account headers changed")
+    ix = {k: header.index(k) for k in fields}
+    kinds = {"Discretionary": "discretionary", "Mandatory": "mandatory", "Net interest": "interest"}
+    groups, totals = {}, {k: Decimal(0) for k in kinds.values()}
+    for row in rows[1:]:
+        category = kinds.get(row[ix["BEA Category"]])
+        if category is None:
+            raise AnnualError("Unknown agency BEA category")
+        value, prior = money(row[ix[str(fy)]], THOUSAND), money(row[ix[str(fy-1)]], THOUSAND)
+        totals[category] += value
+        if not value and not prior:
+            continue
+        ac, an, bc, bn, code, name = [str(row[ix[k]]) for k in fields[:6]]
+        treasury_code, cgac = str(row[ix["Treasury Agency Code"]]), str(row[ix["CGAC Agency Code"]])
+        key = (category, ac, bc, code, treasury_code, cgac)
+        entry = groups.setdefault(key, dict(name=name, agency_name=an, bureau_name=bn, value=Decimal(0), prior=Decimal(0)))
+        if (entry["name"], entry["agency_name"], entry["bureau_name"]) != (name, an, bn):
+            raise AnnualError("Conflicting names for an agency/bureau/account key")
+        entry["value"] += value
+        entry["prior"] += prior
+    trees = {}
+    for category in kinds.values():
+        agencies = {}
+        for (kind, ac, bc, code, treasury_code, cgac), item in groups.items():
+            if kind != category:
+                continue
+            agency = agencies.setdefault(ac, dict(name=item["agency_name"], bureaus={}))
+            bureau = agency["bureaus"].setdefault(bc, dict(name=item["bureau_name"], accounts=[]))
+            bureau["accounts"].append(dict(id=f"{category}-{ac}-{bc}-{treasury_code}-{cgac}-{code}", name=item["name"], code=code,
+                                             treasury_agency_code=treasury_code, cgac_agency_code=cgac,
+                                             value=item["value"], prior=item["prior"], children=[]))
+        roots = []
+        for ac, agency in agencies.items():
+            bureaus = [node(f"{category}-{ac}-{bc}", bureau["name"], bureau["accounts"])
+                       for bc, bureau in agency["bureaus"].items()]
+            root = node(f"agency-{ac}-{category}", AGENCY_NAMES.get(ac, agency["name"]), bureaus)
+            root.update(code=ac, source_name=agency["name"])
+            tree_check(root)
+            roots.append(root)
+        close(sum((r["value"] for r in roots), Decimal(0)), totals[category])
+        trees[category] = roots
+    return dict(fy=fy, status="proposal_estimate" if estimate else "actual", metric="outlays",
+                baseline_fy=fy-1, baseline_status="estimate" if estimate else "actual", totals=totals, **trees)
+
+
 def accounts(rows, fy):
     header = rows[0]
     required = ["Agency Code", "Bureau Code", "Account Code", "Account Name", "Bureau Name", "Subfunction Code", "BEA Category", str(fy), str(fy-1)]
@@ -242,7 +305,7 @@ def build(tables, manifest, sources, completed, monthly):
         raise AnnualError("Annual MTS supplement is not a complete fiscal year")
     last = max(actual_end, complete["fy"])
     budget = dict(years={}, receipts={}, types={}, discretionary={}, monthly=monthly)
-    defense = {}
+    defense, agency_details = {}, {}
     for year in range(last-4, last+1):
         key = str(year)
         if year in summaries and not summaries[year][1]:
@@ -276,10 +339,12 @@ def build(tables, manifest, sources, completed, monthly):
             budget["years"][key]["discretionaryExact"] = sums["Discretionary"]
             budget["discretionary"][key] = disc
             defense[key] = detail
+            agency_details[key] = agency_accounts(tables["accounts"], year, False)
             for item in disc + detail:
                 tree_check(item)
     budget[f"finance{complete['fy']}"] = complete["finance"]
     sums, detail = accounts(tables["accounts"], fy)
+    agency_details[str(fy)] = agency_accounts(tables["accounts"], fy, True)
     disc = programs(tables["discretionary"], DISC, fy, True)
     mandatory = programs(tables["mandatory"], MANDATORY, fy, True)
     row, estimate = receipts[fy]
@@ -305,6 +370,6 @@ def build(tables, manifest, sources, completed, monthly):
                     baseline=f"FY{fy-1} 정부 추정 → FY{fy} 정부안 · 같은 {publication} 발표본")
     close(sum(r["value"] for r in proposal["receipts"]), rec)
     return dict(schema_version=2, normalized_unit="USD", publication=publication, proposal_fy=fy,
-                budget=budget, defense=defense, proposal=proposal, sources=sources,
+                budget=budget, defense=defense, proposal=proposal, sources=sources, agency_details=agency_details,
                 enacted_budget=dict(status="not_collected", amount=None, metric="budget_authority",
                                     note="의회 확정 예산권한은 별도 공식 근거가 필요하며 지출 추정치로 채우지 않습니다."))

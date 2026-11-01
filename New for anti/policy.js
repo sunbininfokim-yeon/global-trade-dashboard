@@ -1024,6 +1024,10 @@
       <div class="policy-grid-2">
         <div class="policy-col">
           ${billPanel(bill)}
+          <section class="policy-block" data-budget-bill-finance>
+            <button type="button" data-budget-finance-load>예산·재정 근거 보기</button>
+            <div data-budget-finance-result aria-live="polite"></div>
+          </section>
           ${collapsibleCard('bill-actions', '진행 이력', actionsBody, actions.length)}
         </div>
         <div class="policy-col">
@@ -1324,6 +1328,15 @@
     host.innerHTML = (VIEWS[view] || viewCongress)(id, overview, viewData);
     if (view === 'simulator' && viewData.simulator) viewCleanup = viewData.simulator.mount(host.querySelector('[data-tariff-simulator]'));
     if (view === 'budget' && viewData.budget) viewCleanup = viewData.budget.mount(host.querySelector('[data-us-budget]'));
+    if (view === 'bill' && viewData.bill) {
+      let active = true, cleanup = null;
+      const billId = viewData.bill.bill_id;
+      const root = host.querySelector('[data-budget-bill-finance]');
+      import('/policy-budget/finance.mjs?v=1').then(module => {
+        if (active && root) cleanup = module.mountBillFinance(root, billId);
+      }).catch(() => { if (active && root) root.querySelector('[data-budget-finance-result]').textContent = '예산 연결 자료를 불러오지 못했습니다.'; });
+      viewCleanup = () => { active = false; cleanup?.(); };
+    }
     host.scrollTop = 0;
   }
 

@@ -53,6 +53,17 @@ export function usableBundle(bundle) {
     }
     if (!near(p.types.discretionary + p.types.mandatory + p.types.interest, p.year.outlays)
         || !near(p.receipts.reduce((n, r) => n + r.value, 0), p.year.receipts)) return null;
+    for (const [year, details] of Object.entries(a.agency_details || {})) {
+      const expected = Number(year)===p.year.fy ? 'proposal_estimate' : 'actual';
+      if (details.status!==expected || details.metric!=='outlays' || details.baseline_fy!==Number(year)-1
+          || details.baseline_status!==(expected==='actual'?'actual':'estimate')) return null;
+      for (const kind of ['discretionary','mandatory','interest']) {
+        if (!Array.isArray(details[kind]) || !details[kind].every(rollup)
+            || !near(details[kind].reduce((n,r)=>n+r.value,0),details.totals[kind])) return null;
+      }
+      const reference = Number(year)===p.year.fy ? p.year.outlays : b.years[year]?.outlays;
+      if (!near(Object.values(details.totals).reduce((n,v)=>n+v,0),reference,1e6)) return null;
+    }
     return bundle;
   } catch { return null; }
 }
@@ -72,5 +83,5 @@ export function collectionState(bundle, status, now = new Date()) {
   if (now.getTime() - period > 65 * 86400 * 1000) {
     return { state: 'stale_period', text: '자료 기준일이 65일 이상 지났습니다. 새 월별 실적 발행 여부를 확인해야 합니다.', checked, good };
   }
-  return { state: 'ok', text: '공식 자료 수집·검증 정상', checked, good };
+  return { state: 'ok', text: '예산 금액 자료 수집·검증 정상', checked, good };
 }

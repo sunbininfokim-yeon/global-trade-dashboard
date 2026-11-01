@@ -15,6 +15,7 @@ import tempfile
 
 import annual
 import treasury
+import funding
 
 DATA = Path(__file__).resolve().parents[2] / "public/data/us_budget"
 BUNDLE = "budget_live_v1.json"
@@ -58,7 +59,7 @@ def compatible_mts(feed):
                 note="record_date is the accounting period end, not the day the report was published.")
 
 
-def assemble(get=treasury.request):
+def assemble(get=treasury.request, previous=None):
     # A single run must not observe two versions of the same source response.
     cache = {}
     def cached(url):
@@ -72,7 +73,8 @@ def assemble(get=treasury.request):
     manifest = annual.discover(cached)
     tables, sources = annual.load(manifest, cached)
     rebuilt = annual.build(tables, manifest, sources, completed, feed["monthly"])
-    return dict(schema_version=1, annual=rebuilt, live=compatible_mts(feed))
+    related = funding.collect(cached, (previous or {}).get("funding"))
+    return dict(schema_version=1, annual=rebuilt, live=compatible_mts(feed), funding=related)
 
 
 def revisions(previous, current):
@@ -96,7 +98,7 @@ def run(output, published=DATA, get=treasury.request, now=None):
     previous = read(published / BUNDLE)
     previous_status = read(published / STATUS) or {}
     try:
-        result = assemble(get)
+        result = assemble(get, previous)
         if previous:
             if result["live"]["mts_record_date"] < previous["live"]["mts_record_date"]:
                 raise ValueError("Treasury accounting period regressed")

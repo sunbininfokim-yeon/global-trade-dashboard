@@ -1,7 +1,7 @@
 # 미국 예산 수집
 
 `refresh_budget.py`는 Treasury MTS 표 1·3·6과 OMB 공식 링크의 엑셀 6종을 읽어
-연간·월별 실적 및 정부안을 하나의 검증된 JSON으로 생성한다. API 키·Supabase·AI 호출은 없다.
+연간·월별 실적·정부안·검토된 법률/CBO 근거를 하나의 JSON으로 생성한다. API 키·Supabase·AI 호출은 없다.
 
 저장소 루트에서:
 
@@ -22,7 +22,7 @@ python3 'New for anti/scripts/us_budget/publish_budget.py' --staged-dir /tmp/us-
 
 ## 출력과 실패 처리
 
-- `budget_live_v1.json`: 새 연간 표·국방 계정·최근 36개월·최신 FY 누계·출처·최근 수정 이력.
+- `budget_live_v1.json`: 새 연간 표·부처/국/계정·최근 36개월·최신 FY 누계·출처·최근 수정 이력·법률/CBO 연결.
 - `collection_status_v1.json`: 마지막 시도·마지막 성공·성공 데이터 ID·성공/실패 상태.
 - 기존 `annual_v1.json`, `mts_live_v1.json`, `sources.json`은 변경하지 않고 대체 자료로 보존한다.
 
@@ -69,3 +69,26 @@ PR·작업 브랜치·dry_run·verify_snapshot 실행은 main의 금액/상태�
 python3 -m unittest discover -v -s 'New for anti/scripts/us_budget' -p 'test_*.py'
 node --test 'New for anti/scripts/us_budget/us_budget_data.test.mjs' 'New for anti/scripts/us_budget/budget_live.test.mjs'
 ```
+
+## 부처·산하기관·계정
+
+`annual.agency_details[FY]`는 의무/재량/순이자별 기관→국→계정의 outlays 트리다.
+분야별 지출과 같은 금액의 다른 분류이므로 두 보기를 더하지 않는다. 기관 식별에는 이름 대신 OMB 기관/국 코드를,
+계정에는 OMB 계정·Treasury 기관·CGAC 기관 코드를 함께 쓴다. 음수·이전 연도만 금액이 있는 계정도 보존한다.
+실적은 OMB가 실제로 실적으로 제공한 연도만 쓴다. 현재 FY2026 실제 계정 자료는 미확인이다.
+
+## 세출법·임시예산·CBO 검토 프로필
+
+`funding_review.json`은 사람이 원문을 검토한 범위다. 새 자료를 발견했다고 금액이나 법적 효력을 자동 확정하지 않는다.
+현재 CR P.L.119-103의 일반 기한/예외와 기존 세출법 12개 분야 참조를 보관한다. 전체 확정 예산권한은 미집계다.
+`funding.py`는 법률/의회/법안번호·제정일·기한·참조를 확인하고 해시 변경을 재검토로 남긴다.
+NARA 법률 목록은 세출 관련 제목을 검토 후보로만 찾는다. 실패 시 이전 후보를 보존하고 후보 수를 미확인으로 표시한다.
+후속 법률의 효과와 각 사업 예외를 검토하기 전에는 모든 사업이 해당 기한까지 유효하다고 확정하지 않는다.
+
+CBO 초안은 원래 버전·기준선·기간·연간 환산 여부를 유지한다. BA와 outlays, 별도 의무지출/세입 영향은 서로 다른 표다.
+원문 검토 후 프로필을 추가/변경하고 연도별·누계 항등식을 검사한다. 직접 PDF 다운로드 실패와 검토 날짜를 표시한다.
+재시도는 프로필의 `retry_not_before` 및 직전 시도 후 7일 중 늦은 시각부터다. 새 PDF도 수치 재검토 전 자동 반영하지 않는다.
+다른 종류의 법률은 해당 조항/근거를 검증하는 어댑터와 회귀검사를 추가해야 하며 현재 CR 검증기를 그대로 적용하지 않는다.
+법안 연결은 Congress/type/number 전체 ID가 일치해야 한다. 제목 유사도로 재정효과를 배정하지 않는다.
+
+새 API 키·유료 AI 호출은 없다. 전체 비압축 묶음은 현재 약 5 MB이며 법안 페이지에서는 버튼 클릭 시만 읽는다.

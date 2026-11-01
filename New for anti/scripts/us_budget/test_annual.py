@@ -51,5 +51,17 @@ class AnnualTests(unittest.TestCase):
         self.assertEqual(groups[-1]['value'], 3)
         with self.assertRaises(a.AnnualError): a.receipt_groups(rows[:-1])
 
+    def test_same_account_number_in_distinct_treasury_agencies_is_not_merged(self):
+        header=['Agency Code','Agency Name','Bureau Code','Bureau Name','Account Code','Account Name',
+                'Treasury Agency Code','CGAC Agency Code','BEA Category','2026','2027']
+        rows=[header,['902','Offsets','00','Offsets','977120','Trust interest','75','075','Net interest',-3,-4],
+              ['902','Offsets','00','Offsets','977120','Worker compensation interest','16','016','Net interest',0,-2]]
+        details=a.agency_accounts(rows,2027,True)
+        leaves=details['interest'][0]['children'][0]['children']
+        self.assertEqual(len(leaves),2)
+        self.assertNotEqual(leaves[0]['id'],leaves[1]['id'])
+        self.assertEqual(details['totals']['interest'],-6000)
+        self.assertEqual(details['baseline_status'],'estimate')
+
 
 if __name__ == '__main__': unittest.main()
