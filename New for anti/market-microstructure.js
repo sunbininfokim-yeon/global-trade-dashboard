@@ -141,15 +141,22 @@ const MS_HIST_SERIES = {
 // anything -- so they always carry the estimate disclaimer in their own
 // fin-note rather than relying on the reader to remember it from the title.
 const MS_IMPLIED_REBALANCE_NOTE = '일일 리셋 공식 추정치이며 실제 ETF 주문·체결·가격영향이 아님';
+// Each log row says how its underlying day return was checked. Only
+// 'observed_krx' means the return was reproduced from two consecutive KRX
+// closes. The other rows are not wrong -- they agree with the Naver candle, or
+// have no previous-day KRX close to test against -- so they stay on the chart
+// as published, and the footnote counts how many of the plotted days are
+// confirmed. A row without the field (older log) is not counted either way.
+const MS_RETURN_CHECK = { field: 'underlying_day_return_quality', ok: 'observed_krx' };
 const msStockLetfSeries = (ticker, ko) => [
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 거래대금`, unit: '조', pick: (r) => msToJo(r.letf_trading_value_krw) },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 현물 거래대금`, unit: '조', pick: (r) => msToJo(r.spot_trading_value_krw) },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF / 현물 거래대금 비율`, unit: '%', pick: (r) => Number.isFinite(r.letf_turnover_ratio) ? r.letf_turnover_ratio * 100 : null },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 합계 순자산 (AUM)`, unit: '조', pick: (r) => msAumToJo(r.letf_aum_sum_krw) },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 추정 리밸런싱 압력 (부호 포함)`, unit: '조',
-        pick: (r) => msToJo(r.implied_rebalance_krw), note: MS_IMPLIED_REBALANCE_NOTE },
+        pick: (r) => msToJo(r.implied_rebalance_krw), note: MS_IMPLIED_REBALANCE_NOTE, check: MS_RETURN_CHECK },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 추정 압력 / 현물 당일 거래대금`, unit: '%',
-        pick: (r) => msFinite(r.implied_ir_pct), note: MS_IMPLIED_REBALANCE_NOTE },
+        pick: (r) => msFinite(r.implied_ir_pct), note: MS_IMPLIED_REBALANCE_NOTE, check: MS_RETURN_CHECK },
 ];
 
 const msDirSeries = (dir, ko) => [
@@ -242,10 +249,15 @@ const msHistChart = (spec) => {
     }
     const soft = win.filter((r) => r.quality && r.quality !== 'observed').length;
     const last = win[win.length - 1] || {};
+    const checked = spec.check ? win.filter((r, i) => Number.isFinite(values[i]) && r[spec.check.field] != null) : [];
+    const confirmed = spec.check ? checked.filter((r) => r[spec.check.field] === spec.check.ok).length : 0;
+    const returnCheck = checked.length
+        ? ` · 수익률 KRX 종가 재현 ${confirmed}/${checked.length}일${confirmed < checked.length ? ' (나머지는 대조 전, 값은 그대로 표시)' : ''}`
+        : '';
     return `
         ${mmLineChart(win.map((r) => r.date), values, { unit: spec.unit, label: spec.label })}
         <p class="fin-note">${finEsc(spec.label)} · 관측 ${usable}거래일 (${finEsc(win[0].date || '')} ~ ${finEsc(last.date || '')}) ·
-            출처 ${finEsc(last.source || '—')}${soft ? ` · <span class="ms-missing">추정·부분 관측 ${soft}일 포함</span>` : ' · 전 구간 실측'}.
+            출처 ${finEsc(last.source || '—')}${soft ? ` · <span class="ms-missing">추정·부분 관측 ${soft}일 포함</span>` : ' · 전 구간 실측'}${returnCheck}.
             휴장일은 채우지 않습니다.</p>
         ${spec.note ? `<p class="fin-note ms-warn">${finEsc(spec.note)}</p>` : ''}`;
 };
