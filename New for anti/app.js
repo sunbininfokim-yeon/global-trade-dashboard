@@ -3783,6 +3783,7 @@ const MODEL_STATUS_KO = {
     validated: { label: '검증 통과', cls: 'green' },
     provisional: { label: '부분 검증', cls: 'yellow' },
     training: { label: '학습 중', cls: 'orange' },
+    trend_reference: { label: '추세 참고용', cls: 'blue' },
 };
 
 const setModelStatusBadge = (cfg) => {
