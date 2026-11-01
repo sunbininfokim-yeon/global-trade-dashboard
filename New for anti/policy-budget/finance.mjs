@@ -4,7 +4,9 @@ const money = n => `${(n / 1e9).toLocaleString('ko-KR', {maximumFractionDigits: 
 export function usableFunding(value) {
   try {
     if (value?.schema_version !== 1 || value.coverage !== 'reviewed_subset'
-        || !Array.isArray(value.measures) || !Array.isArray(value.cost_estimates)) return null;
+        || !Array.isArray(value.measures) || !Array.isArray(value.cost_estimates)
+        || !['checked','source_unavailable'].includes(value.discovery?.status)
+        || !Array.isArray(value.discovery.candidates)) return null;
     const identity = id => /^\d{3}-(hr|s|hjres|sjres)-[1-9]\d*$/.test(id || '');
     for (const law of value.measures) {
       if (!identity(law.bill_id) || !/^\d{3}-[1-9]\d*$/.test(law.public_law_number)
@@ -56,7 +58,7 @@ function lawMarkup(m) {
     <p>임시예산 일반 기한: <strong>${esc(m.general_deadline)}</strong> (미국 날짜) · ${esc(m.deadline_section)}</p>
     <p>후속 세출법의 제정·사업 제외에 따른 조기 종료와 조항별 예외가 있습니다. 현재 모든 사업의 자금 효력을 확정한 표시는 아닙니다.</p>
     <p>${link(m.govinfo_url, '법률 원문')} · ${link(m.corroborating_url, '대통령 서명 확인')}</p>
-    <details><summary>기존 세출법을 참조하는 ${m.areas.length}개 분야</summary>${m.areas.map(a => `<div class="bf-line"><span>${esc(a.name)}</span><span>P.L. ${esc(a.base_law)}${a.base_division ? ` · Division ${esc(a.base_division)}` : ''} · §101(${a.item})</span></div>`).join('')}</details>
+    <details><summary>기존 세출법을 참조하는 ${m.areas.length}개 분야</summary>${m.areas.map(a => `<div class="bf-line"><span>${esc(a.name)}</span><span>P.L. ${esc(a.base_law)}${a.base_division ? ` · Division ${esc(a.base_division)}` : ''} · §101(${esc(a.item)})</span></div>`).join('')}</details>
   </details>`;
 }
 

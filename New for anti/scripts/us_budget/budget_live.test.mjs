@@ -132,12 +132,16 @@ test('unavailable discovery is not displayed as zero new funding laws', () => {
   assert.match(html,/새 공고 검토 후보: 확인 불가/);
   assert.doesNotMatch(html,/새 공고 검토 후보: 0건/);
   assert.match(html,/조기 종료/);
+  delete f.discovery;
+  assert.equal(usableFunding(f),null);
+  assert.match(renderFunding(f,2027),/검증 미완료/);
 });
 
 test('source text is escaped and nonofficial executable links are rejected', () => {
   const f=structuredClone(bundle.funding);
   f.measures[0].title='<script>alert(1)</script>';
   f.measures[0].govinfo_url='javascript:alert(1)';
+  f.measures[0].areas[0].item='<script>alert(2)</script>';
   const html=renderBillFinance(f,f.measures[0].bill_id);
   assert.doesNotMatch(html,/<script>|href="javascript:/);
   assert.match(html,/&lt;script&gt;/);
