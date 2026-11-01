@@ -1,0 +1,461 @@
+{
+  "schema_version": "etf-adjustment-evidence-v1",
+  "collected_at": "2026-11-01T12:31:23.782350+00:00",
+  "provider_published_at": "unknown",
+  "period": [
+    "2024-01-30",
+    "2026-10-30"
+  ],
+  "adjusted_file_sha256": "50dc408d50d8fd0d7ccc6d2276ef5d865508f1d3073f923bdf93ae03253ceb0b",
+  "formula": "D_inferred = U_previous - U_current * A_previous / A_current",
+  "event_threshold_absolute_ratio_change": 0.0005,
+  "limitations": "Inverting the formula is not an independent cash-distribution test. Events are candidates, not verified ex-dates. No inference about OHLC adjustment or tradable returns.",
+  "by_ticker": {
+    "069500": {
+      "source_receipts": [
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=1",
+          "sha256": "3e72f245fb6a7d5129ff20a33ee2fc92ab7232b5570391dd5c8d600b7de91fdd"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=2",
+          "sha256": "d7d289e8ea8806332a3ea911f29f89be37023cf8a52f857c13163fc55ad06085"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=3",
+          "sha256": "cd9f42354e347236b9e2a4d530abf4c68460d559bbc64fa25960de22d2f843fa"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=4",
+          "sha256": "de775d5b5f727ef75dbdac08950f83610d95b307c2185bf6d88a512848aa7537"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=5",
+          "sha256": "3de6aecd314ed483956357cbd45db3bfb28b39454f459c7fcc1ab5f4dda48dff"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=6",
+          "sha256": "311e7aed6212cc17da28b5be142345596178da706ed765ae201266dac3fc0f30"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=7",
+          "sha256": "71e9080bd799e1a9dd0ea9feffe9b61ce5de7ea72d5adfd0f3027ea79b09a69e"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=8",
+          "sha256": "d1d0398d6d4954b307307106af0de97c21e015adb4cfd2e3d52254da69e55ae1"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=9",
+          "sha256": "cf314623469bed86c7b1bf5816b9076f038750db14c9d7725c44a04ff1e81980"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=10",
+          "sha256": "bdfd0bb8e79f2e06aab2587f6842aca3991cfeb2fb68c82944bd6788e69f013c"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=11",
+          "sha256": "7034b5b48a1912851aba300f0c840c09112c685f6a4ec3b806a6a243617c9a00"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=12",
+          "sha256": "2123cec894b6ac71e5cb65dae6a5b8ee5245a16d0af1e4b0eed99ae11c45daaf"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=13",
+          "sha256": "d92dc1327d5d31e45278d9f6fe57dc39fcfb7c41afc14eff58db6e0d01e0e567"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=14",
+          "sha256": "bc01d2c33cc3d95f1a46ce42cf0645133667cff30c079b01161a1b0d6bc5ad6d"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=15",
+          "sha256": "1685c6863b9849cafdb7e7a0c777de32ced952d48b685bcaeddc3a7fe65f323a"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=16",
+          "sha256": "6b2028aff21dde809422f19806e42560618c37964f0c5e7d62e193fb5d2781d8"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/069500/price?pageSize=40&page=17",
+          "sha256": "ac85e1a2ca36998655783c76ca455deef8d137161d2e3b9a96b23e6742f5a242"
+        }
+      ],
+      "unadjusted_coverage": [
+        "2024-01-12",
+        "2026-10-30"
+      ],
+      "events": [
+        {
+          "date": "2024-01-30",
+          "previous_date": "2024-01-29",
+          "U_previous": 34150.0,
+          "U_current": 33995.0,
+          "A_previous": 32369.0,
+          "A_current": 32313.0,
+          "inferred_D_krw": 96.08501222418272,
+          "adjustment_ratio_change": 0.0028215555321222663,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2024-04-29",
+          "previous_date": "2024-04-26",
+          "U_previous": 36605.0,
+          "U_current": 36520.0,
+          "A_previous": 34794.0,
+          "A_current": 35136.0,
+          "inferred_D_krw": 440.4713114754122,
+          "adjustment_ratio_change": 0.012179650266399777,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2024-07-30",
+          "previous_date": "2024-07-29",
+          "U_previous": 38080.0,
+          "U_current": 37575.0,
+          "A_previous": 36637.0,
+          "A_current": 36294.0,
+          "inferred_D_krw": 149.89378409654455,
+          "adjustment_ratio_change": 0.0039518419285020645,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2024-10-30",
+          "previous_date": "2024-10-29",
+          "U_previous": 34995.0,
+          "U_current": 34540.0,
+          "A_previous": 33803.0,
+          "A_current": 33478.0,
+          "inferred_D_krw": 119.69024433956656,
+          "adjustment_ratio_change": 0.0034319478501589895,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2025-01-24",
+          "previous_date": "2025-01-23",
+          "U_previous": 33685.0,
+          "U_current": 33775.0,
+          "A_previous": 32649.0,
+          "A_current": 32843.0,
+          "inferred_D_krw": 109.50522181286942,
+          "adjustment_ratio_change": 0.003261462639234436,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2025-04-29",
+          "previous_date": "2025-04-28",
+          "U_previous": 34200.0,
+          "U_current": 34005.0,
+          "A_previous": 33256.0,
+          "A_current": 33484.0,
+          "inferred_D_krw": 426.5476048261844,
+          "adjustment_ratio_change": 0.012629671371326534,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2025-07-30",
+          "previous_date": "2025-07-29",
+          "U_previous": 43830.0,
+          "U_current": 44030.0,
+          "A_previous": 43160.0,
+          "A_current": 43531.0,
+          "inferred_D_krw": 175.25280834348087,
+          "adjustment_ratio_change": 0.004014518915298471,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2025-10-30",
+          "previous_date": "2025-10-29",
+          "U_previous": 57385.0,
+          "U_current": 57445.0,
+          "A_previous": 56735.0,
+          "A_current": 56934.0,
+          "inferred_D_krw": 140.78608564302704,
+          "adjustment_ratio_change": 0.0024593941643369366,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2026-01-29",
+          "previous_date": "2026-01-28",
+          "U_previous": 76175.0,
+          "U_current": 77035.0,
+          "A_previous": 75498.0,
+          "A_current": 76430.0,
+          "inferred_D_krw": 79.37746958000935,
+          "adjustment_ratio_change": 0.001043127934833299,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2026-04-29",
+          "previous_date": "2026-04-28",
+          "U_previous": 100700.0,
+          "U_current": 101045.0,
+          "A_previous": 99911.0,
+          "A_current": 100699.0,
+          "inferred_D_krw": 445.7075541961676,
+          "adjustment_ratio_change": 0.0044457702839717506,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2026-07-30",
+          "previous_date": "2026-07-29",
+          "U_previous": 89605.0,
+          "U_current": 87635.0,
+          "A_previous": 89298.0,
+          "A_current": 87511.0,
+          "inferred_D_krw": 180.46788403743994,
+          "adjustment_ratio_change": 0.0020181026365717614,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2026-10-29",
+          "previous_date": "2026-10-28",
+          "U_previous": 95650.0,
+          "U_current": 94465.0,
+          "A_previous": 95515.0,
+          "A_current": 94465.0,
+          "inferred_D_krw": 135.0,
+          "adjustment_ratio_change": 0.0014133905669266866,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        }
+      ],
+      "n_events": 12
+    },
+    "102110": {
+      "source_receipts": [
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=1",
+          "sha256": "aaeabac8423a771b862aa8406cf54b4a315fdae949221a4ef1ee5f41e726775f"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=2",
+          "sha256": "a946f899d058a820efa38bede898ac00b9e656960f0da4ac2f7409c7ce57e571"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=3",
+          "sha256": "8da912edd95593edae25d143b5327368343e75eaaacc9bcbbb8f1a35dfce6ab3"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=4",
+          "sha256": "35d7e86e86473b90b2d3aec26a826742ae0fe20b23aea59f231b57518235229a"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=5",
+          "sha256": "693bfc99359f12052a3da28f75c9e3ade1d2b96099e28d9d03d94c3ee5be441c"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=6",
+          "sha256": "05e2dc2249ad4be263148baaa617dc426ab5e2a4768e0f8b2721f2166989eb59"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=7",
+          "sha256": "6639bf0711726094835713de3bb526262cfd76c933bc82bbec997bdc1f940a58"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=8",
+          "sha256": "1fc1358266ef7eb33403d8b25458ae040d89f4ff1c165ecd911bfce45d752eb8"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=9",
+          "sha256": "7588f79ce256863817071fb1b4e503f9e44ee99dfa3dfaab3826f85395fd3ff4"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=10",
+          "sha256": "0af67ca1bf1b2708f5067c0ec60962e6b4bd313d4fbb53dfc1d61e6488f8a51b"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=11",
+          "sha256": "e11ac9e060aa22e2c8166f200c82598de7c1c113122aa164e1f8d3c8712a892f"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=12",
+          "sha256": "069f45c593e25dfb5f3cbc700bb0f896c3d18540315a22e539f3fd5fa74c697f"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=13",
+          "sha256": "9b6451d23c8fb27870b54fd42549932b8ec247c58d89a718b63d609229fcf108"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=14",
+          "sha256": "6b59675d39c566d22d243889e226ad38658403abb0bfbe4c40bea63cec1d282c"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=15",
+          "sha256": "ba2689931e61e60057499a9e6f647623e6bfb35aa6f86850be81f148983a969f"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=16",
+          "sha256": "0a0e49cf585ac3793b4475417046d894660a6223155da39375fbd19cb27cbf3e"
+        },
+        {
+          "url": "https://m.stock.naver.com/api/stock/102110/price?pageSize=40&page=17",
+          "sha256": "313e787949ffffe9b853e4de7f52d2ac6f6fe46bf7b754cab5faeb5a9fd81f11"
+        }
+      ],
+      "unadjusted_coverage": [
+        "2024-01-12",
+        "2026-10-30"
+      ],
+      "events": [
+        {
+          "date": "2024-01-30",
+          "previous_date": "2024-01-29",
+          "U_previous": 34205.0,
+          "U_current": 34065.0,
+          "A_previous": 32124.0,
+          "A_current": 32091.0,
+          "inferred_D_krw": 104.97008507057762,
+          "adjustment_ratio_change": 0.0030782989144717554,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2024-04-29",
+          "previous_date": "2024-04-26",
+          "U_previous": 36670.0,
+          "U_current": 36600.0,
+          "A_previous": 34546.0,
+          "A_current": 34914.0,
+          "inferred_D_krw": 455.77075098814385,
+          "adjustment_ratio_change": 0.012585405252013793,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2024-07-30",
+          "previous_date": "2024-07-29",
+          "U_previous": 38130.0,
+          "U_current": 37640.0,
+          "A_previous": 36374.0,
+          "A_current": 36048.0,
+          "inferred_D_krw": 149.60275188637024,
+          "adjustment_ratio_change": 0.003938946475706029,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2024-10-30",
+          "previous_date": "2024-10-29",
+          "U_previous": 35045.0,
+          "U_current": 34620.0,
+          "A_previous": 33563.0,
+          "A_current": 33271.0,
+          "inferred_D_krw": 121.16062036007497,
+          "adjustment_ratio_change": 0.003469281227731047,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2025-01-24",
+          "previous_date": "2025-01-23",
+          "U_previous": 33725.0,
+          "U_current": 33685.0,
+          "A_previous": 32410.0,
+          "A_current": 32575.0,
+          "inferred_D_krw": 210.62240982348158,
+          "adjustment_ratio_change": 0.006284538904437698,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2025-04-29",
+          "previous_date": "2025-04-28",
+          "U_previous": 34160.0,
+          "U_current": 33995.0,
+          "A_previous": 33034.0,
+          "A_current": 33265.0,
+          "inferred_D_krw": 401.0692920486981,
+          "adjustment_ratio_change": 0.011880390866593205,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2025-07-30",
+          "previous_date": "2025-07-29",
+          "U_previous": 43810.0,
+          "U_current": 44045.0,
+          "A_previous": 42869.0,
+          "A_current": 43227.0,
+          "inferred_D_krw": 129.7745621949216,
+          "adjustment_ratio_change": 0.002971014020513918,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2025-10-30",
+          "previous_date": "2025-10-29",
+          "U_previous": 57440.0,
+          "U_current": 57465.0,
+          "A_previous": 56375.0,
+          "A_current": 56544.0,
+          "inferred_D_krw": 146.75270585738326,
+          "adjustment_ratio_change": 0.002561431107299006,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2026-01-29",
+          "previous_date": "2026-01-28",
+          "U_previous": 76265.0,
+          "U_current": 76935.0,
+          "A_previous": 75042.0,
+          "A_current": 75901.0,
+          "inferred_D_krw": 200.70216466186685,
+          "adjustment_ratio_change": 0.002638585648898406,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2026-04-29",
+          "previous_date": "2026-04-28",
+          "U_previous": 100750.0,
+          "U_current": 100975.0,
+          "A_previous": 99397.0,
+          "A_current": 100065.0,
+          "inferred_D_krw": 449.0748513466242,
+          "adjustment_ratio_change": 0.004477275266215663,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2026-07-30",
+          "previous_date": "2026-07-29",
+          "U_previous": 89395.0,
+          "U_current": 87840.0,
+          "A_previous": 88590.0,
+          "A_current": 87176.0,
+          "inferred_D_krw": 130.2298797834228,
+          "adjustment_ratio_change": 0.001458916878495753,
+          "issuer_cash_verified": false,
+          "status": "inferred_cash_unverified"
+        },
+        {
+          "date": "2026-10-29",
+          "previous_date": "2026-10-28",
+          "U_previous": 95930.0,
+          "U_current": 94225.0,
+          "A_previous": 95205.0,
+          "A_current": 94225.0,
+          "inferred_D_krw": 725.0,
+          "adjustment_ratio_change": 0.007615146263326489,
+          "issuer_cash_verified": false,
+          "status": "excluded_unexplained_ratio_reset"
+        }
+      ],
+      "n_events": 12
+    }
+  }
+}

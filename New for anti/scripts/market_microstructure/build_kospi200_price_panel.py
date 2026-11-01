@@ -217,6 +217,12 @@ def apply_etf_definition(etf_doc: dict[str, Any], *, collected_at: str) -> None:
         "같은 날 시가에서 종가까지의 수익률은 두 시세가 같다."
     )
     etf_doc["price_adjustment"] = "mixed"
+    etf_doc["adjustment_note_ko"] = (
+        "069500·102110은 확인 구간에서 현금 분배금 역조정 식과 비교했다. "
+        "나머지 10개 상품의 수정주가·분배금 반영 방식은 unknown이다. "
+        "날짜별 입력과 역산 금액은 data/manifests/etf_adjustment_evidence_20261101.json을 참조한다. "
+        "역산 금액만으로 공식 분배금 지급액이 검증되는 것은 아니다."
+    )
     etf_doc["dividend_treatment"] = formula_ko
     etf_doc["provider_published_at"] = "unknown"
     etf_doc["definition_collected_at"] = collected_at
