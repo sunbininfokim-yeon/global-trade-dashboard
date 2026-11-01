@@ -1,0 +1,55 @@
+{
+  "status": "synthetic_design_examples_not_market_observations",
+  "as_of": "2026-11-01",
+  "shipowner": {
+    "scope_confirmed_for_example": true,
+    "emissions_year": 2026,
+    "raw_eligible_ghg_tco2e": "200000",
+    "route_weight": "0.5",
+    "phase_in": "1",
+    "available_eua": "20000",
+    "delivery_before_deadline_eua": "30000",
+    "delivery_after_deadline_eua": "10000",
+    "scenario_eur_per_eua": "80",
+    "cash_settled_hedge_delta_eua": "20000",
+    "price_shock_eur": "10",
+    "expected_obligation_eua": "100000",
+    "expected_procurement_gap_eua": "50000",
+    "expected_new_purchase_cash_eur": "4000000",
+    "expected_gross_extra_purchase_cash_eur": "500000",
+    "expected_hedge_gain_eur": "200000",
+    "expected_net_extra_economic_cost_eur": "300000",
+    "note": "Cash excludes unpaid existing contracts, margin, fees and financing; hedge gain need not arrive on purchase date. Cash-settled hedge is a generic scenario contract, not ICE EUA futures."
+  },
+  "dealer": {
+    "role": "principal",
+    "customer_fixed_price_delivery_eua": "50000",
+    "matched_long_futures_lots": "50",
+    "contract_size_eua": "1000",
+    "parallel_price_shock_eur": "-10",
+    "expected_net_delta_eua": "0",
+    "expected_futures_pnl_eur": "-500000",
+    "expected_customer_obligation_pnl_eur": "500000",
+    "expected_net_pnl_eur": "0",
+    "expected_vm_outflow_eur": "500000",
+    "note": "Matched tenor and delivery assumed; zero discounting/fees and full daily settlement. OTC valuation gain is not same-day cash. Initial margin and credit costs are additional unknowns."
+  },
+  "fueleu": {
+    "status": "illustrative_balance_only_not_verified_compliance",
+    "input_target_gco2e_per_mj": "89.3368",
+    "input_actual_gco2e_per_mj": "90",
+    "input_scoped_energy_mj": "1000000000",
+    "pool_quote_eur_per_t_balance": "200",
+    "expected_balance_gco2e": "-663200000",
+    "expected_balance_tco2e": "-663.2",
+    "expected_pool_purchase_eur": "132640",
+    "penalty_eur": null,
+    "penalty_status": "held_pending_current_annex_verification",
+    "note": "Target/actual/energy are precomputed hypothetical inputs; not a general Annex I implementation. Pool eligibility is assumed only for arithmetic illustration; quote is synthetic, balance is not EUA."
+  },
+  "missing_price": {
+    "quantity_eua": "50000",
+    "price_eur": null,
+    "expected_cost_eur": null
+  }
+}
