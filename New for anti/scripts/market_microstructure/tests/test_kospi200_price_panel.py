@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -11,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from build_kospi200_price_panel import (  # noqa: E402
+    apply_etf_definition,
     audit_stored_returns,
     reconcile_index_gaps,
 )
@@ -45,6 +47,10 @@ class PricePanelTests(unittest.TestCase):
         self.assertEqual(added["source"], "Naver fchart KPI200")
         self.assertEqual(added["provider_published_at"], "unknown")
         self.assertEqual(added["collected_at"], "2026-11-01T08:00:00+00:00")
+        again = reconcile_index_gaps(workbook, naver, collected_at="2026-11-02T08:00:00+00:00")
+        self.assertEqual(again["rows_added"], 0)
+        self.assertEqual(len(workbook["rows"]), 2)
+        self.assertEqual(workbook["gap_fill"]["collected_at"], "2026-11-01T08:00:00+00:00")
 
     def test_overlap_mismatch_does_not_pick_a_source(self) -> None:
         workbook = {
@@ -94,6 +100,22 @@ class PricePanelTests(unittest.TestCase):
         self.assertEqual(flip["naver_direction"], "FALLING")
         self.assertLess(flip["price_file_close_to_close"], 0)
         self.assertGreater(flip["letf_history_underlying_day_return"], 0)
+
+    def test_unchecked_etf_stays_unknown_and_a_second_pass_is_stable(self) -> None:
+        doc = {"candidates": [
+            {"ticker": "069500", "rows": [{"close": 1}]},
+            {"ticker": "105190", "rows": [{"close": 2}]},
+        ]}
+        apply_etf_definition(doc, collected_at="2026-11-01T08:30:00+00:00")
+        first = json.dumps(doc, sort_keys=True)
+        apply_etf_definition(doc, collected_at="2026-11-01T08:30:00+00:00")
+        self.assertEqual(json.dumps(doc, sort_keys=True), first)
+        self.assertEqual(doc["candidates"][0]["price_adjustment"], "backward_cash_distribution")
+        self.assertEqual(doc["candidates"][1]["price_adjustment"], "unknown")
+        self.assertEqual(doc["candidates"][1]["dividend_treatment"], "unknown")
+        self.assertEqual(doc["candidates"][0]["rows"][0]["close"], 1)
+        self.assertIn("U_t / (U_{t-1} - D)", doc["adjustment_evidence"]["formula"])
+        self.assertIn("두 번", doc["adjustment_evidence"]["double_count_ko"])
 
 
 if __name__ == "__main__":

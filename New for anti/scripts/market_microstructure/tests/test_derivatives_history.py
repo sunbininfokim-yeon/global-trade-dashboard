@@ -18,7 +18,9 @@ from market_microstructure.derivatives_history import (  # noqa: E402
     activity_record_from_board,
     append_jsonl,
     direction_record_from_micro,
+    implied_rebalance_for_signal,
     stock_records_from_micro,
+    underlying_return_for_signal,
     validate_activity_record,
     validate_direction_record,
     validate_stock_record,
@@ -136,6 +138,9 @@ class TestDerivativesHistory(unittest.TestCase):
         self.assertEqual(stocks[0]["implied_rebalance_krw"], -50.0)
         self.assertEqual(stocks[0]["implied_ir_pct"], 5.0)
         self.assertEqual(stocks[0]["implied_rebalance_quality"], "estimated")
+        self.assertEqual(stocks[0]["underlying_day_return_quality"], "excluded_pending_krx_source")
+        self.assertIsNone(underlying_return_for_signal(stocks[0]))
+        self.assertIsNone(implied_rebalance_for_signal(stocks[0]))
         self.assertEqual(stocks[1]["quality"], "partial")
         self.assertIn("aum_krw", stocks[1]["products"][0])
         self.assertIsNone(stocks[1]["implied_rebalance_krw"])
