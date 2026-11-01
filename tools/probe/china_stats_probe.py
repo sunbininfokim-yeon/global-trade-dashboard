@@ -1,19 +1,26 @@
-"""One-off: what does an NBS yearbook contents page look like from Actions? Not merged."""
+"""One-off: which NBS yearbooks carry provincial crop tables, and in what format? Not merged."""
 import re, urllib.request
 
 def get(url):
     with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=60) as r:
         return r.read()
 
-for y in (2024, 2005):
-    b = get(f"https://www.stats.gov.cn/sj/ndsj/{y}/left.htm")
-    print(y, "head bytes:", b[:300])
-    for enc in ("utf-8", "gb18030"):
+for y in range(2005, 2026):
+    base = f"https://www.stats.gov.cn/sj/ndsj/{y}/"
+    try:
+        t = get(base + "left.htm").decode("gb18030", "ignore")
+    except Exception as e:
+        print(y, "FAIL", e); continue
+    items = re.findall(r"href\s*=\s*['\"]([^'\"]+)['\"][^>]*>\s*([^<]*)<", t)
+    hits = [(h, n.strip()) for h, n in items if ("地区" in n) and any(w in n for w in ("农作物", "农产品", "粮食"))]
+    print(y, hits)
+    if y in (2012, 2024) and hits:
+        h = hits[0][0]
         try:
-            t = b.decode(enc); print("decoded as", enc); break
-        except UnicodeDecodeError:
-            continue
-    print("hrefs:", re.findall(r'href\s*=\s*["\']?([^"\' >]+)', t, re.I)[:15])
-    for word in ("农业", "农作物", "粮食"):
-        i = t.find(word)
-        print(word, i, repr(t[max(0, i - 400):i + 600]) if i >= 0 else "")
+            b = get(base + h)
+            print("   fetched", h, len(b), b[:120])
+            if h.lower().endswith(("htm", "html")):
+                tt = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", b.decode("gb18030", "ignore")))
+                print("   ", tt[:700])
+        except Exception as e:
+            print("   FAIL", h, e)
