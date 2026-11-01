@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -15,6 +16,7 @@ from build_kospi200_price_panel import (  # noqa: E402
     apply_etf_definition,
     audit_stored_returns,
     reconcile_index_gaps,
+    return_quality,
 )
 
 
@@ -47,6 +49,10 @@ class PricePanelTests(unittest.TestCase):
         self.assertEqual(added["source"], "Naver fchart KPI200")
         self.assertEqual(added["provider_published_at"], "unknown")
         self.assertEqual(added["collected_at"], "2026-11-01T08:00:00+00:00")
+        again = reconcile_index_gaps(workbook, naver, collected_at="2026-11-02T08:00:00+00:00")
+        self.assertEqual(again["rows_added"], 0)
+        self.assertEqual(len(workbook["rows"]), 2)
+        self.assertEqual(workbook["gap_fill"]["collected_at"], "2026-11-01T08:00:00+00:00")
 
     def test_overlap_mismatch_does_not_pick_a_source(self) -> None:
         workbook = {
@@ -97,17 +103,35 @@ class PricePanelTests(unittest.TestCase):
         self.assertLess(flip["price_file_close_to_close"], 0)
         self.assertGreater(flip["letf_history_underlying_day_return"], 0)
 
-    def test_adjustment_label_follows_the_evidence_per_ticker(self) -> None:
-        doc = {"candidates": [{"ticker": t} for t in ("069500", "102110", "105190")]}
-        apply_etf_definition(doc, collected_at="2026-11-01T08:00:00+00:00")
-        by = {c["ticker"]: c for c in doc["candidates"]}
-        self.assertEqual(by["069500"]["price_adjustment"], "distribution_adjusted")
-        self.assertEqual(by["069500"]["price_adjustment_verification"], "issuer_notice_and_price_test")
-        self.assertEqual(by["102110"]["price_adjustment"], "unverified_same_chart_source")
-        self.assertEqual(by["102110"]["price_adjustment_verification"], "price_test_only")
-        self.assertEqual(by["105190"]["price_adjustment_verification"], "not_checked")
-        self.assertEqual(doc["price_adjustment"], "see_candidates")
-        self.assertNotIn("unknown", doc["adjustment_note_ko"])
+    def test_unchecked_etf_stays_unknown_and_a_second_pass_is_stable(self) -> None:
+        doc = {"candidates": [
+            {"ticker": "069500", "rows": [{"close": 1}]},
+            {"ticker": "105190", "rows": [{"close": 2}]},
+        ]}
+        apply_etf_definition(doc, collected_at="2026-11-01T08:30:00+00:00")
+        first = json.dumps(doc, sort_keys=True)
+        apply_etf_definition(doc, collected_at="2026-11-01T08:30:00+00:00")
+        self.assertEqual(json.dumps(doc, sort_keys=True), first)
+        self.assertEqual(doc["candidates"][0]["price_adjustment"], "backward_cash_distribution")
+        self.assertEqual(doc["candidates"][1]["price_adjustment"], "unknown")
+        self.assertEqual(doc["candidates"][1]["dividend_treatment"], "unknown")
+        self.assertEqual(doc["candidates"][0]["rows"][0]["close"], 1)
+        self.assertIn("U_t / (U_{t-1} - D)", doc["adjustment_evidence"]["formula"])
+        self.assertIn("두 번", doc["adjustment_evidence"]["double_count_ko"])
+        self.assertEqual(doc["candidates"][0]["adjustment_checked"]["ex_dates_fitting_formula"], 12)
+        tiger = {"ticker": "102110"}
+        apply_etf_definition({"candidates": [tiger]}, collected_at="2026-11-01T08:30:00+00:00")
+        self.assertEqual(tiger["adjustment_checked"]["ex_dates_fitting_formula"], 11)
+        self.assertEqual(tiger["adjustment_checked"]["not_fit"], ["2026-10-29"])
+
+    def test_return_quality_follows_the_snapshot_pairs(self) -> None:
+        reproduced = {("005930", "2026-08-13")}
+        self.assertEqual(return_quality("005930", "2026-08-13", reproduced), "observed_krx")
+        self.assertEqual(
+            return_quality("005930", "2026-05-27", reproduced),
+            "naver_candle_match_krx_close_unchecked",
+        )
+        self.assertEqual(return_quality("005930", "2026-08-10", reproduced), "krx_close_unchecked")
 
     def test_conclusion_does_not_call_the_krx_based_return_wrong(self) -> None:
         self.assertIn("정의 차이", CONCLUSION_KO)

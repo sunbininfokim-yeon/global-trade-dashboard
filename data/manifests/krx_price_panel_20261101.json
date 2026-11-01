@@ -833,7 +833,7 @@
       "result_ko": "기존 OpenAPI drv/fut_bydd_trd·opt_bydd_trd와 같은 정의의 원본을 확인하지 못했다. OpenAPI는 401이고, 15001 전종목 시세의 어떤 계약 묶음도 2026-10-29 공개 activity 행과 같지 않다. 15001 합계는 derivatives_activity_15001_quotes_v1.jsonl에만 있고 이 파일과 합치거나 대체하지 않았다. 결측은 그대로 둔다."
     }
   },
-  "definition_collected_at": "2026-11-01T08:14:11.651899+00:00",
+  "definition_collected_at": "2026-11-01T08:39:45.872892+00:00",
   "provider_published_at": "unknown",
   "index_gap_fill": {
     "collected_at": "2026-11-01T08:14:11.651899+00:00",
@@ -899,42 +899,43 @@
     "note_ko": "겹치는 날의 시가·고가·저가·종가는 거래소 원본과 같고, 거래량은 화면 단위로 최대 1 차이이다. 원본에 없는 날만 네이버 차트로 채운다. 그 날의 거래대금은 차트에 없어 결측이다. 수집 시각은 이번 조회 시각이고, 과거 공개 시각은 unknown이다."
   },
   "etf_price_definition": {
-    "collected_at": "2026-11-01T08:14:11.651899+00:00",
+    "collected_at": "2026-11-01T08:39:45.872892+00:00",
     "provider_published_at": "unknown",
-    "endpoint": "https://fchart.stock.naver.com/sise.nhn?timeframe=day&count=6000&requestType=0",
-    "reader": "FinanceDataReader NaverDailyReader",
-    "price_adjustment": "distribution_adjusted",
-    "dividend_treatment": "현금 분배금은 종가 수익률에 남아 있지 않다. 분배락일 전후 수익률은 코스피200 지수와 같이 움직인다.",
+    "adjusted_source": "FinanceDataReader via Naver fchart",
+    "unadjusted_source": "Naver daily price table OHLC",
+    "krx_workbook": "not_compared",
+    "formula": "A_t / A_{t-1} - 1 = U_t / (U_{t-1} - D) - 1",
+    "double_count_ko": "조정 종가 수익률과 현금 분배금을 더하면 분배금이 두 번 계산된다.",
     "checked": {
-      "ticker": "069500",
-      "ex_date": "2024-10-30",
-      "distribution_krw": 120,
-      "source": "Samsung Kodex notice, 2024-10-29, KODEX 200 distribution schedule"
+      "069500": {
+        "price_adjustment": "backward_cash_distribution",
+        "checked_span": [
+          "2024-01-30",
+          "2026-10-29"
+        ],
+        "ex_dates_fitting_formula": 12,
+        "formula": "A_t / A_{t-1} - 1 = U_t / (U_{t-1} - D) - 1",
+        "primary_cash_check": {
+          "ex_date": "2024-10-30",
+          "distribution_krw": 120,
+          "source": "Samsung Kodex notice 2024-10-29"
+        }
+      },
+      "102110": {
+        "price_adjustment": "backward_cash_distribution",
+        "checked_span": [
+          "2024-01-30",
+          "2026-07-30"
+        ],
+        "ex_dates_fitting_formula": 11,
+        "formula": "A_t / A_{t-1} - 1 = U_t / (U_{t-1} - D) - 1",
+        "not_fit": [
+          "2026-10-29"
+        ],
+        "primary_cash_check": null
+      }
     },
-    "same_endpoint_tickers": [
-      "069500",
-      "102110"
-    ],
-    "not_individually_checked_against_issuer_notice": [
-      "105190",
-      "152100",
-      "293180",
-      "148020",
-      "278530",
-      "295040",
-      "310960",
-      "332930",
-      "332500",
-      "491220"
-    ],
-    "tradable_price_ko": "같은 날 시가 대비 종가 수익률은 막대 전체에 같은 배수가 곱해지면 수정 여부와 같다. 분배락일을 가로지르는 종가 수익률은 현금 분배금을 뺀 수정 수익률이다. 실제 체결 가격인 미수정 시세는 이 파일에 없다.",
-    "verified_tickers": [
-      "069500"
-    ],
-    "price_test_only_tickers": [
-      "102110"
-    ],
-    "labels_corrected_at": "2026-11-01"
+    "before_2024_ko": "2020-01-30부터 2023-10-30까지도 두 종목 모두 분기마다 한 번만 종가 비율이 바뀐다. 그 금액은 발행사 원문과 대조하지 않아 확정하지 않는다. 2019년은 비율 변화가 없어 이 식으로 확인하지 않는다."
   },
   "return_mismatch_audit": {
     "usable_as_close_to_close_signal": false,
@@ -1087,9 +1088,32 @@
     "collected_at": "2026-11-01T08:14:11.651899+00:00",
     "provider_published_at": "unknown"
   },
-  "signal_use_ko": "LETF 리밸런싱 추정이 쓰는 underlying_day_return은 KRX 종가 기준이라 그대로 유효하다. 가격 파일(investor_price_levels)의 종가는 2026-09-14부터 KRX 종가와 다를 수 있으므로, 두 종가를 섞어 수익률을 만들지 않는다. LETF AUM 결측과 파생상품 활동 결측을 쓰는 전략은 보류한다. 옵션 수급과 ETF 다음 날 수익률을 보는 탐색은, ETF 가격이 분배금이 빠진 수정 종가라는 전제에서만 가능하며 그 전제는 KODEX 200만 확인됐다. 탐색이 가능하다는 것은 실전 수익이 확인됐다는 뜻이 아니다.",
+  "signal_use_ko": "신호 함수는 underlying_day_return_quality가 observed_krx일 때만 저장 수익률과 리밸런싱 추정치를 돌려준다. 2026-08-07부터 스냅샷의 연속 KRX 종가로 재현되는 날이 그 상태다. 그 이전 행은 네이버 캔들과 맞지만 KRX 종가 대조가 없다. 표시용 implied_rebalance_krw는 바꾸지 않는다. 가격 파일 종가는 2026-09-14부터 KRX 종가와 다를 수 있으므로 두 종가를 섞지 않는다. 069500은 2024-01-30부터 2026-10-29까지 분배락 12회, 102110은 2024-01-30부터 2026-07-30까지 11회가 A_t/A_{t-1}-1 = U_t/(U_{t-1}-D)-1 이다. 102110의 2026-10-29는 종가 비율이 0.9924에서 1로 한 번에 붙어 단일 분배금 식과 맞지 않아 제외한다. 같은 D를 조정 수익률에 다시 더하면 분배금이 두 번 들어간다. 다른 상품의 조정 방식은 unknown이다. LETF AUM 결측과 파생상품 활동 결측은 채우지 않는다.",
   "price_basis_reconciliation": {
     "file": "data/manifests/krx_close_vs_price_file_20261101.json",
     "summary_ko": "KRX 종가와 가격 파일 종가는 2026-09-14부터 서로 다른 날이 많고, 저장된 underlying_day_return은 KRX 종가 수익률과 36쌍 모두 일치한다."
-  }
+  },
+  "return_source_check": {
+    "collected_at": "2026-11-01T08:39:45.872892+00:00",
+    "provider_published_at": "unknown",
+    "request": "git history of market_microstructure_v1.json stocks[].close",
+    "result": "36 consecutive pairs match the stored return for both stocks",
+    "rows_changed": 0,
+    "openapi_stk_bydd_trd_20261023": "401 Unauthorized, not retried",
+    "note_ko": "저장 수익률은 스냅샷 KRX 종가로 계산한 등락률과 삼성전자·SK하이닉스 연속 36쌍이 모두 같다. 근거는 data/manifests/krx_close_vs_price_file_20261101.json. 가격 파일 종가는 2026-09-14부터 KRX 종가와 다른 날이 많다. 부호가 갈리는 날은 저장값의 오류가 아니라 종가 정의 차이다. 값은 한 행도 바꾸지 않았다."
+  },
+  "remaining_gaps": {
+    "letf_aum": "16 rows stay null. No same-definition original was fetched. Not filled with 0.",
+    "derivatives_activity": "19 October 2026 dates stay missing. 15001 quotes were not substituted and gaps were not filled with 0."
+  },
+  "letf_return_quality": {
+    "rows": 198,
+    "by_quality": {
+      "naver_candle_match_krx_close_unchecked": 100,
+      "krx_close_unchecked": 26,
+      "observed_krx": 72
+    },
+    "reproduced_pairs": 72
+  },
+  "ui_handoff_ko": "market-microstructure.js는 표시용 implied_rebalance_krw를 그대로 그린다. 신호 계산은 underlying_day_return_quality가 observed_krx일 때만 한다."
 }

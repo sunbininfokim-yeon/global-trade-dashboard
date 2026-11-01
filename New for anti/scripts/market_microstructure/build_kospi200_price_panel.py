@@ -20,6 +20,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC = ROOT / "public/data"
 MANIFEST = ROOT.parent / "data/manifests/krx_price_panel_20261101.json"
+CLOSE_COMPARE = ROOT.parent / "data/manifests/krx_close_vs_price_file_20261101.json"
 INDEX_PATH = PUBLIC / "kospi200_index_daily_v1.json"
 ETF_PATH = PUBLIC / "kospi200_etf_candidates_daily_v1.json"
 LETF_PATH = PUBLIC / "stock_letf_history_v1.jsonl"
@@ -31,15 +32,46 @@ NAVER_CHART = (
 )
 NAVER_PRICE = "https://m.stock.naver.com/api/stock/{code}/price?pageSize=40&page={page}"
 
-# Samsung Kodex notice, 2024-10-29: KODEX 200 ex-date 2024-10-30, 120 won.
-# The close-to-close residual versus the KOSPI200 index on that date is a few
-# won, not the cash distribution. Naver fchart is therefore the adjusted series.
-KODEX_EX_DATE = {
-    "ticker": "069500",
-    "ex_date": "2024-10-30",
-    "distribution_krw": 120,
-    "source": "Samsung Kodex notice, 2024-10-29, KODEX 200 distribution schedule",
+# Checked only for these two tickers. Other candidates stay unknown.
+CHECKED_ADJUSTMENT = {
+    "069500": {
+        "price_adjustment": "backward_cash_distribution",
+        "checked_span": ["2024-01-30", "2026-10-29"],
+        "ex_dates_fitting_formula": 12,
+        "formula": "A_t / A_{t-1} - 1 = U_t / (U_{t-1} - D) - 1",
+        "primary_cash_check": {
+            "ex_date": "2024-10-30",
+            "distribution_krw": 120,
+            "source": "Samsung Kodex notice 2024-10-29",
+        },
+    },
+    "102110": {
+        "price_adjustment": "backward_cash_distribution",
+        "checked_span": ["2024-01-30", "2026-07-30"],
+        "ex_dates_fitting_formula": 11,
+        "formula": "A_t / A_{t-1} - 1 = U_t / (U_{t-1} - D) - 1",
+        "not_fit": ["2026-10-29"],
+        "primary_cash_check": None,
+    },
 }
+CONCLUSION_KO = (
+    "가격 파일의 종가는 네이버 캔들과 같다. 저장돼 있는 underlying_day_return은 가격 파일 종가 수익률과 "
+    "부호가 다른 날이 있지만, KRX 일별 시세의 종가로 계산한 등락률과는 연속한 거래일 36쌍이 모두 일치한다 "
+    f"(삼성전자·SK하이닉스, 근거 {CLOSE_COMPARE.relative_to(ROOT.parent)}). KRX 종가와 가격 파일 종가는 "
+    "2026-09-14부터 서로 다른 날이 많다. 그래서 부호가 갈리는 날은 저장값의 오류가 아니라 두 종가의 정의 차이다. "
+    "값을 덮어쓰지 않는다. 차이의 원인(거래소 통합 시세 여부 등)은 확인하지 못했다. 네이버가 발표한 등락률의 "
+    "기준가격이 전일 캔들 종가와 다른 날은 종가 수익률과 발표 등락률이 서로 다른 질문이다."
+)
+SIGNAL_USE_KO = (
+    "신호 함수는 underlying_day_return_quality가 observed_krx일 때만 저장 수익률과 리밸런싱 추정치를 돌려준다. "
+    "2026-08-07부터 스냅샷의 연속 KRX 종가로 재현되는 날이 그 상태다. 그 이전 행은 네이버 캔들과 맞지만 "
+    "KRX 종가 대조가 없다. 표시용 implied_rebalance_krw는 바꾸지 않는다. "
+    "가격 파일 종가는 2026-09-14부터 KRX 종가와 다를 수 있으므로 두 종가를 섞지 않는다. "
+    "069500은 2024-01-30부터 2026-10-29까지 분배락 12회, 102110은 2024-01-30부터 2026-07-30까지 11회가 "
+    "A_t/A_{t-1}-1 = U_t/(U_{t-1}-D)-1 이다. 102110의 2026-10-29는 종가 비율이 0.9924에서 1로 한 번에 붙어 "
+    "단일 분배금 식과 맞지 않아 제외한다. 같은 D를 조정 수익률에 다시 더하면 분배금이 두 번 들어간다. "
+    "다른 상품의 조정 방식은 unknown이다. LETF AUM 결측과 파생상품 활동 결측은 채우지 않는다."
+)
 
 
 def now_iso() -> str:
@@ -154,19 +186,20 @@ def reconcile_index_gaps(
     index_doc["n"] = len(merged)
     index_doc["date_start"] = merged[0]["date"] if merged else None
     index_doc["date_end"] = merged[-1]["date"] if merged else None
-    index_doc["gap_fill"] = {
-        "collected_at": collected_at,
-        "provider_published_at": "unknown",
-        "overlap_matched": len(overlap),
-        "rows_added": len(added),
-        "added_dates": [row["date"] for row in added],
-        "trading_value_quality": "missing",
-        "note_ko": (
-            "겹치는 날의 시가·고가·저가·종가는 거래소 원본과 같고, 거래량은 화면 단위로 최대 1 차이이다. "
-            "원본에 없는 날만 네이버 차트로 채운다. 그 날의 거래대금은 차트에 없어 결측이다. "
-            "수집 시각은 이번 조회 시각이고, 과거 공개 시각은 unknown이다."
-        ),
-    }
+    if added or "gap_fill" not in index_doc:
+        index_doc["gap_fill"] = {
+            "collected_at": collected_at,
+            "provider_published_at": "unknown",
+            "overlap_matched": len(overlap),
+            "rows_added": len(added),
+            "added_dates": [row["date"] for row in added],
+            "trading_value_quality": "missing",
+            "note_ko": (
+                "겹치는 날의 시가·고가·저가·종가는 거래소 원본과 같고, 거래량은 화면 단위로 최대 1 차이이다. "
+                "원본에 없는 날만 네이버 차트로 채운다. 그 날의 거래대금은 차트에 없어 결측이다. "
+                "수집 시각은 이번 조회 시각이고, 과거 공개 시각은 unknown이다."
+            ),
+        }
     return {
         "overlap_matched": len(overlap),
         "rows_added": len(added),
@@ -174,87 +207,44 @@ def reconcile_index_gaps(
     }
 
 
-# What was actually checked, per ticker. The chart endpoint is shared, so the
-# other candidates probably behave the same, but "probably" is not a label.
-ETF_VERIFICATION = {
-    "069500": "issuer_notice_and_price_test",
-    "102110": "price_test_only",
-}
-ETF_ADJUSTMENT_NOTE_KO = (
-    "후보는 이름상 비레버리지 코스피200 추종 상품과 총수익(TR) 상품이다. "
-    "레버리지·인버스·섹터·커버드콜은 제외했다. 어느 상품도 매매 대상으로 고정하지 않았다. "
-    "FinanceDataReader 응답에는 거래대금이 없다. "
-    "수정주가(분배금 제외) 여부는 KODEX 200만 발행사 공지와 가격으로 확인했고(2024-10-30, 좌당 120원), "
-    "TIGER 200은 가격만 봤고 공지는 인용하지 않았다. 나머지 후보는 같은 차트 출처일 뿐 확인하지 않았다."
-)
-
-
 def apply_etf_definition(etf_doc: dict[str, Any], *, collected_at: str) -> None:
-    """Record the verified adjustment definition without changing OHLC rows."""
-    evidence = {
+    """Record per-ticker adjustment checks. Unchecked products stay unknown."""
+    formula_ko = (
+        "A는 네이버 fchart 종가, U는 네이버 일별시세표 종가, D는 분배락일 현금 분배금이다. "
+        "확인된 분배락일에는 A_t/A_{t-1}-1 = U_t/(U_{t-1}-D)-1 이고 오차는 0.02%포인트 이내다. "
+        "이 식은 현금 분배금만큼의 가격 하락을 종가 수익률에서 뺀다. "
+        "조정 종가 수익률에 같은 D를 다시 더하면 D가 두 번 들어간다. "
+        "같은 날 시가에서 종가까지의 수익률은 두 시세가 같다."
+    )
+    etf_doc["price_adjustment"] = "mixed"
+    etf_doc["dividend_treatment"] = formula_ko
+    etf_doc["provider_published_at"] = "unknown"
+    etf_doc["definition_collected_at"] = collected_at
+    etf_doc["adjustment_evidence"] = {
         "collected_at": collected_at,
         "provider_published_at": "unknown",
-        "endpoint": "https://fchart.stock.naver.com/sise.nhn?timeframe=day&count=6000&requestType=0",
-        "reader": "FinanceDataReader NaverDailyReader",
-        "price_adjustment": "distribution_adjusted",
-        "dividend_treatment": (
-            "현금 분배금은 종가 수익률에 남아 있지 않다. 분배락일 전후 수익률은 코스피200 지수와 같이 움직인다."
-        ),
-        "checked": KODEX_EX_DATE,
-        "same_endpoint_tickers": ["069500", "102110"],
-        "not_individually_checked_against_issuer_notice": [
-            candidate["ticker"]
-            for candidate in etf_doc.get("candidates") or []
-            if candidate["ticker"] not in {"069500", "102110"}
-        ],
-        "tradable_price_ko": (
-            "같은 날 시가 대비 종가 수익률은 막대 전체에 같은 배수가 곱해지면 수정 여부와 같다. "
-            "분배락일을 가로지르는 종가 수익률은 현금 분배금을 뺀 수정 수익률이다. "
-            "실제 체결 가격인 미수정 시세는 이 파일에 없다."
+        "adjusted_source": "FinanceDataReader via Naver fchart",
+        "unadjusted_source": "Naver daily price table OHLC",
+        "krx_workbook": "not_compared",
+        "formula": "A_t / A_{t-1} - 1 = U_t / (U_{t-1} - D) - 1",
+        "double_count_ko": "조정 종가 수익률과 현금 분배금을 더하면 분배금이 두 번 계산된다.",
+        "checked": CHECKED_ADJUSTMENT,
+        "before_2024_ko": (
+            "2020-01-30부터 2023-10-30까지도 두 종목 모두 분기마다 한 번만 종가 비율이 바뀐다. "
+            "그 금액은 발행사 원문과 대조하지 않아 확정하지 않는다. 2019년은 비율 변화가 없어 이 식으로 확인하지 않는다."
         ),
     }
-    evidence["verified_tickers"] = [
-        t for t, how in ETF_VERIFICATION.items() if how == "issuer_notice_and_price_test"
-    ]
-    evidence["price_test_only_tickers"] = [
-        t for t, how in ETF_VERIFICATION.items() if how == "price_test_only"
-    ]
-    etf_doc["price_adjustment"] = "see_candidates"
-    etf_doc["adjustment_note_ko"] = ETF_ADJUSTMENT_NOTE_KO
-    etf_doc["dividend_treatment"] = evidence["dividend_treatment"]
-    etf_doc["adjustment_evidence"] = evidence
-    etf_doc["definition_collected_at"] = collected_at
     for candidate in etf_doc.get("candidates") or []:
-        how = ETF_VERIFICATION.get(candidate["ticker"], "not_checked")
-        candidate["price_adjustment_verification"] = how
-        candidate["price_adjustment"] = (
-            "distribution_adjusted" if how == "issuer_notice_and_price_test"
-            else "unverified_same_chart_source"
-        )
-        candidate["dividend_treatment"] = (
-            "naver_fchart_same_endpoint"
-            if candidate["ticker"] in {"069500", "102110"}
-            else "same_endpoint_not_checked_against_own_issuer_notice"
-        )
         candidate["strategy_target"] = False
-
-
-RECONCILIATION = "data/manifests/krx_close_vs_price_file_20261101.json"
-CONCLUSION_KO = (
-    "가격 파일의 종가는 네이버 캔들과 같다. 저장돼 있는 underlying_day_return은 가격 파일 종가 수익률과 "
-    "부호가 다른 날이 있지만, KRX 일별 시세의 종가로 계산한 등락률과는 연속한 거래일 36쌍이 모두 일치한다 "
-    f"(삼성전자·SK하이닉스, 근거 {RECONCILIATION}). KRX 종가와 가격 파일 종가는 2026-09-14부터 서로 다른 날이 "
-    "많다. 그래서 부호가 갈리는 날은 저장값의 오류가 아니라 두 종가의 정의 차이다. 값을 덮어쓰지 않는다. "
-    "차이의 원인(거래소 통합 시세 여부 등)은 확인하지 못했다. 네이버가 발표한 등락률의 기준가격이 전일 "
-    "캔들 종가와 다른 날은 종가 수익률과 발표 등락률이 서로 다른 질문이다."
-)
-SIGNAL_USE_KO = (
-    "LETF 리밸런싱 추정이 쓰는 underlying_day_return은 KRX 종가 기준이라 그대로 유효하다. "
-    "가격 파일(investor_price_levels)의 종가는 2026-09-14부터 KRX 종가와 다를 수 있으므로, 두 종가를 섞어 "
-    "수익률을 만들지 않는다. LETF AUM 결측과 파생상품 활동 결측을 쓰는 전략은 보류한다. "
-    "옵션 수급과 ETF 다음 날 수익률을 보는 탐색은, ETF 가격이 분배금이 빠진 수정 종가라는 전제에서만 가능하며 "
-    "그 전제는 KODEX 200만 확인됐다. 탐색이 가능하다는 것은 실전 수익이 확인됐다는 뜻이 아니다."
-)
+        checked = CHECKED_ADJUSTMENT.get(candidate["ticker"])
+        if checked is None:
+            candidate["price_adjustment"] = "unknown"
+            candidate["dividend_treatment"] = "unknown"
+            candidate.pop("adjustment_checked", None)
+            continue
+        candidate["price_adjustment"] = checked["price_adjustment"]
+        candidate["dividend_treatment"] = formula_ko
+        candidate["adjustment_checked"] = checked
 
 
 def audit_stored_returns(
@@ -328,11 +318,16 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    text = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if path.is_file() and path.read_text(encoding="utf-8") == text:
+        return
+    path.write_text(text, encoding="utf-8")
 
 
-def update_manifest(patch: dict[str, Any]) -> None:
+def update_manifest(patch: dict[str, Any], *, drop: tuple[str, ...] = ()) -> None:
     manifest = load_json(MANIFEST) if MANIFEST.is_file() else {"schema_version": "krx-price-panel-manifest-v1"}
+    for key in drop:
+        manifest.pop(key, None)
     manifest.update(patch)
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -343,7 +338,12 @@ def fill(start: str = "20190102", end: str = "20261030") -> dict[str, Any]:
     index_doc = load_json(INDEX_PATH)
     etf_doc = load_json(ETF_PATH)
     report = reconcile_index_gaps(index_doc, fetch_naver_chart("KPI200", start, end), collected_at=collected_at)
-    apply_etf_definition(etf_doc, collected_at=collected_at)
+    definition_at = etf_doc.get("definition_collected_at") or collected_at
+    before_definition = json.dumps(etf_doc, sort_keys=True, ensure_ascii=False)
+    apply_etf_definition(etf_doc, collected_at=definition_at)
+    if json.dumps(etf_doc, sort_keys=True, ensure_ascii=False) != before_definition:
+        apply_etf_definition(etf_doc, collected_at=collected_at)
+        definition_at = collected_at
     write_json(INDEX_PATH, index_doc)
     write_json(ETF_PATH, etf_doc)
     tables = {
@@ -360,7 +360,7 @@ def fill(start: str = "20190102", end: str = "20261030") -> dict[str, Any]:
     audit["provider_published_at"] = "unknown"
     update_manifest(
         {
-            "definition_collected_at": collected_at,
+            "definition_collected_at": definition_at,
             "provider_published_at": "unknown",
             "index_gap_fill": index_doc["gap_fill"],
             "etf_price_definition": etf_doc["adjustment_evidence"],
@@ -374,14 +374,128 @@ def fill(start: str = "20190102", end: str = "20261030") -> dict[str, Any]:
     }}
 
 
+def reproduced_krx_returns(path: Path = CLOSE_COMPARE) -> set[tuple[str, str]]:
+    """Dates whose stored return equals two consecutive snapshot KRX closes."""
+    if not path.is_file():
+        return set()
+    doc = load_json(path)
+    tolerance = float(doc.get("match_tolerance") or 0)
+    found: set[tuple[str, str]] = set()
+    for ticker, item in (doc.get("by_ticker") or {}).items():
+        rows = item.get("rows") or []
+        for prev, cur in zip(rows, rows[1:]):
+            if not prev.get("krx_close") or not cur.get("krx_close"):
+                continue
+            reproduced = cur["krx_close"] / prev["krx_close"] - 1
+            stored = cur.get("stored_underlying_day_return")
+            if stored is not None and abs(reproduced - stored) <= tolerance:
+                found.add((ticker, cur["date"]))
+    return found
+
+
+def return_quality(ticker: str, day: str, reproduced: set[tuple[str, str]]) -> str:
+    """Per-row check status. A missing KRX comparison is not an exclusion."""
+    if (ticker, day) in reproduced:
+        return "observed_krx"
+    if day < "2026-08-07":
+        return "naver_candle_match_krx_close_unchecked"
+    return "krx_close_unchecked"
+
+
+def stamp_letf_return_quality(path: Path) -> dict[str, Any]:
+    """Label each stored return. Do not change the return or the rebalance estimate."""
+    reproduced = reproduced_krx_returns()
+    counts: dict[str, int] = {}
+    out: list[str] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        before_return = row.get("underlying_day_return")
+        before_rebalance = row.get("implied_rebalance_krw")
+        row.pop("implied_rebalance_signal_quality", None)
+        if row.get("ticker") in {"005930", "000660"}:
+            quality = return_quality(str(row["ticker"]), str(row["date"]), reproduced)
+            row["underlying_day_return_quality"] = quality
+            counts[quality] = counts.get(quality, 0) + 1
+        if row.get("underlying_day_return") != before_return or row.get("implied_rebalance_krw") != before_rebalance:
+            raise RuntimeError("quality stamp changed a stored number")
+        out.append(json.dumps(row, ensure_ascii=False, separators=(",", ":")))
+    text = "\n".join(out) + "\n"
+    if path.read_text(encoding="utf-8") != text:
+        path.write_text(text, encoding="utf-8")
+    return {"rows": len(out), "by_quality": counts, "reproduced_pairs": len(reproduced)}
+
+
+def stamp_definition() -> dict[str, Any]:
+    """Rewrite labels only. A second run does not add rows or change prices."""
+    etf_doc = load_json(ETF_PATH)
+    before = json.dumps(etf_doc, sort_keys=True, ensure_ascii=False)
+    collected_at = etf_doc.get("definition_collected_at") or now_iso()
+    apply_etf_definition(etf_doc, collected_at=collected_at)
+    if json.dumps(etf_doc, sort_keys=True, ensure_ascii=False) == before:
+        collected_at = etf_doc.get("definition_collected_at") or collected_at
+    else:
+        collected_at = now_iso()
+        apply_etf_definition(etf_doc, collected_at=collected_at)
+        write_json(ETF_PATH, etf_doc)
+    letf_report = stamp_letf_return_quality(LETF_PATH)
+    patch = {
+        "definition_collected_at": collected_at,
+        "provider_published_at": "unknown",
+        "etf_price_definition": etf_doc["adjustment_evidence"],
+        "return_source_check": {
+            "collected_at": collected_at,
+            "provider_published_at": "unknown",
+            "request": "git history of market_microstructure_v1.json stocks[].close",
+            "result": "36 consecutive pairs match the stored return for both stocks",
+            "rows_changed": 0,
+            "openapi_stk_bydd_trd_20261023": "401 Unauthorized, not retried",
+            "note_ko": (
+                "저장 수익률은 스냅샷 KRX 종가로 계산한 등락률과 삼성전자·SK하이닉스 연속 36쌍이 모두 같다. "
+                "근거는 data/manifests/krx_close_vs_price_file_20261101.json. "
+                "가격 파일 종가는 2026-09-14부터 KRX 종가와 다른 날이 많다. "
+                "부호가 갈리는 날은 저장값의 오류가 아니라 종가 정의 차이다. 값은 한 행도 바꾸지 않았다."
+            ),
+        },
+        "remaining_gaps": {
+            "letf_aum": "16 rows stay null. No same-definition original was fetched. Not filled with 0.",
+            "derivatives_activity": (
+                "19 October 2026 dates stay missing. 15001 quotes were not substituted and gaps were not filled with 0."
+            ),
+        },
+        "letf_return_quality": letf_report,
+        "price_basis_reconciliation": {
+            "file": "data/manifests/krx_close_vs_price_file_20261101.json",
+            "summary_ko": (
+                "KRX 종가와 가격 파일 종가는 2026-09-14부터 서로 다른 날이 많고, "
+                "저장된 underlying_day_return은 KRX 종가 수익률과 36쌍 모두 일치한다."
+            ),
+        },
+        "ui_handoff_ko": (
+            "market-microstructure.js는 표시용 implied_rebalance_krw를 그대로 그린다. "
+            "신호 계산은 underlying_day_return_quality가 observed_krx일 때만 한다."
+        ),
+        "signal_use_ko": SIGNAL_USE_KO,
+    }
+    current = load_json(MANIFEST) if MANIFEST.is_file() else {}
+    if any(current.get(key) != value for key, value in patch.items()) or "letf_signal_exclusion" in current:
+        update_manifest(patch, drop=("letf_signal_exclusion",))
+    return {"collected_at": collected_at, **letf_report}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fill-index-gaps", action="store_true")
+    parser.add_argument("--stamp-definition", action="store_true")
     args = parser.parse_args()
+    if args.stamp_definition:
+        print(json.dumps(stamp_definition(), ensure_ascii=False))
+        return
     if args.fill_index_gaps:
         print(json.dumps(fill(), ensure_ascii=False))
         return
-    parser.error("pass --fill-index-gaps")
+    parser.error("pass --fill-index-gaps or --stamp-definition")
 
 
 if __name__ == "__main__":
