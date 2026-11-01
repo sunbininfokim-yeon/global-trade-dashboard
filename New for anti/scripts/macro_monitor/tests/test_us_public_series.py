@@ -19,6 +19,14 @@ class Fetching(unittest.TestCase):
     def test_missing_values_are_skipped(self):
         self.assertEqual(ups.parse_fred_csv(CSV), [("2025-06-01", 100.0), ("2025-08-01", 110.0)])
 
+    def test_worker_fallback_is_ascending_and_skips_dots(self):
+        doc = {"ok": True, "body": {"observations": [{"date": "2026-09-01", "value": "132.2"},
+                                                      {"date": "2026-08-01", "value": "."},
+                                                      {"date": "2026-07-01", "value": "131.1"}]}}
+        self.assertEqual(ups.parse_fred_worker(doc), [("2026-07-01", 131.1), ("2026-09-01", 132.2)])
+        with self.assertRaises(ValueError):
+            ups.parse_fred_worker({"ok": False, "status": 429})
+
     def test_empty_or_malformed_csv_is_an_error(self):
         with self.assertRaises(ValueError):
             ups.parse_fred_csv("observation_date,X\n")
