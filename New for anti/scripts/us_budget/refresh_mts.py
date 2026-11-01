@@ -1,9 +1,8 @@
-"""Refresh the 정책 › 미국 › 예산 monthly actuals from Treasury MTS Table 1.
+"""Compatibility CLI for the 정책 › 미국 › 예산 collector.
 
-Writes public/data/us_budget/mts_live_v1.json only. The reviewed annual
-snapshot (annual_v1.json, OMB + MTS vintages pinned by sources.json) is never
-touched here: OMB publishes once a year and its tables need a reviewed
-regeneration, so this script only *reports* a new OMB vintage.
+Normal/dry-run calls now delegate to refresh_budget.py, which regenerates a
+validated OMB annual + MTS monthly bundle. The reviewed annual_v1.json stays
+as a fallback. --verify-snapshot remains a read-only parser proof against it.
 
 Rules carried over from the Codex handoff (docs/prototypes/us-budget/README.md):
 - A Table 1 report holds a "FY yyyy" parent block per fiscal year; months are
@@ -91,41 +90,18 @@ def amount(row: dict, field: str) -> float:
 
 
 def parse_report(rows: List[dict], record_date: str) -> Dict[str, object]:
-    """Monthly rows per fiscal-year block, plus that report's fiscal year to date."""
-    blocks = {}
-    for r in rows:
-        desc = (r.get("classification_desc") or "").strip()
-        if desc.upper().startswith("FY ") and desc[3:].strip().isdigit():
-            blocks[r.get("classification_id")] = int(desc[3:].strip())
-    if not blocks:
-        raise RefreshError("MTS Table 1 has no 'FY yyyy' parent blocks")
-    months: Dict[str, dict] = {}
-    ytd: Dict[int, dict] = {}
-    for r in rows:
-        fy = blocks.get(r.get("parent_id"))
-        if fy is None:
-            continue
-        desc = (r.get("classification_desc") or "").strip()
-        if r.get("record_type_cd") == "MTH" and desc in MONTHS:
-            m = MONTHS[desc]
-            year = fy - 1 if m >= 10 else fy  # October opens the fiscal year
-            key = f"{year:04d}-{m:02d}"
-            if key in months:
-                raise RefreshError(f"MTS Table 1 repeats month {key}")
-            rec, out, dfc = amount(r, RECEIPTS), amount(r, OUTLAYS), amount(r, DEFICIT)
-            months[key] = {"month": key, "receipts": rec, "outlays": out, "deficit": out - rec, "vintage": record_date,
-                           "_reported_deficit": dfc}
-        elif desc.lower().startswith("year-to-date"):
-            ytd[fy] = {"receipts": amount(r, RECEIPTS), "outlays": amount(r, OUTLAYS)}
-    if not months:
-        raise RefreshError("MTS Table 1 has no monthly (MTH) rows under the FY blocks")
-    for row in months.values():
-        reported = row.pop("_reported_deficit")
-        # Table 1 signs deficits negative (surplus positive). Accept either
-        # sign convention but require the identity outlays - receipts.
-        if abs(abs(reported) - abs(row["deficit"])) > 1.0:
-            raise RefreshError(f"MTS {row['month']}: deficit {reported} does not match outlays - receipts")
-    return {"months": months, "ytd": ytd}
+    """Compatibility wrapper around the strict shared parser."""
+    import treasury
+    try:
+        parsed = treasury.monthly_rows(rows, record_date)
+        blocks = {r["classification_id"]: int(r["classification_desc"].split()[1])
+                  for r in rows if (r.get("classification_desc") or "").startswith("FY ")}
+        ytd = {blocks[r["parent_id"]]: {"receipts": amount(r, RECEIPTS), "outlays": amount(r, OUTLAYS)}
+               for r in rows if r.get("parent_id") in blocks and r.get("classification_desc") == "Year-to-Date"}
+        return {"months": {k: {f: float(v) if isinstance(v, treasury.Decimal) else v for f, v in r.items()}
+                           for k, r in parsed.items()}, "ytd": ytd}
+    except (ValueError, KeyError) as err:
+        raise RefreshError(str(err)) from err
 
 
 def check_sequence(months: List[dict]) -> None:
@@ -143,12 +119,9 @@ def check_sequence(months: List[dict]) -> None:
 def merge(existing: dict, parsed: Dict[str, object], record_date: str) -> dict:
     by_month = {m["month"]: m for m in existing["months"]}
     new_months = parsed["months"]
-    # Overlapping months from the previous report must agree closely; a large
-    # jump means the parse picked the wrong rows, not a Treasury revision.
+    # Revisions are accepted after source identities and FY totals reconcile;
+    # a fixed percentage threshold cannot distinguish an error from a revision.
     for key, row in new_months.items():
-        old = by_month.get(key)
-        if old and old["outlays"] and abs(row["outlays"] / old["outlays"] - 1) > 0.02:
-            raise RefreshError(f"{key}: outlays moved >2% vs the published value ({old['outlays']} -> {row['outlays']})")
         by_month[key] = row
     months = sorted(by_month.values(), key=lambda m: m["month"])[-WINDOW:]
     if len(months) < WINDOW:
@@ -216,32 +189,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     try:
         if args.verify_snapshot:
             return verify_snapshot()
-        existing = json.loads(LIVE.read_text(encoding="utf-8"))
-        annual = json.loads(ANNUAL.read_text(encoding="utf-8"))
-        watch = omb_watch(annual)
-        if watch and watch["available"]:
-            print(f"::warning::OMB FY{watch['next_fy']} budget tables are published ({watch['url']}); "
-                  "the annual snapshot needs a reviewed regeneration")
-        record_date = latest_record_date()
-        print(f"MTS latest report: {record_date} (published file: {existing['mts_record_date']})")
-        if record_date <= existing["mts_record_date"]:
-            changed_watch = watch != existing.get("omb_watch") and watch is not None
-            if changed_watch and not args.dry_run:
-                existing["omb_watch"] = watch
-                LIVE.write_text(json.dumps(existing, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-                print("OMB watch status updated")
-            else:
-                print("no newer MTS report; nothing to write")
-            return 0
-        merged = merge(existing, parse_report(report_rows(record_date), record_date), record_date)
-        merged["omb_watch"] = watch
-        print(f"months {merged['months'][0]['month']}..{merged['months'][-1]['month']}; fytd {merged['fytd']}")
+        from refresh_budget import run
         if args.dry_run:
-            print("dry run: not writing")
-            return 0
-        LIVE.write_text(json.dumps(merged, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-        print(f"wrote {LIVE}")
-        return 0
+            from tempfile import TemporaryDirectory
+            with TemporaryDirectory() as folder:
+                return run(Path(folder))
+        return run(DATA_DIR)
     except RefreshError as err:
         print(f"::error::US budget refresh failed, published file kept: {err}", file=sys.stderr)
         return 1
