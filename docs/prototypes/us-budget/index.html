@@ -36,12 +36,26 @@
  if(!response.ok)throw new Error('Budget snapshot HTTP '+response.status);
  const bundle=await response.json();
  const data=bundle.budget;
+ let liveFeed=null,liveError=null;
+ try {
+   const live=await fetch('./mts-live.json',{cache:'no-cache'});
+   if(!live.ok)throw new Error('MTS HTTP '+live.status);
+   const {validateFeed,renderLatest}=await import('./mts-feed.mjs');
+   liveFeed=validateFeed(await live.json());
+   if(liveFeed.coverage.end<data.monthly.at(-1).month)throw new Error('MTS publication predates snapshot');
+   const mount=document.createElement('section');mount.className='bf-panel';
+   const agencyLabels=Object.fromEntries((data.years[2026].agencies||[]).map(r=>[r.key,r.name]));
+   renderLatest(liveFeed,mount,agencyLabels);root.querySelector('.bf-body').append(mount);
+   data.monthly=liveFeed.monthly;
+ }catch(error){liveError=error;}
+ const monthlyNote=root.querySelector('#bf-month-box .bf-message');
+ monthlyNote.textContent=`월별 실적: ${data.monthly[0].month}~${data.monthly.at(-1).month} · ${liveError?'최신 피드 확인 실패: 보관 스냅샷 표시':'Treasury API 수집본'} · 정부안 월별 전망 제외`;
  const $=s=>root.querySelector(s),$$=s=>[...root.querySelectorAll(s)];
   const defenseAccounts=bundle.defense;
  for(const [year,children] of Object.entries(defenseAccounts))data.discretionary[year].find(r=>r.id==='7').children=children;
   const future=bundle.fy2027;
  data.years[2027]=future.year;data.receipts[2027]=future.receipts;data.types[2027]=future.types;data.discretionary[2027]=future.discretionary;
- const state={version:5,fy:2027,main:'outlays',bucket:'discretionary',sort:'value',expanded:false,period:'annual',month:'2026-09'};
+ const state={version:6,fy:2027,main:'outlays',bucket:'discretionary',sort:'value',expanded:false,period:'annual',month:data.monthly.at(-1).month};
  const valueStatus=()=>state.fy===2027?'정부안·추정':'실적';
  const comparison=()=>state.fy===2027?future.baseline:`${state.fy-1} 실적 → ${state.fy} 실적`;
  const changeLabel=()=>state.fy===2027?'FY2026 정부 추정 대비':'전년 대비';

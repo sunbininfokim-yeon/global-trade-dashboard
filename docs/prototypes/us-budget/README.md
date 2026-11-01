@@ -1,7 +1,8 @@
 # 미국 예산 탐색: 검토용 시안
 
 작업: `US-BUDGET-HANDOFF-20261031`. 이 폴더는 정책 → 미국 → 예산을
-기존 제품에 통합하기 위한 화면·공개 데이터 인수 자료다. 운영 화면이나 자동 수집기는 아니다.
+기존 제품에 통합하기 위한 화면·공개 데이터 인수 자료다. Treasury 실적 수집기가 포함되며,
+운영 화면 연결·자동 실행 예약은 아직 설치하지 않았다.
 
 ## 열어보기
 
@@ -18,7 +19,42 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory docs/prototypes/us-budg
 
 ```sh
 node --test tests/us-budget-preview.test.cjs
+node --test tests/us-budget-feed.test.mjs
+python3 tests/test_us_budget_collector.py
 ```
+
+## Treasury API 연결 (11/1 추가)
+
+Python 3 표준 라이브러리만으로 공식 API에서 실제 관측 자료를 갱신한다. 키·유료 AI 호출·Supabase가 필요 없다.
+
+```sh
+python3 scripts/us_budget/collect_mts.py --output docs/prototypes/us-budget/mts-live.json
+```
+
+미리보기는 검증된 `mts-live.json`을 **36개월 월별 차트**와 **최신 집행 실적 상세**에 연결한다.
+부처별 순지출·세입 구조는 금액/증가율/증가액순으로 정렬하며, 전년 **동일 기간 누계**와 비교한다.
+상속·증여세와 관세도 별도 세입 항목이다. 순차입·현금 변화·기타 조달은 세입과 구분한다.
+기존 `budget-data.json`의 연간 OMB 자료와 FY2027 정부안은 덮어쓰지 않는다.
+최신 피드 로딩/검증 실패 시 월별 차트에는 기존 스냅샷과 실패 안내를 표시한다.
+
+수집기는 최신 발표일을 조회한 뒤 MTS 표 1·3·6을 같은 발표일로 고정한다. 표 1의 이전 9월 발표본을
+필요한 만큼 읽어 연속 36개월을 구성하고, 중복 월은 최신 발표본의 수정값을 선택한다.
+관측 월은 `FY xxxx` 모행과 월 이름으로 결정하며 `record_date`를 관측 월로 오인하지 않는다.
+연도 변경 시 현재 FY 누계는 1~12개월이다. 9월 결산일에만 `complete_fy: true`다.
+미발표 미래 월은 제외하고, 과거 월의 누락·부분 응답·합계 불일치·403/429·네트워크 실패는 실행 실패다.
+모든 다운로드와 Decimal 금액 검증 후 JSON 하나를 atomic replace하므로 실패한 실행이 기존 파일을 비우지 않는다.
+출처 URL·응답 SHA256·발표일·확인 시간을 함께 저장한다. 오래된 발표본으로의 교체도 거부한다.
+
+Claude의 운영 연결:
+
+1. `scripts/us_budget/collect_mts.py`를 Python 3 환경에서 위 명령으로 실행한다.
+2. 운영용 출력은 `New for anti/public/data/us_budget/mts_v1.json` 같은 별도 경로로 지정한다.
+3. 운영 UI에서 `mts-feed.mjs`의 검증/동일 기간 비교 계약을 옮기고 해당 공개 JSON을 읽는다.
+4. main 전용 수집 workflow에 연결한다. 데이터는 월간이므로 하루 1회 확인이면 충분하며, 기존 실행을
+   `concurrency`로 직렬화하고 실패 시 후속 commit/upload를 하지 않는다. 브랜치 실행은 운영 산출물을 쓰지 않는다.
+5. 자동 수집의 성공과 사이트가 해당 발표본을 표시하는지 각각 확인한 뒤 배포 완료로 보고한다.
+
+이번 PR은 `.github/workflows/**`나 운영 UI를 변경하지 않으므로 예약 실행/사이트 자동 갱신이 켜졌다는 뜻은 아니다.
 
 ## 사용자 결정
 
@@ -38,6 +74,8 @@ node --test tests/us-budget-preview.test.cjs
 - `budget-data.json`: `budget`(요약·세입·성격별 지출·재량 분야·월별·조달),
   `defense`(FY2022–2025 국방 계정), `fy2027`(4월 정부안 및 같은 발표본의 FY2026 비교값).
 - `sources.json`: 공식 URL, 원래 단위, 발표본, 조회일, 원자료/스냅샷 해시.
+- `mts-live.json`: 별도 실적 피드. `monthly`, `fiscal_ytd`(세입·부처·조달), 출처와 최신 발표일.
+- `mts-feed.mjs`: 실적 피드 검증·정렬 및 시안 내 상세 표시. 비정상 피드는 거부한다.
 
 정규화된 금액은 **명목 USD**다. 원표마다 단위가 다르다.
 
@@ -76,7 +114,8 @@ FY2026 조달은 MTS 표 6의 `Total Borrowing from the Public`, 연준계좌 �
 ## 재생성할 때
 
 이 PR에는 원본 XLSX·API 캐시를 넣지 않았다. `sources.json`의 공식 URL에서 원본을 다시 받고
-해시·단위·발표본을 확인한 뒤 별도 수집기로 생성해야 한다. 자동 갱신은 아직 설치하지 않았다.
+해시·단위·발표본을 확인한 뒤 생성해야 한다. MTS는 위 수집기로 갱신 가능하며,
+OMB 연간 표·국방 계정의 재생성 수집기와 자동 예약은 후속 작업이다.
 
 - OMB 표의 `estimate` 열/행과 과거 실적을 분리한다. April 정부안과 Mid-Session Review는 다른 vintage다.
 - MTS 표 1은 `record_date`가 관측 월과 같지 않다. 부모 `FY xxxx` 블록을 먼저 식별하고
@@ -91,7 +130,7 @@ FY2026 조달은 MTS 표 6의 `Total Borrowing from the Public`, 연준계좌 �
 ## 제품 통합에서 남은 것
 
 - 실제 `/policy/us/budget` 라우트·메뉴·공통 스타일·접근성 연결(경로는 제안).
-- 생산용 수집/생성 스크립트와 갱신 주기·실패 감시·마지막 정상 발표본 보존.
+- MTS 수집기의 운영 경로/예약/실패 감시 연결. OMB 연간 표와 국방 계정의 재생성 수집기.
 - 데이터의 source/vintage/status 필드를 렌더링 값에 연결하고 실적·추정 혼합을 차단.
 - 부처/계정의 법률·세출법 연결, 계약·보조금·수령기업. 현재 시안은 해당 기능을 구현했다고 주장하지 않는다.
 - 실제 날짜 기준의 연도 롤오버와 과거 36개월 범위 갱신.
