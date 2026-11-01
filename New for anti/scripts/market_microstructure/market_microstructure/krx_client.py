@@ -170,14 +170,28 @@ def etf_metrics(row: dict[str, Any]) -> dict[str, Any]:
     aum = None
     aum_source = None
     aum_quality = "missing"
+    blank_field = None
     for field in observed_aum_fields:
         value = _num(row, field)
-        if value is not None:
-            aum = value
-            aum_source = field
-            aum_quality = "observed"
-            break
-    if aum is None:
+        if value is None:
+            continue
+        if value <= 0:
+            # A net-asset total of 0 beside a positive trading value is a blank
+            # source field, not an ETF with no assets: on 2026-08-28, 09-04,
+            # 09-11, 09-23, 10-08, 10-16, 10-23 and 10-30 the single-stock LETFs
+            # came back as 0 while their neighbouring days were trillions.
+            # Reading it as "observed 0" printed 0.00조 and a rebalance of 0.
+            blank_field = blank_field or field
+            continue
+        aum = value
+        aum_source = field
+        aum_quality = "observed"
+        break
+    if aum is None and blank_field is not None:
+        # Do not paper over the gap with market cap either: the history rows for
+        # those days were set to missing, and a proxy here would disagree with them.
+        aum_source = blank_field
+    elif aum is None:
         market_cap = _num(row, "MKTCAP")
         if market_cap is not None:
             aum = market_cap
