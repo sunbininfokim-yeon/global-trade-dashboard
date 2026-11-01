@@ -1,4 +1,4 @@
-"""One-off: can GitHub Actions reach China's NBS yearbook tables? Not merged."""
+"""One-off: can GitHub Actions read NBS yearbook crop tables by province? Not merged."""
 import re, urllib.request
 
 H = {"User-Agent": "Mozilla/5.0"}
@@ -10,21 +10,28 @@ def get(url):
     except Exception as e:
         print("FAIL", url, e); return None
 
-idx = get("https://www.stats.gov.cn/sj/ndsj/")
-if idx:
-    t = idx.decode("utf-8", "ignore")
-    links = sorted(set(re.findall(r'href="([^"]*ndsj/\d{4}/[^"]*)"', t)))
-    print("yearbook links:", links[:40])
-for y in (2024, 2023, 2015, 2005):
-    for path in (f"https://www.stats.gov.cn/sj/ndsj/{y}/indexch.htm",
-                 f"https://www.stats.gov.cn/sj/ndsj/{y}/left.htm"):
-        b = get(path)
-        if b:
-            t = b.decode("utf-8", "ignore")
-            rows = re.findall(r'<a[^>]*href="([^"]+)"[^>]*>([^<]*(?:农作物|粮食|小麦|玉米|稻谷|大豆)[^<]*)</a>', t)
-            print(y, path.rsplit('/',1)[-1], len(t), rows[:25])
-# Latest grain announcement listing
-b = get("https://www.stats.gov.cn/sj/zxfb/")
-if b:
-    t = b.decode("utf-8", "ignore")
-    print(re.findall(r'href="([^"]+)"[^>]*>([^<]*粮食[^<]*)<', t)[:10])
+def text(b):
+    for enc in ("utf-8", "gb18030"):
+        try:
+            return b.decode(enc)
+        except UnicodeDecodeError:
+            pass
+    return b.decode("gb18030", "ignore")
+
+for y in (2024, 2015, 2005):
+    base = f"https://www.stats.gov.cn/sj/ndsj/{y}/"
+    b = get(base + "left.htm")
+    if not b:
+        continue
+    t = text(b)
+    rows = re.findall(r'href="([^"]+)"[^>]*>\s*([^<]*(?:农作物|粮食|小麦|玉米|稻谷|大豆|播种面积)[^<]*)<', t)
+    print(y, rows[:30])
+    for href, name in rows:
+        if "各地区" in name and ("产量" in name or "播种" in name):
+            u = href if href.startswith("http") else base + href.lstrip("./")
+            tb = get(u)
+            if tb:
+                tt = re.sub(r"<[^>]+>", " ", text(tb))
+                tt = re.sub(r"\s+", " ", tt)
+                print("   ", name, "|", tt[:900])
+            break
