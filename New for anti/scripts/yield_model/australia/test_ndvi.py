@@ -61,3 +61,23 @@ def test_sites_move_only_the_listed_points():
     assert a["Merredin"][2] == {7, 8, 9}
     assert c["Winnipeg"][:2] == C.SITES["Winnipeg"] and c["Yorkton"][:2] == (51.21, -102.46)
     assert c["Yorkton"][2] == {7, 8}
+
+
+def test_apply_scales_point_and_ranges():
+    row = {"point": 1000.0, "range_68": [900.0, 1100.0], "range_95": [800.0, 1200.0]}
+    adj = {"log_adjustment": float(np.log(1.1)), "adjustment_pct": 10.0}
+    out = N.apply(row, adj)
+    assert out["point"] == pytest.approx(1100.0)
+    assert out["range_68"] == pytest.approx([990.0, 1210.0])
+    assert out["ndvi"] is adj
+    assert N.apply({"point": 5.0}, None) == {"point": 5.0}
+
+
+def test_half_window_needs_the_full_window_not_to_hurt():
+    good = {"skill_vs_base": 0.2}
+    entry = {"half": good, "half_median": good, "full": {"skill_vs_base": -0.1},
+             "full_median": {"skill_vs_base": -0.1}}
+    assert not N.switched_on(entry, "half", 0.05)
+    entry["full"] = {"skill_vs_base": 0.01}
+    assert N.switched_on(entry, "half", 0.05)
+    assert not N.switched_on(entry, "full", 0.05)

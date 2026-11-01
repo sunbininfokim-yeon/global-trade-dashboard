@@ -13,7 +13,9 @@ region's own forward-chained forecast (the weather model where it is
 operational, the trend where it is not) has its log error regressed on the
 season's standardised NDVI, using earlier seasons only; a window goes live
 only if that beats the forecast by at least 5% with both the p75 and the
-median summary.
+median summary. A half window also needs the full window not to make the
+forecast worse, because once the window has filled in the half correction
+is the one still applied.
 
 The window is fixed here, before any NDVI was read: July-September of the
 harvest year, when the winter crop is in stem elongation to grain fill
@@ -165,6 +167,19 @@ def base_forecasts(country, cfg):
             operational)
 
 
+def switched_on(entry, win, min_skill):
+    """argentina's rule (p75 and median both beat the forecast by min_skill),
+    plus: the half-window correction stays on after the window has filled
+    in, so it may not run where the whole window made the forecast worse --
+    a gain in the first weeks that the rest of the window erases is noise."""
+    a, b = entry.get(win), entry.get(f"{win}_median")
+    on = bool(a and b and a["skill_vs_base"] >= min_skill
+              and b["skill_vs_base"] >= min_skill)
+    if win == "half" and entry.get("full", {}).get("skill_vs_base", 0.0) < 0:
+        on = False
+    return on
+
+
 def score(country, cfg, nd):
     from argentina.ndvi_backtest import MIN_SKILL, correct, fit, rmse
 
@@ -185,9 +200,7 @@ def score(country, cfg, nd):
                         "skill_vs_base": 1 - r1 / r0, "corr_ndvi_error": corr}
     entry["live"] = {}
     for win, half in (("full", False), ("half", True)):
-        a, b = entry.get(win), entry.get(f"{win}_median")
-        on = bool(a and b and a["skill_vs_base"] >= MIN_SKILL
-                  and b["skill_vs_base"] >= MIN_SKILL)
+        on = switched_on(entry, win, MIN_SKILL)
         live = {"enabled": on}
         if on:
             ndvi = season_ndvi(nd, cfg, country.window, half, COL)
@@ -195,7 +208,7 @@ def score(country, cfg, nd):
             slope, mu, sd = fit(base, ndvi, years)
             live.update({"slope": slope, "mean": mu, "sd": sd,
                          "fit_years": [years[0], years[-1]],
-                         "skill_vs_base": a["skill_vs_base"]})
+                         "skill_vs_base": entry[win]["skill_vs_base"]})
         entry["live"][win] = live
     entry["sites"] = {}
     for p in cfg.points:
@@ -255,6 +268,21 @@ def adjustment(country, cfg, season):
                 "backtest_skill": round(e["skill_vs_base"], 3),
                 "fit_years": e["fit_years"]}
     return None
+
+
+def apply(row, adj):
+    """Fold a live correction into a forecast row's point and ranges."""
+    if not adj:
+        return row
+    factor = float(np.exp(adj["log_adjustment"]))
+    for key in ("point", "weather_model_point"):
+        if isinstance(row.get(key), (int, float)):
+            row[key] = row[key] * factor
+    for key in ("range_68", "range_95"):
+        if isinstance(row.get(key), list):
+            row[key] = [v * factor for v in row[key]]
+    row["ndvi"] = adj
+    return row
 
 
 def cli(country):

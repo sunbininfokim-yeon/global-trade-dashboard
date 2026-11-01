@@ -7,7 +7,10 @@ import os
 import sys
 from datetime import datetime, timezone
 
+from australia import ndvi as N
+
 from .gov_outlooks import build_snapshot as build_gov_outlooks
+from .ndvi import canada as ndvi_country
 from .predict import predict_one
 from .regions import ALL, PROVINCE, SAD
 
@@ -137,6 +140,21 @@ def main() -> int:
             "label_scale": "province",
             **prov,
         }
+
+    # MODIS NDVI correction (canada/ndvi.py), only where the published row is
+    # the forecast the backtest scored: the region's own model, or the trend
+    # where that model is not operational -- not a province fallback.
+    country = ndvi_country()
+    resolution = {h["key"]: h["resolution"] for h in hierarchy}
+    for cfg in ALL:
+        row = regions.get(cfg.key)
+        if row is None or "error" in results[cfg.key]:
+            continue
+        own = results[cfg.key].get("operational_choice") == "ridge_weather"
+        res = resolution.get(cfg.key)
+        if res is not None and res != ("sad_weather" if own else "trend"):
+            continue
+        N.apply(row, N.adjustment(country, cfg, int(row.get("season") or 0)))
 
     try:
         gov = build_gov_outlooks()
