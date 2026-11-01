@@ -29,6 +29,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/api/defaults":
             return self.reply(200, defaults(snapshot()))
         files = {"/": ("viewer.html", "text/html"), "/viewer.js": ("viewer.js", "text/javascript"),
+                 "/extras.js": ("extras.js", "text/javascript"),
                  "/viewer.css": ("viewer.css", "text/css")}
         if self.path not in files:
             return self.reply(404, {"error": "Not found"})

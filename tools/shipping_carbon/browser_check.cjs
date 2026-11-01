@@ -20,6 +20,26 @@ require('node:fs').mkdirSync(path.join(__dirname,'source_data'),{recursive:true}
     if(select) await el.selectOption(value); else {await el.fill(value);await el.dispatchEvent('change');}
     await response; await page.waitForTimeout(150);
   }
+  assert.match(await page.locator('#funding-panel').innerText(), /partial/);
+  await change('initial_margin','250000');
+  await page.locator('.funding-chart').waitFor();
+  await change('hedge_basis_shock','2');
+  assert.match(await page.locator('#comparison-panel').innerText(), /-8 EUR\/EUA/);
+  const netMetric=page.locator('#dealer-view .metric').filter({has:page.locator('span', {hasText:'가격충격 시 순평가손익'})});
+  assert.match(await netMetric.innerText(), /100,000 EUR/);
+  await change('hedge_basis_shock','0');
+  await page.locator('details').filter({has:page.locator('summary', {hasText:'계약별 자금 일정'})}).locator('summary').click();
+  await change('customer_payment_date','2026-11-01');
+  await change('price_path','persistent',true);
+  const fundingMetric=page.locator('#funding-panel .metric').first();
+  assert.match(await fundingMetric.innerText(), /0 EUR/);
+  const downloadPromise=page.waitForEvent('download');
+  await page.locator('#export').click();
+  const download=await downloadPromise;
+  const exported=JSON.parse(require('node:fs').readFileSync(await download.path(),'utf8'));
+  assert.equal(exported.inputs.customer_payment_date,'2026-11-01');
+  assert.equal(exported.result.dealer.funding.status,'scenario');
+  assert.equal(exported.result.dealer.cash_path.at(-1).cumulative_vm_eur,'-500000');
   await change('price_shock','10');
   assert.match(await page.locator('#ship-view').innerText(),/300,000 EUR/);
   await change('delivery_date','2027-10-01');
@@ -29,8 +49,12 @@ require('node:fs').mkdirSync(path.join(__dirname,'source_data'),{recursive:true}
   await change('available_eua','-1');
   assert.notEqual(await page.locator('#error').innerText(),'');
   assert.equal(await page.locator('#dealer-view').innerText(),'');
+  assert.equal(await page.locator('#export').isDisabled(),true);
   await page.locator('#reset').click();
   await page.locator('#dealer-view .metric').first().waitFor();
+  await change('initial_margin','250000');
+  await page.locator('.funding-chart').waitFor();
+  await page.locator('#funding-panel').screenshot({path:path.join(__dirname,'source_data','viewer-funding.png')});
   await page.screenshot({path:path.join(__dirname,'source_data','viewer-dealer.png'),fullPage:true});
   await page.locator('#ship-tab').click();
   await page.screenshot({path:path.join(__dirname,'source_data','viewer-shipowner.png'),fullPage:true});
@@ -38,5 +62,5 @@ require('node:fs').mkdirSync(path.join(__dirname,'source_data'),{recursive:true}
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
   assert.deepEqual(errors,[]);
   await browser.close();
-  console.log('PASS: synthetic price reference, both views, shared shock, late delivery, missing price, input errors, reset, mobile width; no browser JS errors.');
+  console.log('PASS: both views, synthetic reference, basis shock, dated funding, prepayment, JSON download, invalidation, shared shock, late delivery, missing price, reset, mobile width; no browser JS errors.');
 })().catch(e=>{console.error(e);process.exit(1)});

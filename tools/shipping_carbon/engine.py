@@ -1,6 +1,7 @@
 """Pure scenario calculations. No automatic legal eligibility or trade execution."""
 from datetime import date
 from decimal import Decimal as D
+from funding import schedule
 
 ZERO = D(0)
 
@@ -46,7 +47,11 @@ def defaults(snapshot):
             "customer_bucket": "2027-09", "future_bucket": "2027-09",
             "future_delivery_date": "2027-09-01", "cash_buffer": "100000",
             "initial_margin": None, "fuel_target": "89.3368", "fuel_actual": "90",
-            "fuel_energy_mj": "1000000000", "pool_quote": "200"}
+            "fuel_energy_mj": "1000000000", "pool_quote": "200",
+            "hedge_basis_shock": "0", "customer_price": "85",
+            "customer_delivery_date": "2027-09-30", "customer_payment_date": "2027-10-15",
+            "replacement_price": None, "trade_fees": "1000", "funding_rate_pct": "5",
+            "price_path": "recovery"}
 
 
 def calculate(p, snapshot):
@@ -73,10 +78,12 @@ def calculate(p, snapshot):
     price = auction["value"] if p["price_mode"] == "auction_reference" else (
         None if p.get("manual_price") in (None, "") else n("manual_price"))
     shock = signed("price_shock")
+    basis = number(p.get("hedge_basis_shock", "0"), "hedge_basis_shock")
+    future_shock = shock + basis
     if price is not None and price + shock < 0:
         raise ValueError("가격 충격 후 EUA 가격은 음수가 될 수 없습니다")
     baseline = None if p.get("future_price") in (None, "") else n("future_price")
-    if baseline is not None and baseline + shock < 0:
+    if baseline is not None and baseline + future_shock < 0:
         raise ValueError("가격 충격 후 선물 가정가격은 음수가 될 수 없습니다")
     budget = gap * price if gap is not None and price is not None else None
     hedge = n("ship_hedge_delta")
@@ -98,17 +105,20 @@ def calculate(p, snapshot):
     if customer_q is not None:
         buckets[p["customer_bucket"]] = -customer_q
     buckets[p["future_bucket"]] = buckets.get(p["future_bucket"], ZERO) + future_q
-    pnl = future_q * shock
+    pnl = future_q * future_shock
     customer_pnl = -customer_q * shock if customer_q is not None else None
     cash = n("cash_buffer")
     margin = None if p.get("initial_margin") in (None, "") else n("initial_margin")
     if not principal:
         margin = ZERO
-    # One shock and recovery. VM is the cash realization of futures P&L, not an extra P&L.
+    price_path = p.get("price_path", "recovery")
+    if price_path not in ("recovery", "persistent"):
+        raise ValueError("가격 경로를 확인하세요")
+    # VM is the cash realization of futures P&L, not an extra P&L.
     vm_cash, peak = ZERO, ZERO
     path = []
     previous = ZERO
-    for day, level in enumerate((ZERO, shock, ZERO)):
+    for day, level in enumerate((ZERO, future_shock, ZERO if price_path == "recovery" else future_shock)):
         vm = future_q * (level - previous)
         previous = level
         vm_cash += vm
@@ -130,12 +140,35 @@ def calculate(p, snapshot):
               "delivery_gap_eua": max(ZERO, customer_q - (future_q if timely_future else ZERO)) if customer_q is not None else None,
               "valuation_method": "parallel_shock_delta_approximation",
               "curve_risk": len([v for v in buckets.values() if v != 0]) > 1}
+    optional = lambda key: None if p.get(key) in (None, "") else n(key)
+    dealer["funding"] = schedule(
+        as_of=p["as_of"], delivery=p["future_delivery_date"],
+        customer_delivery=p.get("customer_delivery_date", p["surrender_date"]),
+        customer_payment=p.get("customer_payment_date", p["surrender_date"]),
+        customer_q=customer_q, future_q=future_q, future_price=baseline,
+        customer_price=optional("customer_price"), replacement_price=optional("replacement_price"),
+        shock=future_shock, recovery=price_path == "recovery", cash_buffer=cash,
+        initial_margin=margin, fees=number(p.get("trade_fees", "0"), "trade_fees", ZERO),
+        annual_rate=number(p.get("funding_rate_pct", "0"), "funding_rate_pct", ZERO), principal=principal)
+    dealer["hedge_shock_eur"] = future_shock
+    dealer["basis_shock_eur"] = basis
+    dealer["valuation_method"] = "customer_and_hedge_shock_delta_approximation"
+    dealer["hedge_comparison"] = []
+    if customer_q is not None:
+        for label, ratio in (("미헤지", ZERO), ("50% 목표", D("0.5")), ("100% 목표", D(1))):
+            target_lots = (customer_q * ratio / D(1000)).to_integral_value(rounding="ROUND_CEILING")
+            qh = target_lots * D(1000)
+            dealer["hedge_comparison"].append({"label": label, "lots": target_lots,
+                "hedge_eua": qh, "residual_delta_eua": qh - customer_q,
+                "net_shock_pnl_eur": qh * future_shock - customer_q * shock,
+                "vm_outflow_eur": max(ZERO, -qh * future_shock)})
+    ship["customer_contract_payment_eur"] = gap * optional("customer_price") if gap is not None and optional("customer_price") is not None else None
     balance = (n("fuel_target") - n("fuel_actual")) * n("fuel_energy_mj") / D(1000000)
     pool = None if p.get("pool_quote") in (None, "") else n("pool_quote")
     fuel = {"status": "illustrative", "balance_tco2e": balance,
             "pool_cost_eur": max(ZERO, -balance) * pool if pool is not None else None,
             "penalty_eur": None, "penalty_status": "held_pending_annex_verification"}
-    return {"schema": "shipping_carbon_scenario_v1", "as_of": as_of.isoformat(),
+    return {"schema": "shipping_carbon_scenario_v2", "as_of": as_of.isoformat(),
             "scenario_data": True, "references": {"auction": auction, "fx": fx},
             "price_mode": p["price_mode"], "budget_price_eur": price,
             "shipowner": ship, "dealer": dealer, "fueleu": fuel}
