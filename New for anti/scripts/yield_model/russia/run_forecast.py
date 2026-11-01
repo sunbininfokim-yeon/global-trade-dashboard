@@ -176,6 +176,8 @@ def main():
                 "caveat": r["caveat"],
                 "non_weather_drivers": r["non_weather_drivers"],
                 "weather_through": r["weather_through"],
+                # Open-Meteo forecast days used after the last measured day.
+                "forecast_through": r.get("forecast_through"),
                 "critical_window_observed": (
                     round(share, 3) if share is not None else None),
                 "season_complete": r["season_complete"],
