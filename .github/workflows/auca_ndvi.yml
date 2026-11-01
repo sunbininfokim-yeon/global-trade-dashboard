@@ -1,0 +1,153 @@
+name: Australia and Canada NDVI (MODIS, weekly)
+
+# In-season crop-condition channel for the Australian and Canadian state
+# models, the same MOD13Q1 source and test as Argentina and Brazil (keyless
+# ORNL DAAC API, reachable from Actions only). Each country is collected in
+# three parallel shards, merged, and re-scored (australia/ndvi.py).
+#
+# On a pull request that touches the NDVI code it runs the same steps and
+# commits the result to the PR branch, so the backtest a reviewer reads comes
+# from real composites.
+on:
+  schedule:
+    # Thu 16:40 UTC -- after Brazil NDVI (16:10).
+    - cron: '40 16 * * 4'
+  workflow_dispatch:
+    inputs:
+      full:
+        description: 'Rebuild the whole record from 2000'
+        type: boolean
+        default: false
+  pull_request:
+    paths:
+      - 'New for anti/scripts/yield_model/australia/ndvi.py'
+      - 'New for anti/scripts/yield_model/canada/ndvi.py'
+      - '.github/workflows/auca_ndvi.yml'
+
+concurrency:
+  group: auca-ndvi-${{ github.head_ref || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      matrix:
+        country: [australia, canada]
+        shard: [0, 1, 2]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scipy scikit-learn
+
+      - name: Collect NDVI (${{ matrix.country }} ${{ matrix.shard }})
+        # Only composites missing from <country>/condition/ndvi_points.csv. The
+        # budget stops requests in time for the upload; the next run resumes.
+        working-directory: "New for anti/scripts/yield_model"
+        env:
+          NDVI_BUDGET_MIN: '300'
+        run: >-
+          python -m ${{ matrix.country }}.ndvi --shard ${{ matrix.shard }} --shards 3
+          --out "$RUNNER_TEMP/ndvi_${{ matrix.country }}_${{ matrix.shard }}.csv"
+          ${{ inputs.full && '--full' || '' }}
+
+      - name: Upload shard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ndvi-${{ matrix.country }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/ndvi_${{ matrix.country }}_${{ matrix.shard }}.csv
+          if-no-files-found: ignore
+          retention-days: 3
+
+  merge:
+    needs: collect
+    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scipy scikit-learn pytest
+
+      - name: Offline tests
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m pytest australia/test_ndvi.py -q
+
+      - name: Download shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ndvi-*
+          path: ${{ runner.temp }}/shards
+          merge-multiple: true
+
+      - name: Merge shards
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          shopt -s nullglob
+          for c in australia canada; do
+            python -m $c.ndvi merge "$RUNNER_TEMP"/shards/ndvi_${c}_*.csv
+          done
+
+      - name: Re-score the NDVI correction
+        # Decides per region which windows the live forecast may correct with
+        # NDVI, against whatever models are on the branch this week.
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m australia.ndvi backtest
+          python -m canada.ndvi backtest
+
+      - name: Commit to the pull request branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/australia/condition" "New for anti/scripts/yield_model/canada/condition"
+          git commit -m "chore: Australia and Canada MODIS NDVI backfill" || exit 0
+          for i in 1 2 3; do
+            git push origin "HEAD:$GITHUB_HEAD_REF" && exit 0
+            echo "push rejected, rebasing and retrying ($i/3)"
+            git pull --rebase --autostash origin "$GITHUB_HEAD_REF"
+          done
+          git push origin "HEAD:$GITHUB_HEAD_REF"
+
+      - name: Commit and Push Changes
+        if: github.event_name != 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/australia/condition" "New for anti/scripts/yield_model/canada/condition"
+          git commit -m "chore: Australia and Canada MODIS NDVI refresh" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push
