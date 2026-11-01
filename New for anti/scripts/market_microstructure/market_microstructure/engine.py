@@ -530,6 +530,11 @@ def build_snapshot(day: dict[str, Any], *, anchors: dict[str, Any] | None = None
     }
 
 
+def _krw_cell(value: Any) -> str:
+    """A blank amount stays blank in the tables; formatting None as 0 would read as an observation."""
+    return "—" if value is None else f"{float(value):,.0f}"
+
+
 def markdown_tables(snap: dict[str, Any]) -> str:
     lines: list[str] = []
     lines.append(f"# Market microstructure tables — {snap['as_of']}")
@@ -600,7 +605,7 @@ def markdown_tables(snap: dict[str, Any]) -> str:
     lines.append("|--------|---------:|---------:|--------------------:|--------------------------:|--------------:|")
     for s in snap["stocks"]:
         lines.append(
-            f"| {s['ticker']} | {s['letf_aum_sum_krw']:,.0f} | {s['adv_spot_krw']:,.0f} | "
+            f"| {s['ticker']} | {_krw_cell(s['letf_aum_sum_krw'])} | {s['adv_spot_krw']:,.0f} | "
             f"{s['letf_turnover_ratio']} | {s['leverage_exposure_pct']} | {s['short_ratio_pct']} |"
         )
     lines.append("")
@@ -638,7 +643,7 @@ def markdown_tables(snap: dict[str, Any]) -> str:
         for p in s.get("products") or []:
             lines.append(
                 f"| {s['ticker']} | {p['ticker']} {p.get('name','')} | {p['L']} | "
-                f"{p['aum']:,.0f} | {p.get('trading_value') or 0:,.0f} | {p.get('structure')} |"
+                f"{_krw_cell(p['aum'])} | {p.get('trading_value') or 0:,.0f} | {p.get('structure')} |"
             )
     lines.append("")
 

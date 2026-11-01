@@ -159,6 +159,24 @@ class TestSnapshot(unittest.TestCase):
         self.assertEqual(stock["scenarios"], {})
         self.assertIsNone(stock["products"][0]["aum"])
 
+    def test_every_product_blank_leaves_the_aum_sum_empty_not_zero(self):
+        day = json.loads(
+            (ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8")
+        )
+        for product in day["stocks"][0]["letf_products"]:
+            product["aum"] = None
+            product["aum_quality"] = "missing"
+        snap = build_snapshot(day)
+        stock = next(s for s in snap["stocks"] if s["ticker"] == day["stocks"][0]["ticker"])
+        self.assertIsNone(stock["letf_aum_sum_krw"])
+        self.assertIsNone(stock["letf_aum_long_krw"])
+        self.assertIsNone(stock["letf_aum_inverse_krw"])
+        self.assertEqual(stock["letf_aum_quality"], "partial")
+        self.assertIsNone(stock["leverage_exposure_pct"])
+        # the daily run renders this same snapshot to markdown; a blank sum must not crash it
+        md = markdown_tables(snap)
+        self.assertIn(f"| {day['stocks'][0]['ticker']} | — |", md)
+
     def test_global_stack_from_external(self):
         day = json.loads((ROOT / "tests/fixtures/demo_day.json").read_text(encoding="utf-8"))
         day["external_venues"] = {

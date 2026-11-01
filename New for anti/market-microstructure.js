@@ -145,7 +145,7 @@ const msStockLetfSeries = (ticker, ko) => [
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 거래대금`, unit: '조', pick: (r) => msToJo(r.letf_trading_value_krw) },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 현물 거래대금`, unit: '조', pick: (r) => msToJo(r.spot_trading_value_krw) },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF / 현물 거래대금 비율`, unit: '%', pick: (r) => Number.isFinite(r.letf_turnover_ratio) ? r.letf_turnover_ratio * 100 : null },
-    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 합계 순자산 (AUM)`, unit: '조', pick: (r) => msToJo(r.letf_aum_sum_krw) },
+    { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} LETF 합계 순자산 (AUM)`, unit: '조', pick: (r) => msAumToJo(r.letf_aum_sum_krw) },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 추정 리밸런싱 압력 (부호 포함)`, unit: '조',
         pick: (r) => msToJo(r.implied_rebalance_krw), note: MS_IMPLIED_REBALANCE_NOTE },
     { file: 'stockLetf', filter: (r) => r.ticker === ticker, label: `${ko} 추정 압력 / 현물 당일 거래대금`, unit: '%',
@@ -301,6 +301,15 @@ const msUsdM = (v) => Number.isFinite(v) ? `$${(v / 1e6).toFixed(0)}M` : '미관
 // the overstatement this label exists to prevent.
 const msAumProvenance = (q) => q === 'observed' ? '(순자산총액 관측)'
     : (q === 'proxy' || q === 'partial') ? '(시가총액 기반 순자산 프록시)' : '';
+// A net-asset total of 0 is never a reading here. KRX returned 0 for the
+// single-stock LETFs on several days while their trading value was in the
+// hundreds of billions and the neighbouring days were trillions, so 0 is a
+// blank source field. Showing it as "0.00조 (순자산총액 관측)" states a
+// measurement nobody made; it is drawn as a gap and labelled as missing.
+const msAumToJo = (v) => (Number.isFinite(v) && v > 0) ? v / 1e12 : null;
+const msAumCell = (v, q) => (Number.isFinite(v) && v > 0)
+    ? `${msJo(v)} <span class="ms-q">${finEsc(msAumProvenance(q))}</span>`
+    : '— <span class="ms-q">(원천 누락)</span>';
 
 // Levered ETF turnover as a share of the two markets combined, rather than as
 // a multiple of cash alone. Safe to add the two: FDR's KOSPI listing (개별
@@ -2049,7 +2058,7 @@ const msModalFor = (key, D) => {
                 ['LETF 거래대금', msJo(st.letf_trading_value_krw)],
                 ['현물 당일 거래대금', msJo(spotTv)],
                 ['LETF / 현물 비율', finPct(st.letf_turnover_ratio)],
-                ['LETF 합계 순자산 (AUM)', `${msJo(st.letf_aum_sum_krw)} <span class="ms-q">${finEsc(msAumProvenance(st.letf_aum_quality))}</span>`],
+                ['LETF 합계 순자산 (AUM)', msAumCell(st.letf_aum_sum_krw, st.letf_aum_quality)],
             ])
             + `<p class="fin-note">관측일 ${finEsc(m.as_of || '—')}. 거래대금 기준 관측치이며 보유 포지션이나 다음 가격 방향이 아닙니다.
                ${msHistRows('stockLetf').filter((r) => r.ticker === ticker).length < MS_HIST_MIN_OBS ? '일별 이력이 아직 쌓이지 않아 오늘 값만 있습니다.' : ''}</p>` };
@@ -2153,7 +2162,7 @@ const msModalFor = (key, D) => {
         return { title: `${sel.name} 단일종목 ETF 상품별`,
             html: msTable(['상품', '배수', '순자산(AUM)', '거래대금', '방향'],
                 (sel.products || []).map((p) => [finEsc(p.name), `${p.L > 0 ? '+' : ''}${p.L}배`,
-                    `${msJo(p.aum)} <span class="ms-q">${finEsc(msAumProvenance(p.aum_quality))}</span>`,
+                    msAumCell(p.aum, p.aum_quality),
                     msJo(p.trading_value), p.direction === 'long' ? '정방향' : '인버스']))
                 + '<p class="fin-note">NAV는 공개 스냅샷에 없습니다. 거래대금은 실측이며, 순자산(AUM)은 상품마다 관측 또는 시가총액 기반 프록시로 표시가 갈립니다 — 각 행의 괄호를 확인하세요.</p>' };
     }
