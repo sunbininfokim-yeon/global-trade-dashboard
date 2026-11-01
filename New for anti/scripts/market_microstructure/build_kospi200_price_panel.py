@@ -174,6 +174,21 @@ def reconcile_index_gaps(
     }
 
 
+# What was actually checked, per ticker. The chart endpoint is shared, so the
+# other candidates probably behave the same, but "probably" is not a label.
+ETF_VERIFICATION = {
+    "069500": "issuer_notice_and_price_test",
+    "102110": "price_test_only",
+}
+ETF_ADJUSTMENT_NOTE_KO = (
+    "후보는 이름상 비레버리지 코스피200 추종 상품과 총수익(TR) 상품이다. "
+    "레버리지·인버스·섹터·커버드콜은 제외했다. 어느 상품도 매매 대상으로 고정하지 않았다. "
+    "FinanceDataReader 응답에는 거래대금이 없다. "
+    "수정주가(분배금 제외) 여부는 KODEX 200만 발행사 공지와 가격으로 확인했고(2024-10-30, 좌당 120원), "
+    "TIGER 200은 가격만 봤고 공지는 인용하지 않았다. 나머지 후보는 같은 차트 출처일 뿐 확인하지 않았다."
+)
+
+
 def apply_etf_definition(etf_doc: dict[str, Any], *, collected_at: str) -> None:
     """Record the verified adjustment definition without changing OHLC rows."""
     evidence = {
@@ -198,18 +213,48 @@ def apply_etf_definition(etf_doc: dict[str, Any], *, collected_at: str) -> None:
             "실제 체결 가격인 미수정 시세는 이 파일에 없다."
         ),
     }
-    etf_doc["price_adjustment"] = "distribution_adjusted"
+    evidence["verified_tickers"] = [
+        t for t, how in ETF_VERIFICATION.items() if how == "issuer_notice_and_price_test"
+    ]
+    evidence["price_test_only_tickers"] = [
+        t for t, how in ETF_VERIFICATION.items() if how == "price_test_only"
+    ]
+    etf_doc["price_adjustment"] = "see_candidates"
+    etf_doc["adjustment_note_ko"] = ETF_ADJUSTMENT_NOTE_KO
     etf_doc["dividend_treatment"] = evidence["dividend_treatment"]
     etf_doc["adjustment_evidence"] = evidence
     etf_doc["definition_collected_at"] = collected_at
     for candidate in etf_doc.get("candidates") or []:
-        candidate["price_adjustment"] = "distribution_adjusted"
+        how = ETF_VERIFICATION.get(candidate["ticker"], "not_checked")
+        candidate["price_adjustment_verification"] = how
+        candidate["price_adjustment"] = (
+            "distribution_adjusted" if how == "issuer_notice_and_price_test"
+            else "unverified_same_chart_source"
+        )
         candidate["dividend_treatment"] = (
             "naver_fchart_same_endpoint"
             if candidate["ticker"] in {"069500", "102110"}
             else "same_endpoint_not_checked_against_own_issuer_notice"
         )
         candidate["strategy_target"] = False
+
+
+RECONCILIATION = "data/manifests/krx_close_vs_price_file_20261101.json"
+CONCLUSION_KO = (
+    "가격 파일의 종가는 네이버 캔들과 같다. 저장돼 있는 underlying_day_return은 가격 파일 종가 수익률과 "
+    "부호가 다른 날이 있지만, KRX 일별 시세의 종가로 계산한 등락률과는 연속한 거래일 36쌍이 모두 일치한다 "
+    f"(삼성전자·SK하이닉스, 근거 {RECONCILIATION}). KRX 종가와 가격 파일 종가는 2026-09-14부터 서로 다른 날이 "
+    "많다. 그래서 부호가 갈리는 날은 저장값의 오류가 아니라 두 종가의 정의 차이다. 값을 덮어쓰지 않는다. "
+    "차이의 원인(거래소 통합 시세 여부 등)은 확인하지 못했다. 네이버가 발표한 등락률의 기준가격이 전일 "
+    "캔들 종가와 다른 날은 종가 수익률과 발표 등락률이 서로 다른 질문이다."
+)
+SIGNAL_USE_KO = (
+    "LETF 리밸런싱 추정이 쓰는 underlying_day_return은 KRX 종가 기준이라 그대로 유효하다. "
+    "가격 파일(investor_price_levels)의 종가는 2026-09-14부터 KRX 종가와 다를 수 있으므로, 두 종가를 섞어 "
+    "수익률을 만들지 않는다. LETF AUM 결측과 파생상품 활동 결측을 쓰는 전략은 보류한다. "
+    "옵션 수급과 ETF 다음 날 수익률을 보는 탐색은, ETF 가격이 분배금이 빠진 수정 종가라는 전제에서만 가능하며 "
+    "그 전제는 KODEX 200만 확인됐다. 탐색이 가능하다는 것은 실전 수익이 확인됐다는 뜻이 아니다."
+)
 
 
 def audit_stored_returns(
@@ -274,12 +319,7 @@ def audit_stored_returns(
             "sign_flips_versus_price_file": sign_flips,
             "naver_base_differs_from_previous_close": base_splits,
         }
-    report["conclusion_ko"] = (
-        "가격 파일의 종가는 네이버 캔들과 같다. 저장돼 있는 underlying_day_return은 "
-        "그 종가 수익률과 부호가 다른 날이 있어 신호에 쓰지 않는다. 값을 덮어쓰지 않는다. "
-        "2026-09-15부터는 네이버가 발표한 등락률의 기준가격이 전일 캔들 종가와 다른 날도 있다. "
-        "그 날은 종가 수익률과 발표 등락률이 서로 다른 질문이다."
-    )
+    report["conclusion_ko"] = CONCLUSION_KO
     return report
 
 
@@ -325,12 +365,7 @@ def fill(start: str = "20190102", end: str = "20261030") -> dict[str, Any]:
             "index_gap_fill": index_doc["gap_fill"],
             "etf_price_definition": etf_doc["adjustment_evidence"],
             "return_mismatch_audit": audit,
-            "signal_use_ko": (
-                "LETF AUM 결측과 파생상품 활동 결측을 쓰는 전략은 보류한다. "
-                "underlying_day_return은 종가 수익률 신호로 쓰지 않는다. "
-                "옵션 수급과 ETF 다음 날 수익률을 보는 탐색은, 이 파일이 분배금이 빠진 수정 종가라는 전제에서만 가능하다. "
-                "탐색이 가능하다는 것은 실전 수익이 확인됐다는 뜻이 아니다."
-            ),
+            "signal_use_ko": SIGNAL_USE_KO,
         }
     )
     return {"collected_at": collected_at, **report, "sign_flips": {

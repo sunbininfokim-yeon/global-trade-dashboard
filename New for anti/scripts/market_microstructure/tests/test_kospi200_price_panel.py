@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from build_kospi200_price_panel import (  # noqa: E402
+    CONCLUSION_KO,
+    apply_etf_definition,
     audit_stored_returns,
     reconcile_index_gaps,
 )
@@ -94,6 +96,22 @@ class PricePanelTests(unittest.TestCase):
         self.assertEqual(flip["naver_direction"], "FALLING")
         self.assertLess(flip["price_file_close_to_close"], 0)
         self.assertGreater(flip["letf_history_underlying_day_return"], 0)
+
+    def test_adjustment_label_follows_the_evidence_per_ticker(self) -> None:
+        doc = {"candidates": [{"ticker": t} for t in ("069500", "102110", "105190")]}
+        apply_etf_definition(doc, collected_at="2026-11-01T08:00:00+00:00")
+        by = {c["ticker"]: c for c in doc["candidates"]}
+        self.assertEqual(by["069500"]["price_adjustment"], "distribution_adjusted")
+        self.assertEqual(by["069500"]["price_adjustment_verification"], "issuer_notice_and_price_test")
+        self.assertEqual(by["102110"]["price_adjustment"], "unverified_same_chart_source")
+        self.assertEqual(by["102110"]["price_adjustment_verification"], "price_test_only")
+        self.assertEqual(by["105190"]["price_adjustment_verification"], "not_checked")
+        self.assertEqual(doc["price_adjustment"], "see_candidates")
+        self.assertNotIn("unknown", doc["adjustment_note_ko"])
+
+    def test_conclusion_does_not_call_the_krx_based_return_wrong(self) -> None:
+        self.assertIn("정의 차이", CONCLUSION_KO)
+        self.assertNotIn("신호에 쓰지 않는다", CONCLUSION_KO)
 
 
 if __name__ == "__main__":
