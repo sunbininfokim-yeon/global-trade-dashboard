@@ -1490,6 +1490,27 @@ async function handleMacro(request, env, ctx) {
             });
         }
 
+        if (source === 'hkma') {
+            // HKMA's open API firewall answers GitHub's runners and bursts from one
+            // address with 405; the daily refresh reads it through here instead
+            // (free_cards.read_hkma). Keyless, so only listed endpoints pass.
+            const HKMA_ENDPOINTS = new Set([
+                'daily-monetary-statistics/daily-figures-interbank-liquidity',
+            ]);
+            const endpoint = url.searchParams.get('endpoint') || '';
+            if (!HKMA_ENDPOINTS.has(endpoint)) {
+                return new Response(JSON.stringify({ error: 'endpoint not allowed' }), { status: 400, headers: JSON_HEADERS });
+            }
+            const pagesize = Math.min(Math.max(parseInt(url.searchParams.get('pagesize'), 10) || 1000, 1), 1000);
+            const offset = Math.max(parseInt(url.searchParams.get('offset'), 10) || 0, 0);
+            return kvCachedJson(env, `hkma:${endpoint}:${pagesize}:${offset}`, 3600, async () => {
+                const res = await fetch(`https://api.hkma.gov.hk/public/market-data-and-statistics/${endpoint}?pagesize=${pagesize}&offset=${offset}&sortorder=desc`,
+                    { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; global-trade-dashboard)', 'Accept': 'application/json' } });
+                if (!res.ok) return { ok: false, status: res.status };
+                return { ok: true, body: await res.json() };
+            });
+        }
+
         if (source === 'bok') {
             const BOK_KEY = env.BOK_API_KEY;
             if (!BOK_KEY) return missingKey('BOK_API_KEY');
