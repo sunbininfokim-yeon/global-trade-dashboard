@@ -66,15 +66,32 @@
     ],
     "intercept": -3.1866879934151545e-15
   },
-  "beats_trend": false,
+  "beats_trend": true,
   "raw_beats_trend": true,
   "thin_evidence": [
     "6 features > 25 seasons / 5"
   ],
-  "recent_skill_vs_trend": 0.16711736680760925,
-  "skill_vs_best_trend": 0.16711736680760925,
+  "preregistered": {
+    "features": [
+      "precip_april",
+      "sm_april",
+      "edd_flower",
+      "sm_flower",
+      "precip_may_aug",
+      "radiation_season"
+    ],
+    "trend_form": "recent20",
+    "n_forward": 9,
+    "n_loo": 25,
+    "forward_skill": 0.2063693418347199,
+    "recent_skill": 0.2063693418347199,
+    "loo_skill": 0.16520204019559248,
+    "passed": true
+  },
+  "recent_skill_vs_trend": 0.2063693418347199,
+  "skill_vs_best_trend": 0.2063693418347199,
   "best_trend_baseline_rmse": 181.9326478932472,
-  "skill_basis": "nested",
+  "skill_basis": "preregistered",
   "nested": {
     "n": 6,
     "years": [
@@ -91,13 +108,13 @@
     "full_skill": 0.2063693418347199,
     "recent_skill": 0.2063693418347199
   },
-  "weather_skill": 0.16711736680760925,
+  "weather_skill": 0.2063693418347199,
   "recent_trend_bias": 9.039723666285504,
   "recent_folds": 10,
   "uncertainty": {
-    "sigma": 210.20712322587025,
+    "sigma": 144.38732708926995,
     "unit": "kg/ha",
-    "basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
+    "basis": "out-of-sample RMSE over last 10 forward folds"
   },
   "validation": {
     "all_deg1_loo": {

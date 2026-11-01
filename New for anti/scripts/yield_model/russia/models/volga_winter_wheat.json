@@ -18,12 +18,12 @@
   "regime_start": 2000,
   "trend": {
     "log_poly_coef": [
-      0.030575336110109482,
-      -54.09011997090582
+      0.03324842356050282,
+      -59.47058238855783
     ],
     "degree": 1,
-    "form": "recent20",
-    "window": 20,
+    "form": "recent10",
+    "window": 10,
     "space": "log(kg/ha)"
   },
   "features": [
@@ -35,46 +35,63 @@
     "precip_autumn"
   ],
   "feature_set": "core",
-  "trend_form": "recent20",
+  "trend_form": "recent10",
   "scaler": {
     "mean": [
-      122.46510000000004,
-      122.46510000000004,
-      0.5512833333333335,
-      40.29340000000001,
-      117.92155,
-      118.9002
+      95.0252,
+      95.0252,
+      0.5642666666666667,
+      39.349000000000004,
+      127.49510000000001,
+      123.05930000000001
     ],
     "scale": [
-      68.04885890733216,
-      68.04885890733216,
-      0.03315387944452689,
-      26.52051278614348,
-      36.31273252383384,
-      41.03167934121147
+      51.01001317937489,
+      51.01001317937488,
+      0.03529197579557648,
+      28.807147106230428,
+      39.95090131261121,
+      49.53632869934954
     ]
   },
   "ridge": {
-    "alpha": 1.4251026703029992,
+    "alpha": 2.0309176209047366,
     "coef": [
-      -0.03544486739786356,
-      -0.03544486739786318,
-      -0.06071249206203216,
-      -0.08098922672193723,
-      0.06852696302771816,
-      0.05615671648067594
+      -0.03882230498386009,
+      -0.03882230498386067,
+      -0.00911413336551812,
+      -0.04576097402547746,
+      0.09851487629394631,
+      0.07387415898964467
     ],
-    "intercept": 1.11677337632591e-14
+    "intercept": 2.310652804013271e-15
   },
-  "beats_trend": false,
+  "beats_trend": true,
   "raw_beats_trend": false,
   "thin_evidence": [
     "6 features > 25 seasons / 5"
   ],
-  "recent_skill_vs_trend": -0.2897493900147148,
-  "skill_vs_best_trend": -0.2897493900147148,
+  "preregistered": {
+    "features": [
+      "winterkill_bare_frost",
+      "winterkill_edd",
+      "sm_april",
+      "edd_grainfill",
+      "precip_spring",
+      "precip_autumn"
+    ],
+    "trend_form": "recent10",
+    "n_forward": 9,
+    "n_loo": 25,
+    "forward_skill": 0.04714547846496531,
+    "recent_skill": 0.04714547846496531,
+    "loo_skill": 0.21754722362133228,
+    "passed": true
+  },
+  "recent_skill_vs_trend": 0.04714547846496531,
+  "skill_vs_best_trend": 0.04714547846496531,
   "best_trend_baseline_rmse": 594.5806005012188,
-  "skill_basis": "nested",
+  "skill_basis": "preregistered",
   "nested": {
     "n": 6,
     "years": [
@@ -90,13 +107,13 @@
     "full_skill": 0.20053169033156204,
     "recent_skill": 0.20053169033156204
   },
-  "weather_skill": -0.2897493900147148,
-  "recent_trend_bias": -293.4894473654997,
+  "weather_skill": 0.04714547846496531,
+  "recent_trend_bias": -39.66650979330762,
   "recent_folds": 10,
   "uncertainty": {
-    "sigma": 561.0745285287954,
+    "sigma": 566.5488136046024,
     "unit": "kg/ha",
-    "basis": "trend-only baseline RMSE over last 10 folds (model showed no skill)"
+    "basis": "out-of-sample RMSE over last 10 forward folds"
   },
   "validation": {
     "all_deg1_loo": {
@@ -389,21 +406,21 @@
     }
   },
   "forward": {
-    "rmse": 475.3483476443542,
-    "mae": 352.3074536332754,
-    "detrended_r2": 0.18585162024332824,
-    "skill_vs_trend": 0.21176338072479328,
-    "baseline_rmse": 603.0528600427659,
-    "recent_rmse": 475.3483476443542,
-    "recent_baseline_rmse": 603.0528600427659,
-    "recent_trend_bias": -293.4894473654997,
+    "rmse": 566.5488136046024,
+    "mae": 480.8497428257111,
+    "detrended_r2": 0.08800928064881408,
+    "skill_vs_trend": 0.04714547846496531,
+    "baseline_rmse": 594.5806005012188,
+    "recent_rmse": 566.5488136046024,
+    "recent_baseline_rmse": 594.5806005012188,
+    "recent_trend_bias": -39.66650979330762,
     "n": 9,
     "years": [
       2016,
       2024
     ],
     "degree": 1,
-    "window": 20,
-    "trend_form": "recent20"
+    "window": 10,
+    "trend_form": "recent10"
   }
 }
