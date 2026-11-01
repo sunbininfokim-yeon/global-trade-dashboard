@@ -43,6 +43,7 @@ from datetime import date
 
 from .model import predict_target, train_target
 from .regions import BY_KEY
+from palm_oil.pks import outlook as pks_outlook
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TRAINING = os.path.join(HERE, "training")
@@ -195,6 +196,7 @@ def forecast(today=None):
                  "note": ("El Nino in the preceding dry season tends to cut "
                           "output 6-24 months later; context only, not applied.")},
         "weather_conditions": conditions,
+        "pks_outlook": pks_outlook(p["trend"], conditions),
         "skill": {
             "beats_trend": False,
             "skill_vs_trend_only": 0.0,

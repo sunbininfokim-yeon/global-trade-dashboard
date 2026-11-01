@@ -20,6 +20,8 @@ from datetime import date, datetime, timezone
 
 import pandas as pd
 
+from .pks import outlook as pks_outlook
+
 from . import conditions as K
 from . import psd
 from .producers import BY_COUNTRY
@@ -90,6 +92,7 @@ def region(producer, today=None):
                  "note": ("El Nino in the year before tends to cut output 6-24 "
                           "months later; context only, not applied.")},
         "weather_conditions": conditions,
+        "pks_outlook": pks_outlook(p["trend"], conditions),
         "skill": {
             "beats_trend": False,
             "skill_vs_trend_only": 0.0,

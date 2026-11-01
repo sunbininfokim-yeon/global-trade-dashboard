@@ -281,6 +281,7 @@ def summary(target, items, score, verdict, history):
         "season_observed_share": 1.0,
         "indicators": items,
         "history_ko": history_ko,
+        "unfavorable_mean_pct": unf.get("mean_residual_pct"),
         "unfavorable_supported": bool(history.get("unfavorable_supported")),
         "applied_to_forecast": False,
         "note_ko": note,
