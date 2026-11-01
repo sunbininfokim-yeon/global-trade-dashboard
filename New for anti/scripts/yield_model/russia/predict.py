@@ -107,6 +107,7 @@ def recent_weather(point, year):
     df = df.sort_values("date").reset_index(drop=True)
     df["et0"] = C.fao56_et0(df, point["lat"], point["elevation"])
     df["vpd_max"] = (C._svp(df.tmax) - C._svp(df.tdew)).clip(lower=0)
+    df["forecast"] = False
 
     # Extend with Open-Meteo T/P forecast; soil from POWER DOY climatology.
     try:
@@ -122,8 +123,9 @@ def recent_weather(point, year):
             fc["wind"] = fc["wind"].fillna(df.wind.mean())
             fc["et0"] = C.fao56_et0(fc, point["lat"], point["elevation"])
             fc["vpd_max"] = (C._svp(fc.tmax) - C._svp(fc.tdew)).clip(lower=0)
+            fc["forecast"] = True
             cols = ["date", "tmax", "tmin", "tmean", "precip", "rh_mean",
-                    "wind", "rs", "gwetroot", "vpd_max", "et0"]
+                    "wind", "rs", "gwetroot", "vpd_max", "et0", "forecast"]
             df = pd.concat([df[cols], fc[cols]], ignore_index=True)
             df = df.drop_duplicates("date").sort_values("date").reset_index(drop=True)
         time.sleep(0.4)
@@ -131,9 +133,18 @@ def recent_weather(point, year):
         log(f"  forecast tail skipped for {point['name']}: {e}")
 
     df = df[["date", "tmax", "tmin", "tmean", "precip", "rh_mean",
-             "wind", "rs", "gwetroot", "vpd_max", "et0"]]
+             "wind", "rs", "gwetroot", "vpd_max", "et0", "forecast"]]
     df.to_csv(cached, index=False)
     return df
+
+
+def observed_through(daily):
+    """Last date of measured (POWER) weather, excluding the forecast tail."""
+    if "forecast" in daily.columns:
+        obs = daily[~daily["forecast"].astype(bool)]
+        if not obs.empty:
+            return obs.date.max()
+    return daily.date.max()
 
 
 def panel_features(cfg, feats, year, history):
@@ -157,7 +168,11 @@ def predict_one(cfg, year, oni):
 
     history = pd.read_csv(os.path.join(TRAINING, f"{cfg.key}.csv"))
     dailies = {p["name"]: recent_weather(p, year) for p in cfg.points}
-    coverage = max(d.date.max() for d in dailies.values())
+    # weather_through is what was measured; the Open-Meteo tail feeds the
+    # features but is reported separately as forecast_through, so the share
+    # of the critical window counted as observed is not overstated.
+    coverage = max(observed_through(d) for d in dailies.values())
+    forecast_end = max(d.date.max() for d in dailies.values())
 
     feats = blend_features(cfg, dailies, year)
     if not feats:
@@ -225,6 +240,7 @@ def predict_one(cfg, year, oni):
                         "value": float(last.target)},
         "features": {f: float(feats[f]) for f in model["features"]},
         "weather_through": str(coverage.date()),
+        "forecast_through": (str(forecast_end.date()) if forecast_end > coverage else None),
         "critical_window_observed": share,
         "season_progress": {
             "critical_days": {
