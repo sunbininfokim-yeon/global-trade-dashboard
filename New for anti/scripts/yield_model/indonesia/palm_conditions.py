@@ -272,6 +272,7 @@ def summary(target, items, score, verdict, observed, history):
         "season_observed_share": round(observed, 2),
         "indicators": items,
         "history_ko": history_ko,
+        "unfavorable_mean_pct": unf.get("mean_residual_pct"),
         "applied_to_forecast": False,
         "note_ko": "판정은 참고용이며 예측치(추세)에는 반영하지 않는다.",
     }

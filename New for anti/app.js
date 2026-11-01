@@ -3433,6 +3433,8 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null, cropK
         // Optional favourable/unfavourable/neutral read-out that does not
         // move the number (see indonesia/palm_conditions.py).
         weatherConditions: entry.weather_conditions || null,
+        // PKS (palm kernel shell) supply derived from the palm line (palm_oil/pks.py).
+        pksOutlook: entry.pks_outlook || null,
         // Pre-season fill weighted by Niño3.4 at sowing (argentina/enso_analog.py,
         // south_africa/enso_preseason.py); null once the season is observed.
         ensoOutlook: entry.enso?.analog_fill || entry.enso_preseason || null,
@@ -4963,6 +4965,9 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
                 ${c.weatherConditions
                     ? renderWeatherConditions(c.weatherConditions)
                     : renderStageConditionSummary(stageConditionFor(stageConds, c.regionKey, c.cropKey || cropIdentity(c)))}
+                ${c.pksOutlook?.summary_ko
+                    ? `<div class="climate-sub" style="margin-top:6px;">${c.pksOutlook.summary_ko}<br><span style="color:#64748b;">${c.pksOutlook.note_ko || ''}</span></div>`
+                    : ''}
             </div>`;
         }).join('')
         : `<div class="climate-card"><div class="climate-sub">이 산지의 작물 슬롯 없음</div></div>`;

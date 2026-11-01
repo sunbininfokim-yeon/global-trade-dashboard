@@ -1,0 +1,392 @@
+{
+ "spec": "Indonesia CPO yield by province: does last year's dry season move it?\n\nSpecification fixed on 2026-11-01 before any skill was computed:\n\n  provinces  the eight with >= 3% of 2021-23 CPO (about 90% of output):\n             Riau, Kalimantan Tengah, Kalimantan Barat, Sumatera Utara,\n             Kalimantan Timur (+ Utara), Sumatera Selatan, Jambi, Sumatera Barat\n  label      log(CPO tonnes / planted ha), BPS province tables (region_db)\n  trend      per province, linear in year over the trailing 10 seasons\n             before the forecast year (BPS revised area/production in 2018;\n             a short window lets the trend move with that instead of a dummy\n             picked after seeing the data)\n  weather    the three \"core\" rows of region_db/data/variable_spec.csv:\n             dry-season (Jun-Oct) root-zone soil moisture one and two years\n             before harvest, and dry-season max VPD one year before,\n             each z-scored within province on the training seasons only\n  model      pooled OLS of the trend residual on the three z-scores\n             (3 coefficients shared by all provinces)\n  test       forward: every harvest year 2011-2023 trained only on earlier\n             years; leave-one-year-out (LOO) over all years as a second view.\n             Score = MAE of the production-weighted national yield deviation.\n  pass       both forward and LOO MAE >= 10% below trend-only\n             (same rule as the Russia core spec, #778)\n\nNino 3.4 (Jun-Oct of the year before harvest) is scored the same way as a\ndiagnostic only; it does not decide anything.",
+ "provinces": [
+  "Riau",
+  "Kalimantan Tengah",
+  "Kalimantan Barat",
+  "Sumatera Utara",
+  "Kalimantan Timur",
+  "Sumatera Selatan",
+  "Jambi",
+  "Sumatera Barat"
+ ],
+ "seasons": [
+  2001,
+  2023
+ ],
+ "core": {
+  "forward": {
+   "n": 13,
+   "mae_trend_pct": 7.88,
+   "mae_model_pct": 7.14,
+   "skill": 0.094,
+   "skill_sumatra": 0.135,
+   "skill_kalimantan": -0.416,
+   "years": [
+    {
+     "year": 2011,
+     "trend_pct": 14.9,
+     "model_pct": 12.0
+    },
+    {
+     "year": 2012,
+     "trend_pct": 13.6,
+     "model_pct": -5.5
+    },
+    {
+     "year": 2013,
+     "trend_pct": 12.7,
+     "model_pct": 2.6
+    },
+    {
+     "year": 2014,
+     "trend_pct": 2.6,
+     "model_pct": -6.6
+    },
+    {
+     "year": 2015,
+     "trend_pct": -0.8,
+     "model_pct": -8.1
+    },
+    {
+     "year": 2016,
+     "trend_pct": -4.2,
+     "model_pct": -7.9
+    },
+    {
+     "year": 2017,
+     "trend_pct": -1.5,
+     "model_pct": -0.3
+    },
+    {
+     "year": 2018,
+     "trend_pct": -4.7,
+     "model_pct": -14.4
+    },
+    {
+     "year": 2019,
+     "trend_pct": -10.7,
+     "model_pct": -17.9
+    },
+    {
+     "year": 2020,
+     "trend_pct": 3.2,
+     "model_pct": 2.3
+    },
+    {
+     "year": 2021,
+     "trend_pct": 7.2,
+     "model_pct": 1.5
+    },
+    {
+     "year": 2022,
+     "trend_pct": 11.4,
+     "model_pct": 7.1
+    },
+    {
+     "year": 2023,
+     "trend_pct": 15.1,
+     "model_pct": 6.7
+    }
+   ],
+   "last_beta": {
+    "soil_root_m3m3:dry_lag1": 0.0499,
+    "soil_root_m3m3:dry_lag2": -0.0095,
+    "vpd_max_kpa:dry_lag1": 0.078,
+    "const": -0.0458
+   }
+  },
+  "loo": {
+   "n": 18,
+   "mae_trend_pct": 7.9,
+   "mae_model_pct": 5.62,
+   "skill": 0.288,
+   "skill_sumatra": 0.273,
+   "skill_kalimantan": 0.07,
+   "years": [
+    {
+     "year": 2006,
+     "trend_pct": -1.9,
+     "model_pct": -3.1
+    },
+    {
+     "year": 2007,
+     "trend_pct": 5.7,
+     "model_pct": 1.7
+    },
+    {
+     "year": 2008,
+     "trend_pct": 9.5,
+     "model_pct": 1.4
+    },
+    {
+     "year": 2009,
+     "trend_pct": 8.8,
+     "model_pct": -1.2
+    },
+    {
+     "year": 2010,
+     "trend_pct": 13.7,
+     "model_pct": 12.8
+    },
+    {
+     "year": 2011,
+     "trend_pct": 14.9,
+     "model_pct": 9.7
+    },
+    {
+     "year": 2012,
+     "trend_pct": 13.6,
+     "model_pct": 5.4
+    },
+    {
+     "year": 2013,
+     "trend_pct": 12.7,
+     "model_pct": 6.6
+    },
+    {
+     "year": 2014,
+     "trend_pct": 2.6,
+     "model_pct": -2.5
+    },
+    {
+     "year": 2015,
+     "trend_pct": -0.8,
+     "model_pct": -4.6
+    },
+    {
+     "year": 2016,
+     "trend_pct": -4.2,
+     "model_pct": -5.3
+    },
+    {
+     "year": 2017,
+     "trend_pct": -1.5,
+     "model_pct": -1.0
+    },
+    {
+     "year": 2018,
+     "trend_pct": -4.7,
+     "model_pct": -12.0
+    },
+    {
+     "year": 2019,
+     "trend_pct": -10.7,
+     "model_pct": -17.4
+    },
+    {
+     "year": 2020,
+     "trend_pct": 3.2,
+     "model_pct": 2.6
+    },
+    {
+     "year": 2021,
+     "trend_pct": 7.2,
+     "model_pct": 1.9
+    },
+    {
+     "year": 2022,
+     "trend_pct": 11.4,
+     "model_pct": 5.4
+    },
+    {
+     "year": 2023,
+     "trend_pct": 15.1,
+     "model_pct": 6.7
+    }
+   ],
+   "last_beta": {
+    "soil_root_m3m3:dry_lag1": 0.0499,
+    "soil_root_m3m3:dry_lag2": -0.0095,
+    "vpd_max_kpa:dry_lag1": 0.078,
+    "const": -0.0458
+   }
+  }
+ },
+ "nino_diagnostic": {
+  "forward": {
+   "n": 13,
+   "mae_trend_pct": 7.88,
+   "mae_model_pct": 6.13,
+   "skill": 0.223,
+   "skill_sumatra": 0.186,
+   "skill_kalimantan": -0.114,
+   "years": [
+    {
+     "year": 2011,
+     "trend_pct": 14.9,
+     "model_pct": 1.9
+    },
+    {
+     "year": 2012,
+     "trend_pct": 13.6,
+     "model_pct": 2.1
+    },
+    {
+     "year": 2013,
+     "trend_pct": 12.7,
+     "model_pct": 4.7
+    },
+    {
+     "year": 2014,
+     "trend_pct": 2.6,
+     "model_pct": -8.2
+    },
+    {
+     "year": 2015,
+     "trend_pct": -0.8,
+     "model_pct": -9.0
+    },
+    {
+     "year": 2016,
+     "trend_pct": -4.2,
+     "model_pct": -4.7
+    },
+    {
+     "year": 2017,
+     "trend_pct": -1.5,
+     "model_pct": -11.1
+    },
+    {
+     "year": 2018,
+     "trend_pct": -4.7,
+     "model_pct": -11.5
+    },
+    {
+     "year": 2019,
+     "trend_pct": -10.7,
+     "model_pct": -14.6
+    },
+    {
+     "year": 2020,
+     "trend_pct": 3.2,
+     "model_pct": 0.5
+    },
+    {
+     "year": 2021,
+     "trend_pct": 7.2,
+     "model_pct": -0.5
+    },
+    {
+     "year": 2022,
+     "trend_pct": 11.4,
+     "model_pct": 5.2
+    },
+    {
+     "year": 2023,
+     "trend_pct": 15.1,
+     "model_pct": 5.7
+    }
+   ],
+   "last_beta": {
+    "nino34:dry_lag1": 0.0362,
+    "const": -0.0458
+   }
+  },
+  "loo": {
+   "n": 18,
+   "mae_trend_pct": 7.9,
+   "mae_model_pct": 5.78,
+   "skill": 0.268,
+   "skill_sumatra": 0.263,
+   "skill_kalimantan": 0.166,
+   "years": [
+    {
+     "year": 2006,
+     "trend_pct": -1.9,
+     "model_pct": -6.4
+    },
+    {
+     "year": 2007,
+     "trend_pct": 5.7,
+     "model_pct": 3.4
+    },
+    {
+     "year": 2008,
+     "trend_pct": 9.5,
+     "model_pct": 0.8
+    },
+    {
+     "year": 2009,
+     "trend_pct": 8.8,
+     "model_pct": 2.2
+    },
+    {
+     "year": 2010,
+     "trend_pct": 13.7,
+     "model_pct": 15.2
+    },
+    {
+     "year": 2011,
+     "trend_pct": 14.9,
+     "model_pct": 3.2
+    },
+    {
+     "year": 2012,
+     "trend_pct": 13.6,
+     "model_pct": 5.9
+    },
+    {
+     "year": 2013,
+     "trend_pct": 12.7,
+     "model_pct": 10.7
+    },
+    {
+     "year": 2014,
+     "trend_pct": 2.6,
+     "model_pct": -3.9
+    },
+    {
+     "year": 2015,
+     "trend_pct": -0.8,
+     "model_pct": -4.2
+    },
+    {
+     "year": 2016,
+     "trend_pct": -4.2,
+     "model_pct": 3.0
+    },
+    {
+     "year": 2017,
+     "trend_pct": -1.5,
+     "model_pct": -9.4
+    },
+    {
+     "year": 2018,
+     "trend_pct": -4.7,
+     "model_pct": -9.9
+    },
+    {
+     "year": 2019,
+     "trend_pct": -10.7,
+     "model_pct": -13.8
+    },
+    {
+     "year": 2020,
+     "trend_pct": 3.2,
+     "model_pct": 0.4
+    },
+    {
+     "year": 2021,
+     "trend_pct": 7.2,
+     "model_pct": -1.4
+    },
+    {
+     "year": 2022,
+     "trend_pct": 11.4,
+     "model_pct": 4.5
+    },
+    {
+     "year": 2023,
+     "trend_pct": 15.1,
+     "model_pct": 5.7
+    }
+   ],
+   "last_beta": {
+    "nino34:dry_lag1": 0.0362,
+    "const": -0.0458
+   }
+  }
+ },
+ "passed": false
+}

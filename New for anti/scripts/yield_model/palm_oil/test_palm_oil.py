@@ -90,3 +90,12 @@ def test_backtest_and_region(tmp_path, monkeypatch):
     wc = entry["weather_conditions"]
     assert wc["target_year"] == 2027 and wc["applied_to_forecast"] is False
     assert wc["indicators"][0]["season"] == "2025/26"
+
+
+def test_pks_outlook_follows_supported_unfavorable_call():
+    from palm_oil.pks import outlook
+    down = outlook(1000.0, {"verdict": "unfavorable", "unfavorable_supported": True, "unfavorable_mean_pct": -10.0})
+    assert down["trend_kt"] == 250 and down["direction"] == "down" and down["adjusted_kt"] == 225
+    flat = outlook(1000.0, {"verdict": "unfavorable", "unfavorable_supported": False, "unfavorable_mean_pct": -10.0})
+    assert flat["direction"] == "flat" and flat["adjusted_kt"] is None
+    assert outlook(None, {"verdict": "neutral"}) is None
