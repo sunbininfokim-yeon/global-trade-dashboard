@@ -1,4 +1,4 @@
-/* PKS (palm kernel shell) supply outlook, shown in the thermal-coal view.
+/* PKS (palm kernel shell) supply outlook, shown in the thermal-coal and palm-oil views.
  *
  * Korean power plants co-fire PKS with coal, so the fuel buyer reads it next
  * to the coal reference prices. Nothing here is a new number: each row is the
@@ -18,6 +18,8 @@
     const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     // 천 t -> 만 t
     const mt = (kt) => Math.round(kt / 10).toLocaleString('ko-KR');
+    // Coal view (co-fired fuel) and palm oil view (where PKS comes from).
+    const VIEWS = ['thermal_coal', 'palm_oil'];
     let pending;
     let generation = 0;
 
@@ -68,7 +70,7 @@
         const host = document.getElementById('news-content');
         if (!host) return;
         host.querySelector('[data-pks]')?.remove();
-        if (typeof currentCommodity === 'undefined' || currentCommodity !== 'thermal_coal') return;
+        if (typeof currentCommodity === 'undefined' || !VIEWS.includes(currentCommodity)) return;
         const key = countryName ? (typeof resolveCountry === 'function' ? resolveCountry(countryName)?.label : countryName) : null;
         if (countryName && !COUNTRIES.some((c) => c.country === key || c.country === countryName)) return;
         const slot = document.createElement('div');
