@@ -39,7 +39,9 @@ PANEL_MODES = ("forecast", "reference")
 # trend-only baseline (-0.57 to -1.60) and India publishes one that scores
 # 0.009, which is zero in practice. Both were indistinguishable from Argentina's
 # validated set until this field existed.
-MODEL_STATUSES = ("validated", "provisional", "training")
+# trend_reference: modelling is finished and found nothing to add to the trend,
+# so the number is the trend, published for reference (China, 2026-11-01).
+MODEL_STATUSES = ("validated", "provisional", "training", "trend_reference")
 
 
 def load_yaml(path):
@@ -183,7 +185,7 @@ def validate(m, folder, errors):
     status = m.get("model_status")
     if status and status not in MODEL_STATUSES:
         errors.append(f"{tag}: model_status='{status}' (허용: {', '.join(MODEL_STATUSES)})")
-    if status in ("provisional", "training") and not m.get("status_note_ko"):
+    if status in ("provisional", "training", "trend_reference") and not m.get("status_note_ko"):
         errors.append(
             f"{tag}: model_status={status} 이면 status_note_ko 가 필요하다 — "
             f"무엇이 안 끝났는지 화면에 적어야 한다."

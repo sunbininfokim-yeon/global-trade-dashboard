@@ -52,6 +52,16 @@ what remains is a residual of a few percent that is mostly revision and
 rounding noise. There is close to nothing left for weather to explain, and a
 model that claimed otherwise would be fitting the noise.
 
+## Trend re-anchoring
+
+The log trend overshoots the flat post-2018 USDA series by 2-4% for most
+configs. `china/anchor.py` shifts it by the mean residual of the last three
+seasons wherever that wins a forward-chained backtest (all folds and the last
+ten); all six configs pass, roughly halving the trend's error. The shift and
+its backtest are published as `trend_anchor`. An NDVI correction was also
+tried (PR #767) and found nothing: its one pass, Henan wheat, was this same
+overshoot in disguise.
+
 ## Why the labels are national
 
 `data.stats.gov.cn` returns HTTP 403 to this machine — a WAF URL ACL, not a

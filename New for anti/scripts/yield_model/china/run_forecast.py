@@ -107,6 +107,9 @@ def main():
             "range_68": [round(r["range_68"][0], 1), round(r["range_68"][1], 1)],
             "range_95": [round(r["range_95"][0], 1), round(r["range_95"][1], 1)],
             "trend": round(r["trend"], 1),
+            # Trend re-anchored to the last three seasons (china/anchor.py),
+            # with the backtest that switched it on; null where it is off.
+            "trend_anchor": r["trend_anchor"],
             "weather_effect_pct": round(r["weather_effect_pct"], 2),
             "last_actual": r["last_actual"],
             # One field the frontend can branch on without reasoning about

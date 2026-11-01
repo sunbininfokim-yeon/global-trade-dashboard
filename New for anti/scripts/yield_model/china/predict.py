@@ -35,6 +35,7 @@ from .collect import (
     oni_for,
     retry_json,
 )
+from .anchor import trend_anchor
 from .regions import ALL, BY_KEY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -151,6 +152,12 @@ def predict_one(cfg, year, oni):
                 "weather_through": str(coverage.date())}
 
     trend_log = float(np.polyval(model["trend"]["log_poly_coef"], year))
+    # Shift the trend to the last three published seasons where that wins out
+    # of sample (china/anchor.py); the polynomial alone overshoots the flat
+    # post-2018 series by 2-4%.
+    anchor = trend_anchor(cfg, model, history)
+    if anchor:
+        trend_log += anchor["log_shift"]
 
     x = np.array([feats[f] for f in model["features"]], dtype=float)
     for i, f in enumerate(model["features"]):
@@ -193,6 +200,7 @@ def predict_one(cfg, year, oni):
         "label_source": model["label_source"],
         "region_share": model["region_share"],
         "trend": trend_val,
+        "trend_anchor": anchor,
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
         "point": point_val,
         "range_68": [point_val - sigma, point_val + sigma],

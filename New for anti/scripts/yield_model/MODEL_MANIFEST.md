@@ -200,5 +200,8 @@ model_status: training
 status_note_ko: "3개 산지 모두 추세 대비 성능이 음수. 원인 규명 중."
 ```
 
+`trend_reference` 는 분석을 마쳤지만 추세 이상을 설명하지 못해 숫자를 추세로만
+내는 국가다(중국). 이때도 `status_note_ko` 로 이유를 적는다.
+
 `validated` 는 근거가 있어야 통과한다 — `build_registry.py` 가 forecast JSON 의
 skill 을 직접 읽어서, 실측보다 후하게 주장하면 거부한다.
