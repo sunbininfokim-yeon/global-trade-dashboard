@@ -239,6 +239,7 @@ const focusTradeCountry = (countryName) => {
     renderRigCountCountry(countryName);
     window.GasStorage?.render(countryName);
     window.CoalPrices?.render(countryName);
+    window.BiomassPks?.render(countryName);
     renderCommodityReports(currentCommodity, countryName);
 
     // Stage 2 stats become the country's, not the world's. "글로벌 무역량
@@ -1389,6 +1390,7 @@ const renderTradeWorldPanel = (arcs) => {
     renderEmergencyStocks().then(renderRigCountWorld);
     window.GasStorage?.render();
     window.CoalPrices?.render();
+    window.BiomassPks?.render();
 };
 
 const futuresCache = new Map();
