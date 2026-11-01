@@ -575,9 +575,10 @@ def main() -> int:
     )
     for s in day["stocks"]:
         n = len(s["letf_products"])
-        aum = sum(p["aum"] for p in s["letf_products"])
+        known = [p["aum"] for p in s["letf_products"] if p["aum"] is not None]
+        aum = f"{sum(known)/1e12:.2f}조" if known else "—"
         print(
-            f"  {s['ticker']} LETFs={n} AUM={aum/1e12:.2f}조 "
+            f"  {s['ticker']} LETFs={n} AUM={aum} "
             f"ADV={s['adv_spot_krw']/1e12:.2f}조"
         )
     return 0

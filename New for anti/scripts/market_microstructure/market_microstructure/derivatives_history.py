@@ -248,24 +248,27 @@ IMPLIED_REBALANCE_FORMULA = (
     "implied_ir_pct=abs(net sum)/spot daily trading value ×100; "
     "model estimate, not observed ETF trades or price impact"
 )
-UNDERLYING_RETURN_EXCLUDED = "excluded_pending_krx_source"
+OBSERVED_KRX = "observed_krx"
 
 
 def underlying_return_for_signal(record: dict[str, Any]) -> float | None:
-    """Return a day return only after a KRX source row has confirmed it.
+    """Return a day return only when the row was reproduced from a KRX close.
 
-    Stored ``underlying_day_return`` stays on the row for audit. Signal code
-    must call this helper. A missing or excluded quality is not usable.
+    Stored ``underlying_day_return`` stays on the row either way. Signal code
+    must call this helper.
     """
-    if record.get("underlying_day_return_quality") != "observed_krx":
+    if record.get("underlying_day_return_quality") != OBSERVED_KRX:
         return None
     value = record.get("underlying_day_return")
     return None if value is None else float(value)
 
 
 def implied_rebalance_for_signal(record: dict[str, Any]) -> float | None:
-    """Keep the stored estimate, but do not feed it to a signal until confirmed."""
-    if record.get("implied_rebalance_signal_quality") != "observed_krx":
+    """Return the stored estimate only when its underlying return is observed KRX.
+
+    This does not change the display field ``implied_rebalance_krw``.
+    """
+    if record.get("underlying_day_return_quality") != OBSERVED_KRX:
         return None
     value = record.get("implied_rebalance_krw")
     return None if value is None else float(value)
@@ -283,11 +286,10 @@ def _implied_rebalance(
     spot_tv = stock.get("spot_trading_value_krw", stock.get("adv_spot_krw"))
     null_result = {
         "underlying_day_return": day_return,
-        "underlying_day_return_quality": UNDERLYING_RETURN_EXCLUDED,
+        "underlying_day_return_quality": OBSERVED_KRX,
         "implied_rebalance_krw": None,
         "implied_ir_pct": None,
         "implied_rebalance_quality": "estimated",
-        "implied_rebalance_signal_quality": UNDERLYING_RETURN_EXCLUDED,
         "implied_rebalance_formula": IMPLIED_REBALANCE_FORMULA,
     }
     if day_return is None or spot_tv is None or float(spot_tv) <= 0 or not products:
@@ -305,11 +307,10 @@ def _implied_rebalance(
     signed_net = totals["tr_total"]
     return {
         "underlying_day_return": float(day_return),
-        "underlying_day_return_quality": UNDERLYING_RETURN_EXCLUDED,
+        "underlying_day_return_quality": OBSERVED_KRX,
         "implied_rebalance_krw": signed_net,
         "implied_ir_pct": impact_ratio(signed_net, float(spot_tv)),
         "implied_rebalance_quality": "estimated",
-        "implied_rebalance_signal_quality": UNDERLYING_RETURN_EXCLUDED,
         "implied_rebalance_formula": IMPLIED_REBALANCE_FORMULA,
     }
 

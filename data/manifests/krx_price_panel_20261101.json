@@ -1084,26 +1084,36 @@
         ]
       }
     },
-    "conclusion_ko": "가격 파일의 종가는 네이버 캔들과 같다. 저장돼 있는 underlying_day_return은 그 종가 수익률과 부호가 다른 날이 있어 신호에 쓰지 않는다. 값을 덮어쓰지 않는다. 2026-09-15부터는 네이버가 발표한 등락률의 기준가격이 전일 캔들 종가와 다른 날도 있다. 그 날은 종가 수익률과 발표 등락률이 서로 다른 질문이다.",
+    "conclusion_ko": "가격 파일의 종가는 네이버 캔들과 같다. 저장돼 있는 underlying_day_return은 가격 파일 종가 수익률과 부호가 다른 날이 있지만, KRX 일별 시세의 종가로 계산한 등락률과는 연속한 거래일 36쌍이 모두 일치한다 (삼성전자·SK하이닉스, 근거 data/manifests/krx_close_vs_price_file_20261101.json). KRX 종가와 가격 파일 종가는 2026-09-14부터 서로 다른 날이 많다. 그래서 부호가 갈리는 날은 저장값의 오류가 아니라 두 종가의 정의 차이다. 값을 덮어쓰지 않는다. 차이의 원인(거래소 통합 시세 여부 등)은 확인하지 못했다. 네이버가 발표한 등락률의 기준가격이 전일 캔들 종가와 다른 날은 종가 수익률과 발표 등락률이 서로 다른 질문이다.",
     "collected_at": "2026-11-01T08:14:11.651899+00:00",
     "provider_published_at": "unknown"
   },
-  "signal_use_ko": "LETF AUM 결측과 파생상품 활동 결측은 채우지 않는다. underlying_day_return_quality가 observed_krx가 아니면 신호에 넣지 않는다. 그 수익률로 만든 implied_rebalance_krw도 신호에 넣지 않는다. 069500과 102110의 확인된 분배락일만 조정 공식을 적는다. 다른 상품은 unknown이다. 탐색이 가능하다는 것은 실전 수익이 확인됐다는 뜻이 아니다.",
+  "signal_use_ko": "신호 함수는 underlying_day_return_quality가 observed_krx일 때만 저장 수익률과 리밸런싱 추정치를 돌려준다. 2026-08-07부터 스냅샷의 연속 KRX 종가로 재현되는 날이 그 상태다. 그 이전 행은 네이버 캔들과 맞지만 KRX 종가 대조가 없다. 표시용 implied_rebalance_krw는 바꾸지 않는다. 가격 파일 종가는 2026-09-14부터 KRX 종가와 다를 수 있으므로 두 종가를 섞지 않는다. 069500은 2024-01-30부터 2026-10-29까지 분배락 12회, 102110은 2024-01-30부터 2026-07-30까지 11회가 A_t/A_{t-1}-1 = U_t/(U_{t-1}-D)-1 이다. 102110의 2026-10-29는 종가 비율이 0.9924에서 1로 한 번에 붙어 단일 분배금 식과 맞지 않아 제외한다. 같은 D를 조정 수익률에 다시 더하면 분배금이 두 번 들어간다. 다른 상품의 조정 방식은 unknown이다. LETF AUM 결측과 파생상품 활동 결측은 채우지 않는다.",
+  "price_basis_reconciliation": {
+    "file": "data/manifests/krx_close_vs_price_file_20261101.json",
+    "summary_ko": "KRX 종가와 가격 파일 종가는 2026-09-14부터 서로 다른 날이 많고, 저장된 underlying_day_return은 KRX 종가 수익률과 36쌍 모두 일치한다."
+  },
   "return_source_check": {
     "collected_at": "2026-11-01T08:39:45.872892+00:00",
     "provider_published_at": "unknown",
-    "request": "KRX OpenAPI sto/stk_bydd_trd basDd=20261023",
-    "result": "401 Unauthorized",
+    "request": "git history of market_microstructure_v1.json stocks[].close",
+    "result": "36 consecutive pairs match the stored return for both stocks",
     "rows_changed": 0,
-    "note_ko": "원본 FLUC_RT 행을 받지 못했다. 401 이후 같은 조회를 반복하지 않았다. 날짜와 종목은 가격 파일과 LETF 행이 같다. 값은 한 행도 바꾸지 않았다. 기준가격이 전일 종가와 같은데도 저장 부호가 네이버 등락률과 반대인 날은 삼성 2026-09-17과 2026-10-23이다. 2026-10-23은 크기 0.47%포인트까지 부호만 반대다. 하이닉스 2026-09-30은 기준가격 차이이다. 네이버 기준가격 1,765,000은 전일 종가 1,790,000과 다르고, 저장값과 네이버 등락률은 둘 다 양수다. 네이버와 다르다는 사실만으로 어느 쪽이 오류인지 정하지 않았다."
+    "openapi_stk_bydd_trd_20261023": "401 Unauthorized, not retried",
+    "note_ko": "저장 수익률은 스냅샷 KRX 종가로 계산한 등락률과 삼성전자·SK하이닉스 연속 36쌍이 모두 같다. 근거는 data/manifests/krx_close_vs_price_file_20261101.json. 가격 파일 종가는 2026-09-14부터 KRX 종가와 다른 날이 많다. 부호가 갈리는 날은 저장값의 오류가 아니라 종가 정의 차이다. 값은 한 행도 바꾸지 않았다."
   },
   "remaining_gaps": {
     "letf_aum": "16 rows stay null. No same-definition original was fetched. Not filled with 0.",
     "derivatives_activity": "19 October 2026 dates stay missing. 15001 quotes were not substituted and gaps were not filled with 0."
   },
-  "letf_signal_exclusion": {
-    "rows_marked": 198,
-    "rows": 198
+  "letf_return_quality": {
+    "rows": 198,
+    "by_quality": {
+      "naver_candle_match_krx_close_unchecked": 100,
+      "krx_close_unchecked": 26,
+      "observed_krx": 72
+    },
+    "reproduced_pairs": 72
   },
-  "ui_handoff_ko": "market-microstructure.js는 implied_rebalance_krw를 그대로 그린다. 신호에서 빼려면 implied_rebalance_signal_quality가 observed_krx일 때만 읽어야 한다. UI 수정은 Claude Code가 한다."
+  "ui_handoff_ko": "market-microstructure.js는 표시용 implied_rebalance_krw를 그대로 그린다. 신호 계산은 underlying_day_return_quality가 observed_krx일 때만 한다."
 }

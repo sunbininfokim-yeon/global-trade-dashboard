@@ -20,6 +20,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC = ROOT / "public/data"
 MANIFEST = ROOT.parent / "data/manifests/krx_price_panel_20261101.json"
+CLOSE_COMPARE = ROOT.parent / "data/manifests/krx_close_vs_price_file_20261101.json"
 INDEX_PATH = PUBLIC / "kospi200_index_daily_v1.json"
 ETF_PATH = PUBLIC / "kospi200_etf_candidates_daily_v1.json"
 LETF_PATH = PUBLIC / "stock_letf_history_v1.jsonl"
@@ -53,6 +54,24 @@ CHECKED_ADJUSTMENT = {
         "primary_cash_check": None,
     },
 }
+CONCLUSION_KO = (
+    "가격 파일의 종가는 네이버 캔들과 같다. 저장돼 있는 underlying_day_return은 가격 파일 종가 수익률과 "
+    "부호가 다른 날이 있지만, KRX 일별 시세의 종가로 계산한 등락률과는 연속한 거래일 36쌍이 모두 일치한다 "
+    f"(삼성전자·SK하이닉스, 근거 {CLOSE_COMPARE.relative_to(ROOT.parent)}). KRX 종가와 가격 파일 종가는 "
+    "2026-09-14부터 서로 다른 날이 많다. 그래서 부호가 갈리는 날은 저장값의 오류가 아니라 두 종가의 정의 차이다. "
+    "값을 덮어쓰지 않는다. 차이의 원인(거래소 통합 시세 여부 등)은 확인하지 못했다. 네이버가 발표한 등락률의 "
+    "기준가격이 전일 캔들 종가와 다른 날은 종가 수익률과 발표 등락률이 서로 다른 질문이다."
+)
+SIGNAL_USE_KO = (
+    "신호 함수는 underlying_day_return_quality가 observed_krx일 때만 저장 수익률과 리밸런싱 추정치를 돌려준다. "
+    "2026-08-07부터 스냅샷의 연속 KRX 종가로 재현되는 날이 그 상태다. 그 이전 행은 네이버 캔들과 맞지만 "
+    "KRX 종가 대조가 없다. 표시용 implied_rebalance_krw는 바꾸지 않는다. "
+    "가격 파일 종가는 2026-09-14부터 KRX 종가와 다를 수 있으므로 두 종가를 섞지 않는다. "
+    "069500은 2024-01-30부터 2026-10-29까지 분배락 12회, 102110은 2024-01-30부터 2026-07-30까지 11회가 "
+    "A_t/A_{t-1}-1 = U_t/(U_{t-1}-D)-1 이다. 102110의 2026-10-29는 종가 비율이 0.9924에서 1로 한 번에 붙어 "
+    "단일 분배금 식과 맞지 않아 제외한다. 같은 D를 조정 수익률에 다시 더하면 분배금이 두 번 들어간다. "
+    "다른 상품의 조정 방식은 unknown이다. LETF AUM 결측과 파생상품 활동 결측은 채우지 않는다."
+)
 
 
 def now_iso() -> str:
@@ -290,12 +309,7 @@ def audit_stored_returns(
             "sign_flips_versus_price_file": sign_flips,
             "naver_base_differs_from_previous_close": base_splits,
         }
-    report["conclusion_ko"] = (
-        "가격 파일의 종가는 네이버 캔들과 같다. 저장돼 있는 underlying_day_return은 "
-        "그 종가 수익률과 부호가 다른 날이 있어 신호에 쓰지 않는다. 값을 덮어쓰지 않는다. "
-        "2026-09-15부터는 네이버가 발표한 등락률의 기준가격이 전일 캔들 종가와 다른 날도 있다. "
-        "그 날은 종가 수익률과 발표 등락률이 서로 다른 질문이다."
-    )
+    report["conclusion_ko"] = CONCLUSION_KO
     return report
 
 
@@ -310,8 +324,10 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def update_manifest(patch: dict[str, Any]) -> None:
+def update_manifest(patch: dict[str, Any], *, drop: tuple[str, ...] = ()) -> None:
     manifest = load_json(MANIFEST) if MANIFEST.is_file() else {"schema_version": "krx-price-panel-manifest-v1"}
+    for key in drop:
+        manifest.pop(key, None)
     manifest.update(patch)
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -349,13 +365,7 @@ def fill(start: str = "20190102", end: str = "20261030") -> dict[str, Any]:
             "index_gap_fill": index_doc["gap_fill"],
             "etf_price_definition": etf_doc["adjustment_evidence"],
             "return_mismatch_audit": audit,
-            "signal_use_ko": (
-                "LETF AUM 결측과 파생상품 활동 결측은 채우지 않는다. "
-                "underlying_day_return_quality가 observed_krx가 아니면 신호에 넣지 않는다. "
-                "그 수익률로 만든 implied_rebalance_krw도 신호에 넣지 않는다. "
-                "069500과 102110의 확인된 분배락일만 조정 공식을 적는다. 다른 상품은 unknown이다. "
-                "탐색이 가능하다는 것은 실전 수익이 확인됐다는 뜻이 아니다."
-            ),
+            "signal_use_ko": SIGNAL_USE_KO,
         }
     )
     return {"collected_at": collected_at, **report, "sign_flips": {
@@ -364,29 +374,57 @@ def fill(start: str = "20190102", end: str = "20261030") -> dict[str, Any]:
     }}
 
 
-def stamp_letf_signal_exclusion(path: Path) -> dict[str, int]:
-    """Mark stored returns unusable as signals. Do not change the numbers."""
-    from market_microstructure.derivatives_history import UNDERLYING_RETURN_EXCLUDED
+def reproduced_krx_returns(path: Path = CLOSE_COMPARE) -> set[tuple[str, str]]:
+    """Dates whose stored return equals two consecutive snapshot KRX closes."""
+    if not path.is_file():
+        return set()
+    doc = load_json(path)
+    tolerance = float(doc.get("match_tolerance") or 0)
+    found: set[tuple[str, str]] = set()
+    for ticker, item in (doc.get("by_ticker") or {}).items():
+        rows = item.get("rows") or []
+        for prev, cur in zip(rows, rows[1:]):
+            if not prev.get("krx_close") or not cur.get("krx_close"):
+                continue
+            reproduced = cur["krx_close"] / prev["krx_close"] - 1
+            stored = cur.get("stored_underlying_day_return")
+            if stored is not None and abs(reproduced - stored) <= tolerance:
+                found.add((ticker, cur["date"]))
+    return found
 
-    lines = path.read_text(encoding="utf-8").splitlines()
-    changed = 0
+
+def return_quality(ticker: str, day: str, reproduced: set[tuple[str, str]]) -> str:
+    """Per-row check status. A missing KRX comparison is not an exclusion."""
+    if (ticker, day) in reproduced:
+        return "observed_krx"
+    if day < "2026-08-07":
+        return "naver_candle_match_krx_close_unchecked"
+    return "krx_close_unchecked"
+
+
+def stamp_letf_return_quality(path: Path) -> dict[str, Any]:
+    """Label each stored return. Do not change the return or the rebalance estimate."""
+    reproduced = reproduced_krx_returns()
+    counts: dict[str, int] = {}
     out: list[str] = []
-    for line in lines:
+    for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         row = json.loads(line)
-        before = row.get("underlying_day_return")
+        before_return = row.get("underlying_day_return")
+        before_rebalance = row.get("implied_rebalance_krw")
+        row.pop("implied_rebalance_signal_quality", None)
         if row.get("ticker") in {"005930", "000660"}:
-            row["underlying_day_return_quality"] = UNDERLYING_RETURN_EXCLUDED
-            row["implied_rebalance_signal_quality"] = UNDERLYING_RETURN_EXCLUDED
-            changed += 1
-        if row.get("underlying_day_return") != before:
-            raise RuntimeError("signal stamp changed a stored return")
+            quality = return_quality(str(row["ticker"]), str(row["date"]), reproduced)
+            row["underlying_day_return_quality"] = quality
+            counts[quality] = counts.get(quality, 0) + 1
+        if row.get("underlying_day_return") != before_return or row.get("implied_rebalance_krw") != before_rebalance:
+            raise RuntimeError("quality stamp changed a stored number")
         out.append(json.dumps(row, ensure_ascii=False, separators=(",", ":")))
     text = "\n".join(out) + "\n"
     if path.read_text(encoding="utf-8") != text:
         path.write_text(text, encoding="utf-8")
-    return {"rows_marked": changed, "rows": len(out)}
+    return {"rows": len(out), "by_quality": counts, "reproduced_pairs": len(reproduced)}
 
 
 def stamp_definition() -> dict[str, Any]:
@@ -401,7 +439,7 @@ def stamp_definition() -> dict[str, Any]:
         collected_at = now_iso()
         apply_etf_definition(etf_doc, collected_at=collected_at)
         write_json(ETF_PATH, etf_doc)
-    letf_report = stamp_letf_signal_exclusion(LETF_PATH)
+    letf_report = stamp_letf_return_quality(LETF_PATH)
     patch = {
         "definition_collected_at": collected_at,
         "provider_published_at": "unknown",
@@ -409,16 +447,15 @@ def stamp_definition() -> dict[str, Any]:
         "return_source_check": {
             "collected_at": collected_at,
             "provider_published_at": "unknown",
-            "request": "KRX OpenAPI sto/stk_bydd_trd basDd=20261023",
-            "result": "401 Unauthorized",
+            "request": "git history of market_microstructure_v1.json stocks[].close",
+            "result": "36 consecutive pairs match the stored return for both stocks",
             "rows_changed": 0,
+            "openapi_stk_bydd_trd_20261023": "401 Unauthorized, not retried",
             "note_ko": (
-                "원본 FLUC_RT 행을 받지 못했다. 401 이후 같은 조회를 반복하지 않았다. "
-                "날짜와 종목은 가격 파일과 LETF 행이 같다. 값은 한 행도 바꾸지 않았다. "
-                "기준가격이 전일 종가와 같은데도 저장 부호가 네이버 등락률과 반대인 날은 삼성 2026-09-17과 2026-10-23이다. "
-                "2026-10-23은 크기 0.47%포인트까지 부호만 반대다. "
-                "하이닉스 2026-09-30은 기준가격 차이이다. 네이버 기준가격 1,765,000은 전일 종가 1,790,000과 다르고, 저장값과 네이버 등락률은 둘 다 양수다. "
-                "네이버와 다르다는 사실만으로 어느 쪽이 오류인지 정하지 않았다."
+                "저장 수익률은 스냅샷 KRX 종가로 계산한 등락률과 삼성전자·SK하이닉스 연속 36쌍이 모두 같다. "
+                "근거는 data/manifests/krx_close_vs_price_file_20261101.json. "
+                "가격 파일 종가는 2026-09-14부터 KRX 종가와 다른 날이 많다. "
+                "부호가 갈리는 날은 저장값의 오류가 아니라 종가 정의 차이다. 값은 한 행도 바꾸지 않았다."
             ),
         },
         "remaining_gaps": {
@@ -427,22 +464,23 @@ def stamp_definition() -> dict[str, Any]:
                 "19 October 2026 dates stay missing. 15001 quotes were not substituted and gaps were not filled with 0."
             ),
         },
-        "letf_signal_exclusion": letf_report,
+        "letf_return_quality": letf_report,
+        "price_basis_reconciliation": {
+            "file": "data/manifests/krx_close_vs_price_file_20261101.json",
+            "summary_ko": (
+                "KRX 종가와 가격 파일 종가는 2026-09-14부터 서로 다른 날이 많고, "
+                "저장된 underlying_day_return은 KRX 종가 수익률과 36쌍 모두 일치한다."
+            ),
+        },
         "ui_handoff_ko": (
-            "market-microstructure.js는 implied_rebalance_krw를 그대로 그린다. "
-            "신호에서 빼려면 implied_rebalance_signal_quality가 observed_krx일 때만 읽어야 한다. UI 수정은 Claude Code가 한다."
+            "market-microstructure.js는 표시용 implied_rebalance_krw를 그대로 그린다. "
+            "신호 계산은 underlying_day_return_quality가 observed_krx일 때만 한다."
         ),
-        "signal_use_ko": (
-            "LETF AUM 결측과 파생상품 활동 결측은 채우지 않는다. "
-            "underlying_day_return_quality가 observed_krx가 아니면 신호에 넣지 않는다. "
-            "그 수익률로 만든 implied_rebalance_krw도 신호에 넣지 않는다. "
-            "069500과 102110의 확인된 분배락일만 조정 공식을 적는다. 다른 상품은 unknown이다. "
-            "탐색이 가능하다는 것은 실전 수익이 확인됐다는 뜻이 아니다."
-        ),
+        "signal_use_ko": SIGNAL_USE_KO,
     }
     current = load_json(MANIFEST) if MANIFEST.is_file() else {}
-    if any(current.get(key) != value for key, value in patch.items()):
-        update_manifest(patch)
+    if any(current.get(key) != value for key, value in patch.items()) or "letf_signal_exclusion" in current:
+        update_manifest(patch, drop=("letf_signal_exclusion",))
     return {"collected_at": collected_at, **letf_report}
 
 

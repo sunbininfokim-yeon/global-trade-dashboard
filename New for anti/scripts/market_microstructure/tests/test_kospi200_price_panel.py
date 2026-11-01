@@ -12,9 +12,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from build_kospi200_price_panel import (  # noqa: E402
+    CONCLUSION_KO,
     apply_etf_definition,
     audit_stored_returns,
     reconcile_index_gaps,
+    return_quality,
 )
 
 
@@ -116,6 +118,24 @@ class PricePanelTests(unittest.TestCase):
         self.assertEqual(doc["candidates"][0]["rows"][0]["close"], 1)
         self.assertIn("U_t / (U_{t-1} - D)", doc["adjustment_evidence"]["formula"])
         self.assertIn("두 번", doc["adjustment_evidence"]["double_count_ko"])
+        self.assertEqual(doc["candidates"][0]["adjustment_checked"]["ex_dates_fitting_formula"], 12)
+        tiger = {"ticker": "102110"}
+        apply_etf_definition({"candidates": [tiger]}, collected_at="2026-11-01T08:30:00+00:00")
+        self.assertEqual(tiger["adjustment_checked"]["ex_dates_fitting_formula"], 11)
+        self.assertEqual(tiger["adjustment_checked"]["not_fit"], ["2026-10-29"])
+
+    def test_return_quality_follows_the_snapshot_pairs(self) -> None:
+        reproduced = {("005930", "2026-08-13")}
+        self.assertEqual(return_quality("005930", "2026-08-13", reproduced), "observed_krx")
+        self.assertEqual(
+            return_quality("005930", "2026-05-27", reproduced),
+            "naver_candle_match_krx_close_unchecked",
+        )
+        self.assertEqual(return_quality("005930", "2026-08-10", reproduced), "krx_close_unchecked")
+
+    def test_conclusion_does_not_call_the_krx_based_return_wrong(self) -> None:
+        self.assertIn("정의 차이", CONCLUSION_KO)
+        self.assertNotIn("신호에 쓰지 않는다", CONCLUSION_KO)
 
 
 if __name__ == "__main__":

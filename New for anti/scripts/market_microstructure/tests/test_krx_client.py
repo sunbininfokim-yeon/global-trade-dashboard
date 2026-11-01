@@ -32,6 +32,25 @@ class TestKrxClient(unittest.TestCase):
         self.assertEqual(out["aum_source"], "MKTCAP")
         self.assertEqual(out["aum_quality"], "proxy")
 
+    def test_zero_net_assets_with_trading_value_is_a_blank_not_an_observation(self):
+        out = etf_metrics(
+            {
+                "INVSTASST_NETASST_TOTAMT": "0",
+                "MKTCAP": "9,999",
+                "ACC_TRDVAL": "196,798,790,974",
+            }
+        )
+        self.assertIsNone(out["aum_krw"])
+        self.assertEqual(out["aum_quality"], "missing")
+        self.assertEqual(out["aum_source"], "INVSTASST_NETASST_TOTAMT")
+        self.assertEqual(out["trading_value_krw"], 196798790974.0)
+
+    def test_zero_in_one_field_defers_to_a_positive_one(self):
+        out = etf_metrics({"INVSTASST_NETASST_TOTAMT": "0", "NETASST_TOTAMT": "5,000"})
+        self.assertEqual(out["aum_krw"], 5000.0)
+        self.assertEqual(out["aum_source"], "NETASST_TOTAMT")
+        self.assertEqual(out["aum_quality"], "observed")
+
     def test_missing_aum_is_not_coerced_to_observed_zero(self):
         out = etf_metrics({"ACC_TRDVAL": "100"})
         self.assertIsNone(out["aum_krw"])
