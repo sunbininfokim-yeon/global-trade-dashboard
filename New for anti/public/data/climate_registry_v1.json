@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-registry-v1",
-  "generated_at": "2026-10-30T04:40:35.765450+00:00",
+  "generated_at": "2026-11-01T08:24:06.984080+00:00",
   "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
   "countries": {
     "Argentina": {
@@ -9,8 +9,8 @@
       "label_ko": "아르헨티나",
       "label_en": "Argentina",
       "panel_mode": "forecast",
-      "model_status": "training",
-      "status_note_ko": "산지 4곳 검증 통과. 팜파스 밀은 서리 피처 생성 실패, 투쿠만 사탕수수는 학습된 모델 없음(공식 통계가 2004/05에서 끊김).",
+      "model_status": "provisional",
+      "status_note_ko": "팜파스 대두·옥수수, 차코 면화는 기상 모델이 추세를 이긴다(대두·면화는 위성 NDVI 보정 추가). 팜파스 밀·북부 대두는 추세, 투쿠만 사탕수수는 공식 통계가 2004/05에서 끊겨 모델 없음.",
       "data_file": "argentina_yield_forecast.json",
       "model_name": "Pampas + Norte Model",
       "view": {
@@ -118,7 +118,7 @@
       "label_ko": "호주",
       "label_en": "Australia",
       "panel_mode": "forecast",
-      "model_status": "provisional",
+      "model_status": "validated",
       "status_note_ko": "밀 3곳과 WA·VIC 보리/카놀라는 검증 통과. SA 보리·카놀라는 수치 예측 없이 참고 신호만 제공. 면화 모델은 종료.",
       "data_file": "australia_yield_forecast.json",
       "model_name": "Wheat Belt Model",
@@ -196,7 +196,7 @@
       "label_en": "Brazil",
       "panel_mode": "forecast",
       "model_status": "provisional",
-      "status_note_ko": "산지 6곳 통과 / 3곳은 추세를 이기지 못함 / 파라나 밀은 적성병 피처 생성 실패.",
+      "status_note_ko": "기상 모델 3곳(파라나 대두, SP 커피·오렌지)과 위성 NDVI 보정 3곳(마투그로수·파라나 옥수수, SP 사탕수수)이 추세보다 낫다. 나머지는 추세에 가깝다.",
       "data_file": "brazil_yield_forecast.json",
       "model_name": "Brazil Regional Model",
       "view": {
@@ -398,8 +398,8 @@
       "label_ko": "중국",
       "label_en": "China",
       "panel_mode": "forecast",
-      "model_status": "training",
-      "status_note_ko": "3개 산지 모두 추세 대비 성능이 음수(-0.57 ~ -1.60). 기상 피처가 추세만 쓰는 것보다 나쁘다. 원인 규명 전까지 수치를 참고용으로만 볼 것. 냉해·서리 피처 3건은 생성 실패.",
+      "model_status": "trend_reference",
+      "status_note_ko": "숫자는 USDA 전국 추정치의 추세(최근 3년 실적에 맞춰 재고정)다. 날씨·엔소·위성 NDVI 모두 추세 이상을 설명하지 못했다 — 성별 통계가 막혀 있고 전국 추정치는 해마다 거의 움직이지 않는다.",
       "data_file": "china_yield_forecast.json",
       "model_name": "Regional crop suite",
       "view": {
@@ -565,7 +565,7 @@
       "label_en": "India",
       "panel_mode": "forecast",
       "model_status": "training",
-      "status_note_ko": "라벨(ICRISAT)이 2019년에서 끊겨 2026년을 7년 전 추세로 외삽 중. 3개 산지 중 2개는 기상 피처 생성 실패로 예측 없음. 통과한 펀자브 밀도 추세 대비 개선이 0.9%에 불과.",
+      "status_note_ko": "라벨은 2024년까지(DES/UPAg). 펀자브 밀·MP 대두는 기상 모델이 추세를 이기지 못하고, 비다르바 면화는 라벨이 2019년에서 끊겼다. 숫자는 참고용.",
       "data_file": "india_yield_forecast.json",
       "view": {
         "longitude": 78,
@@ -821,7 +821,7 @@
       "panel_mode": "forecast",
       "data_file": "russia_yield_forecast.json",
       "model_status": "training",
-      "status_note_ko": "검증 연도가 5~6개(2022~2023 라벨 공백)뿐이라 11개 모델 모두 저신뢰. 라벨 보강 전까지 숫자는 참고용.",
+      "status_note_ko": "라벨은 2024년까지 채웠지만(tochno.st) 11개 모델 모두 추세를 이기지 못한다. 숫자는 참고용.",
       "view": {
         "longitude": 42.0,
         "latitude": 50.5,
