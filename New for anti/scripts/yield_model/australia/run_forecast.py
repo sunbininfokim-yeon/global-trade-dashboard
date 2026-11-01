@@ -7,6 +7,7 @@ import os
 import sys
 from datetime import datetime, timezone
 
+from . import ndvi as N
 from .predict import predict_one
 from .regions import ALL
 
@@ -26,6 +27,7 @@ def main() -> int:
         "regions": {},
         "skipped": {},
     }
+    country = N.australia()
     for cfg in ALL:
         result = predict_one(cfg)
         if "error" in result:
@@ -56,6 +58,8 @@ def main() -> int:
             }
             print(f"[reference] {cfg.key}: {direction} ({pct:+.1f}%)", flush=True)
             continue
+        # MODIS NDVI correction where australia/ndvi.py's backtest earned it.
+        N.apply(result, N.adjustment(country, cfg, result["season"]))
         payload["regions"][cfg.key] = {
             "label": cfg.label,
             "label_ko": cfg.label_ko,
