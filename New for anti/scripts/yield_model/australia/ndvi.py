@@ -68,8 +68,12 @@ class Country:
         self.cond = os.path.join(os.path.dirname(HERE), package, "condition")
         self.out = os.path.join(self.cond, "ndvi_points.csv")
 
-    def months(self):
-        (m0, _), (m1, _) = self.window
+    def window_for(self, cfg):
+        """The NDVI window for one config (one per country unless overridden)."""
+        return self.window
+
+    def months(self, window=None):
+        (m0, _), (m1, _) = window or self.window
         return frozenset(range(m0, m1 + 1))
 
     def sites(self):
@@ -77,8 +81,14 @@ class Country:
         for cfg in self.configs:
             for p in cfg.points:
                 lat, lon = self.site_overrides.get(p["name"], (p["lat"], p["lon"]))
-                out[p["name"]] = (lat, lon, self.months())
+                months = self.months(self.window_for(cfg))
+                if p["name"] in out:
+                    months = months | out[p["name"]][2]
+                out[p["name"]] = (lat, lon, months)
         return out
+
+    def base_forecasts(self, cfg):
+        return base_forecasts(self, cfg)
 
 
 def australia():
@@ -183,12 +193,13 @@ def switched_on(entry, win, min_skill):
 def score(country, cfg, nd):
     from argentina.ndvi_backtest import MIN_SKILL, correct, fit, rmse
 
-    base, operational = base_forecasts(country, cfg)
+    base, operational = country.base_forecasts(cfg)
+    window = country.window_for(cfg)
     entry = {"base": "model" if operational else "trend"}
     for label, half, col in (("full", False, "ndvi_p75"), ("half", True, "ndvi_p75"),
                              ("full_median", False, "ndvi_median"),
                              ("half_median", True, "ndvi_median")):
-        ndvi = season_ndvi(nd, cfg, country.window, half, col)
+        ndvi = season_ndvi(nd, cfg, window, half, col)
         rows = correct(base, ndvi)
         if len(rows) < 5:
             continue
@@ -203,7 +214,7 @@ def score(country, cfg, nd):
         on = switched_on(entry, win, MIN_SKILL)
         live = {"enabled": on}
         if on:
-            ndvi = season_ndvi(nd, cfg, country.window, half, COL)
+            ndvi = season_ndvi(nd, cfg, window, half, COL)
             years = sorted(y for y in base if y in ndvi)
             slope, mu, sd = fit(base, ndvi, years)
             live.update({"slope": slope, "mean": mu, "sd": sd,
@@ -214,7 +225,7 @@ def score(country, cfg, nd):
     for p in cfg.points:
         one = nd[nd.point == p["name"]]
         single = type("one", (), {"points": [{"name": p["name"], "weight": 1.0}]})
-        v = season_ndvi(one, single, country.window)
+        v = season_ndvi(one, single, window)
         if v:
             entry["sites"][p["name"]] = {"seasons": len(v),
                                          "mean_p75": round(float(np.mean(list(v.values()))), 3)}
@@ -236,8 +247,10 @@ def backtest(country):
         if not os.path.exists(os.path.join(train.MODELS, f"{cfg.key}.json")):
             continue
         report[cfg.key] = score(country, cfg, nd)
-    (m0, d0), (m1, d1) = country.window
-    report["_rule"] = (f"window {calendar.month_abbr[m0]} {d0}-{calendar.month_abbr[m1]} {d1}; "
+    windows = sorted({country.window_for(c) for c in country.configs})
+    report["_rule"] = ("window " + " / ".join(
+                           f"{calendar.month_abbr[m0]} {d0}-{calendar.month_abbr[m1]} {d1}"
+                           for (m0, d0), (m1, d1) in windows) + "; "
                        f"live when the forward correction beats the forecast by "
                        f">= {MIN_SKILL:.0%} with both p75 and median (min {MIN_PRIOR} prior seasons)")
     with open(os.path.join(country.cond, "ndvi_backtest.json"), "w") as f:
@@ -257,7 +270,7 @@ def adjustment(country, cfg, season):
         e = live.get(win)
         if not e or not e.get("enabled"):
             continue
-        value = season_ndvi(nd, cfg, country.window, half, COL).get(season)
+        value = season_ndvi(nd, cfg, country.window_for(cfg), half, COL).get(season)
         if value is None:
             continue
         z = (value - e["mean"]) / e["sd"]

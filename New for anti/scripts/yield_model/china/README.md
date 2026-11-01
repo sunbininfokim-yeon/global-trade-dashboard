@@ -52,6 +52,16 @@ what remains is a residual of a few percent that is mostly revision and
 rounding noise. There is close to nothing left for weather to explain, and a
 model that claimed otherwise would be fitting the noise.
 
+## NDVI on the trend
+
+`china/ndvi.py` (weekly, `china_ndvi.yml`) tries the one route left: measure
+the crop instead of the weather. MODIS NDVI over each region's cropland is
+scored against the trend itself, forward-chained, with the windows, sites and
+the four yield configs fixed before any NDVI was read. A window corrects the
+published number only where it beats the trend by at least 5% (both p75 and
+median); the row then reads `presentation: "trend x NDVI"` and replaces the
+unsupported weather effect. Results are in `condition/ndvi_backtest.json`.
+
 ## Why the labels are national
 
 `data.stats.gov.cn` returns HTTP 403 to this machine — a WAF URL ACL, not a

@@ -27,6 +27,8 @@ from datetime import datetime, timezone
 from .collect import current_season, load_oni
 from .predict import predict_one
 from .regions import ALL
+from . import ndvi as NDVI
+from australia import ndvi as N
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.abspath(os.path.join(
@@ -141,6 +143,15 @@ def main():
                 "notes": r["notes"],
             },
         }
+        # MODIS NDVI correction on the trend, where its own forward backtest
+        # beat the trend (china/ndvi.py); off everywhere else.
+        if cfg.key in NDVI.WINDOWS and not r["beats_trend"]:
+            row = payload["regions"][cfg.key]
+            adj = N.adjustment(NDVI.china(), cfg, season)
+            if adj:
+                NDVI.apply(row, adj)
+                log(f"{cfg.key:24} NDVI {adj['window']} {adj['adjustment_pct']:+.1f}% "
+                    f"-> {row['point']:,.0f}")
         flag = "" if r["beats_trend"] else "  [trend extrapolation]"
         log(f"{cfg.key:24} {r['point']:11,.0f} {r['unit']:>8} "
             f"({r['weather_effect_pct']:+.1f}% weather){flag}")
