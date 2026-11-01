@@ -1478,6 +1478,60 @@ const mmMoversView = (ind) => {
     <p class="fin-note">${finEsc(mv.reference_period || '')} 발표 기준. ${finEsc(mv.note_ko || '')}</p>`;
 };
 
+// US Treasury coupon auctions: each tenor's newest result next to the change
+// from that tenor's previous auction. Shares are of the competitive amount
+// awarded (dealer takedown convention); no tail -- WI yields are licensed.
+// good: which direction reads as stronger demand ('up' / 'down'); none for
+// yields, where a move says more about the market than about the auction.
+const mmSigned = (v, digits, unit, good) => {
+    if (!Number.isFinite(v)) return '';
+    const cls = !good || v === 0 ? 'mm-flat' : ((v > 0) === (good === 'up') ? 'mm-up' : 'mm-down');
+    return `<span class="${cls}">${v > 0 ? '+' : ''}${mmFmt(v, digits)}${unit}</span>`;
+};
+
+const mmAuctionsView = (ind) => {
+    const a = ind.auctions || {};
+    const tenor = (t) => t.replace('y', '년');
+    const rowHtml = (r, withDelta) => `
+        <tr>
+            <td class="co-label">${finEsc(tenor(r.tenor))}${r.reopening ? ' <small>재발행</small>' : ''}</td>
+            <td>${finEsc(r.date)}</td>
+            <td>${mmFmt(r.offering_bn, 0)}B</td>
+            <td>${mmFmt(r.high_yield, 3)}%${withDelta ? `<br><small>${mmSigned(r.d_yield_bp, 1, 'bp')}</small>` : ''}</td>
+            <td>${mmFmt(r.bid_to_cover, 2)}배${withDelta ? `<br><small>${mmSigned(r.d_bid_to_cover, 2, '', 'up')}</small>` : ''}</td>
+            <td>${mmFmt(r.pd_pct, 1)}%${withDelta ? `<br><small>${mmSigned(r.d_pd_pp, 1, '%p', 'down')}</small>` : ''}</td>
+            <td>${mmFmt(r.direct_pct, 1)}%</td>
+            <td>${mmFmt(r.indirect_pct, 1)}%${withDelta ? `<br><small>${mmSigned(r.d_indirect_pp, 1, '%p', 'up')}</small>` : ''}</td>
+        </tr>`;
+    const head = `<thead><tr><th>만기</th><th>입찰일</th><th>발행액</th><th>낙찰금리</th><th>응찰률</th><th>딜러</th><th>직접</th><th>간접</th></tr></thead>`;
+    return `
+        <p class="mm-view-title">만기별 최근 입찰 (아래 작은 숫자는 같은 만기 직전 입찰 대비)</p>
+        <div class="co-table-wrap mm-table"><table class="co-table">${head}
+            <tbody>${(a.latest_by_tenor || []).map((r) => rowHtml(r, true)).join('')}</tbody></table></div>
+        <p class="mm-view-title">최근 입찰 15건</p>
+        <div class="co-table-wrap mm-table"><table class="co-table">${head}
+            <tbody>${(a.recent || []).map((r) => rowHtml(r, false)).join('')}</tbody></table></div>
+        <p class="fin-note">${finEsc(a.basis_ko || '')} 딜러 비율이 낮고 간접 비율이 높을수록 수요가 강했다는 뜻입니다. 출처: TreasuryDirect.</p>`;
+};
+
+const mmBuybacksView = (ind) => {
+    const rows = (ind.buybacks || {}).rows || [];
+    return `
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>날짜</th><th>목적</th><th>대상</th><th>매입 신청</th><th>한도</th><th>매입</th><th>신청/한도</th></tr></thead>
+            <tbody>${rows.map((r) => `
+                <tr>
+                    <td class="co-label">${finEsc(r.date)}</td>
+                    <td>${finEsc(r.type_ko || '')}</td>
+                    <td>${finEsc(`${r.security_type_ko || ''} ${r.bucket_ko || ''}`)}</td>
+                    <td>${mmFmt(r.offered_bn, 1)}B</td>
+                    <td>${mmFmt(r.max_bn, 1)}B</td>
+                    <td>${mmFmt(r.accepted_bn, 1)}B</td>
+                    <td>${Number.isFinite(r.offered_to_max) ? `${mmFmt(r.offered_to_max, 1)}배` : '—'}</td>
+                </tr>`).join('')}</tbody></table></div>
+        <p class="fin-note">재무부가 시장에서 기존 국채를 되사는 입찰입니다. 신청/한도가 높을수록 팔고 싶은 물량이 많았다는 뜻입니다. 출처: Fiscal Data.</p>`;
+};
+
 // Which panels an indicator can show, in the order they should appear. The
 // engine names the primary view (ui.click_view); chart_type covers the rest.
 const mmViewsFor = (ind) => {
@@ -1508,6 +1562,8 @@ const mmViewsFor = (ind) => {
     if (has((ind.movers || {}).up) || has((ind.movers || {}).down)) {
         views.push({ id: 'movers', label: '항목별' });
     }
+    if (has((ind.auctions || {}).latest_by_tenor)) views.push({ id: 'auctions', label: '입찰 결과' });
+    if (has((ind.buybacks || {}).rows)) views.push({ id: 'buybacks', label: '바이백 내역' });
     // Assets and liabilities are two separate blocks -- two tabs -- not one
     // panel with both stacks in it. 부채 first: the reserves-against-the-axis
     // question is what this card exists to answer.
@@ -1687,6 +1743,8 @@ const mmChartDrawer = () => {
     else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
     else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
     else if (view === 'movers') body = mmMoversView(ind);
+    else if (view === 'auctions') body = mmAuctionsView(ind);
+    else if (view === 'buybacks') body = mmBuybacksView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
