@@ -60,25 +60,28 @@
         return `<span class="stock-note" style="grid-column:1 / -1;" title="${esc(m.note_ko || '')}">실측 기반 최근 12개월 ${mt(m.last12_kt)}만 t${yoy == null ? '' : ` <span${tone}>(전년비 ${yoy >= 0 ? '+' : ''}${yoy.toFixed(1)}%)</span>`} · 커널 생산 × 1.1</span>`;
     }
 
-    // Actual PKS imports (UN Comtrade; palm_oil/pks_trade.py). Japan only until
-    // Korea's customs code for PKS is confirmed.
+    // Actual PKS exports from Indonesia and Malaysia to every buyer (UN Comtrade,
+    // exporter side; palm_oil/pks_trade.py).
     let importsPending = null;
     function loadImports() {
-        importsPending ||= fetch('/public/data/pks_imports_v1.json', { cache: 'no-cache' })
+        importsPending ||= fetch('/public/data/pks_trade_v1.json', { cache: 'no-cache' })
             .then((r) => (r.ok ? r.json() : null)).catch(() => null);
         return importsPending;
     }
     function importsHtml(d) {
-        const rows = (d?.importers || []).filter((i) => i.last12_kt != null);
-        if (!rows.length) return '';
-        const line = (i) => {
-            const yoy = i.last12_yoy_pct;
-            const origin = Object.entries(i.by_origin_kt || {}).map(([k, v]) => `${esc(k)} ${mt(v)}만`).join(' · ');
-            return `<div class="pks-row" style="cursor:default;"><span class="nm">${esc(i.importer)} 수입 (최근 12개월, ~${esc(i.last_month)})</span>
-                <span class="vl" style="font-size:13px;">${mt(i.last12_kt)}만 t${yoy == null ? '' : ` <span style="color:${yoy >= 0 ? '#86efac' : '#fdba74'}">(${yoy >= 0 ? '+' : ''}${yoy.toFixed(1)}%)</span>`}</span>
-                <span class="stock-note" style="grid-column:1 / -1;">${origin} · 평균 $${Math.round(i.price_usd_t)}/t</span></div>`;
-        };
-        return `<p class="section-title" style="margin-top:10px;">PKS 수입 실적</p>${rows.map(line).join('')}
+        const r = d?.recent;
+        if (!r || r.total_kt == null) return '';
+        const yoy = r.yoy_pct;
+        const exporters = Object.entries(r.by_exporter_kt || {}).map(([k, v]) => `${esc(k)} ${mt(v)}만`).join(' · ');
+        const dest = (r.top_destinations || []).map((x) => `<div class="pks-row" style="cursor:default;">
+                <span class="nm">${esc(x.country)}</span><span class="vl" style="font-size:13px;">${mt(x.kt)}만 t <span class="stock-note">${x.share_pct}%</span></span>
+                <div class="pks-bar"><i style="width:${Math.min(100, x.share_pct).toFixed(1)}%"></i></div></div>`).join('');
+        const korea = (r.top_destinations || []).some((x) => x.country === '한국') ? ''
+            : `<div class="stock-note">한국: ${r.korea_kt != null ? `${r.korea_kt.toLocaleString('ko-KR')}천 t` : '—'}</div>`;
+        return `<p class="section-title" style="margin-top:10px;">PKS 수출 실적 (인니·말레이시아 → 전 세계)</p>
+            <div class="pks-total"><b>${mt(r.total_kt)}만 t</b>${yoy == null ? '' : `<span style="color:${yoy >= 0 ? '#86efac' : '#fdba74'}">${yoy >= 0 ? '+' : ''}${yoy.toFixed(1)}%</span>`}<span class="stock-note">최근 12개월 ~${esc(r.last_month)} · 평균 $${Math.round(r.price_usd_t)}/t</span></div>
+            <div class="stock-note" style="margin-bottom:4px;">${exporters} · 수입국별 상위</div>
+            ${dest}${korea}
             <div class="stock-note" style="margin-top:4px;">${esc(d.note_ko || '')}</div>`;
     }
 
