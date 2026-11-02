@@ -55,13 +55,15 @@ WINTERKILL_C = -15.0
 WEIGHTS = {"sow": 1.0, "veg": 1.0, "repro": 2.0, "fill": 2.0,
            "mature": 0.0, "harvest": 0.0, "dormant": 1.0}
 VERDICT_AT = 2.0
+# "Matched" needs unfavourable seasons this many points below every other class.
+MATCH_GAP_PCT = 2.0
 
 # Daily maximum above which a day counts as heat stress for the crop.
 HEAT_C = {
     "wheat": 32.0, "winter_wheat": 32.0, "spring_wheat": 32.0, "canola": 30.0,
     "barley": 32.0, "corn": 35.0, "corn_safrinha": 35.0, "soy": 35.0,
     "soybeans": 35.0, "sunflower": 35.0, "cotton": 37.0, "sugarcane": 38.0,
-    "coffee": 34.0, "orange": 38.0,
+    "coffee": 34.0, "orange": 38.0, "rice": 35.0, "cassava": 38.0,
 }
 
 LABEL_KO = {"favorable": "유리", "unfavorable": "불리", "neutral": "중립",
@@ -178,24 +180,40 @@ def place(stages, anchor):
     m, d = _md(stages[0]["start"])
     season_start = date(anchor, m, d)
     placed = []
+    floor = season_start - timedelta(days=30)
     for stage in stages:
-        start = _on_or_after(*_md(stage["start"]), season_start - timedelta(days=30))
-        if start < season_start - timedelta(days=30):
-            start = _on_or_after(*_md(stage["start"]), season_start)
+        # Stages run in order; one may overlap the previous by up to a month
+        # (fill begins before flowering ends), never jump back before it.
+        start = _on_or_after(*_md(stage["start"]), floor)
         end = _on_or_after(*_md(stage["end"]), start)
         placed.append((start, end))
+        floor = max(floor, start - timedelta(days=30))
     return placed
 
 
 def current_anchor(stages, today):
+    """Season to show: the oldest started one not yet harvested, else the latest.
+
+    Seasons only overlap for long crops (sugarcane is planted before the
+    previous crop is crushed); for those the crop still in the field wins.
+    """
     m, d = _md(stages[0]["start"])
-    return today.year if date(today.year, m, d) <= today else today.year - 1
+    latest = today.year if date(today.year, m, d) <= today else today.year - 1
+    for anchor in (latest - 1, latest):
+        if place(stages, anchor)[-1][1] >= today:
+            return anchor
+    return latest
 
 
 def harvest_year(stages, placed):
-    for stage, (start, _) in zip(stages, placed):
+    """Label year: where the middle of the harvest falls.
+
+    A Dec-Apr cane crush is labelled by the year it mostly happens in, not
+    the December it starts.
+    """
+    for stage, (start, end) in zip(stages, placed):
         if stage["kind"] == "harvest":
-            return start.year
+            return (start + (end - start) / 2).year
     return placed[-1][1].year
 
 
@@ -422,8 +440,10 @@ def history_ko(history):
     text = "{}~{}년 추세 대비 수확량: ".format(*history["years"]) + ", ".join(parts)
     unf, fav = c.get("unfavorable"), c.get("favorable")
     rest = [c[v]["mean_residual_pct"] for v in c if v != "unfavorable"]
-    if unf and rest and unf["mean_residual_pct"] < min(rest):
+    if unf and rest and unf["mean_residual_pct"] < min(rest) - MATCH_GAP_PCT:
         text += " · 불리 판정이 실제 감수와 맞았다"
+    elif unf and rest and unf["mean_residual_pct"] < min(rest):
+        text += " · 불리 해가 조금 낮았지만 차이가 작다(참고만)"
     elif unf and rest:
         text += " · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
     if fav and unf is not None and fav["mean_residual_pct"] <= unf["mean_residual_pct"]:
