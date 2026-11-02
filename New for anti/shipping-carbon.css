@@ -1,0 +1,105 @@
+/* 해운 › 탄소금융 (shipping-carbon.js). Panels, KPI cards and tables reuse the
+   shipping-* classes from style.css; only the form and switch live here. */
+
+.sc-layout { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); align-items: start; }
+.sc-results { min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+.sc-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sc-kpi-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.sc-kpi-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 14px; }
+
+.sc-inputs { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; }
+.sc-form fieldset { border: 0; margin: 0; padding: 0; }
+.sc-form legend,
+.sc-form summary { color: #e2e8f0; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.sc-form summary { cursor: pointer; }
+.sc-form details { border-top: 1px solid rgba(148, 163, 184, 0.13); margin-top: 18px; padding-top: 14px; }
+.sc-form-lede { color: #64748b; font-size: 11px; line-height: 1.55; margin-bottom: 14px; }
+.sc-field { display: block; margin: 11px 0; }
+.sc-field > span { display: block; color: #94a3b8; font-size: 11px; margin-bottom: 5px; }
+.sc-field small,
+.sc-hint { display: block; color: #64748b; font-size: 10.5px; line-height: 1.5; margin-top: 4px; }
+.sc-form input,
+.sc-form select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(2, 6, 23, 0.6);
+    color: #e2e8f0;
+    font: inherit;
+    font-size: 12px;
+    color-scheme: dark;
+}
+.sc-form input:focus,
+.sc-form select:focus { outline: none; border-color: rgba(56, 189, 248, 0.55); }
+.sc-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sc-pair .sc-field { margin: 11px 0; }
+.sc-actions { display: flex; gap: 8px; margin-top: 18px; }
+.sc-actions button {
+    flex: 1;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 8px;
+    background: rgba(148, 163, 184, 0.08);
+    color: #cbd5e1;
+    padding: 9px 10px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+}
+.sc-actions .sc-export { background: rgba(56, 189, 248, 0.16); border-color: rgba(56, 189, 248, 0.3); color: #e0f2fe; }
+.sc-actions button:disabled { opacity: 0.45; cursor: default; }
+
+.sc-switch {
+    display: flex;
+    gap: 6px;
+    padding: 5px;
+    width: fit-content;
+    border: 1px solid rgba(148, 163, 184, 0.13);
+    background: rgba(15, 23, 42, 0.76);
+    border-radius: 12px;
+}
+.sc-switch button {
+    border: 0;
+    color: #94a3b8;
+    background: transparent;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+}
+.sc-switch button[aria-pressed="true"] { color: #f8fafc; background: rgba(56, 189, 248, 0.16); box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.18); }
+
+.sc-sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    padding: 12px 16px;
+    border-left: 3px solid #f59e0b;
+    border-radius: 0 10px 10px 0;
+    background: rgba(245, 158, 11, 0.07);
+    color: #94a3b8;
+    font-size: 12px;
+}
+.sc-sources strong { color: #fcd34d; }
+.sc-error { padding: 14px 16px; border-radius: 10px; background: rgba(239, 68, 68, 0.12); color: #fecaca; font-size: 13px; }
+.sc-note { color: #94a3b8; font-size: 12px; line-height: 1.6; margin-top: 10px; }
+.sc-note a { color: #bae6fd; }
+.sc-chart { display: block; width: 100%; max-height: 230px; margin: 14px 0; }
+#sc-funding .shipping-table td:first-child { white-space: normal; }
+
+@media (max-width: 1100px) {
+    .sc-layout { grid-template-columns: 1fr; }
+    .sc-inputs { position: static; max-height: none; }
+}
+@media (max-width: 760px) {
+    .sc-two,
+    .sc-kpi-3 { grid-template-columns: 1fr; }
+    .sc-results .shipping-kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+    .sc-results .shipping-kpi-grid,
+    .sc-pair { grid-template-columns: 1fr; }
+}
