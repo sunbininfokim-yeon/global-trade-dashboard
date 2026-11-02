@@ -68,6 +68,14 @@ class StageConditionTests(unittest.TestCase):
         self.assertLess(abs(repro["current"]["precip"] - np.mean([p["precip"] for p in repro["past"]])),
                         3 * np.std([p["precip"] for p in repro["past"]]))
 
+    def test_cane_crush_labelled_by_its_main_year(self):
+        stages = [{"kind": "sow", "start": "10-15", "end": "02-28"},
+                  {"kind": "veg", "start": "05-01", "end": "10-31"},
+                  {"kind": "harvest", "start": "12-01", "end": "04-30"}]
+        placed = B.place(stages, 2024)
+        self.assertEqual(placed[1][0], date(2025, 5, 1))
+        self.assertEqual(B.harvest_year(stages, placed), 2026)
+
 
 if __name__ == "__main__":
     unittest.main()

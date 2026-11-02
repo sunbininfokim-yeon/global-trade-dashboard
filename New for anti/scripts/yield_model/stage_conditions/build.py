@@ -61,7 +61,7 @@ HEAT_C = {
     "wheat": 32.0, "winter_wheat": 32.0, "spring_wheat": 32.0, "canola": 30.0,
     "barley": 32.0, "corn": 35.0, "corn_safrinha": 35.0, "soy": 35.0,
     "soybeans": 35.0, "sunflower": 35.0, "cotton": 37.0, "sugarcane": 38.0,
-    "coffee": 34.0, "orange": 38.0,
+    "coffee": 34.0, "orange": 38.0, "rice": 35.0, "cassava": 38.0,
 }
 
 LABEL_KO = {"favorable": "유리", "unfavorable": "불리", "neutral": "중립",
@@ -178,24 +178,40 @@ def place(stages, anchor):
     m, d = _md(stages[0]["start"])
     season_start = date(anchor, m, d)
     placed = []
+    floor = season_start - timedelta(days=30)
     for stage in stages:
-        start = _on_or_after(*_md(stage["start"]), season_start - timedelta(days=30))
-        if start < season_start - timedelta(days=30):
-            start = _on_or_after(*_md(stage["start"]), season_start)
+        # Stages run in order; one may overlap the previous by up to a month
+        # (fill begins before flowering ends), never jump back before it.
+        start = _on_or_after(*_md(stage["start"]), floor)
         end = _on_or_after(*_md(stage["end"]), start)
         placed.append((start, end))
+        floor = max(floor, start - timedelta(days=30))
     return placed
 
 
 def current_anchor(stages, today):
+    """Season to show: the oldest started one not yet harvested, else the latest.
+
+    Seasons only overlap for long crops (sugarcane is planted before the
+    previous crop is crushed); for those the crop still in the field wins.
+    """
     m, d = _md(stages[0]["start"])
-    return today.year if date(today.year, m, d) <= today else today.year - 1
+    latest = today.year if date(today.year, m, d) <= today else today.year - 1
+    for anchor in (latest - 1, latest):
+        if place(stages, anchor)[-1][1] >= today:
+            return anchor
+    return latest
 
 
 def harvest_year(stages, placed):
-    for stage, (start, _) in zip(stages, placed):
+    """Label year: where the middle of the harvest falls.
+
+    A Dec-Apr cane crush is labelled by the year it mostly happens in, not
+    the December it starts.
+    """
+    for stage, (start, end) in zip(stages, placed):
         if stage["kind"] == "harvest":
-            return start.year
+            return (start + (end - start) / 2).year
     return placed[-1][1].year
 
 
