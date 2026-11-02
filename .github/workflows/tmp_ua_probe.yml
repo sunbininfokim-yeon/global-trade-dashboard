@@ -8,19 +8,13 @@ jobs:
     permissions: {contents: write}
     steps:
       - uses: actions/checkout@v4
-      - run: pip install remotezip
       - run: |
           mkdir -p probe
-          python3 - <<'PY' > probe/cyb_list.txt 2>&1 || true
-          from remotezip import RemoteZip
-          with RemoteZip("https://zenodo.org/api/records/17279151/files/cybench-data.zip/content") as z:
-              names = z.namelist()
-              print(len(names))
-              for n in names:
-                  if "/UA" in n or "_UA" in n or "UA." in n or n.count("/") < 3: print(n)
-          PY
-          (curl -sv -m 40 -A "Mozilla/5.0" -o /dev/null https://ukrstat.gov.ua/ 2>&1 | tail -15) > probe/ukrstat_err.txt || true
-          (curl -s -m 40 -o /dev/null -w "%{http_code}\n" https://www.ukrstat.gov.ua/ ; curl -s -m 40 -o /dev/null -w "%{http_code}\n" https://stat.gov.ua/ ) >> probe/ukrstat_err.txt 2>&1 || true
+          for slug in datasets/areas-gross-harvests-and-crop-yield-annual datasets/areas-gross-harvests-and-productivity-agricultural-crops; do
+            f=probe/$(basename $slug).html
+            curl -sL -m 60 -A "Mozilla/5.0" "https://stat.gov.ua/en/$slug" -o $f || true
+            echo "== $slug $(wc -c < $f)"; grep -oE 'href="[^"]+\.(xlsx|xls|csv|zip|json|xml)[^"]*"|href="[^"]*(sdmx|download|api)[^"]*"' $f | sort -u | head -60
+          done > probe/statgov.txt 2>&1 || true
       - run: |
           git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
           git add probe; git commit -qm "probe2"; git push
