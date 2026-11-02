@@ -1,12 +1,10 @@
-import os, urllib.request, urllib.parse
-key = urllib.parse.unquote(os.environ.get("K", ""))
-print("key set:", bool(key), len(key))
-for op, extra in (("nitemtrade/getNitemtradeList", {"cntyCd": "ID"}), ("nitemtrade/getNitemtradeList", {"cntyCd": "MY"})):
-    for hs in ("140490", "1404909000", "1404901000", "14049090"):
-        q = dict(serviceKey=key, strtYymm="202501", endYymm="202503", hsSgn=hs, **extra)
-        url = "https://apis.data.go.kr/1220000/" + op + "?" + urllib.parse.urlencode(q)
-        try:
-            body = urllib.request.urlopen(url, timeout=60).read().decode("utf-8", "replace")
-        except Exception as e:
-            body = f"ERR {e}"
-        print("==", op, extra, hs); print(body[:1500])
+import json, urllib.request
+base = "https://comtradeapi.un.org/public/v1/preview/C/{f}/HS?reporterCode=410,392&period={p}&partnerCode=360,458&cmdCode=140490&flowCode=M&partner2Code=0&customsCode=C00&motCode=0"
+for f, p in (("A", "2022,2023,2024,2025"), ("M", "202501,202502,202503,202504,202505,202506")):
+    try:
+        b = json.loads(urllib.request.urlopen(base.format(f=f, p=p), timeout=60).read())
+        print(f, p, "count", b.get("count"), b.get("error"))
+        for r in b.get("data", [])[:40]:
+            print(r["reporterCode"], r["partnerCode"], r["period"], r.get("netWgt"), r.get("qty"), r.get("qtyUnitAbbr"), r.get("primaryValue"))
+    except Exception as e:
+        print(f, "ERR", e)
