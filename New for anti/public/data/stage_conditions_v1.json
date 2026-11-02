@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-11-02T15:48:46.478109+00:00",
+ "generated_at": "2026-11-02T15:51:56.522052+00:00",
  "weather_through": "2026-10-30",
  "method_ko": "단계별 기상(NASA POWER, 산지 대표 지점)을 직전 30개 시즌의 같은 구간과 비교해 유리·불리·중립으로 판정한다. 진행 중인 단계는 같은 일수끼리 비교한다. 예측치에는 반영하지 않는다.",
  "rules_ko": {
@@ -13606,48 +13606,10 @@
    {
     "crop": "cocoa",
     "label_ko": "코코아(주작)",
-    "season": "2025/27",
+    "season": "2026/27",
     "harvest_year": 2026,
     "heat_threshold_c": 33.0,
     "stages": [
-     {
-      "kind": "veg",
-      "name_ko": "건기(하마탄)",
-      "start": "2025-12-01",
-      "end": "2026-03-15",
-      "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.72 (평년 0.56)",
-      "metrics": {
-       "precip": {
-        "value": 318.81,
-        "normal": 142.61,
-        "z": 3.72
-       },
-       "dry_spell": {
-        "value": 20.0,
-        "normal": 32.9,
-        "z": -0.77
-       },
-       "heat_days": {
-        "value": 4.0,
-        "normal": 51.8,
-        "z": -1.92
-       },
-       "soil": {
-        "value": 0.72,
-        "normal": 0.56,
-        "z": 2.28
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "유리"
-     },
      {
       "kind": "repro",
       "name_ko": "개화·착과",
@@ -13766,10 +13728,10 @@
     "overall": {
      "verdict": "favorable",
      "verdict_ko": "유리",
-     "score": 5.0,
-     "reason_ko": "유리: 건기(하마탄), 개화·착과, 꼬투리 발달 · 주작 수확 유리(품질·수확 진도, 판정 제외)",
-     "judged_stages": 4,
-     "total_stages": 4
+     "score": 4.0,
+     "reason_ko": "유리: 개화·착과, 꼬투리 발달 · 주작 수확 유리(품질·수확 진도, 판정 제외)",
+     "judged_stages": 3,
+     "total_stages": 3
     },
     "history": null,
     "history_ko": null
@@ -13779,48 +13741,10 @@
    {
     "crop": "cocoa",
     "label_ko": "코코아(주작)",
-    "season": "2025/27",
+    "season": "2026/27",
     "harvest_year": 2026,
     "heat_threshold_c": 33.0,
     "stages": [
-     {
-      "kind": "veg",
-      "name_ko": "건기(하마탄)",
-      "start": "2025-12-01",
-      "end": "2026-03-15",
-      "state": "done",
-      "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 309.2,
-        "normal": 201.4,
-        "z": 1.4
-       },
-       "dry_spell": {
-        "value": 10.0,
-        "normal": 27.83,
-        "z": -1.78
-       },
-       "heat_days": {
-        "value": 28.0,
-        "normal": 31.5,
-        "z": -0.14
-       },
-       "soil": {
-        "value": 0.57,
-        "normal": 0.58,
-        "z": -0.17
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "중립"
-     },
      {
       "kind": "repro",
       "name_ko": "개화·착과",
@@ -13941,8 +13865,8 @@
      "verdict_ko": "불리",
      "score": -2.0,
      "reason_ko": "불리: 꼬투리 발달",
-     "judged_stages": 4,
-     "total_stages": 4
+     "judged_stages": 3,
+     "total_stages": 3
     },
     "history": null,
     "history_ko": null
@@ -14225,30 +14149,68 @@
       "kind": "fill",
       "name_ko": "열매 발달",
       "start": "2026-03-15",
-      "end": "2026-08-31",
+      "end": "2026-06-15",
+      "state": "done",
+      "status": "unfavorable",
+      "reason_ko": "가뭄 길어짐 · 최장 무강우 10일 (평년 6일)",
+      "metrics": {
+       "precip": {
+        "value": 563.92,
+        "normal": 415.44,
+        "z": 1.14
+       },
+       "dry_spell": {
+        "value": 10.0,
+        "normal": 6.13,
+        "z": 1.65
+       },
+       "heat_days": {
+        "value": 2.0,
+        "normal": 3.8,
+        "z": -0.42
+       },
+       "soil": {
+        "value": 0.55,
+        "normal": 0.53,
+        "z": 0.31
+       },
+       "winterkill_days": {
+        "value": 0.0,
+        "normal": 0.0,
+        "z": 0.0
+       }
+      },
+      "observed_share": 1.0,
+      "status_ko": "불리"
+     },
+     {
+      "kind": "mature",
+      "name_ko": "성숙",
+      "start": "2026-06-15",
+      "end": "2026-09-30",
       "state": "done",
       "status": "neutral",
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 691.03,
-        "normal": 598.99,
-        "z": 0.65
+        "value": 268.34,
+        "normal": 302.61,
+        "z": -0.47
        },
        "dry_spell": {
         "value": 13.0,
-        "normal": 10.77,
+        "normal": 10.6,
         "z": 0.45
        },
        "heat_days": {
-        "value": 7.0,
-        "normal": 3.87,
-        "z": 0.74
+        "value": 10.0,
+        "normal": 0.17,
+        "z": 18.53
        },
        "soil": {
-        "value": 0.52,
-        "normal": 0.52,
-        "z": -0.03
+        "value": 0.48,
+        "normal": 0.51,
+        "z": -0.47
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14299,12 +14261,12 @@
      }
     ],
     "overall": {
-     "verdict": "favorable",
-     "verdict_ko": "유리",
-     "score": 2.0,
-     "reason_ko": "유리: 개화",
-     "judged_stages": 3,
-     "total_stages": 3
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 0.0,
+     "reason_ko": "불리: 열매 발달 · 유리: 개화",
+     "judged_stages": 4,
+     "total_stages": 4
     },
     "history": {
      "years": [
@@ -14316,26 +14278,27 @@
       "favorable": {
        "n": 2,
        "years": [
-        2020,
-        2024
+        1996,
+        2020
        ],
-       "mean_residual_pct": 0.0,
-       "below_trend_share": 0.5
+       "mean_residual_pct": 31.2,
+       "below_trend_share": 0.0
       },
       "neutral": {
-       "n": 5,
+       "n": 6,
        "years": [
-        1996,
         2010,
         2013,
         2014,
-        2017
+        2017,
+        2023,
+        2024
        ],
-       "mean_residual_pct": 12.2,
-       "below_trend_share": 0.2
+       "mean_residual_pct": -0.7,
+       "below_trend_share": 0.5
       },
       "unfavorable": {
-       "n": 24,
+       "n": 23,
        "years": [
         1994,
         1995,
@@ -14359,16 +14322,15 @@
         2018,
         2019,
         2021,
-        2022,
-        2023
+        2022
        ],
-       "mean_residual_pct": -0.3,
-       "below_trend_share": 0.38
+       "mean_residual_pct": -0.2,
+       "below_trend_share": 0.35
       }
      },
-     "score_residual_corr": 0.21
+     "score_residual_corr": 0.36
     },
-    "history_ko": "1994~2024년 추세 대비 수확량: 불리 24번 평균 -0.3%, 중립 5번 평균 +12.2%, 유리 2번 평균 +0.0% · 불리 해가 조금 낮았지만 차이가 작다(참고만)"
+    "history_ko": "1994~2024년 추세 대비 수확량: 불리 23번 평균 -0.2%, 중립 6번 평균 -0.7%, 유리 2번 평균 +31.2% · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
    }
   ]
  },
