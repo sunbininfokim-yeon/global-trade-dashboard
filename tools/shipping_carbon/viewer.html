@@ -1,0 +1,26 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>해운 탄소금융 시나리오</title><link rel="stylesheet" href="/viewer.css">
+<header><span class="eyebrow">MARITIME / CARBON FINANCE</span><h1>배출권 수요에서 자금위험까지</h1><p>같은 해운 고객의 조달과 금융사의 헤지를 비교합니다.</p><span class="tag">가상 고객·교육용 시나리오</span></header>
+<main><aside><h2>공통 사례</h2><p class="muted">2026년 배출분 · 적용 범위·가스 입력 완료를 가정합니다. 적용비중과 단계비율은 자동 법률 판정이 아닙니다.</p><form id="inputs">
+<label>배출량 (tCO₂e)<input name="emissions_tco2e" type="number" min="0" step="any"></label>
+<label>배출량 기준<select name="emissions_basis"><option value="raw">항로비중 적용 전</option><option value="scope_adjusted">항로비중 이미 적용</option></select></label>
+<div class="pair"><label>항로비중<input name="route_weight" type="number" min="0" max="1" step="0.1"></label><label>단계비율<input name="phase_factor" type="number" min="0" max="1" step="0.1"></label></div>
+<label>현재 배정 가능한 EUA<input name="available_eua" type="number" min="0"></label><label>계약 인도예정 EUA<input name="scheduled_eua" type="number" min="0"></label>
+<div class="pair"><label>계약 인도일<input name="delivery_date" type="date"></label><label>제출기한 가정<input name="surrender_date" type="date"></label></div>
+<label>예산 가격<select name="price_mode"><option value="auction_reference">EEX 경매 기준가격</option><option value="manual">직접 입력한 가정가격</option></select></label><label>가정가격 (EUR/EUA, 선택)<input name="manual_price" type="number" min="0" step="any" placeholder="미입력"></label>
+<label>공통 가격충격 (EUR/EUA)<input name="price_shock" type="number" step="1"></label>
+<label>해운사 현금결제 헤지 (EUA 상당)<input name="ship_hedge_delta" type="number" min="0"></label>
+<details open><summary>금융사 거래 가정</summary><label>거래 역할<select name="dealer_role"><option value="principal">자기계정 공급·헤지</option><option value="agency">중개 — 자기계정 제외</option></select></label><label>선물 매수 (lot, 1 lot=1,000 EUA)<input name="dealer_lots" type="number" min="0" step="1"></label>
+<label>선물 기준가격 가정 (EUR/EUA)<input name="future_price" type="number" min="0" step="any"><small>합성 입력값입니다. EEX 경매가로 대체하지 않습니다.</small></label>
+<div class="pair"><label>고객 인도 월물<input name="customer_bucket" type="month"></label><label>선물 월물 가정<input name="future_bucket" type="month"></label></div><label>선물 실물 인도일 가정<input name="future_delivery_date" type="date"></label>
+<label>선물 추가 가격충격 (EUR/EUA)<input name="hedge_basis_shock" type="number" step="any"><small>선물 충격 = 공통 충격 + 이 값. 다른 월물의 움직임 차이를 가정합니다.</small></label>
+<label>현금 여유 (EUR)<input name="cash_buffer" type="number" min="0"></label><label>초기 증거금 (EUR, 선택)<input name="initial_margin" type="number" min="0" placeholder="미입력 — 전체 자금소요 미확정"></label></details>
+<details><summary>계약별 자금 일정</summary>
+<label>고객 고정 공급가격 (EUR/EUA)<input name="customer_price" type="number" min="0" step="any"></label>
+<div class="pair"><label>고객 실물 인도일<input name="customer_delivery_date" type="date"></label><label>고객 수금일<input name="customer_payment_date" type="date"></label></div>
+<label>부족 실물 보충가격 (EUR/EUA, 선택)<input name="replacement_price" type="number" min="0" step="any" placeholder="보충 필요 시 입력"></label>
+<label>거래 수수료 합계 (EUR)<input name="trade_fees" type="number" min="0" step="any"></label>
+<label>추가 차입 금리 (연 %, 가정)<input name="funding_rate_pct" type="number" min="0" step="any"></label>
+<label>선물 충격 이후 경로<select name="price_path"><option value="recovery">다음 날 기준가격 복귀</option><option value="persistent">인도일까지 충격 유지</option></select></label>
+<small>가격 경로의 날짜는 분석일+1일 충격, +2일 복귀의 가정입니다. 거래소 캘린더가 아닙니다.</small></details>
+<button type="submit">시나리오 계산</button><button id="reset" type="button" class="secondary">초기 사례로</button></form></aside>
+<section class="results"><div id="error" role="alert"></div><div id="sources"></div><nav aria-label="분석 관점"><button id="ship-tab" aria-pressed="true">해운사 관점</button><button id="dealer-tab" aria-pressed="false">금융사 관점</button><button id="export" disabled>결과 JSON 저장</button></nav><div id="ship-view"></div><div id="dealer-view" hidden></div><section class="panel" id="fuel"></section><section class="panel"><h2>계산의 범위와 근거</h2><p>배출량·보유량·계약·헤지 포지션은 가상 입력입니다. 가격은 관측값 또는 명시된 가상 샘플을 사용합니다. 상단의 자료 상태를 확인하세요. 배출권 조달 예산은 실제 체결 견적과 다릅니다.</p><p>금융사 평가손익은 고객과 선물의 가격충격을 적용한 델타 근사입니다. 자금 일정은 선물 VM·실물 지급·증거금 반환·고객 수금·수수료·가정 차입비용을 합산한 일말 잔액입니다. 장중 자금 피크·세금·신용/자본비용은 미반영입니다.</p><p><a href="https://climate.ec.europa.eu/areas-action/transport-decarbonisation/reducing-emissions-shipping-sector/faq-maritime-transport-eu-emissions-trading-system-ets_en" target="_blank" rel="noreferrer">EU ETS 공식 설명</a> · <a href="https://transport.ec.europa.eu/transport-modes/maritime/decarbonising-maritime-transport-fueleu-maritime_en" target="_blank" rel="noreferrer">FuelEU 공식 설명</a></p></section></section></main><footer>로컬 분석 시연 · 수집시각과 관측일은 가격 출처에 표시</footer><script type="module" src="/viewer.js"></script></html>
