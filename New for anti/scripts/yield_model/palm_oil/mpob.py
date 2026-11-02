@@ -48,8 +48,9 @@ MONTHS = ["jan", "feb", "mar", "apr", "may", "jun",
 
 # PKS (shell) per tonne of palm kernel. Mills recover roughly as much shell
 # as kernel from a bunch (each ~5-7% of FFB weight); industry rule of thumb,
-# not a measured national ratio. Cross-check: 2025 kernel x 1.1 lands within
-# a few % of the CPO x 0.25 figure pks.py uses.
+# not a measured national ratio. Cross-check (first run, to 2026-09): the
+# last 12 months come to 5.33 Mt, about 10% above pks.py's CPO-trend x 0.25
+# (4.82 Mt) and inside both rules' ranges.
 PKS_PER_KERNEL = 1.1
 PKS_PER_KERNEL_RANGE = (0.9, 1.3)
 
