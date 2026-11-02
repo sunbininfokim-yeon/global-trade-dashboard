@@ -11,6 +11,46 @@ import { escapeHtml } from '../../ui.js';
 // 남은 값(null url)은 '원문 미확인'으로 적고, 검색 결과 본문으로만 본 것은
 // '검색 본문'이라고 밝힌다. 날짜가 없는 값은 지어내지 않고 note_ko 를 그대로 낸다.
 
+// 성 이름(region_ko) -> public/data/admin1/CHN.json 의 code. 지도 클릭과 색칠이 둘을 잇는다.
+export const CN_REGION_CODES = {
+    '베이징': 'CN-BJ', '톈진': 'CN-TJ', '허베이': 'CN-HE', '산시(山西)': 'CN-SX', '네이멍구': 'CN-NM',
+    '랴오닝': 'CN-LN', '지린': 'CN-JL', '헤이룽장': 'CN-HL', '상하이': 'CN-SH', '장쑤': 'CN-JS',
+    '저장': 'CN-ZJ', '안후이': 'CN-AH', '푸젠': 'CN-FJ', '장시': 'CN-JX', '산둥': 'CN-SD',
+    '허난': 'CN-HA', '후베이': 'CN-HB', '후난': 'CN-HN', '광둥': 'CN-GD', '광시': 'CN-GX',
+    '하이난': 'CN-HI', '충칭': 'CN-CQ', '쓰촨': 'CN-SC', '구이저우': 'CN-GZ', '윈난': 'CN-YN',
+    '시짱': 'CN-XZ', '산시(陕西)': 'CN-SN', '간쑤': 'CN-GS', '칭하이': 'CN-QH', '닝샤': 'CN-NX', '신장': 'CN-XJ',
+};
+const REGION_BY_CODE = new Map(Object.entries(CN_REGION_CODES).map(([region, code]) => [code, region]));
+export const cnRegionForCode = (code) => REGION_BY_CODE.get(code) || null;
+
+// 지도 색. 배지 색과 같은 계열이고, 한 성에 여러 사정이 겹치면 앞의 것이 이긴다
+// (공석 > 대리 > 서기 겸임 > 2026 서기 교체). 아무 일 없는 성은 기본 회색.
+export const CN_MAP_KINDS = [
+    ['vacant', '수반 공석', [203, 213, 225, 230]],
+    ['acting', '수반 대리', [217, 119, 6, 230]],
+    ['secretary_concurrent', '서기 겸임', [124, 58, 237, 225]],
+    ['changed', '2026 서기 교체', [5, 150, 105, 215]],
+];
+export const cnRegionKind = (leaders, region) => {
+    const head = (leaders?.government_heads || []).find((h) => h.region_ko === region);
+    const sec = (leaders?.provincial_secretaries || []).find((r) => r.region_ko === region);
+    if (head && head.status !== 'elected') return head.status;
+    return sec?.changed_in_2026 ? 'changed' : null;
+};
+export const cnRegionColor = (leaders, code) => {
+    const kind = cnRegionKind(leaders, cnRegionForCode(code));
+    return CN_MAP_KINDS.find(([id]) => id === kind)?.[2] || null;
+};
+
+// 지도에서 성을 누르면 다음 한 번의 렌더가 그 성을 펼친 지방 탭으로 열린다.
+let focusRegion = null;
+export const focusCnRegion = (region) => { focusRegion = region || null; };
+
+export const cnMapLegendHtml = (leaders) => (leaders ? `<div class="cn-lead-legend">
+    <span>지도에서 성을 누르면 서기·성장이 열립니다</span>
+    ${CN_MAP_KINDS.map(([id, label, [r, g, b]]) => `<i><b style="background:rgb(${r},${g},${b})"></b>${escapeHtml(label)}</i>`).join('')}
+</div>` : '');
+
 const safeUrl = (url) => (typeof url === 'string' && /^https?:\/\//.test(url) ? url : '');
 
 const link = (url, label) => {
@@ -56,14 +96,14 @@ const headLabel = (head) => {
     return `${who(head)}${badge ? ` <em class="cn-lead-badge ${cls}">${escapeHtml(badge)}</em>` : ''}`;
 };
 
-const provinceCard = (sec, head, stale) => {
+const provinceCard = (sec, head, stale, open = false) => {
     const flags = [
         sec.changed_in_2026 ? '<em class="cn-lead-badge is-new">2026 교체</em>' : '',
         sec.politburo_member ? '<em class="cn-lead-badge is-pb">정치국</em>' : '',
         head && head.status !== 'elected' ? `<em class="cn-lead-badge ${HEAD_STATUS[head.status]?.[1] || ''}">${escapeHtml(HEAD_STATUS[head.status]?.[0] || head.status)}</em>` : '',
     ].filter(Boolean).join('');
     const pages = [sec.leader_page, head?.leader_page].filter((p, i, all) => p && all.findIndex((q) => q?.url === p.url && q?.label_ko === p.label_ko) === i);
-    return `<details class="cn-lead-province" data-region="${escapeHtml(sec.region_ko)}">
+    return `<details class="cn-lead-province" data-region="${escapeHtml(sec.region_ko)}"${open ? ' open' : ''}>
         <summary>
             <b>${escapeHtml(sec.region_ko)}</b>
             <span>서기 ${escapeHtml(sec.name_ko || '')}</span>
@@ -101,7 +141,7 @@ const xpccCard = (x) => {
     </details>`;
 };
 
-export const provincesHtml = (leaders) => {
+export const provincesHtml = (leaders, focus = null) => {
     const heads = headsByRegion(leaders);
     const stale = staleByRegion(leaders);
     const secs = leaders.provincial_secretaries || [];
@@ -117,9 +157,10 @@ export const provincesHtml = (leaders) => {
             <article class="elections-card"><div class="elections-card-label">수반 공석·겸임</div><div class="elections-card-value">${count('vacant')} · ${count('secretary_concurrent')}</div></article>
         </div>
         ${count('acting') ? `<p class="elections-panel-note">대리: ${escapeHtml(names('acting'))}${count('vacant') ? ` · 공석: ${escapeHtml(names('vacant'))}` : ''}${count('secretary_concurrent') ? ` · 서기 겸임: ${escapeHtml(names('secretary_concurrent'))}` : ''}</p>` : ''}
+        ${cnMapLegendHtml(leaders)}
         <p class="elections-panel-note">성을 누르면 서기·정부 수반의 임명일과 원문이 펼쳐집니다. 11~12월 성 당대회가 열리는 곳은 이후 다시 확인해야 합니다.</p>
         <div class="cn-lead-provinces">
-            ${secs.map((sec) => provinceCard(sec, heads.get(sec.region_ko), stale.get(sec.region_ko))).join('')}
+            ${secs.map((sec) => provinceCard(sec, heads.get(sec.region_ko), stale.get(sec.region_ko), sec.region_ko === focus)).join('')}
             ${xpccCard(leaders.xpcc)}
         </div>
         ${(leaders.rank_conflicts || []).length ? `<details class="elections-disclosure"><summary>출처 간 직급 충돌 ${leaders.rank_conflicts.length}건</summary><div class="elections-disclosure-rows">${leaders.rank_conflicts.map((c) => row(c.name_zh, escapeHtml(c.issue_ko))).join('')}</div></details>` : ''}`;
@@ -171,13 +212,16 @@ export const chnLeadersToggle = (central, leaders) => {
     if (!leaders) return central;
     toggleSeq += 1;
     const name = `cn-lead-${toggleSeq}`;
+    const focus = focusRegion;
+    focusRegion = null;
+    const start = focus ? 1 : 0;
     const tabs = [
         ['central', '중앙 인사', `${central}${centralEvidenceHtml(leaders)}`],
-        ['provinces', `지방 지도부 ${(leaders.provincial_secretaries || []).length}`, provincesHtml(leaders)],
+        ['provinces', `지방 지도부 ${(leaders.provincial_secretaries || []).length}`, provincesHtml(leaders, focus)],
         ['enterprises', '기업·기타', enterprisesHtml(leaders)],
     ];
     return `<div class="cn-lead">
-        ${tabs.map(([id], i) => `<input class="cn-lead-radio" type="radio" name="${name}" id="${name}-${id}" data-cn-tab="${id}"${i === 0 ? ' checked' : ''}>`).join('')}
+        ${tabs.map(([id], i) => `<input class="cn-lead-radio" type="radio" name="${name}" id="${name}-${id}" data-cn-tab="${id}"${i === start ? ' checked' : ''}>`).join('')}
         <div class="cn-lead-tabs" role="group" aria-label="공산당 인사 구분">
             ${tabs.map(([id, label]) => `<label for="${name}-${id}" data-cn-tab="${id}">${escapeHtml(label)}</label>`).join('')}
         </div>

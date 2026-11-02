@@ -52,3 +52,41 @@ test('enterprise and central evidence render from the published file', () => {
     assert.match(central, /장성민/);
     assert.match(central, /중앙위원 보충 10인/);
 });
+
+import { CN_REGION_CODES, cnRegionForCode, cnRegionColor, cnRegionKind, focusCnRegion, cnMapLegendHtml } from '../country-explorer/special/chn-leaders.js';
+
+const admin1 = JSON.parse(readFileSync(new URL('../../../public/data/admin1/CHN.json', import.meta.url)));
+
+test('every province in the file maps to a real admin1 shape', () => {
+    const codes = new Set(admin1.features.map((f) => f.properties.code));
+    for (const sec of data.provincial_secretaries) {
+        const code = CN_REGION_CODES[sec.region_ko];
+        assert.ok(code, `no code for ${sec.region_ko}`);
+        assert.ok(codes.has(code), `${code} missing from admin1`);
+        assert.equal(cnRegionForCode(code), sec.region_ko);
+    }
+    assert.equal(new Set(Object.values(CN_REGION_CODES)).size, 31);
+});
+
+test('map colour follows head status first, then a 2026 secretary change', () => {
+    assert.equal(cnRegionKind(data, '장시'), 'vacant');
+    assert.equal(cnRegionKind(data, '허베이'), 'acting');
+    assert.equal(cnRegionKind(data, '푸젠'), 'secretary_concurrent');
+    assert.equal(cnRegionKind(data, '베이징'), null);
+    assert.equal(cnRegionColor(data, 'CN-BJ'), null);
+    assert.ok(cnRegionColor(data, 'CN-JX'));
+    assert.equal(cnRegionColor(data, 'CN-X01~'), null, 'Paracel shape is not a province');
+    assert.match(cnMapLegendHtml(data), /수반 대리/);
+    assert.equal(cnMapLegendHtml(null), '');
+});
+
+test('a map click opens the provinces tab with that province expanded, once', () => {
+    focusCnRegion('허베이');
+    const html = chnLeadersToggle('<p>CENTRAL</p>', data);
+    assert.match(html, /data-cn-tab="provinces" checked/);
+    assert.match(html, /data-region="허베이" open/);
+    assert.doesNotMatch(html, /data-region="베이징" open/);
+    const next = chnLeadersToggle('<p>CENTRAL</p>', data);
+    assert.match(next, /data-cn-tab="central" checked/);
+    assert.doesNotMatch(next, / open>/);
+});

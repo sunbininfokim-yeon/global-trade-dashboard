@@ -1,7 +1,7 @@
 import { renderCountryShell } from './country-shell.js?v=8';
 import { loadIsraelElectionAnalysis } from '../data/israel-service.js';
 import { renderWorldElectionMap } from './world-map.js';
-import { renderCountryMap } from './country-map.js?v=8';
+import { renderCountryMap } from './country-map.js?v=9';
 import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=16';
 import { renderUsaDistrictMap } from './usa-district-map.js?v=7';
 import { createModal } from '../modal.js';
@@ -15,6 +15,7 @@ import { loadCongressionalDistricts, prefetchCongressionalDistricts } from '../d
 import { applyEopChart } from './special/usa-executive.js';
 import { applyCnPartyChart } from './special/chn-org.js';
 import { loadCnPartyChart, loadCnLeaders } from '../data/chn-service.js';
+import { focusCnRegion } from './special/chn-leaders.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onRoute }) => {
     const modal = createModal(host.roots.modal);
@@ -82,7 +83,12 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             // landing on whatever country was under it) for the first second
             // after opening USA ("미국 들어가서 바로 주 누르면 클릭이 안돼").
             const mapReady = renderCountryMap({ host, country, electionMode: usaElectionMode, isStale,
-                onStateOpen: (stateId) => this.showUsaState(stateId, { financeMode: usaElectionMode }) })
+                onStateOpen: (stateId) => this.showUsaState(stateId, { financeMode: usaElectionMode }),
+                onRegionOpen: (region) => {
+                    focusCnRegion(region);
+                    shell?.openSection('party');
+                    host.roots.modal?.querySelector('.cn-lead-province[open]')?.scrollIntoView({ block: 'center' });
+                } })
                 .then((drawn) => { if (drawn && !isStale()) mapShows = `country:${iso3}`; return drawn; });
             if (usaElectionMode) {
                 host.roots.country.innerHTML = '<div class="panel-header"><h2>미국 선거</h2><p>공개 데이터를 연결하는 중입니다.<span class="inline-spinner" aria-hidden="true"></span></p></div>';
