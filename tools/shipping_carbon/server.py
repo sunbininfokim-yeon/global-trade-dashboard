@@ -6,6 +6,7 @@ from pathlib import Path
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from engine import calculate, defaults, json_value
+from presets import catalog
 
 ROOT = Path(__file__).resolve().parent
 FORCE_SYNTHETIC = False
@@ -32,6 +33,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
+        if self.path == "/api/presets":
+            path = ROOT / "source_data/vessel_emissions.json"
+            return self.reply(200, catalog(json.loads(path.read_text()) if path.exists() else {}))
         if self.path == "/api/defaults":
             return self.reply(200, defaults(snapshot()))
         if self.path == "/api/observations":
@@ -44,6 +48,7 @@ class Handler(BaseHTTPRequestHandler):
         files = {"/": ("viewer.html", "text/html"), "/viewer.js": ("viewer.js", "text/javascript"),
                  "/extras.js": ("extras.js", "text/javascript"),
                  "/observations.js": ("observations.js", "text/javascript"),
+                 "/presets.js": ("presets.js", "text/javascript"),
                  "/viewer.css": ("viewer.css", "text/css")}
         if self.path not in files:
             return self.reply(404, {"error": "Not found"})

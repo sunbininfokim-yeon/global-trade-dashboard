@@ -39,6 +39,8 @@ EMSA 공식 앱이 사용하는 공개 `downloadable-files` 목록에서 요청 
 
 `engine.py`는 네트워크 없는 Decimal 계산 모듈이고 `server.py`의 `/api/calculate`가 동일 결과 객체를 두 화면에 전달한다. `acceptance_cases.json`은 독립 기대값을 갖는 합성 사례다. 누락 가격은 0이 아닌 null이며 잘못된 입력 시 화면의 이전 계산 결과를 지운다.
 
+가상 시나리오에는 5천/5만/20만 EUA 거래 규모 가안을 적용할 수 있다. 이는 회사 전체 운용규모가 아니며 선사·금융사 실제 포지션을 대체하지 않는다. 참고 MRV 분포는 실데이터에서 동적으로 계산하고, 포지션·IM·현금 여유는 명시된 가정으로 구분한다. 상세 가정과 해운 외 탄소금융 확장 제안은 [CARBON_FINANCE_PROPOSAL.md](CARBON_FINANCE_PROPOSAL.md)에 있다. `preset_id`는 사용자가 선택한 시작 템플릿이며 이후 입력을 수정할 수 있다.
+
 `funding.py`는 단일 고객 고정가격 공급·선물 매수 계약의 날짜별 자금 모듈이다. 선물 VM과 마지막 결제가격 기준 실물 인수대금을 함께 반영해 같은 비용을 이중 계산하지 않는다. 완전 매칭·기한 내 인도일 때만 공급 차액에서 수수료·가정 차입비용을 차감한 기여이익을 표시한다. 잔여 재고가 있는 경우 확정 이익으로 평가하지 않는다. 기준일+1일 충격, +2일 복귀는 가상 경로이며 실제 거래소 일정이 아니다.
 
 자금 일정을 보려면 금융사 관점에서 초기 증거금(예: 가상 250,000 EUR)을 입력한다. 고객 수금일을 분석 기준일로 바꾸면 선지급, 인도 이후로 바꾸면 후지급의 자금 차이를 비교할 수 있다. 이는 전략 추천이 아닌 동일 가정의 비교다.
@@ -59,7 +61,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-이미 Chrome이 설치되어 있으면 브라우저 설치 대신 `PW_CHANNEL=chrome npm run test:browser`를 사용할 수 있다. `CARBON_BASE_URL`로 테스트 서버 주소를 바꿀 수 있다. 실제 수집 파일로 실행한 서버는 `PW_CHANNEL=chrome node observed_check.cjs`로 별도 검증한다(기본 8771 포트). 캡처는 git 제외 `source_data/`에 저장한다. 단위 테스트는 37개이며 설계 산술 검산은 별도 16개다.
+이미 Chrome이 설치되어 있으면 브라우저 설치 대신 `PW_CHANNEL=chrome npm run test:browser`를 사용할 수 있다. `CARBON_BASE_URL`로 테스트 서버 주소를 바꿀 수 있다. 실제 수집 파일로 실행한 서버는 `PW_CHANNEL=chrome node observed_check.cjs`로 별도 검증한다(기본 8771 포트). 캡처는 git 제외 `source_data/`에 저장한다. 단위 테스트는 39개이며 설계 산술 검산은 별도 16개다.
 
 ## 법령·자료 근거와 제한
 

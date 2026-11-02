@@ -16,3 +16,5 @@ async function run(){const id=++sequence;const p={...initial};for(const el of fo
 for(const [tab,view] of [['ship','ship'],['dealer','dealer']])document.querySelector(`#${tab}-tab`).onclick=()=>{for(const k of ['ship','dealer']){document.querySelector(`#${k}-tab`).setAttribute('aria-pressed',String(k===tab));document.querySelector(`#${k}-view`).hidden=k!==view;}};
 form.onsubmit=e=>{e.preventDefault();run();};form.addEventListener('change',run);document.querySelector('#reset').onclick=()=>{populate(initial);run();};
 try{const res=await fetch('/api/defaults');initial=await res.json();populate(initial);await run();}catch(e){document.querySelector('#error').textContent='입력 자료를 불러오지 못했습니다: '+e.message;}
+
+document.addEventListener('apply-carbon-preset',e=>{for(const [key,value] of Object.entries(e.detail)){const el=form.elements.namedItem(key);if(el)el.value=value;}run();});
