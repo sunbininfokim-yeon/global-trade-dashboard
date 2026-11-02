@@ -12,3 +12,17 @@ export const loadCnPartyChart = () => {
     }
     return partyChartPromise;
 };
+
+let leadersPromise = null;
+
+// 중앙·지방·기업 인사 임명일 (china_leader_appointments → build_cn_leaders_public.py).
+// 못 읽으면 null 이고, 공산당 화면은 토글 없이 기존 중앙 조직도만 그린다.
+export const loadCnLeaders = () => {
+    if (!leadersPromise) {
+        leadersPromise = fetch('/public/data/elections_cn_leaders_v1.json', { cache: 'no-cache' })
+            .then((response) => (response.ok ? response.json() : null))
+            .then((data) => (data?.schema === 'china_leader_appointments_v1' ? data : null))
+            .catch(() => null);
+    }
+    return leadersPromise;
+};
