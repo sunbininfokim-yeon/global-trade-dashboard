@@ -103,10 +103,15 @@ def parse(html, year):
     """Long rows (date, column, value, provisional) from one year's page."""
     rows = _Rows()
     rows.feed(html)
-    out, section = [], None
+    out, section, flagged = [], None, [False] * 13
     for row in rows.rows:
         label = row[0].strip()
         values = row[1:]
+        # The month header marks provisional months, e.g. "Sep (p)".
+        if not label and any(v[:3].lower() in MONTHS for v in values if v):
+            flagged = [bool(re.search(r"\((p|e)\)", v, re.I)) for v in values[:13]]
+            flagged += [False] * (13 - len(flagged))
+            continue
         numbers = [_number(v) for v in values]
         heading = _section(label)
         if heading and not any(n is not None for n in numbers):
@@ -131,7 +136,7 @@ def parse(html, year):
                 continue
             month = date(year - 1, 12, 1) if i == 0 else date(year, i, 1)
             out.append({"date": month, "column": column, "value": value,
-                        "provisional": bool(re.search(r"\((p|e)\)", raw, re.I)),
+                        "provisional": flagged[i] or bool(re.search(r"\((p|e)\)", raw, re.I)),
                         "page": year})
     return out
 

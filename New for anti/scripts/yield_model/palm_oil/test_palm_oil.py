@@ -103,12 +103,12 @@ def test_pks_outlook_follows_supported_unfavorable_call():
 
 def _mpob_page(year, stock_scale=1.0):
     months = ["Dec"] + ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+                        "Jul", "Aug", "Sep", "Oct", "Nov (r)", "Dec (p)"]
     def row(label, base):
         cells = "".join(f"<td>{base + 1000 * i:,.0f}</td>" for i in range(13))
         return f"<tr><td>{label}</td>{cells}</tr>"
     return (
-        "<table><tr><th>ITEM</th>" + "".join(f"<th>{m}</th>" for m in months) + "</tr>"
+        "<table><tr><th></th>" + "".join(f"<th>{m}</th>" for m in months) + "</tr>"
         "<tr><td>PRODUCTION</td></tr>"
         + row("Crude Palm Oil", 1_500_000) + row("Palm Kernel", 400_000)
         + "<tr><td>CLOSING STOCK</td></tr>"
@@ -127,6 +127,8 @@ def test_mpob_parse_maps_months_and_sections():
     assert got[("palm_oil_stock_t", date(2025, 1, 1))] == 1_701_000
     assert got[("palm_oil_import_t", date(2025, 1, 1))] == 61_000
     assert ("palm_oil_export_t", date(2025, 6, 1)) in got
+    prov = {r["date"] for r in rows if r["provisional"]}
+    assert prov == {date(2025, 12, 1)}
 
 
 def test_mpob_later_page_wins_and_indicators():
