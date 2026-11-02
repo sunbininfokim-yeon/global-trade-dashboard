@@ -9,36 +9,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          mkdir -p probe/es
           B="https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
           for t in apro_cpshr apro_cpnhr; do
-            for c in C1110 C1100 C1500; do
-              curl -s -m 120 "$B/$t?format=JSON&lang=EN&crops=$c&strucpro=YI_HU_EU" -o probe/es/${t}_${c}.json || true
-              curl -s -m 120 "$B/$t?format=JSON&lang=EN&crops=$c&strucpro=AR" -o probe/es/${t}_${c}_ar.json || true
-            done
+            curl -s -m 120 "$B/$t?format=JSON&lang=EN&geo=FRB0&geo=FR&geo=DE&geo=FRE2" -o /tmp/$t.json || true
+            python3 -c "
+          import json;d=json.load(open('/tmp/$t.json'));print('$t', d.get('label'), d['id'], d['size'], 'values', len(d.get('value',{})))
+          for dim in d['id']:
+              c=d['dimension'][dim]['category']; print(' ',dim, list(c.get('label',{}).items())[:25])
+          " >> probe/es2.txt 2>&1 || echo "$t fail $(head -c 300 /tmp/$t.json)" >> probe/es2.txt
           done
-          python3 - <<'PY2' > probe/es.txt 2>&1 || true
-          import json,glob,collections
-          for f in sorted(glob.glob("probe/es/*.json")):
-              try: d=json.load(open(f))
-              except Exception as e: print(f,"ERR",open(f).read()[:200]); continue
-              if "value" not in d: print(f, str(d)[:300]); continue
-              dims=d["id"]; size=d["size"]
-              geo=d["dimension"]["geo"]["category"]["index"]; tim=d["dimension"]["time"]["category"]["index"]
-              inv={v:k for k,v in geo.items()}; tinv={v:k for k,v in tim.items()}
-              gi=dims.index("geo"); ti=dims.index("time")
-              stride=[1]*len(size)
-              for i in range(len(size)-2,-1,-1): stride[i]=stride[i+1]*size[i+1]
-              per=collections.defaultdict(dict)
-              for k,v in d["value"].items():
-                  k=int(k); g=(k//stride[gi])%size[gi]; t=(k//stride[ti])%size[ti]
-                  per[inv[g]][tinv[t]]=v
-              fr={g:per[g] for g in per if g.startswith("FR") and len(g)==4}
-              print(f, "geos",len(geo),"times",min(tim),max(tim),"values",len(d["value"]), "FR NUTS2:",len(fr))
-              for g in sorted(fr)[:30]:
-                  ys=sorted(fr[g]); print("  ",g,ys[0] if ys else "",ys[-1] if ys else "",len(ys), [fr[g][y] for y in ys[-4:]])
-          PY2
-          rm -rf probe/es
       - run: |
           git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
           git add probe; git commit -qm "probe2"; git push
