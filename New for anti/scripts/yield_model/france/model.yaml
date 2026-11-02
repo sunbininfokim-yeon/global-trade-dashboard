@@ -1,0 +1,38 @@
+# 프랑스 — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+
+country: france
+iso: FRA
+label_ko: 프랑스
+label_en: France
+panel_mode: forecast
+model_status: training
+status_note_ko: "라벨은 Eurostat 지역 수확량(2000년~, 25시즌)이라 검증 표본이 짧다. 숫자는 참고용."
+data_file: france_yield_forecast.json
+
+view:
+  longitude: 2.5
+  latitude: 47.0
+  zoom: 4.6
+
+regions:
+  - key: north_wheat
+    label_ko: "북부 곡창지대 (겨울밀)"
+    ui_name: north_wheat
+    coordinates: [2.4, 48.9]
+    crops_region_keys: [north_wheat]
+  - key: west_maize
+    label_ko: "남서·서부 (옥수수)"
+    ui_name: west_maize
+    coordinates: [0.3, 45.2]
+    crops_region_keys: [west_maize]
+
+sources:
+  labels:
+    name: Eurostat apro_cpshr (NUTS 2)
+    url: https://ec.europa.eu/eurostat/databrowser/view/apro_cpshr/default/table
+    updated: "2026-11-02"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-11-02"
