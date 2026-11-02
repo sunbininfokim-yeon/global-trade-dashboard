@@ -1,0 +1,83 @@
+{
+  "schema_version": "krx-deriv-flow-gap-manifest-v1",
+  "generated_at": "2026-11-01T13:45:00Z",
+  "provider_published_at": "unknown",
+  "output": "New for anti/public/data/krx_deriv_flow_v1.json",
+  "builder": "New for anti/scripts/market_microstructure/build_krx_deriv_flow.py --source <krx-month-paste> --print-stats",
+  "private_source": {
+    "repo": "sunbininfokim-yeon/krx-month-paste",
+    "commit": "3a27fa40",
+    "ledger": "data/manifests/krx_gap_regen_20261101.json",
+    "krx_requests": 0,
+    "note_ko": "이번 갱신은 이미 있던 원본만 썼다. 15007은 private 저장소의 원본 CSV, 15003·15018·12012는 수집기 로컬 엑셀이다. 엑셀은 저장소 규칙상 올리지 않고 파일 이름과 SHA-256만 ledger에 남겼다."
+  },
+  "last_dates": {
+    "before": {"flow": "2026-09-30", "futures_front": "2026-09-21", "option_oi": "2026-09-21", "program": "2026-09-07"},
+    "after": {"flow": "2026-10-29", "futures_front": "2026-10-28", "option_oi": "2026-10-28", "program": "2026-09-21"}
+  },
+  "datasets": {
+    "flow_15007": {
+      "screen": "15007",
+      "menu_id": "MDC0201050302",
+      "query": "일별추이 · 거래대금 · 시장 전체 · 세션 전체 (기존 이력과 같은 조건)",
+      "products": ["futures", "options_call", "options_put"],
+      "unit": "원본 CSV 백만원. hive는 원(×1,000,000 한 번). 공개 파일은 백만원.",
+      "definition_check": "2026-09-21 선물 원본 CSV 외국인 매수 20,224,359백만원 = 기존 hive 20,224,359,000,000원",
+      "collected_at_basis": "krx-month-paste data/normalized/manifest.json dates[date].collected_at",
+      "added_dates": "2026-10-01..2026-10-29 (19일)",
+      "missing": [
+        {"date": "2026-10-23", "product": "futures", "reason": "원본 CSV 없음 (옵션 4개 파일만 있음)"},
+        {"date": "2026-10-30", "product": "futures, options_call, options_put", "reason": "원본 CSV 없음"}
+      ],
+      "weekly_scope_ko": "저장된 조회 조건에는 위클리 옵션 포함 여부가 없다. 2026-10-29 풋 전체 거래대금은 64,081백만원이고 OpenAPI 활동 자료는 236,118백만원이라 위클리가 빠졌을 가능성이 있다. 조건은 바꾸지 않았다."
+    },
+    "futures_front_15003": {
+      "screen": "15003",
+      "menu_id": "MDC0201050103",
+      "session": "regular",
+      "contract": "코스피200 F 202612 (A016C000), 창 전체 동일",
+      "collected_at_basis": "local xlsx file mtime",
+      "added_dates": ["2026-09-22", "2026-09-23", "2026-09-29", "2026-10-02", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-23", "2026-10-28"],
+      "missing": ["2026-09-28", "2026-09-30", "2026-10-01", "2026-10-16", "2026-10-22", "2026-10-26", "2026-10-27", "2026-10-29", "2026-10-30"],
+      "open_interest_scope": "시장 전체 미결제약정. 외국인 보유분 아님."
+    },
+    "option_oi_15018": {
+      "screen": "15018",
+      "menu_id": "MDC0201050104",
+      "session": "regular",
+      "chain": "표준 월물 최근월물, 콜·풋 전 행사가 (일자별 339~346개)",
+      "front_month": {"2026-09-22..2026-10-08": "202610", "2026-10-12..": "202611"},
+      "iv_unit": "KRX % 표시 그대로 (예 37.1)",
+      "collected_at_basis": "local xlsx file mtime",
+      "added_dates": ["2026-09-22", "2026-09-23", "2026-10-02", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-23", "2026-10-28"],
+      "missing": ["2026-09-28", "2026-09-29", "2026-09-30", "2026-10-01", "2026-10-16", "2026-10-22", "2026-10-26", "2026-10-27", "2026-10-29", "2026-10-30"],
+      "expiry_day_note_ko": "2026-10-08 만기일은 콜·풋 미결제약정 합계와 ATM IV가 비어 있다. 기존 빌더가 0 또는 빈 값을 관측값으로 보지 않기 때문이며, 보정하지 않았다."
+    },
+    "program_12012": {
+      "screen": "12012",
+      "menu_id": "MDC0201020305",
+      "market": "유가증권",
+      "program_types": ["arbitrage", "non_arbitrage", "total"],
+      "date_axis": "program.dates (별도 날짜축)",
+      "date_basis_ko": "엑셀에 일자 열이 없어 조회 start=end 날짜와 파일설명 기준일로 관측일을 정했다.",
+      "collected_at_basis": "local xlsx file mtime",
+      "added_dates": "2026-09-08..2026-09-21 (10일)",
+      "missing": "2026-09-22..2026-10-30 (25거래일), 원본 없음"
+    }
+  },
+  "calendar": {
+    "holidays": {"2026-09-24": "추석", "2026-09-25": "추석", "2026-10-05": "개천절 대체공휴일", "2026-10-09": "한글날"},
+    "check_ko": "휴장일에 원본 폴더가 없고, holidays 패키지와도 차이가 없었다. 휴장일은 날짜 자체를 만들지 않는다."
+  },
+  "checks": {
+    "existing_values_changed": 0,
+    "existing_nulls_filled": 28,
+    "program_existing_values_changed": 0,
+    "inconsistent_cells": 0,
+    "tests": "tests/test_krx_deriv_flow.py 9 passed",
+    "ui_contract": "validate_ui_contracts.py passed",
+    "derivatives_activity_history_v1_jsonl": "unchanged",
+    "derivatives_activity_15001": "not used"
+  },
+  "next_krx_downloads": 62
+}

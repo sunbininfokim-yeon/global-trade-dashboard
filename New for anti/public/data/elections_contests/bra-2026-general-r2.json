@@ -4,12 +4,14 @@
   "iso3": "BRA",
   "date": "2026-10-25",
   "system_id": "bra-president",
-  "as_of": "2026-10-12",
+  "as_of": "2026-11-01",
   "sources": [
     "https://en.wikipedia.org/wiki/2026_Brazilian_general_election",
     "https://en.wikipedia.org/wiki/List_of_current_state_governors_in_Brazil",
     "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica",
-    "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"
+    "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm",
+    "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.json",
+    "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/como-a-totalizacao-dos-votos-evoluiu-ferramenta-do-tse-permite-acompanhar-o-processo"
   ],
   "parties": [
     {
@@ -95,27 +97,39 @@
           "name_ko": "대통령",
           "group_ko": "전국",
           "seats": 1,
-          "status": "nominated",
+          "status": "completed",
           "candidates": [
             {
               "party_abbr": "PL",
               "name": "Flávio Bolsonaro",
               "status": "nominated",
-              "source": "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica",
-              "note_ko": "기호 22. 부통령 후보 Alfredo Gaspar (PL). TSE 2026-10-05 00:29, 1차 99.99%에서 56,104,268표."
+              "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.json",
+              "note_ko": "기호 22. 부통령 Alfredo Gaspar (PL). TSE JSON vap 59,826,041 · pvap 48,21 · st Não eleito. 1차 표는 bra-2026-general-r1.",
+              "elected": false,
+              "votes": 59826041
             },
             {
               "party_abbr": "PT",
               "name": "Luiz Inácio Lula da Silva",
               "status": "nominated",
               "incumbent": true,
-              "source": "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica",
-              "note_ko": "기호 13. 부통령 후보 Geraldo Alckmin (PSB). TSE 2026-10-05 00:29, 1차 99.99%에서 53,876,617표."
+              "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.json",
+              "note_ko": "기호 13. 부통령 Geraldo Alckmin (PSB). TSE JSON vap 64,256,232 · pvap 51,79 · st Eleito. 1차 표는 bra-2026-general-r1.",
+              "elected": true,
+              "votes": 64256232
             }
           ],
-          "note_ko": "TSE가 두 사람의 결선을 확인했다. 1차 득표의 전체 표는 bra-2026-general-r1."
+          "note_ko": "TSE JSON br-c0001-e006258-u.json, 생성 2026-10-25 23:26:38, 총화 최종 tf=s. 주지사 결선은 이 열이 아니다."
         }
-      ]
+      ],
+      "result": {
+        "by_party": {
+          "PT": 1
+        },
+        "total": 1,
+        "as_of": "2026-10-25",
+        "note_ko": "TSE 결과 JSON 선거 6258 2차, tf=s, 직책 1. 룰라 64,256,232(51,79%) 당선. 플라비우 59,826,041(48,21%). 유효 124,082,273. 당선 증서가 아니다. 1=1."
+      }
     },
     {
       "key": "governor",
@@ -137,8 +151,8 @@
         "as_of": "2026-09-19",
         "note_ko": "영문 위키 List of current state governors. PP 4 MDB 2 SOLIDARIEDADE 1 UNIAO 3 PT 4 PSB 2 PSD 6 IND 2 REPUBLICANOS 2 PL 1 = 27. 주마다 결선 여부가 다르다."
       },
-      "contested_ko": "27개 주·연방구 수장 중 1차 과반 미달인 곳만. 대진은 아직 scheduled.",
-      "seat_note_ko": "대통령 보도만 확인했다. 어느 주가 결선인지는 이 파일에 넣지 않았다. 의회 총선은 1차 파일.",
+      "contested_ko": "1차 과반 미달 6곳의 주지사 결선. 당선 명단은 달력 bra-2026-governors-r2. 이 파일에는 이름을 복사하지 않았다.",
+      "seat_note_ko": "TSE 선거 6260. 달력 행 bra-2026-governors-r2가 AC·AM·DF·ES·RN·TO 6곳의 총화 JSON을 담는다. 이 열의 27개 칸은 1차 전 공석 표라 결선 6명으로 덮지 않았다.",
       "districts": [
         {
           "id": "AC",
@@ -386,5 +400,5 @@
       ]
     }
   ],
-  "note_ko": "1차(bra-2026-general-r1, 2026-10-04)와 다른 파일. 대통령 두 이름은 TSE 2026-10-05 보도. 주지사 결선 대진은 비웠다."
+  "note_ko": "1차(bra-2026-general-r1, 2026-10-04)와 다른 파일. 대통령 결선만 이 파일에 넣었다. 주지사 결선 6곳은 달력 bra-2026-governors-r2."
 }

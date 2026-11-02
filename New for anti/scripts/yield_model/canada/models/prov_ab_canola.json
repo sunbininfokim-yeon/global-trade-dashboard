@@ -28,7 +28,7 @@
     2026
   ],
   "n_seasons": 33,
-  "detrended_residual_cv": 0.12500429209110023,
+  "detrended_residual_cv": 0.1250042920911002,
   "anomaly": {
     "window_years": 20,
     "minimum_prior_years": 10,
@@ -97,11 +97,11 @@
       -0.06492146042416796,
       0.39406485299793476,
       0.37662480810966714,
-      -0.23663884343731545,
-      0.05521166116370298,
+      -0.2366388434373154,
+      0.05521166116370292,
       0.1274091143872397,
       0.27609523366123817,
-      0.024098450543705716
+      0.033126704498238756
     ],
     "scale": [
       1.0949798974521425,
@@ -111,47 +111,47 @@
       1.2015711628508403,
       1.2999515568969435,
       1.1350102887079159,
-      1.1177584053436664
+      1.1391644207901266
     ]
   },
   "ridge": {
     "alpha": 0.04124626382901352,
     "coef": [
-      0.05227044156791485,
-      -0.20475423390252648,
-      0.09746673280364694,
-      -0.010832467910619875,
-      0.09241013256141396,
-      -0.10870804443900033,
-      -0.028225132365040623,
-      -0.01005946550936119
+      0.05238844187319034,
+      -0.20541104802900856,
+      0.09824763750472511,
+      -0.010877209536984796,
+      0.09217749689515564,
+      -0.10862436809480332,
+      -0.027955620804044474,
+      -0.010370436524209012
     ],
-    "intercept": -2.2000904666520733e-14
+    "intercept": -2.1995011993703612e-14
   },
   "top_effects": [
     {
       "feature": "hsu_flower_z20",
-      "effect_pct_per_sd": -18.52
+      "effect_pct_per_sd": -18.57
     },
     {
       "feature": "sm_flowering_z20",
-      "effect_pct_per_sd": -10.3
+      "effect_pct_per_sd": -10.29
     },
     {
       "feature": "heat_dry_stress_z20",
-      "effect_pct_per_sd": 10.24
+      "effect_pct_per_sd": 10.32
     },
     {
       "feature": "sm_preseason_z20",
-      "effect_pct_per_sd": 9.68
+      "effect_pct_per_sd": 9.66
     },
     {
       "feature": "rain_growing_z20",
-      "effect_pct_per_sd": 5.37
+      "effect_pct_per_sd": 5.38
     },
     {
       "feature": "rain_winter_z20",
-      "effect_pct_per_sd": -2.78
+      "effect_pct_per_sd": -2.76
     },
     {
       "feature": "frost_sep_z20",
@@ -159,26 +159,26 @@
     },
     {
       "feature": "oni_summer_z20",
-      "effect_pct_per_sd": -1.0
+      "effect_pct_per_sd": -1.03
     }
   ],
   "uncertainty": {
     "basis": "absolute errors from forward-chaining predictions",
-    "absolute_error_q68_kg_ha": 394.87713963140686,
-    "absolute_error_q95_kg_ha": 840.2109447153307,
+    "absolute_error_q68_kg_ha": 394.87713963142505,
+    "absolute_error_q95_kg_ha": 840.2109447153348,
     "n_forward_errors": 15
   },
   "validation": {
     "weather": {
-      "rmse": 353.52313333475325,
-      "mae": 278.44952315236117,
-      "baseline_rmse": 349.9722091205373,
-      "skill_vs_trend": -0.010146303396887602,
-      "recent_rmse": 404.1812113264328,
-      "recent_baseline_rmse": 406.04145173737714,
-      "recent_skill_vs_trend": 0.004581405181625531,
-      "detrended_r2": -0.8240798911617311,
-      "recent_trend_bias": 321.1348738423106,
+      "rmse": 353.5231333347545,
+      "mae": 278.449523152361,
+      "baseline_rmse": 349.9722091205392,
+      "skill_vs_trend": -0.010146303396885603,
+      "recent_rmse": 404.1812113264357,
+      "recent_baseline_rmse": 406.04145173737993,
+      "recent_skill_vs_trend": 0.004581405181625198,
+      "detrended_r2": -0.8240798911616829,
+      "recent_trend_bias": 321.1348738423141,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
@@ -204,15 +204,15 @@
       ]
     },
     "weather_soil": {
-      "rmse": 349.28650338337303,
-      "mae": 277.1066139461675,
-      "baseline_rmse": 349.9722091205373,
-      "skill_vs_trend": 0.0019593148235610425,
-      "recent_rmse": 400.4553914153365,
-      "recent_baseline_rmse": 406.04145173737714,
-      "recent_skill_vs_trend": 0.01375736466840738,
-      "detrended_r2": -0.7806222229326165,
-      "recent_trend_bias": 321.1348738423106,
+      "rmse": 349.2865033833751,
+      "mae": 277.10661394616835,
+      "baseline_rmse": 349.9722091205392,
+      "skill_vs_trend": 0.0019593148235607094,
+      "recent_rmse": 400.45539141534056,
+      "recent_baseline_rmse": 406.04145173737993,
+      "recent_skill_vs_trend": 0.01375736466840416,
+      "detrended_r2": -0.7806222229325777,
+      "recent_trend_bias": 321.1348738423141,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
@@ -241,15 +241,15 @@
       ]
     },
     "weather_soil_drivers": {
-      "rmse": 347.6739016036237,
-      "mae": 278.47965731282665,
-      "baseline_rmse": 349.9722091205373,
-      "skill_vs_trend": 0.006567114350848446,
-      "recent_rmse": 400.18450484042773,
-      "recent_baseline_rmse": 406.04145173737714,
-      "recent_skill_vs_trend": 0.014424504867393773,
-      "detrended_r2": -0.7642184623904447,
-      "recent_trend_bias": 321.1348738423106,
+      "rmse": 347.53356437304444,
+      "mae": 278.299867379532,
+      "baseline_rmse": 349.9722091205392,
+      "skill_vs_trend": 0.006968109706833481,
+      "recent_rmse": 400.00161584511056,
+      "recent_baseline_rmse": 406.04145173737993,
+      "recent_skill_vs_trend": 0.014874924386231947,
+      "detrended_r2": -0.7627945098674396,
+      "recent_trend_bias": 321.1348738423141,
       "features": [
         "rain_growing_z20",
         "hsu_flower_z20",
