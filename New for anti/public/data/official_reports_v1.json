@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-01T20:32:39.983705+00:00",
+  "generated_at": "2026-11-02T06:16:06.608548+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 170,
     "scored": 170,
     "selected": 40,
-    "indicators": 11
+    "indicators": 12
   },
   "feed_status": [
     {
@@ -137,6 +137,20 @@
       "published_at": "2026-10-30T04:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 3.326
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Outlook for Economic Activity and Prices (October 2026, full text)",
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
+      "published_at": "2026-11-02T05:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.251
     },
     {
       "series_id": "JP_BOJ_POLICY",
@@ -495,6 +509,42 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "7fec949e684b12c3",
+      "published_at": "2026-11-02T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Outlook for Economic Activity and Prices (October 2026, full text)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (October 2026, full text)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.251,
+        "final": 3.251
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "d37df6f26c2d2850",
       "published_at": "2026-10-30T04:00:00+00:00",
       "source": {
@@ -1615,44 +1665,20 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    },
+    }
+  ],
+  "pending_review": [
     {
-      "id": "02c906844fc903d0",
-      "published_at": "2026-09-22T20:30:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
+      "title": "Federal Reserve Board announces approval of application by BancFirst Corporation",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260922a.htm",
-      "category": "official_report",
-      "commodities": [],
+      "country": "USA",
       "domains": [
         "economy",
         "finance"
       ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces approval of application by BancFirst Corporation",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of application by BancFirst Corporation"
-      },
-      "summary": "Federal Reserve Board announces approval of application by BancFirst Corporation",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    }
-  ],
-  "pending_review": [
+      "significance": 2.322,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
@@ -1755,17 +1781,6 @@
     {
       "title": "Minutes of the Securities Lending Committee meeting – September 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/september/securities-lending-committee-meeting-september-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Banknote imagery advisory group minutes – 15 July 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2021,6 +2036,42 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "7fec949e684b12c3",
+      "published_at": "2026-11-02T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Outlook for Economic Activity and Prices (October 2026, full text)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (October 2026, full text)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.251,
+        "final": 3.251
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "d37df6f26c2d2850",
       "published_at": "2026-10-30T04:00:00+00:00",
       "source": {
@@ -3130,41 +3181,6 @@
         "ko": "[USA·경제] Federal Reserve Board announces approval of application by Peoples Bancorp Inc."
       },
       "summary": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "02c906844fc903d0",
-      "published_at": "2026-09-22T20:30:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260922a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces approval of application by BancFirst Corporation",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of application by BancFirst Corporation"
-      },
-      "summary": "Federal Reserve Board announces approval of application by BancFirst Corporation",
       "scores": {
         "significance": 2.322,
         "final": 2.322
