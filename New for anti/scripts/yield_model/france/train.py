@@ -414,7 +414,7 @@ def train_one(cfg):
         "key": cfg.key,
         "label": cfg.label,
         "crop": cfg.crop,
-        "selector": [[s, d] for s, d in cfg.selector],
+        "selector": list(cfg.selector),
         "doc": cfg.doc,
         "caveat": cfg.caveat,
         "non_weather_drivers": cfg.non_weather_drivers,

@@ -152,8 +152,8 @@ WEST_MAIZE = RegionCrop(
     critical_window=[(6, 0), (7, 0), (8, 0), (9, 0)],
     panel={"spi_summer": "precip_jul_aug"},
     core=["deficit_jul_aug", "heat_days_32_jul_aug", "precip_jul_aug", "oni_season"],
-    min_train=14,
-    caveat="Labels are Eurostat NUTS 2 yields from 2000 only (25 seasons). "
+    min_train=12,
+    caveat="Eurostat publishes regional grain maize only from 2007 (18 seasons). "
            "Irrigated and rainfed maize are not split, so drought shows up "
            "damped.",
     non_weather_drivers="Irrigation share and irrigation bans, and the "
