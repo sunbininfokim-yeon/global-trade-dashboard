@@ -152,3 +152,23 @@ def test_mpob_later_page_wins_and_indicators():
     assert pks["kernel_month_kt"] == 412
     assert pks["month_kt"] == round(412_000 * 1.1 / 1000)
     assert pks["last12_kt"] is not None and pks["summary_ko"]
+
+
+def test_pks_trade_summary_reads_only_pks_codes():
+    from palm_oil import pks_trade
+    rows = []
+    for i, p in enumerate(pd.date_range("2024-01-01", "2025-12-01", freq="MS")):
+        for partner, kg in (("360", 200e6), ("458", 60e6)):
+            rows.append({"freq": "M", "period": p.strftime("%Y%m"), "reporter": "392",
+                         "partner": partner, "hs": "140490",
+                         "net_kg": kg * (1.1 if p.year == 2025 else 1.0), "value_usd": kg * 0.157})
+        rows.append({"freq": "M", "period": p.strftime("%Y%m"), "reporter": "410",
+                     "partner": "360", "hs": "440131", "net_kg": 40e6, "value_usd": 4.6e6})
+    rows.append({"freq": "A", "period": "2024", "reporter": "392", "partner": "360",
+                 "hs": "140490", "net_kg": 2.4e9, "value_usd": 3.8e8})
+    out = pks_trade.summary(pd.DataFrame(rows).astype(str))
+    assert [i["importer"] for i in out["importers"]] == ["일본"]  # Korea code unconfirmed
+    jp = out["importers"][0]
+    assert jp["last12_kt"] == round(260 * 12 * 1.1) and jp["last12_yoy_pct"] == 10.0
+    assert jp["price_usd_t"] == round(0.157 * 1000 / 1.1, 1)
+    assert out["annual"][0]["total_kt"] == 2400
