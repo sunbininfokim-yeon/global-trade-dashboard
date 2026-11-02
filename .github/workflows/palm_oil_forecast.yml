@@ -83,7 +83,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           for f in "New for anti/scripts/yield_model/palm_oil/training" \
                    "New for anti/public/data/"{malaysia,colombia,nigeria,thailand}_yield_forecast.json \
-                   "New for anti/public/data/pks_imports_v1.json"; do
+                   "New for anti/public/data/pks_trade_v1.json"; do
             [ -e "$f" ] && git add "$f"
           done
           git commit -m "chore: palm oil forecast on the PR branch" || exit 0
@@ -103,7 +103,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           for f in "New for anti/scripts/yield_model/palm_oil/training" \
                    "New for anti/public/data/"{malaysia,colombia,nigeria,thailand}_yield_forecast.json \
-                   "New for anti/public/data/pks_imports_v1.json"; do
+                   "New for anti/public/data/pks_trade_v1.json"; do
             [ -e "$f" ] && git add "$f"
           done
           git commit -m "chore: weekly palm oil forecast refresh" || exit 0

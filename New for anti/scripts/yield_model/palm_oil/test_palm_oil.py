@@ -158,24 +158,29 @@ def test_mpob_later_page_wins_and_indicators():
     assert wide.set_index("date").ffb_price_rm["2025-01"] == 40.5
 
 
-def test_pks_trade_summary_reads_only_pks_codes():
+def test_pks_trade_exporter_side_summary():
     from palm_oil import pks_trade
     rows = []
-    for i, p in enumerate(pd.date_range("2024-01-01", "2025-12-01", freq="MS")):
-        for partner, kg in (("360", 200e6), ("458", 60e6)):
-            rows.append({"freq": "M", "period": p.strftime("%Y%m"), "reporter": "392",
-                         "partner": partner, "hs": "140490",
-                         "net_kg": kg * (1.1 if p.year == 2025 else 1.0), "value_usd": kg * 0.157})
-        rows.append({"freq": "M", "period": p.strftime("%Y%m"), "reporter": "410",
-                     "partner": "360", "hs": "440131", "net_kg": 40e6, "value_usd": 4.6e6})
-    rows.append({"freq": "A", "period": "2024", "reporter": "392", "partner": "360",
-                 "hs": "140490", "net_kg": 2.4e9, "value_usd": 3.8e8})
+    for p in pd.date_range("2024-01-01", "2025-12-01", freq="MS"):
+        grow = 1.1 if p.year == 2025 else 1.0
+        for exp, jp, kr in (("360", 360e6, 2e6), ("458", 90e6, 1e6)):
+            for partner, kg in (("392", jp * grow), ("410", kr * grow), ("764", 10e6 * grow)):
+                rows.append({"freq": "M", "period": p.strftime("%Y%m"), "exporter": exp,
+                             "partner": partner, "net_kg": kg, "value_usd": kg * 0.11})
+            world = (jp + kr + 10e6) * grow
+            rows.append({"freq": "M", "period": p.strftime("%Y%m"), "exporter": exp,
+                         "partner": "0", "net_kg": world, "value_usd": world * 0.11})
+    for exp, kg in (("360", 4.8e9), ("458", 1.3e9)):
+        rows.append({"freq": "A", "period": "2024", "exporter": exp, "partner": "0",
+                     "net_kg": kg, "value_usd": kg * 0.11})
     out = pks_trade.summary(pd.DataFrame(rows).astype(str))
-    assert [i["importer"] for i in out["importers"]] == ["일본"]  # Korea code unconfirmed
-    jp = out["importers"][0]
-    assert jp["last12_kt"] == round(260 * 12 * 1.1) and jp["last12_yoy_pct"] == 10.0
-    assert jp["price_usd_t"] == round(0.157 * 1000 / 1.1, 1)
-    assert out["annual"][0]["total_kt"] == 2400
+    r = out["recent"]
+    assert r["last_month"] == "2025-12" and r["yoy_pct"] == 10.0
+    assert r["top_destinations"][0]["country"] == "일본"
+    assert r["korea_kt"] == round(3 * 12 * 1.1, 1)
+    assert r["price_usd_t"] == 110.0
+    assert out["annual"] == [{"year": 2024, "total_kt": 6100.0,
+                              "by_exporter_kt": {"인도네시아": 4800.0, "말레이시아": 1300.0}}]
 
 
 def test_mpob_price_check_classes():
