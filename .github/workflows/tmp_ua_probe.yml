@@ -8,20 +8,19 @@ jobs:
     permissions: {contents: write}
     steps:
       - uses: actions/checkout@v4
+      - run: pip install remotezip
       - run: |
           mkdir -p probe
-          curl -sL -m 60 https://zenodo.org/api/records/17279151 -o probe/zenodo.json || true
-          python3 -c "
-          import json;d=json.load(open('probe/zenodo.json'))
-          print(d['metadata']['title'], d['metadata'].get('version'))
-          for f in d['files']: print(f['key'], f['size'], f['links']['self'])
-          " | tee probe/zenodo_files.txt
-          for y in 2015 2019 2020 2021 2022 2023 2024; do
-            for p in "operativ/operativ${y}/sg/sg_reg/scr_reg/scr_e/scr0715_e.html" "operativ/operativ${y}/sg/sg_reg/scr_reg/scr_e/scr0615_e.html"; do
-              code=$(curl -sL -m 60 -A "Mozilla/5.0" -o "probe/ukr_${y}_$(basename $p)" -w "%{http_code}" "https://ukrstat.gov.ua/$p"); echo "$y $p $code $(wc -c < probe/ukr_${y}_$(basename $p))"
-            done
-          done | tee probe/ukrstat.txt
-          curl -s -m 60 "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/apro_cpshr?format=JSON&lang=EN&crops=C1110&strucpro=YI_HU_EU&geo=FR&time=2023" | head -c 1500 > probe/eurostat.txt; echo >> probe/eurostat.txt
+          python3 - <<'PY' > probe/cyb_list.txt 2>&1 || true
+          from remotezip import RemoteZip
+          with RemoteZip("https://zenodo.org/api/records/17279151/files/cybench-data.zip/content") as z:
+              names = z.namelist()
+              print(len(names))
+              for n in names:
+                  if "/UA" in n or "_UA" in n or "UA." in n or n.count("/") < 3: print(n)
+          PY
+          (curl -sv -m 40 -A "Mozilla/5.0" -o /dev/null https://ukrstat.gov.ua/ 2>&1 | tail -15) > probe/ukrstat_err.txt || true
+          (curl -s -m 40 -o /dev/null -w "%{http_code}\n" https://www.ukrstat.gov.ua/ ; curl -s -m 40 -o /dev/null -w "%{http_code}\n" https://stat.gov.ua/ ) >> probe/ukrstat_err.txt 2>&1 || true
       - run: |
           git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add probe; git commit -qm "probe"; git push
+          git add probe; git commit -qm "probe2"; git push
