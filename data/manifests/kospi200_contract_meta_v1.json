@@ -1,0 +1,5025 @@
+{
+ "schema": "kospi200-contract-meta-v1",
+ "generated_at": "2026-11-02T14:01:07.290812+00:00",
+ "provider_published_at": "unknown",
+ "krx_requests": 0,
+ "session_basis": "regular",
+ "trading_calendar": {
+  "path": "kospi200_index_daily_v1.json",
+  "first": "2019-01-02",
+  "last": "2026-10-30",
+  "basis_ko": "공개 KOSPI200 지수 일봉의 거래일. 결측 판단은 이 달력과 hive 정규장 날짜의 차이다."
+ },
+ "expiry_date_reason_ko": "15003·15018 원본 엑셀에는 만기일 열이 없다(열: 일자·종목코드·종목명·시세·내재변동성·거래량·거래대금·미결제약정). 종목명에는 만기월(YYYYMM)만 있다. 둘째 목요일 계산은 휴장으로 앞당겨진 만기(예: 2019-09)를 틀리게 만들므로 쓰지 않는다.",
+ "last_front_regular_date_ko": "그 월물이 정규장 최근월물 조회에 마지막으로 나온 날이다. roll_status가 closed이면 다음 관측일에 바로 다음 월물로 바뀌었고 그 사이 결측 거래일이 없다. 그래도 거래소가 공시한 만기일은 아니므로 expiry_date에 넣지 않는다.",
+ "dedupe_note_ko": "kospi200_option_oi의 중복 제거 키는 만기를 구분하지 않으므로 이 표는 별도로 두고 기존 hive에 합치지 않는다.",
+ "sources": {
+  "kospi200_option_oi": {
+   "parts": 95,
+   "part_sha256": {
+    "data/normalized/kospi200_option_oi/year=2019/month=01/part.jsonl.gz": "51ed78a324d9061491b44cb18d1ff39db7ceb01a3c433df62e605f25f28b45c2",
+    "data/normalized/kospi200_option_oi/year=2019/month=02/part.jsonl.gz": "f103744f940584a3e4be85fa6fe6a9a442218391b4133efa4decb46adab357ab",
+    "data/normalized/kospi200_option_oi/year=2019/month=03/part.jsonl.gz": "403c4fbd4ab663dc77a67d77ff3ec66e543791d2a6cc27e40fe79c98ea5bd62a",
+    "data/normalized/kospi200_option_oi/year=2019/month=04/part.jsonl.gz": "cf4862e8e8e35562690b21ca9c47aa76772c6ce6d4a3482fbf759174f4d46787",
+    "data/normalized/kospi200_option_oi/year=2019/month=05/part.jsonl.gz": "65f550ae294625b2a6e6e34f5cbcc0e619bc1c2ab55a7fd9f6380f0d899c6773",
+    "data/normalized/kospi200_option_oi/year=2019/month=06/part.jsonl.gz": "a7581ff4c3085d6a0ec2875e8bdff6089ee89b23c8697c8971a9f63c452841fc",
+    "data/normalized/kospi200_option_oi/year=2019/month=07/part.jsonl.gz": "57d4b0ff2d760fd3c45542756e5d9b96989734fe8143d0d6c6fdbbf7b98a93a9",
+    "data/normalized/kospi200_option_oi/year=2019/month=08/part.jsonl.gz": "650d5e9528c8f424dc27c3782b45b7eeee67463d9079bc383bea4dec15808f95",
+    "data/normalized/kospi200_option_oi/year=2019/month=09/part.jsonl.gz": "d6afbc64083d2fa8c31e0032a80da762baab1e841073204a7e2f747ee9d62e65",
+    "data/normalized/kospi200_option_oi/year=2019/month=10/part.jsonl.gz": "2a2d97c8664c94efaa749faa4054c0ba449d08edf9626ac7e7ac5fbaedf35c27",
+    "data/normalized/kospi200_option_oi/year=2019/month=11/part.jsonl.gz": "ead6271f2fc1318b678d3fc66f835026bba442495fd2e3ead3ae582310e88bb6",
+    "data/normalized/kospi200_option_oi/year=2019/month=12/part.jsonl.gz": "319185181733a167e0f0922bcb91438a3fcc5fdad5455b3df3e7c2d9429e2962",
+    "data/normalized/kospi200_option_oi/year=2020/month=01/part.jsonl.gz": "c6ebfe8384ec9d188faae07c40e07b1005a8c407fbe41dff6ef485142b717d61",
+    "data/normalized/kospi200_option_oi/year=2020/month=02/part.jsonl.gz": "f081eecc7f1792f314370c8f0283776a5ddd8da0017a9a93a9c24f1fde0fe4f1",
+    "data/normalized/kospi200_option_oi/year=2020/month=03/part.jsonl.gz": "0ee5eb883c4a0da4b7d5a397e8acae90f30fcb78b7c2d331d029bacc92949c1b",
+    "data/normalized/kospi200_option_oi/year=2020/month=04/part.jsonl.gz": "c728084228ac9e0e27aa86d98d51b7e9932a95eac31df35471795171ab4175bc",
+    "data/normalized/kospi200_option_oi/year=2020/month=05/part.jsonl.gz": "7679d5afc0165e4cfb7d7f051d9748076ea4e6930dcda0edc297ea3fd3fd1602",
+    "data/normalized/kospi200_option_oi/year=2020/month=06/part.jsonl.gz": "25af9e947d3fe6d2e9b31e31441d6f6da23ecdc8fb5015410c4e83a4e230eedf",
+    "data/normalized/kospi200_option_oi/year=2020/month=07/part.jsonl.gz": "9afc7240707ff4fa3acd67c3803ba0f0f7e0dd6387051a2706a4362683d500d3",
+    "data/normalized/kospi200_option_oi/year=2020/month=08/part.jsonl.gz": "55724ba88feb3319b82a0c67b6f96823915224a6b36c4ee1bd20b8e97e0e175b",
+    "data/normalized/kospi200_option_oi/year=2020/month=09/part.jsonl.gz": "fab758f292a9f2956f046f1b0c6e6b82e112377d2051e0eb533348e6dabeec5b",
+    "data/normalized/kospi200_option_oi/year=2020/month=10/part.jsonl.gz": "1c94364dd5a292735de100807b5edea4b1c4d9294ca5bba986b59b1a2475d386",
+    "data/normalized/kospi200_option_oi/year=2020/month=11/part.jsonl.gz": "50e8ed13933e583ed8a4053e19c4975d449903e363fb65981f49e3cf9e2ae854",
+    "data/normalized/kospi200_option_oi/year=2020/month=12/part.jsonl.gz": "df10563a65dfbfa18152c98bbf2df8984ff85b219baf097bc3be41b479c98ee6",
+    "data/normalized/kospi200_option_oi/year=2021/month=01/part.jsonl.gz": "d3e3a36aabe2549990c9b588b0719de0487b8625497b3c13dcada903f342cb5b",
+    "data/normalized/kospi200_option_oi/year=2021/month=02/part.jsonl.gz": "e5dd5f7d5b606f9826655865fd5ac964d7f3ef6f176b85f54f7ac6c219665f56",
+    "data/normalized/kospi200_option_oi/year=2021/month=03/part.jsonl.gz": "88c0c714fe8aa4ffe14be8fc8aad3a00defd320a4a1eb771846ebd749e312e6a",
+    "data/normalized/kospi200_option_oi/year=2021/month=04/part.jsonl.gz": "197ee982de3ce023ba98287e586514187890e9e0ebd0ae9aa9f45e917e89528b",
+    "data/normalized/kospi200_option_oi/year=2021/month=05/part.jsonl.gz": "f33fb06f408fbd90c8e8eaf79dd74caf35e6f0d1b57f500ea9c03184c6ee0048",
+    "data/normalized/kospi200_option_oi/year=2021/month=06/part.jsonl.gz": "9d7e54322d8eed9bfb2ca1c880985689a55003bce432bee6f7c5e80bbbe7c518",
+    "data/normalized/kospi200_option_oi/year=2021/month=07/part.jsonl.gz": "e3bbadd54f4a548d20d7ada03de8f59edb7041149a4e87a3a13a2d3e50746635",
+    "data/normalized/kospi200_option_oi/year=2021/month=08/part.jsonl.gz": "3f9ffb2cb16d52f6e55a3a708528a886bfeb3966635d31e366c174994a20d35a",
+    "data/normalized/kospi200_option_oi/year=2021/month=09/part.jsonl.gz": "ab429c39400464eadccd9ff6bd45141aabc934101dfbb065d9f0ec6540ec914e",
+    "data/normalized/kospi200_option_oi/year=2021/month=10/part.jsonl.gz": "13b968de65ee4779f19bcd0aecc89e760aba6383024252cd56bf6c2ddcf34326",
+    "data/normalized/kospi200_option_oi/year=2021/month=11/part.jsonl.gz": "43ac41755871b114327d9496e039ab55d771f1b5a7799b5c1029dced4feb4486",
+    "data/normalized/kospi200_option_oi/year=2021/month=12/part.jsonl.gz": "c889060efb1470faab3199b25a869835be7405c2021044d5ade7cde3e5a69086",
+    "data/normalized/kospi200_option_oi/year=2022/month=01/part.jsonl.gz": "efc5876359802c55f1c2d2f97751404fb25dd72c797fe2e448d77daaccd6be6e",
+    "data/normalized/kospi200_option_oi/year=2022/month=02/part.jsonl.gz": "43bf9789eb3f20e55e7a8a08c3b39398fc414cb0272b6a910eda7fcdb415929c",
+    "data/normalized/kospi200_option_oi/year=2022/month=03/part.jsonl.gz": "be988d096e06b9c1d84b5927b92ed99e6199ea74a41a32a999b77954564eee8a",
+    "data/normalized/kospi200_option_oi/year=2022/month=04/part.jsonl.gz": "570d7b6d09b21686459eeef572bebb6e4d7c51dae2972fd395113b99a8ff1551",
+    "data/normalized/kospi200_option_oi/year=2022/month=05/part.jsonl.gz": "a5230b68c4f8204c22ef89fb4245744573d5a3ba38588a2b1a7558e5794564b1",
+    "data/normalized/kospi200_option_oi/year=2022/month=06/part.jsonl.gz": "a340edf513bed10ce9b77ada759f3192b2300664946fbdaf5eb927bb031f6d31",
+    "data/normalized/kospi200_option_oi/year=2022/month=07/part.jsonl.gz": "494b591871fd0ac3702a0f70a0b5ffd4f0c1ba1c8349341044506a9176041ab2",
+    "data/normalized/kospi200_option_oi/year=2022/month=08/part.jsonl.gz": "59a584af76525541dae37cbbdefb0e0a5d76da0e63e7fdae596c2c76791c1ccb",
+    "data/normalized/kospi200_option_oi/year=2022/month=09/part.jsonl.gz": "d5b0ac1c6e24ef0426752e276dd05ec5789b0dc462757cd4395c1fedb5d9b30b",
+    "data/normalized/kospi200_option_oi/year=2022/month=10/part.jsonl.gz": "25cea3a3bc62a7b4a66f067833b72c9e7997c82884e75c38af34374becfc98a2",
+    "data/normalized/kospi200_option_oi/year=2022/month=11/part.jsonl.gz": "6a0aea2df8e24466778b865ca014a9e47b66ca5ca5723907365a35835039d495",
+    "data/normalized/kospi200_option_oi/year=2022/month=12/part.jsonl.gz": "1c8d3a14a53c519013eae89bcbe2c1cf9e830193759266718522fbdb3559e344",
+    "data/normalized/kospi200_option_oi/year=2023/month=01/part.jsonl.gz": "fccbaf2aebc2e2e2819247baf1f9abd9d41342c3e6a62f10632f94a641436d5c",
+    "data/normalized/kospi200_option_oi/year=2023/month=02/part.jsonl.gz": "33ce3538b7798ac85cc8d81f7f33428e63018843f37d03436909065eac07b94c",
+    "data/normalized/kospi200_option_oi/year=2023/month=03/part.jsonl.gz": "89d2ae01a6f85c27e37cf2dd5088f618eac72bafed828c83dffbc312699fd8d0",
+    "data/normalized/kospi200_option_oi/year=2023/month=04/part.jsonl.gz": "9cbf0fbf22ad9b9a8763c998935f2a8e83a802c40ace106dbeb2db725f281735",
+    "data/normalized/kospi200_option_oi/year=2023/month=05/part.jsonl.gz": "2c9f660d8ba3d5d59e3aa70c836e0008723d8af077b36c7b7fbb9d2139fddb06",
+    "data/normalized/kospi200_option_oi/year=2023/month=06/part.jsonl.gz": "eceacd6f2a95831d8687c59ac65380d37ab25e4a2297b6a12f81f865a2549875",
+    "data/normalized/kospi200_option_oi/year=2023/month=07/part.jsonl.gz": "89ebd73516fcd49de131f8d623be4823f48caed9e4ad19a443f01454741c4165",
+    "data/normalized/kospi200_option_oi/year=2023/month=08/part.jsonl.gz": "4e529494f291077df22e404ab7fbc1cfa4e8130a3e0bfdf960c28294f30f3940",
+    "data/normalized/kospi200_option_oi/year=2023/month=09/part.jsonl.gz": "6e1ccaab6d58d20ece293bff7bdf28720546e9ed92d0570046161d9f4dfd7528",
+    "data/normalized/kospi200_option_oi/year=2023/month=10/part.jsonl.gz": "8e5511a3e9f2952f2ca9af8b475f07241cf9a00f384c2ba10b5f692afe55d996",
+    "data/normalized/kospi200_option_oi/year=2023/month=11/part.jsonl.gz": "dcdb1fbafd14db1d217a5be94b4d6b3a2f2597581f27317c274985844ab92c64",
+    "data/normalized/kospi200_option_oi/year=2023/month=12/part.jsonl.gz": "817bda75cbaecc4529de869496b416238a9bb6733296af1de301f02e0ae66803",
+    "data/normalized/kospi200_option_oi/year=2024/month=01/part.jsonl.gz": "4ec3d95c5b6d121eec6ce4cf5817582d00770f6fe591599e8a1dd4d6939d8891",
+    "data/normalized/kospi200_option_oi/year=2024/month=02/part.jsonl.gz": "2e57ec9bbcc4a15d5afeba2008a4d2043cb9911f525b00a28ae58c8e66afaafc",
+    "data/normalized/kospi200_option_oi/year=2024/month=03/part.jsonl.gz": "1a21ea50448de9fe9e8d5241425bbca6c89a81fc8d6b61c0b2a01dab4b0191b0",
+    "data/normalized/kospi200_option_oi/year=2024/month=04/part.jsonl.gz": "cd2e833f836f6a427418f626d29c28fb43aa1ab91a003793af3db802e0ce444c",
+    "data/normalized/kospi200_option_oi/year=2024/month=05/part.jsonl.gz": "0286ce4a7cc676eaa53038f44ed0bb35d82afd98f0a208d499467e5933e4a857",
+    "data/normalized/kospi200_option_oi/year=2024/month=06/part.jsonl.gz": "197e34ad143fd3890e98892a80045340114c0a15fb849189d791be3c38b6c2f8",
+    "data/normalized/kospi200_option_oi/year=2024/month=07/part.jsonl.gz": "81ba54ef6fddea16f2746312df813da52d35a9244c1a4605d73e57b52885a7be",
+    "data/normalized/kospi200_option_oi/year=2024/month=08/part.jsonl.gz": "ff9297d938b0bb1dd0d0d3482e60cad395d4ca93a404ddd8cc0a26e3be11d351",
+    "data/normalized/kospi200_option_oi/year=2024/month=09/part.jsonl.gz": "ab48646fae9e1cf02bc7f2e149b2f2a3571b68e5be9efa10dc19bdc7a7752239",
+    "data/normalized/kospi200_option_oi/year=2024/month=10/part.jsonl.gz": "54ca073d35eb3918bb3ec954d77a99740fbbcec7f1d064ae537e7a26c2691b8c",
+    "data/normalized/kospi200_option_oi/year=2024/month=11/part.jsonl.gz": "852a3af7436f627e64b1c70fce49ac6e7a6fa174bfcd88857955eb30fd43577e",
+    "data/normalized/kospi200_option_oi/year=2024/month=12/part.jsonl.gz": "03ed88a6e20ac95bd41d7c2b619f93c18558a7e6615fd12bfb38c5de70baaf46",
+    "data/normalized/kospi200_option_oi/year=2025/month=01/part.jsonl.gz": "a3cc94b62730699eda122f7cd1bcbdcdae0053c64ba2187852e06e72b5e2ff75",
+    "data/normalized/kospi200_option_oi/year=2025/month=02/part.jsonl.gz": "176f7878d69b5b5d4ad5b56eb2084feabcb61fa49738b5f587b5937ea3280bbd",
+    "data/normalized/kospi200_option_oi/year=2025/month=03/part.jsonl.gz": "d83169cef2c18a25d1cb25323b774907e05066d4d486633697b8bde5422a187e",
+    "data/normalized/kospi200_option_oi/year=2025/month=04/part.jsonl.gz": "8947849815dd0f721a5e7f993680ebc24f44f338a1fd4ac3d64eb24d4db3dc24",
+    "data/normalized/kospi200_option_oi/year=2025/month=05/part.jsonl.gz": "7dd328a7d356e085b3f1688740dfbeec00c6d502b765b6c9360626cc44a7c277",
+    "data/normalized/kospi200_option_oi/year=2025/month=06/part.jsonl.gz": "b039c14698d1df2dd16ed101fc634db1d8c3ea18a91d335cb413a78057977b77",
+    "data/normalized/kospi200_option_oi/year=2025/month=07/part.jsonl.gz": "6976558d9298200807483b7c8850a01f24b98b0979266c214c1a8dcecfccab8f",
+    "data/normalized/kospi200_option_oi/year=2025/month=08/part.jsonl.gz": "10ca9ff01bb2c65fc445c0d289cefe490d674f969e05d6b4c75f42d20d557dd2",
+    "data/normalized/kospi200_option_oi/year=2025/month=09/part.jsonl.gz": "113002141cec9022096efbee45d9488b265def1401a6e95c6c96dabec9ff1752",
+    "data/normalized/kospi200_option_oi/year=2025/month=10/part.jsonl.gz": "4a9cfcf16695c06641b72996f194fb1e5b37c3ef87e14971473c59731fd93d46",
+    "data/normalized/kospi200_option_oi/year=2025/month=11/part.jsonl.gz": "2e6fd05ffba1e2e9172ac45e8504bcda17ee791896f926f3f875781e40ed76d7",
+    "data/normalized/kospi200_option_oi/year=2025/month=12/part.jsonl.gz": "04d7d7856da681023795b92fc1cef41d926b18ca23bbc257d3633c271e29b7e7",
+    "data/normalized/kospi200_option_oi/year=2026/month=01/part.jsonl.gz": "dad5628a2281a865a9bd9efa91b8d503d8fb654794c560e6e4fae90b7656e299",
+    "data/normalized/kospi200_option_oi/year=2026/month=02/part.jsonl.gz": "51b59ea8c035fd93ed7fa5da2df7b761759da27642ba0fb43cc5828860251f09",
+    "data/normalized/kospi200_option_oi/year=2026/month=03/part.jsonl.gz": "1bf662525471f484fb66b1ff02151b6873ccbe49f8dff43a9177372a86c9a063",
+    "data/normalized/kospi200_option_oi/year=2026/month=04/part.jsonl.gz": "99a933b0f9225506721ae70784b33211b06d7ea1b2619f67e91dfbb3fa0f8cdb",
+    "data/normalized/kospi200_option_oi/year=2026/month=05/part.jsonl.gz": "1378aa5813d870983b49c77341b0c6023ede525472642f1857d1a924a71e6705",
+    "data/normalized/kospi200_option_oi/year=2026/month=06/part.jsonl.gz": "c9684b810164449f63e72f5c15a30d9b6328e82880bb69cd98f1690b9c4723d4",
+    "data/normalized/kospi200_option_oi/year=2026/month=07/part.jsonl.gz": "45ca56cbec8d85ba91f8ff7018cc518e9801fdf11da3e153efa291f3fe8df137",
+    "data/normalized/kospi200_option_oi/year=2026/month=08/part.jsonl.gz": "cb21af53fac9a83e1905b29436fe76912e5f9dc326e9b9e6dee9334255987c99",
+    "data/normalized/kospi200_option_oi/year=2026/month=09/part.jsonl.gz": "4a3fdaf5bc0f7941399cd0ff1313b6cb01fce6be0041c58d0ef623c53c9d4db2",
+    "data/normalized/kospi200_option_oi/year=2026/month=10/part.jsonl.gz": "c24a8ec73e13c3f5ee47ca11553043cd2cbdec59769b661b7d9b56245e4d1ccc",
+    "data/normalized/kospi200_option_oi/year=2026/month=11/part.jsonl.gz": "c0858612b9a0ac4ba50ee2abbeb3d3e7f94f7cce0e057817a4451da6ee1d0735"
+   },
+   "regular_missing_vs_calendar": [],
+   "manifest_generated_at": "2026-11-02T14:00:21Z"
+  },
+  "kospi200_futures_oi": {
+   "parts": 95,
+   "part_sha256": {
+    "data/normalized/kospi200_futures_oi/year=2019/month=01/part.jsonl.gz": "a2f99969aeb3c24c04201985b4318dc438faa072c6868622bae6a0e223c22ad7",
+    "data/normalized/kospi200_futures_oi/year=2019/month=02/part.jsonl.gz": "4a07651a3ad1fba24509a13b7b1addb15b15a3331c561cedf8f259fcfb689bb8",
+    "data/normalized/kospi200_futures_oi/year=2019/month=03/part.jsonl.gz": "b26b819ffabdfe4f0aa7a1e6776a0605b1644a6c4bd9a86d258d471c0168f231",
+    "data/normalized/kospi200_futures_oi/year=2019/month=04/part.jsonl.gz": "2cba3dc42279274681852635a5884a1d7c2aeb146f8b453a7d0a1d832b9e41cc",
+    "data/normalized/kospi200_futures_oi/year=2019/month=05/part.jsonl.gz": "469a7845885698d69cac2c3e6db738196222c4e227d126cd0b9a657c8511a650",
+    "data/normalized/kospi200_futures_oi/year=2019/month=06/part.jsonl.gz": "7775bfc09736b21904300ca66fc8cf43a5416f12ee4dced406cd5fc7d6695fdd",
+    "data/normalized/kospi200_futures_oi/year=2019/month=07/part.jsonl.gz": "53abc053c02e3e4fda0502b125cc6107b421e9e7d92fb02114596e143ef12406",
+    "data/normalized/kospi200_futures_oi/year=2019/month=08/part.jsonl.gz": "f9a6f656252d5a84f221b71f626be9e10fb19458e79811eb9a4c8ad26e99cbbe",
+    "data/normalized/kospi200_futures_oi/year=2019/month=09/part.jsonl.gz": "101f87c0cc29ff96317a8a90855b247647c1bd5ed0dacfaf2eb0076aab0dc465",
+    "data/normalized/kospi200_futures_oi/year=2019/month=10/part.jsonl.gz": "14e13095fe082c4b36bbeaa329733a083bbbc535d219987cfa0a5a44dad38227",
+    "data/normalized/kospi200_futures_oi/year=2019/month=11/part.jsonl.gz": "d2968816073abc79bfd4dd871ed02fe4afe1680e58274dfbd3f75ef70ce8fdbb",
+    "data/normalized/kospi200_futures_oi/year=2019/month=12/part.jsonl.gz": "de5487c0af6a522aa1830171ab0279ce234e3e1dbd67d07ceabb58cc958761f0",
+    "data/normalized/kospi200_futures_oi/year=2020/month=01/part.jsonl.gz": "8f785a83b82aaf0ed4da0365c5d6d4b84c45c8acd72ff3a7def5153697460792",
+    "data/normalized/kospi200_futures_oi/year=2020/month=02/part.jsonl.gz": "8be21cb17534326d3adb29276019b222b6471479e1a9fb82e08354ba3d6434a5",
+    "data/normalized/kospi200_futures_oi/year=2020/month=03/part.jsonl.gz": "927a04a44db32d7eab8758f166f1e9a5031f126afb08235c3069e3523b3ae42a",
+    "data/normalized/kospi200_futures_oi/year=2020/month=04/part.jsonl.gz": "862176ef4753cbdb70e311658bc76568fa653a07ccac64e130b75a7361d7f2a4",
+    "data/normalized/kospi200_futures_oi/year=2020/month=05/part.jsonl.gz": "19677655371844f935e6d17d3ffa17c8b41fdbb6c69c5505406af5b57c35ceb8",
+    "data/normalized/kospi200_futures_oi/year=2020/month=06/part.jsonl.gz": "7bc4e1c0a03fd5bdb9a3e90c0ce829563fd49ceaf88a206bdea563ad24283a7d",
+    "data/normalized/kospi200_futures_oi/year=2020/month=07/part.jsonl.gz": "c355497d7a8a2cb0989efd2e042d3d416113f39824eda2bee8a18d6b71c0b99c",
+    "data/normalized/kospi200_futures_oi/year=2020/month=08/part.jsonl.gz": "a4c393417cfbfed720724c8dfce817f613bb5cf78c944788c51495783482b42a",
+    "data/normalized/kospi200_futures_oi/year=2020/month=09/part.jsonl.gz": "a4ea1d09523e7cda6a9a56e3ae2f6f6d87db18c53631740d6d45ee37d6c1b28b",
+    "data/normalized/kospi200_futures_oi/year=2020/month=10/part.jsonl.gz": "306d7f25ac4eec42e8cbbd1fc314aa9614e973e5fb012c802f8f5e128297e0bb",
+    "data/normalized/kospi200_futures_oi/year=2020/month=11/part.jsonl.gz": "0d43468cb55a4cde9486e1606ae2d7968da896833a318e230b852f0600cabde1",
+    "data/normalized/kospi200_futures_oi/year=2020/month=12/part.jsonl.gz": "7dac7c742a8723ce1e77eacf9b409a2056de22f9504d09176af31c6357abe406",
+    "data/normalized/kospi200_futures_oi/year=2021/month=01/part.jsonl.gz": "e3b2b20fc75a234d538a57a6b9a2c3ec3d8350580939be94f98f01eee0c21453",
+    "data/normalized/kospi200_futures_oi/year=2021/month=02/part.jsonl.gz": "774bb09d56d1ad06fc739b9c9aa5a5e91e7c3a9fa184934abf1ce1e86e4a7d47",
+    "data/normalized/kospi200_futures_oi/year=2021/month=03/part.jsonl.gz": "f55fd19f869c7e80090aa5424fd0dfa47947138e591eaecd51fc9e264a3990a9",
+    "data/normalized/kospi200_futures_oi/year=2021/month=04/part.jsonl.gz": "d8a264edf5798be901d00f2b61d9d87ad7e1134d0bc0d51d16f76f57f8da237c",
+    "data/normalized/kospi200_futures_oi/year=2021/month=05/part.jsonl.gz": "2c24342c1e1bd641ed4c83abf2e22d0dfa68740942dad3c065211b2a92acd88d",
+    "data/normalized/kospi200_futures_oi/year=2021/month=06/part.jsonl.gz": "2982f1234e5b292fa4ca4ad4dbd06cd1a1342180719cf1c38bf840bcbfd4862e",
+    "data/normalized/kospi200_futures_oi/year=2021/month=07/part.jsonl.gz": "07dd1a76c68a20bf798591d6562ca90ccf0a702445943e927ba46a350d302ca3",
+    "data/normalized/kospi200_futures_oi/year=2021/month=08/part.jsonl.gz": "a9f9dc8f10973cc9269ed230c8c0734928f15de2c09178b8681413f27cb7c058",
+    "data/normalized/kospi200_futures_oi/year=2021/month=09/part.jsonl.gz": "df3e7a39f12011324439a4bae205e7e2e018409033989b376a983b0eda1b15e2",
+    "data/normalized/kospi200_futures_oi/year=2021/month=10/part.jsonl.gz": "317ddaae1ae26426d0e0c8096217bf7cd9ac30bca04dd60ee2418cf32fba444b",
+    "data/normalized/kospi200_futures_oi/year=2021/month=11/part.jsonl.gz": "c04dfe36fc961097541c6b9a08bb4fc5f4db0b543c22bfcf7c4552fb5046f3a3",
+    "data/normalized/kospi200_futures_oi/year=2021/month=12/part.jsonl.gz": "5697ea3ebba11f6c39da53f5219fdb40c0a40bc039bbb239419779c2e83fc9a6",
+    "data/normalized/kospi200_futures_oi/year=2022/month=01/part.jsonl.gz": "f57879ad990f852b3ca248f9824b27235f6a826397fabdafbbc0a8d2aa5bd08c",
+    "data/normalized/kospi200_futures_oi/year=2022/month=02/part.jsonl.gz": "cc9d05dcf958060dc4f1597399bdde08ba8239ba28b9ae54dc306ceb2c1a58fd",
+    "data/normalized/kospi200_futures_oi/year=2022/month=03/part.jsonl.gz": "c45963834d0819c6412fbcae52bb7e0632d3be68e0197741354e87d52ab8c098",
+    "data/normalized/kospi200_futures_oi/year=2022/month=04/part.jsonl.gz": "7f255b6e091847578d53a807f513dcd38d627adc573582c15e4a0ad2383059e1",
+    "data/normalized/kospi200_futures_oi/year=2022/month=05/part.jsonl.gz": "0bbc6bfd6af95f4abfc010f2b9cc3d28c24a6e37f1a9949497ec9e9b43f5ca3c",
+    "data/normalized/kospi200_futures_oi/year=2022/month=06/part.jsonl.gz": "2499ef75d930ed942efaf840a50daad6c398bf577ba3081c67baac3c82da042c",
+    "data/normalized/kospi200_futures_oi/year=2022/month=07/part.jsonl.gz": "994cebeda7bd8d3a8ab42bc3f326a3ea267a19d3da22774c8974716f83e08c74",
+    "data/normalized/kospi200_futures_oi/year=2022/month=08/part.jsonl.gz": "45ee39db7126e682fe731f52d41bb02ae2a3157b800419f58aa7fac840d31c99",
+    "data/normalized/kospi200_futures_oi/year=2022/month=09/part.jsonl.gz": "6d01fefdb6ce745445ee354f85688161beaf0a46f2cfcb96f7b3b1d3e22bc3fa",
+    "data/normalized/kospi200_futures_oi/year=2022/month=10/part.jsonl.gz": "e51695ef0f5922ad5be3cf9f3adcc96ff9cd0639acaa36568209d2c8304d9de1",
+    "data/normalized/kospi200_futures_oi/year=2022/month=11/part.jsonl.gz": "039c382f588b546e7e9186bc2412ce3e6ed9f237e96010bace882e8eed7c93d5",
+    "data/normalized/kospi200_futures_oi/year=2022/month=12/part.jsonl.gz": "0fb9c3825439092df9be6f2c5d9a49c40e4c54e3b5755fcd5adb3968e374559d",
+    "data/normalized/kospi200_futures_oi/year=2023/month=01/part.jsonl.gz": "5e5f6f76e74c3c5387e81f1c2db347a3119dafe20bd6d1490d0c77b9ec0c6166",
+    "data/normalized/kospi200_futures_oi/year=2023/month=02/part.jsonl.gz": "dd5d87ea5d706cc0315c88a18aedc5b925879db9cd59d3c20dcd67b4656f8430",
+    "data/normalized/kospi200_futures_oi/year=2023/month=03/part.jsonl.gz": "051c75e4542ad0e88cd4e9dde8c0841f6cf3527016530f6818195bbce541b598",
+    "data/normalized/kospi200_futures_oi/year=2023/month=04/part.jsonl.gz": "cea73065e88ca54ba8cc0207e52c31603670cb6f0b1b131ee5491a504a8a5871",
+    "data/normalized/kospi200_futures_oi/year=2023/month=05/part.jsonl.gz": "92ff560cca53d8997f897f372221af2124a715d987a024a8f7fd047c1f9b6588",
+    "data/normalized/kospi200_futures_oi/year=2023/month=06/part.jsonl.gz": "248db0da06c802997f0be6df13f9366bf778872c2734f7a101a5a07473a2cce2",
+    "data/normalized/kospi200_futures_oi/year=2023/month=07/part.jsonl.gz": "40efd1d23a68c862cd06172fa08e7f5b9804a59ce4db0e355cd7ba958ada8d93",
+    "data/normalized/kospi200_futures_oi/year=2023/month=08/part.jsonl.gz": "a3a23a4a05a2d2e6b197963d65b51723f275a357c0666cab272f2337b4fe6924",
+    "data/normalized/kospi200_futures_oi/year=2023/month=09/part.jsonl.gz": "ffba514d42665d9f588c47dc81d800acd382081bc204f6f514a4413c0a2f1ab9",
+    "data/normalized/kospi200_futures_oi/year=2023/month=10/part.jsonl.gz": "9873f525a457b07878d73d30b910c035c9f8f17b6e80249840acbb16cee201c3",
+    "data/normalized/kospi200_futures_oi/year=2023/month=11/part.jsonl.gz": "adaff7144dd008c9f3ffe0eee12f528466d8914eabac0b80e800792f42360e48",
+    "data/normalized/kospi200_futures_oi/year=2023/month=12/part.jsonl.gz": "cada8bc2f70020a6caf3045d136c9f655888b740e72af34f82827d1adca2d71a",
+    "data/normalized/kospi200_futures_oi/year=2024/month=01/part.jsonl.gz": "a07dda24885c55e8ce28f22c7c070c55de8c18740e55274a9e93bb09d3e7351a",
+    "data/normalized/kospi200_futures_oi/year=2024/month=02/part.jsonl.gz": "f86cd0899409fe17265d113d51c0c76bdff0e8ed1dd6f744ae1fbbe5981c7885",
+    "data/normalized/kospi200_futures_oi/year=2024/month=03/part.jsonl.gz": "a81cfcd19a9497feb6fcdefcf33e79eed71c6d26fd853e27cfd36236ac70275b",
+    "data/normalized/kospi200_futures_oi/year=2024/month=04/part.jsonl.gz": "702fd08c7efb1e6c784d3028eccb02cf219071b32a97011cfff338345d415f52",
+    "data/normalized/kospi200_futures_oi/year=2024/month=05/part.jsonl.gz": "0f86e092fc36c0ba0a2aec94c69a2595a31f3f06934380348cedef8666a868ed",
+    "data/normalized/kospi200_futures_oi/year=2024/month=06/part.jsonl.gz": "843546c0c1f5521a709b009bfc7ddc52c9ae27078182f4c459bc66594d3ebc75",
+    "data/normalized/kospi200_futures_oi/year=2024/month=07/part.jsonl.gz": "1cbad89c333c97462fd6275886f964cb1986f91a351104a46639f6644c5be15b",
+    "data/normalized/kospi200_futures_oi/year=2024/month=08/part.jsonl.gz": "a1fb89421b3d156e1ebbd37eff61fed7681da3a33ba6c29c74074d9a9dd1de2e",
+    "data/normalized/kospi200_futures_oi/year=2024/month=09/part.jsonl.gz": "01afbb8b3dca8324ec5b890556b598e4cb1355b0949b0733eccc2f7e79f278c8",
+    "data/normalized/kospi200_futures_oi/year=2024/month=10/part.jsonl.gz": "b2676e7c0007963720e0f9194d53b280429be845487faa99027bbff6c0d5162e",
+    "data/normalized/kospi200_futures_oi/year=2024/month=11/part.jsonl.gz": "600a4cb6da4723745cca632ed80f65d52a0d1b1c42715646f6c591c620daa8f3",
+    "data/normalized/kospi200_futures_oi/year=2024/month=12/part.jsonl.gz": "740d43b86f895c80fcdaa8face808865c4b366526ef217a6b36e0102ddab9909",
+    "data/normalized/kospi200_futures_oi/year=2025/month=01/part.jsonl.gz": "5bcd370054e80d60a050d590b87693abaafd1eb75603faf8714a1646780605b1",
+    "data/normalized/kospi200_futures_oi/year=2025/month=02/part.jsonl.gz": "4755b96495068f8db4431e19b6ef0a185e0a75f778b6e9dd95498e9359749cf5",
+    "data/normalized/kospi200_futures_oi/year=2025/month=03/part.jsonl.gz": "15294c160c6c2db786212c754b7d5e091a891cd00cf1ea96da36710cd5d82220",
+    "data/normalized/kospi200_futures_oi/year=2025/month=04/part.jsonl.gz": "667fa7363cae632e64a6fc94bb42bd2b6d1ba37073e627b6ce9765f7f85deadf",
+    "data/normalized/kospi200_futures_oi/year=2025/month=05/part.jsonl.gz": "cf7385dd95a9fb027f5f12caf172c55825765320a833e12b11407ab61d309e3e",
+    "data/normalized/kospi200_futures_oi/year=2025/month=06/part.jsonl.gz": "e5514faf8d98e397867e58fccd9f75744703e1d909cfb42a81c03b88ae0d5162",
+    "data/normalized/kospi200_futures_oi/year=2025/month=07/part.jsonl.gz": "3a037776f0d934d0776e80ff0feb843eedffbb6f5a4712964753266abfcfc989",
+    "data/normalized/kospi200_futures_oi/year=2025/month=08/part.jsonl.gz": "de1d1154130dc86b81f770f4d93846a92722ec5ba8faf69219ccebe9455d31fe",
+    "data/normalized/kospi200_futures_oi/year=2025/month=09/part.jsonl.gz": "a5615be6d2e764acffa6d29cc30cf657451488c3bbd607b545ceffafd992d6fd",
+    "data/normalized/kospi200_futures_oi/year=2025/month=10/part.jsonl.gz": "e0f30d2cef2acf5e0eb5da801868b7c084aca54bbf52475ee0d226270d36d664",
+    "data/normalized/kospi200_futures_oi/year=2025/month=11/part.jsonl.gz": "d2d3a6b3135da814ad55185c78b99f0abcee29af6f92452559417d17f7c5cea4",
+    "data/normalized/kospi200_futures_oi/year=2025/month=12/part.jsonl.gz": "13ffe4bdffec09cd334f63a2ffde9cd0b806d9b413a5ac79745bc9dad93a3992",
+    "data/normalized/kospi200_futures_oi/year=2026/month=01/part.jsonl.gz": "767e4cb2fbf23e6c5e62b391744547b6747020750bf1ef92c0e19911fe6efd3a",
+    "data/normalized/kospi200_futures_oi/year=2026/month=02/part.jsonl.gz": "92af3c819a2821aecc051dc052a617481015829caf6e77157f11963aa7a68560",
+    "data/normalized/kospi200_futures_oi/year=2026/month=03/part.jsonl.gz": "086a8835dff58ef14fad517c4fefd9a4a172fbdffd6d2f88f3ca6ec4d8e1eecc",
+    "data/normalized/kospi200_futures_oi/year=2026/month=04/part.jsonl.gz": "ae36eda7cdafc9e874840a79aa6266d43d353a2f9c040c4047735e06d5149fd1",
+    "data/normalized/kospi200_futures_oi/year=2026/month=05/part.jsonl.gz": "6f91ea9743ed4ae0159198d06b35d9a63710c400a15ac985f1cd75e10c4f3831",
+    "data/normalized/kospi200_futures_oi/year=2026/month=06/part.jsonl.gz": "b36c0b2024d75cedd0cc2c8e883b78d0682ced9168f446bc44c18350ae5f726d",
+    "data/normalized/kospi200_futures_oi/year=2026/month=07/part.jsonl.gz": "fc6438dd3d4cc31fc728bbba84706811b03c1e928f566e424cce776b3c4b99b0",
+    "data/normalized/kospi200_futures_oi/year=2026/month=08/part.jsonl.gz": "68ee8c27838334920df59c615b595e0e72b725e291eadf364e328b691dacbb48",
+    "data/normalized/kospi200_futures_oi/year=2026/month=09/part.jsonl.gz": "6eb05ad3573105845f96bd4a744efd006148a9c6ccee81ee9ead5fb50337b591",
+    "data/normalized/kospi200_futures_oi/year=2026/month=10/part.jsonl.gz": "0efa513c83b538829fb2cf2dda21aab67678b1fafa2bd9fdcd61b8e618a40976",
+    "data/normalized/kospi200_futures_oi/year=2026/month=11/part.jsonl.gz": "d3de6e51c904ba9f5a8a18adc9ad9e9cf6b68eee3928eb3028b55273d97761ca"
+   },
+   "regular_missing_vs_calendar": [
+    "2019-12-02",
+    "2019-12-03",
+    "2019-12-04",
+    "2019-12-05",
+    "2019-12-06",
+    "2019-12-09",
+    "2019-12-10",
+    "2019-12-11",
+    "2019-12-12",
+    "2019-12-13",
+    "2019-12-16",
+    "2019-12-17",
+    "2019-12-18",
+    "2019-12-19",
+    "2019-12-20",
+    "2019-12-23",
+    "2019-12-24",
+    "2019-12-26",
+    "2019-12-27",
+    "2019-12-30"
+   ],
+   "manifest_generated_at": "2026-11-02T14:00:00Z"
+  }
+ },
+ "contracts": [
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201901",
+   "contract_code": null,
+   "contract_code_count": 52,
+   "contract_code_sample": [
+    "201P1215",
+    "201P1217"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201901 220.0",
+    "코스피200 C 201901 222.5"
+   ],
+   "option_types": [
+    "call"
+   ],
+   "first_front_regular_date": "2019-01-02",
+   "last_front_regular_date": "2019-01-10",
+   "regular_dates_observed": 7,
+   "next_contract_month": "201902",
+   "next_first_front_regular_date": "2019-01-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 52,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "83f6693432e9a33b8e7ab43fe90222f32d8b6fc24738712ea9e8269cb86cc3b9"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201902",
+   "contract_code": null,
+   "contract_code_count": 104,
+   "contract_code_sample": [
+    "201P2215",
+    "201P2217"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201902 215.0",
+    "코스피200 C 201902 217.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-01-11",
+   "last_front_regular_date": "2019-02-14",
+   "regular_dates_observed": 22,
+   "next_contract_month": "201903",
+   "next_first_front_regular_date": "2019-02-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 104,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "2eb356dd090253d96bddaf012f21e9805bd7cb5c0c271e4403e20558ab3b1c5a",
+    "698b9743c4182713686571e2aec3a5e410ca011931646367d0fa35ff7a3ed1e5"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201903",
+   "contract_code": null,
+   "contract_code_count": 138,
+   "contract_code_sample": [
+    "201P3215",
+    "201P3217"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201903 215.0",
+    "코스피200 C 201903 217.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-02-15",
+   "last_front_regular_date": "2019-03-14",
+   "regular_dates_observed": 19,
+   "next_contract_month": "201904",
+   "next_first_front_regular_date": "2019-03-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 138,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "5a36f38394d165a3682762386c6f4a48f40ce4d82cf4a65d0960bbbdd74a5a55",
+    "a40a39764aedca3abbb76e752771e8f3a8ef3282803dac057c4f61a3f81f0b64"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201904",
+   "contract_code": null,
+   "contract_code_count": 94,
+   "contract_code_sample": [
+    "201P4215",
+    "201P4217"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201904 215.0",
+    "코스피200 C 201904 217.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-03-15",
+   "last_front_regular_date": "2019-04-11",
+   "regular_dates_observed": 20,
+   "next_contract_month": "201905",
+   "next_first_front_regular_date": "2019-04-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 94,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "1a59be9c07960025422106b7e91854a3561ef8c23389ec8ea7444f81dce96ef8",
+    "2b4bfdd86ebc5a95876e653bd3abc57293fa9f0d4368931943af6d8fa667f728"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201905",
+   "contract_code": null,
+   "contract_code_count": 94,
+   "contract_code_sample": [
+    "201P5215",
+    "201P5217"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201905 215.0",
+    "코스피200 C 201905 217.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-04-12",
+   "last_front_regular_date": "2019-05-09",
+   "regular_dates_observed": 18,
+   "next_contract_month": "201906",
+   "next_first_front_regular_date": "2019-05-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 94,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "b4692626d0ac0d744e76c0b4e74a7dcb9d0b9cc1edc9d811e049f63da8606caa",
+    "e895e124f6aa27126f68f90ea7a758e94aa888318ec156519cfc6cc468900b23"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201906",
+   "contract_code": null,
+   "contract_code_count": 162,
+   "contract_code_sample": [
+    "201P6200",
+    "201P6202"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201906 200.0",
+    "코스피200 C 201906 202.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-05-10",
+   "last_front_regular_date": "2019-06-13",
+   "regular_dates_observed": 24,
+   "next_contract_month": "201907",
+   "next_first_front_regular_date": "2019-06-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 162,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "2364d1a70a20d406dc90c71665ceb5a4b6137b253e7642f4b96b0d4ad5aa8dad",
+    "3a447876702817192c286f39cd58cbdb98d7bb0ad59f446d72a7a671639eef81"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201907",
+   "contract_code": null,
+   "contract_code_count": 88,
+   "contract_code_sample": [
+    "201P7222",
+    "201P7225"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201907 222.5",
+    "코스피200 C 201907 225.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-06-14",
+   "last_front_regular_date": "2019-07-11",
+   "regular_dates_observed": 20,
+   "next_contract_month": "201908",
+   "next_first_front_regular_date": "2019-07-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 88,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "470cb458c8ffbc89f07c056a3bac45807c75f9eafe197f0a79802a7596114be5",
+    "f7e89bc2774d1fcbfdb3241ce82f3ed98438069d868ca643b2dca80fe06ae629"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201908",
+   "contract_code": null,
+   "contract_code_count": 96,
+   "contract_code_sample": [
+    "201P8212",
+    "201P8215"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201908 222.5",
+    "코스피200 C 201908 225.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-07-12",
+   "last_front_regular_date": "2019-08-08",
+   "regular_dates_observed": 20,
+   "next_contract_month": "201909",
+   "next_first_front_regular_date": "2019-08-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 96,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "2e7244438b99a1cf8da4775df8f004eb2102b9bdd92f778e2ed867d5809c9f01",
+    "fdc2882b344aa46e8f441bd02bc431c1dfc10cbe379c242048bda82862cb85aa"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201909",
+   "contract_code": null,
+   "contract_code_count": 138,
+   "contract_code_sample": [
+    "201P9195",
+    "201P9197"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201909 195.0",
+    "코스피200 C 201909 197.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-08-09",
+   "last_front_regular_date": "2019-09-11",
+   "regular_dates_observed": 23,
+   "next_contract_month": "201910",
+   "next_first_front_regular_date": "2019-09-16",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 138,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "628661841ee7eebbd0c310446f5e9f087f8df8b3fd8b91676769cc2f21d67aa9",
+    "b45c3a4faa7512e12e342d3f0d91dc91936d8938203332f71e323533708a3e2b"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201910",
+   "contract_code": null,
+   "contract_code_count": 96,
+   "contract_code_sample": [
+    "201PA212",
+    "201PA215"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201910 212.5",
+    "코스피200 C 201910 215.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-09-16",
+   "last_front_regular_date": "2019-10-10",
+   "regular_dates_observed": 17,
+   "next_contract_month": "201911",
+   "next_first_front_regular_date": "2019-10-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 96,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "0e460ba79f2072d020881345227774dc749f1d4fad20b14059d545c8687ba45f",
+    "fa0e79a683d6670e7a222772310cdff561b1db4942c5a7a5edb353c2de958c3a"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201911",
+   "contract_code": null,
+   "contract_code_count": 92,
+   "contract_code_sample": [
+    "201PB212",
+    "201PB215"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201911 212.5",
+    "코스피200 C 201911 215.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-10-11",
+   "last_front_regular_date": "2019-11-14",
+   "regular_dates_observed": 25,
+   "next_contract_month": "201912",
+   "next_first_front_regular_date": "2019-11-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 92,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "476c27bfe644c0b18c93c3ada3f2b2531ce1a68abc0a3873dcae2fa99f81529e",
+    "e32787806aad0c080b61612697a47ff69d5cdf6b0b758988b326e2db589c73c6"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201912",
+   "contract_code": null,
+   "contract_code_count": 166,
+   "contract_code_sample": [
+    "201PC195",
+    "201PC197"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 201912 195.0",
+    "코스피200 C 201912 197.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-11-15",
+   "last_front_regular_date": "2019-12-12",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202001",
+   "next_first_front_regular_date": "2019-12-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 166,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "207c74c95605cacbff78ed6aa08a775b07e29863edd5b4435a3a9f3adda8da6e",
+    "3086e0e16e219c292384412f49029dda4ed3f32ae0874bbeecab51d7abd80948"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202001",
+   "contract_code": null,
+   "contract_code_count": 100,
+   "contract_code_sample": [
+    "201Q1212",
+    "201Q1215"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202001 212.5",
+    "코스피200 C 202001 215.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2019-12-13",
+   "last_front_regular_date": "2020-01-09",
+   "regular_dates_observed": 17,
+   "next_contract_month": "202002",
+   "next_first_front_regular_date": "2020-01-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 100,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "7d0e9f666ffd4a605edfe669d3fbeef23ba844d31278f5cf9670b922bc04f41e",
+    "952a4b4173296619e642ad45d1937f9ef72957e2f26dfa07cb33f1b154fc1c47"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202002",
+   "contract_code": null,
+   "contract_code_count": 108,
+   "contract_code_sample": [
+    "201Q2212",
+    "201Q2215"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202002 212.5",
+    "코스피200 C 202002 215.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-01-10",
+   "last_front_regular_date": "2020-02-13",
+   "regular_dates_observed": 23,
+   "next_contract_month": "202003",
+   "next_first_front_regular_date": "2020-02-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 108,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "2c0d2f8a273d3ec78337eca4b58c5c12fefd1aaf5f4265f0cf31fd94d7fe25b6",
+    "c52f8eaab44551690c216e9cf1fa8b462ff0c971f45ce2cd998a773ffd5fb1f4"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202003",
+   "contract_code": null,
+   "contract_code_count": 130,
+   "contract_code_sample": [
+    "201Q3190",
+    "201Q3192"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202003 190.0",
+    "코스피200 C 202003 192.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-02-14",
+   "last_front_regular_date": "2020-03-12",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202004",
+   "next_first_front_regular_date": "2020-03-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 130,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "4f3dc311a0b14cc492a77c0398cca9810f8db26bfdd682582a99b8c87f9ea339",
+    "a988732b7856d3d5db0fe7b7726bcdaa51f3ab0d66d5d0fa61b14f61db076c78"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202004",
+   "contract_code": null,
+   "contract_code_count": 150,
+   "contract_code_sample": [
+    "201Q4160",
+    "201Q4162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202004 207.5",
+    "코스피200 C 202004 210.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-03-13",
+   "last_front_regular_date": "2020-04-09",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202005",
+   "next_first_front_regular_date": "2020-04-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 150,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "1c4c99812eded5a56adc4ce3eec4acf5c9163bb6980fe5ec537f89bf10b9bdc7",
+    "acb605bd3e7c63c434f4100e7efad0fe8b74a85b00a0d395bd54062d9650a7bf"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202005",
+   "contract_code": null,
+   "contract_code_count": 150,
+   "contract_code_sample": [
+    "201Q5160",
+    "201Q5162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202005 160.0",
+    "코스피200 C 202005 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-04-10",
+   "last_front_regular_date": "2020-05-14",
+   "regular_dates_observed": 21,
+   "next_contract_month": "202006",
+   "next_first_front_regular_date": "2020-05-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 150,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "9e1357b03a0317124d11473087007d49ea482e9b08009afd8436f728a23bbc9e",
+    "fcb93767265763dd914ef4eb74f83103d4648e7b4d635c646f6058b4cf103d6e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202006",
+   "contract_code": null,
+   "contract_code_count": 170,
+   "contract_code_sample": [
+    "201Q6160",
+    "201Q6162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202006 160.0",
+    "코스피200 C 202006 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-05-15",
+   "last_front_regular_date": "2020-06-11",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202007",
+   "next_first_front_regular_date": "2020-06-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 170,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "49f27528199c396ca404f29f3fdad55c1bfdfdc6264a51cde2686dbafb5cc88f",
+    "d66e7969d8700c20ab79bdd19d25c15814bb45bad15ec28aaa76b85ad0213d02"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202007",
+   "contract_code": null,
+   "contract_code_count": 150,
+   "contract_code_sample": [
+    "201Q7160",
+    "201Q7162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202007 160.0",
+    "코스피200 C 202007 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-06-12",
+   "last_front_regular_date": "2020-07-09",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202008",
+   "next_first_front_regular_date": "2020-07-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 150,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "8e741f839e8eabd38b992e0eac16234b3618ef6e186051a4d86f82bff0ca4540",
+    "983107c3eadec94fc0e836a3875f5253335f8163aa26f62920e3dfc449758adf"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202008",
+   "contract_code": null,
+   "contract_code_count": 164,
+   "contract_code_sample": [
+    "201Q8160",
+    "201Q8162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202008 160.0",
+    "코스피200 C 202008 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-07-10",
+   "last_front_regular_date": "2020-08-13",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202009",
+   "next_first_front_regular_date": "2020-08-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 164,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "11d605aeb32267bc31d2eeff550f37a88040290f1cdb80bd5c35c7fe75601ca5",
+    "f12873dd30998599ad0dba6d419b6b5e76d5abd01b0ea13a81f28f21a164b578"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202009",
+   "contract_code": null,
+   "contract_code_count": 166,
+   "contract_code_sample": [
+    "201Q9160",
+    "201Q9162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202009 160.0",
+    "코스피200 C 202009 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-08-14",
+   "last_front_regular_date": "2020-09-10",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202010",
+   "next_first_front_regular_date": "2020-09-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 166,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "0b5cf2ba4da632e81f5cf5041ef50ebe1dd7d9a80f3ea4cedfc362edd78283f0",
+    "30c0b583a3178e240d201b4e265e9584c5028b67967da14b6915c01514879085"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202010",
+   "contract_code": null,
+   "contract_code_count": 130,
+   "contract_code_sample": [
+    "201QA202",
+    "201QA205"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202010 202.5",
+    "코스피200 C 202010 205.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-09-11",
+   "last_front_regular_date": "2020-10-08",
+   "regular_dates_observed": 17,
+   "next_contract_month": "202011",
+   "next_first_front_regular_date": "2020-10-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 130,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "742c4974aae1c28bd8c2fb4c8e2788c977543ccb569c71b7ca9f291b24d050ad",
+    "883a783e27c9e0c61c6fd41467727169e7118eb5a3f3a360e7cd669c1d2453ce"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202011",
+   "contract_code": null,
+   "contract_code_count": 128,
+   "contract_code_sample": [
+    "201QB212",
+    "201QB215"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202011 212.5",
+    "코스피200 C 202011 215.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-10-12",
+   "last_front_regular_date": "2020-11-12",
+   "regular_dates_observed": 24,
+   "next_contract_month": "202012",
+   "next_first_front_regular_date": "2020-11-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 128,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "282758f78286ed074a616bb9caa93c557a15a43bead8559a5d78873c8ab0ba28",
+    "ecb5bc550bd1ca7ff355728b5d0c7faad35db4b58edeacacaccb70c60cd53ef7"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202012",
+   "contract_code": null,
+   "contract_code_count": 220,
+   "contract_code_sample": [
+    "201QC140",
+    "201QC142"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202012 140.0",
+    "코스피200 C 202012 142.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-11-13",
+   "last_front_regular_date": "2020-12-10",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202101",
+   "next_first_front_regular_date": "2020-12-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 220,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "5e6fbea27617a6138d5db1f7b834e7ef51b5ad26923ee7caf48034c74d8caed7",
+    "986038b0d4603bd93198ae76c80a655cf3c2a90e2898f75ad4c00715e4b508d9"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202101",
+   "contract_code": null,
+   "contract_code_count": 182,
+   "contract_code_sample": [
+    "201R1245",
+    "201R1247"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202101 245.0",
+    "코스피200 C 202101 247.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2020-12-11",
+   "last_front_regular_date": "2021-01-14",
+   "regular_dates_observed": 22,
+   "next_contract_month": "202102",
+   "next_first_front_regular_date": "2021-01-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 182,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "0e5d04e0084baf45986e9b8370a1b9cbb0f56e5f18787bb22cb7b0b036aecba4",
+    "75d200a2311ca692494cf314fc2a50c27a556fa7fd2533e44d0b9b916e8cfb65"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202102",
+   "contract_code": null,
+   "contract_code_count": 174,
+   "contract_code_sample": [
+    "201R2262",
+    "201R2265"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202102 262.5",
+    "코스피200 C 202102 265.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-01-15",
+   "last_front_regular_date": "2021-02-10",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202103",
+   "next_first_front_regular_date": "2021-02-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 174,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "4090362e85becb129ef6777a2e9178249f0c1371b3b7b269479123a64e52e52b",
+    "621c83019437044a8f41d947534b89ac0b9d5324b9d55747460fe5fb6388c8a3"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202103",
+   "contract_code": null,
+   "contract_code_count": 272,
+   "contract_code_sample": [
+    "201R3140",
+    "201R3142"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202103 140.0",
+    "코스피200 C 202103 142.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-02-15",
+   "last_front_regular_date": "2021-03-11",
+   "regular_dates_observed": 18,
+   "next_contract_month": "202104",
+   "next_first_front_regular_date": "2021-03-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 272,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "52deff2565801f34b951d59067b37ad0aa286477957a26b29d33ad389a980fd4",
+    "8c424a170f48b1285bb6bc45300f0285fbe3e6564d74f0dd91ae46567c22225a"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202104",
+   "contract_code": null,
+   "contract_code_count": 174,
+   "contract_code_sample": [
+    "201R4262",
+    "201R4265"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202104 262.5",
+    "코스피200 C 202104 265.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-03-12",
+   "last_front_regular_date": "2021-04-08",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202105",
+   "next_first_front_regular_date": "2021-04-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 174,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "68ffc2e6181f72d9309df2e765efb45075f2a6526edd9a3637acfae92575e47d",
+    "7f469173286feea04735174ffd1154162465b1d85f98fb0b0ec68c3103ed500e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202105",
+   "contract_code": null,
+   "contract_code_count": 152,
+   "contract_code_sample": [
+    "201R5290",
+    "201R5292"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202105 290.0",
+    "코스피200 C 202105 292.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-04-09",
+   "last_front_regular_date": "2021-05-13",
+   "regular_dates_observed": 24,
+   "next_contract_month": "202106",
+   "next_first_front_regular_date": "2021-05-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 152,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "7a75cf001ae1ae2a4d13835eac0bad49dca94c6ce4c75927416ff6e4d34662d9",
+    "8e2183d423de82b6848dca087f82b7830d5fa9c4f81935b426f1c9d2e5f69151"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202106",
+   "contract_code": null,
+   "contract_code_count": 272,
+   "contract_code_sample": [
+    "201R6140",
+    "201R6142"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202106 140.0",
+    "코스피200 C 202106 142.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-05-14",
+   "last_front_regular_date": "2021-06-10",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202107",
+   "next_first_front_regular_date": "2021-06-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 272,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "d18663915ff032c782c4537da8dbead946ea03b7281ef61001af37d6d51af68c",
+    "e176cb0916a2016617c2da364e3005d885e56ecf86631a71d698918324e7e138"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202107",
+   "contract_code": null,
+   "contract_code_count": 96,
+   "contract_code_sample": [
+    "201R7362",
+    "201R7365"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202107 362.5",
+    "코스피200 C 202107 365.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-06-11",
+   "last_front_regular_date": "2021-07-08",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202108",
+   "next_first_front_regular_date": "2021-07-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 96,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "b7461171d3fad49a6ac0331b4f7c0963c7b768f4cb372e282a1283b8fefce663",
+    "dc956339d90b5b3ab584e837f8dd704db5386c667ac25b2eb1d82439c76407e8"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202108",
+   "contract_code": null,
+   "contract_code_count": 96,
+   "contract_code_sample": [
+    "201R8362",
+    "201R8365"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202108 362.5",
+    "코스피200 C 202108 365.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-07-09",
+   "last_front_regular_date": "2021-08-12",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202109",
+   "next_first_front_regular_date": "2021-08-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 96,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "092ac24bed76c0527ec4a1be7b54c5e123d6ce4f3af34cfb91cfb23188609c5f",
+    "34740a0faf8640ae6b326c70ea1f4ec06297db6bf374133496e4cad99da78943"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202109",
+   "contract_code": null,
+   "contract_code_count": 206,
+   "contract_code_sample": [
+    "201R9240",
+    "201R9242"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202109 240.0",
+    "코스피200 C 202109 242.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-08-13",
+   "last_front_regular_date": "2021-09-09",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202110",
+   "next_first_front_regular_date": "2021-09-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 206,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "5ed2671731cda75a82939a6f15eca73e543c0872397716954fcb429389acc723",
+    "cce12faab22424064f508e235e0d7158b45d7c6d779481ffbc140eb513ba061b"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202110",
+   "contract_code": null,
+   "contract_code_count": 114,
+   "contract_code_sample": [
+    "201RA340",
+    "201RA342"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202110 360.0",
+    "코스피200 C 202110 362.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-09-10",
+   "last_front_regular_date": "2021-10-14",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202111",
+   "next_first_front_regular_date": "2021-10-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 114,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "75aecb4b13ebd8b5ffc877e17a6d340a72fe9486613995a20df7393280a21c58",
+    "a3a2bf5b30dd49b9c12e49f08bd0ce79a39aebc9746b2dc48d8ba08a9cfe227a"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202111",
+   "contract_code": null,
+   "contract_code_count": 114,
+   "contract_code_sample": [
+    "201RB340",
+    "201RB342"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202111 340.0",
+    "코스피200 C 202111 342.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-10-15",
+   "last_front_regular_date": "2021-11-11",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202112",
+   "next_first_front_regular_date": "2021-11-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 114,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "136292d9c5dfa2e70062b42d526b61dddd5e7969de7b5be446ab2bda0ca54a82",
+    "7f1fd80a290e4318b472300c22c01ddff43546a24cb85aa45368f780527b34f1"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202112",
+   "contract_code": null,
+   "contract_code_count": 286,
+   "contract_code_sample": [
+    "201RC140",
+    "201RC142"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202112 140.0",
+    "코스피200 C 202112 142.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-11-12",
+   "last_front_regular_date": "2021-12-09",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202201",
+   "next_first_front_regular_date": "2021-12-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 286,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "5013fb49b1afd2516560dd685850653c49329e1a80dac10007cba944535cf523",
+    "63bed1563e4f3ec8459ec74a6b2e4517dbbd460658d624fea181eb7f54212162"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202201",
+   "contract_code": null,
+   "contract_code_count": 152,
+   "contract_code_sample": [
+    "201S1292",
+    "201S1295"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202201 292.5",
+    "코스피200 C 202201 295.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2021-12-10",
+   "last_front_regular_date": "2022-01-13",
+   "regular_dates_observed": 24,
+   "next_contract_month": "202202",
+   "next_first_front_regular_date": "2022-01-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 152,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "c622311a3129e8bf40f692bbd44f49c61806e41815aa972f43749c74280428ee",
+    "e5cf6c171d650e009ed1d0283740e901061f7f3f6d8539d2362d9f77e1320862"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202202",
+   "contract_code": null,
+   "contract_code_count": 172,
+   "contract_code_sample": [
+    "201S2267",
+    "201S2270"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202202 292.5",
+    "코스피200 C 202202 295.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-01-14",
+   "last_front_regular_date": "2022-02-10",
+   "regular_dates_observed": 17,
+   "next_contract_month": "202203",
+   "next_first_front_regular_date": "2022-02-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 172,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "2f7d520fc61e6c0db8ff3f85c60b41bd87a45ce42f7017ea2efa18413bf5eda6",
+    "b3ee732190822325be568c22f234408c2f080adca804325dba68016a4b1df6ee"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202203",
+   "contract_code": null,
+   "contract_code_count": 210,
+   "contract_code_sample": [
+    "201S3255",
+    "201S3257"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202203 255.0",
+    "코스피200 C 202203 257.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-02-11",
+   "last_front_regular_date": "2022-03-10",
+   "regular_dates_observed": 18,
+   "next_contract_month": "202204",
+   "next_first_front_regular_date": "2022-03-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 210,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "4902f3963889fa271473df5880179feefa7385ce5c5643eb689200defd71b428",
+    "e649e6c8fb488bb0a7a71f167789865c93704eb390c2ea5bd3223ac898ecd932"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202204",
+   "contract_code": null,
+   "contract_code_count": 214,
+   "contract_code_sample": [
+    "201S4255",
+    "201S4257"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202204 255.0",
+    "코스피200 C 202204 257.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-03-11",
+   "last_front_regular_date": "2022-04-14",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202205",
+   "next_first_front_regular_date": "2022-04-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 214,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "68ad9db420e040afbaf957995b8b77c55b98010487e670e4aab6089fc397e7ae",
+    "d47887a10478d602f11679f210a3308e746a1cd94fdb8b1ac3bb0ce8f6f70c9b"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202205",
+   "contract_code": null,
+   "contract_code_count": 234,
+   "contract_code_sample": [
+    "201S5230",
+    "201S5232"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202205 230.0",
+    "코스피200 C 202205 232.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-04-15",
+   "last_front_regular_date": "2022-05-12",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202206",
+   "next_first_front_regular_date": "2022-05-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 234,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "6c7d48db464b880103ade547398d5131e7f808dd8c991616ff245ecfb0bf4d24",
+    "e6d7b724b37ffb42e904a4ad8bf7f66d7ce9c72dffbba4df8c15a283870e377b"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202206",
+   "contract_code": null,
+   "contract_code_count": 250,
+   "contract_code_sample": [
+    "201S6210",
+    "201S6212"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202206 210.0",
+    "코스피200 C 202206 212.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-05-13",
+   "last_front_regular_date": "2022-06-09",
+   "regular_dates_observed": 18,
+   "next_contract_month": "202207",
+   "next_first_front_regular_date": "2022-06-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 250,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "0aa2a06e84c06aa43823aa759631fad43882d910ebc608674740f0128e884059",
+    "904916f9e992767183bbf99f72a3e197b95a927c36da025c598f19658df0c682"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202207",
+   "contract_code": null,
+   "contract_code_count": 236,
+   "contract_code_sample": [
+    "201S7222",
+    "201S7225"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202207 230.0",
+    "코스피200 C 202207 232.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-06-10",
+   "last_front_regular_date": "2022-07-14",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202208",
+   "next_first_front_regular_date": "2022-07-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 236,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "2de9793f0c914331a7a5eccd5e17068e71e9522ca1d2b50dcf5519ba088f74a1",
+    "a40e2fead4c0eaf8277663386a9ef1170570d4139f833dcb3343b982121d1027"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202208",
+   "contract_code": null,
+   "contract_code_count": 216,
+   "contract_code_sample": [
+    "201S8222",
+    "201S8225"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202208 222.5",
+    "코스피200 C 202208 225.0"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-07-15",
+   "last_front_regular_date": "2022-08-11",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202209",
+   "next_first_front_regular_date": "2022-08-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 216,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "03793ccf0d1e219465ed7c7a1b0a8ff915e4430a150867005317affe90a5464f",
+    "c8954f3ccfabbdd6a88f3bd493cf69b8006b75171302af2b569c4f7665cb930c"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202209",
+   "contract_code": null,
+   "contract_code_count": 242,
+   "contract_code_sample": [
+    "201S9220",
+    "201S9222"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202209 220.0",
+    "코스피200 C 202209 222.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-08-12",
+   "last_front_regular_date": "2022-09-08",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202210",
+   "next_first_front_regular_date": "2022-09-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 242,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "3747e79b8e66d20e1721941bef81054566fac297eeac39cca20266cb8f7175fb",
+    "d0c1137d2a74f28ddd7cf6ccedd5316553aa7fe31f700f2adba2176d47f14ec7"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202210",
+   "contract_code": null,
+   "contract_code_count": 242,
+   "contract_code_sample": [
+    "201SA180",
+    "201SA182"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202210 180.0",
+    "코스피200 C 202210 182.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-09-13",
+   "last_front_regular_date": "2022-10-13",
+   "regular_dates_observed": 21,
+   "next_contract_month": "202211",
+   "next_first_front_regular_date": "2022-10-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 242,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "4e9fdb09fc21629afa939f815c39f24bccd1662ee858840516de4a6bd24d4704",
+    "8c3cd3410c32681e141d0a007750a76c0bfcecd5ce3fcc898ed8f03eef36fa91"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202211",
+   "contract_code": null,
+   "contract_code_count": 238,
+   "contract_code_sample": [
+    "201SB180",
+    "201SB182"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202211 180.0",
+    "코스피200 C 202211 182.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-10-14",
+   "last_front_regular_date": "2022-11-10",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202212",
+   "next_first_front_regular_date": "2022-11-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 238,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "369bcab9cbea734c84a6820aba34d598113768a304b789555280cb2cb191d301",
+    "8752a2d4392cb37f1b689b5cee2e0b512b97945ca932bf59a81d3a13df573fdb"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202212",
+   "contract_code": null,
+   "contract_code_count": 306,
+   "contract_code_sample": [
+    "201SC140",
+    "201SC142"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202212 140.0",
+    "코스피200 C 202212 142.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-11-11",
+   "last_front_regular_date": "2022-12-08",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202301",
+   "next_first_front_regular_date": "2022-12-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 306,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "7ba39adf2bc220fa25d6da4a46b15d2b98c251cf33cef07ad19d3ed0fc2d486e",
+    "dfc8e7615a25680629e1a26c7059b3dc0df621af70423dd259b5a2b96acf8eba"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202301",
+   "contract_code": null,
+   "contract_code_count": 234,
+   "contract_code_sample": [
+    "201T1160",
+    "201T1162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202301 160.0",
+    "코스피200 C 202301 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2022-12-09",
+   "last_front_regular_date": "2023-01-12",
+   "regular_dates_observed": 24,
+   "next_contract_month": "202302",
+   "next_first_front_regular_date": "2023-01-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 234,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "2f5d106c835c28a66b558ee248212184ee97a6534a6fc48689c62b3cc6e7f9c7",
+    "9c8e85daa8727e99299939e6ce2dfede29268f72f10d0bf307b1a8019f0dd743"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202302",
+   "contract_code": null,
+   "contract_code_count": 234,
+   "contract_code_sample": [
+    "201T2160",
+    "201T2162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202302 160.0",
+    "코스피200 C 202302 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-01-13",
+   "last_front_regular_date": "2023-02-09",
+   "regular_dates_observed": 18,
+   "next_contract_month": "202303",
+   "next_first_front_regular_date": "2023-02-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 234,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "02ebe4766a0f9f7840317f487ee979bfba2feac80116c94ed65ab06bcbb611cd",
+    "6dd9de6024e4a228059feb38b6e2e8588a6c607b710e911275dc7720dda9ea50"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202303",
+   "contract_code": null,
+   "contract_code_count": 262,
+   "contract_code_sample": [
+    "201T3160",
+    "201T3162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202303 160.0",
+    "코스피200 C 202303 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-02-10",
+   "last_front_regular_date": "2023-03-09",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202304",
+   "next_first_front_regular_date": "2023-03-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 262,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "5ac62029698aaf1258b476c1130c9baa82564f19b9f4022354f42aa95e1d5aa5",
+    "733268680cc6632f3b753428b6f5083de20c3d81ff82bd92e5db7bbc714169eb"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202304",
+   "contract_code": null,
+   "contract_code_count": 226,
+   "contract_code_sample": [
+    "201T4165",
+    "201T4167"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202304 165.0",
+    "코스피200 C 202304 167.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-03-10",
+   "last_front_regular_date": "2023-04-13",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202305",
+   "next_first_front_regular_date": "2023-04-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 226,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "959de10a99cf2387b252029113fd98c58966755dfcdf154d8c09be112db58964",
+    "c1423e5f407fd63cdd9b59dedd1941de10a77b9a3bad092d09ada10663f98ff8"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202305",
+   "contract_code": null,
+   "contract_code_count": 226,
+   "contract_code_sample": [
+    "201T5170",
+    "201T5172"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202305 170.0",
+    "코스피200 C 202305 172.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-04-14",
+   "last_front_regular_date": "2023-05-11",
+   "regular_dates_observed": 18,
+   "next_contract_month": "202306",
+   "next_first_front_regular_date": "2023-05-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 226,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "684f1bd0da2be6c170014aefd9ed794332d0d265a4fa712a6372c3b9148cc970",
+    "dce35a196809c2fdf7b4c45a2518334853995bbb076e7dd251618e3975b5f038"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202306",
+   "contract_code": null,
+   "contract_code_count": 290,
+   "contract_code_sample": [
+    "201T6160",
+    "201T6162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202306 160.0",
+    "코스피200 C 202306 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-05-12",
+   "last_front_regular_date": "2023-06-08",
+   "regular_dates_observed": 18,
+   "next_contract_month": "202307",
+   "next_first_front_regular_date": "2023-06-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 290,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "407e88aea52022b2e65af5ff4545f4912b1a71cda975613fca7ab1d32c8319de",
+    "ac6f6c51a2a11f2b48ea0cb21299f800bc9ecc89852cc715a32c699845b22ef8"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202307",
+   "contract_code": null,
+   "contract_code_count": 214,
+   "contract_code_sample": [
+    "201T7185",
+    "201T7187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202307 185.0",
+    "코스피200 C 202307 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-06-09",
+   "last_front_regular_date": "2023-07-13",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202308",
+   "next_first_front_regular_date": "2023-07-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 214,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "3de4bdd55d7a966a60592aa83a8b2ca30f1e24d9a6d0bad629a4980677171651",
+    "3ff5732cf5f9950b0eb5812425d2e577248a59388f2b8e8cdc04ebe07a70d195"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202308",
+   "contract_code": null,
+   "contract_code_count": 218,
+   "contract_code_sample": [
+    "201T8185",
+    "201T8187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202308 185.0",
+    "코스피200 C 202308 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-07-14",
+   "last_front_regular_date": "2023-08-10",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202309",
+   "next_first_front_regular_date": "2023-08-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 218,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "92f3b182899fb1f14734d50c16b076333f8fbeafbb6c0fbf9e3cf9a64cc2e689",
+    "b534fd4f28a78ebdecbf8fea271a20f1065186c3d414bc21f28f9dbaad5bf4ed"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202309",
+   "contract_code": null,
+   "contract_code_count": 246,
+   "contract_code_sample": [
+    "201T9160",
+    "201T9162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202309 160.0",
+    "코스피200 C 202309 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-08-11",
+   "last_front_regular_date": "2023-09-14",
+   "regular_dates_observed": 24,
+   "next_contract_month": "202310",
+   "next_first_front_regular_date": "2023-09-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 246,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "322bb3bbd8496a9442f604a86c1c13c2de6a3939eff3c76de95d91867377cabb",
+    "793a566aeab1ca410a08dca7ee9ed57f47184b347badc7c57d38f025311729b0"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202310",
+   "contract_code": null,
+   "contract_code_count": 210,
+   "contract_code_sample": [
+    "201TA205",
+    "201TA207"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202310 205.0",
+    "코스피200 C 202310 207.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-09-15",
+   "last_front_regular_date": "2023-10-12",
+   "regular_dates_observed": 15,
+   "next_contract_month": "202311",
+   "next_first_front_regular_date": "2023-10-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 210,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "8f989297d1263654778f51b0250a4d669ced76815a99ca3f5d13d9219c1cb8ca",
+    "e7d3ead7b25b1f80b94e8e114eaf9102adbaa59f3e8b84c356eb7c3d63e840d5"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202311",
+   "contract_code": null,
+   "contract_code_count": 214,
+   "contract_code_sample": [
+    "201TB205",
+    "201TB207"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202311 205.0",
+    "코스피200 C 202311 207.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-10-13",
+   "last_front_regular_date": "2023-11-09",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202312",
+   "next_first_front_regular_date": "2023-11-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 214,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "e95c6324a307080d165606e0bf1f263fc2caf77e71f99b6977ec9faf6691a489",
+    "f66150242ca59718d3750803915088c8d30c30d9e8f6c1c32e8945b3e7aeb1d9"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202312",
+   "contract_code": null,
+   "contract_code_count": 290,
+   "contract_code_sample": [
+    "201TC160",
+    "201TC162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202312 160.0",
+    "코스피200 C 202312 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-11-10",
+   "last_front_regular_date": "2023-12-14",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202401",
+   "next_first_front_regular_date": "2023-12-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 290,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "3ef687c432237232f3a617c00abf7af827276cc43022156823dc5f0374c0bce1",
+    "43b8096ba6f1efa56f2b4da3b04ab91ceebe3000a1f827808fe7213dd5a9f7db"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202401",
+   "contract_code": null,
+   "contract_code_count": 218,
+   "contract_code_sample": [
+    "201V1200",
+    "201V1202"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202401 200.0",
+    "코스피200 C 202401 202.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2023-12-15",
+   "last_front_regular_date": "2024-01-11",
+   "regular_dates_observed": 17,
+   "next_contract_month": "202402",
+   "next_first_front_regular_date": "2024-01-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 218,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "3461e669066ce963d29ddab63118897e1765a80857b138aacc2ccd6d354157c2",
+    "b3a05797d0685392a95fe5f2c28fe68f01cf2d7dad3bb7a6ab4399c5cbb3c3b6"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202402",
+   "contract_code": null,
+   "contract_code_count": 226,
+   "contract_code_sample": [
+    "201V2185",
+    "201V2187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202402 185.0",
+    "코스피200 C 202402 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-01-12",
+   "last_front_regular_date": "2024-02-08",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202403",
+   "next_first_front_regular_date": "2024-02-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 226,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "d6da1fdef8913542a81abed513bed3d84b42b764ca34f7c9ec49e14e073d7abc",
+    "f47ffc6d5ab05ea7347b9cbf21490e6431202936b684ad708cf6d62b057bc09c"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202403",
+   "contract_code": null,
+   "contract_code_count": 230,
+   "contract_code_sample": [
+    "201V3185",
+    "201V3187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202403 185.0",
+    "코스피200 C 202403 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-02-13",
+   "last_front_regular_date": "2024-03-14",
+   "regular_dates_observed": 22,
+   "next_contract_month": "202404",
+   "next_first_front_regular_date": "2024-03-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 230,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "06539b82b56140363961bee2c1ee1560411f71ee802c5a33e6baf1cc8e04301d",
+    "34172266a2475bfa66d6006139f8794e637754f59d7eb197c3e5aa4c6c7e4a40"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202404",
+   "contract_code": null,
+   "contract_code_count": 238,
+   "contract_code_sample": [
+    "201V4185",
+    "201V4187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202404 185.0",
+    "코스피200 C 202404 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-03-15",
+   "last_front_regular_date": "2024-04-11",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202405",
+   "next_first_front_regular_date": "2024-04-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 238,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "7092a79a42adab5236f9907d50e265334e88b44796edab0a7dc7e1a2e2098e66",
+    "8dd8b0fb0f208184414a191561810c05ac3743ed054c27005db2a5aeac86e656"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202405",
+   "contract_code": null,
+   "contract_code_count": 222,
+   "contract_code_sample": [
+    "201V5205",
+    "201V5207"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202405 205.0",
+    "코스피200 C 202405 207.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-04-12",
+   "last_front_regular_date": "2024-05-09",
+   "regular_dates_observed": 18,
+   "next_contract_month": "202406",
+   "next_first_front_regular_date": "2024-05-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 222,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "1d838a0441496f6cd41503ae7cefa5831c3ba2bbcba0cfa02fec62af22f194ec",
+    "46e5abe6dbe531fed5b8631404f24cd1a599083d840c0ca9b200c02888fb8d4f"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202406",
+   "contract_code": null,
+   "contract_code_count": 262,
+   "contract_code_sample": [
+    "201V6160",
+    "201V6162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202406 160.0",
+    "코스피200 C 202406 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-05-10",
+   "last_front_regular_date": "2024-06-13",
+   "regular_dates_observed": 23,
+   "next_contract_month": "202407",
+   "next_first_front_regular_date": "2024-06-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 262,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "0b417802be2ed15504c299336ede7b9be2a81fba5f2a7d81afccc2b9612d6262",
+    "2a701c2a760759eaa855a92ebba94bede35c949d7c5a98b4c0e3c0f7273197dc"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202407",
+   "contract_code": null,
+   "contract_code_count": 234,
+   "contract_code_sample": [
+    "201V7205",
+    "201V7207"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202407 205.0",
+    "코스피200 C 202407 207.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-06-14",
+   "last_front_regular_date": "2024-07-11",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202408",
+   "next_first_front_regular_date": "2024-07-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 234,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "149dc1bceee34f99017e49eab3a2fbd3da639751cd2530e685c2df646ef95689",
+    "63e28df091b75cebd3b3511beff341024683e2d11e6438e81de63cf4f581573d"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202408",
+   "contract_code": null,
+   "contract_code_count": 214,
+   "contract_code_sample": [
+    "201V8230",
+    "201V8232"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202408 230.0",
+    "코스피200 C 202408 232.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-07-12",
+   "last_front_regular_date": "2024-08-08",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202409",
+   "next_first_front_regular_date": "2024-08-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 214,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "5f2f2e235829de627ba3396d72d6cb6afe2e10f266f72de0b418c58d0df8551c",
+    "c15114f028a69eecf84e951688136cddc4b2e500845786220b8102d27dde1d0e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202409",
+   "contract_code": null,
+   "contract_code_count": 250,
+   "contract_code_sample": [
+    "201V9185",
+    "201V9187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202409 185.0",
+    "코스피200 C 202409 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-08-09",
+   "last_front_regular_date": "2024-09-12",
+   "regular_dates_observed": 24,
+   "next_contract_month": "202410",
+   "next_first_front_regular_date": "2024-09-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 250,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "00970ed8a3ed726d87c69112243588e490bbc2561fe7c85751d28b6453d9ebd3",
+    "e333768d64bf50bfeea7470a9f4c530bedd5d30d019ad7b675fcc6b6f8f0e093"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202410",
+   "contract_code": null,
+   "contract_code_count": 226,
+   "contract_code_sample": [
+    "201VA235",
+    "201VA237"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202410 235.0",
+    "코스피200 C 202410 237.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-09-13",
+   "last_front_regular_date": "2024-10-10",
+   "regular_dates_observed": 14,
+   "next_contract_month": "202411",
+   "next_first_front_regular_date": "2024-10-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 226,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "0f82d5eac2a1272122b20b87dba09947c8c38ea264b096397f0ab06f173a7356",
+    "34b78d728a2c438af7b88770379ee32bd6c40d9f2e7149f500731b4b47de0665"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202411",
+   "contract_code": null,
+   "contract_code_count": 250,
+   "contract_code_sample": [
+    "201VB210",
+    "201VB212"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202411 210.0",
+    "코스피200 C 202411 212.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-10-11",
+   "last_front_regular_date": "2024-11-14",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202412",
+   "next_first_front_regular_date": "2024-11-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 250,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "4089f97a3d602e3da3c2a32c32d5a91388553cfdcd1be00a040957af705b8be4",
+    "d0f4fbe2f35bb46b00cccc29be1cda63350823a76efd37db2973f19a0ca02ecc"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202412",
+   "contract_code": null,
+   "contract_code_count": 290,
+   "contract_code_sample": [
+    "201VC160",
+    "201VC162"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202412 160.0",
+    "코스피200 C 202412 162.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-11-15",
+   "last_front_regular_date": "2024-12-12",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202501",
+   "next_first_front_regular_date": "2024-12-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 290,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "9b6f17aa544a3ab338cc83ac57cbe8a6ac6c61b7b824716c5140c32f22d02747",
+    "a9f0a9da9f99f174ba9026b26766bf8abd0a960377fbbd1f332519a2b1200c7e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202501",
+   "contract_code": null,
+   "contract_code_count": 250,
+   "contract_code_sample": [
+    "201W1210",
+    "201W1212"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202501 210.0",
+    "코스피200 C 202501 212.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2024-12-13",
+   "last_front_regular_date": "2025-01-09",
+   "regular_dates_observed": 17,
+   "next_contract_month": "202502",
+   "next_first_front_regular_date": "2025-01-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 250,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "64cdb245d83c9df7dd39e5020a00d49b88084a38e585afbe49ac8955a13a1093",
+    "9f66357e89f6b8125b69032549b85ec6e0f3e26a55efa682f24778a27c5c7330"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202502",
+   "contract_code": null,
+   "contract_code_count": 234,
+   "contract_code_sample": [
+    "201W2200",
+    "201W2202"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202502 200.0",
+    "코스피200 C 202502 202.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-01-10",
+   "last_front_regular_date": "2025-02-13",
+   "regular_dates_observed": 21,
+   "next_contract_month": "202503",
+   "next_first_front_regular_date": "2025-02-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 234,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "333975017a207438ae9e4268f81170c74f1223ce5ca04bf5755d694e677ecde2",
+    "ab4d1cb33bfbaa6c2abe7fb38a0121b4af13b3e07a56e1229a64fea3bce847d9"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202503",
+   "contract_code": null,
+   "contract_code_count": 262,
+   "contract_code_sample": [
+    "201W3195",
+    "201W3197"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202503 195.0",
+    "코스피200 C 202503 197.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-02-14",
+   "last_front_regular_date": "2025-03-13",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202504",
+   "next_first_front_regular_date": "2025-03-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 262,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "30077d3b0f33e747d943bda762ebc0b635d8616eb2b43278fc0a81d7fc90be20",
+    "5e0eeeec9f8e5d9fa31e6f4757685578b23aa22e14d9d07b95a15c234c0d6b28"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202504",
+   "contract_code": null,
+   "contract_code_count": 222,
+   "contract_code_sample": [
+    "201W4195",
+    "201W4197"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202504 195.0",
+    "코스피200 C 202504 197.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-03-14",
+   "last_front_regular_date": "2025-04-10",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202505",
+   "next_first_front_regular_date": "2025-04-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 222,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "8e010122e1960e35442271371ccd05a22cfc6eaf5dadf71bcec209c221fcfcc0",
+    "fd4ad3fe4043c40a1625020c0d159483edf938ead166d2d49cc1f244da181135"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202505",
+   "contract_code": null,
+   "contract_code_count": 214,
+   "contract_code_sample": [
+    "201W5195",
+    "201W5197"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202505 195.0",
+    "코스피200 C 202505 197.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-04-11",
+   "last_front_regular_date": "2025-05-08",
+   "regular_dates_observed": 17,
+   "next_contract_month": "202506",
+   "next_first_front_regular_date": "2025-05-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 214,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "114052e826d7d1a403edbe6bfb5cb71f886f09b02afae56de3a5a2121487e9a1",
+    "a8060b3e28742bbc615c9091225656b98996a80cd1a0c1a10e3fbb96bdb2b44b"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202506",
+   "contract_code": null,
+   "contract_code_count": 266,
+   "contract_code_sample": [
+    "201W6190",
+    "201W6192"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202506 190.0",
+    "코스피200 C 202506 192.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-05-09",
+   "last_front_regular_date": "2025-06-12",
+   "regular_dates_observed": 23,
+   "next_contract_month": "202507",
+   "next_first_front_regular_date": "2025-06-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 266,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "5124780d53829231df53e993d5410fcc4b6500a21e37247a058dede640e17e24",
+    "cb349af7f1039811b08adae1e5fa824a298e7c97c7b54599c01376617828edf3"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202507",
+   "contract_code": null,
+   "contract_code_count": 256,
+   "contract_code_sample": [
+    "201W7185",
+    "201W7187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202507 185.0",
+    "코스피200 C 202507 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-06-13",
+   "last_front_regular_date": "2025-07-10",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202508",
+   "next_first_front_regular_date": "2025-07-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 256,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "b245a860cf61ac7aa192d89848290a8e05163c6c6c7a744d16f2176265a8b1eb",
+    "bc3b708f0f37590ce36498024733a7c2bc0552da013ec11c29b9761b4fae16fb"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202508",
+   "contract_code": null,
+   "contract_code_count": 270,
+   "contract_code_sample": [
+    "201W8185",
+    "201W8187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202508 185.0",
+    "코스피200 C 202508 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-07-11",
+   "last_front_regular_date": "2025-08-14",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202509",
+   "next_first_front_regular_date": "2025-08-18",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 270,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "1a0cf103c046eb4ecf71e6a4c85e6c1c51090bcd1808f8444159e6890f340537",
+    "94c779f4a7e0582740b2ebca0ea67e27b775747058dc0c982b1967d0b47ba35e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202509",
+   "contract_code": null,
+   "contract_code_count": 278,
+   "contract_code_sample": [
+    "201W9185",
+    "201W9187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202509 185.0",
+    "코스피200 C 202509 187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-08-18",
+   "last_front_regular_date": "2025-09-11",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202510",
+   "next_first_front_regular_date": "2025-09-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 278,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "3031662736de3254c54ce4fd4b696b19c22fd743a7eb5c3c3271227808aa233d",
+    "4b7bdef86f860f52a6e7637217699750b461277802a71cac6093439e722b610e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202510",
+   "contract_code": null,
+   "contract_code_count": 292,
+   "contract_code_sample": [
+    "201WA200",
+    "201WA202"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202510 200.0",
+    "코스피200 C 202510 202.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-09-12",
+   "last_front_regular_date": "2025-10-02",
+   "regular_dates_observed": 15,
+   "next_contract_month": "202511",
+   "next_first_front_regular_date": "2025-10-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 292,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "5bcf6249df7a8749892dd03893bfe59df7fbe8b3f4b96d559743785bc0fe0290",
+    "6767c81ba6d1d9a874212341e59bfe910ee8792a99d57f029a3f82c052ac4596"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202511",
+   "contract_code": null,
+   "contract_code_count": 370,
+   "contract_code_sample": [
+    "201WB220",
+    "201WB222"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202511 220.0",
+    "코스피200 C 202511 222.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-10-10",
+   "last_front_regular_date": "2025-11-13",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202512",
+   "next_first_front_regular_date": "2025-11-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 370,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "61b1d04245f31b6f3a7155e5cda901ac4b85aa37e7691bb4cb915c33be6ad6d0",
+    "c2e4721493cd49b69cf37bbb453fe57ad12c8cf96a0e2eb5641e2314bc98cf2c"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202512",
+   "contract_code": null,
+   "contract_code_count": 410,
+   "contract_code_sample": [
+    "201WC170",
+    "201WC172"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202512 170.0",
+    "코스피200 C 202512 172.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-11-14",
+   "last_front_regular_date": "2025-12-11",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202601",
+   "next_first_front_regular_date": "2025-12-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 410,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "bac7d6b0ef245b32e890482a86d68482e2711c4826627ad1c28b6585a8c9b2ec",
+    "de4aedb2fd68c591cdc70620afeabf7ee00494dfaf196d38b8825047d09b3fc4"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202601",
+   "contract_code": null,
+   "contract_code_count": 358,
+   "contract_code_sample": [
+    "B0161300",
+    "B0161302"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202601 300.0",
+    "코스피200 C 202601 302.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2025-12-12",
+   "last_front_regular_date": "2026-01-08",
+   "regular_dates_observed": 17,
+   "next_contract_month": "202602",
+   "next_first_front_regular_date": "2026-01-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 358,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "11a35d4204f092335cff14ed7297e4d52f10af557f24ebbb8724fe4356ffade2",
+    "e8bf529e36250c8dffa0834458a35664a1d74f6280513548eb427c095cea76ed"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202602",
+   "contract_code": null,
+   "contract_code_count": 454,
+   "contract_code_sample": [
+    "B0162305",
+    "B0162307"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202602 305.0",
+    "코스피200 C 202602 307.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-01-09",
+   "last_front_regular_date": "2026-02-12",
+   "regular_dates_observed": 25,
+   "next_contract_month": "202603",
+   "next_first_front_regular_date": "2026-02-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 454,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "4dfc2b53b767a452f96b3c9bf7d17288fbc7937e9a576d4943a300824de0578e",
+    "eafdfae09e8e50600e31f28eab42fe6a3047bcd620a9ab88f9b1acb487453679"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202603",
+   "contract_code": null,
+   "contract_code_count": 674,
+   "contract_code_sample": [
+    "B0163185",
+    "B0163187"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202603   185.0",
+    "코스피200 C 202603   187.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-02-13",
+   "last_front_regular_date": "2026-03-12",
+   "regular_dates_observed": 16,
+   "next_contract_month": "202604",
+   "next_first_front_regular_date": "2026-03-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 674,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "4b36529757a0d48db9125d1ddeb071d8722aeadab5a6346fc4bcf4fdf823f51a",
+    "fa2134b6f92af9470b100661a1abf02805c31221e06cc2b02d64fb59e1975721"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202604",
+   "contract_code": null,
+   "contract_code_count": 522,
+   "contract_code_sample": [
+    "B0164375",
+    "B0164377"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202604   375.0",
+    "코스피200 C 202604   377.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-03-13",
+   "last_front_regular_date": "2026-04-09",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202605",
+   "next_first_front_regular_date": "2026-04-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 522,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "46ceb94f4fba96db72c3d152de4c8db2ddcab7316626cc2610d8b97a7a802e59",
+    "e89c4efb11f5717d09d4b71f3b49e537b04ba64f9ae512cdb47be038348853c9"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202605",
+   "contract_code": null,
+   "contract_code_count": 738,
+   "contract_code_sample": [
+    "B0165420",
+    "B0165422"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202605   420.0",
+    "코스피200 C 202605   422.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-04-10",
+   "last_front_regular_date": "2026-05-14",
+   "regular_dates_observed": 23,
+   "next_contract_month": "202606",
+   "next_first_front_regular_date": "2026-05-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 738,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "60ef8c087fb06839ab948a2d71976075e9ba604635d67cc78d0808f4b9f4f2c9",
+    "c81f14a4d85d538ea4627b4da794afa501f18bdb7a7c5e147fea5e9f7776b172"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202606",
+   "contract_code": null,
+   "contract_code_count": 1080,
+   "contract_code_sample": [
+    "B0166180",
+    "B0166182"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202606   180.0",
+    "코스피200 C 202606   182.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-05-15",
+   "last_front_regular_date": "2026-06-11",
+   "regular_dates_observed": 18,
+   "next_contract_month": "202607",
+   "next_first_front_regular_date": "2026-06-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1080,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "bfadcf5d27468bc63ba74549ca691e2e46a990d9dd0e0e999dcd4f04b0f72198",
+    "e72bcbc91b589ea9b49e40cde958b1ff4b173d79fb9eeceaff286a55c31e296f"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202607",
+   "contract_code": null,
+   "contract_code_count": 844,
+   "contract_code_sample": [
+    "B0167545",
+    "B0167547"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202607   545.0",
+    "코스피200 C 202607   547.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-06-12",
+   "last_front_regular_date": "2026-07-09",
+   "regular_dates_observed": 20,
+   "next_contract_month": "202608",
+   "next_first_front_regular_date": "2026-07-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 844,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "3b54b49f559a4260ffe21ed59d8bbacabc28b782a7df09377f9f39caaa4daadf",
+    "b865dc655e5329a4c1b91c6928539ac1070d75569824c71c822a4e79687afbad"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202608",
+   "contract_code": null,
+   "contract_code_count": 780,
+   "contract_code_sample": [
+    "B0168625",
+    "B0168627"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202608   625.0",
+    "코스피200 C 202608   627.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-07-10",
+   "last_front_regular_date": "2026-08-13",
+   "regular_dates_observed": 24,
+   "next_contract_month": "202609",
+   "next_first_front_regular_date": "2026-08-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1560,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "1f5834cad00fe6f9bf56b38d4b48354277472e48ea0791c50b3c6411f3d4f253",
+    "8d4f02ea8caaa9a64767519804aacb92c12bef221f22e7f5cffb614c3d705cfe"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202609",
+   "contract_code": null,
+   "contract_code_count": 1012,
+   "contract_code_sample": [
+    "B0169335",
+    "B0169337"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202609   335.0",
+    "코스피200 C 202609   337.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-08-14",
+   "last_front_regular_date": "2026-09-10",
+   "regular_dates_observed": 19,
+   "next_contract_month": "202610",
+   "next_first_front_regular_date": "2026-09-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1012,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "29db7d1e056fc16b58087055ab277a913afb32e1d2863fe3ea70e2715dd05695",
+    "8b25d2912ae326e7dfc925b9693ef1d93b2f254dcdc1ebee1380dcbf9c51ee41"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202610",
+   "contract_code": null,
+   "contract_code_count": 682,
+   "contract_code_sample": [
+    "B016A745",
+    "B016A747"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202610   745.0",
+    "코스피200 C 202610   747.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-09-11",
+   "last_front_regular_date": "2026-10-08",
+   "regular_dates_observed": 17,
+   "next_contract_month": "202611",
+   "next_first_front_regular_date": "2026-10-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 682,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "4c224642b1a69e6dc22b74798759bd9f3ac9e9ee71c855e0f88917e34d7bc4b5",
+    "aa82c482842730dcdcf12c06b4b913a231cdda47e6fea28ee5a14a7036ea9fbc"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "source_screen": "15018",
+   "menu_id": "MDC0201050104",
+   "product_ko": "코스피200 옵션",
+   "contract_type": "standard_monthly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202611",
+   "contract_code": null,
+   "contract_code_count": 692,
+   "contract_code_sample": [
+    "B016B732",
+    "B016B735"
+   ],
+   "contract_name_sample": [
+    "코스피200 C 202611   750.0",
+    "코스피200 C 202611   752.5"
+   ],
+   "option_types": [
+    "call",
+    "put"
+   ],
+   "first_front_regular_date": "2026-10-12",
+   "last_front_regular_date": "2026-11-02",
+   "regular_dates_observed": 16,
+   "next_contract_month": null,
+   "next_first_front_regular_date": null,
+   "missing_trading_days_before_roll": null,
+   "roll_status": "open_latest_month",
+   "last_date_rows": 692,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": 0.0,
+   "last_date_raw_sha256": [
+    "34e0b9c978e5eab92243398d8608abd72ac73a943a397571c18b8a96b9d6e0aa",
+    "fe313d9c6764a6958ab936449c9d444f7c812453b43ca6c84d89a7f3b29a37a2"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201903",
+   "contract_code": "101P3000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101P3000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 201903"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2019-01-02",
+   "last_front_regular_date": "2019-03-14",
+   "regular_dates_observed": 48,
+   "next_contract_month": "201906",
+   "next_first_front_regular_date": "2019-03-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "1f6c53d367888a5710526ed79937dfb29b58dd2ad28553cbfc344ee11e8efd0e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201906",
+   "contract_code": "101P6000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101P6000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 201906"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2019-03-15",
+   "last_front_regular_date": "2019-06-13",
+   "regular_dates_observed": 62,
+   "next_contract_month": "201909",
+   "next_first_front_regular_date": "2019-06-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "c5d587045a653c968bcf54d093b9f7cd24db67ba4a14751d2988d09fda2aa31d"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201909",
+   "contract_code": "101P9000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101P9000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 201909"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2019-06-14",
+   "last_front_regular_date": "2019-09-11",
+   "regular_dates_observed": 63,
+   "next_contract_month": "201912",
+   "next_first_front_regular_date": "2019-09-16",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "f9ed375405782da9869813e755b548449a299f6fbd6c6e5699ce3e67194def98"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "201912",
+   "contract_code": "101PC000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101PC000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 201912"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2019-09-16",
+   "last_front_regular_date": "2019-11-29",
+   "regular_dates_observed": 53,
+   "next_contract_month": "202003",
+   "next_first_front_regular_date": "2020-01-02",
+   "missing_trading_days_before_roll": [
+    "2019-12-02",
+    "2019-12-03",
+    "2019-12-04",
+    "2019-12-05",
+    "2019-12-06",
+    "2019-12-09",
+    "2019-12-10",
+    "2019-12-11",
+    "2019-12-12",
+    "2019-12-13",
+    "2019-12-16",
+    "2019-12-17",
+    "2019-12-18",
+    "2019-12-19",
+    "2019-12-20",
+    "2019-12-23",
+    "2019-12-24",
+    "2019-12-26",
+    "2019-12-27",
+    "2019-12-30"
+   ],
+   "roll_status": "missing_day_between",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "a9120b4b9dae9b4584fa4348c3764caeb65bb6cf0b043b301d4d44ccaa9006af"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202003",
+   "contract_code": "101Q3000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101Q3000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202003"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2020-01-02",
+   "last_front_regular_date": "2020-03-12",
+   "regular_dates_observed": 49,
+   "next_contract_month": "202006",
+   "next_first_front_regular_date": "2020-03-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "140af928c1162099b64731464ddcf80d54988b46afedce026c845aee384976f1"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202006",
+   "contract_code": "101Q6000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101Q6000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202006"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2020-03-13",
+   "last_front_regular_date": "2020-06-11",
+   "regular_dates_observed": 61,
+   "next_contract_month": "202009",
+   "next_first_front_regular_date": "2020-06-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "c821ce8cd44186ee694aae9671bba962780fa912fc492d17efdb0493567f66f1"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202009",
+   "contract_code": "101Q9000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101Q9000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202009"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2020-06-12",
+   "last_front_regular_date": "2020-09-10",
+   "regular_dates_observed": 64,
+   "next_contract_month": "202012",
+   "next_first_front_regular_date": "2020-09-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "b74377153e5ef34cb021f148e8bf4dd9dc67b72df5e8193798434a433344327e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202012",
+   "contract_code": "101QC000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101QC000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202012"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2020-09-11",
+   "last_front_regular_date": "2020-12-10",
+   "regular_dates_observed": 61,
+   "next_contract_month": "202103",
+   "next_first_front_regular_date": "2020-12-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "b5a6f1a9f1b7825668e5f8ae09a9cc6f616d4974b4602c7a291aea62847d8c51"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202103",
+   "contract_code": "101R3000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101R3000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202103"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2020-12-11",
+   "last_front_regular_date": "2021-03-11",
+   "regular_dates_observed": 59,
+   "next_contract_month": "202106",
+   "next_first_front_regular_date": "2021-03-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "a43c038fc20e63ee5c942dca335c7873c0d58ad23b5877b5466650e4f3e29b71"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202106",
+   "contract_code": "101R6000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101R6000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202106"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2021-03-12",
+   "last_front_regular_date": "2021-06-10",
+   "regular_dates_observed": 63,
+   "next_contract_month": "202109",
+   "next_first_front_regular_date": "2021-06-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "3aaa59fccd8349bafab030636832de18a4f9e076461b915e798a72cdbcc17d01"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202109",
+   "contract_code": "101R9000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101R9000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202109"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2021-06-11",
+   "last_front_regular_date": "2021-09-09",
+   "regular_dates_observed": 64,
+   "next_contract_month": "202112",
+   "next_first_front_regular_date": "2021-09-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "1739ee062d827caba35b896da4f939b19afb15bba53b62bf6ee945d70eb0ea17"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202112",
+   "contract_code": "101RC000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101RC000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202112"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2021-09-10",
+   "last_front_regular_date": "2021-12-09",
+   "regular_dates_observed": 60,
+   "next_contract_month": "202203",
+   "next_first_front_regular_date": "2021-12-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "3f0f3ea0dceaca00d47925c9958260ce7649d2ebb4d2ce773a208dcefaa7f9ef"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202203",
+   "contract_code": "101S3000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101S3000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202203"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2021-12-10",
+   "last_front_regular_date": "2022-03-10",
+   "regular_dates_observed": 59,
+   "next_contract_month": "202206",
+   "next_first_front_regular_date": "2022-03-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "391fbbf16ec07eea8f744e717fb4f4c82b872ca0be9756cbd34431b2e0879abc"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202206",
+   "contract_code": "101S6000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101S6000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202206"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2022-03-11",
+   "last_front_regular_date": "2022-06-09",
+   "regular_dates_observed": 62,
+   "next_contract_month": "202209",
+   "next_first_front_regular_date": "2022-06-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "d5f003c8578f55298192f50980595a61eb796a56dddd027c2604ac270fe85410"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202209",
+   "contract_code": "101S9000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101S9000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202209"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2022-06-10",
+   "last_front_regular_date": "2022-09-08",
+   "regular_dates_observed": 64,
+   "next_contract_month": "202212",
+   "next_first_front_regular_date": "2022-09-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 2,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "57d852c76a370c43f16405333eb1f9334941df460eeba4374e4a13d10bdf15fd"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202212",
+   "contract_code": "101SC000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101SC000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202212"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2022-09-13",
+   "last_front_regular_date": "2022-12-08",
+   "regular_dates_observed": 61,
+   "next_contract_month": "202303",
+   "next_first_front_regular_date": "2022-12-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "e7c6ac4b4938189563823a571df65f6a959b78392c2dac89ba5e781f1290790a"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202303",
+   "contract_code": "101T3000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101T3000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202303"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2022-12-09",
+   "last_front_regular_date": "2023-03-09",
+   "regular_dates_observed": 61,
+   "next_contract_month": "202306",
+   "next_first_front_regular_date": "2023-03-10",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "e8bad4c2311636308125313a68aee0c1d62708247b913412dbe19211f95acccc"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202306",
+   "contract_code": "101T6000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101T6000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202306"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2023-03-10",
+   "last_front_regular_date": "2023-06-08",
+   "regular_dates_observed": 61,
+   "next_contract_month": "202309",
+   "next_first_front_regular_date": "2023-06-09",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "29ab03d29eee26191ad1a2f06e0d8148061baad68589c12b968b216daa9b8c97"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202309",
+   "contract_code": "101T9000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101T9000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202309"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2023-06-09",
+   "last_front_regular_date": "2023-09-14",
+   "regular_dates_observed": 69,
+   "next_contract_month": "202312",
+   "next_first_front_regular_date": "2023-09-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "e12b8bcb16b1d5b7c119acd3f95cb8f5f2b8e44eac264161eeb023b4c711062a"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202312",
+   "contract_code": "101TC000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101TC000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202312"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2023-09-15",
+   "last_front_regular_date": "2023-12-14",
+   "regular_dates_observed": 60,
+   "next_contract_month": "202403",
+   "next_first_front_regular_date": "2023-12-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "79910be9b92ca3255ffd9dca4d5e0d4ae9cbe54b8508148a59911cecf1dbea44"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202403",
+   "contract_code": "101V3000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101V3000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202403"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2023-12-15",
+   "last_front_regular_date": "2024-03-14",
+   "regular_dates_observed": 59,
+   "next_contract_month": "202406",
+   "next_first_front_regular_date": "2024-03-15",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "8f31ed90cabd1e5ecc5574a057ac48d0b2cb3f93dca0ebe36deceeedd9eaa1f0"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202406",
+   "contract_code": "101V6000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101V6000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202406"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2024-03-15",
+   "last_front_regular_date": "2024-06-13",
+   "regular_dates_observed": 60,
+   "next_contract_month": "202409",
+   "next_first_front_regular_date": "2024-06-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "2c02eb83ced7b62c9d287007b65598dcd19e0293b07b4acda18292941cc5f2b4"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202409",
+   "contract_code": "101V9000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101V9000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202409"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2024-06-14",
+   "last_front_regular_date": "2024-09-12",
+   "regular_dates_observed": 64,
+   "next_contract_month": "202412",
+   "next_first_front_regular_date": "2024-09-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "23498ddd8b3f7bfda7e47109f71152005cc2b16e8b30c3c7fc33cb742ccd8add"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202412",
+   "contract_code": "101VC000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101VC000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202412"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2024-09-13",
+   "last_front_regular_date": "2024-12-12",
+   "regular_dates_observed": 59,
+   "next_contract_month": "202503",
+   "next_first_front_regular_date": "2024-12-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "cb4b795b6c8613368834aa0c666e8222fee35ee4847f3b8f7ca0e4e5dfe0aa8f"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202503",
+   "contract_code": "101W3000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101W3000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202503"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2024-12-13",
+   "last_front_regular_date": "2025-03-13",
+   "regular_dates_observed": 57,
+   "next_contract_month": "202506",
+   "next_first_front_regular_date": "2025-03-14",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "b79cd8db033de5140943e14683794de99c163e6cc5bbce20bc5addc68aa84f4e"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202506",
+   "contract_code": "101W6000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101W6000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202506"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2025-03-14",
+   "last_front_regular_date": "2025-06-12",
+   "regular_dates_observed": 60,
+   "next_contract_month": "202509",
+   "next_first_front_regular_date": "2025-06-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "31616c147e1aa183c69f0485f0fe7eba02efde29bfd5bf0a819bde91d307a242"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202509",
+   "contract_code": "101W9000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101W9000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202509"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2025-06-13",
+   "last_front_regular_date": "2025-09-11",
+   "regular_dates_observed": 64,
+   "next_contract_month": "202512",
+   "next_first_front_regular_date": "2025-09-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "ee8d23c8e1c422ba0619829449e3aec982a1c92e0c4777804471298645954266"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202512",
+   "contract_code": "101WC000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "101WC000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202512"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2025-09-12",
+   "last_front_regular_date": "2025-12-11",
+   "regular_dates_observed": 60,
+   "next_contract_month": "202603",
+   "next_first_front_regular_date": "2025-12-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "bcadd5e43f2ba2e627849487f18c5402e41e74574ff4f456b2ed1ad8983d1bbc"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202603",
+   "contract_code": "A0163000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "A0163000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202603"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2025-12-12",
+   "last_front_regular_date": "2026-03-12",
+   "regular_dates_observed": 58,
+   "next_contract_month": "202606",
+   "next_first_front_regular_date": "2026-03-13",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "7395c2f0781e700a1eda6d61f45c306d6c15ef7f2b824a01173d68b8055c21a7"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202606",
+   "contract_code": "A0166000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "A0166000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202606"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2026-03-13",
+   "last_front_regular_date": "2026-06-11",
+   "regular_dates_observed": 61,
+   "next_contract_month": "202609",
+   "next_first_front_regular_date": "2026-06-12",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "5dc25c2b31a1971f4e7cf01fce584d4e3937cb5d40f88aeb472efc8691c9c61c"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202609",
+   "contract_code": "A0169000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "A0169000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202609"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2026-06-12",
+   "last_front_regular_date": "2026-09-10",
+   "regular_dates_observed": 63,
+   "next_contract_month": "202612",
+   "next_first_front_regular_date": "2026-09-11",
+   "missing_trading_days_before_roll": [],
+   "roll_status": "closed",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "06f176cfa4df73d9fc2c3464d37045105a7628b64d6b453ac42f220d364a24fa"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "source_screen": "15003",
+   "menu_id": "MDC0201050103",
+   "product_ko": "코스피200 선물",
+   "contract_type": "standard_quarterly",
+   "contract_type_basis": "15003/15018 최근월물 조회 결과이고 종목명에 위클리·미니 표기가 없다",
+   "expiry_or_contract_month": "202612",
+   "contract_code": "A016C000",
+   "contract_code_count": 1,
+   "contract_code_sample": [
+    "A016C000"
+   ],
+   "contract_name_sample": [
+    "코스피200 F 202612"
+   ],
+   "option_types": [],
+   "first_front_regular_date": "2026-09-11",
+   "last_front_regular_date": "2026-11-02",
+   "regular_dates_observed": 33,
+   "next_contract_month": null,
+   "next_first_front_regular_date": null,
+   "missing_trading_days_before_roll": null,
+   "roll_status": "open_latest_month",
+   "last_date_rows": 1,
+   "last_date_oi_null_share": 0.0,
+   "last_date_iv_null_share": null,
+   "last_date_raw_sha256": [
+    "caae4d72c32eb9ecc4a40aa34c15465c9b296daffddfcb6613026d46ddca0ce4"
+   ],
+   "expiry_date": null,
+   "expiry_date_status": "not_in_source"
+  }
+ ]
+}

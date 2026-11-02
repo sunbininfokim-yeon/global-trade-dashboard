@@ -1,0 +1,52 @@
+{
+  "schema": "kospi200-etf-daily-update-v1",
+  "run_at": "2026-11-02T13:09:39.877447+00:00",
+  "run_at_kst_date": "2026-11-02",
+  "provider_published_at": "unknown",
+  "session_rule_ko": "KST 기준 오늘 이전 거래일, 또는 오늘이면 18:30 KST 이후(시간외 단일가 18:00 종료)만 완료로 본다.",
+  "dry_run": false,
+  "reports": [
+    {
+      "ticker": "069500",
+      "last_stored": "2026-10-30",
+      "adjusted_over_unadjusted_close_steps": [
+        {
+          "date": "2026-10-29",
+          "ratio_before": 0.998589,
+          "ratio_after": 1.0
+        }
+      ],
+      "overlap_days": 41,
+      "overlap_ohlc_mismatch": [],
+      "stored_volume_differs": [
+        {
+          "date": "2026-10-30",
+          "stored": 30157866.0,
+          "source": 30861155.0
+        }
+      ],
+      "appended": [
+        {
+          "date": "2026-11-02",
+          "open": 89280.0,
+          "high": 93855.0,
+          "low": 88850.0,
+          "close": 92945.0,
+          "volume": 23823190.0,
+          "volume_quality": "provisional_same_day",
+          "trading_value_krw": null,
+          "trading_value_quality": "missing",
+          "session": "regular_close_after_after_hours",
+          "source": "FinanceDataReader DataReader (Naver fchart, cash-distribution adjusted)",
+          "price_adjustment": "backward_cash_distribution",
+          "unadjusted_close": 92945.0,
+          "collected_at": "2026-11-02T13:09:39.877447+00:00",
+          "provider_published_at": "unknown",
+          "quality": "observed"
+        }
+      ],
+      "skipped": [],
+      "status": "ok"
+    }
+  ]
+}

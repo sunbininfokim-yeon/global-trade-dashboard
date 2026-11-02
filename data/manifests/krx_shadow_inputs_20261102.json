@@ -1,0 +1,525 @@
+{
+ "schema": "krx-shadow-inputs-report-v1",
+ "generated_at": "2026-11-02T14:03:54.549392+00:00",
+ "provider_published_at": "unknown",
+ "private_source": {
+  "repo": "sunbininfokim-yeon/krx-month-paste",
+  "commit": "1f3b9b42",
+  "regen_ledger": "data/manifests/krx_gap_regen_20261102.json",
+  "raw_json_ledger": "data/manifests/krx_raw_json_20261101.json"
+ },
+ "krx_queries": {
+  "screens": {
+   "15007": "MDC0201050302",
+   "15003": "MDC0201050103",
+   "15018": "MDC0201050104"
+  },
+  "condition_ko": "모든 조회는 하루 단위(시작일=종료일). 15007 일별추이·거래대금·백만원·매수/매도 파일 분리·세션 전체(기존과 동일). 15003 최근월물 코스피200 선물. 15018 최근월물 코스피200 옵션 콜/풋(정규·야간을 한 파일로 받고 빌더가 세션을 나눔).",
+  "single_day_check_ko": "15003·15018은 모든 행의 일자가 요청일인지, 15007은 파일의 날짜가 요청일 하나뿐인지 확인했다. 빈 표·로그인 화면·화면 번호 불일치는 거부한다.",
+  "successful_downloads": 24,
+  "session": "debug Chrome(CDP) 1개, 순차. bounce·401 없음",
+  "12012": "이번 범위 제외(수집하지 않음)"
+ },
+ "datasets": {
+  "krx_15007_k200_investor": {
+   "last_valid_date": "2026-11-02",
+   "rows_added": 7,
+   "added": "10-23 선물, 10-30 선물·콜·풋, 11-02 선물·콜·풋",
+   "unit_ko": "원본 CSV 백만원(*_mn_krw), normalized는 KRW(*_krw = 백만원×1e6)",
+   "net_check": "7행 모두 매수−매도=순매수, 매수 전체=매도 전체",
+   "weekly_scope": "unknown (조회 조건은 기존 이력과 같게 두었고 위클리 포함 여부는 화면에서 확인하지 못함)"
+  },
+  "kospi200_futures_oi": {
+   "last_valid_date": "2026-11-02",
+   "rows_added": 10,
+   "contract": "A016C000 코스피200 F 202612, regular",
+   "added_dates": [
+    "2026-09-28",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-16",
+    "2026-10-22",
+    "2026-10-26",
+    "2026-10-27",
+    "2026-10-29",
+    "2026-10-30",
+    "2026-11-02"
+   ]
+  },
+  "kospi200_option_oi": {
+   "last_valid_date": "2026-11-02",
+   "rows_added": 15112,
+   "front_month": "202611 (10-12부터), 202610은 10-08까지",
+   "iv_unit": "원천 % (예: 20.0 = 20%)",
+   "added_dates": [
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-16",
+    "2026-10-22",
+    "2026-10-26",
+    "2026-10-27",
+    "2026-10-29",
+    "2026-10-30",
+    "2026-11-02"
+   ],
+   "weekly": "없음(최근월물 조회, 종목명에 위클리 표기 없음)"
+  },
+  "kodex200_069500": {
+   "last_valid_date": "2026-11-02",
+   "rows_added": 1,
+   "source": "FinanceDataReader (Naver fchart, 현금분배 역조정)",
+   "overlap_days": 41,
+   "overlap_ohlc_mismatch": 0,
+   "ratio_steps": [
+    {
+     "date": "2026-10-29",
+     "ratio_before": 0.998589,
+     "ratio_after": 1.0
+    }
+   ],
+   "stored_volume_differs": [
+    {
+     "date": "2026-10-30",
+     "stored": 30157866.0,
+     "source": 30861155.0
+    }
+   ],
+   "note_ko": "기존 10-30 거래량은 지금 소스와 703,289주 다르다. 기존 값을 덮어쓰지 않았다. 같은 날 수집한 행의 거래량은 provisional_same_day로 표시한다."
+  }
+ },
+ "public_panel": {
+  "file": "New for anti/public/data/krx_deriv_flow_v1.json",
+  "old_values_changed": 0,
+  "dates_added": [
+   "2026-10-30",
+   "2026-11-02"
+  ],
+  "last_dates": {
+   "flow": "2026-11-02",
+   "futures_front": "2026-11-02",
+   "option_oi": "2026-11-02",
+   "program": "2026-09-21"
+  },
+  "structural_nulls_kept": "만기일(예: 2026-10-08) OI·ATM IV null 유지, 보간 없음"
+ },
+ "contract_meta": {
+  "file": "data/manifests/kospi200_contract_meta_v1.json",
+  "private_copy": "data/normalized/kospi200_contract_meta/contracts_v1.json",
+  "months": 127,
+  "expiry_date": "모두 null (원본에 만기일 열 없음)",
+  "roll_status": {
+   "closed": 124,
+   "missing_day_between": 1,
+   "open_latest_month": 2
+  }
+ },
+ "remaining_gaps": [
+  {
+   "dataset": "kospi_program",
+   "range": "2026-09-22..",
+   "reason": "이번 범위 제외"
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "range": "2019-12-02..2019-12-30 (20 거래일)",
+   "reason": "private 정규장 행 없음. 기존 manifest 결측 목록에는 2019-12-12만 있었다"
+  },
+  {
+   "dataset": "krx_deriv_flow_v1 missing_trading_days",
+   "dates": [
+    "2022-12-30",
+    "2023-12-29"
+   ],
+   "reason": "연말 휴장일로 보인다(공개 KOSPI200 지수 일봉에도 없음). 빌더 기대 달력 문제, 이번에 고치지 않음"
+  }
+ ],
+ "timing_ko": {
+  "trade_date": "KST 거래일",
+  "session": "regular/night 행 단위",
+  "collected_at": "우리가 파일을 받은 시각(UTC). 15007은 private raw의 collected_at.json, 15003/15018은 원본 JSON collected_at",
+  "provider_published_at": "unknown (증거 없음)",
+  "file_mtime": "수집 시각으로만 쓰고 제공처 공개 시각으로 쓰지 않음"
+ },
+ "raw_files": [
+  {
+   "dataset": "krx_15007_k200_investor",
+   "date": "2026-10-23",
+   "unit": "futures",
+   "sha256": {
+    "futures_buy.csv": "a84129e3fa042900fd678d144e6470f3ea58a4c0fed35a7b89d8ed0a26218697",
+    "futures_sell.csv": "1c8c116f24f3bf4ff34981e2802a547e019733c2f2df1bd1ced0a41e881a5538"
+   },
+   "collected_at": "2026-11-02T13:40:19Z",
+   "regular_expiry": null,
+   "contract_codes": null
+  },
+  {
+   "dataset": "krx_15007_k200_investor",
+   "date": "2026-10-30",
+   "unit": "futures",
+   "sha256": {
+    "futures_buy.csv": "1e89874d01322193801ac1cbc2eb06f844cff126d38e983c10304e227048bac9",
+    "futures_sell.csv": "cdcd32b50b9c418ca01da48fbea4dc86f1aa29d845a4b633e391a5a58d234393"
+   },
+   "collected_at": "2026-11-02T13:40:22Z",
+   "regular_expiry": null,
+   "contract_codes": null
+  },
+  {
+   "dataset": "krx_15007_k200_investor",
+   "date": "2026-10-30",
+   "unit": "options_call",
+   "sha256": {
+    "options_call_buy.csv": "c84d3fbf579dbeb5604dca561ab0cbe9fd464a461b83932a155aaabe2c5c9b57",
+    "options_call_sell.csv": "50a59122bde6fddff2726c85bc05b40db6d85c19ed942ec8184b80f6a2e6d5a3"
+   },
+   "collected_at": "2026-11-02T13:40:54Z",
+   "regular_expiry": null,
+   "contract_codes": null
+  },
+  {
+   "dataset": "krx_15007_k200_investor",
+   "date": "2026-10-30",
+   "unit": "options_put",
+   "sha256": {
+    "options_put_buy.csv": "066aceb7d17f6675fc3fc1bf4251244c60d02d2bdf4d45315f850127f46b37de",
+    "options_put_sell.csv": "3ff10885b601f4fac2589b6609aa52edb0f39b1dddca9114e554c5c8f7c6b0d6"
+   },
+   "collected_at": "2026-11-02T13:41:25Z",
+   "regular_expiry": null,
+   "contract_codes": null
+  },
+  {
+   "dataset": "krx_15007_k200_investor",
+   "date": "2026-11-02",
+   "unit": "futures",
+   "sha256": {
+    "futures_buy.csv": "b8a7cb46f7b192ae93130dcbddbf25c0f203bc092f8e802710e9b5f6978e949d",
+    "futures_sell.csv": "48e1c713463da02c33f7c35e6291cd8d7ef2c80dbbe5aa0726de5561bc828193"
+   },
+   "collected_at": "2026-11-02T13:42:49Z",
+   "regular_expiry": null,
+   "contract_codes": null
+  },
+  {
+   "dataset": "krx_15007_k200_investor",
+   "date": "2026-11-02",
+   "unit": "options_call",
+   "sha256": {
+    "options_call_buy.csv": "e89cef1714cdd04f6d5c38b94aa7b2228771311c1bb1deb9c26c225ed275438f",
+    "options_call_sell.csv": "44a943eff85030be87c6b98baa1cb4db0a9168af00bd92625ca5dad58c4a87ac"
+   },
+   "collected_at": "2026-11-02T13:43:25Z",
+   "regular_expiry": null,
+   "contract_codes": null
+  },
+  {
+   "dataset": "krx_15007_k200_investor",
+   "date": "2026-11-02",
+   "unit": "options_put",
+   "sha256": {
+    "options_put_buy.csv": "de8ce46e6774d419082d5643befcf37e1471defc3df8c0036a33b934c55f1922",
+    "options_put_sell.csv": "5aa52e9b7784a59f9c54a560ab3fffdd66f041aaeef87a35f52b87f6e92fb705"
+   },
+   "collected_at": "2026-11-02T13:44:01Z",
+   "regular_expiry": null,
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-09-28",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "4e0593e3325db1d671dfb8f67373269200067e1e0a8091baac3aa4b5a2fc0c1f"
+   },
+   "collected_at": "2026-11-02T13:44:19Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-09-30",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "42578fe1d43edce093fa8c813d9804040f0a02bf00b8054c9029ede6f1110073"
+   },
+   "collected_at": "2026-11-02T13:44:36Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-10-01",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "43cc473d7bd9c8f3e86e948ba765644e53f87f4ace46b36ed9f3ece7c9b11763"
+   },
+   "collected_at": "2026-11-02T13:44:52Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-10-16",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "e4177110e04577e2342f3f5a9119364b6dde4c289a72dfd12d2da8ed63984ca2"
+   },
+   "collected_at": "2026-11-02T13:45:09Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-10-22",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "6d148842dce2d1cd3c472e089755430634e1393c46f2c5e9b0019cc7e9d31994"
+   },
+   "collected_at": "2026-11-02T13:45:25Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-10-26",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "9c23eadabc026857676e82eeec33de0bb19595f7a02d2c915750dba7d12941b5"
+   },
+   "collected_at": "2026-11-02T13:45:41Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-10-27",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "6e0158683445729dd9d8aa94197adc761d32111f6c3313dfb519b031314b6cc4"
+   },
+   "collected_at": "2026-11-02T13:45:58Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-10-29",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "689f7043bb76d79215ed2e198577621679d853c191830adb7c31ca594ccb336e"
+   },
+   "collected_at": "2026-11-02T13:41:44Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-10-30",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "a5f23a0d6fc7fd9c43aba2f07693ee39969ba4c212a19bb345f64fdc24b983fc"
+   },
+   "collected_at": "2026-11-02T13:42:01Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_futures_oi",
+   "date": "2026-11-02",
+   "unit": null,
+   "sha256": {
+    "k200_front_regular.xlsx": "caae4d72c32eb9ecc4a40aa34c15465c9b296daffddfcb6613026d46ddca0ce4"
+   },
+   "collected_at": "2026-11-02T13:46:15Z",
+   "regular_expiry": null,
+   "contract_codes": [
+    "A016C000"
+   ]
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-09-28",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "b170f5dadc897186547aee5c420104b91e7f7756f5fa0e61db3f645a980395a1",
+    "front_call.xlsx": "56bb1b46424642723cb645cdfb530e228089d8564ce0fe6d42f59135c4c27d35"
+   },
+   "collected_at": "2026-11-02T13:49:34Z",
+   "regular_expiry": [
+    "202610"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-09-29",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "2a7629e40fd0fd01c55ef82ac78d88704fa6b19d308900100479a6ca86a6e127",
+    "front_call.xlsx": "116c8332b22e2e0a6f14eb090d03d10ee0cb02c300255b2cb7ad79df86495679"
+   },
+   "collected_at": "2026-11-02T13:50:14Z",
+   "regular_expiry": [
+    "202610"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-09-30",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "4ce8abaf82c9bcd22819547013491ccba8fa3bb7ec3b8eff144f93756a5091ce",
+    "front_call.xlsx": "330dffe7dcfc5720d70105f0d61e15115ebb7ddc9c21df1f72f54375b70f552e"
+   },
+   "collected_at": "2026-11-02T13:50:55Z",
+   "regular_expiry": [
+    "202610"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-10-01",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "a5eeba5d016be7aab2ece9a1b015fe48722105c3159d3ba18db2d67139c21667",
+    "front_call.xlsx": "676f2f113a65635d74d97e5b00f3c58cbbea6e02f29d49405f84b7f773b3bfe1"
+   },
+   "collected_at": "2026-11-02T13:51:36Z",
+   "regular_expiry": [
+    "202610"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-10-16",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "44acaf2ffacd4bf3598ff5aec945dd432f934dc0ce65ea42ad8fb32bb0ec9741",
+    "front_call.xlsx": "a0ecf6e351d46cf5c2bd5b32842811dc29abf8d3660787f68e24b6420fec4166"
+   },
+   "collected_at": "2026-11-02T13:52:16Z",
+   "regular_expiry": [
+    "202611"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-10-22",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "48e8e25580a7416b1a5394b53d5126390b37e21ed38d42f5ec4a7adb7de04e09",
+    "front_call.xlsx": "8b0623547afd399e6f7525c4bf28492f226c0b90dd1228b8638c77933f37817d"
+   },
+   "collected_at": "2026-11-02T13:52:57Z",
+   "regular_expiry": [
+    "202611"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-10-26",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "b8d5c2ffac9899129536e6573acfdea9b19f109686e46d996d9418620dd30760",
+    "front_call.xlsx": "6dad9c21534450f8c32eda281b189ec7af6f25b9c40e1da890160ce341cad79f"
+   },
+   "collected_at": "2026-11-02T13:53:37Z",
+   "regular_expiry": [
+    "202611"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-10-27",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "c9e09cdc58614d8cc68432d8fb1b0dc57b8dac4b82f0292a24b3f6bead4141e0",
+    "front_call.xlsx": "e2fe8f20bf505639c1b05ddde1e4bfafdb08536abf6b2ba29c05de066da1a7a9"
+   },
+   "collected_at": "2026-11-02T13:54:18Z",
+   "regular_expiry": [
+    "202611"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-10-29",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "27bd0eb6862b87df7daad63f485204d6483820539d2af9f015c4c0a4b21042d6",
+    "front_call.xlsx": "6dca1da6ce67dc9a09b490db0dec5b20281c19cfb91868df1fa9faa2b855fe33"
+   },
+   "collected_at": "2026-11-02T13:48:12Z",
+   "regular_expiry": [
+    "202611"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-10-30",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "5ef73e5d2dc3c7b4cd67e92267eae24db49c2b685fc97dd62801ec9cc1781ae5",
+    "front_call.xlsx": "e066e64b6495f00e8bb3521d8c29f369b95561614d10fad456d82bd6d39b57d4"
+   },
+   "collected_at": "2026-11-02T13:48:53Z",
+   "regular_expiry": [
+    "202611"
+   ],
+   "contract_codes": null
+  },
+  {
+   "dataset": "kospi200_option_oi",
+   "date": "2026-11-02",
+   "unit": null,
+   "sha256": {
+    "front_put.xlsx": "34e0b9c978e5eab92243398d8608abd72ac73a943a397571c18b8a96b9d6e0aa",
+    "front_call.xlsx": "fe313d9c6764a6958ab936449c9d444f7c812453b43ca6c84d89a7f3b29a37a2"
+   },
+   "collected_at": "2026-11-02T13:54:40Z",
+   "regular_expiry": [
+    "202611"
+   ],
+   "contract_codes": null
+  }
+ ],
+ "claude_handoff_ko": [
+  "update_kospi200_etf_daily.py --tickers 069500 을 매 거래일 18:30 KST 이후 1회 실행. 종료코드 2(provider_rebased/no_overlap)이면 붙이지 말고 알림",
+  "KRX 15007/15003/15018 일일 수집은 수집기 run_krx_gap_queue.py(디버그 Chrome 로그인 필요)로 가능. workflow 연결은 Claude 소유",
+  "build_krx_deriv_flow.py --source <krx-month-paste> 재실행 후 tests/test_krx_deriv_flow.py, validate_ui_contracts.py"
+ ],
+ "not_changed": [
+  "derivatives_activity_history_v1.jsonl",
+  "v1 model/forecast files",
+  "15001 not used"
+ ]
+}
