@@ -52,6 +52,14 @@
         return pending;
     }
 
+    // Kernel-based actuals (MPOB, Malaysia only): last 12 months and the change.
+    function monthlyHtml(m) {
+        if (!m || m.last12_kt == null) return '';
+        const yoy = m.last12_yoy_pct;
+        const tone = yoy == null ? '' : ` style="color:${yoy >= 0 ? '#86efac' : '#fdba74'}"`;
+        return `<span class="stock-note" style="grid-column:1 / -1;" title="${esc(m.note_ko || '')}">실측 기반 최근 12개월 ${mt(m.last12_kt)}만 t${yoy == null ? '' : ` <span${tone}>(전년비 ${yoy >= 0 ? '+' : ''}${yoy.toFixed(1)}%)</span>`} · 커널 생산 × 1.1</span>`;
+    }
+
     function rowHtml(r, max) {
         const v = r.p.adjusted_kt ?? r.p.trend_kt;
         const pill = PILL[r.wc.verdict] || PILL.neutral;
@@ -62,6 +70,7 @@
             <span class="nm">${esc(r.label)}<span class="pks-pill" style="background:${pill.bg};color:${pill.fg}">${esc(r.wc.verdict_ko || '—')}</span></span>
             <span class="vl" style="font-size:13px;">${change}</span>
             <div class="pks-bar"><u style="width:${(100 * r.p.trend_kt / max).toFixed(1)}%"></u><i style="width:${(100 * v / max).toFixed(1)}%"></i></div>
+            ${monthlyHtml(r.p.monthly)}
         </div>`;
     }
 
@@ -94,7 +103,7 @@
                 <div class="pks-total"><b>${mt(adj)}만 t</b>${pct < 0 ? `<s>${mt(trend)}만 t</s><span class="pks-down">${pct}%</span>` : '<span class="stock-note">추세 수준</span>'}</div>
                 <div class="stock-note" style="margin-bottom:4px;">${rows.length}개 산지 합계 · 흐린 막대 = 추세, 진한 막대 = 기상 판정 반영</div>
                 ${rows.map((r) => rowHtml(r, rows[0].p.trend_kt)).join('')}
-                <div class="stock-note" style="margin-top:6px;">PKS 생산 통계는 어느 나라도 공개하지 않습니다. CPO 추세의 약 25%(업계 경험치 22~30%)로 환산했고, 불리 판정은 과거 불리 해의 평균 감소폭을 적용했습니다. 행을 누르면 팜 카드의 판정 근거로 이동합니다.</div>`;
+                <div class="stock-note" style="margin-top:6px;">PKS 생산 통계는 어느 나라도 공개하지 않습니다. CPO 추세의 약 25%(업계 경험치 22~30%)로 환산했고, 말레이시아는 MPOB 월별 팜커널 생산으로 최근 12개월 실측 기반 추정을 함께 보여 줍니다. 불리 판정은 과거 불리 해의 평균 감소폭을 적용했습니다. 행을 누르면 팜 카드의 판정 근거로 이동합니다.</div>`;
             slot.querySelectorAll('[data-pks-country]').forEach((el) => el.addEventListener('click', () => {
                 // Crop monitor, then that country's regions (the palm card holds the call).
                 if (typeof setView !== 'function' || typeof showClimateCountry !== 'function') return;
