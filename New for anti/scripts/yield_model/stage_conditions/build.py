@@ -55,6 +55,8 @@ WINTERKILL_C = -15.0
 WEIGHTS = {"sow": 1.0, "veg": 1.0, "repro": 2.0, "fill": 2.0,
            "mature": 0.0, "harvest": 0.0, "dormant": 1.0}
 VERDICT_AT = 2.0
+# "Matched" needs unfavourable seasons this many points below every other class.
+MATCH_GAP_PCT = 2.0
 
 # Daily maximum above which a day counts as heat stress for the crop.
 HEAT_C = {
@@ -438,8 +440,10 @@ def history_ko(history):
     text = "{}~{}년 추세 대비 수확량: ".format(*history["years"]) + ", ".join(parts)
     unf, fav = c.get("unfavorable"), c.get("favorable")
     rest = [c[v]["mean_residual_pct"] for v in c if v != "unfavorable"]
-    if unf and rest and unf["mean_residual_pct"] < min(rest):
+    if unf and rest and unf["mean_residual_pct"] < min(rest) - MATCH_GAP_PCT:
         text += " · 불리 판정이 실제 감수와 맞았다"
+    elif unf and rest and unf["mean_residual_pct"] < min(rest):
+        text += " · 불리 해가 조금 낮았지만 차이가 작다(참고만)"
     elif unf and rest:
         text += " · 불리 판정이 실제 수확량과 잘 맞지 않았다(참고만)"
     if fav and unf is not None and fav["mean_residual_pct"] <= unf["mean_residual_pct"]:
