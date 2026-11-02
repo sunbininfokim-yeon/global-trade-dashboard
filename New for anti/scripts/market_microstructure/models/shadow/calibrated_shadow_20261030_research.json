@@ -1,0 +1,86 @@
+{
+  "schema_version": "calibrated-direction-shadow-v2",
+  "features": [
+    "momentum5",
+    "volatility20",
+    "today_return",
+    "today_gap",
+    "today_intraday",
+    "momentum20",
+    "call_rank60",
+    "put_rank60",
+    "call_mean5",
+    "put_mean5"
+  ],
+  "model": {
+    "kind": "baseline",
+    "mean": [
+      0.004566486591938507,
+      0.01237438581905186,
+      0.0009215772450236055,
+      0.0008436638276468879,
+      7.593871348413674e-05,
+      0.017504696428648683,
+      0.00014384349827387713,
+      0.004823551975450704,
+      -0.002472067674439974,
+      -0.0015258267899284665
+    ],
+    "scale": [
+      0.031949333086493906,
+      0.007126720236925085,
+      0.014724334431373744,
+      0.009992020799304942,
+      0.010620427529688893,
+      0.06800913529310763,
+      0.2943439429551549,
+      0.2973203818689735,
+      0.009825762094614013,
+      0.010442266055142745
+    ],
+    "coef": [
+      -0.07933777890278332,
+      0.03967236112777793,
+      -0.21068170211659945,
+      0.28332482855979363,
+      0.14781510717919227,
+      0.05775193048952981,
+      0.06669041471210375,
+      -0.09283936910030864,
+      -0.02622107591526944,
+      -0.030974899876425363
+    ],
+    "intercept": 0.021377688739954145
+  },
+  "calibrator": {
+    "slope": 0.0,
+    "intercept": -0.182321673863665,
+    "n": 121,
+    "at_zero_slope": true,
+    "method": "monotone sigmoid, fixed slope penalty .5*a^2"
+  },
+  "trained_through": "2026-10-30",
+  "last_base_target": "2026-04-29",
+  "first_calibration_source": "2026-04-30",
+  "last_calibration_target": "2026-10-30",
+  "n_base": 1738,
+  "n_calibration": 121,
+  "calendar_version": "4.5.6",
+  "calendar_overlay": "reviewed-six-closures-20261101",
+  "input_hashes": {
+    "board": "e6553d27059d2f2202c3d7a09e0cb73953febfba1ce59abd5524c156852c1956",
+    "prices": "eae506025fb06245727d71b342f063f822ba4f1eb58c260b068b672a10ee5852"
+  },
+  "created_at": "2026-11-02T02:05:39.555960+00:00",
+  "status": "shadow_only",
+  "implementation_sha256": {
+    "shadow_direction_engine.py": "495f0885d6959d0c244f26938d96a38fa2994bc14d72652d6f942fba82e5aa3d",
+    "option_direction_model.py": "2f82c96f208509b77089290bf0f30a2b29b392a52db9325423ac5de49cb9ace4",
+    "research_direction_diagnostics.py": "330b636990f5589c8163b4494b6f6e58e0a9ac6f01a5dff306a8c39f0333d4a3",
+    "research_option_dynamics.py": "df75e3d995204e8c5f5722f9ae168a2b22049a2a82e18577c55a28a8a5938848",
+    "research_pr791_evaluation.py": "f357cfbd7b76e2d92c7c20b279997bae5b3a920c84c80a2582106f3cbfc9762a"
+  },
+  "validation": "selected after retrospective research; incremental skill not established",
+  "target": "069500 next KRX session close > open; DOWN includes flat",
+  "model_id": "a40e5e67ba0220ebec4a73b3a488226136c3b633cd8839ca4846bdda68777aeb"
+}
