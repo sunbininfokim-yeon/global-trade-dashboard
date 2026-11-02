@@ -8,6 +8,10 @@ require('node:fs').mkdirSync(path.join(__dirname,'source_data'),{recursive:true}
   const page = await browser.newPage({viewport:{width:1440,height:1100}});
   const errors=[]; page.on('pageerror',e=>errors.push(e.message));
   await page.goto(baseURL);
+  await page.locator('#observed-view .panel').first().waitFor();
+  assert.equal(await page.locator('#observed-view').isVisible(),true);
+  assert.equal(await page.locator('#scenario-inputs').isHidden(),true);
+  await page.locator('#scenario-mode').click();
   await page.locator('#ship-view .metric').first().waitFor();
   assert.match(await page.locator('#ship-view').innerText(), /50,000 EUA/);
   assert.match(await page.locator('#ship-view').innerText(), /4,000,000 EUR/);
