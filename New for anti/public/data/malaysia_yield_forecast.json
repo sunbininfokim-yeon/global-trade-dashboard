@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T09:21:02.510313+00:00",
+  "generated_at": "2026-11-02T01:26:29.758558+00:00",
   "country": "Malaysia",
   "methodology": "USDA PSD crude palm oil production trend (forward-chained against itself), USDA's own estimate alongside, and a lagged-drought weather read-out that does not move the number (scripts/yield_model/palm_oil/).",
   "regions": {
@@ -108,6 +108,109 @@
         "summary_ko": "PKS(팜 껍질) 공급 추정: 추세 약 4,821천 t → 불리 판정이라 감소 쪽, 과거 불리 해 평균(-6.2%) 적용 시 약 4,522천 t",
         "note_ko": "CPO의 약 25%(업계 경험치 22~30%)로 환산한 추정이며 공식 통계가 아니다."
       },
+      "supply_indicators": {
+        "month": "2026-09",
+        "month_ko": "2026년 9월",
+        "provisional": false,
+        "stock_kt": 3511.0,
+        "stock_5y_avg_kt": 2152.0,
+        "stock_vs_5y_pct": 63.2,
+        "stock_mom_pct": 24.5,
+        "production_kt": 2117.0,
+        "production_3m_yoy_pct": 4.0,
+        "production_ytd_yoy_pct": 1.9,
+        "export_kt": 1120.0,
+        "export_3m_yoy_pct": -7.1,
+        "export_ytd_yoy_pct": 4.0,
+        "import_kt": 58.0,
+        "verdict": "ample",
+        "verdict_ko": "공급 여유",
+        "reason_ko": "재고가 같은 달 5년 평균보다 +63%, 최근 3개월 생산 전년비 +4%, 수출 -7%",
+        "series": [
+          {
+            "month": "2025-09",
+            "stock_kt": 2360.0,
+            "production_kt": 1841.0,
+            "export_kt": 1430.0
+          },
+          {
+            "month": "2025-10",
+            "stock_kt": 2508.0,
+            "production_kt": 2044.0,
+            "export_kt": 1696.0
+          },
+          {
+            "month": "2025-11",
+            "stock_kt": 2836.0,
+            "production_kt": 1936.0,
+            "export_kt": 1204.0
+          },
+          {
+            "month": "2025-12",
+            "stock_kt": 3051.0,
+            "production_kt": 1830.0,
+            "export_kt": 1332.0
+          },
+          {
+            "month": "2026-01",
+            "stock_kt": 2814.0,
+            "production_kt": 1576.0,
+            "export_kt": 1453.0
+          },
+          {
+            "month": "2026-02",
+            "stock_kt": 2702.0,
+            "production_kt": 1285.0,
+            "export_kt": 1076.0
+          },
+          {
+            "month": "2026-03",
+            "stock_kt": 2269.0,
+            "production_kt": 1377.0,
+            "export_kt": 1510.0
+          },
+          {
+            "month": "2026-04",
+            "stock_kt": 2307.0,
+            "production_kt": 1630.0,
+            "export_kt": 1293.0
+          },
+          {
+            "month": "2026-05",
+            "stock_kt": 2426.0,
+            "production_kt": 1516.0,
+            "export_kt": 1134.0
+          },
+          {
+            "month": "2026-06",
+            "stock_kt": 2542.0,
+            "production_kt": 1638.0,
+            "export_kt": 1216.0
+          },
+          {
+            "month": "2026-07",
+            "stock_kt": 2628.0,
+            "production_kt": 1793.0,
+            "export_kt": 1400.0
+          },
+          {
+            "month": "2026-08",
+            "stock_kt": 2819.0,
+            "production_kt": 1817.0,
+            "export_kt": 1275.0
+          },
+          {
+            "month": "2026-09",
+            "stock_kt": 3511.0,
+            "production_kt": 2117.0,
+            "export_kt": 1120.0
+          }
+        ],
+        "applied_to_forecast": false,
+        "note_ko": "MPOB 월간 통계(말레이시아 팜유 재고·생산·수출). 재고가 5년 평균보다 10% 넘게 많으면 공급 여유, 10% 넘게 적으면 빠듯으로 본다. 예측치에는 반영하지 않는다.",
+        "source": "MPOB, Summary of the Malaysian Palm Oil Industry",
+        "url": "https://bepi.mpob.gov.my/stat/web_report1.php?val=202684"
+      },
       "skill": {
         "beats_trend": false,
         "skill_vs_trend_only": 0.0,
@@ -119,8 +222,8 @@
       },
       "forecast_gate": {
         "publishable": true,
-        "recent_operational_mape": 0.04361269604836037,
-        "latest_operational_ape": 0.05211957116950786,
+        "recent_operational_mape": 0.0436126960483597,
+        "latest_operational_ape": 0.05211957116950444,
         "maximum_publish_mape": 0.15,
         "status": "publishable_baseline"
       },
