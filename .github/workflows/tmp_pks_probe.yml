@@ -1,0 +1,12 @@
+name: tmp PKS exporter probe
+on:
+  push:
+    branches: [claude/tmp-pks-exporter-probe]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tmpprobe/probe.py
