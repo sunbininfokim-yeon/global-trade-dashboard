@@ -59,6 +59,14 @@ jobs:
         working-directory: "New for anti/scripts/yield_model"
         run: python -m palm_oil.conditions backtest
 
+      - name: Refresh MPOB monthly supply (Malaysia)
+        # bepi.mpob.gov.my only answers from Actions. A failure keeps the
+        # committed CSV; the dump line prints the parsed table for debugging.
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m palm_oil.mpob dump | head -60 || true
+          python -m palm_oil.mpob || echo "::warning::MPOB refresh failed; using the committed CSV"
+
       - name: Run forecast
         working-directory: "New for anti/scripts/yield_model"
         run: python -m palm_oil.forecast

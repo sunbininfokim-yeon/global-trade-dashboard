@@ -99,3 +99,46 @@ def test_pks_outlook_follows_supported_unfavorable_call():
     flat = outlook(1000.0, {"verdict": "unfavorable", "unfavorable_supported": False, "unfavorable_mean_pct": -10.0})
     assert flat["direction"] == "flat" and flat["adjusted_kt"] is None
     assert outlook(None, {"verdict": "neutral"}) is None
+
+
+def _mpob_page(year, stock_scale=1.0):
+    months = ["Dec"] + ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    def row(label, base):
+        cells = "".join(f"<td>{base + 1000 * i:,.0f}</td>" for i in range(13))
+        return f"<tr><td>{label}</td>{cells}</tr>"
+    return (
+        "<table><tr><th>ITEM</th>" + "".join(f"<th>{m}</th>" for m in months) + "</tr>"
+        "<tr><td>PRODUCTION</td></tr>"
+        + row("Crude Palm Oil", 1_500_000) + row("Palm Kernel", 400_000)
+        + "<tr><td>CLOSING STOCK</td></tr>"
+        + row("Palm Oil", 1_700_000 * stock_scale) + row("Palm Kernel Oil", 200_000)
+        + "<tr><td>EXPORT</td></tr>" + row("Palm Oil", 1_300_000)
+        + "<tr><td>IMPORT</td></tr>" + row("CPO", 50_000)
+        + row("Palm Oil (CPO+PPO)", 60_000) + "</table>")
+
+
+def test_mpob_parse_maps_months_and_sections():
+    from palm_oil import mpob
+    rows = mpob.parse(_mpob_page(2025), 2025)
+    got = {(r["column"], r["date"]): r["value"] for r in rows}
+    assert got[("cpo_production_t", date(2024, 12, 1))] == 1_500_000
+    assert got[("cpo_production_t", date(2025, 12, 1))] == 1_512_000
+    assert got[("palm_oil_stock_t", date(2025, 1, 1))] == 1_701_000
+    assert got[("palm_oil_import_t", date(2025, 1, 1))] == 61_000
+    assert ("palm_oil_export_t", date(2025, 6, 1)) in got
+
+
+def test_mpob_later_page_wins_and_indicators():
+    from palm_oil import mpob
+    rows = []
+    for y in range(2019, 2026):
+        rows += mpob.parse(_mpob_page(y, 1.3 if y == 2025 else 1.0), y)
+    wide = mpob.tidy(rows)
+    # Dec 2024 is on the 2024 and 2025 pages: the 2025 page wins.
+    assert wide.set_index("date").palm_oil_stock_t["2024-12"] == 1_700_000 * 1.3
+    out = mpob.indicators(wide)
+    assert out["month"] == "2025-12"
+    assert out["stock_vs_5y_pct"] > 10 and out["verdict"] == "ample"
+    assert out["applied_to_forecast"] is False
+    assert len(out["series"]) == 13
