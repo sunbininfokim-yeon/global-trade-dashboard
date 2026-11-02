@@ -4902,6 +4902,7 @@ const renderSupplyIndicators = (si) => {
                 <span class="vl" style="font-size:12px;">${kt(si.pks.month_kt)}<span style="color:#64748b;"> · 12개월 전년비</span>${pct(si.pks.last12_yoy_pct)}</span></div>` : ''}
             ${strip}
             ${si.note_ko ? `<div class="climate-sub">${si.note_ko}</div>` : ''}
+            ${si.price_history_ko ? `<div class="climate-sub" style="margin-top:4px;">과거 검증: ${si.price_history_ko}</div>` : ''}
             ${si.pks?.note_ko ? `<div class="climate-sub">${si.pks.note_ko}</div>` : ''}
         </div>`;
 };
