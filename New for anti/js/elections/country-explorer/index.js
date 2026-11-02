@@ -14,7 +14,7 @@ import { nationalMonitoringStates, renderUsaElectionNational } from './special/u
 import { loadCongressionalDistricts, prefetchCongressionalDistricts } from '../data/geo-service.js?v=2';
 import { applyEopChart } from './special/usa-executive.js';
 import { applyCnPartyChart } from './special/chn-org.js';
-import { loadCnPartyChart } from '../data/chn-service.js';
+import { loadCnPartyChart, loadCnLeaders } from '../data/chn-service.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onRoute }) => {
     const modal = createModal(host.roots.modal);
@@ -116,7 +116,11 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             }
             // 중국 당 주요 직위 골격도 같은 방식이다 -- 화면이 그려지기 전에 한 번만
             // 읽고, 못 읽으면 모듈 내장 골격으로 그린다.
-            if (iso3 === 'CHN') applyCnPartyChart(await loadCnPartyChart());
+            if (iso3 === 'CHN') {
+                const [chart, leaders] = await Promise.all([loadCnPartyChart(), loadCnLeaders()]);
+                applyCnPartyChart(chart);
+                country.cn_leaders = leaders;
+            }
             if (iso3 === 'ISR') {
                 host.roots.country.innerHTML = '<div class="panel-header"><h2>이스라엘</h2><p>검토한 선거 자료를 연결하는 중입니다.<span class="inline-spinner" aria-hidden="true"></span></p></div>';
                 const result = await loadIsraelElectionAnalysis();

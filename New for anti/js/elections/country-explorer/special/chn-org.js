@@ -1,6 +1,7 @@
 import { escapeHtml } from '../../ui.js';
 import { orgBox, orgGrid, rowList, disclosure, noteLine, expandableGrid } from './org-chart.js';
 import { personName, personLine, isFallen, statusKo } from './china.js';
+import { chnLeadersToggle } from './chn-leaders.js';
 
 // 중국 우측 대시보드의 세 화면 -- 공산당 / 군부 / 국무원. 셋 다 미국 행정부 화면과
 // 같은 조직도(단 + 박스 격자)이고, 블록을 누르면 그 조직도가 뜬다. 미국이 행정부 ·
@@ -418,7 +419,7 @@ export const chnParty = (country) => {
     });
     const fallenRows = [...fallen.values()];
 
-    return `
+    return chnLeadersToggle(`
         <p class="section-title">1 · 정치국 상무위원회 ${standing.n ? `${standing.n}인` : ''}</p>
         ${orgGrid(pscBoxes(standing))}
         ${noteLine(standing.source ? `서열은 공식 발표 순서입니다 · 출처 ${standing.source}` : '서열은 공식 발표 순서입니다.')}
@@ -440,7 +441,7 @@ export const chnParty = (country) => {
 
         ${disclosure(`당·군 실각·조사 ${fallenRows.length}인 · 전체`, fallenRows)}
         ${footer(leadership)}
-    `;
+    `, country.cn_leaders);
 };
 
 export const chnMilitary = (country) => {

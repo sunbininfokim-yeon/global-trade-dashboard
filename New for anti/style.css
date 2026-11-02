@@ -7224,3 +7224,68 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .elections-office-polls > .elections-senate-scale, .elections-office-polls > .elections-senate-rows, .elections-office-polls > .elections-panel-note { margin-left: 6px; margin-right: 6px; }
 .elections-office-polls > .elections-senate-scale .is-dem { color: #60a5fa; } .elections-office-polls > .elections-senate-scale .is-gop { color: #f87171; }
 .elections-office-polls .elections-senate-verdict.is-dem { color: #60a5fa; } .elections-office-polls .elections-senate-verdict.is-gop { color: #f87171; }
+
+/* --- 중국 공산당 화면: 중앙 / 지방 / 기업 토글 (chn-leaders.js) ----------------
+   라디오 + 형제 선택자. 화면이 innerHTML 로 다시 그려져도 핸들러가 필요 없다. */
+.cn-lead-radio { position: absolute; opacity: 0; pointer-events: none; }
+.cn-lead-tabs { display: flex; gap: 6px; margin: 2px 0 10px; flex-wrap: wrap; }
+.cn-lead-tabs label {
+    cursor: pointer;
+    padding: 5px 12px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 999px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 650;
+}
+.cn-lead-tabs label:hover { border-color: #7dd3fc; }
+.cn-lead-pane { display: none; }
+.cn-lead-radio[data-cn-tab="central"]:checked ~ .cn-lead-pane[data-cn-pane="central"],
+.cn-lead-radio[data-cn-tab="provinces"]:checked ~ .cn-lead-pane[data-cn-pane="provinces"],
+.cn-lead-radio[data-cn-tab="enterprises"]:checked ~ .cn-lead-pane[data-cn-pane="enterprises"] { display: block; }
+.cn-lead-radio[data-cn-tab="central"]:checked ~ .cn-lead-tabs label[data-cn-tab="central"],
+.cn-lead-radio[data-cn-tab="provinces"]:checked ~ .cn-lead-tabs label[data-cn-tab="provinces"],
+.cn-lead-radio[data-cn-tab="enterprises"]:checked ~ .cn-lead-tabs label[data-cn-tab="enterprises"] {
+    background: rgba(220, 38, 38, 0.18);
+    border-color: #f87171;
+    color: #fee2e2;
+}
+.cn-lead-radio:focus-visible + .cn-lead-radio,
+.cn-lead-radio:focus-visible ~ .cn-lead-tabs { outline: 1px dashed #7dd3fc; outline-offset: 3px; }
+.cn-lead-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-bottom: 4px; }
+.cn-lead-summary .elections-card { padding: 6px 8px; margin: 0; }
+@media (max-width: 520px) { .cn-lead-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.cn-lead-provinces { display: grid; gap: 5px; margin: 8px 0; }
+.cn-lead-province {
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 7px;
+    padding: 6px 9px;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+.cn-lead-province[open] { border-color: rgba(125, 211, 252, 0.4); }
+.cn-lead-province summary {
+    cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+}
+.cn-lead-province summary b { color: #f1f5f9; min-width: 64px; }
+.cn-lead-province summary span { color: #cbd5e1; }
+.cn-lead-badge {
+    font-style: normal;
+    font-size: 10.5px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: #94a3b8;
+}
+.cn-lead-badge.is-acting { border-color: #f59e0b; color: #fbbf24; }
+.cn-lead-badge.is-vacant { border-color: #94a3b8; color: #e2e8f0; background: rgba(148, 163, 184, 0.15); }
+.cn-lead-badge.is-concurrent { border-color: #a78bfa; color: #c4b5fd; }
+.cn-lead-badge.is-new { border-color: #34d399; color: #6ee7b7; }
+.cn-lead-badge.is-pb { border-color: #f87171; color: #fca5a5; }
+.cn-lead-province .elections-disclosure-rows strong { font-weight: 500; }
+.cn-lead-pb-row { display: grid !important; grid-template-columns: 1fr auto; gap: 2px 10px; }
+.cn-lead-pb-row small { grid-column: 1 / -1; color: #94a3b8; font-size: 11px; }
