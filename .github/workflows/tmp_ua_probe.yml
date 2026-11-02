@@ -8,37 +8,36 @@ jobs:
     permissions: {contents: write}
     steps:
       - uses: actions/checkout@v4
-      - run: pip install openpyxl xlrd pandas
       - run: |
           mkdir -p probe/z
-          B=https://stat.gov.ua/sites/default/files
-          curl -sL -m 120 -A "Mozilla/5.0" -o probe/z/annual.zip "$B/2023-08/%D0%9F%D0%BB%D0%BE%D1%89%D1%96%2C%20%D0%B2%D0%B0%D0%BB%D0%BE%D0%B2%D1%96%20%D0%B7%D0%B1%D0%BE%D1%80%D0%B8%20%D1%82%D0%B0%20%D1%83%D1%80%D0%BE%D0%B6%D0%B0%D0%B9%D0%BD%D1%96%D1%81%D1%82%D1%8C%20%D1%81%D1%96%D0%BB%D1%8C%D1%81%D1%8C%D0%BA%D0%BE%D0%B3%D0%BE%D1%81%D0%BF%D0%BE%D0%B4%D0%B0%D1%80%D1%81%D1%8C%D0%BA%D0%B8%D1%85%20%D0%BA%D1%83%D0%BB%D1%8C%D1%82%D1%83%D1%80%20%D0%B7%D0%B0%20%D1%97%D1%85%20%D0%B2%D0%B8%D0%B4%D0%B0%D0%BC%D0%B8.zip" || true
-          curl -sL -m 120 -A "Mozilla/5.0" -o probe/z/monthly.zip "$B/2025-11/ovuzp_sg.zip" || true
-          curl -sL -m 60 -A "Mozilla/5.0" -o probe/devapi.html https://stat.gov.ua/en/development-api || true
-          ls -la probe/z > probe/zip.txt
-          python3 - <<'PY2' >> probe/zip.txt 2>&1 || true
-          import zipfile, io, pandas as pd
-          for z in ("probe/z/annual.zip","probe/z/monthly.zip"):
-              try:
-                  zf = zipfile.ZipFile(z)
-              except Exception as e:
-                  print(z, e); continue
-              for n in zf.namelist():
-                  try: nn = n.encode("cp437").decode("utf-8")
-                  except Exception: nn = n
-                  print("##", z, nn, zf.getinfo(n).file_size)
-              for n in zf.namelist()[:40]:
-                  if n.endswith((".xlsx",".xls")):
-                      try:
-                          xl = pd.read_excel(io.BytesIO(zf.read(n)), sheet_name=None, header=None)
-                          for sh, df in list(xl.items())[:2]:
-                              print("=== sheet", sh, df.shape); print(df.head(14).to_string(max_colwidth=28)[:2500])
-                      except Exception as e: print("ERR", e)
-                      break
+          curl -sL -m 60 -A "Mozilla/5.0" https://stat.gov.ua/en/development-api/step-by-step-example -o probe/step.html || true
+          grep -oE 'https?://[^"<> ]*(sdmx|SDMX|rest|api)[^"<> ]*' probe/step.html | sed 's/&amp;/\&/g' | sort -u > probe/sdmx_urls.txt || true
+          cat probe/sdmx_urls.txt
+          u=$(grep -iE 'dataflow' probe/sdmx_urls.txt | head -1)
+          echo "dataflow url: $u"
+          [ -n "$u" ] && curl -sL -m 120 -H "Accept: application/json" "$u" -o probe/dataflows.json || true
+          python3 - <<'PY2' > probe/dataflows.txt 2>&1 || true
+          import json,re
+          s=open("probe/dataflows.json",encoding="utf-8",errors="replace").read()
+          print(len(s)); print(s[:600])
+          try:
+              d=json.loads(s); flows=d.get("data",{}).get("dataflows",[]) or d.get("Dataflows",[])
+              for f in flows:
+                  n=json.dumps(f.get("names",f.get("name","")),ensure_ascii=False)
+                  if re.search(r"(?i)crop|harvest|yield|agri|урож|рослин|сільськ|зібран|культур", n+f.get("id","")): print(f.get("agencyID"), f.get("id"), f.get("version"), n[:200])
+          except Exception as e: print("ERR",e)
           PY2
+          curl -sL -m 180 -A "Mozilla/5.0" -o probe/z/rosl.zip "https://stat.gov.ua/sites/default/files/2023-08/%D0%A0%D0%BE%D1%81%D0%BB%D0%B8%D0%BD%D0%BD%D0%B8%D1%86%D1%82%D0%B2%D0%BE%20%281991-2022%29.zip" || true
           python3 -c "
-          import re,html;s=open('probe/devapi.html').read();t=re.sub(r'<script.*?</script>','',s,flags=re.S);t=re.sub(r'<[^>]+>',' ',t);print(re.sub(r'\s+',' ',html.unescape(t))[:4000])
-          print(sorted(set(re.findall(r'https?://[^\"\' <>]+', s)))[:80])" > probe/devapi.txt || true
+          import zipfile
+          z=zipfile.ZipFile('probe/z/rosl.zip')
+          for i in z.infolist():
+              n=i.filename
+              try: n=n.encode('cp437').decode('utf-8')
+              except Exception: pass
+              print(i.file_size, n)
+          " > probe/rosl_list.txt 2>&1 || true
+          rm -f probe/z/*.zip
       - run: |
           git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
           git add probe; git commit -qm "probe2"; git push
