@@ -9,35 +9,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          mkdir -p probe/z
-          curl -sL -m 60 -A "Mozilla/5.0" https://stat.gov.ua/en/development-api/step-by-step-example -o probe/step.html || true
-          grep -oE 'https?://[^"<> ]*(sdmx|SDMX|rest|api)[^"<> ]*' probe/step.html | sed 's/&amp;/\&/g' | sort -u > probe/sdmx_urls.txt || true
-          cat probe/sdmx_urls.txt
-          u=$(grep -iE 'dataflow' probe/sdmx_urls.txt | head -1)
-          echo "dataflow url: $u"
-          [ -n "$u" ] && curl -sL -m 120 -H "Accept: application/json" "$u" -o probe/dataflows.json || true
-          python3 - <<'PY2' > probe/dataflows.txt 2>&1 || true
-          import json,re
-          s=open("probe/dataflows.json",encoding="utf-8",errors="replace").read()
-          print(len(s)); print(s[:600])
-          try:
-              d=json.loads(s); flows=d.get("data",{}).get("dataflows",[]) or d.get("Dataflows",[])
-              for f in flows:
-                  n=json.dumps(f.get("names",f.get("name","")),ensure_ascii=False)
-                  if re.search(r"(?i)crop|harvest|yield|agri|урож|рослин|сільськ|зібран|культур", n+f.get("id","")): print(f.get("agencyID"), f.get("id"), f.get("version"), n[:200])
-          except Exception as e: print("ERR",e)
+          mkdir -p probe/es
+          B="https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
+          for t in apro_cpshr apro_cpnhr; do
+            for c in C1110 C1100 C1500; do
+              curl -s -m 120 "$B/$t?format=JSON&lang=EN&crops=$c&strucpro=YI_HU_EU" -o probe/es/${t}_${c}.json || true
+              curl -s -m 120 "$B/$t?format=JSON&lang=EN&crops=$c&strucpro=AR" -o probe/es/${t}_${c}_ar.json || true
+            done
+          done
+          python3 - <<'PY2' > probe/es.txt 2>&1 || true
+          import json,glob,collections
+          for f in sorted(glob.glob("probe/es/*.json")):
+              try: d=json.load(open(f))
+              except Exception as e: print(f,"ERR",open(f).read()[:200]); continue
+              if "value" not in d: print(f, str(d)[:300]); continue
+              dims=d["id"]; size=d["size"]
+              geo=d["dimension"]["geo"]["category"]["index"]; tim=d["dimension"]["time"]["category"]["index"]
+              inv={v:k for k,v in geo.items()}; tinv={v:k for k,v in tim.items()}
+              gi=dims.index("geo"); ti=dims.index("time")
+              stride=[1]*len(size)
+              for i in range(len(size)-2,-1,-1): stride[i]=stride[i+1]*size[i+1]
+              per=collections.defaultdict(dict)
+              for k,v in d["value"].items():
+                  k=int(k); g=(k//stride[gi])%size[gi]; t=(k//stride[ti])%size[ti]
+                  per[inv[g]][tinv[t]]=v
+              fr={g:per[g] for g in per if g.startswith("FR") and len(g)==4}
+              print(f, "geos",len(geo),"times",min(tim),max(tim),"values",len(d["value"]), "FR NUTS2:",len(fr))
+              for g in sorted(fr)[:30]:
+                  ys=sorted(fr[g]); print("  ",g,ys[0] if ys else "",ys[-1] if ys else "",len(ys), [fr[g][y] for y in ys[-4:]])
           PY2
-          curl -sL -m 180 -A "Mozilla/5.0" -o probe/z/rosl.zip "https://stat.gov.ua/sites/default/files/2023-08/%D0%A0%D0%BE%D1%81%D0%BB%D0%B8%D0%BD%D0%BD%D0%B8%D1%86%D1%82%D0%B2%D0%BE%20%281991-2022%29.zip" || true
-          python3 -c "
-          import zipfile
-          z=zipfile.ZipFile('probe/z/rosl.zip')
-          for i in z.infolist():
-              n=i.filename
-              try: n=n.encode('cp437').decode('utf-8')
-              except Exception: pass
-              print(i.file_size, n)
-          " > probe/rosl_list.txt 2>&1 || true
-          rm -f probe/z/*.zip
+          rm -rf probe/es
       - run: |
           git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
           git add probe; git commit -qm "probe2"; git push
