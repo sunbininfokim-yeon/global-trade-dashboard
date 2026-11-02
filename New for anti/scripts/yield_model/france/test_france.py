@@ -8,9 +8,9 @@ from france.regions import NORTH_WHEAT, WEST_MAIZE, _wheat
 def test_region_yield_area_weighted_and_partial_years_dropped(tmp_path):
     rows = []
     for year, (ya, aa, yb, ab) in {2020: (7.0, 100, 9.0, 300), 2021: (6.0, 100, None, None)}.items():
-        rows += [("C1111", eurostat.YIELD, "FRB0", year, ya), ("C1111", eurostat.AREA, "FRB0", year, aa)]
+        rows += [("C1110", eurostat.YIELD, "FRB0", year, ya), ("C1110", eurostat.AREA, "FRB0", year, aa)]
         if yb:
-            rows += [("C1111", eurostat.YIELD, "FRE2", year, yb), ("C1111", eurostat.AREA, "FRE2", year, ab)]
+            rows += [("C1110", eurostat.YIELD, "FRE2", year, yb), ("C1110", eurostat.AREA, "FRE2", year, ab)]
     p = tmp_path / "e.csv"
     pd.DataFrame(rows, columns=["crops", "strucpro", "geo", "year", "value"]).to_csv(p, index=False)
     out = eurostat.region_yield("winter_wheat", ["FRB0", "FRE2"], path=p)
