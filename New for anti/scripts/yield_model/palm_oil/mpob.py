@@ -31,10 +31,12 @@ MPOB_CSV = os.path.join(HERE, "training", "mpob_monthly.csv")
 URL = "https://bepi.mpob.gov.my/stat/web_report1.php?val={year}84"
 FIRST_YEAR = 2010
 
-# (section heading, row label) -> column. Matching is case-insensitive and
-# on the start of the label, so "Palm Oil (CPO+PPO)" matches "palm oil".
+# (section heading, row label) -> column. Matching is case-insensitive, on
+# the whole label or the label before " (", so "Palm Oil (CPO+PPO)" matches
+# "palm oil" but "Palm Kernel Oil" does not match "palm kernel".
 SERIES = {
     ("PRODUCTION", "crude palm oil"): "cpo_production_t",
+    ("PRODUCTION", "palm kernel"): "pk_production_t",
     ("CLOSING STOCK", "palm oil"): "palm_oil_stock_t",
     ("EXPORT", "palm oil"): "palm_oil_export_t",
     ("IMPORT", "palm oil"): "palm_oil_import_t",
@@ -44,7 +46,12 @@ SECTIONS = ("PRODUCTION", "CLOSING STOCK", "OPENING STOCK", "EXPORT", "IMPORT",
 MONTHS = ["jan", "feb", "mar", "apr", "may", "jun",
           "jul", "aug", "sep", "oct", "nov", "dec"]
 
-MONTH_KO = {m: f"{i + 1}월" for i, m in enumerate(MONTHS)}
+# PKS (shell) per tonne of palm kernel. Mills recover roughly as much shell
+# as kernel from a bunch (each ~5-7% of FFB weight); industry rule of thumb,
+# not a measured national ratio. Cross-check: 2025 kernel x 1.1 lands within
+# a few % of the CPO x 0.25 figure pks.py uses.
+PKS_PER_KERNEL = 1.1
+PKS_PER_KERNEL_RANGE = (0.9, 1.3)
 
 
 def log(msg):
@@ -126,7 +133,7 @@ def parse(html, year):
             continue
         name = label.lower()
         column = next((c for (s, l), c in SERIES.items()
-                       if s == section and name.startswith(l)), None)
+                       if s == section and (name == l or name.startswith(l + " ("))), None)
         if column is None:
             continue
         # Months run Dec(Y-1), Jan(Y) ... Dec(Y); later cells beyond 13 are
@@ -179,6 +186,8 @@ def collect(today=None):
         raise SystemExit("MPOB: nothing parsed")
     wide = tidy(rows)
     missing = [c for c in SERIES.values() if c not in wide.columns]
+    # A page without the kernel row only loses the PKS line, not the run.
+    missing = [c for c in missing if c != "pk_production_t"]
     if missing:
         raise SystemExit(f"MPOB: rows not found: {', '.join(missing)}")
     os.makedirs(os.path.dirname(MPOB_CSV), exist_ok=True)
@@ -265,11 +274,13 @@ def indicators(frame=None):
         parts.append(f"수출 {exp3:+.0f}%")
     series = []
     for _, r in d.tail(13).iterrows():
+        pk = r.get("pk_production_t")
         series.append({
             "month": r.date.strftime("%Y-%m"),
             "stock_kt": _kt(r.get("palm_oil_stock_t")),
             "production_kt": _kt(r.get("cpo_production_t")),
             "export_kt": _kt(r.get("palm_oil_export_t")),
+            "pks_kt": _kt(None if pk is None or pd.isna(pk) else pk * PKS_PER_KERNEL),
         })
     return {
         "month": last.date.strftime("%Y-%m"),
@@ -288,6 +299,8 @@ def indicators(frame=None):
         "export_ytd_yoy_pct": _pct(ytd("palm_oil_export_t", year),
                                    ytd("palm_oil_export_t", year - 1)),
         "import_kt": _kt(last.get("palm_oil_import_t")),
+        "pks": _pks(by, year, month, last12=lambda c, y: _sum12(by, c, y, month),
+                    last3=last3, ytd=ytd),
         "verdict": verdict,
         "verdict_ko": verdict_ko,
         "reason_ko": ", ".join(parts) if parts else None,
@@ -299,6 +312,42 @@ def indicators(frame=None):
         "source": "MPOB, Summary of the Malaysian Palm Oil Industry",
         "url": URL.format(year=year),
     }
+
+
+def _sum12(by, col, year, month):
+    if col not in by:
+        return None
+    end = pd.Timestamp(year, month, 1)
+    s = by[col][(by.index > end - pd.DateOffset(months=12)) & (by.index <= end)].dropna()
+    return s.sum() if len(s) == 12 else None
+
+
+def _pks(by, year, month, last12, last3, ytd):
+    """Monthly PKS estimate from MPOB palm kernel output, or None."""
+    col = "pk_production_t"
+    if col not in by or pd.isna(by[col].get(pd.Timestamp(year, month, 1))):
+        return None
+    pk = by[col][pd.Timestamp(year, month, 1)]
+    t12, p12 = last12(col, year), last12(col, year - 1)
+    k = PKS_PER_KERNEL
+    out = {
+        "month_kt": _kt(pk * k),
+        "kernel_month_kt": _kt(pk),
+        "last12_kt": _kt(None if t12 is None else t12 * k),
+        "last12_range_kt": (None if t12 is None else
+                            [_kt(t12 * PKS_PER_KERNEL_RANGE[0]), _kt(t12 * PKS_PER_KERNEL_RANGE[1])]),
+        "last12_yoy_pct": _pct(t12, p12),
+        "m3_yoy_pct": _pct(last3(col, year), last3(col, year - 1)),
+        "ytd_yoy_pct": _pct(ytd(col, year), ytd(col, year - 1)),
+        "ratio_to_kernel": k,
+    }
+    parts = [f"최근 12개월 PKS 약 {out['last12_kt'] / 10:,.0f}만 t" if out["last12_kt"] else None,
+             f"전년비 {out['last12_yoy_pct']:+.1f}%" if out["last12_yoy_pct"] is not None else None,
+             f"최근 3개월 {out['m3_yoy_pct']:+.1f}%" if out["m3_yoy_pct"] is not None else None]
+    out["summary_ko"] = ", ".join(p for p in parts if p)
+    out["note_ko"] = ("MPOB 월별 팜커널 생산 × 1.1(껍질/커널, 업계 경험치 0.9~1.3)로 환산한 실측 기반 "
+                      "추정. 커널 생산은 공식 통계, 비율은 추정이다.")
+    return out
 
 
 def main(argv):

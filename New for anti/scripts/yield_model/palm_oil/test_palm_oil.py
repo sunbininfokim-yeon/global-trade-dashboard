@@ -111,8 +111,10 @@ def _mpob_page(year, stock_scale=1.0):
         "<table><tr><th></th>" + "".join(f"<th>{m}</th>" for m in months) + "</tr>"
         "<tr><td>PRODUCTION</td></tr>"
         + row("Crude Palm Oil", 1_500_000) + row("Palm Kernel", 400_000)
+        + row("Palm Kernel Oil", 180_000)
         + "<tr><td>CLOSING STOCK</td></tr>"
-        + row("Palm Oil", 1_700_000 * stock_scale) + row("Palm Kernel Oil", 200_000)
+        + row("Palm Oil", 1_700_000 * stock_scale) + row("Palm Kernel", 150_000)
+        + row("Palm Kernel Oil", 200_000)
         + "<tr><td>EXPORT</td></tr>" + row("Palm Oil", 1_300_000)
         + "<tr><td>IMPORT</td></tr>" + row("CPO", 50_000)
         + row("Palm Oil (CPO+PPO)", 60_000) + "</table>")
@@ -144,3 +146,9 @@ def test_mpob_later_page_wins_and_indicators():
     assert out["stock_vs_5y_pct"] > 10 and out["verdict"] == "ample"
     assert out["applied_to_forecast"] is False
     assert len(out["series"]) == 13
+    # Kernel row parsed (not "Palm Kernel Oil") and turned into PKS.
+    assert wide.set_index("date").pk_production_t["2025-01"] == 401_000
+    pks = out["pks"]
+    assert pks["kernel_month_kt"] == 412
+    assert pks["month_kt"] == round(412_000 * 1.1 / 1000)
+    assert pks["last12_kt"] is not None and pks["summary_ko"]
