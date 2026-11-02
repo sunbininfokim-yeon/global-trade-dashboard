@@ -14,7 +14,7 @@ function render(r){
 }
 async function run(){const id=++sequence;const p={...initial};for(const el of form.elements)if(el.name)p[el.name]=el.value;document.querySelector('#error').textContent='';invalidateExport();try{const res=await fetch('/api/calculate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});const r=await res.json();if(id!==sequence)return;if(!res.ok)throw Error(r.error);render(r);renderExtras(r,p);}catch(e){if(id!==sequence)return;document.querySelector('#error').textContent=e.message;document.querySelector('#ship-view').innerHTML='';document.querySelector('#dealer-view').innerHTML='';document.querySelector('#fuel').innerHTML='';}}
 for(const [tab,view] of [['ship','ship'],['dealer','dealer']])document.querySelector(`#${tab}-tab`).onclick=()=>{for(const k of ['ship','dealer']){document.querySelector(`#${k}-tab`).setAttribute('aria-pressed',String(k===tab));document.querySelector(`#${k}-view`).hidden=k!==view;}};
-form.onsubmit=e=>{e.preventDefault();run();};form.addEventListener('change',run);document.querySelector('#reset').onclick=()=>{populate(initial);run();};
+form.onsubmit=e=>{e.preventDefault();run();};form.addEventListener('change',e=>{if(e.target.name)run();});document.querySelector('#reset').onclick=()=>{populate(initial);run();};
 try{const res=await fetch('/api/defaults');initial=await res.json();populate(initial);await run();}catch(e){document.querySelector('#error').textContent='입력 자료를 불러오지 못했습니다: '+e.message;}
 
 document.addEventListener('apply-carbon-preset',e=>{for(const [key,value] of Object.entries(e.detail)){const el=form.elements.namedItem(key);if(el)el.value=value;}run();});

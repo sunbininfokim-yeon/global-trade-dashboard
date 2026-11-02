@@ -26,7 +26,7 @@ const baseURL = process.env.CARBON_BASE_URL || 'http://127.0.0.1:8771';
   assert.match(await page.locator('#mode-label').innerText(),/가상/);
   await page.locator('#apply-preset:not([disabled])').waitFor();
   await page.locator('#preset-choice').selectOption('single');
-  const calculation=page.waitForResponse(r=>r.url().endsWith('/api/calculate'));
+  const calculation=page.waitForResponse(r=>r.url().endsWith('/api/calculate') && r.request().postDataJSON()?.preset_id==='single');
   await page.locator('#apply-preset').click();
   const result=await (await calculation).json();
   assert.equal(result.shipowner.procurement_gap_eua,'5000');
