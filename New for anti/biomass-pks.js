@@ -60,6 +60,28 @@
         return `<span class="stock-note" style="grid-column:1 / -1;" title="${esc(m.note_ko || '')}">실측 기반 최근 12개월 ${mt(m.last12_kt)}만 t${yoy == null ? '' : ` <span${tone}>(전년비 ${yoy >= 0 ? '+' : ''}${yoy.toFixed(1)}%)</span>`} · 커널 생산 × 1.1</span>`;
     }
 
+    // Actual PKS imports (UN Comtrade; palm_oil/pks_trade.py). Japan only until
+    // Korea's customs code for PKS is confirmed.
+    let importsPending = null;
+    function loadImports() {
+        importsPending ||= fetch('/public/data/pks_imports_v1.json', { cache: 'no-cache' })
+            .then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        return importsPending;
+    }
+    function importsHtml(d) {
+        const rows = (d?.importers || []).filter((i) => i.last12_kt != null);
+        if (!rows.length) return '';
+        const line = (i) => {
+            const yoy = i.last12_yoy_pct;
+            const origin = Object.entries(i.by_origin_kt || {}).map(([k, v]) => `${esc(k)} ${mt(v)}만`).join(' · ');
+            return `<div class="pks-row" style="cursor:default;"><span class="nm">${esc(i.importer)} 수입 (최근 12개월, ~${esc(i.last_month)})</span>
+                <span class="vl" style="font-size:13px;">${mt(i.last12_kt)}만 t${yoy == null ? '' : ` <span style="color:${yoy >= 0 ? '#86efac' : '#fdba74'}">(${yoy >= 0 ? '+' : ''}${yoy.toFixed(1)}%)</span>`}</span>
+                <span class="stock-note" style="grid-column:1 / -1;">${origin} · 평균 $${Math.round(i.price_usd_t)}/t</span></div>`;
+        };
+        return `<p class="section-title" style="margin-top:10px;">PKS 수입 실적</p>${rows.map(line).join('')}
+            <div class="stock-note" style="margin-top:4px;">${esc(d.note_ko || '')}</div>`;
+    }
+
     function rowHtml(r, max) {
         const v = r.p.adjusted_kt ?? r.p.trend_kt;
         const pill = PILL[r.wc.verdict] || PILL.neutral;
@@ -89,7 +111,7 @@
         const coal = host.querySelector('[data-coal-prices]');
         if (coal) coal.after(slot); else host.appendChild(slot);
         try {
-            let rows = await load();
+            let [rows, imports] = await Promise.all([load(), loadImports()]);
             if (token !== generation || !slot.isConnected) return;
             if (countryName) rows = rows.filter((r) => r.country === key || r.country === countryName);
             if (!rows.length) { slot.remove(); return; }
@@ -103,6 +125,7 @@
                 <div class="pks-total"><b>${mt(adj)}만 t</b>${pct < 0 ? `<s>${mt(trend)}만 t</s><span class="pks-down">${pct}%</span>` : '<span class="stock-note">추세 수준</span>'}</div>
                 <div class="stock-note" style="margin-bottom:4px;">${rows.length}개 산지 합계 · 흐린 막대 = 추세, 진한 막대 = 기상 판정 반영</div>
                 ${rows.map((r) => rowHtml(r, rows[0].p.trend_kt)).join('')}
+                ${countryName ? '' : importsHtml(imports)}
                 <div class="stock-note" style="margin-top:6px;">PKS 생산 통계는 어느 나라도 공개하지 않습니다. CPO 추세의 약 25%(업계 경험치 22~30%)로 환산했고, 말레이시아는 MPOB 월별 팜커널 생산으로 최근 12개월 실측 기반 추정을 함께 보여 줍니다. 불리 판정은 과거 불리 해의 평균 감소폭을 적용했습니다. 행을 누르면 팜 카드의 판정 근거로 이동합니다.</div>`;
             slot.querySelectorAll('[data-pks-country]').forEach((el) => el.addEventListener('click', () => {
                 // Crop monitor, then that country's regions (the palm card holds the call).
