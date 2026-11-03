@@ -41,6 +41,11 @@
             id: "uranium", name_ko: "천연우라늄·화합물", exactAliasesOnly: true,
             aliases: ["uranium", "natural uranium", "우라늄", "천연우라늄", "천연우라늄·화합물", "284410"]
         },
+        // Wood pellets only (HS 440131): never wood chips, logs or charcoal.
+        "biomass": {
+            id: "biomass", name_ko: "바이오매스 연료", exactAliasesOnly: true,
+            aliases: ["biomass", "wood pellets", "wood pellet", "바이오매스", "바이오매스 연료", "목재펠릿", "우드펠릿", "440131"]
+        },
         "manganese": {
             id: "manganese", name_ko: "망간광·정광", exactAliasesOnly: true,
             aliases: ["manganese", "manganese ore", "manganese ores and concentrates", "망간광", "망간광·정광", "망간 정광", "2602", "260200"]
@@ -527,6 +532,14 @@
             hsCode: "261210", strictHs: true,
             reporters: ALL_M49_CODES, partners: ALL_M49_CODES,
             colorScheme: { source: [101, 163, 13], target: [163, 230, 53] }
+        },
+        // Biomass fuels: the map is wood pellets (HS 440131), a clean line.
+        // PKS ships under HS 140490 with other goods, so it is a panel
+        // (biomass-pks.js), not routes.
+        biomass: {
+            hsCode: "440131", strictHs: true,
+            reporters: ALL_M49_CODES, partners: ALL_M49_CODES,
+            colorScheme: { source: [21, 128, 61], target: [134, 239, 172] }
         },
         wheat: {
             hsCode: "1001",
@@ -1131,6 +1144,12 @@
             title: "에너지: 우라늄 광석·정광",
             desc: "우라늄광·정광 수출입 · 천연우라늄·화합물과 별도 표시",
             hsNote: "HS261210 우라늄광·정광 · HS2612 전체(토륨광 포함)·HS284410과 합산하지 않음 · 신고 중량은 우라늄 함유량(tU)이 아님 · 신고·미러 자료 조회 범위",
+            totalVolume: "—", topExporter: "—", observedOnly: true, arcs: [], news: {}
+        },
+        biomass: {
+            title: "에너지: 바이오매스 연료 (목재펠릿·PKS)",
+            desc: "발전소 혼소용 목재펠릿 수출입 · PKS 공급 전망은 오른쪽 패널",
+            hsNote: "지도 = HS440131 목재펠릿만 · 목재칩·원목·숯 제외 · PKS(HS140490)는 다른 품목과 섞여 지도에 그리지 않음 · 신고·미러 자료 조회 범위",
             totalVolume: "—", topExporter: "—", observedOnly: true, arcs: [], news: {}
         },
         nickel: {
