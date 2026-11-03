@@ -35,8 +35,13 @@ class Estimate(unittest.TestCase):
         diesel = m.estimate_ship(pure("lng_diesel_ss"))
         self.assertLess(diesel["intensity"], est["intensity"] - 10)
 
-    def test_bio_blend_and_other_not_estimated(self):
-        self.assertEqual(m.estimate_ship(ship(1000, 3030, 0.05, 0.18, between=3030))["status"], "unestimated")
+    def test_bio_blend_estimated_under_uco_assumption_and_other_not(self):
+        # B30-like: 70 % LFO + 30 % FAME by mass.
+        co2 = 700 * 3.151 + 300 * 2.834
+        est = m.estimate_ship(ship(1000, co2, 0.05, 0.18, between=co2))
+        self.assertEqual((est["status"], est["propulsion"]), ("estimated_assumed", "bio_blend"))
+        mix = [{"fuel": "lfo", "tonnes": 700, "scope": "intra_eu"}, {"fuel": e.bio_fuel(), "tonnes": 300, "scope": "intra_eu"}]
+        self.assertAlmostEqual(est["intensity"], e.intensity(mix, 2025)["ghg_intensity"], places=1)
         self.assertEqual(m.estimate_ship(ship(1000, 1375, 0.0, 0.0, between=1375))["propulsion"], "other")
         self.assertEqual(m.estimate_ship(ship(0, 0, 0, 0))["status"], "skipped")
 
@@ -53,7 +58,9 @@ class Aggregate(unittest.TestCase):
         rows = [pure("hfo", 1000), bulk, pure("lng_diesel_ss", 1500), ship(1000, 3030, 0.05, 0.18, between=3030)]
         a = m.aggregate(rows)
         self.assertEqual(a["total"]["ships"], 3)
-        self.assertEqual(a["unestimated"], {"bio_blend_suspected": 1})
+        self.assertEqual(a["total_with_bio_assumption"]["ships"], 4)
+        self.assertEqual(a["by_propulsion"]["bio_blend"]["ships"], 1)
+        self.assertEqual(a["unestimated"], {})
         self.assertEqual(a["by_propulsion"]["lng"]["surplus_ships_2025"], 1)
         self.assertGreater(a["by_propulsion"]["lng"]["net_2025"], 0)
         self.assertLess(a["by_propulsion"]["oil"]["net_2025"], 0)
@@ -64,3 +71,21 @@ class Aggregate(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SizeFilter(unittest.TestCase):
+    def test_offshore_dropped_and_general_cargo_count_matched(self):
+        def gc(fuel, hours):
+            r = pure("hfo", fuel)
+            r.update(ship_type="General cargo ship", hours=hours)
+            return r
+        off = pure("hfo", 500)
+        off.update(ship_type="Other ship types (Offshore)", hours=1000)
+        big, small, mid = gc(5000, 5000), gc(300, 3000), gc(2000, 4000)
+        kept, dropped = m.size_filter([big, small, mid, off, pure("hfo")], 2025, {"General cargo ship": 2})
+        self.assertNotIn(off, kept)
+        self.assertNotIn(small, kept)
+        self.assertIn(big, kept)
+        self.assertIn(mid, kept)
+        self.assertEqual(dropped, {"Other ship types (Offshore)": 1, "General cargo ship": 1})
+        self.assertEqual(len(m.size_filter([big, small, off], 2024, {})[0]), 3)

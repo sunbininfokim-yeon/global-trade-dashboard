@@ -345,3 +345,67 @@ def quick_check(gross_tonnage, fuels, eu_share=None, year=2025, p_wind_over_p_pr
             "penalty_eur": now["penalty_eur"],
             "value_at_pool_eur": None if pool_price is None else abs(cb) * pool_price,
             "first_deficit_period": flip, "timeline": timeline}
+
+
+# ------------------------------------------------------------------ biofuel blends
+# Directive (EU) 2018/2001 (RED II), read 2026-11-03:
+#   Annex V totals, waste cooking oil biodiesel: typical 11.2, default 14.9 gCO2e/MJ
+#   (GHG savings 88 % / 84 % against the 94 gCO2e/MJ transport comparator).
+#   Annex III: FAME lower calorific value 37 MJ/kg.
+# FuelEU Annex II: bio-diesel Cf CO2 2.834 g/g; CH4/N2O are TBM, so the highest
+# default in the biofuel class (HVO: 0.00005 / 0.00018) applies. Annex II note
+# (a): WtT = E - Cf_CO2 / LCV, so the biogenic CO2 burnt on board is netted off.
+# Food/feed-crop or uncertified biofuels get the worst fossil factor (Art. 10(1)(a)):
+# no credit at all, which bio_fuel(certified=False) reproduces.
+UCO_FAME_E = {"default": 14.9, "typical": 11.2}
+
+
+def bio_fuel(e_value=UCO_FAME_E["default"], lcv=0.037, cf_co2=2.834, certified=True, worst_fossil="hfo"):
+    if not certified:
+        return dict(FUELS[worst_fossil], label="인증 없는 바이오연료 (최악 화석 계수)")
+    return {"label": f"UCO 바이오디젤 (E {e_value:g})", "lcv": lcv, "wtt": e_value - cf_co2 / lcv,
+            "cf_co2": cf_co2, "cf_ch4": 0.00005, "cf_n2o": 0.00018, "slip": 0.0}
+
+
+def blend_economics(base, bio_mass_share, tonnes, year=2025, eu_share=None, pool_price=None,
+                    bio_premium_eur_per_t=None, e_value=UCO_FAME_E["default"], certified=True):
+    """What a biofuel blend does to one ship's balance, and what it is worth at the pool price.
+
+    base: fossil fuel key. bio_mass_share: 0..1 of the fuel mass (B30 = 0.3).
+    tonnes: annual fuel on EU-related voyages. eu_share as in quick_check.
+    Returns the balance with and without the blend, the surplus each tonne of
+    biofuel creates, the premium per tonne at which blending costs the same as
+    buying that surplus from a pool, the mass share that just reaches zero
+    balance, and a B0..B100 curve.
+    """
+    if not 0 <= bio_mass_share <= 1:
+        raise ValueError("bio share must be between 0 and 1")
+    share = eu_share or {"extra_eu": 1.0}
+    bio = bio_fuel(e_value, certified=certified)
+
+    def run(s):
+        rows = [{"fuel": base, "tonnes": tonnes * (1 - s) * f, "scope": k} for k, f in share.items() if f and s < 1]
+        rows += [{"fuel": bio, "tonnes": tonnes * s * f, "scope": k} for k, f in share.items() if f and s > 0]
+        return ship(rows, year)
+
+    without, with_blend = run(0.0), run(bio_mass_share)
+    pure_bio = run(1.0)
+    bio_t = tonnes * bio_mass_share
+    gain_per_t = (pure_bio["compliance_balance_tco2e"] - without["compliance_balance_tco2e"]) / tonnes
+    # CB is linear in the mass share (energy and emissions both are), so zero crossing is exact.
+    span = pure_bio["compliance_balance_tco2e"] - without["compliance_balance_tco2e"]
+    zero = None if span <= 0 else -without["compliance_balance_tco2e"] / span
+    curve = [{"bio_pct": p, "compliance_balance_tco2e": run(p / 100)["compliance_balance_tco2e"],
+              "ghg_intensity": run(p / 100)["ghg_intensity"]} for p in range(0, 101, 10)]
+    out = {"bio_fuel": bio["label"], "certified": certified, "e_value": e_value, "bio_tonnes": bio_t,
+           "without": {k: without[k] for k in ("ghg_intensity", "compliance_balance_tco2e", "penalty_eur")},
+           "with_blend": {k: with_blend[k] for k in ("ghg_intensity", "compliance_balance_tco2e", "penalty_eur")},
+           "pure_bio_intensity": pure_bio["ghg_intensity"],
+           "surplus_per_t_bio_tco2e": gain_per_t,
+           "bio_share_for_zero_balance": None if zero is None else max(0.0, zero),
+           "curve": curve}
+    if pool_price is not None:
+        out["breakeven_premium_eur_per_t"] = gain_per_t * pool_price
+    if bio_premium_eur_per_t is not None and gain_per_t > 0:
+        out["cost_per_tco2e_of_blending"] = bio_premium_eur_per_t / gain_per_t
+    return out
