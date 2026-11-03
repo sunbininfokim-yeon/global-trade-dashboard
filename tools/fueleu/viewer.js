@@ -173,6 +173,121 @@ function reset() {
   run();
 }
 
+// ------------------------------------------------------------ 1 rules
+
+const FUEL_COLOR = k => k.startsWith('lng') ? ({ lng_otto_ms: '#7dd3fc', lng_lbsi: '#38bdf8', lng_otto_ss: '#0ea5e9', lng_diesel_ss: '#0369a1' }[k]) : ({ hfo: '#f97316', lfo: '#fb923c', mdo_mgo: '#fbbf24' }[k] || '#a3a3a3');
+
+const SHORT = { hfo: 'HFO', lfo: 'LFO', mdo_mgo: 'MGO', lng_otto_ms: 'LNG 오토 중속', lng_lbsi: 'LNG LBSI', lng_otto_ss: 'LNG 오토 저속', lng_diesel_ss: 'LNG 디젤 저속' };
+
+function rulesChart(r) {
+  const W = 900, H = 360, L = 52, R = 170, T = 16, B = 34, y0 = 2025, y1 = 2052, lo = 10, hi = 95;
+  const x = y => L + (W - L - R) * (y - y0) / (y1 - y0);
+  const y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const steps = r.periods.map((p, i) => ({ ...p, to: r.periods[i + 1]?.from_year ?? y1 }));
+  const stair = steps.map(p => `${x(p.from_year)},${y(p.target)} ${x(p.to)},${y(p.target)}`).join(' ');
+  const deficitZone = `${x(y0)},${y(hi)} ${stair} ${x(y1)},${y(hi)}`;
+  const grid = [20, 40, 60, 80, 90].map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(148,163,184,.1)"/><text x="${L - 8}" y="${y(v) + 4}" font-size="11" fill="#64748b" text-anchor="end">${v}</text>`).join('');
+  const xt = r.periods.map(p => `<text x="${x(p.from_year)}" y="${H - 12}" font-size="11" fill="#64748b" text-anchor="middle">${p.from_year}</text><text x="${(x(p.from_year) + x(steps.find(s => s.from_year === p.from_year).to)) / 2}" y="${y(p.target) + 15}" font-size="10.5" fill="#94a3b8" text-anchor="middle">${fmt(p.target, 1)}</text>`).join('');
+  // Labels on the right are spread out so close intensities (91.7 / 91.4 / 90.8) stay readable.
+  const lab = r.fuels.map(f => ({ f, ly: y(f.intensity) }));
+  lab.forEach((l, i) => { if (i && l.ly - lab[i - 1].ly < 14) l.ly = lab[i - 1].ly + 14; });
+  const fuelsSvg = lab.map(({ f, ly }) => {
+    const c = FUEL_COLOR(f.key), fy = y(f.intensity);
+    const cross = f.first_deficit_period ? `<circle cx="${x(f.first_deficit_period)}" cy="${fy}" r="4.5" fill="${c}"><title>${esc(f.label)}: ${f.first_deficit_period}년부터 부족</title></circle>` : '';
+    return `<line x1="${L}" x2="${W - R}" y1="${fy}" y2="${fy}" stroke="${c}" stroke-width="2" stroke-dasharray="${f.key.startsWith('lng') ? '0' : '6 4'}"/>${cross}
+      <path d="M${W - R} ${fy} L${W - R + 10} ${ly}" stroke="${c}" fill="none"/><text x="${W - R + 14}" y="${ly + 4}" font-size="11.5" fill="${c}">${esc(SHORT[f.key] || f.key)} ${fmt(f.intensity, 1)} → ${f.first_deficit_period ?? '–'}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="FuelEU 한도 계단과 연료별 집약도">
+    <polygon points="${deficitZone}" fill="rgba(239,68,68,.07)"/>
+    <text x="${x(2045)}" y="${y(70)}" font-size="13" fill="rgba(252,165,165,.7)" text-anchor="middle">한도보다 높음 = 부족</text>
+    <text x="${x(2026.5)}" y="${y(40)}" font-size="13" fill="rgba(134,239,172,.6)">한도보다 낮음 = 잉여</text>
+    ${grid}<polyline points="${stair}" fill="none" stroke="#e2e8f0" stroke-width="2.5"/>${xt}${fuelsSvg}
+    <text x="${L}" y="${T + 2}" font-size="11" fill="#64748b">gCO₂e/MJ (WtW)</text></svg>`;
+}
+
+async function loadRules(latestOpx) {
+  const r = await (await fetch('/api/rules')).json();
+  $('#rules-chart').innerHTML = rulesChart(r) + `<div class="legend"><span><i style="background:#e2e8f0"></i>한도 (91.16에서 단계 감축)</span><span><i style="background:#f97316"></i>석유 연료 (점선)</span><span><i style="background:#38bdf8"></i>LNG 엔진별 (실선, 메탄 슬립 차이)</span><span>점 = 부족으로 바뀌는 해 · 오른쪽 숫자 = 집약도 · 전환 연도</span></div>
+    <p class="note">총량 한도(cap)가 없습니다. EU ETS와 달리 FuelEU는 선박마다 1MJ당 배출 한도만 정하고, 선종·크기와 상관없이 같습니다. 한도보다 깨끗한 연료를 쓴 만큼 잉여가 생기므로 시장 공급량은 정해져 있지 않습니다.</p>`;
+  const hfo = r.fuels.find(f => f.key === 'hfo');
+  $('#rules-side').innerHTML = `
+    <div><h2 style="font-size:14px;margin-bottom:8px">가격의 위아래 범위</h2><div class="table-wrap"><table><tbody>
+      <tr><td>상한: 부담금 환산 (HFO 선박)</td><td class="num">${eur(hfo.penalty_eur_per_tco2e)}/tCO₂e</td></tr>
+      <tr><td>현재 OPX</td><td class="num">${latestOpx != null ? `${eur(latestOpx, 2)} (상한의 ${fmt(latestOpx / hfo.penalty_eur_per_tco2e * 100, 0)}%)` : '수집 전'}</td></tr>
+      <tr><td>하한: 이미 지은 LNG선의 잉여</td><td class="num">추가 비용 거의 0</td></tr>
+      <tr><td>그 사이: 바이오연료 혼합으로 잉여를 만드는 비용</td><td class="num">시장 가격을 정하는 쪽</td></tr>
+    </tbody></table></div>
+    <p class="note">부담금 = |부족분| ÷ (실제 집약도 × 41,000 MJ) × €2,400. 연속 미준수 시 1 + (n−1)/10 배.</p></div>
+    <div><h2 style="font-size:14px;margin-bottom:8px">보고기간 다음 해의 일정 (원문 확인분)</h2><div class="table-wrap"><table><tbody>
+      <tr><td>4월 30일까지</td><td>차입분 등록 (제20조(3))</td></tr>
+      <tr><td>5월 1일 전</td><td>풀링·이월·차입 반영 후 검증 잔액 기록 (제23조(1))</td></tr>
+      <tr><td>6월 30일까지</td><td>부족 선박 부담금 납부 (제23조(2))</td></tr>
+    </tbody></table></div>
+    <p class="note">2025년이 첫 보고기간이라 첫 풀링 마감은 2026년 4월이었습니다. 그래서 풀 가격은 매년 봄 마감 전 수요가 몰리고 그 뒤 새 연도 잉여로 넘어갑니다.</p></div>`;
+}
+
+// ------------------------------------------------------------ 3 supply
+
+const PROP = { oil: '석유 연료선', lng: 'LNG 추진선' };
+const TYPE_KO = { 'Container ship': '컨테이너선', 'Bulk carrier': '벌크선', 'Oil tanker': '유조선', 'Chemical tanker': '케미컬 탱커', 'General cargo ship': '일반화물선',
+  'LNG carrier': 'LNG 운반선', 'Gas carrier': '가스 운반선', 'Vehicle carrier': '자동차 운반선', 'Ro-pax ship': '로팩스', 'Ro-ro ship': '로로선', 'Passenger ship': '여객선', 'Passenger ship (Cruise Passenger ship)': '크루즈선',
+  'Container/ro-ro cargo ship': '컨테이너·로로선', 'Refrigerated cargo carrier': '냉동선', 'Combination carrier': '겸용선', 'Other ship types': '기타', 'Other ship types (Offshore)': '기타(해양작업)', 'Combined gas/LNG carrier': '가스·LNG 겸용' };
+const kt = v => `${fmt(v / 1000, 0)}천 t`;
+
+function supplyView(data, year, target) {
+  const d = data[year], prev = data[String(Number(year) - 1)];
+  const t = d.total, lng = d.by_propulsion.lng || {}, oil = d.by_propulsion.oil || {};
+  const types = Object.entries(d.by_ship_type).filter(([, v]) => v.ships >= 20).slice(0, 12);
+  const max = Math.max(...types.map(([, v]) => Math.max(v[`surplus_${target}`], v[`deficit_${target}`])), 1);
+  const rows = types.map(([k, v]) => {
+    const s = v[`surplus_${target}`], df = v[`deficit_${target}`];
+    return `<tr><td>${esc(TYPE_KO[k] || k)}</td><td class="num">${fmt(v.ships)}</td>
+      <td style="width:28%;text-align:right"><span class="bar" style="width:${df / max * 100}%;background:#ef4444aa"></span></td>
+      <td style="width:28%"><span class="bar" style="width:${s / max * 100}%;background:#22c55eaa"></span></td>
+      <td class="num">${kt(-df)}</td><td class="num">${kt(s)}</td><td class="num">${fmt(v[`surplus_ships_${target}`])}</td></tr>`;
+  }).join('');
+  const lngPrev = prev?.by_propulsion?.lng;
+  return `
+    <div class="kpis">
+      ${kpi(`LNG 추진선 (${year})`, `${fmt(lng.ships)}척`, lngPrev ? `${Number(year) - 1}년 ${fmt(lngPrev.ships)}척 → ${fmt((lng.ships / lngPrev.ships - 1) * 100, 0)}% 증가` : '', 'pos')}
+      ${kpi(`잉여 추정 (${target} 한도)`, kt(t[`surplus_${target}`]), `${fmt(t[`surplus_ships_${target}`])}척이 한도보다 깨끗함`, 'pos')}
+      ${kpi(`부족 추정 (${target} 한도)`, kt(t[`deficit_${target}`]), `석유선 평균 ${fmt(oil.avg_intensity, 2)} gCO₂e/MJ`, 'neg')}
+      ${kpi('장부상 순수급', kt(t[`net_${target}`]), '잉여 − 부족 · 바이오 혼합 제외', t[`net_${target}`] < 0 ? 'neg' : 'pos')}
+    </div>
+    <p class="warn">해석: 석유선의 구조적 부족이 LNG선 잉여보다 큽니다. 그런데도 시장 해설은 "공급이 수요를 넘는다"고 하고 가격은 내려갑니다. 차이는 바이오연료 혼합과 "필요할 때 만드는" 잉여가 메웁니다. 그래서 풀 가격은 LNG 잉여량보다 바이오 혼합으로 잉여를 만드는 비용에 끌려갑니다. 2030년 한도(−6%)가 오면 부족이 약 ${fmt(t.deficit_2030 / t.deficit_2025, 1)}배로 커집니다.</p>
+    <div class="legend"><span><i style="background:#ef4444aa"></i>부족 (풀에서 사야 하는 양)</span><span><i style="background:#22c55eaa"></i>잉여 (풀에 팔 수 있는 양)</span></div>
+    <div class="table-wrap"><table><thead><tr><th>선종</th><th class="num">척수</th><th class="num">부족</th><th>잉여</th><th class="num">부족 t</th><th class="num">잉여 t</th><th class="num">잉여 선박</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="grid2">
+      <div><h2 style="font-size:14px;margin-bottom:8px">추진 연료별</h2><div class="table-wrap"><table><thead><tr><th>구분</th><th class="num">척수</th><th class="num">평균 집약도</th><th class="num">2025 한도 순</th><th class="num">2030 한도 순</th></tr></thead><tbody>
+        ${Object.entries(d.by_propulsion).map(([k, v]) => `<tr><td>${esc(PROP[k] || k)}</td><td class="num">${fmt(v.ships)}</td><td class="num">${fmt(v.avg_intensity, 2)}</td><td class="num">${kt(v.net_2025)}</td><td class="num">${kt(v.net_2030)}</td></tr>`).join('')}
+        <tr><td>바이오 혼합 추정 (계산 제외)</td><td class="num">${fmt(d.unestimated.bio_blend_suspected || 0)}</td><td colspan="3">MRV에 바이오 WtW 혜택이 없어 추정 불가</td></tr>
+        <tr><td>메탄올·기타 (계산 제외)</td><td class="num">${fmt(d.unestimated.other || 0)}</td><td colspan="3"></td></tr>
+      </tbody></table></div></div>
+      <div><h2 style="font-size:14px;margin-bottom:8px">이 추정의 한계</h2><ul class="note" style="padding-left:18px;margin:0">
+        <li>공식 FuelEU 잔액이 아닙니다. FuelEU 데이터베이스는 비공개입니다.</li>
+        <li>MRV에 총톤수가 없어 5,000 GT 이하 선박(2025년부터 MRV에 일부 포함)을 걸러내지 못했습니다. 부족이 과대 추정될 수 있습니다.</li>
+        <li>바이오 혼합 선박은 빠져 있어 잉여는 과소 추정입니다.</li>
+        <li>최외곽지역 항해(FuelEU 50%)가 EU 역내(100%)에 섞여 있습니다. 풍력·육상전원 보정, 이미 맺은 풀링은 반영하지 않았습니다.</li>
+        <li>${year === '2024' ? '2024년은 FuelEU 시행 전 해라 구조 비교용입니다.' : `연료량·배출이 없는 보고서 ${fmt(d.skipped)}건은 제외했습니다.`}</li>
+      </ul></div>
+    </div>`;
+}
+
+async function loadSupply() {
+  const data = await (await fetch('/api/supply')).json();
+  if (data.status === 'missing') {
+    $('#supply-body').innerHTML = `<p class="warn">MRV 추정 자료가 없습니다. <code>${esc(data.hint)}</code> 를 실행하세요.</p>`;
+    return;
+  }
+  const years = Object.keys(data).sort().reverse();
+  $('#supply-meta').innerHTML = `EMSA MRV 공개 자료 (선박별 연간 연료·CO₂·CH₄·N₂O) · 버전 ${esc(years.map(y => `${y} v${data[y].source_version ?? '로컬'}`).join(', '))}<br>
+    <label>보고연도 <select id="s-year">${years.map(y => `<option>${y}</option>`).join('')}</select></label>
+    <label>적용 한도 <select id="s-target"><option>2025</option><option>2030</option><option>2035</option></select></label>`;
+  const draw = () => { $('#supply-body').innerHTML = supplyView(data, $('#s-year').value, $('#s-target').value); };
+  $('#supply-meta').addEventListener('change', draw);
+  draw();
+}
+
 async function quickCheck() {
   const v = id => $(id).value;
   const body = { gross_tonnage: v('#q-gt'), intra_eu_pct: v('#q-intra'), at_berth_pct: v('#q-berth'), pool_price: $('#pool').value,
@@ -197,9 +312,11 @@ async function quickCheck() {
 fuels = await (await fetch('/api/fuels')).json();
 example = await (await fetch('/api/example')).json();
 const latest = await loadMarket();
+loadRules(latest);
+loadSupply();
 $('#pool').value = latest ?? '';
 if (latest == null) $('#pool').placeholder = '가격 직접 입력';
-document.addEventListener('change', e => { if (e.target.closest('main') && !e.target.closest('#market, #quick')) run(); });
+document.addEventListener('change', e => { if (e.target.closest('#voyages')) run(); });
 $('#legs').addEventListener('click', e => { if (e.target.classList.contains('del')) { e.target.closest('tr').remove(); run(); } });
 $('#add').onclick = () => { legs = readLegs(); legs.push({ id: `L${legs.length + 1}`, status: 'planned', origin: { country: 'NL' }, destination: { country: 'NL' }, at_sea: { mdo_mgo: 100 }, at_berth: {} }); drawLegs(); run(); };
 $('#reset').onclick = reset;

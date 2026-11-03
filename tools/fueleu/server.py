@@ -38,6 +38,27 @@ def calculate(body):
             "constants": {"target": full["target"], "penalty_eur_per_tco2e": full["penalty_eur_per_tco2e"]}}
 
 
+def rules():
+    """Everything the staircase chart needs, straight from the regulation constants."""
+    periods = [{"from_year": y, "reduction_pct": pct, "target": engine.target(y)} for y, pct in sorted(engine.REDUCTIONS)]
+    fuels = []
+    for key, f in engine.FUELS.items():
+        i = engine.intensity([{"fuel": key, "tonnes": 1, "scope": "intra_eu"}], 2025)["ghg_intensity"]
+        flip = next((p["from_year"] for p in periods if p["target"] < i), None)
+        fuels.append({"key": key, "label": f["label"], "intensity": i, "first_deficit_period": flip,
+                      "penalty_eur_per_tco2e": engine.penalty_per_tco2e(i)})
+    return {"reference": engine.REFERENCE, "periods": periods, "fuels": sorted(fuels, key=lambda x: -x["intensity"]),
+            "penalty_eur_per_t_vlsfo": engine.PENALTY_EUR_PER_T_VLSFO, "vlsfo_mj_per_t": engine.VLSFO_MJ_PER_T}
+
+
+def supply():
+    out = {}
+    for path in sorted((ROOT / "source_data").glob("mrv_supply_*.json")):
+        d = json.loads(path.read_text())
+        out[str(d["reporting_year"])] = d
+    return out or {"status": "missing", "hint": "python3 mrv_supply.py --year 2025 --year 2024"}
+
+
 def quick(body):
     intra = float(body.get("intra_eu_pct") or 0) / 100
     berth = float(body.get("at_berth_pct") or 0) / 100
@@ -63,6 +84,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/market":
             return self.reply(200, market())
+        if self.path == "/api/rules":
+            return self.reply(200, rules())
+        if self.path == "/api/supply":
+            return self.reply(200, supply())
         if self.path == "/api/fuels":
             return self.reply(200, {k: v["label"] for k, v in engine.FUELS.items()})
         if self.path == "/api/example":
