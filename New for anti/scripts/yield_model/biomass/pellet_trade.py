@@ -12,7 +12,7 @@ HS 4401.31 is pellets only, so unlike PKS (1404.90) the line is clean.
 
 Two reads:
   importers  Korea and Japan, flow M, every partner: annual from 2015 and the
-             last 30 months. One call per period covers both.
+             last 36 months. One call per period covers both.
   exporters  the main shippers, flow X, partner World, annual only.
 
 Source: Comtrade public preview API (no key, one period per call, capped at
@@ -209,6 +209,16 @@ def summary(frame=None):
     m = d[(d.side == "M") & (d.freq == "M")].copy()
     m["month"] = pd.to_datetime(m.period, format="%Y%m")
     recent = {label: _importer_recent(m, code) for code, label in IMPORTERS.items()}
+    # A month without a weight leaves the year-earlier window short. When the
+    # window is a calendar year, the annual filing (which has the weight) says
+    # the same thing.
+    by_year = {a["year"]: a for a in annual}
+    for label, r in recent.items():
+        if r and r["yoy_pct"] is None and r["last_month"].endswith("-12"):
+            y = int(r["last_month"][:4])
+            cur, prev = (by_year.get(y) or {}).get(label), (by_year.get(y - 1) or {}).get(label)
+            if cur and prev:
+                r["yoy_pct"] = _pct(cur["kt"], prev["kt"])
 
     ex = d[(d.side == "X") & (d.freq == "A") & (d.partner == WORLD) & d.net_kg.notna()]
     exporters = []
