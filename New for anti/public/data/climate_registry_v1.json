@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-registry-v1",
-  "generated_at": "2026-11-03T11:46:41.487880+00:00",
+  "generated_at": "2026-11-03T13:54:07.822231+00:00",
   "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
   "countries": {
     "Argentina": {
@@ -788,6 +788,64 @@
           "palm_oil"
         ],
         "note_ko": "팜 등 통제 seed (1품목 금지 → 주황 우선)"
+      }
+    },
+    "Kazakhstan": {
+      "country": "kazakhstan",
+      "iso": "KAZ",
+      "label_ko": "카자흐스탄",
+      "label_en": "Kazakhstan",
+      "panel_mode": "reference",
+      "status_note_ko": "수확량 예측 없음 — 생육 단계별 날씨 판정과 USDA 전망만 제공한다.",
+      "data_file": "kazakhstan_yield_forecast.json",
+      "model_name": "카자흐스탄 봄밀·보리 (생육 판정)",
+      "view": {
+        "longitude": 67.0,
+        "latitude": 51.5,
+        "zoom": 4.3
+      },
+      "regions": [
+        {
+          "key": "kazakhstan_spring_wheat",
+          "label_ko": "북부 (봄밀)",
+          "ui_name": "kazakhstan_spring_wheat",
+          "coordinates": [
+            65.0,
+            53.3
+          ],
+          "crops_region_keys": [
+            "kazakhstan_spring_wheat"
+          ]
+        },
+        {
+          "key": "kazakhstan_barley",
+          "label_ko": "북동부 (보리)",
+          "ui_name": "kazakhstan_barley",
+          "coordinates": [
+            70.0,
+            52.6
+          ],
+          "crops_region_keys": [
+            "kazakhstan_barley"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "USDA PSD (국가 단수 1992~)",
+          "url": "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery",
+          "updated": "2026-11-03"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-11-03"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "밀 수출은 철도로 중앙아시아·이란·중국·흑해 항으로 나간다 (seed)"
       }
     },
     "Malaysia": {
