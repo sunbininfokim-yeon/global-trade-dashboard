@@ -23,7 +23,7 @@ import pandas as pd
 from .pks import outlook as pks_outlook
 
 from . import conditions as K
-from . import psd
+from . import mpob, psd
 from .producers import BY_COUNTRY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +38,24 @@ def log(msg):
 def _complete(year, today):
     """Label year Y is market year Y-1, which ends on 30 September of Y."""
     return date(int(year), 9, 30) < today
+
+
+def _supply(producer):
+    """MPOB monthly stocks/output/exports, Malaysia only; context, never applied."""
+    if producer.country != "malaysia":
+        return None
+    try:
+        return mpob.indicators()
+    except (OSError, ValueError, KeyError) as exc:
+        log(f"{producer.key}: MPOB indicators unavailable: {exc}")
+        return None
+
+
+def _with_monthly(outlook, supply):
+    """Add the MPOB kernel-based monthly PKS line to the trend outlook."""
+    if outlook is not None and supply and supply.get("pks"):
+        outlook = {**outlook, "monthly": supply["pks"]}
+    return outlook
 
 
 def region(producer, today=None):
@@ -70,6 +88,7 @@ def region(producer, today=None):
     except (OSError, ValueError) as exc:
         log(f"{producer.key}: weather conditions unavailable: {exc}")
 
+    supply = _supply(producer)
     validation = model["validation"][model["configuration"]]
     return {
         "label": producer.label,
@@ -92,7 +111,8 @@ def region(producer, today=None):
                  "note": ("El Nino in the year before tends to cut output 6-24 "
                           "months later; context only, not applied.")},
         "weather_conditions": conditions,
-        "pks_outlook": pks_outlook(p["trend"], conditions),
+        "pks_outlook": _with_monthly(pks_outlook(p["trend"], conditions), supply),
+        "supply_indicators": supply,
         "skill": {
             "beats_trend": False,
             "skill_vs_trend_only": 0.0,

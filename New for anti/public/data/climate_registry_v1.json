@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-registry-v1",
-  "generated_at": "2026-11-01T08:24:06.984080+00:00",
+  "generated_at": "2026-11-03T11:46:41.487880+00:00",
   "note": "Generated from scripts/yield_model/*/model.yaml. Do not edit by hand.",
   "countries": {
     "Argentina": {
@@ -558,6 +558,59 @@
       },
       "notes_ko": "|"
     },
+    "France": {
+      "country": "france",
+      "iso": "FRA",
+      "label_ko": "프랑스",
+      "label_en": "France",
+      "panel_mode": "forecast",
+      "model_status": "training",
+      "status_note_ko": "라벨은 Eurostat 지역 수확량(2000년~, 25시즌)이라 검증 표본이 짧다. 숫자는 참고용.",
+      "data_file": "france_yield_forecast.json",
+      "view": {
+        "longitude": 2.5,
+        "latitude": 47.0,
+        "zoom": 4.6
+      },
+      "regions": [
+        {
+          "key": "north_wheat",
+          "label_ko": "북부 곡창지대 (겨울밀)",
+          "ui_name": "north_wheat",
+          "coordinates": [
+            2.4,
+            48.9
+          ],
+          "crops_region_keys": [
+            "north_wheat"
+          ]
+        },
+        {
+          "key": "west_maize",
+          "label_ko": "남서·서부 (옥수수)",
+          "ui_name": "west_maize",
+          "coordinates": [
+            0.3,
+            45.2
+          ],
+          "crops_region_keys": [
+            "west_maize"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "Eurostat apro_cpshr (NUTS 2)",
+          "url": "https://ec.europa.eu/eurostat/databrowser/view/apro_cpshr/default/table",
+          "updated": "2026-11-02"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-11-02"
+        }
+      }
+    },
     "India": {
       "country": "india",
       "iso": "IND",
@@ -565,7 +618,7 @@
       "label_en": "India",
       "panel_mode": "forecast",
       "model_status": "training",
-      "status_note_ko": "라벨은 2024년까지(DES/UPAg). 펀자브 밀·MP 대두는 기상 모델이 추세를 이기지 못하고, 비다르바 면화는 라벨이 2019년에서 끊겼다. 숫자는 참고용.",
+      "status_note_ko": "라벨은 2024년까지(DES/UPAg). 펀자브 밀·MP 대두·동부 쌀은 기상 모델이 추세를 이기지 못하고, 비다르바 면화는 라벨이 2019년에서 끊겼다. 숫자는 참고용.",
       "data_file": "india_yield_forecast.json",
       "view": {
         "longitude": 78,
@@ -607,6 +660,18 @@
           ],
           "crops_region_keys": [
             "vidarbha_cotton"
+          ]
+        },
+        {
+          "key": "east_rice",
+          "label_ko": "차티스가르·오디샤 (쌀)",
+          "ui_name": "east_rice",
+          "coordinates": [
+            82.5,
+            21.2
+          ],
+          "crops_region_keys": [
+            "east_rice"
           ]
         }
       ],
@@ -1147,6 +1212,76 @@
         "note_ko": "커피 수출 제한 모델이 아니라 생산·기후 참고 모델"
       },
       "notes_ko": "|"
+    },
+    "Ukraine": {
+      "country": "ukraine",
+      "iso": "UKR",
+      "label_ko": "우크라이나",
+      "label_en": "Ukraine",
+      "panel_mode": "reference",
+      "status_note_ko": "수확량 예측 없음 — 생육 단계별 날씨 판정만 제공한다 (주별 수확량 공개 자료가 2013~2022년뿐).",
+      "data_file": "ukraine_yield_forecast.json",
+      "model_name": "우크라이나 곡물·유지 (생육 판정)",
+      "view": {
+        "longitude": 32.5,
+        "latitude": 49.0,
+        "zoom": 4.8
+      },
+      "regions": [
+        {
+          "key": "ukraine_winter_wheat",
+          "label_ko": "중남부 (겨울밀)",
+          "ui_name": "ukraine_winter_wheat",
+          "coordinates": [
+            32.3,
+            48.0
+          ],
+          "crops_region_keys": [
+            "ukraine_winter_wheat"
+          ]
+        },
+        {
+          "key": "ukraine_corn",
+          "label_ko": "중북부 (옥수수)",
+          "ui_name": "ukraine_corn",
+          "coordinates": [
+            33.0,
+            50.0
+          ],
+          "crops_region_keys": [
+            "ukraine_corn"
+          ]
+        },
+        {
+          "key": "ukraine_sunflower",
+          "label_ko": "중동부 (해바라기)",
+          "ui_name": "ukraine_sunflower",
+          "coordinates": [
+            34.3,
+            48.7
+          ],
+          "crops_region_keys": [
+            "ukraine_sunflower"
+          ]
+        }
+      ],
+      "sources": {
+        "labels": {
+          "name": "우크라이나 국가통계청 (주별 연보 2013~2022)",
+          "url": "https://stat.gov.ua/en/datasets/areas-gross-harvests-and-crop-yield-annual",
+          "updated": "2023-08-01"
+        },
+        "climate": {
+          "name": "NASA POWER (daily)",
+          "url": "https://power.larc.nasa.gov/",
+          "updated": "2026-11-03"
+        }
+      },
+      "trade_policy": {
+        "restricted": false,
+        "prohibited_crops": [],
+        "note_ko": "흑해 해상 수출 경로가 전쟁 위험에 노출 (seed)"
+      }
     },
     "United States": {
       "country": "us",

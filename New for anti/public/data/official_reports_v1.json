@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-01T20:32:39.983705+00:00",
+  "generated_at": "2026-11-03T11:59:19.948467+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 170,
     "scored": 170,
     "selected": 40,
-    "indicators": 11
+    "indicators": 12
   },
   "feed_status": [
     {
@@ -137,6 +137,20 @@
       "published_at": "2026-10-30T04:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 3.326
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Outlook for Economic Activity and Prices (October 2026, full text)",
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
+      "published_at": "2026-11-02T05:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 3.251
     },
     {
       "series_id": "JP_BOJ_POLICY",
@@ -495,6 +509,42 @@
       "site_slot": "finance.policy"
     },
     {
+      "id": "7fec949e684b12c3",
+      "published_at": "2026-11-02T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Outlook for Economic Activity and Prices (October 2026, full text)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (October 2026, full text)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.251,
+        "final": 3.251
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "d37df6f26c2d2850",
       "published_at": "2026-10-30T04:00:00+00:00",
       "source": {
@@ -828,41 +878,6 @@
         "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 17 September 2026"
       },
       "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
-      "scores": {
-        "significance": 2.599,
-        "final": 2.599
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "38fc95e4eb631490",
-      "published_at": "2026-09-17T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Bank rate maintained at 3.75% - September 2026 Monetary Policy Summary and Minutes",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Bank rate maintained at 3.75% - September 2026 Monetary Policy Summary and Minutes"
-      },
-      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
       "scores": {
         "significance": 2.599,
         "final": 2.599
@@ -1687,6 +1702,17 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
+      "title": "Regulators explore credit union reforms to support growth, innovation and better outcomes for members",
+      "url": "https://www.bankofengland.co.uk/news/2026/november/regulators-explore-credit-union-reforms-to-support-growth-innovation-and-better-outcomes-for-members",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
       "title": "Remit for the Monetary Policy Committee - October 2026",
       "url": "https://www.bankofengland.co.uk/letter/2026/mpc-remit-2026",
       "country": "GBR",
@@ -1755,17 +1781,6 @@
     {
       "title": "Minutes of the Securities Lending Committee meeting – September 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/september/securities-lending-committee-meeting-september-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Banknote imagery advisory group minutes – 15 July 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2015,6 +2030,42 @@
       "rank_reasons": [
         "domains:economy,finance",
         "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "7fec949e684b12c3",
+      "published_at": "2026-11-02T05:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Outlook for Economic Activity and Prices (October 2026, full text)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (October 2026, full text)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 3.251,
+        "final": 3.251
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -2354,41 +2405,6 @@
         "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 17 September 2026"
       },
       "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
-      "scores": {
-        "significance": 2.599,
-        "final": 2.599
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "38fc95e4eb631490",
-      "published_at": "2026-09-17T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Bank rate maintained at 3.75% - September 2026 Monetary Policy Summary and Minutes",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Bank rate maintained at 3.75% - September 2026 Monetary Policy Summary and Minutes"
-      },
-      "summary": "The Bank of England’s Monetary Policy Committee is responsible for making decisions about Bank Rate.",
       "scores": {
         "significance": 2.599,
         "final": 2.599

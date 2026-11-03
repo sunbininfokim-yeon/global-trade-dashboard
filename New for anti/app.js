@@ -3435,6 +3435,8 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null, cropK
         weatherConditions: entry.weather_conditions || null,
         // PKS (palm kernel shell) supply derived from the palm line (palm_oil/pks.py).
         pksOutlook: entry.pks_outlook || null,
+        // MPOB monthly stocks/output/exports (palm_oil/mpob.py), Malaysia only.
+        supplyIndicators: entry.supply_indicators || null,
         // Pre-season fill weighted by Niño3.4 at sowing (argentina/enso_analog.py,
         // south_africa/enso_preseason.py); null once the season is observed.
         ensoOutlook: entry.enso?.analog_fill || entry.enso_preseason || null,
@@ -4867,6 +4869,44 @@ const renderWeatherConditions = (wc) => {
         </div>`;
 };
 
+// MPOB supply read-out: stocks vs the same month's 5-year average, recent
+// output and exports, and a 13-month stock bar strip. Context only.
+const SUPPLY_PILL = { ample: 'green', tight: 'red', neutral: 'blue' };
+const renderSupplyIndicators = (si) => {
+    if (!si || si.stock_kt == null) return '';
+    const kt = (v) => (v == null ? '—' : `${Math.round(v).toLocaleString()}천 t`);
+    const pct = (v) => (v == null ? '' : ` <span style="color:${v >= 0 ? '#86efac' : '#fca5a5'};">(${v >= 0 ? '+' : ''}${v.toFixed(1)}%)</span>`);
+    const series = (si.series || []).filter((r) => r.stock_kt != null);
+    const max = Math.max(...series.map((r) => r.stock_kt), 1);
+    const bars = series.map((r, i) => {
+        const h = Math.max(2, Math.round((r.stock_kt / max) * 28));
+        return `<rect x="${i * 12}" y="${30 - h}" width="9" height="${h}" rx="1" fill="${i === series.length - 1 ? '#38bdf8' : '#475569'}"><title>${r.month} 재고 ${kt(r.stock_kt)}</title></rect>`;
+    }).join('');
+    const strip = series.length > 1
+        ? `<svg width="${series.length * 12}" height="30" style="display:block;margin-top:4px;" aria-label="월말 재고 추이">${bars}</svg>
+           <div class="climate-sub">${series[0].month} ~ ${series[series.length - 1].month} 월말 재고</div>` : '';
+    return `
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
+            <div class="climate-metric-row" style="border:none;">
+                <span class="nm" style="font-weight:600;color:#e2e8f0;">공급 지표 (MPOB ${si.month_ko}${si.provisional ? ', 잠정' : ''})</span>
+                <span class="climate-status-pill ${SUPPLY_PILL[si.verdict] || 'blue'}">${si.verdict_ko}</span>
+            </div>
+            ${si.reason_ko ? `<div class="climate-sub">${si.reason_ko}</div>` : ''}
+            <div class="climate-metric-row"><span class="nm">월말 재고</span>
+                <span class="vl" style="font-size:12px;">${kt(si.stock_kt)}${si.stock_5y_avg_kt != null ? ` <span style="color:#64748b;">/ 5년 평균 ${kt(si.stock_5y_avg_kt)}</span>` : ''}${pct(si.stock_vs_5y_pct)}</span></div>
+            <div class="climate-metric-row"><span class="nm">CPO 생산 (월)</span>
+                <span class="vl" style="font-size:12px;">${kt(si.production_kt)}<span style="color:#64748b;"> · 3개월 전년비</span>${pct(si.production_3m_yoy_pct)}</span></div>
+            <div class="climate-metric-row"><span class="nm">팜유 수출 (월)</span>
+                <span class="vl" style="font-size:12px;">${kt(si.export_kt)}<span style="color:#64748b;"> · 3개월 전년비</span>${pct(si.export_3m_yoy_pct)}</span></div>
+            ${si.pks?.month_kt != null ? `<div class="climate-metric-row"><span class="nm" title="${si.pks.note_ko || ''}">PKS 추정 (월)</span>
+                <span class="vl" style="font-size:12px;">${kt(si.pks.month_kt)}<span style="color:#64748b;"> · 12개월 전년비</span>${pct(si.pks.last12_yoy_pct)}</span></div>` : ''}
+            ${strip}
+            ${si.note_ko ? `<div class="climate-sub">${si.note_ko}</div>` : ''}
+            ${si.price_history_ko ? `<div class="climate-sub" style="margin-top:4px;">과거 검증: ${si.price_history_ko}</div>` : ''}
+            ${si.pks?.note_ko ? `<div class="climate-sub">${si.pks.note_ko}</div>` : ''}
+        </div>`;
+};
+
 // Same read-out as the palm card, built from the stage calls: overall call,
 // which stages drove it, and how such calls matched past yields.
 const renderStageConditionSummary = (sc) => {
@@ -4965,6 +5005,7 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
                 ${c.weatherConditions
                     ? renderWeatherConditions(c.weatherConditions)
                     : renderStageConditionSummary(stageConditionFor(stageConds, c.regionKey, c.cropKey || cropIdentity(c)))}
+                ${renderSupplyIndicators(c.supplyIndicators)}
                 ${c.pksOutlook?.summary_ko
                     ? `<div class="climate-sub" style="margin-top:6px;">${c.pksOutlook.summary_ko}<br><span style="color:#64748b;">${c.pksOutlook.note_ko || ''}</span></div>`
                     : ''}

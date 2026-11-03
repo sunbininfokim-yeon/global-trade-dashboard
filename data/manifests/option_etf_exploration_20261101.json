@@ -1,0 +1,269 @@
+{
+  "input_sha256": {
+    "derivatives_board_v1.json": "78adbba541fb34513a4de8e4ef5f0ace279fdd25745e27dce2a0be72e1133f51",
+    "kospi200_etf_candidates_daily_v1.json": "928f1f90fc4aaf6aed6192caec598468eca4ca6fb1feea039140d1954e0221be"
+  },
+  "method": {
+    "rules": "fixed signs; no optimization or fitted model",
+    "split": "2019-2023 discovery / 2024-2026 chronological evaluation by outcome date",
+    "limitations": [
+      "Exploratory, not an untouched holdout",
+      "Historical publication times unknown",
+      "Adjusted close-to-close is an association, not executable P&L",
+      "Next open-to-close assumes common daily OHLC adjustment factor; unverified",
+      "Costs 5/10/20bps are illustrative round trip, not actual quotes",
+      "Exclude TIGER 2026-10-29 unexplained adjustment-reset outcome",
+      "No LETF, cash-flow, or activity-gap inputs; no short strategy inferred"
+    ]
+  },
+  "tickers": {
+    "069500": {
+      "discovery": {
+        "adjusted_close_to_close": {
+          "baseline": {
+            "n": 1232,
+            "mean_pct": 0.042287704608045824,
+            "positive_pct": 53.327922077922075
+          },
+          "call_positive": {
+            "n": 562,
+            "mean_pct": 0.006815247875309812,
+            "positive_pct": 53.91459074733096
+          },
+          "put_positive": {
+            "n": 609,
+            "mean_pct": 0.003530487239045253,
+            "positive_pct": 49.75369458128079
+          },
+          "spread_positive": {
+            "n": 577,
+            "mean_pct": 0.06518084085366847,
+            "positive_pct": 55.80589254766031
+          }
+        },
+        "next_open_to_close_assumed": {
+          "baseline": {
+            "n": 1232,
+            "mean_pct": -0.015922721221457253,
+            "positive_pct": 48.538961038961034
+          },
+          "call_positive": {
+            "n": 562,
+            "mean_pct": -0.009643620948315883,
+            "positive_pct": 50.0,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.059643620948315886,
+              "10": -0.1096436209483159,
+              "20": -0.2096436209483159
+            }
+          },
+          "put_positive": {
+            "n": 609,
+            "mean_pct": -0.08114858565517521,
+            "positive_pct": 44.991789819376024,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.13114858565517523,
+              "10": -0.18114858565517522,
+              "20": -0.2811485856551752
+            }
+          },
+          "spread_positive": {
+            "n": 577,
+            "mean_pct": 0.022984067995234857,
+            "positive_pct": 51.81975736568457,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.027015932004765146,
+              "10": -0.07701593200476514,
+              "20": -0.17701593200476515
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "adjusted_close_to_close": {
+          "baseline": {
+            "n": 688,
+            "mean_pct": 0.17430603865776587,
+            "positive_pct": 57.55813953488372
+          },
+          "call_positive": {
+            "n": 278,
+            "mean_pct": 0.2447712618206416,
+            "positive_pct": 58.63309352517986
+          },
+          "put_positive": {
+            "n": 342,
+            "mean_pct": 0.07337997478289442,
+            "positive_pct": 57.89473684210527
+          },
+          "spread_positive": {
+            "n": 304,
+            "mean_pct": 0.16242016354318217,
+            "positive_pct": 56.9078947368421
+          }
+        },
+        "next_open_to_close_assumed": {
+          "baseline": {
+            "n": 688,
+            "mean_pct": 0.012950647273192596,
+            "positive_pct": 52.90697674418605
+          },
+          "call_positive": {
+            "n": 278,
+            "mean_pct": 0.06600050982577939,
+            "positive_pct": 56.11510791366906,
+            "net_mean_pct_by_cost_bps": {
+              "5": 0.016000509825779385,
+              "10": -0.03399949017422062,
+              "20": -0.13399949017422064
+            }
+          },
+          "put_positive": {
+            "n": 342,
+            "mean_pct": -0.01780443172079782,
+            "positive_pct": 53.80116959064327,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.06780443172079782,
+              "10": -0.11780443172079783,
+              "20": -0.21780443172079783
+            }
+          },
+          "spread_positive": {
+            "n": 304,
+            "mean_pct": 0.017434848517605864,
+            "positive_pct": 53.94736842105263,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.03256515148239414,
+              "10": -0.08256515148239414,
+              "20": -0.18256515148239416
+            }
+          }
+        }
+      }
+    },
+    "102110": {
+      "discovery": {
+        "adjusted_close_to_close": {
+          "baseline": {
+            "n": 1232,
+            "mean_pct": 0.042891989992268766,
+            "positive_pct": 53.97727272727273
+          },
+          "call_positive": {
+            "n": 562,
+            "mean_pct": 0.007332462000696368,
+            "positive_pct": 53.91459074733096
+          },
+          "put_positive": {
+            "n": 609,
+            "mean_pct": 0.005336333975298804,
+            "positive_pct": 51.231527093596064
+          },
+          "spread_positive": {
+            "n": 577,
+            "mean_pct": 0.0648885602683494,
+            "positive_pct": 55.80589254766031
+          }
+        },
+        "next_open_to_close_assumed": {
+          "baseline": {
+            "n": 1232,
+            "mean_pct": -0.01475321518219904,
+            "positive_pct": 49.67532467532468
+          },
+          "call_positive": {
+            "n": 562,
+            "mean_pct": -0.019235398585160893,
+            "positive_pct": 50.177935943060504,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.0692353985851609,
+              "10": -0.1192353985851609,
+              "20": -0.2192353985851609
+            }
+          },
+          "put_positive": {
+            "n": 609,
+            "mean_pct": -0.06189912252371068,
+            "positive_pct": 47.29064039408867,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.11189912252371068,
+              "10": -0.1618991225237107,
+              "20": -0.26189912252371067
+            }
+          },
+          "spread_positive": {
+            "n": 577,
+            "mean_pct": 0.011716640532181305,
+            "positive_pct": 51.81975736568457,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.038283359467818696,
+              "10": -0.0882833594678187,
+              "20": -0.1882833594678187
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "adjusted_close_to_close": {
+          "baseline": {
+            "n": 687,
+            "mean_pct": 0.17666961787674856,
+            "positive_pct": 57.64192139737992
+          },
+          "call_positive": {
+            "n": 278,
+            "mean_pct": 0.2438131990462679,
+            "positive_pct": 57.55395683453237
+          },
+          "put_positive": {
+            "n": 341,
+            "mean_pct": 0.07893823709472732,
+            "positive_pct": 58.35777126099707
+          },
+          "spread_positive": {
+            "n": 304,
+            "mean_pct": 0.16811989460902818,
+            "positive_pct": 56.57894736842105
+          }
+        },
+        "next_open_to_close_assumed": {
+          "baseline": {
+            "n": 687,
+            "mean_pct": -0.0019081331649560356,
+            "positive_pct": 52.11062590975255
+          },
+          "call_positive": {
+            "n": 278,
+            "mean_pct": 0.042673896540364555,
+            "positive_pct": 55.03597122302158,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.007326103459635448,
+              "10": -0.05732610345963545,
+              "20": -0.15732610345963546
+            }
+          },
+          "put_positive": {
+            "n": 341,
+            "mean_pct": -0.0346584259207474,
+            "positive_pct": 52.785923753665685,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.0846584259207474,
+              "10": -0.1346584259207474,
+              "20": -0.23465842592074743
+            }
+          },
+          "spread_positive": {
+            "n": 304,
+            "mean_pct": 0.008986166094045435,
+            "positive_pct": 52.30263157894737,
+            "net_mean_pct_by_cost_bps": {
+              "5": -0.04101383390595457,
+              "10": -0.09101383390595458,
+              "20": -0.19101383390595458
+            }
+          }
+        }
+      }
+    }
+  }
+}

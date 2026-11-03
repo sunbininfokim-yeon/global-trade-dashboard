@@ -59,6 +59,19 @@ jobs:
         working-directory: "New for anti/scripts/yield_model"
         run: python -m palm_oil.conditions backtest
 
+      - name: Refresh MPOB monthly supply (Malaysia)
+        # bepi.mpob.gov.my only answers from Actions. A failure keeps the
+        # committed CSV; the dump line prints the parsed table for debugging.
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python -m palm_oil.mpob dump | head -60 || true
+          python -m palm_oil.mpob || echo "::warning::MPOB refresh failed; using the committed CSV"
+
+      - name: Refresh PKS imports (UN Comtrade)
+        # Public preview API, no key, rate limited; a failure keeps the committed files.
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m palm_oil.pks_trade || echo "::warning::Comtrade PKS refresh failed; using committed files"
+
       - name: Run forecast
         working-directory: "New for anti/scripts/yield_model"
         run: python -m palm_oil.forecast
@@ -69,7 +82,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           for f in "New for anti/scripts/yield_model/palm_oil/training" \
-                   "New for anti/public/data/"{malaysia,colombia,nigeria,thailand}_yield_forecast.json; do
+                   "New for anti/public/data/"{malaysia,colombia,nigeria,thailand}_yield_forecast.json \
+                   "New for anti/public/data/pks_trade_v1.json"; do
             [ -e "$f" ] && git add "$f"
           done
           git commit -m "chore: palm oil forecast on the PR branch" || exit 0
@@ -88,7 +102,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           for f in "New for anti/scripts/yield_model/palm_oil/training" \
-                   "New for anti/public/data/"{malaysia,colombia,nigeria,thailand}_yield_forecast.json; do
+                   "New for anti/public/data/"{malaysia,colombia,nigeria,thailand}_yield_forecast.json \
+                   "New for anti/public/data/pks_trade_v1.json"; do
             [ -e "$f" ] && git add "$f"
           done
           git commit -m "chore: weekly palm oil forecast refresh" || exit 0

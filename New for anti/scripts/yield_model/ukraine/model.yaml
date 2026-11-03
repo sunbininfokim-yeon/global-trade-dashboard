@@ -1,0 +1,52 @@
+# 우크라이나 — 국가 모델 매니페스트
+# 규격: ../MODEL_MANIFEST.md · 이 파일만 고치면 UI 코드 수정 없이 반영된다.
+#
+# 수확량 모델 없음 (2026-11-03 sean 결정: 생육 판정만). 주별 수확량은
+# 국가통계청에 2013~2022 연보로만 남아 학습에 너무 짧다. 산지는 생육
+# 단계별 날씨 판정(stage_conditions)을 위한 지점이며, 점령지는 피했다.
+
+country: ukraine
+iso: UKR
+label_ko: 우크라이나
+label_en: Ukraine
+panel_mode: reference
+status_note_ko: "수확량 예측 없음 — 생육 단계별 날씨 판정만 제공한다 (주별 수확량 공개 자료가 2013~2022년뿐)."
+data_file: ukraine_yield_forecast.json
+model_name: 우크라이나 곡물·유지 (생육 판정)
+
+view:
+  longitude: 32.5
+  latitude: 49.0
+  zoom: 4.8
+
+regions:
+  - key: ukraine_winter_wheat
+    label_ko: "중남부 (겨울밀)"
+    ui_name: ukraine_winter_wheat
+    coordinates: [32.3, 48.0]     # 키로보흐라드·오데사 북부·미콜라이우
+    crops_region_keys: [ukraine_winter_wheat]
+  - key: ukraine_corn
+    label_ko: "중북부 (옥수수)"
+    ui_name: ukraine_corn
+    coordinates: [33.0, 50.0]     # 폴타바·체르카시·키이우·빈니차
+    crops_region_keys: [ukraine_corn]
+  - key: ukraine_sunflower
+    label_ko: "중동부 (해바라기)"
+    ui_name: ukraine_sunflower
+    coordinates: [34.3, 48.7]     # 드니프로페트로우스크·키로보흐라드·폴타바 남부
+    crops_region_keys: [ukraine_sunflower]
+
+sources:
+  labels:
+    name: "우크라이나 국가통계청 (주별 연보 2013~2022)"
+    url: https://stat.gov.ua/en/datasets/areas-gross-harvests-and-crop-yield-annual
+    updated: "2023-08-01"
+  climate:
+    name: NASA POWER (daily)
+    url: https://power.larc.nasa.gov/
+    updated: "2026-11-03"
+
+trade_policy:
+  restricted: false
+  prohibited_crops: []
+  note_ko: "흑해 해상 수출 경로가 전쟁 위험에 노출 (seed)"

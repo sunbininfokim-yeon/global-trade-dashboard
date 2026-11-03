@@ -4,12 +4,15 @@
   "iso3": "POL",
   "date": "2026-09-27",
   "system_id": "pol-local",
-  "as_of": "2026-10-01",
+  "as_of": "2026-11-01",
   "sources": [
     "https://wybory.gov.pl/wojtburmistrz_2024_2029/",
     "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_mayoral_election",
     "https://www.fakt.pl/polityka/wybory-w-krakowie-kto-wygral-pkw-podala-oficjalne-wyniki/nm463fd",
-    "https://www.gazetaprawna.pl/wiadomosci/kraj/artykuly/11320139,oficjalne-wyniki-wyborow-w-krakowie-gibala-pierwszy-ale-bedzie-druga.html"
+    "https://www.gazetaprawna.pl/wiadomosci/kraj/artykuly/11320139,oficjalne-wyniki-wyborow-w-krakowie-gibala-pierwszy-ale-bedzie-druga.html",
+    "https://krakow.kbw.gov.pl/uploaded_files/1791860767_krakow-obwieszczenie-k-i.pdf",
+    "https://www.bip.krakow.pl/?bip_id=1&mmi=35887",
+    "Dz.U. Woj. Małopolskiego 2026 poz. 5703"
   ],
   "parties": [
     {
@@ -75,24 +78,26 @@
           "name_ko": "크라쿠프",
           "name_pl": "Kraków",
           "seats": 1,
-          "status": "nominated",
-          "note_ko": "1차 2026-09-27. 보도가 PKW 전 구역(454) 숫자를 전함. wybory.gov.pl 원문 표를 이번 실행에서 열지 못함. 과반 당선자 없음. 결선 2026-10-11 기바와·피아트코프스카. elected 키는 결선 후.",
+          "status": "completed",
+          "note_ko": "1차 2026-09-27 당선 없음. 결선 2026-10-11. 결선 득표는 시선관위 BIP·선거위원 공고. 1차 후보별 득표는 공고에 없어 기존 보도(위키·PKW 인용)를 유지한다. 그 합 255,785는 공고 1차 유효표와 같다.",
           "candidates": [
             {
               "party_abbr": "KdM",
               "name": "Łukasz Gibała",
               "status": "nominated",
-              "votes": 93042,
-              "source": "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_mayoral_election",
-              "note_ko": "보도 36.38%. 결선 진출. 위키 표 출전: National Electoral Commission."
+              "votes": 161184,
+              "source": "https://www.bip.krakow.pl/?bip_id=1&mmi=35887",
+              "note_ko": "결선 시선관위 BIP 161,184(62.12%). 선거위원 공고도 당선 161,184·유효 259,490. 1차 보도 93,042(36.38%)는 결선 표가 아니다.",
+              "elected": true
             },
             {
               "party_abbr": "KO",
               "name": "Monika Piątkowska",
               "status": "nominated",
-              "votes": 76514,
-              "source": "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_mayoral_election",
-              "note_ko": "보도 29.91%. 결선 진출."
+              "votes": 98306,
+              "source": "https://www.bip.krakow.pl/?bip_id=1&mmi=35887",
+              "note_ko": "결선 시선관위 BIP 98,306(37.88%). 161,184+98,306=259,490이 공고 유효표다. 1차 보도 76,514(29.91%)는 결선 표가 아니다.",
+              "elected": false
             },
             {
               "party_abbr": "PiS",
@@ -101,7 +106,7 @@
               "elected": false,
               "votes": 44772,
               "source": "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_mayoral_election",
-              "note_ko": "보도 17.50%."
+              "note_ko": "1차 보도(위키·PKW 인용). 보도 17.50%."
             },
             {
               "party_abbr": "Razem",
@@ -110,7 +115,7 @@
               "elected": false,
               "votes": 17684,
               "source": "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_mayoral_election",
-              "note_ko": "보도 6.91%."
+              "note_ko": "1차 보도(위키·PKW 인용). 보도 6.91%."
             },
             {
               "party_abbr": "NL",
@@ -119,7 +124,7 @@
               "elected": false,
               "votes": 12303,
               "source": "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_mayoral_election",
-              "note_ko": "보도 4.81%."
+              "note_ko": "1차 보도(위키·PKW 인용). 보도 4.81%."
             },
             {
               "party_abbr": "KKP",
@@ -128,7 +133,7 @@
               "elected": false,
               "votes": 10523,
               "source": "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_mayoral_election",
-              "note_ko": "보도 4.11%."
+              "note_ko": "1차 보도(위키·PKW 인용). 보도 4.11%."
             },
             {
               "party_abbr": "SdPL",
@@ -137,11 +142,19 @@
               "elected": false,
               "votes": 947,
               "source": "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_mayoral_election",
-              "note_ko": "보도 0.37%."
+              "note_ko": "1차 보도(위키·PKW 인용). 보도 0.37%."
             }
           ]
         }
-      ]
+      ],
+      "result": {
+        "by_party": {
+          "KdM": 1
+        },
+        "total": 1,
+        "as_of": "2026-10-12",
+        "note_ko": "결선 2026-10-11. 크라쿠프 1선거구 선거위원 공고 2026-10-12(Dz.U. Woj. Małopolskiego poz. 5703)와 시선관위 BIP. 당선 Łukasz Gibała(KdM). 유효 259,490. 1=1."
+      }
     }
   ]
 }

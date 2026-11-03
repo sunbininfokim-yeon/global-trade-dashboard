@@ -1,5 +1,7 @@
 import { loadAdmin1 } from '../data/geo-service.js?v=2';
 import { classColors, stateClass2024 } from '../data/usa-election-context.js?v=2';
+import { loadCnLeaders } from '../data/chn-service.js';
+import { cnRegionColor, cnRegionForCode } from './special/chn-leaders.js';
 
 const neutral = [51, 65, 85, 235];
 const selected = [14, 116, 144, 245];
@@ -151,7 +153,9 @@ const stateIndex = (country) => new Map(
 
 // fitView:false 는 카메라를 건드리지 않고 색만 바꾼다. 주를 누른 직후 "눌렀다"는 표시를 지도에
 // 먼저 주려고 같은 지도를 다시 칠할 때 쓴다 -- 사용자가 확대해 둔 시점이 되돌아가면 안 된다.
-export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, fitView = true, onStateOpen }) => {
+export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, fitView = true, onStateOpen, onRegionOpen = null }) => {
+    // 중국 인사 자료는 경계 도형과 동시에 받는다 -- 차례로 받으면 지도가 그만큼 늦게 뜬다.
+    const cnLeadersPromise = country.iso3 === 'CHN' ? loadCnLeaders() : null;
     let raw;
     try {
         raw = await loadAdmin1(country.iso3);
@@ -161,6 +165,12 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
         console.warn(`국가 경계 도형을 불러오지 못했습니다 (${country.iso3}):`, error?.message || error);
         return false;
     }
+    // 중국은 성마다 서기·성장 자료가 있어 성을 누를 수 있고, 대리·공석 등으로 색이 칠해진다.
+    // 자료를 못 읽으면 예전처럼 누를 수 없는 회색 지도로 남는다.
+    // 인사 자료가 늦으면 지도를 붙잡지 않는다 -- 3초가 지나면 회색 지도로 먼저 그린다.
+    const cnLeaders = cnLeadersPromise
+        ? await Promise.race([cnLeadersPromise, new Promise((resolve) => { setTimeout(() => resolve(null), 3000); })])
+        : null;
     const geo = withRelocatedExclaves(raw, country.iso3);
     if (isStale?.()) return false;
     const usaStates = country.iso3 === 'USA' ? stateIndex(country) : null;
@@ -169,7 +179,7 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
         data: geo,
         stroked: true,
         filled: true,
-        pickable: country.iso3 === 'USA',
+        pickable: country.iso3 === 'USA' || Boolean(cnLeaders && onRegionOpen),
         lineWidthMinPixels: 1,
         updateTriggers: { getFillColor: [selectedStateId, electionMode] },
         getLineColor: [203, 213, 225, 190],
@@ -180,6 +190,7 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
                 const stateId = feature.properties?.code?.replace(/^US-/, '');
                 return classColors[stateClass2024(stateId)];
             }
+            if (cnLeaders) return cnRegionColor(cnLeaders, feature.properties?.code) || neutral;
             return state ? partyColor(state.governor?.abbr) : neutral;
         },
     });
@@ -189,6 +200,9 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
     ], country.iso3 === 'USA' ? (info) => {
         const state = usaStates.get(info?.object?.properties?.code);
         if (state) onStateOpen(state.id);
+    } : cnLeaders && onRegionOpen ? (info) => {
+        const region = cnRegionForCode(info?.object?.properties?.code);
+        if (region) onRegionOpen(region);
     } : null, fitView ? viewForGeometry(geo) : null);
     return true;
 };

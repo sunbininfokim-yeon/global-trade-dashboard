@@ -307,6 +307,77 @@ COTTON = RegionCrop(
 )
 
 
-ALL = [PUNJAB_WHEAT, MP_SOYBEAN, COTTON]
+# ---------------------------------------------------------------------------
+# 동부 쌀벨트 -- 카리프 쌀: a rainfed crop that lives or dies on the monsoon.
+#
+# Chhattisgarh and Odisha are India's eastern rice bowl and, unlike Punjab,
+# mostly rainfed: canal and tubewell cover is a fraction of the Punjab level,
+# so a weak or broken monsoon shows straight up in the yield (2002, 2009 and
+# 2015 droughts). Punjab rice is left out on purpose -- it is fully irrigated
+# and its yield follows the trend, which no weather feature would beat.
+#
+# Calendar: nursery and transplanting with the monsoon (June-July), tillering
+# July-August, panicle initiation and flowering September, grain fill and
+# harvest October-November. The mechanisms are the ones the agronomy names:
+# a late onset delays transplanting, a September break at flowering costs
+# grain number, and an October cyclone or flood lodges a ripe crop.
+#
+# Points: the eight largest rice districts of the two states, weighted by
+# their 2000-2017 mean rice area (ICRISAT); together 27% of the region's area.
+# Mayurbhanj's ICRISAT coordinate (19.1N) is wrong, so Baripada is used.
+# ---------------------------------------------------------------------------
+
+EAST_RICE_POINTS = [
+    {"name": "Raipur",      "lat": 21.25, "lon": 81.63, "elevation": 298, "weight": 0.161},
+    {"name": "Durg",        "lat": 21.19, "lon": 81.28, "elevation": 289, "weight": 0.135},
+    {"name": "Bilaspur",    "lat": 22.08, "lon": 82.15, "elevation": 264, "weight": 0.117},
+    {"name": "Rajnandgaon", "lat": 21.10, "lon": 81.03, "elevation": 307, "weight": 0.112},
+    {"name": "Baripada",    "lat": 21.94, "lon": 86.72, "elevation": 40,  "weight": 0.133},
+    {"name": "Bargarh",     "lat": 21.34, "lon": 83.62, "elevation": 171, "weight": 0.126},
+    {"name": "Berhampur",   "lat": 19.31, "lon": 84.79, "elevation": 24,  "weight": 0.109},
+    {"name": "Bhawanipatna", "lat": 19.91, "lon": 83.17, "elevation": 250, "weight": 0.105},
+]
+
+
+def _east_rice(daily, y):
+    onset = C.monsoon_onset_doy(daily, y)
+    return {
+        "onset_doy": onset,
+        "onset_delay": C.days_late(onset),
+        "precip_jun_sep": C.window_totals(daily, [(6, 0), (7, 0), (8, 0), (9, 0)], y),
+        "precip_jul_aug": C.window_totals(daily, [(7, 0), (8, 0)], y),
+        # September dry spells weighted by VPD: panicle and flowering stress
+        "flowering_stress_sep": C.flowering_drought_stress(daily, y, month=9),
+        "longest_dry_aug_sep": C.longest_dry_spell(daily, [(8, 0), (9, 0)], y),
+        # Cyclone / flood rain on the ripening crop
+        "harvest_waterlog": C.waterlogging_penalty(daily, [(10, 0), (11, 0)], y, 300.0),
+        "heat_days_35": C.heat_days(daily, [(9, 0), (10, 0)], y, 35.0),
+    }
+
+
+EAST_RICE = RegionCrop(
+    key="east_rice",
+    label="Chhattisgarh-Odisha kharif rice",
+    crop="rice",
+    selector=[(14, None), (8, None)],       # Chhattisgarh, Odisha
+    points=EAST_RICE_POINTS,
+    build=_east_rice,
+    doc="No guide file: rainfed kharif rice agronomy (IMD onset, flowering "
+        "dry spells, cyclone lodging); features fixed before training.",
+    critical_window=[(6, 0), (7, 0), (8, 0), (9, 0), (10, 0)],
+    panel={"spi_monsoon": "precip_jun_sep"},
+    core=["precip_jun_sep", "flowering_stress_sep", "onset_delay",
+          "oni_season", "dmi_season"],
+    caveat="Labels are all-season rice (ICRISAT and DES do not split kharif "
+           "from rabi for every district); rabi rice is a small share in both "
+           "states, so the label is read as the kharif crop.",
+    non_weather_drivers=(
+        "Procurement prices and the free-grain scheme have pushed area and "
+        "input use up since the 2010s; irrigation is spreading in Chhattisgarh. "
+        "Both move the trend, which the model takes out before reading weather."),
+)
+
+
+ALL = [PUNJAB_WHEAT, MP_SOYBEAN, COTTON, EAST_RICE]
 
 BY_KEY = {r.key: r for r in ALL}

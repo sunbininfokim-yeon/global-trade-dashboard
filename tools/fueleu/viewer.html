@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FuelEU 풀링 시장</title>
+<link rel="stylesheet" href="/viewer.css">
+<body>
+<header>
+  <p class="eyebrow">FUELEU MARITIME · POOLING</p>
+  <h1>FuelEU 준수 잔액과 풀 가격</h1>
+  <p class="lede">항차별 연료 사용량으로 선박의 연간 준수 잔액을 계산하고, 풀 매입·차입·부담금 중 비용을 비교합니다. 가격은 OceanScore 공개 월간 해설의 OPX 지수이며, 공개 호가 기준이라 실제 체결가가 아닙니다.</p>
+</header>
+<nav class="jump"><a href="#rules">1 규칙과 가격 범위</a><a href="#market">2 풀 가격 추이</a><a href="#supply">3 수급 구조</a><a href="#quick">4 선박 판정</a><a href="#voyages">5 항차·거래</a></nav>
+<main>
+  <section class="panel" id="rules">
+    <div class="head"><div><p class="kicker">1 · RULES</p><h2>한도는 5년마다 내려가고, 연료마다 부족으로 바뀌는 시점이 다르다</h2></div><div class="meta">Regulation (EU) 2023/1805 제4조(2) · 부속서 II 기본 배출계수</div></div>
+    <div id="rules-chart"></div>
+    <div id="rules-side" class="grid2"></div>
+  </section>
+
+  <section class="panel" id="market">
+    <div class="head"><div><p class="kicker">2 · POOL PRICE HISTORY</p><h2>FuelEU 잉여분 풀 가격 (OPX, EUR/tCO₂e)</h2></div><div id="market-meta" class="meta"></div></div>
+    <div id="chart"></div>
+    <div id="market-table"></div>
+  </section>
+
+  <section class="panel" id="supply">
+    <div class="head"><div><p class="kicker">3 · SUPPLY &amp; DEMAND</p><h2>잉여는 누가 만들고, 부족은 누가 지는가 (EMSA MRV 기반 추정)</h2></div><div id="supply-meta" class="meta"></div></div>
+    <div id="supply-body"></div>
+  </section>
+
+  <section class="panel" id="quick">
+    <div class="head"><div><p class="kicker">4 · QUICK CHECK</p><h2>이 선박은 잉여 선박인가, 부족 선박인가</h2></div></div>
+    <p class="note">FuelEU 한도는 선종·크기와 상관없이 모든 선박에 같은 gCO₂e/MJ입니다. 크기는 적용 대상인지(5,000 GT 초과)와 잔액의 규모만 바꾸고, 잉여냐 부족이냐는 연료 구성이 정합니다.</p>
+    <div class="controls">
+      <label>총톤수 (GT) <input id="q-gt" type="number" min="0" value="95000"></label>
+      <label>주 연료 <select id="q-f1"></select></label>
+      <label>연간 t (EU 관련 항해) <input id="q-t1" type="number" min="0" value="12000"></label>
+      <label>보조 연료 <select id="q-f2"></select></label>
+      <label>연간 t <input id="q-t2" type="number" min="0" value="600"></label>
+      <label>EU↔EU 항해 % <input id="q-intra" type="number" min="0" max="100" value="10"></label>
+      <label>EU 항구 정박 % <input id="q-berth" type="number" min="0" max="100" value="5"></label>
+    </div>
+    <div id="q-out"></div>
+  </section>
+
+  <section class="panel" id="voyages">
+    <div class="head"><div><p class="kicker">5 · VOYAGES</p><h2>항차 입력</h2></div>
+      <div class="controls">
+        <label>보고연도 <input id="year" type="number" min="2025" max="2050" step="1"></label>
+        <label>풀 가격 (EUR/t) <input id="pool" type="number" min="0" step="any"></label>
+        <label>다음 기간 가격 가정 <input id="next" type="number" min="0" step="any" placeholder="선택"></label>
+        <label>연속 미준수 기간 <input id="consec" type="number" min="0" step="1"></label>
+      </div>
+    </div>
+    <p class="note">출발·도착 항구 국가로 적용 비율을 정합니다: EU↔EU 100%, EU↔역외 50%, EU↔최외곽지역 50%, 역외↔역외 0%. 정박 중 연료는 도착항이 EU일 때만 100% 반영합니다. 노르웨이·아이슬란드 등 EEA 적용 여부는 확인 전이라 역외로 둡니다.</p>
+    <div class="table-wrap"><table id="legs"><thead><tr>
+      <th>항차</th><th>상태</th><th>출발국</th><th>도착국</th><th>최외곽</th><th>항해 연료</th><th>항해 t</th><th>정박 연료</th><th>정박 t</th><th></th>
+    </tr></thead><tbody></tbody></table></div>
+    <div class="actions"><button id="add" type="button">항차 추가</button><button id="reset" type="button" class="secondary">예제로 되돌리기</button></div>
+  </section>
+
+  <div id="error" role="alert" hidden></div>
+  <section id="results"></section>
+</main>
+<footer>로컬 분석 도구 · 규정: Regulation (EU) 2023/1805 · 가상 선박·가상 항차 예제</footer>
+<script type="module" src="/viewer.js"></script>
+</body>
+</html>
