@@ -1,0 +1,53 @@
+{
+  "schema_version": "kospi200-direction-shadow-public-v1",
+  "published_from": "data/manifests/shadow_forecast_replay_20261102.json",
+  "forecast": {
+    "schema_version": "calibrated-direction-shadow-v2",
+    "model_id": "a40e5e67ba0220ebec4a73b3a488226136c3b633cd8839ca4846bdda68777aeb",
+    "as_of": "2026-10-30",
+    "target_date": "2026-11-02",
+    "generated_at": "2026-11-02T02:05:42.391480+00:00",
+    "target_open": "2026-11-02T00:00:00+00:00",
+    "trained_through": "2026-10-30",
+    "target": "069500 next KRX session close > open; DOWN includes flat",
+    "input_hashes": {
+      "board": "e6553d27059d2f2202c3d7a09e0cb73953febfba1ce59abd5524c156852c1956",
+      "prices": "eae506025fb06245727d71b342f063f822ba4f1eb58c260b068b672a10ee5852"
+    },
+    "status": "retrospective_research",
+    "direction": "DOWN",
+    "probability_up": 0.45454542551990673,
+    "validation": "selected after retrospective research; incremental skill not established",
+    "provider_published_at": "unknown",
+    "probability_non_up": 0.5454545744800933,
+    "raw_probability_up": 0.28956048478443447,
+    "feature_values": {
+      "momentum5": 0.044254301223663584,
+      "volatility20": 0.03551200871276551,
+      "today_return": -0.038797438204626,
+      "today_gap": -0.03144021595299851,
+      "today_intraday": -0.007596043499644822,
+      "momentum20": -0.1699348197716407,
+      "call_rank60": -0.26666666666666666,
+      "put_rank60": 0.4,
+      "call_mean5": -0.008263706368049817,
+      "put_mean5": 0.05501127449205838
+    },
+    "calibration_slope": 0.0,
+    "calibration_has_zero_slope": true,
+    "information_state": "recent_base_rate_only",
+    "timing_evidence": "local generation time; public first-seen time not verified"
+  },
+  "research": {
+    "report": "data/manifests/option_calibration_research_20261102.md",
+    "n_outcomes": 1178,
+    "calibrated_accuracy": 0.5399,
+    "recent_base_rate_accuracy": 0.5195,
+    "brier_delta_vs_base_rate": -0.00028,
+    "brier_delta_interval_95": [
+      -0.00199,
+      0.0014
+    ],
+    "summary_ko": "과거 1,178일 시간순 평가에서 기본 확률 대비 추가 정보가 확인되지 않았다."
+  }
+}

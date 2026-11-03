@@ -226,8 +226,8 @@ const SIGNAL_PAGES = [
             { label: '나스닥 종합', value: 'NASDAQ', fmt: 'idx2', symbol: '^IXIC', ma: true },
             // Yahoo daily quote (data.js) now backs both -- see the 0.52 block
             // there. KOSPI here is the index level itself, distinct from the
-            // K200 옵션 풋콜 비율 fixed card, which reads the separate KRX
-            // derivatives board.
+            // K200 다음 거래일 방향 fixed card, which reads the separate
+            // direction shadow file.
             { label: '필라델피아 반도체', value: 'SOX', fmt: 'idx2', symbol: '^SOX', ma: true },
             { label: 'KOSPI', value: 'KOSPI', fmt: 'idx2', symbol: '^KS11', ma: true }
         ]
@@ -467,13 +467,14 @@ function refreshSignalMarkets() {
 
 // `foot` carries the as-of date on its own line. Folding it into `sub` made the
 // date wrap mid-token (2026-08-\n09) once the worst-point name grew.
-const signalFixedCard = ({ id, title, value, sub, foot, tone, target }) => `
+const signalFixedCard = ({ id, title, value, sub, foot, tone, target, tab, split }) => `
     <div class="signal-fixed-card${target ? ' is-clickable' : ''}${tone ? ` tone-${tone}` : ''}"
-         id="${id}"${target ? ` role="button" tabindex="0" data-target="${finEsc(target)}"` : ''}>
+         id="${id}"${target ? ` role="button" tabindex="0" data-target="${finEsc(target)}"` : ''}${tab ? ` data-tab="${finEsc(tab)}"` : ''}>
         <span class="signal-fixed-title">${finEsc(title)}</span>
         <span class="signal-fixed-value">${finEsc(value)}${
             value === '불러오는 중' ? '<span class="inline-spinner" aria-hidden="true"></span>' : ''
         }</span>
+        ${Number.isFinite(split) ? `<span class="signal-fixed-split" aria-hidden="true"><i style="width:${(split * 100).toFixed(1)}%"></i><b></b></span>` : ''}
         <span class="signal-fixed-sub">${finEsc(sub)}</span>
         ${foot ? `<span class="signal-fixed-foot">${finEsc(foot)}</span>` : ''}
     </div>`;
@@ -500,8 +501,8 @@ const signalFixedState = {
         value: '불러오는 중', sub: 'IMF PortWatch 7일 vs 28일', target: 'shipping_chokepoints'
     },
     kospi: {
-        id: 'signal-kospi', title: 'K200 옵션 풋콜 비율',
-        value: '불러오는 중', sub: 'KRX 코스피200 옵션 거래량', target: 'fin_derivatives'
+        id: 'signal-kospi', title: 'K200 다음 거래일 방향 · 참고',
+        value: '불러오는 중', sub: 'KODEX 200 시가 → 종가', target: 'fin_derivatives', tab: 'derivatives'
     }
 };
 
@@ -572,35 +573,37 @@ const signalLoadChokepoints = async () => {
     signalRenderFixed(signalFixedState);
 };
 
-// KOSPI200 option put/call volume ratio. Ratio above 1 means more puts than
-// calls traded -- the usual shorthand for hedging demand outpacing upside bets.
-// The board is written by the KRX OpenAPI job (scripts/market_microstructure),
-// so this card only reads what that job published; a missing file leaves the
-// placeholder rather than reconstructing a ratio from anything else.
-const signalLoadPutCall = async () => {
+// KODEX 200 next-session direction from the calibrated shadow engine (#797).
+// Replaced the put/call ratio card, which still lives in the 파생 수급 tab.
+// Both views go through msDirectionView, so a forecast whose target session
+// has passed shows 자료 없음 here too -- never yesterday's number as today's.
+// No up/down colors: the engine has no validated edge, so the card must not
+// read as a signal.
+const signalLoadDirection = async () => {
     try {
-        const res = await fetch('/public/data/derivatives_board_v1.json', { cache: 'no-cache' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const kr = (await res.json()).kr || {};
-        const opts = kr.kospi200_options || {};
-        const ratio = Number(opts.put_call_volume);
-        if (!isFinite(ratio)) throw new Error('풋콜 비율 없음');
-
-        const contracts = (n) => Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
-        const asOf = signalAsOf(opts.bas_dd || kr.as_of);
-        signalFixedState.kospi = {
-            ...signalFixedState.kospi,
-            value: ratio.toFixed(2),
-            sub: `콜 ${contracts(opts.call_volume)} · 풋 ${contracts(opts.put_volume)} 계약`,
-            foot: asOf ? `as of ${asOf} · KRX` : 'KRX',
-            // Puts outnumbering calls is the state worth flagging.
-            tone: ratio >= 1 ? 'warn' : null
-        };
+        const doc = await loadFirstJson(finDataPaths('kospi200_direction_shadow_v1.json'), { cache: 'no-cache' });
+        const v = msDirectionView(doc);
+        if (v.state === 'missing') {
+            signalFixedState.kospi = {
+                ...signalFixedState.kospi,
+                value: '자료 없음',
+                sub: v.lastTarget ? `${msDayLabel(v.lastTarget)} 이후 새 옵션·ETF 자료 대기` : '새 옵션·ETF 자료 대기',
+                foot: '연구용 · 지난 값은 표시하지 않음', tone: 'muted', split: null
+            };
+        } else {
+            signalFixedState.kospi = {
+                ...signalFixedState.kospi,
+                value: `상승 ${msPct1(v.up)} · 하락·보합 ${msPct1(v.down)}`,
+                sub: `${msDayLabel(v.target)} KODEX 200 시가 → 종가${v.baseRateOnly ? ' · 최근 121일 비율' : ''}`,
+                foot: v.state === 'late' ? '장 시작 후 생성 · 사전 예측 아님' : `연구용 · 입력 ${msDayLabel(v.asOf)}`,
+                tone: v.state === 'late' ? 'muted' : null, split: v.up
+            };
+        }
     } catch (e) {
-        console.error('K200 풋콜 비율 로드 실패:', e);
+        console.error('K200 방향 참고 로드 실패:', e);
         signalFixedState.kospi = {
             ...signalFixedState.kospi,
-            value: '연동 예정', sub: 'KRX 파생 보드 없음', tone: 'muted'
+            value: '자료 없음', sub: '방향 참고 파일 없음', tone: 'muted', split: null
         };
     }
     signalRenderFixed(signalFixedState);
@@ -685,7 +688,9 @@ function initSignalPanel() {
     });
 
     const followCard = (card) => {
-        if (card?.dataset.target) setView(card.dataset.target);
+        if (!card?.dataset.target) return;
+        if (card.dataset.tab) msOpenTab(card.dataset.tab);
+        setView(card.dataset.target);
     };
     signalEls.fixed().addEventListener('click', (e) => followCard(e.target.closest('.signal-fixed-card.is-clickable')));
     signalEls.fixed().addEventListener('keydown', (e) => {
@@ -701,7 +706,7 @@ function initSignalPanel() {
     // rather than being downloaded twice.
     signalLoadEnso();
     signalLoadChokepoints();
-    signalLoadPutCall();
+    signalLoadDirection();
 }
 
 // Deck.GL Map Initialization
