@@ -1,0 +1,73 @@
+name: Monthly Kazakhstan USDA refresh
+
+# USDA PSD national production / yield for Kazakhstan wheat and barley:
+# refreshes the reference panel's outlooks and the national
+# yield tables stage_conditions checks its past calls against. Runs after
+# the monthly WASDE (around the 10th-12th).
+#
+# On a pull request touching kazakhstan/ it runs the same refresh plus the
+# stage build and commits the outputs to the PR branch (PSD and NASA POWER
+# are only reachable from Actions).
+on:
+  schedule:
+    - cron: '50 18 14 * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/yield_model/kazakhstan/**'
+      - '.github/workflows/kazakhstan_usda_refresh.yml'
+
+jobs:
+  refresh:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy
+      - name: Refresh USDA PSD (Kazakhstan)
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m kazakhstan.psd
+
+      - name: Stage conditions on the PR branch
+        if: github.event_name == 'pull_request'
+        working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python3 build_registry.py
+          python -m stage_conditions.build
+          git checkout -- "../../public/data/climate_registry_v1.json" 2>/dev/null || true
+
+      - name: Commit to the pull request branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/kazakhstan/training" \
+                  "New for anti/public/data/kazakhstan_yield_forecast.json" \
+                  "New for anti/public/data/stage_conditions_v1.json"
+          git commit -m "chore: Kazakhstan USDA refresh on the PR branch" || exit 0
+          git push origin "HEAD:$GITHUB_HEAD_REF"
+
+      # A separate step with a bare `git push`, so tools/ops/check_deploy_chain.py
+      # sees that this workflow commits to main and deploy.yml must chain it.
+      - name: Commit and Push Changes
+        if: github.event_name != 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/kazakhstan/training" \
+                  "New for anti/public/data/kazakhstan_yield_forecast.json"
+          git commit -m "chore: monthly Kazakhstan USDA refresh" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push
