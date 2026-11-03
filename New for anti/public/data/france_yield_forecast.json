@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-11-02T15:37:51.122340+00:00",
+  "season": 2027,
+  "country": "France",
+  "source_note": "Yields: Eurostat apro_cpshr (NUTS 2, EU standard humidity), area-weighted across each region's NUTS 2 units. Weather: NASA POWER daily, area-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI. NAO: NOAA CPC monthly index.",
+  "methodology_note": "Same method as the India and Brazil models: yield is a log technology trend plus a weather deviation; only the deviation is modelled, with ridge regression on features fixed before training. Skill is measured by forward chaining with the trend refit inside every fold, scored over the most recent folds.",
+  "regions": {
+    "north_wheat": {
+      "label": "Northern France winter wheat",
+      "crop": "winter_wheat",
+      "season": 2027,
+      "unit": "kg/ha",
+      "point": 7401.8,
+      "range_68": [
+        6358.0,
+        8445.5
+      ],
+      "range_95": [
+        5356.0,
+        9447.6
+      ],
+      "trend": 7401.8,
+      "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": 1.74,
+      "point_basis": "trend",
+      "features_filled": [
+        "wet_days_may_jun",
+        "precip_may_jun",
+        "deficit_mar_may",
+        "heat_days_28_jun",
+        "nao_season"
+      ],
+      "last_actual": {
+        "year": 2024,
+        "yield": 6387.797278518348
+      },
+      "enso": {
+        "state": "unknown",
+        "oni_growing_season": null
+      },
+      "nao": {
+        "state": "unknown",
+        "nao_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.156,
+        "weather_skill": 0.156,
+        "weather_driven": true,
+        "non_weather_features": [],
+        "beats_trend": false,
+        "low_confidence": true,
+        "label_through": 2024,
+        "stale_label": false,
+        "sigma_kg_ha": 1043.8
+      },
+      "provenance": {
+        "guide": "No guide file: winter wheat agronomy for the Paris Basin (wet May-June disease years 2016/2024, grain-fill heat 2003/2022); features fixed before training.",
+        "caveat": "Labels are Eurostat NUTS 2 yields from 2000 only (25 seasons), so the out-of-sample record is short; 2016 alone dominates the wet arm.",
+        "non_weather_drivers": "French wheat yields have been flat since the late 1990s (nitrogen limits, the end of breeding gains, climate); the trend is taken out before reading weather.",
+        "weather_through": "2026-10-28",
+        "critical_window_observed": 0.0,
+        "season_complete": false
+      }
+    },
+    "west_maize": {
+      "label": "South-west and western France grain maize",
+      "crop": "grain_maize",
+      "season": 2026,
+      "unit": "kg/ha",
+      "point": 8714.6,
+      "range_68": [
+        7653.4,
+        9775.8
+      ],
+      "range_95": [
+        6634.6,
+        10794.6
+      ],
+      "trend": 8714.6,
+      "weather_effect_pct": 0.0,
+      "model_weather_effect_pct": -12.02,
+      "point_basis": "trend",
+      "features_filled": [],
+      "last_actual": {
+        "year": 2024,
+        "yield": 9281.106038922377
+      },
+      "enso": {
+        "state": "strong El Nino",
+        "oni_growing_season": 1.7833333333333332
+      },
+      "nao": {
+        "state": "unknown",
+        "nao_season": null
+      },
+      "skill": {
+        "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
+        "skill_vs_trend_only": 0.173,
+        "weather_skill": 0.173,
+        "weather_driven": true,
+        "non_weather_features": [],
+        "beats_trend": false,
+        "low_confidence": true,
+        "label_through": 2024,
+        "stale_label": false,
+        "sigma_kg_ha": 1061.2
+      },
+      "provenance": {
+        "guide": "No guide file: grain maize agronomy (July-August water balance and flowering heat; irrigation bans in 2022); features fixed before training.",
+        "caveat": "Eurostat publishes regional grain maize only from 2007 (18 seasons). Irrigated and rainfed maize are not split, so drought shows up damped.",
+        "non_weather_drivers": "Irrigation share and irrigation bans, and the area moving out of maize since 2010, move yields independently of weather.",
+        "weather_through": "2026-10-28",
+        "critical_window_observed": 1.0,
+        "season_complete": true
+      }
+    }
+  },
+  "skipped": {}
+}
