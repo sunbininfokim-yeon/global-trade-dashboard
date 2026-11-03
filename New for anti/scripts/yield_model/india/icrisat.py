@@ -73,6 +73,7 @@ CROPS = {
     "wheat": "WHEAT",
     "soybean": "SOYABEAN",
     "cotton": "COTTON",
+    "rice": "RICE",
 }
 
 # ICRISAT writes -1 for "not reported" rather than leaving the cell empty.
