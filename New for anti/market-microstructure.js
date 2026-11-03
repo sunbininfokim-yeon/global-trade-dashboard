@@ -31,7 +31,89 @@ const MS_FILES = {
     credit: 'deposit_credit_v1.json',
     // KRX 15007 투자자별 선물·콜·풋 거래실적, 2019~ (build_krx_deriv_flow.py).
     flow: 'krx_deriv_flow_v1.json',
+    // Calibrated shadow direction engine output (#797), research only.
+    direction: 'kospi200_direction_shadow_v1.json',
 };
+
+// --- KODEX 200 다음 거래일 방향 (참고) ---------------------------------------
+// Shared by the 파생 수급 tab and the home fixed card. The engine's DOWN
+// includes a flat close, so the label is always 하락·보합. A forecast whose
+// target session has already passed is never shown as today's: it collapses
+// to 자료 없음 rather than carrying yesterday's number forward.
+const msDayLabel = (iso) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) return '—';
+    const [y, m, d] = iso.split('-').map(Number);
+    const wd = '일월화수목금토'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+    return `${m}/${d}(${wd})`;
+};
+const MS_DIRECTION_REASONS = {
+    'missing fresh option or ETF price features': '옵션 또는 ETF 가격 자료가 아직 안 들어왔어요.',
+    'incomplete ETF price window': 'ETF 가격 이력이 비어 있어요.',
+    'source session has not closed': '기준일 장이 아직 끝나지 않았어요.',
+};
+const msDirectionView = (doc, today = msKstToday()) => {
+    const f = (doc || {}).forecast;
+    if (!f) return { state: 'missing', reason: '방향 참고 파일이 없어요.' };
+    const p = Number(f.probability_up);
+    const base = { target: f.target_date, asOf: f.as_of, modelId: String(f.model_id || '').slice(0, 7),
+        research: doc.research || {} };
+    if (f.status === 'unavailable' || !Number.isFinite(p)) {
+        return { ...base, state: 'missing', reason: MS_DIRECTION_REASONS[f.reason] || '새 옵션·ETF 자료를 기다리는 중이에요.' };
+    }
+    if (!f.target_date || f.target_date < today) {
+        return { ...base, state: 'missing', target: null, lastTarget: f.target_date,
+            reason: `${msDayLabel(f.target_date)} 이후 새 옵션·ETF 자료가 없어요. 지난 값은 보여주지 않아요.` };
+    }
+    return { ...base, state: f.status === 'shadow_research' ? 'live' : 'late', up: p, down: 1 - p,
+        baseRateOnly: f.information_state === 'recent_base_rate_only' };
+};
+const msPct1 = (x) => `${(x * 100).toFixed(1)}%`;
+
+const msDirectionSection = (D) => {
+    const v = msDirectionView(D.direction);
+    const r = v.research || {};
+    const badge = v.state === 'live' ? ['연구용', 'is-research']
+        : v.state === 'late' ? ['장 시작 후 생성', 'is-muted'] : ['자료 없음', 'is-muted'];
+    const head = `
+        <div class="ms-dir-head">
+            <span class="ms-dir-title">KODEX 200 다음 거래일 방향 · 참고</span>
+            <span class="ms-dir-badge ${badge[1]}">${badge[0]}</span>
+        </div>
+        <div class="ms-dir-target">${v.target ? `${msDayLabel(v.target)} 시가 → 종가` : '다음 거래일 시가 → 종가'}</div>`;
+    let body;
+    if (v.state === 'missing') {
+        body = `<div class="ms-dir-empty">—</div>
+            <p class="ms-dir-note">${finEsc(v.reason)}</p>`;
+    } else {
+        body = `
+        <div class="ms-dir-split${v.state === 'late' ? ' is-late' : ''}">
+            <div><span>상승</span><strong>${msPct1(v.up)}</strong></div>
+            <div class="is-down"><span>하락·보합</span><strong>${msPct1(v.down)}</strong></div>
+        </div>
+        <div class="ms-dir-bar" role="img" aria-label="상승 ${msPct1(v.up)}, 하락·보합 ${msPct1(v.down)}">
+            <i style="width:${(v.up * 100).toFixed(1)}%"></i><b></b><em></em>
+        </div>
+        <div class="ms-dir-mid">50%</div>
+        <p class="ms-dir-note">${v.state === 'late'
+            ? '장이 시작된 뒤 만들어진 값이라 사전 예측이 아니에요. 적중 기록에서 빠져요.'
+            : v.baseRateOnly
+                ? '최근 121거래일 비율이에요. 옵션 수급은 이 값을 움직이지 못했어요.'
+                : '옵션 수급·가격으로 계산한 확률이에요. 거래 신호로 검증되지 않았어요.'}</p>`;
+    }
+    const foot = [v.asOf ? `입력 ${msDayLabel(v.asOf)}` : null, v.modelId ? `모델 ${finEsc(v.modelId)}` : null,
+        Number.isFinite(r.calibrated_accuracy) && Number.isFinite(r.recent_base_rate_accuracy)
+            ? `과거 적중 ${msPct1(r.calibrated_accuracy)} (기준 ${msPct1(r.recent_base_rate_accuracy)}, ${Number(r.n_outcomes || 0).toLocaleString()}일)` : null]
+        .filter(Boolean).join(' · ');
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>다음 거래일 방향 (연구용)</h2>
+        <p class="fin-lead">외국인 콜·풋 순매수와 KODEX 200 가격으로 다음 거래일 시가 대비 종가의 상승 확률을 냅니다. 보합은 하락에 포함합니다. 매매 신호가 아닙니다.</p>
+        <div class="ms-dir-card">${head}${body}${foot ? `<div class="ms-dir-foot">${foot}</div>` : ''}</div>
+    </section>`;
+};
+
+// Lets another view (the home fixed card) land on a specific tab.
+const msOpenTab = (id) => { if (MS_TABS.some((t) => t.id === id)) MS_TAB = id; };
 
 // Prefer the standalone FreeSIS table, falling back to the micro snapshot's
 // copy so the panel still renders if the daily publish has not run.
@@ -1782,6 +1864,8 @@ const msDerivatives = (D) => {
         : missingSplitRow(label, state.reason);
 
     return `
+    ${msDirectionSection(D)}
+
     <section class="fin-block fin-block-wide">
         <h2>외국인 KOSPI200 파생 수급</h2>
         <p class="fin-lead">매도·매수·순매수는 KRX 공개 대시보드(선물)와 인증된 KRX 15007 원자료(콜·풋)의 당일 거래 흐름입니다. 수급 기준일 ${finEsc(foreignAsOf)} · 표출 시각 ${finEsc(observedAt)}.</p>
