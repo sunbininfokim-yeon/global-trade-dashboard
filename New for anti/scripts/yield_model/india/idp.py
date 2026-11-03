@@ -49,10 +49,11 @@ SOURCES = {
             "cropwise-area-production-yield-upag.csv",
 }
 
-STATES = {"Punjab", "Haryana", "Madhya Pradesh", "Maharashtra", "Gujarat"}
+STATES = {"Punjab", "Haryana", "Madhya Pradesh", "Maharashtra", "Gujarat",
+          "Chhattisgarh", "Odisha", "Orissa"}
 # Source crop name (lower-cased, prefix match) -> model crop key
 CROPS = {"wheat": "wheat", "soyabean": "soybean", "soybean": "soybean",
-         "cotton": "cotton"}
+         "cotton": "cotton", "rice": "rice"}
 
 
 def log(msg):
@@ -96,8 +97,15 @@ def tidy(df, source):
 
 # ICRISAT state codes used by regions.py selectors.
 STATE_CODES = {9: "Punjab", 4: "Haryana", 6: "Madhya Pradesh",
-               7: "Maharashtra", 3: "Gujarat"}
-SPLICE_CROPS = {"wheat", "soybean"}
+               7: "Maharashtra", 3: "Gujarat", 14: "Chhattisgarh",
+               8: ("Odisha", "Orissa")}
+# Rice joins after the overlap check in the PR run (same test as wheat/soy).
+SPLICE_CROPS = {"wheat", "soybean", "rice"}
+
+
+def _names(code):
+    v = STATE_CODES[code]
+    return list(v) if isinstance(v, tuple) else [v]
 
 
 def region_yield(crop, selector, path=OUT):
@@ -112,7 +120,7 @@ def region_yield(crop, selector, path=OUT):
         return None
     d = pd.read_csv(path)
     d = d[(d.crop == crop) & (d.season != "Total")
-          & d.state.isin([STATE_CODES[c] for c, _ in selector])]
+          & d.state.isin([n for c, _ in selector for n in _names(c)])]
     d = d.assign(year=d.year_label.str[:4].astype(int))
     out = []
     for year, g in d.groupby("year"):

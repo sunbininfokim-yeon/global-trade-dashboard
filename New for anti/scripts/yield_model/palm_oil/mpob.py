@@ -31,20 +31,32 @@ MPOB_CSV = os.path.join(HERE, "training", "mpob_monthly.csv")
 URL = "https://bepi.mpob.gov.my/stat/web_report1.php?val={year}84"
 FIRST_YEAR = 2010
 
-# (section heading, row label) -> column. Matching is case-insensitive and
-# on the start of the label, so "Palm Oil (CPO+PPO)" matches "palm oil".
+# (section heading, row label) -> column. Matching is case-insensitive, on
+# the whole label or the label before " (", so "Palm Oil (CPO+PPO)" matches
+# "palm oil" but "Palm Kernel Oil" does not match "palm kernel".
 SERIES = {
     ("PRODUCTION", "crude palm oil"): "cpo_production_t",
+    ("PRODUCTION", "palm kernel"): "pk_production_t",
     ("CLOSING STOCK", "palm oil"): "palm_oil_stock_t",
     ("EXPORT", "palm oil"): "palm_oil_export_t",
     ("IMPORT", "palm oil"): "palm_oil_import_t",
+    ("PRICE", "ffb"): "ffb_price_rm",
 }
+OPTIONAL = ("pk_production_t", "ffb_price_rm")
+PRICE_CHECK_JSON = os.path.join(HERE, "training", "mpob_price_check.json")
+HORIZON = 3  # months ahead for the price check
 SECTIONS = ("PRODUCTION", "CLOSING STOCK", "OPENING STOCK", "EXPORT", "IMPORT",
             "PRICE", "DOMESTIC", "DISAPPEARANCE", "PLANTED", "YIELD")
 MONTHS = ["jan", "feb", "mar", "apr", "may", "jun",
           "jul", "aug", "sep", "oct", "nov", "dec"]
 
-MONTH_KO = {m: f"{i + 1}월" for i, m in enumerate(MONTHS)}
+# PKS (shell) per tonne of palm kernel. Mills recover roughly as much shell
+# as kernel from a bunch (each ~5-7% of FFB weight); industry rule of thumb,
+# not a measured national ratio. Cross-check (first run, to 2026-09): the
+# last 12 months come to 5.33 Mt, about 10% above pks.py's CPO-trend x 0.25
+# (4.82 Mt) and inside both rules' ranges.
+PKS_PER_KERNEL = 1.1
+PKS_PER_KERNEL_RANGE = (0.9, 1.3)
 
 
 def log(msg):
@@ -126,7 +138,7 @@ def parse(html, year):
             continue
         name = label.lower()
         column = next((c for (s, l), c in SERIES.items()
-                       if s == section and name.startswith(l)), None)
+                       if s == section and (name == l or name.startswith(l + " ("))), None)
         if column is None:
             continue
         # Months run Dec(Y-1), Jan(Y) ... Dec(Y); later cells beyond 13 are
@@ -179,6 +191,8 @@ def collect(today=None):
         raise SystemExit("MPOB: nothing parsed")
     wide = tidy(rows)
     missing = [c for c in SERIES.values() if c not in wide.columns]
+    # A page without the kernel row only loses the PKS line, not the run.
+    missing = [c for c in missing if c not in OPTIONAL]
     if missing:
         raise SystemExit(f"MPOB: rows not found: {', '.join(missing)}")
     os.makedirs(os.path.dirname(MPOB_CSV), exist_ok=True)
@@ -265,11 +279,13 @@ def indicators(frame=None):
         parts.append(f"수출 {exp3:+.0f}%")
     series = []
     for _, r in d.tail(13).iterrows():
+        pk = r.get("pk_production_t")
         series.append({
             "month": r.date.strftime("%Y-%m"),
             "stock_kt": _kt(r.get("palm_oil_stock_t")),
             "production_kt": _kt(r.get("cpo_production_t")),
             "export_kt": _kt(r.get("palm_oil_export_t")),
+            "pks_kt": _kt(None if pk is None or pd.isna(pk) else pk * PKS_PER_KERNEL),
         })
     return {
         "month": last.date.strftime("%Y-%m"),
@@ -288,8 +304,12 @@ def indicators(frame=None):
         "export_ytd_yoy_pct": _pct(ytd("palm_oil_export_t", year),
                                    ytd("palm_oil_export_t", year - 1)),
         "import_kt": _kt(last.get("palm_oil_import_t")),
+        "pks": _pks(by, year, month, last12=lambda c, y: _sum12(by, c, y, month),
+                    last3=last3, ytd=ytd),
         "verdict": verdict,
         "verdict_ko": verdict_ko,
+        "ffb_price_rm": None if pd.isna(last.get("ffb_price_rm", float("nan"))) else round(float(last.ffb_price_rm), 2),
+        "price_history_ko": price_history_ko(_load_check()),
         "reason_ko": ", ".join(parts) if parts else None,
         "series": series,
         "applied_to_forecast": False,
@@ -301,6 +321,134 @@ def indicators(frame=None):
     }
 
 
+def _verdict(vs5):
+    if vs5 is None:
+        return "neutral"
+    return "ample" if vs5 >= 10 else "tight" if vs5 <= -10 else "neutral"
+
+
+def _load_check():
+    import json
+    try:
+        with open(PRICE_CHECK_JSON, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def price_check(frame=None, write=True):
+    """Did the stock call line up with the FFB price over the next months?
+
+    FFB price at 1% OER (MPOB, RM/t) is set from the CPO price, so it stands
+    in for CPO. For every month from 2015 (5 prior years needed), the stock
+    gap to the same month's 5-year average is classed as in indicators(),
+    and the FFB price change over the next HORIZON months is recorded.
+    The ±10% bands are the same fixed ones; nothing is fitted here.
+    """
+    import numpy as np
+
+    if frame is None:
+        frame = pd.read_csv(MPOB_CSV)
+    if "ffb_price_rm" not in frame:
+        return None
+    d = frame.copy()
+    d["date"] = pd.to_datetime(d["date"])
+    by = d.set_index("date").sort_index()
+    rows = []
+    for t, r in by.iterrows():
+        stock, price = r.get("palm_oil_stock_t"), r.get("ffb_price_rm")
+        ahead = by.ffb_price_rm.get(t + pd.DateOffset(months=HORIZON))
+        if pd.isna(stock) or pd.isna(price) or ahead is None or pd.isna(ahead) or price <= 0:
+            continue
+        past = [by.palm_oil_stock_t.get(pd.Timestamp(t.year - k, t.month, 1)) for k in range(1, 6)]
+        past = [v for v in past if v is not None and not pd.isna(v)]
+        if len(past) < 5:
+            continue
+        gap = (stock / (sum(past) / 5) - 1) * 100
+        rows.append({"month": t.strftime("%Y-%m"), "stock_vs_5y_pct": round(gap, 1),
+                     "verdict": _verdict(gap),
+                     "price_change_pct": round((ahead / price - 1) * 100, 1)})
+    if len(rows) < 24:
+        return None
+    table = pd.DataFrame(rows)
+    classes = {}
+    for v, g in table.groupby("verdict"):
+        classes[v] = {"n": int(len(g)),
+                      "mean_change_pct": round(float(g.price_change_pct.mean()), 1),
+                      "fell_share": round(float((g.price_change_pct < 0).mean()), 2)}
+    corr = float(np.corrcoef(table.stock_vs_5y_pct, table.price_change_pct)[0, 1])
+    a, n, t_ = (classes.get(k, {}).get("mean_change_pct") for k in ("ample", "neutral", "tight"))
+    ordered = None not in (a, n, t_) and a < n < t_
+    out = {
+        "label": f"MPOB FFB price (1% OER, RM/t) change over the next {HORIZON} months",
+        "months": [rows[0]["month"], rows[-1]["month"]],
+        "n": len(rows),
+        "horizon_months": HORIZON,
+        "classes": classes,
+        "corr_gap_vs_change": round(corr, 2),
+        "supported": bool(ordered and corr < 0),
+        "rows": rows,
+    }
+    if write:
+        import json
+        with open(PRICE_CHECK_JSON, "w", encoding="utf-8") as f:
+            json.dump(out, f, indent=1)
+            f.write("\n")
+    return out
+
+
+def price_history_ko(check):
+    if not check:
+        return None
+    c = check["classes"]
+    def part(k, ko):
+        x = c.get(k)
+        return f"{ko} {x['n']}개월 평균 {x['mean_change_pct']:+.1f}%" if x else None
+    body = ", ".join(p for p in (part("ample", "여유"), part("neutral", "평년"),
+                                  part("tight", "빠듯")) if p)
+    lead = (f"{check['months'][0][:4]}~{check['months'][1][:4]}년 판정 뒤 {check['horizon_months']}개월 "
+            f"FFB 가격 변화: {body}")
+    if check["supported"]:
+        return lead + " → 재고가 많을 때 가격이 덜 오르거나 내렸다(판정과 맞음)."
+    return lead + " → 판정 방향과 가격이 뚜렷이 맞지 않았다(참고만)."
+
+
+def _sum12(by, col, year, month):
+    if col not in by:
+        return None
+    end = pd.Timestamp(year, month, 1)
+    s = by[col][(by.index > end - pd.DateOffset(months=12)) & (by.index <= end)].dropna()
+    return s.sum() if len(s) == 12 else None
+
+
+def _pks(by, year, month, last12, last3, ytd):
+    """Monthly PKS estimate from MPOB palm kernel output, or None."""
+    col = "pk_production_t"
+    if col not in by or pd.isna(by[col].get(pd.Timestamp(year, month, 1))):
+        return None
+    pk = by[col][pd.Timestamp(year, month, 1)]
+    t12, p12 = last12(col, year), last12(col, year - 1)
+    k = PKS_PER_KERNEL
+    out = {
+        "month_kt": _kt(pk * k),
+        "kernel_month_kt": _kt(pk),
+        "last12_kt": _kt(None if t12 is None else t12 * k),
+        "last12_range_kt": (None if t12 is None else
+                            [_kt(t12 * PKS_PER_KERNEL_RANGE[0]), _kt(t12 * PKS_PER_KERNEL_RANGE[1])]),
+        "last12_yoy_pct": _pct(t12, p12),
+        "m3_yoy_pct": _pct(last3(col, year), last3(col, year - 1)),
+        "ytd_yoy_pct": _pct(ytd(col, year), ytd(col, year - 1)),
+        "ratio_to_kernel": k,
+    }
+    parts = [f"최근 12개월 PKS 약 {out['last12_kt'] / 10:,.0f}만 t" if out["last12_kt"] else None,
+             f"전년비 {out['last12_yoy_pct']:+.1f}%" if out["last12_yoy_pct"] is not None else None,
+             f"최근 3개월 {out['m3_yoy_pct']:+.1f}%" if out["m3_yoy_pct"] is not None else None]
+    out["summary_ko"] = ", ".join(p for p in parts if p)
+    out["note_ko"] = ("MPOB 월별 팜커널 생산 × 1.1(껍질/커널, 업계 경험치 0.9~1.3)로 환산한 실측 기반 "
+                      "추정. 커널 생산은 공식 통계, 비율은 추정이다.")
+    return out
+
+
 def main(argv):
     if argv[:1] == ["dump"]:
         year = date.today().year
@@ -309,7 +457,10 @@ def main(argv):
         for r in rows.rows:
             print(" | ".join(r))
         return 0
-    collect()
+    frame = collect()
+    check = price_check(frame)
+    if check:
+        log(f"price check {check['months']}: {check['classes']} corr {check['corr_gap_vs_change']}")
     print(indicators())
     return 0
 

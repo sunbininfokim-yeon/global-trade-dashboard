@@ -10,7 +10,7 @@ Python 3.9 이상. 저장소 루트에서:
 python3 tools/shipping_carbon/server.py --port 8769 --synthetic
 ```
 
-http://127.0.0.1:8769 에 접속한다. 기본 샘플은 **가격·환율·배출량·포지션 모두 가상 데이터**이고 화면에 `synthetic`으로 표시한다. 가상 가격 80 EUR/EUA와 환율 1,500 KRW/EUR은 실제 관측값이 아니다. `--synthetic` 없이 실행하면 로컬 수집 성공 파일을 우선 사용하며, 파일이 없으면 가상 샘플로 시작한다. 서버는 loopback에만 바인딩하고 접속 시 외부 API를 호출하지 않는다.
+http://127.0.0.1:8769 에 접속한다. **기본 화면은 공개 관측자료이며 가상 계약 시나리오는 별도로 연다.** 실데이터를 보려면 위 실행 명령에서 `--synthetic`을 빼고 아래 수집 명령을 먼저 실행한다. 수집 파일이 없으면 미확보로 표시하고 가상 가격으로 자동 대체하지 않는다. `--synthetic`은 테스트 전용 가상 가격 80 EUR/EUA·환율 1,500 KRW/EUR을 명시적으로 사용하는 옵션이다. 서버는 loopback에만 바인딩하고 접속 시 외부 API를 호출하지 않는다.
 
 실제 공개 참고자료를 수집하려면 별도 가상환경에 의존성을 설치한다:
 
@@ -18,9 +18,14 @@ http://127.0.0.1:8769 에 접속한다. 기본 샘플은 **가격·환율·배�
 python3 -m venv tools/shipping_carbon/.venv
 tools/shipping_carbon/.venv/bin/pip install -r tools/shipping_carbon/requirements.txt
 tools/shipping_carbon/.venv/bin/python tools/shipping_carbon/collect_prices.py --as-of 2026-11-01
+tools/shipping_carbon/.venv/bin/python tools/shipping_carbon/collect_mrv.py --year 2025
 ```
 
 EEX 경매 XLSX와 ECB KRW/EUR 참고환율 API는 개발 시 키 없이 실제 응답을 확인했다. 수집기는 원본 URL·관측일·수집시각·해시를 기록하며 원본과 수집 결과는 git 제외 경로인 `source_data/`에 둔다. `redistribution_status`는 `not_verified`이다. 공개 다운로드 가능 여부와 공개 서비스 재배포 권한은 별개다. 실패 기록은 마지막 성공 snapshot을 덮어쓰지 않는다.
+
+EMSA 공식 앱이 사용하는 공개 `downloadable-files` 목록에서 요청 연도·버전을 확인하고 MRV XLSX를 받는다. Full ERs와 Partial ERs를 합산하거나 같은 선박의 다른 기간을 중복 집계하지 않는다. 선박 IMO·명칭·선종·회사·DoC 발행 표기·CO₂ 총량·ETS 보고 CO₂·연료량을 원본 시트·행과 함께 보존한다. `N/A`·빈칸은 null이며 원문 0은 유지한다. DoC 미발행을 발행·검증 완료로 승격하지 않는다. 2025년 보고량을 2026년 제출 의무로 자동 환산하지 않는다. 원문 `m tonnes`는 metric tonnes이고 million tonnes로 배율 변환하지 않는다.
+
+실데이터 화면은 IMO·이름 검색을 제공하며 HMM 보고서가 있으면 초기 검색을 HMM으로 둔다. 공개되지 않은 배출권 보유량·선물 포지션·증거금·고객 계약·풀링 견적은 미확보로 표시한다. 가상 시나리오 입력으로 이 값을 실제 관측값처럼 채우지 않는다.
 
 ## 계산과 두 관점
 
@@ -33,6 +38,8 @@ EEX 경매 XLSX와 ECB KRW/EUR 참고환율 API는 개발 시 키 없이 실제 
 - FuelEU: 사전 계산된 집약도·에너지의 단순 잔액과 가정 풀링 견적 비용만 계산한다. 법정 부담금·연료계수·최적전략은 현행 부속서 검토 전까지 보류한다. 이 잔액은 EUA가 아니다.
 
 `engine.py`는 네트워크 없는 Decimal 계산 모듈이고 `server.py`의 `/api/calculate`가 동일 결과 객체를 두 화면에 전달한다. `acceptance_cases.json`은 독립 기대값을 갖는 합성 사례다. 누락 가격은 0이 아닌 null이며 잘못된 입력 시 화면의 이전 계산 결과를 지운다.
+
+가상 시나리오에는 5천/5만/20만 EUA 거래 규모 가안을 적용할 수 있다. 이는 회사 전체 운용규모가 아니며 선사·금융사 실제 포지션을 대체하지 않는다. 참고 MRV 분포는 실데이터에서 동적으로 계산하고, 포지션·IM·현금 여유는 명시된 가정으로 구분한다. 상세 가정과 해운 외 탄소금융 확장 제안은 [CARBON_FINANCE_PROPOSAL.md](CARBON_FINANCE_PROPOSAL.md)에 있다. `preset_id`는 사용자가 선택한 시작 템플릿이며 이후 입력을 수정할 수 있다.
 
 `funding.py`는 단일 고객 고정가격 공급·선물 매수 계약의 날짜별 자금 모듈이다. 선물 VM과 마지막 결제가격 기준 실물 인수대금을 함께 반영해 같은 비용을 이중 계산하지 않는다. 완전 매칭·기한 내 인도일 때만 공급 차액에서 수수료·가정 차입비용을 차감한 기여이익을 표시한다. 잔여 재고가 있는 경우 확정 이익으로 평가하지 않는다. 기준일+1일 충격, +2일 복귀는 가상 경로이며 실제 거래소 일정이 아니다.
 
@@ -54,7 +61,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-이미 Chrome이 설치되어 있으면 브라우저 설치 대신 `PW_CHANNEL=chrome npm run test:browser`를 사용할 수 있다. `CARBON_BASE_URL`로 테스트 서버 주소를 바꿀 수 있다. 캡처는 git 제외 `source_data/`에 저장한다. 입력 변경·두 관점 전환·추가 가격충격·선지급·날짜별 자금 그래프·JSON 저장·가격 미입력·입력 오류·초기화·모바일 가로 넘침을 확인한다. 단위 테스트는 32개이며 설계 산술 검산은 별도 16개다.
+이미 Chrome이 설치되어 있으면 브라우저 설치 대신 `PW_CHANNEL=chrome npm run test:browser`를 사용할 수 있다. `CARBON_BASE_URL`로 테스트 서버 주소를 바꿀 수 있다. 실제 수집 파일로 실행한 서버는 `PW_CHANNEL=chrome node observed_check.cjs`로 별도 검증한다(기본 8771 포트). 캡처는 git 제외 `source_data/`에 저장한다. 단위 테스트는 39개이며 설계 산술 검산은 별도 16개다.
 
 ## 법령·자료 근거와 제한
 

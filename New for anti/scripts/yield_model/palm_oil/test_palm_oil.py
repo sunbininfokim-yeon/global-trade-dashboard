@@ -111,11 +111,16 @@ def _mpob_page(year, stock_scale=1.0):
         "<table><tr><th></th>" + "".join(f"<th>{m}</th>" for m in months) + "</tr>"
         "<tr><td>PRODUCTION</td></tr>"
         + row("Crude Palm Oil", 1_500_000) + row("Palm Kernel", 400_000)
+        + row("Palm Kernel Oil", 180_000)
         + "<tr><td>CLOSING STOCK</td></tr>"
-        + row("Palm Oil", 1_700_000 * stock_scale) + row("Palm Kernel Oil", 200_000)
+        + row("Palm Oil", 1_700_000 * stock_scale) + row("Palm Kernel", 150_000)
+        + row("Palm Kernel Oil", 200_000)
         + "<tr><td>EXPORT</td></tr>" + row("Palm Oil", 1_300_000)
         + "<tr><td>IMPORT</td></tr>" + row("CPO", 50_000)
-        + row("Palm Oil (CPO+PPO)", 60_000) + "</table>")
+        + row("Palm Oil (CPO+PPO)", 60_000)
+        + "<tr><td>PRICE (1% OER EQUIVALENT)</td></tr>"
+        + "<tr><td>FFB (RM)</td>" + "".join(f"<td>{40 + i * 0.5:.2f}</td>" for i in range(13)) + "</tr>"
+        + "</table>")
 
 
 def test_mpob_parse_maps_months_and_sections():
@@ -144,3 +149,52 @@ def test_mpob_later_page_wins_and_indicators():
     assert out["stock_vs_5y_pct"] > 10 and out["verdict"] == "ample"
     assert out["applied_to_forecast"] is False
     assert len(out["series"]) == 13
+    # Kernel row parsed (not "Palm Kernel Oil") and turned into PKS.
+    assert wide.set_index("date").pk_production_t["2025-01"] == 401_000
+    pks = out["pks"]
+    assert pks["kernel_month_kt"] == 412
+    assert pks["month_kt"] == round(412_000 * 1.1 / 1000)
+    assert pks["last12_kt"] is not None and pks["summary_ko"]
+    assert wide.set_index("date").ffb_price_rm["2025-01"] == 40.5
+
+
+def test_pks_trade_exporter_side_summary():
+    from palm_oil import pks_trade
+    rows = []
+    for p in pd.date_range("2024-01-01", "2025-12-01", freq="MS"):
+        grow = 1.1 if p.year == 2025 else 1.0
+        for exp, jp, kr in (("360", 360e6, 2e6), ("458", 90e6, 1e6)):
+            for partner, kg in (("392", jp * grow), ("410", kr * grow), ("764", 10e6 * grow)):
+                rows.append({"freq": "M", "period": p.strftime("%Y%m"), "exporter": exp,
+                             "partner": partner, "net_kg": kg, "value_usd": kg * 0.11})
+            world = (jp + kr + 10e6) * grow
+            rows.append({"freq": "M", "period": p.strftime("%Y%m"), "exporter": exp,
+                         "partner": "0", "net_kg": world, "value_usd": world * 0.11})
+    for exp, kg in (("360", 4.8e9), ("458", 1.3e9)):
+        rows.append({"freq": "A", "period": "2024", "exporter": exp, "partner": "0",
+                     "net_kg": kg, "value_usd": kg * 0.11})
+    out = pks_trade.summary(pd.DataFrame(rows).astype(str))
+    r = out["recent"]
+    assert r["last_month"] == "2025-12" and r["yoy_pct"] == 10.0
+    assert r["top_destinations"][0]["country"] == "일본"
+    assert r["korea_kt"] == round(3 * 12 * 1.1, 1)
+    assert r["price_usd_t"] == 110.0
+    assert out["annual"] == [{"year": 2024, "total_kt": 6100.0,
+                              "by_exporter_kt": {"인도네시아": 4800.0, "말레이시아": 1300.0}}]
+
+
+def test_mpob_price_check_classes():
+    from palm_oil import mpob
+    months = pd.date_range("2010-01-01", "2020-12-01", freq="MS")
+    rng = np.random.default_rng(1)
+    stock = 2_000_000 * (1 + 0.3 * np.sin(np.arange(len(months)) / 7))
+    # Price falls after high stock months, rises after low ones.
+    price = [50.0]
+    for i in range(1, len(months)):
+        price.append(price[-1] * (1 - 0.05 * np.sin((i - 3) / 7) + rng.normal(0, 0.005)))
+    frame = pd.DataFrame({"date": months.strftime("%Y-%m"), "palm_oil_stock_t": stock,
+                          "ffb_price_rm": price})
+    out = mpob.price_check(frame, write=False)
+    assert out["n"] > 24 and out["months"][0] == "2015-01"
+    assert out["corr_gap_vs_change"] < 0
+    assert "FFB" in mpob.price_history_ko(out)

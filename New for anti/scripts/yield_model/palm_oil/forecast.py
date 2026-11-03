@@ -51,6 +51,13 @@ def _supply(producer):
         return None
 
 
+def _with_monthly(outlook, supply):
+    """Add the MPOB kernel-based monthly PKS line to the trend outlook."""
+    if outlook is not None and supply and supply.get("pks"):
+        outlook = {**outlook, "monthly": supply["pks"]}
+    return outlook
+
+
 def region(producer, today=None):
     """Region payload, or None without the PSD slice."""
     from indonesia.model import predict_target, train_target
@@ -81,6 +88,7 @@ def region(producer, today=None):
     except (OSError, ValueError) as exc:
         log(f"{producer.key}: weather conditions unavailable: {exc}")
 
+    supply = _supply(producer)
     validation = model["validation"][model["configuration"]]
     return {
         "label": producer.label,
@@ -103,8 +111,8 @@ def region(producer, today=None):
                  "note": ("El Nino in the year before tends to cut output 6-24 "
                           "months later; context only, not applied.")},
         "weather_conditions": conditions,
-        "pks_outlook": pks_outlook(p["trend"], conditions),
-        "supply_indicators": _supply(producer),
+        "pks_outlook": _with_monthly(pks_outlook(p["trend"], conditions), supply),
+        "supply_indicators": supply,
         "skill": {
             "beats_trend": False,
             "skill_vs_trend_only": 0.0,

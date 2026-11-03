@@ -1,0 +1,81 @@
+name: FuelEU pool market refresh
+
+# 해운 › FuelEU 풀링 tab. OceanScore publishes one OPX commentary a month and
+# EMSA re-versions the MRV workbook every few weeks, so a weekly run catches
+# both without hammering either site. After display_until (2026-12-03) the
+# collectors are skipped and build_site_data.py writes the file without the
+# OPX series and MRV estimate -- that run is the takedown the user asked for.
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'tools/fueleu/**'
+      - 'tests/fueleu/**'
+      - 'New for anti/shipping-fueleu.js'
+      - '.github/workflows/fueleu_market_refresh.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fueleu-market-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install --quiet pytest
+      - run: python -m pytest -q tools/fueleu
+      - run: node --test tests/fueleu/*.test.mjs
+
+  update:
+    needs: validate
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet openpyxl
+      - name: Still inside the publication window?
+        id: window
+        run: |
+          until=$(python -c "import sys; sys.path.insert(0, 'tools/fueleu'); import build_site_data as b; print(b.DISPLAY_UNTIL)")
+          if [[ "$(date -u +%F)" > "$until" ]]; then echo "live=false" >> "$GITHUB_OUTPUT"; else echo "live=true" >> "$GITHUB_OUTPUT"; fi
+      - name: Collect OPX commentary
+        if: steps.window.outputs.live == 'true'
+        run: python tools/fueleu/collect_pool_prices.py
+      - name: Estimate supply from the two latest MRV years
+        if: steps.window.outputs.live == 'true'
+        run: python tools/fueleu/mrv_supply.py --latest 2
+      - name: Build the site file
+        run: python tools/fueleu/build_site_data.py
+      - name: Commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/fueleu_market_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh FuelEU pool market data'
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase --autostash
+          done
+          exit 1

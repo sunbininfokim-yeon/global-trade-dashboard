@@ -39,13 +39,25 @@
       eyebrow: 'NET ZERO PATHWAY',
       title: 'Net Zero 시나리오',
       desc: 'IMO 2050 넷제로 전략의 중간 관문인 CII 감축 일정(2026–2030)에 대응해 감속·개조가 유효 선복량을 얼마나 잠식하는지 봅니다. 2050년까지의 전체 경로가 아니라 현재 확정된 감축 계수 구간만 다룹니다.'
+    },
+    shipping_fueleu: {
+      eyebrow: 'FUELEU MARITIME',
+      title: 'FuelEU 풀링',
+      desc: 'EU 기항 선박의 연료 온실가스 집약도 규제(FuelEU Maritime)입니다. 한도보다 깨끗한 선박은 잉여를, 못 미치는 선박은 부족을 갖고 풀링으로 거래합니다. 규칙, 풀 가격 추이, 선종·연료별 수급 구조, 선박별 판정을 한 화면에 모았습니다.'
+    },
+    shipping_carbon: {
+      eyebrow: 'CARBON FINANCE',
+      title: '해운 탄소금융',
+      desc: '같은 해운사의 EU ETS 배출권 조달 부족량을 금융사의 고정가격 공급·선물 헤지와 연결합니다. 가격손익이 상쇄돼도 증거금과 실물 인수대금이 고객 수금보다 먼저 나가면 추가 자금이 필요하다는 점을 날짜별로 보여 줍니다. 가상 고객·가상 가격의 교육용 시나리오입니다.'
     }
   };
 
   const VIEW_ORDER = [
     ['shipping_fleet', '글로벌 선대'],
     ['shipping_routes', '항로 운항 선복량'],
-    ['shipping_chokepoints', '초크포인트']
+    ['shipping_chokepoints', '초크포인트'],
+    ['shipping_carbon', '탄소금융'],
+    ['shipping_fueleu', 'FuelEU 풀링']
   ];
 
   const SHIP_TYPE_LABELS = {
@@ -494,8 +506,8 @@
             <p class="shipping-hero-desc">${escapeHtml(meta.desc)}</p>
           </div>
           <div class="shipping-hero-meta">
-            <span>스냅샷 ${formatDate(data.generated_at)}</span>
-            ${source && target !== 'shipping_chokepoints' ? `<a class="shipping-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">UNCTAD 원문 ↗</a>` : ''}
+            <span>${target === 'shipping_carbon' ? '가상 고객·가상 가격 시나리오' : target === 'shipping_fueleu' ? 'Regulation (EU) 2023/1805 · 공개 자료' : `스냅샷 ${formatDate(data.generated_at)}`}</span>
+            ${source && !['shipping_chokepoints', 'shipping_carbon', 'shipping_fueleu'].includes(target) ? `<a class="shipping-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">UNCTAD 원문 ↗</a>` : ''}
           </div>
         </header>
         <nav class="shipping-tabs" aria-label="해운 데이터 화면">${tabs}</nav>
@@ -2045,6 +2057,21 @@
     renderEnvironmentInto(data, root.querySelector('#shipping-environment-standalone'));
   };
 
+  // The calculator lives in shipping-carbon.js; this only frames it.
+  const renderCarbon = (data, root) => {
+    root.innerHTML = pageShell('shipping_carbon', '<div id="shipping-carbon-standalone"></div>', data);
+    const slot = root.querySelector('#shipping-carbon-standalone');
+    if (window.ShippingCarbon) window.ShippingCarbon.render(slot);
+    else slot.innerHTML = '<div class="shipping-error"><strong>탄소금융 모듈을 불러오지 못했습니다.</strong></div>';
+  };
+
+  const renderFuelEU = (data, root) => {
+    root.innerHTML = pageShell('shipping_fueleu', '<div id="shipping-fueleu-standalone"></div>', data);
+    const slot = root.querySelector('#shipping-fueleu-standalone');
+    if (window.ShippingFuelEU) window.ShippingFuelEU.render(slot);
+    else slot.innerHTML = '<div class="shipping-error"><strong>FuelEU 모듈을 불러오지 못했습니다.</strong></div>';
+  };
+
   // --------------------------------------------------------------- lifecycle
 
   const bindTabs = (root) => {
@@ -2063,7 +2090,9 @@
     shipping_routes: renderRoutes,
     shipping_chokepoints: renderChokepoints,
     shipping_scenarios: renderScenarios,
-    shipping_environment: renderEnvironment
+    shipping_environment: renderEnvironment,
+    shipping_carbon: renderCarbon,
+    shipping_fueleu: renderFuelEU
   };
 
   const render = async (target, host) => {

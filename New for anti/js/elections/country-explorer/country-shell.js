@@ -4,6 +4,7 @@ import { usaSections } from './special/usa.js';
 import { usaLegislature } from './special/usa-legislature.js?v=2';
 import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections } from './special/china.js';
+import { cnMapLegendHtml } from './special/chn-leaders.js';
 import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';
 import { jpnSections } from './special/jpn.js';
 import { jpnExecutive } from './special/jpn-executive.js';
@@ -231,6 +232,7 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
                     <span class="elections-block-state">${escapeHtml(stateLabel(status))}</span>
                 </button>`;
             }).join('')}</div>
+            ${country.iso3 === 'CHN' ? cnMapLegendHtml(country.cn_leaders) : ''}
             ${hasMapBlock ? `<section class="elections-detail-section">
                 <p class="section-title">지도 요약</p>
                 ${sectionContent(country, MAP_SECTION, mapStatus)}

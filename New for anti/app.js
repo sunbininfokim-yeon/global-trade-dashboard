@@ -4898,8 +4898,12 @@ const renderSupplyIndicators = (si) => {
                 <span class="vl" style="font-size:12px;">${kt(si.production_kt)}<span style="color:#64748b;"> · 3개월 전년비</span>${pct(si.production_3m_yoy_pct)}</span></div>
             <div class="climate-metric-row"><span class="nm">팜유 수출 (월)</span>
                 <span class="vl" style="font-size:12px;">${kt(si.export_kt)}<span style="color:#64748b;"> · 3개월 전년비</span>${pct(si.export_3m_yoy_pct)}</span></div>
+            ${si.pks?.month_kt != null ? `<div class="climate-metric-row"><span class="nm" title="${si.pks.note_ko || ''}">PKS 추정 (월)</span>
+                <span class="vl" style="font-size:12px;">${kt(si.pks.month_kt)}<span style="color:#64748b;"> · 12개월 전년비</span>${pct(si.pks.last12_yoy_pct)}</span></div>` : ''}
             ${strip}
             ${si.note_ko ? `<div class="climate-sub">${si.note_ko}</div>` : ''}
+            ${si.price_history_ko ? `<div class="climate-sub" style="margin-top:4px;">과거 검증: ${si.price_history_ko}</div>` : ''}
+            ${si.pks?.note_ko ? `<div class="climate-sub">${si.pks.note_ko}</div>` : ''}
         </div>`;
 };
 
