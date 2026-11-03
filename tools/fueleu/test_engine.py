@@ -163,3 +163,27 @@ class QuickCheck(unittest.TestCase):
         self.assertAlmostEqual(full["compliance_balance_tco2e"], 2 * half["compliance_balance_tco2e"])
         with self.assertRaises(ValueError):
             e.quick_check(50_000, {"hfo": 1_000}, eu_share={"intra_eu": 0.5})
+
+
+class Biofuel(unittest.TestCase):
+    def test_uco_fame_intensity_from_red_ii_default(self):
+        # WtT = 14.9 - 2.834/0.037; TtW = (2.834 + 0.00005*25 + 0.00018*298)/0.037
+        expected = 14.9 - 2.834 / 0.037 + (2.834 + 0.00005 * 25 + 0.00018 * 298) / 0.037
+        got = e.intensity([{"fuel": e.bio_fuel(), "tonnes": 1, "scope": "intra_eu"}], 2025)["ghg_intensity"]
+        self.assertAlmostEqual(got, expected, places=6)
+        self.assertAlmostEqual(got, 16.38, places=2)
+
+    def test_balance_is_linear_in_blend_and_zero_point_is_exact(self):
+        r = e.blend_economics("lfo", 0.3, 10_000, pool_price=100, bio_premium_eur_per_t=300)
+        self.assertAlmostEqual(r["with_blend"]["compliance_balance_tco2e"],
+                               r["without"]["compliance_balance_tco2e"] + r["surplus_per_t_bio_tco2e"] * 3_000, places=6)
+        z = e.blend_economics("lfo", r["bio_share_for_zero_balance"], 10_000)
+        self.assertAlmostEqual(z["with_blend"]["compliance_balance_tco2e"], 0.0, places=6)
+        self.assertAlmostEqual(r["breakeven_premium_eur_per_t"], r["surplus_per_t_bio_tco2e"] * 100)
+        self.assertAlmostEqual(r["cost_per_tco2e_of_blending"], 300 / r["surplus_per_t_bio_tco2e"])
+        self.assertEqual(len(r["curve"]), 11)
+
+    def test_uncertified_bio_earns_nothing(self):
+        r = e.blend_economics("hfo", 0.3, 1_000, certified=False)
+        self.assertAlmostEqual(r["with_blend"]["ghg_intensity"], r["without"]["ghg_intensity"])
+        self.assertIsNone(r["bio_share_for_zero_balance"])

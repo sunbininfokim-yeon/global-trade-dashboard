@@ -44,14 +44,17 @@ def supply():
         d = json.loads(path.read_text())
         out[str(d["reporting_year"])] = {
             "source_version": d.get("source_version"), "source_url": d.get("source_url"), "retrieved_at": d.get("retrieved_at"),
-            "total": slim(d["total"]), "by_propulsion": {k: slim(v) for k, v in d["by_propulsion"].items()},
+            "total": slim(d["total"]), "total_with_bio_assumption": slim(d["total_with_bio_assumption"]),
+            "size_filter": d.get("size_filter"), "by_propulsion": {k: slim(v) for k, v in d["by_propulsion"].items()},
             "by_ship_type": {k: slim(v) for k, v in list(d["by_ship_type"].items())[:16]},
             "unestimated": d["unestimated"], "skipped": d["skipped"]}
     return out
 
 
-def main():
-    prices = json.loads((SRC / "pool_prices.json").read_text())
+def main(today=None):
+    today = today or datetime.now(timezone.utc).date().isoformat()
+    live = today <= DISPLAY_UNTIL
+    prices = json.loads((SRC / "pool_prices.json").read_text()) if live else None
     data = {
         "schema": "fueleu_market_v1",
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -59,14 +62,15 @@ def main():
         "regulation": {"name": "Regulation (EU) 2023/1805 (FuelEU Maritime)", "oj": "OJ L 234, 22.9.2023",
                        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R1805"},
         "rules": rules(),
+        # Past the window the third-party data leaves the file, not just the page.
         "prices": {"source": prices["source"], "source_index_url": prices["source_index_url"],
                    "retrieved_at": prices["retrieved_at"], "price_type": prices["price_type"], "unit": prices["unit"],
                    "series": prices["series"], "latest_topbar": prices.get("latest_topbar"),
-                   "missing_pages": prices.get("missing_pages", [])},
-        "supply": supply(),
+                   "missing_pages": prices.get("missing_pages", [])} if live else None,
+        "supply": supply() if live else None,
     }
     DEST.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
-    print(f"wrote {DEST} ({DEST.stat().st_size:,} bytes), years {list(data['supply'])}")
+    print(f"wrote {DEST} ({DEST.stat().st_size:,} bytes), live={live}, years {list(data['supply'] or [])}")
 
 
 if __name__ == "__main__":

@@ -17,10 +17,21 @@ How a ship is read:
   - FuelEU share = (between EU ports + within EU ports + half of departing and
     arriving) / total, applied to energy.
 
+Scope fixes for the 2025 MRV extension (Regulation (EU) 2023/957 brought in
+general cargo ships of 400-5 000 GT and offshore ships; MRV has no GT column):
+  - Offshore ships are dropped: FuelEU covers ships carrying cargo or
+    passengers (Art. 2(1)), not offshore service vessels.
+  - General cargo ships: only the N largest by fuel per hour at sea are kept,
+    N = the 2024 count, when every MRV ship was above 5 000 GT. Bigger ships
+    burn more per hour; this is a count-matched proxy, not a GT lookup.
+
+Biofuel blends (low CO2/fuel, no methane) are estimated apart, assuming the
+bio part is waste-cooking-oil FAME at the RED II default (engine.bio_fuel) and
+that MRV reports its CO2 at the Annex II 2.834 factor. They go into
+total_with_bio_assumption, never into total.
+
 What it cannot see, stated wherever the numbers are shown:
-  - Biofuel blends. Their CO2 per tonne looks like a mix and their WtW credit
-    is not in MRV; such ships (low ratio, no methane) are counted apart as
-    "바이오 혼합 추정" and left out of the totals -- so surplus is understated.
+  - Which biofuel was really bunkered and its certified E value.
   - Methanol and other fuels (ratio below LNG) -- counted apart, left out.
   - Outermost-region voyages are inside "between EU ports" here (FuelEU: 50 %).
   - Wind and shore power rewards, ice derogations, pooling already done.
@@ -57,7 +68,13 @@ COLS = {
     "departed": "CO₂ emissions from all voyages which departed from ports under a MS jurisdiction [m tonnes]",
     "arrived": "CO₂ emissions from all voyages to ports under a MS jurisdiction [m tonnes]",
     "in_port": "CO₂ emissions which occurred within ports under a MS jurisdiction [m tonnes]",
+    "hours": "Time spent at sea [hours]",
 }
+MRV_SIZE_CHANGE_YEAR = 2025
+OUT_OF_FUELEU_TYPES = {"Other ship types (Offshore)"}
+COUNT_MATCHED_TYPES = ("General cargo ship",)
+BIO = engine.bio_fuel()
+BIO_FLOOR = 2.80  # below FAME's 2.834: not a FAME blend
 
 
 def num(v):
@@ -90,9 +107,16 @@ def estimate_ship(row):
     if not fuel or not co2:
         return {"status": "skipped", "reason": "no_fuel_or_co2"}
     kind, ratio = classify(fuel, co2, row.get("ch4"))
-    if kind in ("other", "bio_blend_suspected"):
-        return {"status": "unestimated", "propulsion": kind, "ratio": ratio}
-    if kind == "oil":
+    if kind == "other" or (kind == "bio_blend_suspected" and ratio < BIO_FLOOR):
+        return {"status": "unestimated", "propulsion": "other", "ratio": ratio}
+    if kind == "bio_blend_suspected":
+        bio_share = min(1.0, max(0.0, (LFO["cf_co2"] - ratio) / (LFO["cf_co2"] - BIO["cf_co2"])))
+        e_bio = fuel * bio_share * 1e6 * BIO["lcv"]
+        e_oil = fuel * (1 - bio_share) * 1e6 * LFO["lcv"]
+        energy = e_bio + e_oil
+        wtt_num = e_bio * BIO["wtt"] + e_oil * LFO["wtt"]
+        kind, lng_share = "bio_blend", 0.0
+    elif kind == "oil":
         t = (ratio - HFO["cf_co2"]) / (MGO["cf_co2"] - HFO["cf_co2"])
         lcv, wtt = lerp(HFO["lcv"], MGO["lcv"], t), lerp(HFO["wtt"], MGO["wtt"], t)
         energy = fuel * 1e6 * lcv
@@ -108,7 +132,8 @@ def estimate_ship(row):
     intensity = (wtt_num + ttw_g) / energy
     scoped = (row.get("between") or 0) + (row.get("in_port") or 0) + 0.5 * ((row.get("departed") or 0) + (row.get("arrived") or 0))
     share = scoped / co2
-    return {"status": "estimated", "propulsion": kind, "ratio": ratio, "lng_energy_share_est": lng_share,
+    return {"status": "estimated_assumed" if kind == "bio_blend" else "estimated", "propulsion": kind,
+            "ratio": ratio, "lng_energy_share_est": lng_share,
             "intensity": intensity, "fueleu_energy_mj": energy * share, "fueleu_share": share}
 
 
@@ -116,13 +141,43 @@ def balance(est, year):
     return (engine.target(year) - est["intensity"]) * est["fueleu_energy_mj"] / 1e6
 
 
+def size_filter(rows, reporting_year, baseline_counts):
+    """Drop rows FuelEU would not cover; see the module docstring. Returns (kept, dropped counts)."""
+    rows = list(rows)
+    if reporting_year < MRV_SIZE_CHANGE_YEAR:
+        return rows, {}
+    dropped = {t: 0 for t in OUT_OF_FUELEU_TYPES}
+    keep_ids = set()
+    for t in COUNT_MATCHED_TYPES:
+        group = [r for r in rows if r.get("ship_type") == t and r.get("fuel") and r.get("hours")]
+        group.sort(key=lambda r: r["fuel"] / r["hours"], reverse=True)
+        n = baseline_counts.get(t)
+        kept = group if n is None else group[:n]
+        keep_ids |= {id(r) for r in kept}
+        dropped[t] = sum(1 for r in rows if r.get("ship_type") == t) - len(kept)
+    out = []
+    for r in rows:
+        t = r.get("ship_type")
+        if t in OUT_OF_FUELEU_TYPES:
+            dropped[t] += 1
+        elif t in COUNT_MATCHED_TYPES and id(r) not in keep_ids:
+            continue
+        else:
+            out.append(r)
+    return out, dropped
+
+
 def aggregate(rows, years=(2025, 2030, 2035)):
-    """rows: iterable of dicts with COLS keys. Totals by propulsion and ship type."""
+    """rows: iterable of dicts with COLS keys. Totals by propulsion and ship type.
+
+    total counts oil and LNG ships only; total_with_bio_assumption adds the
+    biofuel-blend ships estimated under the UCO FAME assumption.
+    """
     def bucket():
         return {"ships": 0, **{f"surplus_{y}": 0.0 for y in years}, **{f"deficit_{y}": 0.0 for y in years},
                 **{f"surplus_ships_{y}": 0 for y in years}, "energy_mj": 0.0, "intensity_weighted": 0.0}
     by_prop, by_type, unest, skipped = defaultdict(bucket), defaultdict(bucket), defaultdict(int), 0
-    total = bucket()
+    total, with_bio = bucket(), bucket()
     for row in rows:
         est = estimate_ship(row)
         if est["status"] == "skipped":
@@ -131,7 +186,10 @@ def aggregate(rows, years=(2025, 2030, 2035)):
         if est["status"] == "unestimated":
             unest[est["propulsion"]] += 1
             continue
-        for b in (total, by_prop[est["propulsion"]], by_type[row.get("ship_type") or "?"]):
+        targets = [with_bio, by_prop[est["propulsion"]]]
+        if est["status"] == "estimated":
+            targets += [total, by_type[row.get("ship_type") or "?"]]
+        for b in targets:
             b["ships"] += 1
             b["energy_mj"] += est["fueleu_energy_mj"]
             b["intensity_weighted"] += est["intensity"] * est["fueleu_energy_mj"]
@@ -147,7 +205,7 @@ def aggregate(rows, years=(2025, 2030, 2035)):
         for y in years:
             b[f"net_{y}"] = b[f"surplus_{y}"] - b[f"deficit_{y}"]
         return b
-    return {"total": finish(total), "by_propulsion": {k: finish(v) for k, v in by_prop.items()},
+    return {"total": finish(total), "total_with_bio_assumption": finish(with_bio), "by_propulsion": {k: finish(v) for k, v in by_prop.items()},
             "by_ship_type": {k: finish(v) for k, v in sorted(by_type.items(), key=lambda kv: -kv[1]["energy_mj"])},
             "unestimated": dict(unest), "skipped": skipped, "years": list(years)}
 
@@ -173,10 +231,17 @@ def read_workbook(raw, year):
         book.close()
 
 
-def fetch(year):
+def listing():
     with urlopen(BASE + "/downloadable-files", timeout=30) as res:
-        listing = json.load(res)
-    meta = next(r for r in listing["results"] if int(r["reportingPeriod"]) == year)
+        return json.load(res)["results"]
+
+
+def listed_years():
+    return [int(r["reportingPeriod"]) for r in listing()]
+
+
+def fetch(year):
+    meta = next(r for r in listing() if int(r["reportingPeriod"]) == year)
     url = f"{BASE}/reporting-period-document/binary/{year}/{meta['version']}"
     with urlopen(url, timeout=120) as res:
         return res.read(60_000_001), url, meta["version"]
@@ -184,16 +249,29 @@ def fetch(year):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--year", type=int, action="append", required=True)
+    ap.add_argument("--year", type=int, action="append")
+    ap.add_argument("--latest", type=int, help="the N newest reporting years EMSA lists")
     ap.add_argument("--file", type=Path, help="official workbook already downloaded (single --year only)")
     a = ap.parse_args()
+    if not a.year and not a.latest:
+        ap.error("give --year or --latest")
     OUT.mkdir(exist_ok=True)
-    for year in a.year:
+    years = sorted(a.year or sorted(listed_years(), reverse=True)[:a.latest])
+    if any(y >= MRV_SIZE_CHANGE_YEAR for y in years) and MRV_SIZE_CHANGE_YEAR - 1 not in years and not a.file:
+        years = [MRV_SIZE_CHANGE_YEAR - 1] + years  # baseline for the count-matched filter
+    baseline = {}
+    for year in years:
         if a.file:
             raw, url, version = a.file.read_bytes(), "local_official_file", None
         else:
             raw, url, version = fetch(year)
-        agg = aggregate(read_workbook(raw, year))
+        rows = list(read_workbook(raw, year))
+        if year == MRV_SIZE_CHANGE_YEAR - 1:
+            baseline = {t: sum(1 for r in rows if r.get("ship_type") == t) for t in COUNT_MATCHED_TYPES}
+        rows, dropped = size_filter(rows, year, baseline)
+        agg = aggregate(rows)
+        agg["size_filter"] = {"dropped": dropped, "baseline_counts": baseline if year >= MRV_SIZE_CHANGE_YEAR else {},
+                              "method": "offshore_out_of_scope_and_general_cargo_count_matched_to_2024"}
         result = {"schema": "fueleu_mrv_supply_estimate_v1", "reporting_year": year, "source_url": url,
                   "source_version": version, "sha256": hashlib.sha256(raw).hexdigest(),
                   "retrieved_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),

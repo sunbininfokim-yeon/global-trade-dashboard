@@ -32,3 +32,16 @@
     .fe-bar-cell { width: 20%; }
 }
 @media (max-width: 420px) { #shipping-fueleu-standalone .shipping-kpi-grid { grid-template-columns: 1fr; } }
+.fe-legs td input, .fe-legs td select { min-width: 64px; padding: 6px 8px; }
+.fe-legs td { padding: 6px 6px; }
+.fe-legs input, .fe-legs select {
+    width: 100%; background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 7px;
+    color: #e2e8f0; font: inherit; font-size: 12px; color-scheme: dark;
+}
+.fe-del { border: 1px solid rgba(239, 68, 68, 0.3); background: transparent; color: #fca5a5; border-radius: 7px; padding: 4px 9px; cursor: pointer; }
+.fe-voy-actions { max-width: 320px; }
+.fe-best td { color: #e0f2fe; background: rgba(56, 189, 248, 0.07); }
+.fe-voy-out { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+.fe-voy-ctl { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .fe-voy-ctl { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .fe-voy-ctl { grid-template-columns: 1fr 1fr; } }
