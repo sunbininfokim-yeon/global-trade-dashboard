@@ -3,7 +3,10 @@ import argparse
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from engine import calculate, defaults, json_value
+from presets import catalog
 
 ROOT = Path(__file__).resolve().parent
 FORCE_SYNTHETIC = False
@@ -11,7 +14,11 @@ FORCE_SYNTHETIC = False
 
 def snapshot():
     path = ROOT / "source_data/reference_prices.json"
-    return json.loads(path.read_text()) if path.exists() and not FORCE_SYNTHETIC else json.loads((ROOT / "synthetic_snapshot.json").read_text())
+    if FORCE_SYNTHETIC:
+        return json.loads((ROOT / "synthetic_snapshot.json").read_text())
+    if path.exists():
+        return json.loads(path.read_text())
+    return {"as_of": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(), "sources": {}, "status": "missing"}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -26,10 +33,22 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
+        if self.path == "/api/presets":
+            path = ROOT / "source_data/vessel_emissions.json"
+            return self.reply(200, catalog(json.loads(path.read_text()) if path.exists() else {}))
         if self.path == "/api/defaults":
             return self.reply(200, defaults(snapshot()))
+        if self.path == "/api/observations":
+            s = snapshot()
+            mrv = ROOT / "source_data/vessel_emissions.json"
+            return self.reply(200, {"prices": s, "vessels": json.loads(mrv.read_text()) if mrv.exists() else {
+                "status": "source_not_collected", "records": [],
+                "source_url": "https://mrv.emsa.europa.eu/#public/emission-report"},
+                "private_inputs": {key: None for key in ("allowance_inventory", "futures_positions", "initial_margin", "customer_contracts", "pooling_quotes")}})
         files = {"/": ("viewer.html", "text/html"), "/viewer.js": ("viewer.js", "text/javascript"),
                  "/extras.js": ("extras.js", "text/javascript"),
+                 "/observations.js": ("observations.js", "text/javascript"),
+                 "/presets.js": ("presets.js", "text/javascript"),
                  "/viewer.css": ("viewer.css", "text/css")}
         if self.path not in files:
             return self.reply(404, {"error": "Not found"})

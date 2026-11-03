@@ -1,0 +1,38 @@
+const {chromium} = require('playwright');
+const assert = require('node:assert/strict');
+const baseURL = process.env.CARBON_BASE_URL || 'http://127.0.0.1:8771';
+(async () => {
+  const browser = await chromium.launch({headless:true, ...(process.env.PW_CHANNEL ? {channel:process.env.PW_CHANNEL} : {})});
+  const page = await browser.newPage({viewport:{width:1440,height:1000}});
+  const errors=[]; page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(baseURL);
+  await page.locator('#vessel-search').waitFor();
+  assert.equal(await page.locator('#scenario-inputs').isHidden(),true);
+  const data=await (await page.request.get(baseURL + '/api/observations')).json();
+  assert.equal(data.prices.sources.eex_eua_auction.status,'observed');
+  assert.equal(data.prices.sources.ecb_eurkrw.status,'observed');
+  assert.equal(data.vessels.status,'observed');
+  assert.ok(data.vessels.count>1000);
+  assert.equal(data.private_inputs.allowance_inventory,null);
+  assert.match(await page.locator('#observed-view').innerText(),/HMM LEAF/);
+  await page.locator('#vessel-search').fill('1015959');
+  const vessel=data.vessels.records.find(r=>r.imo==='1015959' && r.report_scope==='full');
+  for(const key of ['total_co2_t','ets_reported_co2_t'])
+    assert.ok((await page.locator('#vessel-rows').innerText()).includes(Number(vessel[key]).toLocaleString('ko-KR',{maximumFractionDigits:2})));
+  await page.setViewportSize({width:390,height:844});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
+  await page.locator('#scenario-mode').click();
+  assert.equal(await page.locator('#observed-view').isHidden(),true);
+  assert.match(await page.locator('#mode-label').innerText(),/가상/);
+  await page.locator('#apply-preset:not([disabled])').waitFor();
+  await page.locator('#preset-choice').selectOption('single');
+  const calculation=page.waitForResponse(r=>r.url().endsWith('/api/calculate') && r.request().postDataJSON()?.preset_id==='single');
+  await page.locator('#apply-preset').click();
+  const result=await (await calculation).json();
+  assert.equal(result.shipowner.procurement_gap_eua,'5000');
+  assert.equal(await page.locator('[name="dealer_lots"]').inputValue(),'5');
+  assert.match(await page.locator('#preset-notice').innerText(),/실제 운용규모·통상 한도가 아닙니다/);
+  assert.deepEqual(errors,[]);
+  await browser.close();
+  console.log('PASS: actual EEX/ECB/MRV data, private nulls, vessel search, reported CO2 fields, mobile width, explicit scenario mode.');
+})().catch(e=>{console.error(e);process.exit(1)});
