@@ -1,0 +1,37 @@
+name: tmp pellet probe
+on:
+  push:
+    branches: [claude/biomass-view]
+    paths: [".github/workflows/tmp_pellet_probe.yml"]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p probe
+          python3 - <<'PY' > probe/pellets.txt 2>&1
+          import json, time, urllib.request
+          def get(u):
+              for i in range(4):
+                  try: return json.loads(urllib.request.urlopen(u, timeout=90).read())
+                  except Exception as e:
+                      print("retry", e); time.sleep(10*(i+1))
+          B="https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode={r}&period={p}&cmdCode=440131&flowCode={f}"
+          names={"410":"Korea","392":"Japan","826":"UK","704":"Vietnam","360":"Indonesia","458":"Malaysia","124":"Canada","842":"USA","643":"Russia"}
+          for f,reps in (("M","410,392,826"),("X","704,360,458,124,842,643")):
+              for p in ("2023","2024","2025"):
+                  time.sleep(7)
+                  d=get(B.format(r=reps,p=p,f=f)) or {}
+                  rows=[x for x in d.get("data",[]) if str(x.get("partnerCode"))=="0" and str(x.get("partner2Code")) in ("0","None") and str(x.get("motCode")) in ("0","None") and x.get("customsCode") in ("C00",None)]
+                  for x in rows: print(f,p,names.get(str(x["reporterCode"]),x["reporterCode"]), round((x.get("netWgt") or 0)/1e6), "kt", round((x.get("primaryValue") or 0)/max(x.get("netWgt") or 1,1)*1000,1), "$/t")
+          # Korea imports by partner 2024
+          time.sleep(7)
+          d=get("https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=410&period=2024&cmdCode=440131&flowCode=M") or {}
+          rows=sorted([x for x in d.get("data",[]) if str(x.get("partnerCode"))!="0" and str(x.get("motCode")) in ("0","None") and str(x.get("partner2Code")) in ("0","None")], key=lambda x:-(x.get("netWgt") or 0))[:8]
+          for x in rows: print("KOR2024 from", x["partnerCode"], round((x.get("netWgt") or 0)/1e6), "kt")
+          PY
+      - run: |
+          git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add probe; git commit -qm probe; git push
