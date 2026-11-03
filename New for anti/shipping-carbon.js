@@ -69,7 +69,7 @@
   };
 
   const defaults = snapshot => ({
-    as_of: snapshot.as_of ?? '2026-11-01', scope_confirmed: true,
+    as_of: snapshot.as_of ?? '2026-11-01', scope_confirmed: true, preset_id: '',
     emissions_tco2e: '200000', emissions_basis: 'raw',
     route_weight: '0.5', phase_factor: '1', gases_complete: true,
     emissions_year: 2026, available_eua: '20000',

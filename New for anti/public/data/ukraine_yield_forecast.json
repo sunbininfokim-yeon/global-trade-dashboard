@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-11-03T07:55:13.416007+00:00",
+  "season": "2026/27",
+  "country": "Ukraine",
+  "forecast_available": false,
+  "panel_mode": "reference",
+  "title_ko": "우크라이나 곡물·유지 생육 판정",
+  "reason_ko": "주별 수확량 공개 자료가 2013~2022년 연보뿐이라 날씨 모델을 학습하지 않습니다. 산지별 생육 단계 날씨 판정(유리·불리·중립)만 보여 줍니다.",
+  "government_outlooks": [
+    {
+      "agency": "USDA",
+      "agency_ko": "USDA (PSD·WASDE)",
+      "season": "2026/27",
+      "metric_ko": "옥수수 생산 전망",
+      "value": 31800000,
+      "unit": "tonnes",
+      "status_ko": "2026년 10월 USDA 기준 · 전년 대비 +3%",
+      "note_ko": "단수 7.15 t/ha (전년 7.02), 수확면적 4.45백만 ha, 수출 22.0백만 t. 2022년 이후는 점령지 일부가 빠진 정부 통제 지역 기준.",
+      "url": "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery",
+      "url_label": "USDA PSD Online"
+    },
+    {
+      "agency": "USDA",
+      "agency_ko": "USDA (PSD·WASDE)",
+      "season": "2026/27",
+      "metric_ko": "해바라기씨 생산 전망",
+      "value": 13000000,
+      "unit": "tonnes",
+      "status_ko": "2026년 10월 USDA 기준 · 전년 대비 +21%",
+      "note_ko": "단수 2.24 t/ha (전년 1.95), 수확면적 5.80백만 ha, 수출 0.1백만 t. 2022년 이후는 점령지 일부가 빠진 정부 통제 지역 기준.",
+      "url": "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery",
+      "url_label": "USDA PSD Online"
+    },
+    {
+      "agency": "USDA",
+      "agency_ko": "USDA (PSD·WASDE)",
+      "season": "2026/27",
+      "metric_ko": "밀 생산 전망",
+      "value": 26000000,
+      "unit": "tonnes",
+      "status_ko": "2026년 10월 USDA 기준 · 전년 대비 +8%",
+      "note_ko": "단수 4.73 t/ha (전년 4.27), 수확면적 5.50백만 ha, 수출 12.5백만 t. 2022년 이후는 점령지 일부가 빠진 정부 통제 지역 기준.",
+      "url": "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery",
+      "url_label": "USDA PSD Online"
+    }
+  ],
+  "research_notes": [
+    {
+      "title_ko": "산지 선정",
+      "body_ko": "겨울밀은 중남부(키로보흐라드·오데사 북부·미콜라이우), 옥수수는 중북부(폴타바·체르카시·키이우·빈니차), 해바라기는 중동부(드니프로페트로우스크·키로보흐라드)를 대표 지점으로 둔다. 2022년 이후 점령·전선 지역(헤르손·자포리자·도네츠크·루한스크)은 피했다.",
+      "links": []
+    },
+    {
+      "title_ko": "수확량 모델이 없는 이유",
+      "body_ko": "국가통계청 주별 수확량은 2013~2022년 연보(해마다 형식이 다른 엑셀)로만 공개된다. 2013년 이전 장기 시계열과 전쟁 이후 연도는 내려받을 수 있는 형태가 없다. 약 10시즌으로는 날씨 효과를 추세와 구분해 검증할 수 없다.",
+      "links": [
+        {
+          "label": "국가통계청 데이터셋",
+          "url": "https://stat.gov.ua/en/datasets/areas-gross-harvests-and-crop-yield-annual"
+        }
+      ]
+    },
+    {
+      "title_ko": "날씨 외 변수",
+      "body_ko": "전쟁으로 비료·연료 투입, 지뢰 지역 경작 포기, 항만 봉쇄에 따른 수출 차질이 수확량과 수출량을 날씨와 별개로 움직인다. 판정은 날씨만 본다.",
+      "links": []
+    }
+  ],
+  "sources": [
+    {
+      "name": "NASA POWER (daily)",
+      "url": "https://power.larc.nasa.gov/",
+      "supports": "생육 단계별 강수·기온·토양수분"
+    }
+  ]
+}
