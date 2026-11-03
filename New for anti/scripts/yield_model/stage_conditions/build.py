@@ -64,6 +64,7 @@ HEAT_C = {
     "barley": 32.0, "corn": 35.0, "corn_safrinha": 35.0, "soy": 35.0,
     "soybeans": 35.0, "sunflower": 35.0, "cotton": 37.0, "sugarcane": 38.0,
     "coffee": 34.0, "orange": 38.0, "rice": 35.0, "cassava": 38.0,
+    "cocoa": 33.0,
 }
 
 LABEL_KO = {"favorable": "유리", "unfavorable": "불리", "neutral": "중립",
