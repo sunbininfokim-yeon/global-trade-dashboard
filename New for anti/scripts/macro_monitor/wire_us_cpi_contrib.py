@@ -2,12 +2,13 @@
 """US CPI contributions by item (see macro_monitor/us_cpi_contrib.py) -> public/data/us_cpi_contrib_v1.json,
 and the headline/core CPI cards point their '기여도' tab at it.
 
-    BLS_CONTACT_EMAIL=... python3 wire_us_cpi_contrib.py           # fetch what is missing, recompute
-    python3 wire_us_cpi_contrib.py --offline                       # re-attach the stored file only
+    BLS_API_KEY=... python3 wire_us_cpi_contrib.py      # recompute when BLS has a new month
+    python3 wire_us_cpi_contrib.py --offline            # re-attach the stored file only
 
-The December weights are kept in config/us_cpi_weights_v1.json (one table a year, fetched once). The index
-files (~40 MB) are fetched only when BLS has a month the stored file does not. Without BLS_CONTACT_EMAIL the
-cards keep what they have.
+The indexes come from the BLS API (about 11 requests with a key). The December weights are kept in
+config/us_cpi_weights_v1.json, one table a year: a new table is fetched from www.bls.gov only when
+BLS_CONTACT_EMAIL is set (that site wants a contact address); otherwise the newest stored table is carried
+forward, which is what BLS itself does until it publishes the next one.
 
 Also shapes the two CPI cards as two blocks: 헤드라인 CPI and 근원 CPI, each with its own YoY/MoM switch.
 The headline/core switch inside the drawer repeated the two blocks, so it goes, as does the old
@@ -17,6 +18,7 @@ The headline/core switch inside the drawer repeated the two blocks, so it goes, 
 from __future__ import annotations
 
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -47,8 +49,12 @@ def latest_published_month() -> str | None:
 def load_weights(years: list[int]) -> dict:
     doc = json.loads(WEIGHTS.read_text(encoding="utf-8")) if WEIGHTS.exists() else {"tables": {}}
     changed = False
+    contact = bool(os.environ.get("BLS_CONTACT_EMAIL", "").strip())
     for y in years:
         if str(y) in doc["tables"]:
+            continue
+        if not contact:
+            print(f"  weights: December {y} not stored; BLS_CONTACT_EMAIL not set, carrying the newest stored table")
             continue
         try:
             doc["tables"][str(y)] = uc.parse_relative_importance(uc._get(uc.RI_URL.format(year=y)))
@@ -56,7 +62,7 @@ def load_weights(years: list[int]) -> dict:
             print(f"  weights: December {y} fetched ({len(doc['tables'][str(y)])} rows)")
         except Exception as exc:  # noqa: BLE001 -- next January's table simply is not out yet
             print(f"  weights: December {y} not available ({str(exc)[:80]})")
-    if changed or "items" not in doc:
+    if contact and (changed or "items" not in doc):
         doc["items"] = uc.parse_items(uc._get(uc.FILES.format(name="cu.item")))
         changed = True
     if changed:
@@ -73,10 +79,8 @@ def compute(latest: str) -> dict:
     nodes = uc.build_tree(newest, weights["items"])
     keep = {f"{p}0000{n['code']}" for n in nodes if n["code"] for p in ("CUSR", "CUUR")}
     keep |= {"CUSR0000SA0L1E", "CUUR0000SA0L1E"}
-    data: dict = {}
-    for name in uc.DATA_FILES:
-        for sid, obs in uc.parse_data(uc._get(uc.FILES.format(name=name)), keep).items():
-            data.setdefault(sid, {}).update(obs)
+    data = uc.api_data(sorted(keep), y - 3, y)
+    print(f"  BLS API: {len(data)} of {len(keep)} series")
     ri_by_year = {yr: uc._align(nodes, weights["tables"][str(yr)]) for yr in years}
 
     months, m = [], latest
@@ -109,7 +113,7 @@ def compute(latest: str) -> dict:
                   for k, n in enumerate(nodes)],
         "weights_december": years[-1],
         "baskets": out,
-        "source": "BLS CPI-U U.S. city average indexes (download.bls.gov cu.data) and relative importance tables",
+        "source": "BLS CPI-U U.S. city average indexes (BLS public data API) and relative importance tables",
         "method_ko": ("기여도 = 항목 가중치(직전 12월 상대중요도를 해당 월까지 가격 변화로 이월) × 항목 변동률. "
                       "전월비는 계절조정 지수(없으면 원지수), 전년비는 원지수. 하위 항목 기여도를 위로 더해 각 묶음 값이 "
                       "됩니다. 전년비는 12월 가중치 교체를 한 번 건너가므로 공표치와 조금 어긋나고, 그 차이를 '잔차'로 "

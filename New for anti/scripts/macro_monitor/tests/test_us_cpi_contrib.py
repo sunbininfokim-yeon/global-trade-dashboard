@@ -48,6 +48,34 @@ class Parse(unittest.TestCase):
                 os.environ["BLS_CONTACT_EMAIL"] = old
 
 
+class Api(unittest.TestCase):
+    def test_missing_series_and_months_are_left_out_and_batches_follow_the_key(self):
+        import io
+        import json
+        sent = []
+
+        def opener(req, timeout):
+            body = json.loads(req.data)
+            sent.append(body)
+            series = [{"seriesID": sid, "data": [{"year": "2026", "period": "M01", "value": "101.5"},
+                                                 {"year": "2025", "period": "M10", "value": "-"},
+                                                 {"year": "2025", "period": "M13", "value": "100"}]}
+                      for sid in body["seriesid"] if not sid.startswith("CUSR")]
+            return io.BytesIO(json.dumps({"status": "REQUEST_SUCCEEDED",
+                                          "Results": {"series": series}}).encode())
+
+        ids = [f"CUUR0000X{i}" for i in range(60)] + ["CUSR0000X0"]
+        got = uc.api_data(ids, 2023, 2026, key="k", opener=opener)
+        self.assertEqual([len(b["seriesid"]) for b in sent], [50, 11])
+        self.assertEqual(sent[0]["registrationkey"], "k")
+        self.assertEqual(got["CUUR0000X1"], {"2026-01": 101.5})
+        self.assertNotIn("CUSR0000X0", got)
+        sent.clear()
+        uc.api_data(ids, 2023, 2026, key="", opener=opener)
+        self.assertEqual([len(b["seriesid"]) for b in sent], [25, 25, 11])
+        self.assertNotIn("registrationkey", sent[0])
+
+
 class Tree(unittest.TestCase):
     def test_depth_from_the_catalog(self):
         nodes = uc.build_tree(uc.parse_relative_importance(RI_HTML), uc.parse_items(ITEMS))
