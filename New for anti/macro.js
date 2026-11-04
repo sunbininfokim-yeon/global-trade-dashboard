@@ -712,28 +712,65 @@ const mmUseBars = (ind) => {
 const MM_MA_SPECS = [
     { window: 5, label: '5일선', color: '#f87171' },
     { window: 20, label: '20일선', color: '#facc15' },
+    { window: 30, label: '30일선', color: '#fb923c' },
     { window: 60, label: '60일선', color: '#4ade80' },
     { window: 120, label: '120일선', color: '#60a5fa' },
-    { window: 240, label: '240일선', color: '#c084fc' },
+    { window: 200, label: '200일선', color: '#c084fc' },
 ];
+// Display window vs fetch window: every range pulls at least a year more
+// than it shows, so the 200-day line is already running at the left edge
+// instead of starting 200 sessions into the chart. The worker's yfinance
+// route takes 'Ny' ranges as-is, so no worker change was needed for these.
+const MM_PRICE_RANGES = [
+    { id: '3mo', label: '3개월', days: 92, fetch: '2y' },
+    { id: '6mo', label: '6개월', days: 183, fetch: '2y' },
+    { id: '1y', label: '1년', days: 366, fetch: '2y' },
+    { id: '2y', label: '2년', days: 731, fetch: '3y' },
+    { id: '5y', label: '5년', days: 1827, fetch: '6y' },
+    { id: '10y', label: '10년', days: 3653, fetch: '11y' },
+];
+const mmPriceRange = (id) => MM_PRICE_RANGES.find((r) => r.id === id) || MM_PRICE_RANGES[2];
 const MM_MA_CACHE = new Map();  // "symbol:range" -> { dates, close } | 'loading' | Error
 
 // range is the same '5y'/'10y' window string the rest of the drawer already
 // uses (windowOpts) -- MA240 only needs ~1 trading year of run-up, but once
 // the toggle exists there's no reason its two options should mean something
 // different here than they do on every other tab.
-const mmFetchDailyForMa = (symbol, range) => {
-    const key = `${symbol}:${range}`;
+// Where each equity index's daily closes come from. Most carry a yahoo:
+// source already; these don't, or Yahoo serves no history for them (it
+// returns a single bar for 000300.SS / HSTECH.HK / ^VNINDEX.VN). eastmoney
+// and moex go through the worker, which reshapes them into Yahoo's JSON.
+// TOPIX and KASE have no free daily source found, so they keep the plain
+// fixture '추이' line.
+const MM_DAILY_OVERRIDE = {
+    kospi: ['yahoo', '^KS11'], kosdaq: ['yahoo', '^KQ11'],
+    csi300: ['eastmoney', '1.000300'], hstech: ['eastmoney', '124.HSTECH'], vnindex: ['eastmoney', '100.VNINDEX'],
+    moex_index: ['moex', 'IMOEX'], rtsi: ['moex', 'RTSI'],
+};
+const MM_DAILY_SRC_LABEL = { yahoo: 'Yahoo Finance', eastmoney: 'Eastmoney', moex: 'MOEX ISS' };
+const mmDailySource = (ind) => {
+    if (!ind || ind.category !== 'equity') return null;
+    const o = MM_DAILY_OVERRIDE[ind.id];
+    if (o) return { kind: o[0], id: o[1] };
+    const src = String(ind.source || '');
+    return src.startsWith('yahoo:') ? { kind: 'yahoo', id: src.slice('yahoo:'.length) } : null;
+};
+const mmDailyUrl = (src, range) => (src.kind === 'yahoo'
+    ? `/api/macro?source=yfinance&symbol=${encodeURIComponent(src.id)}&interval=1d&range=${encodeURIComponent(range)}`
+    : `/api/macro?source=${src.kind}&secid=${encodeURIComponent(src.id)}&range=${encodeURIComponent(range)}`);
+
+const mmFetchDailyForMa = (src, range) => {
+    const key = `${src.kind}:${src.id}:${range}`;
     const cached = MM_MA_CACHE.get(key);
     if (cached && cached !== 'loading') return cached;
     if (cached === 'loading') return null;
     MM_MA_CACHE.set(key, 'loading');
-    fetch(`/api/macro?source=yfinance&symbol=${encodeURIComponent(symbol)}&interval=1d&range=${encodeURIComponent(range)}`)
+    fetch(mmDailyUrl(src, range))
         .then((res) => res.json())
         .then((result) => {
             const chart = (result.chart || {}).result || [];
             const row = chart[0];
-            if (!row) throw new Error('no chart data');
+            if (!row) throw new Error(result.error || 'no chart data');
             const ts = row.timestamp || [];
             const closes = ((row.indicators || {}).quote || [{}])[0].close || [];
             const dates = [], close = [];
@@ -753,21 +790,17 @@ const mmFetchDailyForMa = (symbol, range) => {
     return null;
 };
 
-const mmEquityMaView = (ind, range) => {
-    const symbol = String(ind.source || '').slice('yahoo:'.length);
-    if (!symbol) return '<p class="fin-note">연결된 시세 심볼이 없습니다.</p>';
-
-    const data = mmFetchDailyForMa(symbol, range);
+const mmPriceMaChart = (src, label, rangeId) => {
+    const rng = mmPriceRange(rangeId);
+    const data = mmFetchDailyForMa(src, rng.fetch);
     if (data instanceof Error) {
         return `<p class="fin-note">일봉 데이터를 못 받았습니다 — ${finEsc(data.message)}</p>`;
     }
     if (!data) {
-        return `<p class="fin-loading">일봉 ${finEsc(range.replace('y', '년'))}치를 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>`;
+        return `<p class="fin-loading">${finEsc(label)} 일봉을 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>`;
     }
     const { dates, close } = data;
-    if (close.length < 240) {
-        return `<p class="fin-note">일봉이 ${close.length}개뿐이라 240일선을 그릴 수 없습니다.</p>`;
-    }
+    if (close.length < 2) return '<p class="fin-note">일봉이 부족합니다.</p>';
 
     const mas = MM_MA_SPECS.map((spec) => {
         let sum = 0;
@@ -779,10 +812,18 @@ const mmEquityMaView = (ind, range) => {
         return { ...spec, series };
     });
 
-    const n = close.length;
-    const allVals = close.concat(...mas.map((m) => m.series)).filter(Number.isFinite);
+    // Cut to the display window only after the averages are computed.
+    const dn = (iso) => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d) / 86400000; };
+    const cutoff = dn(dates[dates.length - 1]) - rng.days;
+    let i0 = dates.findIndex((d) => dn(d) >= cutoff);
+    if (i0 < 0) i0 = 0;
+    const px = close.slice(i0), dd = dates.slice(i0);
+    const mv = mas.map((m) => ({ ...m, series: m.series.slice(i0) }));
+    const n = px.length;
+
+    const allVals = px.concat(...mv.map((m) => m.series)).filter(Number.isFinite);
     let lo = Math.min(...allVals), hi = Math.max(...allVals);
-    const pad = (hi - lo) * 0.06;
+    const pad = (hi - lo) * 0.06 || 1;
     lo -= pad; hi += pad;
     const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R);
     const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
@@ -797,26 +838,289 @@ const mmEquityMaView = (ind, range) => {
         return d;
     };
     const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
-    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+    const xAt = [0, 0.25, 0.5, 0.75, 1].map((t) => Math.round(t * (n - 1)));
+    const chg = (px[n - 1] / px[0] - 1) * 100;
+    const last = mv.map((m) => m.series[n - 1]);
 
-    // Moving averages exist to be read against price, so once there are five
-    // of them, price recedes to a thin neutral trace rather than competing
-    // with them in the same color -- same rule as the home chart modal.
     return `
+    <div class="mm-px-head">
+        <span class="mm-px-last">${mmFmt(px[n - 1], 2)}</span>
+        <span class="${chg >= 0 ? 'mm-tm-upt' : 'mm-tm-dnt'}">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}% · ${finEsc(rng.label)}</span>
+        <span class="mm-px-date">${finEsc(dd[n - 1])} 종가</span>
+    </div>
     <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img"
-         aria-label="${finEsc(ind.label_ko)} 일봉 및 이동평균">
+         aria-label="${finEsc(label)} 주가 및 이동평균">
         ${ticks.map((t) => `
             <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
             <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
-        <path d="${path(close)}" class="mm-ma-price"/>
-        ${mas.map((m) => `<path d="${path(m.series)}" fill="none" stroke="${finEsc(m.color)}" stroke-width="1.5"/>`).join('')}
-        ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
-            text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
+        ${mv.map((m) => `<path d="${path(m.series)}" fill="none" stroke="${finEsc(m.color)}" stroke-width="1.2" opacity=".9"/>`).join('')}
+        <path d="${path(px)}" class="mm-px-line"/>
+        ${xAt.map((i, k) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+            text-anchor="${k === 0 ? 'start' : (k === xAt.length - 1 ? 'end' : 'middle')}">${finEsc(dd[i] || '')}</text>`).join('')}
     </svg>
     <div class="mm-ma-legend">
-        ${mas.map((m) => `<span class="mm-ma-key"><i style="background:${finEsc(m.color)}"></i>${finEsc(m.label)}</span>`).join('')}
+        <span class="mm-ma-key"><i style="background:#f8fafc"></i>주가</span>
+        ${mv.map((m, k) => `<span class="mm-ma-key"><i style="background:${finEsc(m.color)}"></i>${finEsc(m.label)}${Number.isFinite(last[k]) ? ` ${mmFmt(last[k], 2)}` : ''}</span>`).join('')}
     </div>
-    <p class="fin-note">일별 종가, 최근 ${finEsc(range.replace('y', '년'))}(${n}거래일) · Yahoo Finance ${finEsc(symbol)}. 5/20/60/120/240일 이동평균은 단순이동평균(SMA)입니다.</p>`;
+    <p class="fin-note">일별 종가 · ${finEsc(rng.label)}(${n}거래일) · ${finEsc(MM_DAILY_SRC_LABEL[src.kind] || '')} ${finEsc(src.id)}. 이동평균은 단순이동평균(SMA)이고, 표시 구간 앞의 일봉까지 넣어 계산해 왼쪽 끝부터 이어집니다.</p>`;
+};
+
+const mmEquityMaView = (ind, rangeId) => {
+    const src = mmDailySource(ind);
+    if (!src) return '<p class="fin-note">연결된 시세 심볼이 없습니다.</p>';
+    return mmPriceMaChart(src, ind.label_ko, rangeId);
+};
+
+// Constituent treemap (Investing.com-style): sectors first, then companies
+// inside each sector, both laid out squarified by market cap. Positions are
+// computed in a fixed 1000x560 unit box and emitted as percentages; text is
+// sized in cqw against the wrapper, so the same markup scales from the full
+// drawer down to a phone without measuring anything at render time.
+// Data: public/data/equity_heatmap_v1.json (build_equity_heatmap.py, daily
+// after the US close). Only indices listed there get a treemap.
+let MM_HEAT_DOC = null, MM_HEAT_PROMISE = null, MM_HEAT_PERIOD = 'd1';
+let MM_HEAT_STOCK = null, MM_STOCK_RANGE = '1y';
+const MM_HEAT_PERIODS = { d1: '1일', w1: '1주', m1: '1개월' };
+const MM_TREEMAP_KEY = { ndx: 'ndx', spx: 'spx', kospi: 'kospi', kosdaq: 'kosdaq', nikkei: 'nikkei', taiex: 'taiex' };
+// mc is in billions of the index's own currency.
+const mmCapFmt = (mc, ccy) => {
+    if (!Number.isFinite(mc)) return '—';
+    if (ccy === 'KRW') return `${(mc / 1000).toFixed(1)}조원`;
+    if (ccy === 'JPY') return `${(mc / 1000).toFixed(1)}조엔`;
+    if (ccy === 'TWD') return `${Math.round(mc * 10).toLocaleString()}억 대만달러`;
+    return mc >= 1000 ? `$${(mc / 1000).toFixed(2)}T` : `$${mc.toFixed(0)}B`;
+};
+const mmHeatDocFetch = () => {
+    if (!MM_HEAT_PROMISE) {
+        MM_HEAT_PROMISE = fetch('/public/data/equity_heatmap_v1.json', { cache: 'no-cache' })
+            .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+            .then((d) => { MM_HEAT_DOC = d; })
+            .catch((e) => { MM_HEAT_DOC = e; })
+            .finally(() => { if (MM_CHART) mmPaint(); });
+    }
+    return MM_HEAT_DOC;
+};
+
+const mmSquarify = (items, x, y, w, h) => {
+    // items: [{ v, ... }] sorted desc; returns same objects with x,y,w,h.
+    const out = [];
+    let rest = items.filter((it) => it.v > 0);
+    while (rest.length) {
+        const total = rest.reduce((a, b) => a + b.v, 0);
+        const short = Math.min(w, h);
+        const scale = (w * h) / total;
+        let row = [], best = Infinity;
+        for (const it of rest) {
+            const cand = row.concat(it);
+            const sum = cand.reduce((a, b) => a + b.v, 0) * scale;
+            const side = sum / short;
+            const worst = Math.max(...cand.map((c) => {
+                const len = (c.v * scale) / side;
+                return Math.max(side / len, len / side);
+            }));
+            if (worst > best) break;
+            best = worst; row = cand;
+        }
+        const rowArea = row.reduce((a, b) => a + b.v, 0) * scale;
+        const thick = rowArea / short;
+        let off = 0;
+        for (const it of row) {
+            const len = (it.v * scale) / thick;
+            if (w >= h) out.push({ ...it, x, y: y + off, w: thick, h: len });
+            else out.push({ ...it, x: x + off, y, w: len, h: thick });
+            off += len;
+        }
+        if (w >= h) { x += thick; w -= thick; } else { y += thick; h -= thick; }
+        rest = rest.slice(row.length);
+    }
+    return out;
+};
+
+const mmHeatColor = (p) => {
+    if (!Number.isFinite(p)) return 'rgb(51,65,85)';
+    const t = Math.min(Math.abs(p) / 3, 1);
+    const base = [51, 65, 85];
+    const tgt = p >= 0 ? [220, 38, 38] : [37, 99, 235];
+    const mix = base.map((b, i) => Math.round(b + (tgt[i] - b) * (0.25 + 0.75 * t) * (Math.abs(p) < 0.01 ? 0 : 1)));
+    return `rgb(${mix.join(',')})`;
+};
+
+const mmEquityTreemap = (ind) => {
+    const key = MM_TREEMAP_KEY[ind.id];
+    if (!key) return '';
+    const doc = mmHeatDocFetch();
+    if (doc instanceof Error) return `<p class="fin-note">구성종목 데이터를 못 받았습니다 — ${finEsc(doc.message)}</p>`;
+    if (!doc) return '<p class="fin-loading">구성종목 히트맵을 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
+    const idx = (doc.indices || {})[key];
+    if (!idx || !(idx.rows || []).length) return '';
+    const per = MM_HEAT_PERIODS[MM_HEAT_PERIOD] ? MM_HEAT_PERIOD : 'd1';
+    const sign = (p) => (Number.isFinite(p) ? `${p > 0 ? '+' : ''}${p.toFixed(2)}%` : '—');
+    const W = 1000, H = 560, HEAD = 15, GAP = 1;
+
+    // Nikkei 225 is price-weighted: its boxes use the official weight.
+    const sz = (r) => (idx.size_by === 'w' ? (r.w || 0) : (r.mc || 0));
+    const bySec = new Map();
+    idx.rows.forEach((r) => {
+        if (!bySec.has(r.sec)) bySec.set(r.sec, []);
+        bySec.get(r.sec).push(r);
+    });
+    const sectors = [...bySec.entries()].map(([name, rows]) => {
+        const mc = rows.reduce((a, b) => a + sz(b), 0);
+        const wsum = rows.filter((r) => Number.isFinite(r[per])).reduce((a, b) => a + sz(b) * b[per], 0);
+        return { name, rows: rows.sort((a, b) => sz(b) - sz(a)), v: mc, pct: wsum / mc };
+    }).sort((a, b) => b.v - a.v);
+    const totalPct = sectors.reduce((a, b) => a + b.v * b.pct, 0) / sectors.reduce((a, b) => a + b.v, 0);
+
+    const pc = (v, of) => `${(v / of * 100).toFixed(3)}%`;
+    const box = (x, y, w, h) => `left:${pc(x, W)};top:${pc(y, H)};width:${pc(w, W)};height:${pc(h, H)}`;
+    let html = '';
+    mmSquarify(sectors, 0, 0, W, H).forEach((sec) => {
+        const head = sec.h > 40 && sec.w > 50 ? HEAD : 0;
+        html += `<div class="mm-tm-sec" style="${box(sec.x, sec.y, sec.w, sec.h)}">`
+            + (head ? `<div class="mm-tm-sec-head"><span>${finEsc(sec.name)}</span><span class="${sec.pct >= 0 ? 'mm-tm-upt' : 'mm-tm-dnt'}">${sign(sec.pct)}</span></div>` : '')
+            + '</div>';
+        const inner = mmSquarify(sec.rows.map((r) => ({ ...r, v: sz(r) })),
+            sec.x + GAP, sec.y + head + GAP, Math.max(sec.w - 2 * GAP, 1), Math.max(sec.h - head - 2 * GAP, 1));
+        inner.forEach((c) => {
+            const p = c[per];
+            const fs = Math.max(6, Math.min(c.w / 4.2, c.h / 2.4, 34));
+            const showTick = c.w >= 24 && c.h >= 14;
+            const showPct = showTick && c.h >= 26;
+            const tip = `${c.s} ${c.n} · ${sec.name} · 시총 ${mmCapFmt(c.mc, idx.ccy)}${c.w ? ` · 지수 비중 ${c.w}%` : ''} · 종가 ${c.px} · ${MM_HEAT_PERIODS[per]} ${sign(p)}`;
+            html += `<div class="mm-tm-cell${MM_HEAT_STOCK === c.s ? ' on' : ''}" data-mm-heat-stock="${finEsc(c.s)}" title="${finEsc(tip)}" style="${box(c.x + GAP / 2, c.y + GAP / 2, Math.max(c.w - GAP, 0.5), Math.max(c.h - GAP, 0.5))};background:${mmHeatColor(p)};font-size:${(fs / 10).toFixed(2)}cqw">`
+                + (showTick ? `<b>${finEsc(c.l || c.s)}</b>` : '')
+                + (showPct ? `<span>${sign(p)}</span>` : '')
+                + '</div>';
+        });
+    });
+
+    const legend = [-3, -2, -1, 0, 1, 2, 3];
+    return `
+    <div class="mm-tm-bar">
+        <span class="mm-tm-title">${finEsc(idx.label_ko)} 구성종목 · ${finEsc(idx.as_of || doc.as_of)} 종가 기준${idx.stale ? ' (갱신 실패, 이전 값)' : ''} · 전체(${idx.size_by === 'w' ? '편입비중' : '시총'}가중) <b class="${totalPct >= 0 ? 'mm-tm-upt' : 'mm-tm-dnt'}">${sign(totalPct)}</b></span>
+        <span class="mm-tm-toggle">
+            <span class="mm-tm-toggle-lab">등락률</span>
+            ${Object.entries(MM_HEAT_PERIODS).map(([k, lab]) => `<button type="button" class="${per === k ? 'active' : ''}" data-mm-heat-period="${k}">${lab}</button>`).join('')}
+        </span>
+    </div>
+    <div class="mm-tm-wrap"><div class="mm-tm">${html}</div></div>
+    <div class="mm-tm-legend">
+        <span>-3%</span>${legend.map((p) => `<i style="background:${mmHeatColor(p)}"></i>`).join('')}<span>+3%</span>
+        <span class="mm-heat-scale">박스 크기 = ${idx.size_by === 'w' ? `지수 편입 비중${idx.weight_as_of ? ` (${finEsc(idx.weight_as_of)} 기준)` : ''}` : '시가총액'} · ${idx.n}종목 · 종목을 클릭하면 아래에 주가·이동평균 차트</span>
+    </div>
+    ${(() => {
+        const st = MM_HEAT_STOCK && idx.rows.find((r) => r.s === MM_HEAT_STOCK);
+        if (!st) return '';
+        return `
+    <div class="mm-stock-panel">
+        <div class="mm-stock-top">
+            <span class="mm-stock-name"><b>${finEsc(st.s)}</b> ${finEsc(st.n)} <em>${finEsc(st.sec)} · 시총 ${mmCapFmt(st.mc, idx.ccy)}</em></span>
+            <span class="pf-mode">
+                ${MM_PRICE_RANGES.map((r) => `<button type="button" class="pf-mode-btn ${MM_STOCK_RANGE === r.id ? 'on' : ''}" data-mm-stock-range="${r.id}">${r.label}</button>`).join('')}
+            </span>
+            <button type="button" class="mm-close" data-mm-heat-stock-close="1" aria-label="종목 차트 닫기">✕</button>
+        </div>
+        ${mmPriceMaChart({ kind: 'yahoo', id: ({ KRW: st.s + (key === 'kosdaq' ? '.KQ' : '.KS'), JPY: `${st.s}.T`, TWD: `${st.s}.TW` })[idx.ccy] || st.s.replace(/\./g, '-') }, st.n, MM_STOCK_RANGE)}
+    </div>`;
+    })()}
+    <p class="fin-note">${finEsc(doc.note_ko || '')} 평일 한국시간 아침 7시 30분 갱신(미국·한국·일본·대만 모두 전 거래일 종가) · 구성: 나스닥·S&P CSV·네이버 시총 순위·닛케이 공식 비중·대만증권거래소 · 종가: Yahoo Finance.</p>
+    <p class="mm-view-title mm-tm-cal-title">지수 일별 등락 · 최근 1년</p>`;
+};
+
+// One trading day per cell, one week per column, Mon-Fri down the side --
+// GitHub-contribution layout, so a run of red weeks or a single crash day
+// shows up without reading a line chart. Reuses the MA tab's daily fetch
+// (same /api/macro yfinance proxy and cache); '2y' is pulled so the first
+// cell of the 12-month window still has a previous close to compare with.
+// Colour scale is clamped per index at its own 95th-percentile |move|
+// (floor 1%): a fixed ±3% would paint VIX almost all saturated and a
+// low-vol index almost all grey.
+// Korean market convention, as on the treemap above it: red up, blue down.
+const MM_HEAT_UP = '239,68,68', MM_HEAT_DOWN = '59,130,246';
+const MM_HEAT_DAYS = ['월', '화', '수', '목', '금'];
+
+const mmEquityHeatmapView = (ind) => {
+    const src = mmDailySource(ind);
+    if (!src) return '<p class="fin-note">연결된 시세 심볼이 없습니다.</p>';
+    const symbol = src.id;
+    const data = mmFetchDailyForMa(src, '2y');
+    if (data instanceof Error) {
+        return `<p class="fin-note">일봉 데이터를 못 받았습니다 — ${finEsc(data.message)}</p>`;
+    }
+    if (!data) {
+        return '<p class="fin-loading">일봉을 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
+    }
+    const { dates, close } = data;
+    if (close.length < 3) return '<p class="fin-note">일봉이 부족해 히트맵을 그릴 수 없습니다.</p>';
+
+    const dayNum = (iso) => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d) / 86400000; };
+    const lastDay = dayNum(dates[dates.length - 1]);
+    const rows = [];
+    for (let i = 1; i < close.length; i++) {
+        const dn = dayNum(dates[i]);
+        if (lastDay - dn > 365) continue;
+        const wd = (new Date(dn * 86400000).getUTCDay() + 6) % 7;  // Mon=0
+        if (wd > 4) continue;  // a stray weekend print (some exchanges) has no row
+        rows.push({ date: dates[i], dn, wd, close: close[i], prev: close[i - 1], pct: (close[i] / close[i - 1] - 1) * 100 });
+    }
+    if (!rows.length) return '<p class="fin-note">최근 1년 거래일이 없습니다.</p>';
+
+    const abs = rows.map((r) => Math.abs(r.pct)).sort((a, b) => a - b);
+    const clamp = Math.max(1, Math.ceil(abs[Math.floor(abs.length * 0.95)] * 2) / 2);
+    const fill = (p) => {
+        const t = Math.min(Math.abs(p) / clamp, 1);
+        if (t < 0.02) return 'rgba(100,116,139,.28)';
+        return `rgba(${p > 0 ? MM_HEAT_UP : MM_HEAT_DOWN},${(0.18 + 0.82 * t).toFixed(2)})`;
+    };
+
+    // Week columns are anchored to Monday of the first row's week.
+    const firstMon = rows[0].dn - rows[0].wd;
+    const C = 13, G = 2, LX = 22, TY = 16;
+    const nWeeks = Math.floor((lastDay - firstMon) / 7) + 1;
+    const W = LX + nWeeks * (C + G), H = TY + 5 * (C + G) + 2;
+    const sign = (p) => `${p > 0 ? '+' : ''}${p.toFixed(2)}%`;
+
+    let monthLabels = '', prevMonth = '';
+    rows.forEach((r) => {
+        const m = r.date.slice(0, 7);
+        if (m === prevMonth) return;
+        prevMonth = m;
+        const col = Math.floor((r.dn - firstMon) / 7);
+        monthLabels += `<text x="${LX + col * (C + G)}" y="10" class="mm-tick">${Number(m.slice(5))}월</text>`;
+    });
+
+    const cells = rows.map((r) => {
+        const col = Math.floor((r.dn - firstMon) / 7);
+        return `<rect x="${LX + col * (C + G)}" y="${TY + r.wd * (C + G)}" width="${C}" height="${C}" rx="2"
+            fill="${fill(r.pct)}"><title>${r.date} (${MM_HEAT_DAYS[r.wd]}) · 종가 ${mmFmt(r.close, 2)} · ${sign(r.pct)}</title></rect>`;
+    }).join('');
+
+    const up = rows.filter((r) => r.pct > 0).length, down = rows.filter((r) => r.pct < 0).length;
+    const best = rows.reduce((a, b) => (b.pct > a.pct ? b : a));
+    const worst = rows.reduce((a, b) => (b.pct < a.pct ? b : a));
+    const yr = (rows[rows.length - 1].close / rows[0].prev - 1) * 100;
+    const legendSteps = [-1, -0.5, 0, 0.5, 1].map((t) => t * clamp);
+
+    return `
+    <svg class="mm-heatmap" viewBox="0 0 ${W} ${H}" role="img"
+         aria-label="${finEsc(ind.label_ko)} 최근 1년 일별 등락 히트맵">
+        ${monthLabels}
+        ${[0, 2, 4].map((d) => `<text x="0" y="${TY + d * (C + G) + C - 3}" class="mm-tick">${MM_HEAT_DAYS[d]}</text>`).join('')}
+        ${cells}
+    </svg>
+    <div class="mm-heat-legend">
+        <span>하락</span>
+        ${legendSteps.map((p) => `<i style="background:${fill(p)}" title="${sign(p)}"></i>`).join('')}
+        <span>상승</span>
+        <span class="mm-heat-scale">색 최대 ±${clamp}%</span>
+    </div>
+    <div class="mm-heat-stats">
+        <span>상승 <b class="mm-tm-upt">${up}일</b> · 하락 <b class="mm-tm-dnt">${down}일</b></span>
+        <span>최대 상승 <b class="mm-tm-upt">${sign(best.pct)}</b> ${finEsc(best.date)}</span>
+        <span>최대 하락 <b class="mm-tm-dnt">${sign(worst.pct)}</b> ${finEsc(worst.date)}</span>
+        <span>1년 누적 <b class="${yr >= 0 ? 'mm-tm-upt' : 'mm-tm-dnt'}">${sign(yr)}</b></span>
+    </div>
+    <p class="fin-note">전일 종가 대비 등락률 · 최근 1년 ${rows.length}거래일 · ${finEsc(MM_DAILY_SRC_LABEL[src.kind] || '')} ${finEsc(symbol)}. 칸에 마우스를 올리면 날짜·종가·등락률이 나옵니다. 휴장일은 빈칸입니다.</p>`;
 };
 
 const mmLineChart = (dates, values, opts = {}) => {
@@ -1737,7 +2041,8 @@ const mmViewsFor = (ind) => {
     // A plain level line is redundant once the level is already visible as
     // the top of a stack -- skipped here so fed_total_assets doesn't carry
     // both '추이' and '자산'/'부채' saying the same 6.7T two different ways.
-    if (!hasBalanceSheet && !hasQeQt && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
+    const daily = mmDailySource(ind);
+    if (!daily && !hasBalanceSheet && !hasQeQt && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
         views.push({ id: 'history', label: '추이' });
     }
     // 5/20/60/120/240-day moving averages are a daily-chart convention
@@ -1748,8 +2053,12 @@ const mmViewsFor = (ind) => {
     // (source starts "yahoo:"); the equity ids with no live source yet
     // (csi300, hsi, sensex, ...) have no daily bars to compute this from
     // either, and this tab would just be a permanent loading spinner for them.
-    if (ind.category === 'equity' && String(ind.source || '').startsWith('yahoo:')) {
-        views.push({ id: 'ma', label: '이동평균' });
+    // For equity indices with real daily bars, '추이' IS the price + MA
+    // chart (one tab, range-selectable) instead of the monthly fixture line
+    // next to a separate 이동평균 tab.
+    if (daily) {
+        views.push({ id: 'ma', label: '추이' });
+        views.push({ id: 'heatmap', label: '일별 히트맵' });
     }
     // Secondary panels come last so the engine's primary view stays default.
     const sv = (ind.ui || {}).secondary_view;
@@ -1887,11 +2196,13 @@ const mmChartDrawer = () => {
     // fixture-era series) would either show almost nothing or almost
     // everything -- 5y/20y actually brackets "recent" against "across
     // multiple QE/QT cycles" for this one.
-    const windowOpts = view === 'qeqt' ? ['5y', '20y'] : ['5y', '10y'];
+    const windowOpts = view === 'qeqt' ? ['5y', '20y']
+        : view === 'ma' ? MM_PRICE_RANGES.map((r) => r.id) : ['5y', '10y'];
     const showWindow = view === 'history' || view === 'qeqt' || view === 'ma';
 
     let body = '';
-    if (view === 'ma') body = mmEquityMaView(ind, windowOpts.includes(MM_CHART.window) ? MM_CHART.window : '5y');
+    if (view === 'ma') body = mmEquityMaView(ind, windowOpts.includes(MM_CHART.window) ? MM_CHART.window : '1y');
+    else if (view === 'heatmap') body = mmEquityTreemap(ind) + mmEquityHeatmapView(ind);
     else if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
     else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
     else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
@@ -1981,7 +2292,7 @@ const mmChartDrawer = () => {
                     </div>` : ''}
                     ${showWindow ? `<div class="pf-mode">
                         ${windowOpts.map((w) => `<button type="button" class="pf-mode-btn ${MM_CHART.window === w ? 'on' : ''}"
-                            data-mm-window="${w}">${w.replace('y', '년')}</button>`).join('')}
+                            data-mm-window="${w}">${finEsc(view === 'ma' ? mmPriceRange(w).label : w.replace('y', '년'))}</button>`).join('')}
                     </div>` : ''}
                 </div>
                 <button class="mm-close" data-mm-chart-close="1" aria-label="닫기">✕</button>
@@ -1993,7 +2304,7 @@ const mmChartDrawer = () => {
                 data-mm-view="${finEsc(v.id)}">${finEsc(v.label)}</button>`).join('')}
         </div>` : ''}
 
-        <div class="mm-drawer-body">
+        <div class="mm-drawer-body${view === 'heatmap' ? ' mm-drawer-body-full' : ''}">
             <div class="mm-drawer-main">
                 ${body}
                 ${mmNoteWithState(ind) ? `<p class="fin-note mm-note">${finEsc(mmNoteWithState(ind))}</p>` : ''}
@@ -2014,7 +2325,8 @@ const mmChartDrawer = () => {
                     return '';
                 })()}
             </div>
-            ${view === 'qeqt' ? mmQeQtRail(null)
+            ${view === 'heatmap' ? ''
+                : view === 'qeqt' ? mmQeQtRail(null)
                 : view === 'balance_liabilities' && (ind.balance_sheet || {}).ratio
                 ? mmReservesRatioRail(ind.balance_sheet.ratio, ind.balance_sheet.dates || [])
                 : view === 'balance_assets'
@@ -3582,6 +3894,20 @@ const renderMacroMonitor = async () => {
             }
             const win = t.closest('[data-mm-window]');
             if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); return; }
+            const hp = t.closest('[data-mm-heat-period]');
+            if (hp && MM_CHART) { MM_HEAT_PERIOD = hp.getAttribute('data-mm-heat-period'); mmPaint(); return; }
+            const hs = t.closest('[data-mm-heat-stock]');
+            if (hs && MM_CHART) {
+                const sym = hs.getAttribute('data-mm-heat-stock');
+                MM_HEAT_STOCK = MM_HEAT_STOCK === sym ? null : sym;
+                mmPaint();
+                const panel = document.querySelector('.mm-stock-panel');
+                if (panel) panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                return;
+            }
+            if (t.closest('[data-mm-heat-stock-close]') && MM_CHART) { MM_HEAT_STOCK = null; mmPaint(); return; }
+            const sr = t.closest('[data-mm-stock-range]');
+            if (sr && MM_CHART) { MM_STOCK_RANGE = sr.getAttribute('data-mm-stock-range'); mmPaint(); return; }
             const vw = t.closest('[data-mm-view]');
             if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
             const cm = t.closest('[data-mm-cpi-month]');

@@ -4696,6 +4696,45 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .mm-ma-legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 8px 0 4px; }
 .mm-ma-key { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: #cbd5e1; }
 .mm-ma-key i { width: 10px; height: 3px; border-radius: 2px; flex: none; }
+.mm-heatmap { width: 100%; height: auto; display: block; margin: 4px 0 2px; }
+.mm-heatmap rect:hover { stroke: #e2e8f0; stroke-width: 1.2; }
+.mm-heat-legend { display: flex; align-items: center; gap: 4px; margin: 6px 0 4px; font-size: 11px; color: #94a3b8; }
+.mm-heat-legend i { width: 13px; height: 13px; border-radius: 2px; flex: none; }
+.mm-heat-scale { margin-left: 10px; color: #64748b; }
+.mm-drawer-body.mm-drawer-body-full { grid-template-columns: 1fr; }
+.mm-tm-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin: 2px 0 8px; }
+.mm-tm-title { font-size: 12px; color: #cbd5e1; }
+.mm-tm-toggle { display: inline-flex; gap: 4px; }
+.mm-tm-toggle button { font-size: 11px; padding: 3px 9px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: #94a3b8; cursor: pointer; }
+.mm-tm-toggle button.active { background: rgba(148,163,184,.18); color: #e2e8f0; }
+.mm-tm-upt { color: #f87171; } .mm-tm-dnt { color: #60a5fa; }
+.mm-tm-wrap { container-type: inline-size; }
+.mm-tm { position: relative; width: 100%; aspect-ratio: 1000 / 560; background: #0b1220; border-radius: 6px; overflow: hidden; }
+.mm-tm-sec { position: absolute; box-sizing: border-box; border: 1px solid #0b1220; }
+.mm-tm-sec-head { position: absolute; left: 0; right: 0; top: 0; height: 1.5cqw; display: flex; justify-content: space-between; align-items: center;
+    padding: 0 .4cqw; font-size: clamp(8px, 1.05cqw, 13px); line-height: 1; color: #cbd5e1; font-weight: 600; white-space: nowrap; overflow: hidden; }
+.mm-tm-cell { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden; color: #fff; line-height: 1.1; text-align: center; cursor: default; }
+.mm-tm-cell:hover { outline: 2px solid #f8fafc; z-index: 2; }
+.mm-tm-cell b { font-weight: 700; letter-spacing: .01em; }
+.mm-tm-cell span { font-size: .78em; opacity: .92; font-variant-numeric: tabular-nums; }
+.mm-tm-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; margin: 6px 0 2px; font-size: 11px; color: #94a3b8; }
+.mm-tm-legend i { width: 22px; height: 10px; flex: none; }
+.mm-tm-cell { cursor: pointer; }
+.mm-tm-cell.on { outline: 2px solid #facc15; z-index: 3; }
+.mm-tm-toggle-lab { font-size: 11px; color: #64748b; align-self: center; margin-right: 2px; }
+.mm-stock-panel { margin: 12px 0 4px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: rgba(15,23,42,.6); }
+.mm-stock-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 6px; }
+.mm-stock-name { font-size: 13px; color: #e2e8f0; flex: 1 1 220px; }
+.mm-stock-top .pf-mode { display: inline-flex; width: auto; flex: none; }
+.mm-stock-top .pf-mode-btn { padding: 4px 9px; font-size: 11px; }
+.mm-stock-name em { font-style: normal; font-size: 11px; color: #94a3b8; margin-left: 6px; }
+.mm-px-head { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 4px; font-size: 12px; }
+.mm-px-last { font-size: 18px; font-weight: 650; color: #f8fafc; font-variant-numeric: tabular-nums; }
+.mm-px-date { color: #64748b; font-size: 11px; }
+.mm-px-line { fill: none; stroke: #f8fafc; stroke-width: 1.6; }
+.mm-tm-cal-title { margin-top: 18px !important; }
+.mm-heat-stats { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: #cbd5e1; margin: 4px 0; }
 
 /* SOMA maturity mini-block in the 자산 tab's rail, replacing the news stub. */
 .mm-soma-rail { display: flex; flex-direction: column; gap: 4px; }
