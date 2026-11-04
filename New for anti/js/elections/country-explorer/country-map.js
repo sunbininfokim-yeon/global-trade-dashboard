@@ -3,9 +3,12 @@ import { classColors, stateClass2024 } from '../data/usa-election-context.js?v=2
 import { loadCnLeaders } from '../data/chn-service.js';
 import { cnRegionColor, cnRegionForCode } from './special/chn-leaders.js';
 import { controlColor, controlCamp } from './special/divided-authority.js';
+import { loadPersonnel } from '../data/personnel-service.js';
+import { regionLeaderIndex } from './special/region-leaders.js';
 
 const neutral = [51, 65, 85, 235];
 const selected = [14, 116, 144, 245];
+const withLeader = [71, 85, 105, 240];
 const partyColor = (abbr) => abbr === 'DEM' ? [37, 99, 235, 220]
     : abbr === 'GOP' ? [220, 38, 38, 220] : neutral;
 
@@ -154,9 +157,12 @@ const stateIndex = (country) => new Map(
 
 // fitView:false 는 카메라를 건드리지 않고 색만 바꾼다. 주를 누른 직후 "눌렀다"는 표시를 지도에
 // 먼저 주려고 같은 지도를 다시 칠할 때 쓴다 -- 사용자가 확대해 둔 시점이 되돌아가면 안 된다.
-export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, fitView = true, onStateOpen, onRegionOpen = null, onCampOpen = null }) => {
+export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, fitView = true, onStateOpen, onRegionOpen = null, onCampOpen = null, onAreaOpen = null }) => {
     // 중국 인사 자료는 경계 도형과 동시에 받는다 -- 차례로 받으면 지도가 그만큼 늦게 뜬다.
     const cnLeadersPromise = country.iso3 === 'CHN' ? loadCnLeaders() : null;
+    // 나머지 나라: 지역을 누르면 그 지역 수장(인사 명단)이 뜬다. 명단도 경계와 동시에 받는다.
+    const areaMode = country.iso3 !== 'USA' && country.iso3 !== 'CHN' && !country.control_map && onAreaOpen;
+    const personnelPromise = areaMode ? loadPersonnel(country.iso3).catch(() => null) : null;
     let raw;
     try {
         raw = await loadAdmin1(country.iso3);
@@ -174,6 +180,8 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
         : null;
     const geo = withRelocatedExclaves(raw, country.iso3);
     if (isStale?.()) return false;
+    if (personnelPromise && country.personnel === undefined) country.personnel = await personnelPromise;
+    const leaders = areaMode ? regionLeaderIndex(country, geo.features || []) : null;
     const usaStates = country.iso3 === 'USA' ? stateIndex(country) : null;
     const layer = new host.layers.GeoJsonLayer({
         id: `elections-country-${country.iso3}`,
@@ -181,7 +189,7 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
         stroked: true,
         filled: true,
         // 분쟁국은 지역별 통제 세력으로 칠하고, 누르면 그 쪽 대시보드가 열린다.
-        pickable: country.iso3 === 'USA' || Boolean(cnLeaders && onRegionOpen) || Boolean(country.control_map && onCampOpen),
+        pickable: country.iso3 === 'USA' || Boolean(cnLeaders && onRegionOpen) || Boolean(country.control_map && onCampOpen) || Boolean(areaMode),
         lineWidthMinPixels: 1,
         updateTriggers: { getFillColor: [selectedStateId, electionMode] },
         getLineColor: [203, 213, 225, 190],
@@ -194,6 +202,8 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
             }
             if (country.control_map) return controlColor(country, feature.properties?.code) || neutral;
             if (cnLeaders) return cnRegionColor(cnLeaders, feature.properties?.code) || neutral;
+            // 수장 명단이 있는 지역은 한 톤 밝게 -- 눌러 볼 수 있다는 표시.
+            if (leaders?.has(feature.properties?.code)) return withLeader;
             return state ? partyColor(state.governor?.abbr) : neutral;
         },
     });
@@ -214,6 +224,9 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
     } : country.control_map && onCampOpen ? (info) => {
         const camp = controlCamp(country, info?.object?.properties?.code);
         if (camp) onCampOpen(camp);
+    } : areaMode ? (info) => {
+        const feature = info?.object;
+        if (feature?.properties) onAreaOpen(feature, leaders.get(feature.properties.code) || []);
     } : cnLeaders && onRegionOpen ? (info) => {
         const region = cnRegionForCode(info?.object?.properties?.code);
         if (region) onRegionOpen(region);

@@ -6,6 +6,7 @@ import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections } from './special/china.js';
 import { cnMapLegendHtml } from './special/chn-leaders.js';
 import { personnelCategories, personnelPartHtml, OFFICE_LABELS } from './special/personnel-roster.js';
+import { regionCardHtml } from './special/region-leaders.js';
 import { isDivided, dividedAuthorityHtml, dividedAuthorityKeys, dividedOverviewCards, campTabs, campHtml, controlMapSummaryHtml } from './special/divided-authority.js';
 import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';
 import { jpnSections } from './special/jpn.js';
@@ -333,5 +334,17 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
     };
     draw();
     // The explorer needs this to reopen a screen named in the URL.
-    return { openSection: (key) => { if (tabs.some(([, tabKey]) => tabKey === key)) openSection(key); } };
+    // 지도에서 지역을 누르면: 그 지역 수장 카드 (인사 명단).
+    const openArea = (feature, leaders) => {
+        const p = feature?.properties || {};
+        active = null;
+        markActive();
+        modal.open({
+            title: `${p.name_ko || p.name || p.code || '지역'}`,
+            subtitle: [country.name_ko || country.iso3, p.type].filter(Boolean).join(' · '),
+            status: leaders?.length ? '지역 수장' : '명단 수집 전',
+            body: regionCardHtml(country, feature, leaders),
+        });
+    };
+    return { openSection: (key) => { if (tabs.some(([, tabKey]) => tabKey === key)) openSection(key); }, openArea };
 };
