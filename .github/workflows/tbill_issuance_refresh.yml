@@ -44,4 +44,4 @@ jobs:
           git add "New for anti/public/data/tbill_issuance_v1.json" \
                   "New for anti/public/data/macro_monitor_v1.json"
           git commit -m "chore: refresh T-bill auction sizes" || exit 0
-          git push
+          bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"

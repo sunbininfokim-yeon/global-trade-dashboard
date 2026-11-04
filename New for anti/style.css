@@ -7331,6 +7331,67 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 }
 .ms-dir-foot { font-size: 11px; color: rgba(148, 163, 184, 0.7); margin-top: 6px; }
 
+/* --- 국가별 인사 명단 (personnel-roster.js) ----------------------------------- */
+.pr-roster { font-size: 12px; color: #cbd5e1; }
+.pr-section { margin: 12px 0 4px; }
+.pr-section .section-title small { color: #94a3b8; font-weight: 500; }
+.pr-person {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1px 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+.pr-person .pr-title { color: #94a3b8; }
+.pr-person strong { color: #f1f5f9; font-weight: 600; text-align: right; }
+.pr-person em { grid-column: 1 / -1; font-style: normal; color: #a5b4fc; font-size: 11px; }
+.pr-person small { grid-column: 1 / -1; color: #64748b; font-size: 11px; }
+.pr-kv { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; }
+.pr-kv span { color: #94a3b8; }
+.pr-kv strong { color: #e2e8f0; font-weight: 500; text-align: right; }
+.pr-note { margin: 4px 0; color: #94a3b8; line-height: 1.45; font-size: 12px; }
+.pr-note b { color: #cbd5e1; margin-right: 4px; }
+.pr-bullets { margin: 4px 0 6px; padding-left: 18px; color: #94a3b8; line-height: 1.45; }
+.pr-sub {
+    margin: 6px 0;
+    padding: 4px 9px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 7px;
+}
+.pr-sub > summary { cursor: pointer; color: #93c5fd; font-weight: 650; padding: 2px 0; }
+.pr-groups { display: grid; gap: 4px; margin: 6px 0; }
+.pr-group { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 34px; align-items: center; gap: 8px; }
+.pr-group span { color: #e2e8f0; overflow-wrap: anywhere; }
+.pr-group span small { color: #94a3b8; }
+.pr-group i { display: block; height: 7px; border-radius: 4px; background: #60a5fa; min-width: 2px; }
+.pr-group b { text-align: right; color: #f1f5f9; }
+.pr-chips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 6px 0; }
+.pr-chips span { padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.25); color: #cbd5e1; }
+.pr-chips b { color: #f1f5f9; }
+
+.pr-heading { margin-top: 16px; padding-top: 10px; border-top: 1px solid rgba(148, 163, 184, 0.2); }
+.pr-roster:first-child .pr-heading { margin-top: 0; padding-top: 0; border-top: 0; }
+
+/* --- 분할 권력 화면 (divided-authority.js: 리비아·예멘) ------------------------ */
+.da-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 8px 0; }
+.da-side { border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 8px; padding: 8px 10px; }
+.da-side-title { margin: 0 0 4px; color: #f1f5f9; font-weight: 700; font-size: 13px; }
+.da-pole { font-weight: 400 !important; text-align: left !important; line-height: 1.45; }
+.da-camp-head { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; }
+.da-camp-head i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.da-camp-head b { color: #f1f5f9; font-size: 15px; }
+.da-camp-head em { font-style: normal; font-size: 11px; color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 999px; padding: 1px 8px; }
+.da-brief { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.da-brief-text { font-size: 12.5px !important; font-weight: 500 !important; line-height: 1.5; }
+.da-gap { margin-top: 14px; }
+.da-legend div { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px; color: #cbd5e1; }
+.da-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.da-legend b { color: #f1f5f9; }
+.da-legend span { margin-left: auto; color: #94a3b8; }
+.pr-chips span { font-size: 12px; }
+.da-contested, .da-contested div { font-size: 12px; }
+.da-contested strong { font-weight: 400; color: #cbd5e1; }
+
 /* US CPI contributions tab (macro.js mmCpiContribView) */
 .mm-cpi-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 0 8px; }
 .mm-cpi-head .pf-mode-btn[disabled] { opacity: 0.35; cursor: default; }

@@ -1,0 +1,81 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { personnelCategories, personnelPartHtml, personnelCategory } from '../country-explorer/special/personnel-roster.js';
+
+const dir = new URL('../../../public/data/personnel/', import.meta.url);
+const index = JSON.parse(readFileSync(new URL('index.json', dir)));
+const load = (iso) => JSON.parse(readFileSync(new URL(`${iso}.json`, dir)));
+const cats = (iso) => [...personnelCategories(load(iso)).keys()];
+
+test('every published country renders its categories without leaking raw values', () => {
+    const countries = Object.keys(index.countries);
+    assert.ok(countries.length >= 30);
+    for (const iso of countries) {
+        const data = load(iso);
+        const all = personnelPartHtml(data, [...personnelCategories(data).keys()]);
+        assert.ok(all.length > 500, `${iso} rendered too little`);
+        assert.match(all, new RegExp(`기준일 ${data.as_of}`));
+        assert.doesNotMatch(all, /\[object Object\]|undefined/, `${iso} leaked a raw value`);
+    }
+});
+
+test('offices follow each country: 대통령실, 총리실, both for semi-presidential systems', () => {
+    assert.ok(cats('FRA').includes('president') && cats('FRA').includes('pm'));
+    assert.ok(cats('KOR').includes('president') && !cats('KOR').includes('pm'));
+    assert.ok(cats('GBR').includes('pm') && !cats('GBR').includes('president'), 'UK PM is hoisted out of executive');
+    assert.ok(cats('DEU').includes('pm') && cats('DEU').includes('executive'), 'chancellor goes to 총리실');
+    assert.ok(cats('SAU').includes('monarch'));
+    assert.ok(cats('IRN').includes('leader'));
+    assert.equal(personnelCategory('prime_minister'), 'pm');
+    assert.equal(personnelCategory('knesset_27'), 'legislature');
+    assert.equal(personnelCategory('governors'), 'local');
+    assert.equal(personnelCategory('orientation'), 'orientation');
+});
+
+test('a part only holds the categories asked for, and nothing for an absent category', () => {
+    const gbr = load('GBR');
+    const pm = personnelPartHtml(gbr, ['pm']);
+    assert.match(pm, /Andy Burnham/);
+    assert.doesNotMatch(pm, /Labour/);
+    assert.match(personnelPartHtml(gbr, ['legislature']), /pr-group/);
+    assert.equal(personnelPartHtml(gbr, ['monarch']), '');
+    assert.equal(personnelPartHtml(null, ['pm']), '');
+});
+
+test('internal ids stay hidden and unsafe urls never become links', () => {
+    const jpn = load('JPN');
+    assert.doesNotMatch(personnelPartHtml(jpn, [...personnelCategories(jpn).keys()]), /mona_cd|hr_cmt_id/);
+    const html = personnelPartHtml({ as_of: '2026-11-04', president: { name: 'X', source_url: 'javascript:alert(1)' } }, ['president']);
+    assert.match(html, /X/);
+    assert.doesNotMatch(html, /javascript:/);
+});
+
+test('roster tiers use the same numbered org-chart boxes as the USA and China screens', () => {
+    const kor = personnelPartHtml(load('KOR'), ['president']);
+    assert.match(kor, /<p class="section-title">1 · 대통령<\/p>/);
+    assert.match(kor, /elections-org-box/);
+    assert.match(kor, /세부 자료·근거/, 'nothing from the source is dropped');
+    const rus = personnelPartHtml(load('RUS'), ['president']);
+    assert.doesNotMatch(rus, /elections-org-box-ko">직책</, 'boxes keep the printed title even when it is not Korean');
+    assert.match(rus, /В\.Путин/);
+    assert.match(rus, /박스를 누르면 전원 \d+인/, 'long tiers fold like the Politburo roster');
+});
+
+import { rankOf } from '../country-explorer/special/personnel-roster.js';
+
+test('staff lists split by grade: 실장급, 수석·차장급, 비서관급', () => {
+    assert.equal(rankOf('대통령비서실장'), 1);
+    assert.equal(rankOf('정책실장'), 1);
+    assert.equal(rankOf('정무수석비서관'), 2);
+    assert.equal(rankOf('국가안보실 제2차장'), 2);
+    assert.equal(rankOf('제1부속실장'), 3, '부속실장 is 비서관급 despite the word 실장');
+    assert.equal(rankOf('총무비서관'), 3);
+    assert.equal(rankOf('Руководитель Администрации Президента'), 1);
+    assert.equal(rankOf('Первый заместитель Руководителя Администрации Президента'), 2);
+    assert.equal(rankOf('비서실 부실장'), 2);
+    const kor = personnelPartHtml(load('KOR'), ['president']);
+    assert.match(kor, /비서실 · 실장급 2인/);
+    assert.match(kor, /비서실 · 수석·차장급/);
+    assert.match(kor, /비서실 · 비서관·보좌급/);
+});
