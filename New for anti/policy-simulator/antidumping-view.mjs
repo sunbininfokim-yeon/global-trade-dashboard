@@ -24,7 +24,7 @@ const initial = () => {
 };
 let draft = initial(), result = null, dirty = true, methodResult = null;
 let industryId = 'transformer', profileId = '', evidenceOrigin = 'KOR';
-const originName = () => ({KOR:'한국',VNM:'베트남',CHN:'중국',JPN:'일본'})[evidenceOrigin];
+const originName = () => ({KOR:'한국',VNM:'베트남',CHN:'중국',JPN:'일본',MEX:'멕시코'})[evidenceOrigin];
 let companySearch = '', allCompaniesOpen = false, overview = true, calculatorOpen = false;
 const selectedIndustry = () => COMPANY_INDUSTRIES.find(x => x.id === industryId);
 const industrialProduct = () => INDUSTRIAL_PRODUCTS.some(p=>p.id===selectedIndustry().product);
@@ -202,7 +202,7 @@ export function antidumpingMarkup() {
       <div><dt>자금 부담</dt><dd>예치액 × 연 금융비용률 ÷ 100 × 예치 일수 ÷ 365. 사용자 금리·기간에 따른 가정 비용이며 세관이 확정한 이자가 아닙니다.</dd></div></dl>
       <p><a href="https://www.trade.gov/antidumping-and-countervailing-duty-frequently-asked-questions" target="_blank" rel="noopener noreferrer">상무부 재심·예치금 안내 ↗</a> · <a href="https://www.ecfr.gov/current/title-19/chapter-III/part-351/subpart-B/section-351.212" target="_blank" rel="noopener noreferrer">관세 확정 규정 19 CFR §351.212 ↗</a>. 선택한 사건·기업의 근거 공고는 단계 카드와 세율 이력에서 확인할 수 있습니다.</p>
     </details>
-    <label>대상 제품 원산지<select data-ad-origin-country aria-label="반덤핑 자료 원산지"><option value="KOR"${evidenceOrigin === 'KOR' ? ' selected' : ''}>한국</option><option value="VNM"${evidenceOrigin === 'VNM' ? ' selected' : ''}>베트남 · 선별 조사</option><option value="CHN"${evidenceOrigin === 'CHN' ? ' selected' : ''}>중국 · 선별 조사</option><option value="JPN"${evidenceOrigin === 'JPN' ? ' selected' : ''}>일본 · 선별 조사</option></select><small>기업 본사·선적국과 구분합니다. 원산지를 바꾸면 계산·제품/법인 확인을 해제합니다.</small></label><p class="ts-help" data-ad-origin>대상 원산지: ${originName()} · 한국산 5개 AD 계산 사건과 베트남·중국·일본 선별 공고를 분리합니다.</p><div data-ad-process>${processMarkup()}</div><div data-ad-history>${hasADCase() ? history() : coverageGap()}</div><div data-ad-notice-review>${monitorNotices()}</div><details class="ts-ad-calculator" data-ad-calculator${calculatorOpen ? ' open' : ''}><summary>선택 · 예치 부담 계산</summary><p class="ts-help">실제 거래의 통관일·신고가격·생산자/수출자 조건이 필요합니다. 품목 전체의 공고 흐름과 계산에 선택한 법인의 예치 참고율은 별개입니다.</p><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건·거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div></details><div data-ad-method>${methodEditor()}</div><div data-cvd-panel>${additionalRemedy()}</div>
+    <label>대상 제품 원산지<select data-ad-origin-country aria-label="반덤핑 자료 원산지"><option value="KOR"${evidenceOrigin === 'KOR' ? ' selected' : ''}>한국</option><option value="VNM"${evidenceOrigin === 'VNM' ? ' selected' : ''}>베트남 · 선별 조사</option><option value="CHN"${evidenceOrigin === 'CHN' ? ' selected' : ''}>중국 · 선별 조사</option><option value="JPN"${evidenceOrigin === 'JPN' ? ' selected' : ''}>일본 · 선별 조사</option><option value="MEX"${evidenceOrigin === 'MEX' ? ' selected' : ''}>멕시코 · 마그카본 벽돌 선별 조사</option></select><small>기업 본사·선적국과 구분합니다. 원산지를 바꾸면 계산·제품/법인 확인을 해제합니다.</small></label><p class="ts-help" data-ad-origin>대상 원산지: ${originName()} · 한국산 5개 AD 계산 사건과 베트남·중국·일본 선별 공고를 분리합니다.</p><div data-ad-process>${processMarkup()}</div><div data-ad-history>${hasADCase() ? history() : coverageGap()}</div><div data-ad-notice-review>${monitorNotices()}</div><details class="ts-ad-calculator" data-ad-calculator${calculatorOpen ? ' open' : ''}><summary>선택 · 예치 부담 계산</summary><p class="ts-help">실제 거래의 통관일·신고가격·생산자/수출자 조건이 필요합니다. 품목 전체의 공고 흐름과 계산에 선택한 법인의 예치 참고율은 별개입니다.</p><div class="ts-layout"><section class="ts-editor" aria-label="반덤핑 시나리오 입력"><div class="ts-panel-title"><span>AD</span><h2>사건·거래 조건</h2></div><div data-ad-editor>${editor()}</div></section><section class="ts-results" data-ad-results aria-label="반덤핑 계산 결과">${output()}</section></div></details><div data-ad-method>${methodEditor()}</div><div data-cvd-panel>${additionalRemedy()}</div>
     <footer class="ts-footer"><details><summary>반덤핑 모델·데이터 확보 범위·공식 출처</summary><p>예치액 = 대상 수입 신고가격 × AD 현금예치율. 금융비용 = 예치액 × 연 금리 × 일수 ÷ 365. USD 센트에서 한 번 반올림합니다.</p><p>공개 공고로 사건·법인별 마진·예비/최종·POR·예치 발효 조건을 확보할 수 있습니다. 제품 범위·생산자/수출자 조합·CBP 지침은 별도 확인해야 합니다. 실제 덤핑마진에는 거래별 미국 판매가격·정상가격·조정비용이 필요합니다.</p><p>로컬 수집기의 공고 발견 목록을 별도로 제공합니다. 세율·단계의 자동 적용과 메일 알림은 아직 연결되지 않았습니다. 예비판정·재심 개시·소송 접수만으로 예치율을 변경하지 않습니다.</p><p>${catalog.legal_sources.map(link).join(' · ')} · ${AD_MODEL_VERSION}</p></details></footer></div>`;
 }
 export function mountAntidumping(root, { openCompany } = {}) {
@@ -237,7 +237,7 @@ export function mountAntidumping(root, { openCompany } = {}) {
   root.addEventListener('toggle', event => { if (root.contains(event.target) && event.target.hasAttribute('data-ad-all')) allCompaniesOpen = event.target.open; if (event.target.hasAttribute('data-ad-calculator')) calculatorOpen = event.target.open; }, { capture: true, signal });
   root.addEventListener('input', event => {
     const el = event.target;
-    if (el.hasAttribute('data-ad-origin-country')) { if (!['KOR','VNM','CHN','JPN'].includes(el.value)) return; evidenceOrigin = el.value; result = null; unconfirm(); chooseIndustry(selectedIndustry()); return; }
+    if (el.hasAttribute('data-ad-origin-country')) { if (!['KOR','VNM','CHN','JPN','MEX'].includes(el.value)) return; evidenceOrigin = el.value; result = null; unconfirm(); chooseIndustry(selectedIndustry()); return; }
     if (el.hasAttribute('data-ad-search')) {
       companySearch = el.value; allCompaniesOpen = true;
       root.querySelector('[data-ad-featured]').hidden = Boolean(companySearch.trim());
@@ -276,7 +276,7 @@ export function mountAntidumping(root, { openCompany } = {}) {
   }, { signal });
   root.addEventListener('click', event => {
     const el = event.target.closest('button'); if (!el || !root.contains(el)) return;
-    if(el.hasAttribute('data-ad-related-origin')){if(!['KOR','CHN'].includes(el.dataset.adRelatedOrigin))return;evidenceOrigin=el.dataset.adRelatedOrigin;result=null;unconfirm();chooseIndustry(selectedIndustry());return;}
+    if(el.hasAttribute('data-ad-related-origin')){if(!['KOR','CHN','MEX'].includes(el.dataset.adRelatedOrigin))return;evidenceOrigin=el.dataset.adRelatedOrigin;result=null;unconfirm();chooseIndustry(selectedIndustry());return;}
     if (el.hasAttribute('data-ad-overview')) { overview = true; calculatorOpen = false; processRecordId = ''; paint(); return; }
     if (el.hasAttribute('data-ad-case')) {
       if (evidenceOrigin !== 'KOR') return;

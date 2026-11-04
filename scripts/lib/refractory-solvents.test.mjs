@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {INDUSTRIAL_PRODUCTS,INDUSTRIAL_CASES,industrialCases,industrialEvidenceMarkup} from '../../New for anti/policy-simulator/refractory-solvents-evidence.mjs';
+import {INDUSTRIAL_PRODUCTS,INDUSTRIAL_CASES,industrialCases,industrialEvidenceMarkup,industrialImportRequirements} from '../../New for anti/policy-simulator/refractory-solvents-evidence.mjs';
 import {COMPANY_PROFILES,COMPANY_INDUSTRIES,companyADLink,companyCalibration} from '../../New for anti/policy-simulator/company-profiles.mjs';
 import {PRODUCTS,policyOptions} from '../../New for anti/policy-simulator/policy-catalog.mjs';
 import {productVerification,adCoverageStatus} from '../../New for anti/policy-simulator/product-verification.mjs';
 import {simulateRemedy,lookupRemedy,REMEDY_QUOTES} from '../../New for anti/policy-simulator/trade-remedy-model.mjs';
 import {AD_CATALOG} from '../../New for anti/policy-simulator/antidumping-catalog.mjs';
-import {mountAntidumping,selectAntidumping} from '../../New for anti/policy-simulator/antidumping-view.mjs';
+import {mountAntidumping,selectAntidumping,antidumpingMarkup} from '../../New for anti/policy-simulator/antidumping-view.mjs';
 import {REMEDY_MONITOR_CATALOG} from '../../New for anti/policy-simulator/remedy-monitor-catalog.mjs';
 
 test('two source-backed companies expose three refractory and four separate solvent products, without invented business inputs',()=>{
@@ -55,4 +55,30 @@ test('mounted industry/company selection and related-origin controls reset compu
  send('input','data-ad-family','chemicals');assert.match(root.querySelector('[data-ad-notice-review]').innerHTML,/중국산 → 한국 수입/);assert.match(root.querySelector('[data-ad-notice-review]').innerHTML,/구제23-2026-6호/);
  send('click','data-ad-industry',null,{adIndustry:'methyl-ethyl-ketone'});assert.ok(!root.querySelector('[data-ad-notice-review]').innerHTML.includes('구제23-2026-6호'));
  send('click','data-ad-related-origin',null,{adRelatedOrigin:'KOR'});assert.match(root.querySelector('[data-ad-process]').innerHTML,/후성코퍼레이션/);clean();
+});
+
+test('Mexican brick AD is selectable without inheriting Chinese CVD or unrelated company rates',()=>{
+ assert.deepEqual(industrialCases('magnesia-carbon-bricks','MEX','USA').map(r=>[r.case_id,r.duty]),[['A-201-837','AD']]);
+ assert.deepEqual(productVerification('magnesia-carbon-bricks','MEX').ad.case_ids,['A-201-837']);
+ const html=industrialEvidenceMarkup('magnesia-carbon-bricks','MEX');assert.match(html,/멕시코산 → 미국 수입/);assert.match(html,/2021-17790/);
+ selectAntidumping({case_id:'A-580-867',company_id:'hyosung'});
+ const nodes=new Map(),handlers={};const root={contains:()=>true,querySelector(s){if(!nodes.has(s))nodes.set(s,{innerHTML:'',focus(){},classList:{add(){}}});return nodes.get(s);},querySelectorAll:()=>[],addEventListener(t,f){(handlers[t]??=[]).push(f);}};
+ const clean=mountAntidumping(root);assert.match(antidumpingMarkup(),/value="MEX"/);
+ const send=(type,attr,value,dataset={})=>{const el={value,dataset,hasAttribute:k=>k===attr,closest(){return this;}};handlers[type].forEach(f=>f({target:el}));};
+ send('input','data-ad-family','refractories');send('click','data-ad-related-origin',null,{adRelatedOrigin:'MEX'});
+ assert.match(root.querySelector('[data-ad-origin]').textContent,/멕시코/);assert.match(root.querySelector('[data-ad-process]').innerHTML,/조선내화/);assert.ok(!root.querySelector('[data-ad-editor]').innerHTML.includes('data-ad-form'));clean();
+});
+test('Indian historical recommendations preserve price-floor versus specific-duty units and cannot become current US quotes',()=>{
+ const mek=industrialCases('methyl-ethyl-ketone','CHN','IND')[0],dmf=industrialCases('dimethylformamide','CHN','IND')[0];
+ assert.equal(mek.reported_values[0].kind,'historical_reference_price_recommendation');assert.equal(mek.reported_values[0].amount,1147.06);assert.equal(mek.reported_values[0].unit,'USD/MT');
+ assert.deepEqual(dmf.reported_values.map(v=>v.amount),[377.21,405.75]);
+ for(const row of [mek,dmf]){assert.equal(row.stage,'historical_recommendation');assert.equal(row.rate_pct,null);assert.equal(row.calculation_ready,false);assert.equal(row.steps[1][1],'unknown');assert.equal(industrialCases(row.product,'CHN','USA').length,0);assert.equal(lookupRemedy({import_country:'IND',product:row.product,origin:'CHN'}).status,'unresolved');}
+ const html=industrialEvidenceMarkup('methyl-ethyl-ketone','CHN');assert.match(html,/중국산 → 인도 수입/);assert.match(html,/1,147.06 USD\/MT/);assert.match(html,/기준가격 권고/);assert.match(html,/현행 미확인/);
+});
+test('import compliance frameworks remain conditional and never become a blanket China ban or duty quote',()=>{
+ const chemicals=industrialImportRequirements('dimethylformamide','CHN');assert.deepEqual(chemicals.map(r=>r.id),['us-section301-check','us-uflpa','us-tsca']);
+ for(const r of chemicals){assert.equal(r.import_country,'USA');assert.equal(r.rate_pct,null);assert.equal(r.calculation_ready,false);}
+ assert.deepEqual(industrialImportRequirements('magnesia-carbon-bricks','MEX'),[]);assert.deepEqual(industrialImportRequirements('dimethylformamide','KOR').map(r=>r.id),['us-tsca']);
+ assert.ok(!industrialImportRequirements('magnesia-carbon-bricks','CHN').some(r=>r.id==='us-tsca'));
+ const copy=industrialCases('dimethylformamide','CHN','IND')[0];copy.reported_values[0].amount=0;assert.equal(industrialCases('dimethylformamide','CHN','IND')[0].reported_values[0].amount,377.21);
 });
