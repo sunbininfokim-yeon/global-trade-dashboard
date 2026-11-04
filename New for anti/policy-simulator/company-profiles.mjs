@@ -38,7 +38,7 @@ Object.assign(COMPANY_PROFILES, {
 
 Object.assign(COMPANY_PROFILES, Object.fromEntries([
   ['chosun-refractories','조선내화','조선내화(주)','magnesia-carbon-bricks',CHOSUN_SHAPED,'제조사 공식 제품군을 확인했습니다. 한국 본사와 중국 생산법인·수출자를 구분하며 원산지·거래·미국 반덤핑 적용은 별도 확인 대상입니다.'],
-  ['foosung-corporation','후성코퍼레이션','후성코퍼레이션(주) · 공식 제품 페이지 표기','ethyl-acetate',FOOSUNG_PRODUCTS,'제품 취급을 확인한 무역회사 프로필입니다. (주)후성 제조사와 구분합니다. 동일 도메인의 후성HDS 표기와 법인 승계는 추가 확인 대상이며 중국 제조사·수출자·원산지·제소/피소 역할과 개별 세율은 미확인입니다.'],
+  ['foosung-corporation','후성코퍼레이션','후성코퍼레이션(주) · 공식 제품 페이지 표기','ethyl-acetate',FOOSUNG_PRODUCTS,'제품 취급을 확인한 무역회사 프로필입니다. (주)후성 제조사와 구분합니다. 동일 도메인의 후성HDS 표기와 법인 승계는 추가 확인 대상이며 중국 제조사·수출자·원산지·개별 세율은 미확인입니다. 중국산 초산에틸 한국 조사에는 국내수입자 답변서 제출이 공식 기록되어 있으며, 중국 생산자·수출자나 개별 덤핑률 보유 법인과 구분합니다.'],
 ].map(([id,name,official_name,product,source,note])=>[id,{id,name,official_name,product,products:INDUSTRIAL_PRODUCTS.filter(p=>p.profile===id).map(p=>p.label).join(' · '),financial:null,source:{...source,checked_on:'2026-11-04'},note,ad:null,missing:[...missing],product_origin:null,product_price:null,product_quantity:null,product_variable_cost:null,product_fixed_cost:null}])));
 
 export function companyCalibration(id, product = COMPANY_PROFILES[id]?.product) {
