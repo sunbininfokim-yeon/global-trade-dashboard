@@ -2,12 +2,11 @@
   "schema": "egy_personnel_v1",
   "as_of": "2026-11-04",
   "country": "EGY",
-  "cutoff_ko": "대통령, 총리, 하원 의장과 교섭단체 대표까지다. 의석 표와 주지사 명단은 열리지 않았다.",
+  "cutoff_ko": "대통령 득표, 총리, 하원 의장, 교섭단체 대표, 하원 속성 통계까지다. 정당 의석과 주지사는 없다.",
   "not_in_this_file": [
-    "하원 정당 의석. 통계 페이지와 선거관리위원회 결과 표가 열리지 않았다. 신문과 위키 숫자는 쓰지 않는다.",
-    "상원 의장. 하원 영상 목록에 이름이 있으나 날짜가 없고 전임 의장 접견도 함께 있다.",
-    "장관 전원과 주지사.",
-    "대통령 득표."
+    "하원 정당 의석. 정당 페이지는 이름 둘과 101만 돌려줬다.",
+    "상원 의장. 상원 사이트는 이름을 열지 않았고 신문 표는 복사하지 않는다.",
+    "장관 전원과 주지사."
   ],
   "president": {
     "name": "Abdel Fattah el-Sisi",
@@ -15,7 +14,21 @@
     "chaired_a_meeting": "2026-11-01",
     "source_url": "https://www.presidency.eg/ar/%D9%82%D8%B3%D9%85-%D8%A7%D9%84%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1/%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1-%D8%B1%D8%A6%D8%A7%D8%B3%D9%8A%D8%A9/news01112026-2/",
     "spokesperson_on_2026_05_03": {"name": "Mohamed El-Shenawy", "arabic": "محمد الشناوي", "title": "المتحدث الرسمي", "source_url": "https://www.presidency.eg/ar/%D9%82%D8%B3%D9%85-%D8%A7%D9%84%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1/%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1-%D8%B1%D8%A6%D8%A7%D8%B3%D9%8A%D8%A9/news03052026/"},
-    "vote": null
+    "election_2024": {
+      "source_url": "https://www.elections.eg/2023-09-19-22-59-19/pres-2024-mob/pres-2024-result-mob",
+      "decision_index": "https://www.elections.eg/component/content/article/165-pres-2024-laws?Itemid=518",
+      "registered": 67032438,
+      "turnout_ballots": 44777668,
+      "turnout_printed": "66.8%",
+      "invalid": 489307,
+      "valid": 44288361,
+      "candidates": [
+        {"name": "عبد الفتاح سعيد حسين خليل السيسي", "votes": 39702451},
+        {"name": "حازم محمد سليمان محمد عمر", "votes": 1986352},
+        {"name": "محمد فريد سعد زهران", "votes": 1776952},
+        {"name": "عبد السند حسن محمد يمامه", "votes": 822606}
+      ]
+    }
   },
   "prime_minister": {
     "name": "Mostafa Madbouly",
@@ -35,7 +48,7 @@
       "invalid": 0,
       "presiding_that_day": "Abla El-Hawary",
       "source_url": "https://www.parliament.gov.eg/News_Show.aspx?frm=5629",
-      "spoke_on": "2026-07-22",
+      "presided_on": ["2026-07-14", "2026-07-22"],
       "note": "570은 그날 표다. 의원 정수로 쓰지 않는다."
     },
     "parliamentary_bodies_announced": "2026-01-14",
@@ -48,15 +61,28 @@
     ],
     "values_committee": {"day": "2026-03-02", "nominated_members": 14, "rule": "المادة 28", "url": "https://www.parliament.gov.eg/News_Show.aspx?frm=5702", "note": "다수 의석 정당의 이름은 적지 않는다. 14명 중 적어도 절반은 그 정당이나 연합 바깥이다."},
     "seats_by_party": null,
+    "party_page": {"url": "https://www.parliament.gov.eg/PartiesFram.aspx", "title": "التمثيل الحزبى فى البرلمان", "rows_returned": [{"name": "محمد تيسير محمد مطر", "figure": 101}, {"name": "ميرنا عصام الدين محمد عارف", "figure": 101}], "note": "정당 이름이 없고 두 사람 모두 101이다. 의석 표로 쓰지 않는다."},
+    "attributes": {
+      "source_url": "https://www.parliament.gov.eg/Statestics_main.aspx",
+      "note": "같은 주소의 두 번 열기에서 여성 목록 칸만 141과 142였다. 이 표는 속성이라 의원 정수가 아니다.",
+      "rows": [
+        {"attribute": "إمرأة", "list": [141, 142], "individual": 4, "appointed": 14, "total": [159, 160]},
+        {"attribute": "الشباب حتى سن 40 سنة", "list": 65, "individual": 36, "appointed": 2, "total": 103},
+        {"attribute": "بالخارج", "list": 9, "individual": 0, "appointed": 0, "total": 9},
+        {"attribute": "ذو الإعاقة", "list": 8, "individual": 0, "appointed": 0, "total": 8},
+        {"attribute": "عامل", "list": 0, "individual": 0, "appointed": 0, "total": 0},
+        {"attribute": "مسيحيين", "list": 28, "individual": 3, "appointed": 2, "total": 33}
+      ]
+    },
     "first_session_close": "홈페이지에 제1차 정기회 종료 동의가 있으나 연 줄에는 날짜가 없다."
   },
   "governors": [],
   "orientation": {
-    "note": "열린 페이지는 정당 의석과 좌우 표시를 적지 않는다.",
+    "note": "선거 페이지의 네 후보 합은 유효표 44,288,361과 같다. 하원 속성 표는 의원 정수가 아니다.",
     "poles": [
-      {"pole": "대통령", "line": "압델 파타 엘시시. 2026년 11월 1일 총리 무스타파 마드불리와 회의했다. 5월 3일 대변인은 모하메드 엘셰나위다. 득표는 열리지 않았다."},
+      {"pole": "대통령", "line": "압델 파타 엘시시. 선거관리위원회 페이지의 표는 39,702,451이다. 유효표 44,288,361, 무효 489,307, 투표 44,777,668, 등록 67,032,438, 인쇄된 참여율 66.8%다. 2026년 11월 1일 총리와 회의했다."},
       {"pole": "하원", "line": "제3기 의장 히샴 압델살람 바다위. 2026년 1월 12일 570표 모두 유효 가운데 521표. 7월 22일에도 회의를 주재했다. 1월 14일 교섭단체 대표는 미래조국당 아흐메드 압델가와드, 누르당 아흐메드 칼릴 카이랄라, 타잠무 아테프 마가우리, 회의당 아흐메드 에삼 엘딘 후세인 모하메드다. 의석 수는 없다."},
-      {"pole": "윤리위", "line": "3월 2일 일반위원회가 14명을 추천했다. 내규 28조는 다수 의석 정당이나 연합 바깥이 적어도 절반이라고 하고, 그 정당 이름은 적지 않는다."}
+      {"pole": "속성", "line": "하원 통계는 여성 목록 141과 142를 같은 주소에서 달리 보여 줬다. 그에 따라 여성 합은 159와 160이다. 40세 이하 103, 재외 9, 장애 8, 노동자 0, 기독교인 33은 두 번이 같았다. 정당 페이지는 의석을 만들지 못했다."}
     ]
   }
 }
