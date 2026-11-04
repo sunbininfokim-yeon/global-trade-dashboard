@@ -4,9 +4,12 @@ and core CPI, month on month and year on year, for every item BLS publishes a we
 Inputs, all from BLS:
   * relative importance (www.bls.gov/cpi/tables/relative-importance/<year>.htm) -- each item's share of
     the basket in December of that year, the full item hierarchy (about 320 rows, eight levels);
-  * the item catalog and the U.S. city-average index files (download.bls.gov/pub/time.series/cu/).
-bls.gov refuses automated requests that carry no contact address, so every request sends one, read from
-the BLS_CONTACT_EMAIL environment variable (never written to the repo). Without it nothing is fetched.
+  * the item catalog (download.bls.gov/pub/time.series/cu/cu.item);
+  * the U.S. city-average indexes, from the BLS public data API (api.bls.gov, BLS_API_KEY).
+The monthly refresh needs only the API. The weight tables and the catalog are web pages/files, fetched
+once a year and kept in config/us_cpi_weights_v1.json; www.bls.gov refuses automated requests that carry
+no contact address, so that fetch sends one from BLS_CONTACT_EMAIL (never written to the repo) and is
+skipped without it -- the stored tables are used instead.
 
 Method (BLS's own, see "Calculating contributions" in the CPI handbook):
   weight_i(m) = RI_i(Dec) * (I_i(m) / I_i(Dec)) / (I_all(m) / I_all(Dec)),  Dec = the December before m;
@@ -24,11 +27,13 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 import os
 import re
 import subprocess
 from html.parser import HTMLParser
 from typing import Any
+from urllib.request import Request, urlopen
 
 RI_URL = "https://www.bls.gov/cpi/tables/relative-importance/{year}.htm"
 FILES = "https://download.bls.gov/pub/time.series/cu/{name}"
@@ -103,7 +108,7 @@ NAMES_KO = {
 
 
 # --------------------------------------------------------------------------
-# Fetching (contact address required)
+# Fetching
 # --------------------------------------------------------------------------
 
 def user_agent() -> str:
@@ -119,6 +124,41 @@ def _get(url: str, timeout: int = 180) -> str:
     if proc.returncode != 0:
         raise RuntimeError(f"{url}: curl rc={proc.returncode}")           # never echo the header back
     return proc.stdout.decode("utf-8", errors="replace")
+
+
+API = "https://api.bls.gov/publicAPI/v2/timeseries/data/"
+
+
+def api_data(series_ids: list[str], start_year: int, end_year: int, key: str | None = None,
+             opener=urlopen) -> dict[str, dict[str, float]]:
+    """series id -> {YYYY-MM: index} from the BLS API. Ids BLS does not have (many items publish no
+    seasonally adjusted index) are left out rather than failing the batch; missing months ("-") too."""
+    key = os.environ.get("BLS_API_KEY", "") if key is None else key
+    size = 50 if key else 25
+    out: dict[str, dict[str, float]] = {}
+    for i in range(0, len(series_ids), size):
+        payload = {"seriesid": series_ids[i:i + size], "startyear": str(start_year), "endyear": str(end_year)}
+        if key:
+            payload["registrationkey"] = key
+        req = Request(API, data=json.dumps(payload).encode(), method="POST",
+                      headers={"Content-Type": "application/json", "Accept": "application/json"})
+        with opener(req, timeout=60) as res:
+            doc = json.loads(res.read().decode("utf-8"))
+        if doc.get("status") != "REQUEST_SUCCEEDED":
+            raise RuntimeError(f"BLS API: {doc.get('status')} {(doc.get('message') or [''])[:1]}")
+        for ser in (doc.get("Results") or {}).get("series", []):
+            obs = {}
+            for row in ser.get("data", []):
+                period = str(row.get("period", ""))
+                if not period.startswith("M") or period == "M13":
+                    continue
+                try:
+                    obs[f"{row['year']}-{period[1:]}"] = float(row["value"])
+                except (KeyError, ValueError):
+                    continue
+            if obs:
+                out.setdefault(ser["seriesID"], {}).update(obs)
+    return out
 
 
 # --------------------------------------------------------------------------

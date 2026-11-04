@@ -26,8 +26,9 @@ name: Refresh macro public series
 # 미 국채 입찰·바이백(wire_ust_auctions.py): TreasuryDirect(쿠폰 입찰 결과 -- 낙찰금리·응찰률·딜러/직접/간접 비율)와
 # Fiscal Data(바이백)로 미국 유동성 카드 2장(ust_auction_demand, ust_buybacks)을 만든다. 행은 public/data/ust_auctions_v1.json.
 # 미국 CPI 기여도(wire_us_cpi_contrib.py): BLS 상대중요도(12월 가중치)와 품목 지수로 헤드라인·근원 CPI의 품목별
-# 기여도(전월비·전년비, 25개월)를 public/data/us_cpi_contrib_v1.json 에 쓴다. 새 달이 나왔을 때만 BLS 파일(~40MB)을
-# 받는다. bls.gov 는 연락처 없는 자동 요청을 막으므로 시크릿 BLS_CONTACT_EMAIL 이 있어야 돈다(없으면 건너뜀).
+# 기여도(전월비·전년비, 25개월)를 public/data/us_cpi_contrib_v1.json 에 쓴다. 새 달이 나왔을 때만 BLS API
+# (BLS_API_KEY, 요청 약 11번)로 품목 지수를 받는다. 12월 가중치 표는 1년에 한 번 나오는 웹페이지라 저장해 둔
+# config/us_cpi_weights_v1.json 을 쓰고, 새 표가 나오면(매년 2월경) 로컬에서 받아 커밋한다.
 # 호주(wire_aus_public_series.py): ABS Data API(CPI·절사평균·노동력·국민계정·국제수지·상품교역·건축승인), FRED(OECD 금리), 세계은행 Pink Sheet(철광석·석탄). 키 없음. RBA는 접근 불가(403).
 # 인도네시아(wire_idn_public_series.py): BPS WebAPI(시크릿 BPS_API_KEY -- 없으면 건너뜀), FRED(외환보유액), Yahoo. 첫 실행 때 국가를 만든다. 패널에 'BPS API 사용' 표기(source_notices).
 # 미국 물가(BLS CPI·BEA PCE)와 연준 대차대조표·QE/QT·Z.1 헤지펀드 국채: 빌더와 wire가 있었지만 정기 실행에 빠져 있어
@@ -71,9 +72,6 @@ jobs:
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
           ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
-          # bls.gov refuses automated requests without a contact address (BLS policy); only the CPI
-          # contributions step uses it, as the User-Agent of its requests to bls.gov.
-          BLS_CONTACT_EMAIL: ${{ secrets.BLS_CONTACT_EMAIL }}
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
           BPS_API_KEY: ${{ secrets.BPS_API_KEY }}
           BLS_API_KEY: ${{ secrets.BLS_API_KEY }}

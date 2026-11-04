@@ -93,9 +93,9 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | HK product | underlying | L | AUM USD | TV USD | impact |
 |------------|------------|--:|--------:|-------:|--------|
-| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | None | None | 414135867.6497574 | indirect_swap |
-| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | None | None | 77872509.70935924 | indirect_swap |
-| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | None | None | 3090667.2860225025 | indirect_swap |
+| 7709.HK CSOP SK Hynix Daily Max (2x) | 000660 | None | None | 399606946.4657164 | indirect_swap |
+| 7747.HK CSOP Samsung Electronics Daily Max (2x) | 005930 | None | None | 63551255.447036766 | indirect_swap |
+| 7347.HK CSOP Samsung Electronics Daily Max (-2x) | 005930 | None | None | 3223732.6008250075 | indirect_swap |
 
 | Crypto product | underlying | OI USD | 24h vol USD | funding | impact |
 |---------------|------------|-------:|------------:|--------:|--------|
@@ -132,17 +132,17 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | metric | 억원 | as_of | quality |
 |--------|-----:|-------|---------|
-| 고객예탁금 | 904628.78 | 2026-11-02 | observed |
-| 신용잔고 | 292159.87 | 2026-11-02 | observed |
-| 신용/예탁금 % | 32.296 |  |  |
+| 고객예탁금 | 882412.78 | 2026-11-03 | observed |
+| 신용잔고 | 289501.85 | 2026-11-03 | observed |
+| 신용/예탁금 % | 32.808 |  |  |
 
 ## 8. KOSPI market investor flows
 
 | actor | net_krw | date | quality |
 |-------|--------:|------|---------|
-| foreign | -1508600000000.0 | 26.11.03 | observed |
-| retail | 1638800000000.0 | 26.11.03 | observed |
-| institution | -494100000000.0 | 26.11.03 | observed |
+| foreign | -2452800000000.0 | 26.11.04 | observed |
+| retail | 962900000000.0 | 26.11.04 | observed |
+| institution | 1133400000000.0 | 26.11.04 | observed |
 
 ## 9. Levered ETF TV by category
 
@@ -150,10 +150,10 @@ venue 분리: KR cash 회전율 식에 HK/US/crypto 합산 금지. 다만 Distor
 
 | category | n | TV 조 | % of lev TV | % of KOSPI TV |
 |----------|--:|------:|------------:|--------------:|
-| index | 53 | 4.841 | 78.43 | 24.117 |
-| overseas | 25 | 0.018 | 0.29 | 0.089 |
-| sector | 8 | 0.751 | 12.17 | 3.743 |
-| single_stock | 16 | 0.562 | 9.11 | 2.801 |
+| index | 53 | 6.571 | 77.2 | 27.435 |
+| overseas | 25 | 0.028 | 0.32 | 0.115 |
+| sector | 8 | 1.115 | 13.1 | 4.656 |
+| single_stock | 16 | 0.798 | 9.37 | 3.33 |
 
 ## 10. Short interest
 
