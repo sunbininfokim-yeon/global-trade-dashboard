@@ -76,8 +76,8 @@
     "betting_source": "polymarket"
   },
   "summary": {
-    "countries": 40,
-    "countries_with_head": 31,
+    "countries": 54,
+    "countries_with_head": 43,
     "countries_with_map_spectrum": 31,
     "countries_with_events": 40,
     "countries_with_governance_polls": 8,
@@ -88126,6 +88126,821 @@
         }
       },
       "mode": "calendar_only"
+    },
+    {
+      "iso3": "GRC",
+      "name_ko": "그리스",
+      "priority_tier": 3,
+      "region": "europe",
+      "system": "parliamentary",
+      "map_spectrum": null,
+      "head": {
+        "role": "prime_minister",
+        "name_en": "Kyriakos Mitsotakis",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://www.primeminister.gr/",
+            "note": "config/grc_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "parliamentary_republic",
+      "political_context": {
+        "note_ko": "교섭단체 표의 합은 297이다. 본회의 페이지는 300명이라고 적는다. 차이는 공석으로 만들지 않았다."
+      },
+      "source_review": {
+        "roster": "config/grc_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "LBN",
+      "name_ko": "레바논",
+      "priority_tier": 3,
+      "region": "middle_east",
+      "system": "parliamentary",
+      "map_spectrum": null,
+      "head": {
+        "role": "president",
+        "name_en": "Joseph Aoun",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://www.nna-leb.gov.lb/ar/news/329600/",
+            "note": "config/lbn_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "confessional_parliamentary_republic",
+      "political_context": {
+        "note_ko": "대통령은 의회가 뽑는다. 총리가 내각을 주재한 날과 대통령이 주재한 날은 다른 기사다. 블록 의석은 없다."
+      },
+      "source_review": {
+        "roster": "config/lbn_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "LBY",
+      "name_ko": "리비아",
+      "priority_tier": 3,
+      "region": "africa",
+      "system": "other",
+      "map_spectrum": null,
+      "head": null,
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "mode": "divided_authority",
+      "regime": "divided_authority",
+      "political_context": {
+        "note_ko": "트리폴리 통신과 대표원 사이트는 정부와 의장을 다른 이름으로 적는다. 의석 수는 없다.",
+        "divided": true
+      },
+      "source_review": {
+        "roster": "config/lby_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      },
+      "authorities": [
+        {
+          "id": "west",
+          "label_ko": "트리폴리(서부)",
+          "keys": [
+            "tripoli"
+          ],
+          "note_ko": "대통령평의회·통합정부(GNU)·최고국가평의회. 유엔이 인정한 정부 쪽이다."
+        },
+        {
+          "id": "east",
+          "label_ko": "대표원(동부)",
+          "keys": [
+            "house"
+          ],
+          "note_ko": "벵가지·세바에서 회의하는 하원. 별도 정부를 지명한다."
+        },
+        {
+          "id": "military",
+          "label_ko": "군 지휘(동부)",
+          "keys": [
+            "command"
+          ],
+          "note_ko": "리비아국민군(LNA) 지휘부."
+        }
+      ],
+      "camps": [
+        {
+          "id": "government",
+          "label_ko": "트리폴리 정부(GNU)",
+          "role_ko": "국제 승인 정부",
+          "authority_ids": [
+            "west"
+          ],
+          "color": [
+            59,
+            130,
+            246
+          ],
+          "brief": {
+            "status_ko": "유엔이 인정한 리비아 정부. 대통령평의회(국가원수 기능)와 통합정부(GNU, 행정)가 트리폴리에 있고, 최고국가평의회가 자문 상원 역할을 한다.",
+            "base_ko": "트리폴리(서부 트리폴리타니아)",
+            "armed_ko": "트리폴리·미스라타·자위야 등 서부 도시 무장세력 연합. 단일 지휘 체계가 아니다.",
+            "backers_ko": "튀르키예(2019~2020 트리폴리 공방 때 군사 지원), 유엔 지원단(UNSMIL)과의 공식 창구.",
+            "claim_ko": "2021년 유엔 주도 정치대화로 출범한 과도 정부가 선거 전까지 정통 정부라는 입장."
+          }
+        },
+        {
+          "id": "opposition",
+          "label_ko": "동부 세력(대표원·LNA)",
+          "role_ko": "경쟁 정부·군 실권",
+          "authority_ids": [
+            "east",
+            "military"
+          ],
+          "color": [
+            239,
+            68,
+            68
+          ],
+          "brief": {
+            "status_ko": "2014년 선출된 대표원(하원)이 동부에서 회의하며 별도 정부를 지명한다. 실권은 하프타르의 리비아국민군(LNA)에 있다.",
+            "base_ko": "벵가지(대표원·LNA), 토브루크·세바(대표원 회의)",
+            "armed_ko": "리비아국민군(LNA). 칼리파 하프타르 총사령관과 그 아들들이 지휘 계통을 쥐고 있다.",
+            "backers_ko": "이집트, 아랍에미리트, 러시아(바그너→아프리카군단) 등.",
+            "claim_ko": "선출 의회인 대표원만이 정부를 승인할 수 있다는 입장. 트리폴리 정부의 임기는 끝났다고 본다."
+          }
+        }
+      ],
+      "control_map": {
+        "as_of": "2026-06",
+        "confidence": "approximate",
+        "basis_ko": "위상·통제 지역·무장 세력·후원국은 공개 보도를 Claude가 정리한 배경 정보다(지식 기준 2026-06, 출처 링크 미첨부, 검증 전). 이름·직함·날짜는 인사 명단의 공식 매체 출처를 따른다.",
+        "regions": {
+          "LY-TN": {
+            "camp": "government",
+            "name_ko": "타주라 와 안 나와히 알 아르바"
+          },
+          "LY-JI": {
+            "camp": "government",
+            "name_ko": "알즈파라"
+          },
+          "LY-ZA": {
+            "camp": "government",
+            "name_ko": "앗자위야"
+          },
+          "LY-NQ": {
+            "camp": "government",
+            "name_ko": "안누카트알캄스"
+          },
+          "LY-MB": {
+            "camp": "government",
+            "name_ko": "알무르굽"
+          },
+          "LY-MI": {
+            "camp": "government",
+            "note_ko": "미스라타: 서부 최대 무장세력 근거지",
+            "name_ko": "미스라타"
+          },
+          "LY-GD": {
+            "camp": "government",
+            "name_ko": "가다미스"
+          },
+          "LY-MZ": {
+            "camp": "government",
+            "name_ko": "미즈다"
+          },
+          "LY-BU": {
+            "camp": "opposition",
+            "name_ko": "알부트난"
+          },
+          "LY-QB": {
+            "camp": "opposition",
+            "name_ko": "알 쿠바"
+          },
+          "LY-JA": {
+            "camp": "opposition",
+            "name_ko": "알자발알아크다르"
+          },
+          "LY-MJ": {
+            "camp": "opposition",
+            "name_ko": "알마르즈"
+          },
+          "LY-BA": {
+            "camp": "opposition",
+            "name_ko": "벵가지"
+          },
+          "LY-AJ": {
+            "camp": "opposition",
+            "name_ko": "아즈다비야 지구"
+          },
+          "LY-KF": {
+            "camp": "opposition",
+            "name_ko": "알쿠프라"
+          },
+          "LY-SR": {
+            "camp": "opposition",
+            "note_ko": "시르테·주프라: 2020년 휴전선 이후 LNA 통제",
+            "name_ko": "시르테"
+          },
+          "LY-JU": {
+            "camp": "opposition",
+            "name_ko": "알주프라"
+          },
+          "LY-SB": {
+            "camp": "opposition",
+            "contested": true,
+            "note_ko": "남부 페잔: LNA 우세, 부족·지역 무장세력 혼재",
+            "name_ko": "세바"
+          },
+          "LY-WS": {
+            "camp": "opposition",
+            "contested": true,
+            "note_ko": "남부 페잔: LNA 우세, 부족·지역 무장세력 혼재",
+            "name_ko": "애쉬 샤티"
+          },
+          "LY-WD": {
+            "camp": "opposition",
+            "contested": true,
+            "note_ko": "남부 페잔: LNA 우세, 부족·지역 무장세력 혼재",
+            "name_ko": "와디알하야"
+          },
+          "LY-MQ": {
+            "camp": "opposition",
+            "contested": true,
+            "note_ko": "남부 페잔: LNA 우세, 부족·지역 무장세력 혼재",
+            "name_ko": "무르주크"
+          },
+          "LY-GT": {
+            "camp": "opposition",
+            "contested": true,
+            "note_ko": "남부 페잔: LNA 우세, 부족·지역 무장세력 혼재",
+            "name_ko": "가트"
+          }
+        }
+      }
+    },
+    {
+      "iso3": "MAR",
+      "name_ko": "모로코",
+      "priority_tier": 3,
+      "region": "africa",
+      "system": "other",
+      "map_spectrum": null,
+      "head": {
+        "role": "king",
+        "name_en": "Mohammed VI",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://maroc.ma/fr/actualites/sm-le-roi-nomme-fatima-ezzahra-el-mansouri-cheffe-du-gouvernement-et-la-charge-de-former-le-nouveau",
+            "note": "config/mar_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "mode": "leadership_brief",
+      "regime": "constitutional_monarchy",
+      "political_context": {
+        "note_ko": "교섭단체 합은 392다. 진정과 현대당 97은 그 합의 과반에 못 미친다. 야당이라고 적은 칸만 야당이다."
+      },
+      "source_review": {
+        "roster": "config/mar_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "ESP",
+      "name_ko": "스페인",
+      "priority_tier": 3,
+      "region": "europe",
+      "system": "parliamentary",
+      "map_spectrum": null,
+      "head": {
+        "role": "prime_minister",
+        "name_en": "Pedro Sánchez Pérez-Castejón",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://www.lamoncloa.gob.es/gobierno/composiciondelgobierno/paginas/index.aspx",
+            "note": "config/esp_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "parliamentary_monarchy",
+      "political_context": {
+        "note_ko": "해산된 15대 의회의 그룹으로 읽은 축이다. 11월 29일 투표 결과가 아니다."
+      },
+      "source_review": {
+        "roster": "config/esp_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "ARM",
+      "name_ko": "아르메니아",
+      "priority_tier": 3,
+      "region": "europe",
+      "system": "parliamentary",
+      "map_spectrum": null,
+      "head": {
+        "role": "prime_minister",
+        "name_en": "Nikol Pashinyan",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://www.arlis.am/hy/acts/230070/print/act",
+            "note": "config/arm_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "parliamentary_republic",
+      "political_context": {
+        "note_ko": "의석 합은 105다. 시민계약 64는 그 합의 과반이다. 제8기 숫자와 합치지 않는다."
+      },
+      "source_review": {
+        "roster": "config/arm_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "AZE",
+      "name_ko": "아제르바이잔",
+      "priority_tier": 3,
+      "region": "europe",
+      "system": "presidential",
+      "map_spectrum": null,
+      "head": {
+        "role": "president",
+        "name_en": "Ilham Aliyev",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://msk.gov.az/az/elections/view/1193",
+            "note": "config/aze_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "presidential_republic",
+      "political_context": {
+        "note_ko": "대통령이 제1부통령과 총리와 대통령실장을 임명한다. 의회 다수는 신아제르바이잔당이고 의석 정수는 없다."
+      },
+      "source_review": {
+        "roster": "config/aze_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "YEM",
+      "name_ko": "예멘",
+      "priority_tier": 3,
+      "region": "middle_east",
+      "system": "other",
+      "map_spectrum": null,
+      "head": null,
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "mode": "divided_authority",
+      "regime": "divided_authority",
+      "political_context": {
+        "note_ko": "지도위원회 사이트와 사나 사바는 대통령 직함을 다른 사람에게 준다. 두 하원 사이트도 의장이 다르다. 의석 수는 없다.",
+        "divided": true
+      },
+      "source_review": {
+        "roster": "config/yem_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      },
+      "authorities": [
+        {
+          "id": "plc",
+          "label_ko": "대통령지도위원회(국제 승인)",
+          "keys": [
+            "presidential_leadership_council",
+            "prime_minister"
+          ],
+          "note_ko": "아덴·리야드를 오가는 국제 승인 정부."
+        },
+        {
+          "id": "sanaa",
+          "label_ko": "사나(후티) 측",
+          "keys": [
+            "sanaa_saba"
+          ],
+          "note_ko": "사나를 장악한 안사르알라(후티)의 최고정치위원회. 국제 승인은 없다."
+        }
+      ],
+      "camps": [
+        {
+          "id": "government",
+          "label_ko": "정부(대통령지도위원회)",
+          "role_ko": "국제 승인 정부",
+          "authority_ids": [
+            "plc"
+          ],
+          "color": [
+            59,
+            130,
+            246
+          ],
+          "brief": {
+            "status_ko": "2022년 4월 하디 대통령이 권한을 넘긴 8인 대통령지도위원회(PLC)가 국가원수 기능을 맡는다. 국제적으로 승인된 정부다.",
+            "base_ko": "아덴(임시 수도), 리야드에서도 활동",
+            "armed_ko": "정부군과 함께 남부 세력·서해안 부대 등 여러 무장 집단이 위원회 안에 묶여 있다. 단일 지휘가 아니다.",
+            "backers_ko": "사우디아라비아 주도 연합. 아랍에미리트는 남부 세력을 따로 후원해 왔다.",
+            "claim_ko": "2014년 후티의 사나 장악은 쿠데타이며 위원회가 유일한 합법 정부라는 입장."
+          }
+        },
+        {
+          "id": "opposition",
+          "label_ko": "후티(안사르알라)",
+          "role_ko": "반군·사실상 정부",
+          "authority_ids": [
+            "sanaa"
+          ],
+          "color": [
+            239,
+            68,
+            68
+          ],
+          "brief": {
+            "status_ko": "2014년 사나를 장악한 안사르알라 운동. 최고정치위원회가 사나에서 별도 정부를 운영한다. 국제 승인은 없다.",
+            "base_ko": "사나(수도), 북부 고원과 홍해 연안",
+            "armed_ko": "후티 군·혁명 지도자 압둘말리크 알후티 직할 조직. 홍해 선박 공격으로 국제 분쟁에 직접 끼어들었다.",
+            "backers_ko": "이란(무기·기술 지원으로 널리 보도됨).",
+            "claim_ko": "사나의 최고정치위원회가 예멘 정부이며 상대는 외세가 세운 정부라는 입장."
+          }
+        }
+      ],
+      "control_map": {
+        "as_of": "2026-06",
+        "confidence": "approximate",
+        "basis_ko": "위상·통제 지역·무장 세력·후원국은 공개 보도를 Claude가 정리한 배경 정보다(지식 기준 2026-06, 출처 링크 미첨부, 검증 전). 이름·직함·날짜는 인사 명단의 공식 매체 출처를 따른다.",
+        "regions": {
+          "YE-AD": {
+            "camp": "government",
+            "name_ko": "아덴"
+          },
+          "YE-LA": {
+            "camp": "government",
+            "name_ko": "라히즈"
+          },
+          "YE-AB": {
+            "camp": "government",
+            "name_ko": "아브얀"
+          },
+          "YE-SH": {
+            "camp": "government",
+            "name_ko": "샤브와"
+          },
+          "YE-HD": {
+            "camp": "government",
+            "name_ko": "하드라마우트"
+          },
+          "YE-MR": {
+            "camp": "government",
+            "name_ko": "마라"
+          },
+          "YE-SA": {
+            "camp": "opposition",
+            "name_ko": "사나 시(수도)"
+          },
+          "YE-SN": {
+            "camp": "opposition",
+            "name_ko": "사나 주"
+          },
+          "YE-AM": {
+            "camp": "opposition",
+            "name_ko": "암란"
+          },
+          "YE-SD": {
+            "camp": "opposition",
+            "name_ko": "사다"
+          },
+          "YE-HJ": {
+            "camp": "opposition",
+            "name_ko": "하자"
+          },
+          "YE-MW": {
+            "camp": "opposition",
+            "name_ko": "마위트"
+          },
+          "YE-RA": {
+            "camp": "opposition",
+            "name_ko": "라이마"
+          },
+          "YE-DH": {
+            "camp": "opposition",
+            "name_ko": "다마르"
+          },
+          "YE-IB": {
+            "camp": "opposition",
+            "name_ko": "이브"
+          },
+          "YE-BA": {
+            "camp": "opposition",
+            "name_ko": "바이다"
+          },
+          "YE-HU": {
+            "camp": "opposition",
+            "contested": true,
+            "note_ko": "호데이다: 항구·북부는 후티, 남쪽 해안 일부는 정부 측",
+            "name_ko": "호데이다"
+          },
+          "YE-JA": {
+            "camp": "opposition",
+            "contested": true,
+            "note_ko": "자우프: 대부분 후티, 동부 사막 일부 정부 측",
+            "name_ko": "자우프"
+          },
+          "YE-MA": {
+            "camp": "government",
+            "contested": true,
+            "note_ko": "마리브: 도시·유전은 정부 측, 서부 외곽이 전선",
+            "name_ko": "마리브"
+          },
+          "YE-TA": {
+            "camp": "government",
+            "contested": true,
+            "note_ko": "타이즈: 시가지가 양측으로 갈림",
+            "name_ko": "타이즈"
+          },
+          "YE-DA": {
+            "camp": "government",
+            "contested": true,
+            "note_ko": "달리: 북부 일부 후티, 나머지 정부 측",
+            "name_ko": "달리"
+          }
+        }
+      }
+    },
+    {
+      "iso3": "IRQ",
+      "name_ko": "이라크",
+      "priority_tier": 3,
+      "region": "middle_east",
+      "system": "parliamentary",
+      "map_spectrum": null,
+      "head": {
+        "role": "prime_minister",
+        "name_en": "Ali Falih Al-Zaidi",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://ina.iq/en/politics/48180-president-amedi-tasks-ali-al-zaidi-with-forming-the-new-government.html",
+            "note": "config/irq_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "federal_parliamentary_republic",
+      "political_context": {
+        "note_ko": "총리가 정부와 군 통수다. 대통령은 의회가 뽑는다. 쿠르드 자치정부는 이라크 안의 지역 정부다."
+      },
+      "source_review": {
+        "roster": "config/irq_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "EGY",
+      "name_ko": "이집트",
+      "priority_tier": 3,
+      "region": "middle_east",
+      "system": "presidential",
+      "map_spectrum": null,
+      "head": {
+        "role": "president",
+        "name_en": "Abdel Fattah el-Sisi",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://www.presidency.eg/ar/%D9%82%D8%B3%D9%85-%D8%A7%D9%84%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1/%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1-%D8%B1%D8%A6%D8%A7%D8%B3%D9%8A%D8%A9/news01112026-2/",
+            "note": "config/egy_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "presidential_republic",
+      "political_context": {
+        "note_ko": "선거 페이지의 네 후보 합은 유효표 44,288,361과 같다. 하원 속성 표는 의원 정수가 아니다."
+      },
+      "source_review": {
+        "roster": "config/egy_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "GEO",
+      "name_ko": "조지아",
+      "priority_tier": 3,
+      "region": "europe",
+      "system": "parliamentary",
+      "map_spectrum": null,
+      "head": {
+        "role": "prime_minister",
+        "name_en": "Irakli Kobakhidze",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://www.gov.ge/index.php?lang_id=GEO&sec_id=195",
+            "note": "config/geo_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "parliamentary_republic",
+      "political_context": {
+        "note_ko": "조지안 드림 추출은 이름 78개로 끝나고 페이지는 78을 적지 않는다. 홈은 의원 0을 적는다. 헌법 37조는 150이다. 셋을 합치지 않는다."
+      },
+      "source_review": {
+        "roster": "config/geo_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "QAT",
+      "name_ko": "카타르",
+      "priority_tier": 3,
+      "region": "middle_east",
+      "system": "other",
+      "map_spectrum": null,
+      "head": {
+        "role": "emir",
+        "name_en": "Tamim bin Hamad Al-Thani",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://qna.org.qa/en/qatar/",
+            "note": "config/qat_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "mode": "leadership_brief",
+      "regime": "absolute_monarchy",
+      "political_context": {
+        "note_ko": "국왕이 슈라 의원을 임명한다. 총리는 외교장관을 겸한다. 정당은 없다."
+      },
+      "source_review": {
+        "roster": "config/qat_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "KWT",
+      "name_ko": "쿠웨이트",
+      "priority_tier": 3,
+      "region": "middle_east",
+      "system": "other",
+      "map_spectrum": null,
+      "head": {
+        "role": "emir",
+        "name_en": "Meshal Al-Ahmad Al-Jaber Al-Sabah",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://www.kuna.net.kw/NewsAgenciesPublicsite/ArticleDetails.aspx?Language=ar&id=3278627",
+            "note": "config/kwt_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "mode": "leadership_brief",
+      "regime": "monarchy_assembly_suspended",
+      "political_context": {
+        "note_ko": "국왕이 군 통수다. 국민의회는 해산되어 있고 그 권한은 국왕과 내각이 행사한다. 정당 의석은 없다."
+      },
+      "source_review": {
+        "roster": "config/kwt_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
+    },
+    {
+      "iso3": "PAN",
+      "name_ko": "파나마",
+      "priority_tier": 3,
+      "region": "americas",
+      "system": "presidential",
+      "map_spectrum": null,
+      "head": {
+        "role": "president",
+        "name_en": "José Raúl Mulino",
+        "sources": [
+          {
+            "org": "personnel roster",
+            "url": "https://sineisen.tribunal-electoral.gob.pa/portal/article?articleId=77757",
+            "note": "config/pan_personnel_2026-11-04.json"
+          }
+        ]
+      },
+      "ruling_party": null,
+      "parties_tracked": [],
+      "legislature": null,
+      "subnational": null,
+      "polls": null,
+      "events": [],
+      "events_this_year": 0,
+      "ingest_mode": null,
+      "regime": "presidential_republic",
+      "political_context": {
+        "note_ko": "정당은 선거재판소와 국회 기사가 적은 이름이다. 국회 의석 정수는 없다."
+      },
+      "source_review": {
+        "roster": "config/pan_personnel_2026-11-04.json",
+        "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+      }
     }
   ],
   "live_election_news": [

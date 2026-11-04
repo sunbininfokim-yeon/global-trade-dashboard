@@ -1,0 +1,183 @@
+{
+  "iso3": "YEM",
+  "as_of": "2026-11-04",
+  "priority_tier": 3,
+  "region": "middle_east",
+  "system": "other",
+  "regime": "divided_authority",
+  "source_review": {
+    "roster": "config/yem_personnel_2026-11-04.json",
+    "note_ko": "인사 명단(Cursor 수집, 공식 사이트·관보·의회 페이지)에서 국가 수반만 옮겼다. 정치 성향(map_spectrum)은 따로 검토하기 전까지 비워 둔다."
+  },
+  "parties": [],
+  "elections": {
+    "events_2026": []
+  },
+  "mode": "divided_authority",
+  "political_context": {
+    "note_ko": "지도위원회 사이트와 사나 사바는 대통령 직함을 다른 사람에게 준다. 두 하원 사이트도 의장이 다르다. 의석 수는 없다.",
+    "divided": true
+  },
+  "authorities": [
+    {
+      "id": "plc",
+      "label_ko": "대통령지도위원회(국제 승인)",
+      "keys": [
+        "presidential_leadership_council",
+        "prime_minister"
+      ],
+      "note_ko": "아덴·리야드를 오가는 국제 승인 정부."
+    },
+    {
+      "id": "sanaa",
+      "label_ko": "사나(후티) 측",
+      "keys": [
+        "sanaa_saba"
+      ],
+      "note_ko": "사나를 장악한 안사르알라(후티)의 최고정치위원회. 국제 승인은 없다."
+    }
+  ],
+  "camps": [
+    {
+      "id": "government",
+      "label_ko": "정부(대통령지도위원회)",
+      "role_ko": "국제 승인 정부",
+      "authority_ids": [
+        "plc"
+      ],
+      "color": [
+        59,
+        130,
+        246
+      ],
+      "brief": {
+        "status_ko": "2022년 4월 하디 대통령이 권한을 넘긴 8인 대통령지도위원회(PLC)가 국가원수 기능을 맡는다. 국제적으로 승인된 정부다.",
+        "base_ko": "아덴(임시 수도), 리야드에서도 활동",
+        "armed_ko": "정부군과 함께 남부 세력·서해안 부대 등 여러 무장 집단이 위원회 안에 묶여 있다. 단일 지휘가 아니다.",
+        "backers_ko": "사우디아라비아 주도 연합. 아랍에미리트는 남부 세력을 따로 후원해 왔다.",
+        "claim_ko": "2014년 후티의 사나 장악은 쿠데타이며 위원회가 유일한 합법 정부라는 입장."
+      }
+    },
+    {
+      "id": "opposition",
+      "label_ko": "후티(안사르알라)",
+      "role_ko": "반군·사실상 정부",
+      "authority_ids": [
+        "sanaa"
+      ],
+      "color": [
+        239,
+        68,
+        68
+      ],
+      "brief": {
+        "status_ko": "2014년 사나를 장악한 안사르알라 운동. 최고정치위원회가 사나에서 별도 정부를 운영한다. 국제 승인은 없다.",
+        "base_ko": "사나(수도), 북부 고원과 홍해 연안",
+        "armed_ko": "후티 군·혁명 지도자 압둘말리크 알후티 직할 조직. 홍해 선박 공격으로 국제 분쟁에 직접 끼어들었다.",
+        "backers_ko": "이란(무기·기술 지원으로 널리 보도됨).",
+        "claim_ko": "사나의 최고정치위원회가 예멘 정부이며 상대는 외세가 세운 정부라는 입장."
+      }
+    }
+  ],
+  "control_map": {
+    "as_of": "2026-06",
+    "confidence": "approximate",
+    "basis_ko": "위상·통제 지역·무장 세력·후원국은 공개 보도를 Claude가 정리한 배경 정보다(지식 기준 2026-06, 출처 링크 미첨부, 검증 전). 이름·직함·날짜는 인사 명단의 공식 매체 출처를 따른다.",
+    "regions": {
+      "YE-AD": {
+        "camp": "government",
+        "name_ko": "아덴"
+      },
+      "YE-LA": {
+        "camp": "government",
+        "name_ko": "라히즈"
+      },
+      "YE-AB": {
+        "camp": "government",
+        "name_ko": "아브얀"
+      },
+      "YE-SH": {
+        "camp": "government",
+        "name_ko": "샤브와"
+      },
+      "YE-HD": {
+        "camp": "government",
+        "name_ko": "하드라마우트"
+      },
+      "YE-MR": {
+        "camp": "government",
+        "name_ko": "마라"
+      },
+      "YE-SA": {
+        "camp": "opposition",
+        "name_ko": "사나 시(수도)"
+      },
+      "YE-SN": {
+        "camp": "opposition",
+        "name_ko": "사나 주"
+      },
+      "YE-AM": {
+        "camp": "opposition",
+        "name_ko": "암란"
+      },
+      "YE-SD": {
+        "camp": "opposition",
+        "name_ko": "사다"
+      },
+      "YE-HJ": {
+        "camp": "opposition",
+        "name_ko": "하자"
+      },
+      "YE-MW": {
+        "camp": "opposition",
+        "name_ko": "마위트"
+      },
+      "YE-RA": {
+        "camp": "opposition",
+        "name_ko": "라이마"
+      },
+      "YE-DH": {
+        "camp": "opposition",
+        "name_ko": "다마르"
+      },
+      "YE-IB": {
+        "camp": "opposition",
+        "name_ko": "이브"
+      },
+      "YE-BA": {
+        "camp": "opposition",
+        "name_ko": "바이다"
+      },
+      "YE-HU": {
+        "camp": "opposition",
+        "contested": true,
+        "note_ko": "호데이다: 항구·북부는 후티, 남쪽 해안 일부는 정부 측",
+        "name_ko": "호데이다"
+      },
+      "YE-JA": {
+        "camp": "opposition",
+        "contested": true,
+        "note_ko": "자우프: 대부분 후티, 동부 사막 일부 정부 측",
+        "name_ko": "자우프"
+      },
+      "YE-MA": {
+        "camp": "government",
+        "contested": true,
+        "note_ko": "마리브: 도시·유전은 정부 측, 서부 외곽이 전선",
+        "name_ko": "마리브"
+      },
+      "YE-TA": {
+        "camp": "government",
+        "contested": true,
+        "note_ko": "타이즈: 시가지가 양측으로 갈림",
+        "name_ko": "타이즈"
+      },
+      "YE-DA": {
+        "camp": "government",
+        "contested": true,
+        "note_ko": "달리: 북부 일부 후티, 나머지 정부 측",
+        "name_ko": "달리"
+      }
+    }
+  }
+}
