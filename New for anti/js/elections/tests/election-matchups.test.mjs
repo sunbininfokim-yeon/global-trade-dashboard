@@ -13,7 +13,7 @@ const now=Date.parse('2026-10-07T12:00:00Z');
 const state=(id)=>country.ui_ready.state_drilldown.states.find((s)=>s.id===id);
 
 test('CA01 shows current member and certified nominees without any poll feed',()=>{
- const html=districtFocusHtml(state('CA'),'01',[],null,null,null);
+ const html=districtFocusHtml(state('CA'),'01',[],null,null,null,7,{now});
  assert.match(html,/현재 의원/);assert.match(html,/Gallagher/);
  assert.match(html,/이번 선거 구도/);assert.match(html,/DEM/);assert.match(html,/Mike McGuire/);
  assert.match(html,/GOP/);assert.match(html,/James Gallagher/);assert.match(html,/공식 인증 본선 명부/);

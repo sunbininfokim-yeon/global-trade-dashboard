@@ -59,7 +59,7 @@ test('reference quality and rejected matchup labels reach HTML without becoming 
         source_quality:{verification_level:'primary_toplines_checked',methodological_quality:'unrated'},
         commissioning:{sponsors:['Fixture sponsor']}})]);
     const b={...board,monitoring:{race_coverage:{[r.race_id]:{matchup_reviewed:false}}}};
-    const html=pollEvidenceHtml(r,b,{status:'ok'},7);
+    const html=pollEvidenceHtml(r,b,{status:'ok'},7,{now});
     assert.match(html,/참고 전용/);assert.match(html,/정확도 미등급/);assert.match(html,/Fixture sponsor/);
     assert.match(html,/여론조사 후보 대진 대조 대기/);
 });
