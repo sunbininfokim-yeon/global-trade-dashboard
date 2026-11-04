@@ -42,6 +42,7 @@ import csv
 import http.cookiejar
 import io
 import json
+import os
 import sys
 import time
 import urllib.parse
@@ -61,6 +62,12 @@ NAVER_URL = "https://m.stock.naver.com/api/stocks/marketValue/{mkt}?page={page}&
 NIKKEI_CSV_URL = "https://indexes.nikkei.co.jp/nkave/archives/file/nikkei_stock_average_weight_jp.csv"
 TWSE_LIST_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
 SPARK_URL = "https://query1.finance.yahoo.com/v8/finance/spark?symbols={syms}&range=3mo&interval=1d"
+# Yahoo answers GitHub runner IPs with 429 from the first request, so the
+# daily job reads spark through the site's own worker (Cloudflare egress,
+# KV-cached an hour) and only falls back to Yahoo directly.
+PROXY_SPARK_URL = os.environ.get("HEATMAP_SPARK_PROXY",
+    "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/macro?source=yspark&symbols={syms}")
+TWSE_DAY_URL = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
 
 DUP_CLASS = {"GOOG": "GOOGL", "FOX": "FOXA", "NWS": "NWSA"}
 
@@ -147,7 +154,7 @@ def yahoo_quotes(symbols: list[str]) -> dict[str, dict]:
 def yahoo_sector(sym: str) -> str | None:
     url = f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{urllib.parse.quote(sym)}?modules=assetProfile&crumb={urllib.parse.quote(crumb())}"
     try:
-        res = (get(url, tries=2).get("quoteSummary") or {}).get("result") or []
+        res = (get(url, tries=1).get("quoteSummary") or {}).get("result") or []
         return ((res[0] if res else {}).get("assetProfile") or {}).get("sector")
     except RuntimeError:
         return None
@@ -176,13 +183,26 @@ def short_name(name: str) -> str:
 
 def spark(ysyms: list[str]) -> dict[str, dict]:
     out: dict[str, dict] = {}
+    dead = 0
     for i in range(0, len(ysyms), 20):
         chunk = ysyms[i:i + 20]
-        try:
-            data = get(SPARK_URL.format(syms=urllib.parse.quote(",".join(chunk))))
-        except RuntimeError as exc:
-            print(f"  spark chunk failed ({chunk[0]}..): {exc}")
+        q = urllib.parse.quote(",".join(chunk))
+        data = None
+        for url, tries in ((PROXY_SPARK_URL, 2), (SPARK_URL, 2)):
+            try:
+                data = get(url.format(syms=q), tries=tries)
+                if isinstance(data, dict) and any(isinstance(v, dict) and v.get("close") for v in data.values()):
+                    break
+                data = None
+            except RuntimeError as exc:
+                print(f"  spark chunk failed ({chunk[0]}.., {url[:40]}): {str(exc)[-60:]}")
+        if data is None:
+            dead += 1
+            if dead >= 3:
+                print("  spark: 3 chunks in a row failed on both routes, giving up on this market")
+                break
             continue
+        dead = 0
         for s in chunk:
             row = data.get(s) or {}
             ts, closes = row.get("timestamp") or [], row.get("close") or []
@@ -195,7 +215,7 @@ def spark(ysyms: list[str]) -> dict[str, dict]:
                     "dates": [datetime.fromtimestamp(t + gmt, timezone.utc).date().isoformat() for t, _ in pts],
                     "close": [c for _, c in pts],
                 }
-        time.sleep(1.0)
+        time.sleep(0.3)
     return out
 
 
@@ -282,18 +302,30 @@ def build_kr() -> dict[str, dict]:
 
     kospi, kosdaq = top("KOSPI", 200, ".KS"), top("KOSDAQ", 100, ".KQ")
     allm = {**kospi, **kosdaq}
-    todo = [m["y"] for m in allm.values() if m["y"] not in cache]
-    for i, y in enumerate(todo):
-        sec = yahoo_sector(y)
-        if sec:
-            cache[y] = sec
-        time.sleep(0.25)
+    # Sectors: Naver's own industry groups (반도체와반도체장비, 은행, ...),
+    # the classification Korean users read. Yahoo's quoteSummary is
+    # crumb-gated and blocked on runner IPs. Cached by item code; only new
+    # entrants are looked up.
+    groups = cache.setdefault("_naver_groups", {})
+    codes = cache.setdefault("naver_industry", {})
+    for i, code in enumerate(c for c in allm if c not in codes):
+        try:
+            ind = str(get(f"https://m.stock.naver.com/api/stock/{code}/integration", tries=2).get("industryCode") or "")
+        except RuntimeError:
+            continue
+        if ind and ind not in groups:
+            try:
+                info = get(f"https://m.stock.naver.com/api/stocks/industry/{ind}?page=1&pageSize=1", tries=2).get("groupInfo") or {}
+                groups[ind] = info.get("name") or ""
+            except RuntimeError:
+                pass
+        codes[code] = ind
+        time.sleep(0.1)
         if i % 50 == 49:
-            print(f"  sector lookups {i + 1}/{len(todo)}")
-    if todo:
-        SECTOR_CACHE.write_text(json.dumps(dict(sorted(cache.items())), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    for m in allm.values():
-        m["sec"] = YAHOO_SECTOR_KO.get(cache.get(m["y"]) or "", "기타")
+            print(f"  naver industry lookups {i + 1}")
+    SECTOR_CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    for code, m in allm.items():
+        m["sec"] = groups.get(codes.get(code) or "") or "기타"
     prices = spark(sorted(m["y"] for m in allm.values()))
     return {
         "kospi": {"label_ko": "코스피 시총 상위 200", "ccy": "KRW", "size_by": "mc", **finish_index(kospi, prices)},
@@ -315,7 +347,11 @@ def build_jp() -> dict[str, dict]:
         members[code] = {"n": (r.get("社名") or "").strip(), "l": (r.get("社名") or "").strip(),
                          "sec": NIKKEI_SECTOR_KO.get(sec, sec or "기타"),
                          "w": num(r.get("ウエート")), "y": f"{code}.T"}
-    quotes = yahoo_quotes([m["y"] for m in members.values()])
+    try:
+        quotes = yahoo_quotes([m["y"] for m in members.values()])
+    except RuntimeError as exc:
+        print(f"  nikkei market caps skipped (tooltip only): {str(exc)[-60:]}")
+        quotes = {}
     for m in members.values():
         m["mc"] = (quotes.get(m["y"]) or {}).get("marketCap")
     prices = spark(sorted(m["y"] for m in members.values()))
@@ -329,8 +365,15 @@ def build_tw() -> dict[str, dict]:
     if len(listed) < 900:
         raise RuntimeError(f"TWSE company list has {len(listed)} rows")
     info = {r["公司代號"].strip(): r for r in listed if r.get("公司代號", "").strip().isdigit()}
-    quotes = yahoo_quotes([f"{c}.TW" for c in info])
-    ranked = sorted(((q.get("marketCap") or 0, s) for s, q in quotes.items()), reverse=True)[:150]
+    close = {r["Code"].strip(): num(r.get("ClosingPrice")) for r in get(TWSE_DAY_URL)}
+    caps = []
+    for code, r in info.items():
+        shares, px = num(r.get("已發行普通股數或TDR原股發行股數")), close.get(code)
+        if shares and px:
+            caps.append((shares * px, f"{code}.TW"))
+    if len(caps) < 800:
+        raise RuntimeError(f"TWSE market caps for only {len(caps)} companies")
+    ranked = sorted(caps, reverse=True)[:150]
     members = {}
     for mc, ysym in ranked:
         code = ysym.split(".")[0]

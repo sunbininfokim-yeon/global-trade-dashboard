@@ -1613,6 +1613,24 @@ async function handleMacro(request, env, ctx) {
             });
         }
 
+        // Batched 3-month daily closes (Yahoo spark, <=20 symbols) for the
+        // equity heatmap builder: Yahoo answers GitHub runner IPs with 429,
+        // Cloudflare egress gets through.
+        if (source === 'yspark') {
+            const symbols = (url.searchParams.get('symbols') || '').split(',').filter(Boolean);
+            if (!symbols.length || symbols.length > 20 || !symbols.every((s) => /^[A-Za-z0-9.^=-]{1,20}$/.test(s))) {
+                return new Response(JSON.stringify({ error: 'symbols: 1-20 tickers' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+            }
+            const list = symbols.join(',');
+            return kvCachedJson(env, `yspark:${list}`, 3600, async () => {
+                const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/spark?symbols=${encodeURIComponent(list)}&range=3mo&interval=1d`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
+                });
+                if (!res.ok) return { ok: false, status: res.status };
+                return { ok: true, body: await res.json() };
+            });
+        }
+
         // Daily closes for equity indices Yahoo carries no history for
         // (CSI 300, Hang Seng Tech, VN-Index via Eastmoney; MOEX / RTS via the
         // exchange's own ISS). Both are reshaped into Yahoo's chart JSON so
