@@ -46,3 +46,32 @@ DGTR의 과거 DMF 6/37/2017-DGAD 페이지에서 ‘Final Finding’으로 표�
 ## 검증 및 남은 범위
 
 수입국·원산지·기업 역할·신청인 주장과 확정 세율 격리, 실패를0건으로 만들지 않는 비교, 과거 미국 목록 제외를 회귀 검증합니다. 라이브 화면·운영 배포는 미검증입니다. 다음 실제 자료가 필요합니다: 미국 현행 전체 ACCESS 명령/범위 및 CBP 지침, 한국 현행 부과 규칙의 전수 대조, DMF 후속 법원 원문·정부 결정, 실제 생산자·수출자·통관일 조합. 신규 실행 세율은 추가하지 않습니다.
+
+
+## 후속: 미국 USITC 실제 사건 검색 확보
+
+앞 절의 미국 ‘결과 확보 미완료’ 중 **USITC 사건 검색**은 다음과 같이 보강했습니다. 상무부 ACCESS 현행 명령/예치 지침 전수 대조는 여전히 별도 미완료입니다.
+
+USITC IDS의 공개 페이지·프런트엔드에 명시된 기본 검색 양식 `/assets/data/basic_search.json`과 읽기 전용 `/idata/api/v1/advanced-search` 요청을 사용했습니다. 인증·차단을 우회하지 않았으며 DB나 사건을 수정하지 않습니다. 잘못된 `/assets/config/basic_search.json` 경로는 HTTP200으로 HTML 앱 셸을 반환하므로 JSON 검색결과로 수용하지 않았습니다.
+
+| 검색어 | 실제 totalRecords | 범위 |
+|---|---|---|
+| magnesia carbon bricks | 5 | 양성 대조. 5개 개별 법률이 아니라 검색 결과 행 수 |
+| methyl ethyl ketone | 0 | USITC 기본 사건 검색 |
+| 2-butanone | 0 | 위와 같음 |
+| 78-93-3 | 0 | 위와 같음. CAS 색인 전수성 보장은 아님 |
+| dimethylformamide | 0 | USITC 기본 사건 검색 |
+| dimethyl formamide | 0 | 위와 같음 |
+| 68-12-2 | 0 | 위와 같음. CAS 색인 전수성 보장은 아님 |
+
+응답의 `cases`, `totalRecords`, `originalSearch`를 확인했습니다. 검색어가 originalSearch에 반영되며 빈 cases 배열/0건을 반환하는지 대조했습니다. 양성 대조는 제3차 Review, case2986/investigation8960, 2026-07-01 개시 등록 등을 반환했습니다. 등록·active 표시는 최종 ITC 결정이나 명령 유지/철회가 아닙니다. 새 단계의 최종 완료로 승격하지 않았습니다.
+
+6개 음성 대조는 수입국USA의 별도 `USITC_COMPARISON_EVIDENCE`에 검색어·원문 SHA256·결과 구조·양성 대조를 기록하고, 한국 KTC 기록과 분리했습니다. 공개 UI 링크는 `https://ids.usitc.gov/case?type=basic&query=...`입니다. 이 검색은 모든 원산지의 USITC 사건 자료이며 상무부의 모든 현행 명령·scope ruling·CBP 예치 지침의 부재 판정이 아닙니다. 따라서 `absence_confirmed:false`, `rate_pct:null`, `calculation_ready:false`를 유지합니다.
+
+실제 응답·영수증은 비공개 임시 `/private/tmp/usitc-comparison-20261105`에 보관합니다. 양성 대조 응답 SHA256: `2d119763775ade639fff59e7633355fb0a4e1582572ef238d552dcb8a0eeec88`. HTTP200 HTML·403/429·불완전한 결과 구조·검색어 미반영·양성 대조 실패를 0건 근거로 쓰지 않습니다. 기존 KTC의 HTML 표 검증과 USITC의 JSON 구조 검증을 구분했습니다.
+
+### 물질 식별 보강
+
+[CDC/NIOSH MEK](https://www.cdc.gov/niosh/npg/npgd0069.html)와 [DMF](https://www.cdc.gov/niosh/npg/npgd0226.html)를 직접 열어 CAS 및 동의어를 대조했습니다. MEK=2-Butanone/CAS78-93-3, DMF=Dimethylformamide/N,N-Dimethylformamide/CAS68-12-2를 화면에 출처와 함께 표시합니다. 안전 노출한도나 의료 권고를 가져오지 않았습니다. 물질 정체 확인은 관세 분류·명령 적용 확인과 별개입니다. MEKP/MIBK/dimethyl fumarate를 같은 물질로 등록하지 않았습니다.
+
+한국 2019 규칙의 유효기간3년 문구는 공식 검색 색인에서 추가 확인됐으나, 이번 직접 HTML 접근에서는 본문이 동적으로 제공돼 전체 본문·후속 개정의 대조를 완결하지 못했습니다. 이 문구만으로 2022년 이후 모든 조치가 없다고 결론내리지 않았습니다.

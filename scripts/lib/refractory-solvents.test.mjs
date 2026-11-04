@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {INDUSTRIAL_PRODUCTS,INDUSTRIAL_CASES,industrialCases,industrialEvidenceMarkup,industrialImportRequirements,industrialResearchStatus,industrialComparisonEvidence,INDUSTRIAL_SOURCE_EXCLUSIONS,verifiedEmptyComparison} from '../../New for anti/policy-simulator/refractory-solvents-evidence.mjs';
+import {INDUSTRIAL_PRODUCTS,INDUSTRIAL_CASES,industrialCases,industrialEvidenceMarkup,industrialImportRequirements,industrialResearchStatus,industrialComparisonEvidence,INDUSTRIAL_SOURCE_EXCLUSIONS,verifiedEmptyComparison,USITC_COMPARISON_EVIDENCE,INDUSTRIAL_IDENTITIES} from '../../New for anti/policy-simulator/refractory-solvents-evidence.mjs';
 import {COMPANY_PROFILES,COMPANY_INDUSTRIES,companyADLink,companyCalibration} from '../../New for anti/policy-simulator/company-profiles.mjs';
 import {PRODUCTS,policyOptions} from '../../New for anti/policy-simulator/policy-catalog.mjs';
 import {productVerification,adCoverageStatus} from '../../New for anti/policy-simulator/product-verification.mjs';
@@ -107,7 +107,7 @@ test('official KTC empty searches have query confirmation and a positive control
   const rows=industrialComparisonEvidence(p);assert.ok(rows.length>=3);for(const r of rows){assert.equal(verifiedEmptyComparison(r),true);assert.equal(r.checked_on,'2026-11-05');assert.equal(r.absence_confirmed,false);assert.ok(r.sha256?.match(/^[a-f0-9]{64}$/));}
   const r=rows[0];assert.equal(verifiedEmptyComparison({...r,http_status:403}),false);assert.equal(verifiedEmptyComparison({...r,expected_table_present:false}),false);assert.equal(verifiedEmptyComparison({...r,result_count:null}),false);assert.equal(verifiedEmptyComparison({...r,query_echo_verified:false}),false);assert.equal(verifiedEmptyComparison({...r,positive_control:{observed_first_page_rows:0}}),false);
  }
- assert.equal(industrialResearchStatus('methyl-ethyl-ketone','CHN','KOR').checked_on,'2026-11-05');assert.equal(industrialResearchStatus('methyl-ethyl-ketone','CHN','USA').checked_on,'2026-11-04');
+ assert.equal(industrialResearchStatus('methyl-ethyl-ketone','CHN','KOR').checked_on,'2026-11-05');assert.equal(industrialResearchStatus('methyl-ethyl-ketone','CHN','USA').checked_on,'2026-11-05');
  assert.equal(INDUSTRIAL_SOURCE_EXCLUSIONS[0].data_as_of,'2014-11-03');assert.equal(INDUSTRIAL_SOURCE_EXCLUSIONS[0].status,'excluded_stale');
 });
 test('EA importer participation, Korean scope and petitioner allegation remain separate from an executable duty',()=>{
@@ -116,4 +116,15 @@ test('EA importer participation, Korean scope and petitioner allegation remain s
  assert.equal(r.alleged_values[0].amount,28.8);assert.equal(r.alleged_values[0].kind,'petitioner_alleged_dumping_margin');assert.equal(r.rate_pct,null);assert.equal(r.calculation_ready,false);assert.equal(r.steps.filter(s=>s[1]==='confirmed').length,1);
  assert.deepEqual([r.investigation_period.start,r.investigation_period.end],['2025-01-01','2025-12-31']);assert.equal(r.investigation_period.may_be_adjusted,true);
  const html=industrialEvidenceMarkup('ethyl-acetate','CHN');assert.match(html,/국내수입자 답변서 제출/);assert.match(html,/28.80%.*확정·잠정 관세 아님/);assert.match(html,/data-petitioner-allegation/);assert.ok(!html.includes('28.80 USD'));
+});
+
+test('USITC JSON searches preserve a successful control and remain distinct from Commerce order coverage',()=>{
+ assert.equal(USITC_COMPARISON_EVIDENCE.length,6);
+ for(const p of ['methyl-ethyl-ketone','dimethylformamide']){
+  const rows=industrialComparisonEvidence(p,'USA');assert.equal(rows.length,3);
+  for(const r of rows){assert.equal(verifiedEmptyComparison(r),true);assert.equal(r.positive_control.query,'magnesia carbon bricks');assert.equal(verifiedEmptyComparison({...r,expected_result_structure:false}),false);assert.equal(verifiedEmptyComparison({...r,empty_cases_array:false}),false);assert.equal(verifiedEmptyComparison({...r,http_status:429}),false);assert.equal(r.absence_confirmed,false);}
+  const r=industrialResearchStatus(p,'CHN','USA');assert.match(r.label,/USITC/);assert.match(r.note,/상무부 명령 전수 판정이 아닙니다/);assert.equal(r.rate_pct,null);assert.equal(r.calculation_ready,false);assert.equal(r.checked_on,'2026-11-05');
+  assert.match(industrialEvidenceMarkup(p,'CHN'),/data-substance-identity/);assert.equal(productVerification(p,'CHN').checked_on,'2026-11-05');
+ }
+ assert.equal(INDUSTRIAL_IDENTITIES['methyl-ethyl-ketone'].cas,'78-93-3');assert.equal(INDUSTRIAL_IDENTITIES.dimethylformamide.cas,'68-12-2');assert.ok(!INDUSTRIAL_IDENTITIES['methyl-ethyl-ketone'].aliases.includes('MIBK'));assert.ok(!INDUSTRIAL_IDENTITIES.dimethylformamide.aliases.includes('Dimethyl fumarate'));
 });
