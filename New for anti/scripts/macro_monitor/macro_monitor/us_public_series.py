@@ -49,11 +49,11 @@ def fetch_fred(series_id: str, *, timeout: int = 40, tries: int = 3) -> Points:
         raise RuntimeError(f"FRED {series_id}: {last}; worker: {exc}") from exc
 
 
-WORKER_FRED = "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/macro?source=fred&limit=400&series_id={sid}"
+WORKER_FRED = "https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/macro?source=fred&limit=10000&series_id={sid}"
 
 
 def fetch_fred_worker(series_id: str, *, timeout: int = 40) -> Points:
-    """The newest 400 observations through the dashboard Worker (FRED API, KV-cached). curl, not urllib:
+    """Up to 10,000 newest observations through the dashboard Worker (FRED API, KV-cached). curl, not urllib:
     the Worker answers Python's default client with 403."""
     proc = subprocess.run(["curl", "-sS", "-L", "-m", str(timeout), "-A", USER_AGENT, WORKER_FRED.format(sid=series_id)],
                           check=False, capture_output=True)
