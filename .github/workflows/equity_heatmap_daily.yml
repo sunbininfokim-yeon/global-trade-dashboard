@@ -35,9 +35,8 @@ jobs:
 
   update:
     needs: validate
-    # On main: build + commit. workflow_dispatch on another branch: build and
-    # upload the file as an artifact only (a dry run from a runner IP).
-    if: github.event_name != 'pull_request'
+    # Runs on PRs too, as a dry run from a runner IP: builds and uploads the
+    # file as an artifact; only main commits it.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
