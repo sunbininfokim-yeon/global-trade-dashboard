@@ -1958,7 +1958,7 @@
         {
           "id": "core_cpi_yoy",
           "category": "inflation",
-          "label_ko": "근원 CPI YoY",
+          "label_ko": "근원 CPI",
           "display": "2.57%",
           "data_status": "live"
         }
@@ -3008,7 +3008,7 @@
           },
           {
             "id": "cpi_yoy",
-            "label_ko": "CPI YoY",
+            "label_ko": "헤드라인 CPI",
             "display": "3.72%",
             "value": 3.72,
             "unit": "%",
@@ -3049,25 +3049,11 @@
                 "note_ko": "전월 대비 %. 계절조정 여부는 원 시리즈 정의를 따른다.",
                 "id": "cpi_yoy:mom"
               }
-            },
-            "peers": {
-              "group": "us_cpi",
-              "label_ko": "지수",
-              "options": [
-                {
-                  "id": "cpi_yoy",
-                  "label_ko": "헤드라인 CPI"
-                },
-                {
-                  "id": "core_cpi_yoy",
-                  "label_ko": "근원 CPI"
-                }
-              ]
             }
           },
           {
             "id": "core_cpi_yoy",
-            "label_ko": "근원 CPI YoY",
+            "label_ko": "근원 CPI",
             "display": "2.57%",
             "value": 2.57,
             "unit": "%",
@@ -3108,20 +3094,6 @@
                 "note_ko": "전월 대비 %. 계절조정 여부는 원 시리즈 정의를 따른다.",
                 "id": "core_cpi_yoy:mom"
               }
-            },
-            "peers": {
-              "group": "us_cpi",
-              "label_ko": "지수",
-              "options": [
-                {
-                  "id": "cpi_yoy",
-                  "label_ko": "헤드라인 CPI"
-                },
-                {
-                  "id": "core_cpi_yoy",
-                  "label_ko": "근원 CPI"
-                }
-              ]
             }
           },
           {
@@ -25458,7 +25430,7 @@
         {
           "id": "cpi_yoy",
           "category": "inflation",
-          "label_ko": "CPI YoY",
+          "label_ko": "헤드라인 CPI",
           "unit": "%",
           "format": "pct1",
           "value": 3.72,
@@ -25850,38 +25822,6 @@
           "quality": "live",
           "refresh_tier": "monthly",
           "chart_type": "bar",
-          "components": [
-            {
-              "id": "housing",
-              "label_ko": "주거",
-              "contrib_pp": 1.15,
-              "share": 0.34
-            },
-            {
-              "id": "food",
-              "label_ko": "식료품",
-              "contrib_pp": 0.35,
-              "share": 0.13
-            },
-            {
-              "id": "energy",
-              "label_ko": "에너지",
-              "contrib_pp": 0.1,
-              "share": 0.07
-            },
-            {
-              "id": "services_ex_housing",
-              "label_ko": "서비스(주거 제외)",
-              "contrib_pp": 0.85,
-              "share": 0.28
-            },
-            {
-              "id": "goods_core",
-              "label_ko": "근원 상품",
-              "contrib_pp": 0.2,
-              "share": 0.18
-            }
-          ],
           "news_query": "US CPI inflation consumer prices BLS",
           "news_tags": [
             "cpi",
@@ -26717,25 +26657,47 @@
               }
             ]
           },
-          "peers": {
-            "group": "us_cpi",
-            "label_ko": "지수",
-            "options": [
-              {
-                "id": "cpi_yoy",
-                "label_ko": "헤드라인 CPI"
-              },
-              {
-                "id": "core_cpi_yoy",
-                "label_ko": "근원 CPI"
-              }
-            ]
+          "cpi_contrib": {
+            "file": "public/data/us_cpi_contrib_v1.json",
+            "basket": "headline",
+            "latest_month": "2026-09",
+            "months": [
+              "2024-09",
+              "2024-10",
+              "2024-11",
+              "2024-12",
+              "2025-01",
+              "2025-02",
+              "2025-03",
+              "2025-04",
+              "2025-05",
+              "2025-06",
+              "2025-07",
+              "2025-08",
+              "2025-09",
+              "2025-10",
+              "2025-11",
+              "2025-12",
+              "2026-01",
+              "2026-02",
+              "2026-03",
+              "2026-04",
+              "2026-05",
+              "2026-06",
+              "2026-07",
+              "2026-08",
+              "2026-09"
+            ],
+            "published_pct": {
+              "mom": 0.649,
+              "yoy": 3.738
+            }
           }
         },
         {
           "id": "core_cpi_yoy",
           "category": "inflation",
-          "label_ko": "근원 CPI YoY",
+          "label_ko": "근원 CPI",
           "unit": "%",
           "format": "pct1",
           "value": 2.57,
@@ -27127,26 +27089,6 @@
           "quality": "live",
           "refresh_tier": "monthly",
           "chart_type": "bar",
-          "components": [
-            {
-              "id": "housing",
-              "label_ko": "주거",
-              "contrib_pp": 1.4,
-              "share": 0.42
-            },
-            {
-              "id": "services_ex_housing",
-              "label_ko": "서비스(주거 제외)",
-              "contrib_pp": 1.1,
-              "share": 0.35
-            },
-            {
-              "id": "goods_core",
-              "label_ko": "근원 상품",
-              "contrib_pp": 0.35,
-              "share": 0.23
-            }
-          ],
           "news_query": "US core CPI inflation",
           "news_tags": [
             "core_cpi",
@@ -27982,19 +27924,41 @@
               }
             ]
           },
-          "peers": {
-            "group": "us_cpi",
-            "label_ko": "지수",
-            "options": [
-              {
-                "id": "cpi_yoy",
-                "label_ko": "헤드라인 CPI"
-              },
-              {
-                "id": "core_cpi_yoy",
-                "label_ko": "근원 CPI"
-              }
-            ]
+          "cpi_contrib": {
+            "file": "public/data/us_cpi_contrib_v1.json",
+            "basket": "core",
+            "latest_month": "2026-09",
+            "months": [
+              "2024-09",
+              "2024-10",
+              "2024-11",
+              "2024-12",
+              "2025-01",
+              "2025-02",
+              "2025-03",
+              "2025-04",
+              "2025-05",
+              "2025-06",
+              "2025-07",
+              "2025-08",
+              "2025-09",
+              "2025-10",
+              "2025-11",
+              "2025-12",
+              "2026-01",
+              "2026-02",
+              "2026-03",
+              "2026-04",
+              "2026-05",
+              "2026-06",
+              "2026-07",
+              "2026-08",
+              "2026-09"
+            ],
+            "published_pct": {
+              "mom": 0.335,
+              "yoy": 2.564
+            }
           }
         },
         {
