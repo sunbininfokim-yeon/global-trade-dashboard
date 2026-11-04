@@ -7368,3 +7368,22 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .pr-chips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 6px 0; }
 .pr-chips span { padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.25); color: #cbd5e1; }
 .pr-chips b { color: #f1f5f9; }
+
+/* 인사 명단 갈래 토글 -- 중국 토글과 같은 라디오 + 형제 선택자 방식. */
+.pr-radio { position: absolute; opacity: 0; pointer-events: none; }
+.pr-pane { display: none; }
+.pr-radio[data-pr-tab="head"]:checked ~ .pr-pane[data-pr-pane="head"],
+.pr-radio[data-pr-tab="executive"]:checked ~ .pr-pane[data-pr-pane="executive"],
+.pr-radio[data-pr-tab="legislature"]:checked ~ .pr-pane[data-pr-pane="legislature"],
+.pr-radio[data-pr-tab="local"]:checked ~ .pr-pane[data-pr-pane="local"],
+.pr-radio[data-pr-tab="other"]:checked ~ .pr-pane[data-pr-pane="other"] { display: block; }
+.pr-radio[data-pr-tab="head"]:checked ~ .pr-tabs label[data-pr-tab="head"],
+.pr-radio[data-pr-tab="executive"]:checked ~ .pr-tabs label[data-pr-tab="executive"],
+.pr-radio[data-pr-tab="legislature"]:checked ~ .pr-tabs label[data-pr-tab="legislature"],
+.pr-radio[data-pr-tab="local"]:checked ~ .pr-tabs label[data-pr-tab="local"],
+.pr-radio[data-pr-tab="other"]:checked ~ .pr-tabs label[data-pr-tab="other"] {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: #60a5fa;
+    color: #dbeafe;
+}
+.pr-tabs { margin-top: 10px; }

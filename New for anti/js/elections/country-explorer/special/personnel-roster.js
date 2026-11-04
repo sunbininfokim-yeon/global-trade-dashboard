@@ -180,7 +180,7 @@ function renderNode(key, value, depth, inList = false) {
     if (Array.isArray(value)) {
         const body = renderList(key, value, depth);
         if (!body) return '';
-        return depth === 0 ? body : `<details class="pr-sub"${value.length <= 12 && hasPeople(body) ? ' open' : ''}><summary>${escapeHtml(label(key))}${countLabel(value)}</summary>${body}</details>`;
+        return depth === 0 ? body : `<details class="pr-sub"${value.length <= 40 && hasPeople(body) ? ' open' : ''}><summary>${escapeHtml(label(key))}${countLabel(value)}</summary>${body}</details>`;
     }
     if (isPerson(value) && !Object.values(value).some((v) => v && typeof v === 'object')) {
         return personRow(value, inList ? '' : label(key));
@@ -213,20 +213,72 @@ const notesBlock = (data) => {
         .map(([t, list]) => `<p class="pr-note"><b>${escapeHtml(t)}</b></p><ul class="pr-bullets">${list.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul>`).join('')}</details>`;
 };
 
+// 우측 '인사 명단' 창 안의 갈래. 나라마다 맨 위 키 이름이 달라 키를 갈래에 직접 짝짓고,
+// 표에 없는 키는 이름의 낱말로 고른다. 어느 쪽에도 안 걸리면 '기타'.
+const CATEGORIES = [
+    ['head', '국가원수·대통령실'],
+    ['executive', '행정부'],
+    ['legislature', '의회'],
+    ['local', '지방'],
+    ['other', '기타'],
+];
+const CATEGORY_OF = {
+    amiri_diwan: 'head', crown_prince: 'head', deputy_emir: 'head', elysee: 'head', emir: 'head', federal_president: 'head',
+    first_vice_president: 'head', king: 'head', national_security: 'head', national_security_council: 'head', presidency: 'head',
+    president: 'head', presidential_administration: 'head', presidential_chancellery: 'head', presidential_court: 'head',
+    presidential_leadership_council: 'head', presidential_office: 'head', presidential_secretariat: 'head', royal_court: 'head',
+    secretariat: 'head', security_council: 'head', special_advisors: 'head', supreme_council: 'head', supreme_leader: 'head',
+    vice_president: 'head',
+    cabinet_office: 'executive', cabinet_secretariat: 'executive', cabinet_secretary_general: 'executive',
+    deputy_prime_minister: 'executive', executive: 'executive', executive_yuan: 'executive', government: 'executive',
+    presidency_minister: 'executive', prime_minister: 'executive', prime_minister_advisors: 'executive',
+    prime_ministers_office: 'executive', privy_council: 'executive',
+    assembly: 'legislature', assembly_of_experts: 'legislature', bundesrat: 'legislature', bundestag: 'legislature',
+    chamber: 'legislature', commons: 'legislature', congress_groups_before_dissolution: 'legislature',
+    congress_permanent_deputation: 'legislature', council_of_representatives: 'legislature', deputies: 'legislature',
+    dissolution: 'legislature', federal_national_council: 'legislature', federation_council: 'legislature',
+    guardian_council: 'legislature', house: 'legislature', house_of_commons: 'legislature', house_of_councillors: 'legislature',
+    house_of_lords: 'legislature', house_of_representatives: 'legislature', houses: 'legislature', legislative_yuan: 'legislature',
+    majlis: 'legislature', milli_majlis: 'legislature', national_assembly: 'legislature', parliament: 'legislature',
+    sejm: 'legislature', senate: 'legislature', senate_2027_projection: 'legislature', senate_permanent_deputation: 'legislature',
+    shura: 'legislature', state_duma: 'legislature',
+    devolved: 'local', devolved_legislatures: 'local', england_mayor: 'local', governors: 'local', governors_elected_2026: 'local',
+    kurdistan_region: 'local', local_election_2026: 'local', local_executives: 'local', premiers: 'local', quebec_election: 'local',
+    regional_executives: 'local', regional_governors: 'local', regional_heads: 'local', regions: 'local',
+};
+export const personnelCategory = (key) => {
+    if (CATEGORY_OF[key]) return CATEGORY_OF[key];
+    if (/knesset|senate|house|assembly|parliament|chamber|deput|majlis|shura|congress|bundes|duma|sejm|legislat|diet/.test(key)) return 'legislature';
+    if (/president|royal|king|emir|supreme|elysee|secretariat|advis/.test(key)) return 'head';
+    if (/minister|government|cabinet|executive|chancell/.test(key)) return 'executive';
+    if (/governor|region|local|devolved|mayor|premier|province|municipal/.test(key)) return 'local';
+    return 'other';
+};
+
+let rosterSeq = 0;
+
 export const personnelRosterHtml = (data) => {
     if (!data || typeof data !== 'object') return null;
-    const sections = Object.entries(data)
+    const byCategory = new Map(CATEGORIES.map(([id]) => [id, []]));
+    Object.entries(data)
         .filter(([k]) => !META_KEYS.has(k) && !NOTE_KEYS.has(k) && !HIDDEN_KEYS.has(k))
-        .map(([k, v]) => {
+        .forEach(([k, v]) => {
             const body = renderNode(k, v, 0);
-            if (!body) return '';
+            if (!body) return;
             const n = Array.isArray(v) ? ` <small>${v.length}</small>` : '';
-            return `<section class="pr-section"><p class="section-title">${escapeHtml(label(k, true))}${n}</p>${body}</section>`;
-        }).filter(Boolean);
+            byCategory.get(personnelCategory(k)).push(`<section class="pr-section"><p class="section-title">${escapeHtml(label(k, true))}${n}</p>${body}</section>`);
+        });
+    const tabs = CATEGORIES.filter(([id]) => byCategory.get(id).length);
+    rosterSeq += 1;
+    const name = `pr-tab-${rosterSeq}`;
     return `<div class="pr-roster">
         <p class="elections-panel-note">기준일 ${escapeHtml(data.as_of || '')}${data.cutoff_ko ? ` · ${escapeHtml(data.cutoff_ko)}` : ''}</p>
         ${notesBlock(data)}
-        ${sections.join('')}
+        ${tabs.map(([id], i) => `<input class="pr-radio" type="radio" name="${name}" id="${name}-${id}" data-pr-tab="${id}"${i === 0 ? ' checked' : ''}>`).join('')}
+        <div class="cn-lead-tabs pr-tabs" role="group" aria-label="인사 갈래">
+            ${tabs.map(([id, text]) => `<label for="${name}-${id}" data-pr-tab="${id}">${escapeHtml(text)}</label>`).join('')}
+        </div>
+        ${tabs.map(([id]) => `<div class="pr-pane" data-pr-pane="${id}">${byCategory.get(id).join('')}</div>`).join('')}
         <p class="elections-panel-note">공식 사이트·관보·의회 페이지에서 확인한 이름만 담았습니다. 이름을 누르면 출처가 열립니다.</p>
     </div>`;
 };

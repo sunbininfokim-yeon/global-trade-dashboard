@@ -35,3 +35,25 @@ test('internal ids stay hidden and unsafe urls never become links', () => {
     assert.doesNotMatch(html, /javascript:/);
     assert.equal(personnelRosterHtml(null), null);
 });
+
+import { personnelCategory } from '../country-explorer/special/personnel-roster.js';
+
+test('roster splits into 국가원수·대통령실 / 행정부 / 의회 / 지방 tabs', () => {
+    const kor = personnelRosterHtml(load('KOR'));
+    for (const tab of ['국가원수·대통령실', '의회', '지방']) assert.match(kor, new RegExp(`>${tab}<`));
+    assert.equal((kor.match(/type="radio"/g) || []).length, (kor.match(/data-pr-pane=/g) || []).length);
+    assert.equal(personnelCategory('president'), 'head');
+    assert.equal(personnelCategory('prime_minister'), 'executive');
+    assert.equal(personnelCategory('knesset_27'), 'legislature');
+    assert.equal(personnelCategory('governors'), 'local');
+    assert.equal(personnelCategory('orientation'), 'other');
+});
+
+test('every top-level section of every country lands in exactly one tab', () => {
+    for (const iso of Object.keys(index.countries)) {
+        const html = personnelRosterHtml(load(iso));
+        const panes = (html.match(/data-pr-pane=/g) || []).length;
+        assert.ok(panes >= 1, `${iso} has no tabs`);
+        assert.equal((html.match(/ checked/g) || []).length, 1, `${iso} should open one tab`);
+    }
+});
