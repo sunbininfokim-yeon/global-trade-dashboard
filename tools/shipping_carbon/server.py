@@ -7,6 +7,8 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from engine import calculate, defaults, json_value
 from presets import catalog
+from fueleu_adapter import call_fueleu
+from combined_finance import observed_reference
 
 ROOT = Path(__file__).resolve().parent
 FORCE_SYNTHETIC = False
@@ -33,6 +35,13 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
+        if self.path == "/api/market":
+            def local_json(name, fallback):
+                path = ROOT / "source_data" / name
+                return json.loads(path.read_text()) if path.exists() else fallback
+            return self.reply(200, {"prices": snapshot(),
+                "market_structure": local_json("market_structure.json", {"status": "not_collected", "records": []}),
+                "fueleu_audit": local_json("fueleu_audit.json", {"status": "not_collected"})})
         if self.path == "/api/presets":
             path = ROOT / "source_data/vessel_emissions.json"
             return self.reply(200, catalog(json.loads(path.read_text()) if path.exists() else {}))
@@ -41,11 +50,18 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/api/observations":
             s = snapshot()
             mrv = ROOT / "source_data/vessel_emissions.json"
-            return self.reply(200, {"prices": s, "vessels": json.loads(mrv.read_text()) if mrv.exists() else {
+            structure = ROOT / "source_data/market_structure.json"
+            audit = ROOT / "source_data/fueleu_audit.json"
+            return self.reply(200, {"prices": s,
+                "market_structure": json.loads(structure.read_text()) if structure.exists() else {"status": "not_collected", "records": []},
+                "fueleu_audit": json.loads(audit.read_text()) if audit.exists() else {"status": "not_collected"},
+                "vessels": json.loads(mrv.read_text()) if mrv.exists() else {
                 "status": "source_not_collected", "records": [],
                 "source_url": "https://mrv.emsa.europa.eu/#public/emission-report"},
                 "private_inputs": {key: None for key in ("allowance_inventory", "futures_positions", "initial_margin", "customer_contracts", "pooling_quotes")}})
-        files = {"/": ("viewer.html", "text/html"), "/viewer.js": ("viewer.js", "text/javascript"),
+        files = {"/climate": ("market.html", "text/html"), "/market.css": ("market.css", "text/css"),
+                 "/market-ui.js": ("market-ui.js", "text/javascript"), "/market-math.mjs": ("market-math.mjs", "text/javascript"),
+                 "/": ("viewer.html", "text/html"), "/viewer.js": ("viewer.js", "text/javascript"),
                  "/extras.js": ("extras.js", "text/javascript"),
                  "/observations.js": ("observations.js", "text/javascript"),
                  "/presets.js": ("presets.js", "text/javascript"),
@@ -56,7 +72,7 @@ class Handler(BaseHTTPRequestHandler):
         self.reply(200, (ROOT / name).read_bytes(), mime + "; charset=utf-8")
 
     def do_POST(self):
-        if self.path != "/api/calculate":
+        if self.path not in ("/api/calculate", "/api/combined"):
             return self.reply(404, {"error": "Not found"})
         # A browser from another origin cannot submit changes to the local viewer.
         origin = self.headers.get("Origin")
@@ -69,7 +85,12 @@ class Handler(BaseHTTPRequestHandler):
             p = json.loads(self.rfile.read(size))
             if not isinstance(p, dict):
                 raise ValueError("입력 형식을 확인하세요")
-            self.reply(200, calculate(p, snapshot()))
+            if self.path == "/api/combined":
+                result = call_fueleu({"mode": "combined", "inputs": p, "reference": observed_reference(snapshot())})
+                result["inputs"] = p
+                self.reply(200, result)
+            else:
+                self.reply(200, calculate(p, snapshot()))
         except (ValueError, KeyError, TypeError) as exc:
             self.reply(400, {"error": str(exc)})
 

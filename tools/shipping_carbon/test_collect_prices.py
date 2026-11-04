@@ -21,6 +21,13 @@ class SourcesTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_eex_rows([["wrong", "headers"]], date(2026, 11, 1))
 
+    def test_optional_auction_metrics_keep_missing_separate_from_zero(self):
+        header = ["Date", "Auction Name", "Contract", "Status", "Auction Price €/tCO2", "Auction Volume tCO2", "Cover Ratio", "Total Number of Bidders"]
+        records, _ = parse_eex_rows([header, [datetime(2026, 10, 30), "DE", "T3PA", "successful", 80, 1000, 0, None]], date(2026, 11, 2))
+        self.assertEqual(records[0]['cover_ratio'], '0')
+        self.assertIsNone(records[0]['bidders'])
+        self.assertIsNone(records[0]['bid_volume_tco2'])
+
     def test_ecb_unit_and_missing(self):
         head = "KEY,FREQ,CURRENCY,CURRENCY_DENOM,UNIT_MULT,TIME_PERIOD,OBS_VALUE,OBS_STATUS\n"
         row = "EXR.D.KRW.EUR.SP00.A,D,KRW,EUR,0,2026-10-30,1500,A\n"
