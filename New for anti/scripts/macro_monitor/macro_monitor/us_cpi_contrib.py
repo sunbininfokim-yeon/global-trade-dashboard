@@ -82,6 +82,23 @@ NAMES_KO = {
     "Used cars and trucks": "중고차·트럭", "Car and truck rental": "렌터카", "Prescription drugs": "처방약",
     "Physicians' services": "의사 진료", "Hospital services": "병원", "College tuition and fees": "대학 등록금",
     "Wireless telephone services": "무선통신", "Internet services and electronic information providers": "인터넷",
+    "Owners' equivalent rent of primary residence": "자가주거비(주거 주택)",
+    "Other lodging away from home including hotels and motels": "호텔·모텔 등 숙박",
+    "Unsampled owners' equivalent rent of secondary residences": "별장 자가주거비",
+    "Motor vehicle insurance": "자동차 보험", "Full service meals and snacks": "외식(풀서비스)",
+    "Limited service meals and snacks": "외식(패스트푸드 등)", "Food at employee sites and schools": "직장·학교 급식",
+    "Other food away from home": "기타 외식", "Nonprescription drugs": "일반의약품", "Dental services": "치과",
+    "Eyeglasses and eye care": "안경·안과", "Services by other medical professionals": "기타 의료 전문 서비스",
+    "Day care and preschool": "보육·유치원", "Elementary and high school tuition and fees": "초중고 학비",
+    "Airline fares": "항공료", "Leased cars and trucks": "리스 차량", "Gasoline, unleaded regular": "보통 휘발유",
+    "Smartphones": "스마트폰", "Computers, peripherals, and smart home assistants": "컴퓨터·주변기기",
+    "Haircuts and other personal care services": "이발·미용", "Household furniture and bedding": "가구·침구",
+    "Major appliances": "대형 가전", "Water and sewerage maintenance": "상하수도",
+    "Garbage and trash collection": "쓰레기 수거", "Beer, ale, and other malt beverages at home": "맥주(가정)",
+    "Distilled spirits at home": "증류주(가정)", "Wine at home": "와인(가정)",
+    "Alcoholic beverages away from home": "주류(외식)", "Beef and veal": "소고기", "Pork": "돼지고기",
+    "Poultry": "가금류", "Eggs": "계란", "Milk": "우유", "Fresh fruits": "신선 과일", "Fresh vegetables": "신선 채소",
+    "Coffee": "커피", "Carbonated drinks": "탄산음료", "Sugar and sweets": "설탕·과자류",
 }
 
 
