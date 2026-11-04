@@ -20,9 +20,12 @@ export const loadLivePolls = () => {
         fetchJson('usa_election_unreviewed_polls_v1.json').catch(() => null),
         // Election-night media calls (AP 등, 비공식). Optional.
         fetchJson('usa_election_media_calls_v1.json').catch(() => null),
-        ]).then(([board, health, unreviewed, calls]) => {
+        // State-published uncertified counts (collect_official_results.py). Optional.
+        fetchJson('usa_election_official_results_v1.json').catch(() => null),
+        ]).then(([board, health, unreviewed, calls, official]) => {
             if (board && unreviewed?.schema === 'usa_election_unreviewed_polls_v1' && unreviewed.as_of === board.as_of) board.unreviewed = unreviewed;
             if (board && calls?.schema === 'usa_election_media_calls_v1') board.mediaCalls = calls;
+            if (board && official?.schema === 'usa_election_official_results_v1') board.officialResults = official;
             return { board, health };
         }).catch(() => {
             expiresAt = Date.now() + 60 * 1000;
