@@ -276,7 +276,7 @@ export function mountAntidumping(root, { openCompany } = {}) {
   }, { signal });
   root.addEventListener('click', event => {
     const el = event.target.closest('button'); if (!el || !root.contains(el)) return;
-    if(el.hasAttribute('data-ad-related-origin')){if(!['KOR','CHN','MEX'].includes(el.dataset.adRelatedOrigin))return;evidenceOrigin=el.dataset.adRelatedOrigin;result=null;unconfirm();chooseIndustry(selectedIndustry());return;}
+    if(el.hasAttribute('data-ad-related-origin')){if(!['KOR','CHN','MEX','JPN'].includes(el.dataset.adRelatedOrigin))return;evidenceOrigin=el.dataset.adRelatedOrigin;result=null;unconfirm();chooseIndustry(selectedIndustry());return;}
     if (el.hasAttribute('data-ad-overview')) { overview = true; calculatorOpen = false; processRecordId = ''; paint(); return; }
     if (el.hasAttribute('data-ad-case')) {
       if (evidenceOrigin !== 'KOR') return;

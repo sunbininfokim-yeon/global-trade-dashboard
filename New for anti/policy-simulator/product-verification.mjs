@@ -93,6 +93,10 @@ export function adCoverageStatus(product, country = 'KOR') {
     basic.research={state:'official_case_documents_reviewed',label:'미국 사건 공고 확인',note:'이 선택 원산지·제품의 선별 공고 확인. 현재 기업별 적용 전수 검토는 미완료입니다.'};
     basic.procedure={state:'selected_official_action_confirmed',label:row.ad.records.map(r=>r.procedure_label).join(' / '),note:'확인한 사건·절차만 표시하며 기업별 예치·정산·명령 연장을 추정하지 않습니다.'};
     basic.next_step='정확한 제조/수출 법인·제품 범위·현행 예치 지침 확인';
+  } else if(status==='industrial_bounded_search'){
+    basic.research={state:'bounded_search_no_confirmed_case',label:'제한 조사 · 대응 사건 미발견',note:row.ad.research_status.note};
+    basic.procedure={state:'unconfirmed',label:'공식 적용 사건 미확인',note:'현행 명령 전수 대조 미완료. 규제 없음·0%·정부 판정 대기로 확정하지 않습니다.'};
+    basic.next_step='공식 전체 명령 목록·정확한 제품 범위·거래별 지침 추가 확인';
   } else if(status==='industrial_case_not_reviewed'){
     basic.research={state:'company_product_confirmed',label:'기업 제품 확인 · 사건 조사 미완료',note:'공식 회사의 취급 제품 확인과 정부 조사 여부는 별개입니다.'};
     basic.next_step='해당 원산지의 미국 공식 사건·제품 범위 조사';

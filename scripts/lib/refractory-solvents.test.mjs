@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {INDUSTRIAL_PRODUCTS,INDUSTRIAL_CASES,industrialCases,industrialEvidenceMarkup,industrialImportRequirements} from '../../New for anti/policy-simulator/refractory-solvents-evidence.mjs';
+import {INDUSTRIAL_PRODUCTS,INDUSTRIAL_CASES,industrialCases,industrialEvidenceMarkup,industrialImportRequirements,industrialResearchStatus} from '../../New for anti/policy-simulator/refractory-solvents-evidence.mjs';
 import {COMPANY_PROFILES,COMPANY_INDUSTRIES,companyADLink,companyCalibration} from '../../New for anti/policy-simulator/company-profiles.mjs';
 import {PRODUCTS,policyOptions} from '../../New for anti/policy-simulator/policy-catalog.mjs';
 import {productVerification,adCoverageStatus} from '../../New for anti/policy-simulator/product-verification.mjs';
@@ -28,7 +28,7 @@ test('sunset/rescission facts never become company cash rates or blanket revocat
 test('Korean EA initiation is separate from American coverage and cannot create a final rate or full process',()=>{
  const r=industrialCases('ethyl-acetate','CHN','KOR')[0];assert.equal(r.date,'2026-08-18');assert.equal(r.steps.filter(s=>s[1]==='confirmed').length,1);assert.equal(r.rate_pct,null);
  assert.equal(adCoverageStatus('ethyl-acetate','CHN').procedure.state,'unconfirmed');assert.deepEqual(productVerification('ethyl-acetate','CHN').ad.case_ids,[]);
- for(const product of ['methyl-ethyl-ketone','dimethylformamide']){assert.equal(adCoverageStatus(product,'CHN').research.state,'company_product_confirmed');assert.equal(adCoverageStatus(product,'CHN').procedure.state,'unconfirmed');assert.equal(productVerification(product,'CHN').ad.rate_pct,null);}
+ for(const product of ['methyl-ethyl-ketone','dimethylformamide']){assert.equal(adCoverageStatus(product,'CHN').research.state,'bounded_search_no_confirmed_case');assert.equal(adCoverageStatus(product,'CHN').procedure.state,'unconfirmed');assert.equal(productVerification(product,'CHN').ad.rate_pct,null);}
 });
 test('American verification uses the exact origin and cannot claim an old Korea roster reviewed new products',()=>{
  assert.deepEqual(productVerification('magnesia-carbon-bricks','CHN').ad.case_ids,['A-570-954','C-570-955']);
@@ -72,8 +72,9 @@ test('Indian historical recommendations preserve price-floor versus specific-dut
  const mek=industrialCases('methyl-ethyl-ketone','CHN','IND')[0],dmf=industrialCases('dimethylformamide','CHN','IND')[0];
  assert.equal(mek.reported_values[0].kind,'historical_reference_price_recommendation');assert.equal(mek.reported_values[0].amount,1147.06);assert.equal(mek.reported_values[0].unit,'USD/MT');
  assert.deepEqual(dmf.reported_values.map(v=>v.amount),[377.21,405.75]);
- for(const row of [mek,dmf]){assert.equal(row.stage,'historical_recommendation');assert.equal(row.rate_pct,null);assert.equal(row.calculation_ready,false);assert.equal(row.steps[1][1],'unknown');assert.equal(industrialCases(row.product,'CHN','USA').length,0);assert.equal(lookupRemedy({import_country:'IND',product:row.product,origin:'CHN'}).status,'unresolved');}
- const html=industrialEvidenceMarkup('methyl-ethyl-ketone','CHN');assert.match(html,/중국산 → 인도 수입/);assert.match(html,/1,147.06 USD\/MT/);assert.match(html,/기준가격 권고/);assert.match(html,/현행 미확인/);
+ assert.equal(mek.stage,'historical_measure_termination_reported');assert.equal(mek.termination_date,'2021-04-23');assert.equal(mek.steps[1][1],'confirmed');assert.equal(dmf.stage,'historical_recommendation');assert.equal(dmf.steps[1][1],'unknown');
+ for(const row of [mek,dmf]){assert.equal(row.rate_pct,null);assert.equal(row.calculation_ready,false);assert.equal(industrialCases(row.product,'CHN','USA').length,0);assert.equal(lookupRemedy({import_country:'IND',product:row.product,origin:'CHN'}).status,'unresolved');}
+ const html=industrialEvidenceMarkup('methyl-ethyl-ketone','CHN');assert.match(html,/중국산 → 인도 수입/);assert.match(html,/1,147.06 USD\/MT/);assert.match(html,/기준가격 권고/);assert.match(html,/기존 조치 종료 보고/);
 });
 test('import compliance frameworks remain conditional and never become a blanket China ban or duty quote',()=>{
  const chemicals=industrialImportRequirements('dimethylformamide','CHN');assert.deepEqual(chemicals.map(r=>r.id),['us-section301-check','us-uflpa','us-tsca']);
@@ -81,4 +82,22 @@ test('import compliance frameworks remain conditional and never become a blanket
  assert.deepEqual(industrialImportRequirements('magnesia-carbon-bricks','MEX'),[]);assert.deepEqual(industrialImportRequirements('dimethylformamide','KOR').map(r=>r.id),['us-tsca']);
  assert.ok(!industrialImportRequirements('magnesia-carbon-bricks','CHN').some(r=>r.id==='us-tsca'));
  const copy=industrialCases('dimethylformamide','CHN','IND')[0];copy.reported_values[0].amount=0;assert.equal(industrialCases('dimethylformamide','CHN','IND')[0].reported_values[0].amount,377.21);
+});
+
+test('research distinguishes unresearched, bounded misses, investigation and specific terminated measures',()=>{
+ const r=(p,o,m)=>industrialResearchStatus(p,o,m);
+ assert.equal(r('high-alumina-bricks','CHN','USA').state,'not_researched');assert.equal(r('high-alumina-bricks','CHN','USA').checked_on,null);
+ assert.equal(r('methyl-ethyl-ketone','CHN','USA').state,'bounded_search_no_confirmed_case');assert.match(r('methyl-ethyl-ketone','CHN','USA').note,/ACCESS.*오류/);
+ assert.equal(r('dimethylformamide','CHN','KOR').state,'bounded_search_no_confirmed_case');assert.match(r('dimethylformamide','CHN','KOR').note,/첫 페이지/);
+ assert.equal(r('ethyl-acetate','CHN','KOR').state,'official_investigation_identified');assert.equal(r('magnesia-carbon-bricks','CHN','USA').state,'official_case_identified');
+ assert.equal(r('methyl-ethyl-ketone','CHN','IND').state,'specific_measure_termination_reported');assert.equal(r('dimethylformamide','CHN','IND').state,'historical_recommendation_only');
+ assert.equal(r('methyl-ethyl-ketone','JPN','CHN').state,'specific_measure_terminated');
+ for(const [p,o,m] of [['methyl-ethyl-ketone','CHN','USA'],['methyl-ethyl-ketone','CHN','IND'],['methyl-ethyl-ketone','JPN','CHN']]){const row=r(p,o,m);assert.equal(row.absence_confirmed,false);assert.equal(row.rate_pct,null);assert.equal(row.calculation_ready,false);}
+ assert.equal(r('methyl-ethyl-ketone',null,'CHN').state,'not_researched');
+ const html=industrialEvidenceMarkup('methyl-ethyl-ketone','CHN');assert.match(html,/data-industrial-research-status/);assert.match(html,/WTO 공식 보고/);assert.ok(!industrialCases('methyl-ethyl-ketone','CHN','USA').length);
+});
+test('Japanese MEK termination is a Chinese import case and Korean precursor listing is not an AD rate or first-group approval',()=>{
+ const r=industrialCases('methyl-ethyl-ketone','JPN','CHN')[0];assert.equal(r.date,'2019-11-21');assert.equal(r.stage,'measure_terminated');assert.equal(r.rate_pct,null);assert.equal(industrialCases('methyl-ethyl-ketone','CHN','CHN').length,0);
+ const rule=industrialImportRequirements('methyl-ethyl-ketone','CHN').find(r=>r.id==='kr-mek-precursor');assert.equal(rule.import_country,'KOR');assert.equal(rule.origin_specific,false);assert.equal(rule.rate_pct,null);assert.match(rule.note,/1군.*2군/);
+ assert.ok(!industrialImportRequirements('dimethylformamide','CHN').some(r=>r.id==='kr-mek-precursor'));
 });

@@ -14,6 +14,8 @@ export const INDUSTRIAL_PRODUCTS = [
 ];
 const continuation = fr('2021-17790','2021-08-19','Commerce · 중국·멕시코 AD / 중국 CVD 명령 유지');
 const mek = source('인도 DGTR · MEK 2018-02-01 최종 권고, 표 pp.40~41','https://dgtr.gov.in/sites/default/files/2024-07/FF%20NCV%201.2.18.pdf');
+const mekTermination = source('WTO WT/TPR/OV/24/Add.1 p.26 · 인도 MEK 2021-04-23 종료 보고','https://www.wto.org/english/news_e/news21_e/ov24a1.pdf');
+const chinaMEKTermination = source('MOFCOM 2019 제51호 · 일본·대만산 MEK 조치 종료','https://cacs.mofcom.gov.cn/cacscms/articleDetail/jkdc?articleId=161256&id=53d8a6e26e584780016e87820f590e18');
 const dmf = source('인도 DGTR · DMF 2021-01-11 최종 권고, 표 pp.59~60','https://dgtr.gov.in/sites/default/files/2024-08/FF%20-%20DMF%20NCV.pdf');
 const brickAD = fr('2026-22523','2026-11-04','Commerce · 마그카본 벽돌 AD 제3차 일몰 최종결과');
 const brickCVD = fr('2026-22529','2026-11-04','Commerce · 중국산 마그카본 벽돌 CVD 제3차 일몰 최종결과');
@@ -21,13 +23,16 @@ const rescission = fr('2026-16051','2026-08-06','Commerce · 중국산 마그카
 const acetone = fr('2026-11549','2026-06-09','Commerce · 한국산 아세톤 2024~2025 최종결과');
 const ktc = source('한국 무역위원회 · 진행 중 반덤핑 조사 목록','https://www.ktc.go.kr/proInvestList.do');
 export const INDUSTRIAL_CASES = [
+  {id:'cn-jp-mek-terminated', product:'methyl-ethyl-ketone', import_country:'CHN', origin:'JPN', duty:'AD', case_id:'MOFCOM 2019 제51호', stage:'measure_terminated', procedure_label:'해당 중국 수입 AD 조치 종료 공고 확인', date:'2019-11-21', source:chinaMEKTermination, related_sources:[], rate_pct:null,
+    steps:[['일몰재심·기존 조치 종료 공고','confirmed','2019-11-20'],['해당 AD 징수 중단','confirmed','2019-11-21'],['이후 신규 조치 전수 확인','unknown',null]],
+    note:'중국이 일본·대만산 MEK에 부과하던 조치가 종료된 사건입니다. 공고는 2019-11-21부터 해당 AD를 징수하지 않는다고 명시합니다. 이 행은 일본산→중국 수입에 한정합니다. 중국산→한국/미국 사건이 아니며 현재 모든 관세가 0%이거나 규제가 없다는 뜻이 아닙니다.'},
   {id:'us-mx-mcb-ad', product:'magnesia-carbon-bricks', import_country:'USA', origin:'MEX', duty:'AD', case_id:'A-201-837', stage:'commerce_sunset_final', procedure_label:'상무부 제3차 일몰재심 최종결과 공표', date:'2026-11-04', source:brickAD, related_sources:[continuation], rate_pct:null,
     steps:[['상무부 일몰 최종결과','confirmed','2026-11-04'],['동일 차수 ITC 결과','unknown',null],['동일 차수 명령 유지·철회','unknown',null]],
     note:'2021년 명령 유지 공고와 2026년 상무부 일몰 결과를 확인했습니다. 일몰 재발 가능성 마진은 현행 예치율이 아닙니다. 멕시코산 AD 사건이며 중국산 CVD를 합산하지 않습니다. 한국 본사·선적국으로 제품 원산지를 확정하지 않습니다.'},
-  {id:'in-cn-mek-historical', product:'methyl-ethyl-ketone', import_country:'IND', origin:'CHN', duty:'AD', case_id:'14/26/2016-DGAD', stage:'historical_recommendation', procedure_label:'과거 인도 최종 권고 확인 · 현행 부과 미확인', date:'2018-02-01', source:mek, related_sources:[], rate_pct:null,
+  {id:'in-cn-mek-historical', product:'methyl-ethyl-ketone', import_country:'IND', origin:'CHN', duty:'AD', case_id:'14/26/2016-DGAD', stage:'historical_measure_termination_reported', procedure_label:'과거 인도 조치 종료 · WTO 공식 보고 확인', date:'2021-04-23', date_kind:'termination_reported', source:mekTermination, related_sources:[mek], termination_date:'2021-04-23', recommendation_date:'2018-02-01', rate_pct:null,
     reported_values:[{kind:'historical_reference_price_recommendation',amount:1147.06,unit:'USD/MT',entity:'중국산 · 표의 원산지/수출국 조건 대조 필요'}],
-    steps:[['최종 권고 공표','confirmed','2018-02-01'],['현행 부과·연장·종료','unknown',null]],
-    note:'표의 1,147.06 USD/MT는 권고 기준가격입니다. 관세 정액이나 %가 아니며, 해당 landed value가 기준보다 낮을 때 차액을 부과하도록 3년을 권고했습니다. 세관 부과 공고·후속 연장 및 현재 유효성은 미확인입니다. 인도 수입 사건으로 한국·미국 계산에 이식하지 않습니다. MEK와 MIBK는 다른 물질입니다.'},
+    steps:[['최종 권고 공표','confirmed','2018-02-01'],['부과·종료의 WTO 공식 보고','confirmed','2021-04-23'],['종료 후 신규 조치 전수 확인','unknown',null]],
+    note:'표의 1,147.06 USD/MT는 권고 기준가격입니다. 관세 정액이나 %가 아니며, 해당 landed value가 기준보다 낮을 때 차액을 부과하도록 3년을 권고했습니다. WTO 보고서는 인도 정부 대표부의 통보를 근거로 2018-04-24 확정 부과와 2021-04-23 종료를 기록합니다. 인도 국내 부과·종료 원문과 종료 후 모든 신규 조치까지 확인한 것은 아닙니다. 이 과거 기준가격을 현행 세율로 사용하지 않습니다. 인도 수입 사건으로 한국·미국 계산에 이식하지 않습니다. MEK와 MIBK는 다른 물질입니다.'},
   {id:'in-cn-dmf-historical', product:'dimethylformamide', import_country:'IND', origin:'CHN', duty:'AD', case_id:'6/37/2019-DGTR', stage:'historical_recommendation', procedure_label:'과거 인도 최종 권고 확인 · 현행 부과 미확인', date:'2021-01-11', source:dmf, related_sources:[], rate_pct:null,
     reported_values:[{kind:'historical_specific_duty_recommendation',amount:377.21,unit:'USD/MT',entity:'Liaocheng Luxi Methylamine Chemical Co., Ltd. · 중국산/중국 수출 행'}, {kind:'historical_specific_duty_recommendation',amount:405.75,unit:'USD/MT',entity:'위 생산자 외 · 중국산/중국 수출 행'}],
     steps:[['최종 권고 공표','confirmed','2021-01-11'],['현행 부과·연장·종료','unknown',null]],
@@ -50,8 +55,8 @@ export function industrialCases(product, origin=null, importCountry=null) {
 }
 export function industrialUSVerification(product,origin) {
   const p=INDUSTRIAL_PRODUCTS.find(p=>p.id===product); if(!p)return null;
-  const records=industrialCases(product,origin,'USA');
-  return {checked_on:INDUSTRIAL_CHECKED_ON,ad:{country:origin,import_country:'USA',status:records.length?'industrial_us_case_reviewed':'industrial_case_not_reviewed',label:records.length?'미국 수입 공식 사건 확인 · 기업별 적용 미확정':'기업 취급 제품 확인 · 미국 해당 원산지 사건 미확인',rate_pct:null,case_ids:records.map(r=>r.case_id),sources:[p.source,...records.flatMap(r=>[r.source,...r.related_sources])],note:records.length?records.map(r=>r.note).join(' '):'기업 제품 자료만 확인했습니다. 미국의 해당 원산지 AD/CVD 사건 조사·최신 적용은 미완료이며 정부 판정 대기·면제·0%를 뜻하지 않습니다.',records}};
+  const records=industrialCases(product,origin,'USA'), research=industrialResearchStatus(product,origin,'USA');
+  return {checked_on:INDUSTRIAL_CHECKED_ON,ad:{country:origin,import_country:'USA',status:records.length?'industrial_us_case_reviewed':research.state==='bounded_search_no_confirmed_case'?'industrial_bounded_search':'industrial_case_not_reviewed',label:records.length?'미국 수입 공식 사건 확인 · 기업별 적용 미확정':research.label,rate_pct:null,case_ids:records.map(r=>r.case_id),sources:[p.source,...research.sources,...records.flatMap(r=>[r.source,...r.related_sources])],note:research.note,research_status:research,records}};
 }
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const country=c=>({USA:'미국',KOR:'한국',CHN:'중국',JPN:'일본',VNM:'베트남',MEX:'멕시코',IND:'인도'})[c]||c;
@@ -59,8 +64,8 @@ const link=s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"
 export function industrialEvidenceMarkup(product,origin=null,{originControls=true}={}) {
   const p=INDUSTRIAL_PRODUCTS.find(p=>p.id===product); if(!p)return '';
   const records=industrialCases(product),matched=records.filter(r=>r.origin===origin);
-  return `<section class="ts-ad-notices" data-industrial-evidence><h2>수입국별 관련 사건</h2><p class="ts-help">기업의 취급·생산 품목과 실제 반덤핑 적용은 별개입니다. 현재 원산지 ${esc(country(origin)||'미선택')} · 자료 확인 ${INDUSTRIAL_CHECKED_ON}. 수입국별 조사·부과 절차를 합치지 않습니다. 과거 권고와 현행 부과를 구분합니다.</p>${link(p.source)}
-    ${records.length?records.map(r=>{const same=r.origin===origin;return `<article data-industrial-case="${r.id}" data-import-country="${r.import_country}"><h3>${country(r.origin)}산 → ${country(r.import_country)} 수입 · ${r.duty}</h3><p><b>${esc(r.case_id)} · ${esc(r.procedure_label)}</b></p>${same?'':`<p class="ts-unverified">현재 선택 원산지와 다름 · 관련 사건 참고만</p>${originControls?`<button type="button" data-ad-related-origin="${r.origin}">${country(r.origin)}산 자료 선택</button>`:`<small>위 제품 원산지 입력에서 ${country(r.origin)}을 선택하면 일치 여부를 확인할 수 있습니다.</small>`}`}<p class="ts-help">${esc(r.note)}</p>${r.reported_values?.length?`<ul data-historical-recommendation>${r.reported_values.map(v=>`<li>${esc(v.entity)} · ${v.amount.toLocaleString('en-US',{minimumFractionDigits:2})} ${esc(v.unit)} · 과거 ${v.kind.includes('reference_price')?'기준가격 권고':'종량세 권고'} / 현행 미확인</li>`).join('')}</ul>`:''}${r.por_start?`<small>POR ${r.por_start} ~ ${r.por_end}</small>`:''}${same?`<div class="ts-ad-stages" aria-label="${country(r.import_country)} 사건 확인 단계">${r.steps.map(([label,state,date])=>`<p data-evidence-stage="${state}">${state==='confirmed'?'●':'○'} ${esc(label)} · ${date||'근거 미확인'}</p>`).join('')}</div>`:''}<p>${link(r.source)}${r.related_sources.map(s=>' · '+link(s)).join('')}</p><small>기업별 적용 미확인 · 자동 세율·단계 계산 미반영</small></article>`;}).join(''):'<p class="ts-unverified">제품 취급 확인 · 해당 제품의 공식 반덤핑 사건 조사 미완료. 판정 대기나 0%가 아닙니다.</p>'}
+  return `<section class="ts-ad-notices" data-industrial-evidence><h2>수입국별 관련 사건</h2><p class="ts-help">기업의 취급·생산 품목과 실제 반덤핑 적용은 별개입니다. 현재 원산지 ${esc(country(origin)||'미선택')} · 자료 확인 ${INDUSTRIAL_CHECKED_ON}. 수입국별 조사·부과 절차를 합치지 않습니다. 과거 권고와 현행 부과를 구분합니다.</p>${link(p.source)}${researchStatusMarkup(product,origin)}
+    ${records.length?records.map(r=>{const same=r.origin===origin;return `<article data-industrial-case="${r.id}" data-import-country="${r.import_country}"><h3>${country(r.origin)}산 → ${country(r.import_country)} 수입 · ${r.duty}</h3><p><b>${esc(r.case_id)} · ${esc(r.procedure_label)}</b></p>${same?'':`<p class="ts-unverified">현재 선택 원산지와 다름 · 관련 사건 참고만</p>${originControls?`<button type="button" data-ad-related-origin="${r.origin}">${country(r.origin)}산 자료 선택</button>`:`<small>위 제품 원산지 입력에서 ${country(r.origin)}을 선택하면 일치 여부를 확인할 수 있습니다.</small>`}`}<p class="ts-help">${esc(r.note)}</p>${r.reported_values?.length?`<ul data-historical-recommendation>${r.reported_values.map(v=>`<li>${esc(v.entity)} · ${v.amount.toLocaleString('en-US',{minimumFractionDigits:2})} ${esc(v.unit)} · 과거 ${v.kind.includes('reference_price')?'기준가격 권고':'종량세 권고'} / ${r.stage==='historical_measure_termination_reported'?'기존 조치 종료 보고':'현행 부과 미확인'}</li>`).join('')}</ul>`:''}${r.por_start?`<small>POR ${r.por_start} ~ ${r.por_end}</small>`:''}${same?`<div class="ts-ad-stages" aria-label="${country(r.import_country)} 사건 확인 단계">${r.steps.map(([label,state,date])=>`<p data-evidence-stage="${state}">${state==='confirmed'?'●':'○'} ${esc(label)} · ${date||'근거 미확인'}</p>`).join('')}</div>`:''}<p>${link(r.source)}${r.related_sources.map(s=>' · '+link(s)).join('')}</p><small>기업별 적용 미확인 · 자동 세율·단계 계산 미반영</small></article>`;}).join(''):'<p class="ts-unverified">제품 취급 확인 · 해당 제품의 공식 반덤핑 사건 조사 미완료. 판정 대기나 0%가 아닙니다.</p>'}
     ${importRequirementsMarkup(product,origin)}${records.length&&!matched.length?'<p class="ts-help">현재 선택 원산지에 일치하는 확인 사건 없음 · 다른 원산지의 세율을 적용하지 않습니다.</p>':''}</section>`;
 }
 
@@ -68,6 +73,7 @@ export function industrialEvidenceMarkup(product,origin=null,{originControls=tru
 export function industrialImportRequirements(product,origin) {
   if(!INDUSTRIAL_PRODUCTS.some(p=>p.id===product)) return [];
   const rows=[];
+  if(product==='methyl-ethyl-ketone') rows.push({id:'kr-mek-precursor',import_country:'KOR',kind:'chemical_precursor_controls',origin_specific:false,status:'official_list_checked_transaction_requirements_unverified',label:'한국 · MEK 원료물질 2군 목록 확인',note:'관세청 자료에 MEK가 원료물질 2군으로 기재되어 있습니다. AD와 별개의 기록·거래 관리 요건 확인 대상입니다. 1군 수출입승인 규정을 2군에 그대로 적용하지 않습니다. 혼합물·거래별 예외·신고 요건은 추가 확인이 필요하며 수입금지로 판정하지 않습니다.',source:source('관세청 · 원료물질 및 최대거래량 / 시행령 별표8 안내','https://customs.go.kr/cclss/cm/cntnts/cntntsView.do?cntntsId=964&mi=3253')});
   if(origin==='CHN') rows.push({id:'us-section301-check',import_country:'USA',kind:'additional_tariff_scope_check',origin_specific:true,status:'framework_checked_hts_exclusions_unverified',label:'미국 · Section 301 품목·제외조건 대조',note:'중국산 적용 목록과 제외 절차가 별도로 있습니다. 정확한 HTS·통관일·유효한 제외를 확인해야 합니다. 이 제품의 적용 여부와 현행 추가세율은 미확인이며 AD/CVD와 자동 합산하지 않습니다.',source:source('USTR · China Section 301 Tariff Actions and Exclusion Process','https://ustr.gov/issue-areas/enforcement/section-301-investigations/tariff-actions')});
   if(origin==='CHN') rows.push({id:'us-uflpa',import_country:'USA',kind:'conditional_import_prohibition',origin_specific:true,status:'legal_basis_checked_shipment_unverified',label:'미국 · UFLPA 공급망 확인',note:'신장 지역에서 전부·일부 생산되거나 법률상 지정 목록의 기업이 생산한 물품은 수입금지 추정 대상입니다. 모든 중국산의 일괄 금지가 아닙니다. 실제 공급망·현행 지정 목록 대조는 미완료이며 조선내화·후성의 위반을 확인한 것이 아닙니다.',source:source('Public Law 117-78 §3 · 수입금지 추정과 예외','https://www.govinfo.gov/content/pkg/PLAW-117publ78/html/PLAW-117publ78.htm')});
   if(INDUSTRIAL_PRODUCTS.find(p=>p.id===product).family==='chemicals') rows.push({id:'us-tsca',import_country:'USA',kind:'chemical_import_compliance',origin_specific:false,status:'framework_checked_substance_conditions_unverified',label:'미국 · TSCA 화학물질 수입 요건',note:'중국 전용 관세가 아닙니다. 적용 대상 화학물질은 TSCA 적합성 인증과 해당 물질의 목록·신규용도·개별 규칙 등을 확인해야 합니다. CAS·조성·용도·거래별 적합성 검증은 미완료입니다.',source:source('EPA · TSCA Requirements for Importing Chemicals','https://www.epa.gov/tsca-import-export-requirements/tsca-requirements-importing-chemicals')});
@@ -76,4 +82,29 @@ export function industrialImportRequirements(product,origin) {
 function importRequirementsMarkup(product,origin) {
  const rows=industrialImportRequirements(product,origin);
  return rows.length?`<details data-industrial-import-requirements><summary>관련 수입 규제 · 거래별 적용 확인</summary>${rows.map(r=>`<article><h3>${esc(r.label)}</h3><p class="ts-help">${esc(r.note)}</p>${link(r.source)}<small> · 법적 틀 확인 / 실제 거래 적용 미확인 · 세율 계산 제외</small></article>`).join('')}</details>`:'';
+}
+
+
+// A bounded search miss is a research result, never a legal exemption.
+export function industrialResearchStatus(product,origin,importCountry) {
+  const records=origin?industrialCases(product,origin,importCountry):[];
+  let state='not_researched', label='사건 조사 미완료', note='이 품목·원산지·수입국 조합의 공식 사건 조사 기록이 충분하지 않습니다. 규제 없음·0%·판정 대기로 판단하지 않습니다.';
+  let sources=records.flatMap(r=>[r.source,...r.related_sources]);
+  if(records.length) {
+    if(records.every(r=>r.stage==='measure_terminated')) {state='specific_measure_terminated';label='해당 조치 종료 공고 확인';}
+    else if(records.every(r=>r.stage==='historical_measure_termination_reported')) {state='specific_measure_termination_reported';label='과거 조치 종료 · WTO 공식 보고 확인';}
+    else if(records.every(r=>r.stage==='historical_recommendation')) {state='historical_recommendation_only';label='과거 권고 확인 · 현행 부과 미확인';}
+    else if(records.every(r=>r.stage==='investigation_in_progress')) {state='official_investigation_identified';label='공식 조사 개시 확인 · 부과 미확인';}
+    else {state='official_case_identified';label='공식 사건 확인 · 기업별 현행 세율 미확인';}
+    note=records.map(r=>r.note).join(' ');
+  } else if(origin==='CHN'&&['methyl-ethyl-ketone','dimethylformamide'].includes(product)&&['USA','KOR'].includes(importCountry)) {
+    state='bounded_search_no_confirmed_case';label='제한 조사 · 대응 AD/CVD 미발견';
+    note=importCountry==='USA'?'공식 도메인의 품명 검색과 공개 페이지를 확인했으나 해당 중국산 사건을 확인하지 못했습니다. ACCESS 검색 결과가 오류로 완전히 확보되지 않아 현행 전체 명령 목록 대조는 미완료입니다. 규제 없음·면제·0%·정부 판정 대기를 뜻하지 않습니다.':'KTC·국가법령정보센터·관세청 공식 도메인의 품명 검색과 KTC 진행 목록 첫 페이지를 확인했습니다. 전체 조사·부과 목록 및 상세 제품 범위 대조는 미완료입니다. 대응 사건 미발견은 규제 없음·면제·0%·정부 판정 대기를 뜻하지 않습니다.';
+    sources=[source(importCountry==='USA'?'Commerce · AD/CVD 공식 검색 (결과 확보 미완료)':'KTC · 진행 중 조사 목록 (첫 페이지 확인)',importCountry==='USA'?'https://access.trade.gov/adcvd':'https://www.ktc.go.kr/proInvestList.do')];
+  }
+  return {state,label,note,checked_on:state==='not_researched'?null:INDUSTRIAL_CHECKED_ON,absence_confirmed:false,rate_pct:null,calculation_ready:false,sources};
+}
+function researchStatusMarkup(product,origin) {
+ const markets=[...new Set(['USA','KOR',...industrialCases(product,origin).map(r=>r.import_country)])];
+ return `<details data-industrial-research-status><summary>수입국별 확인 상태 · 미조사와 종료 구분</summary><p class="ts-help">선택 원산지 ${esc(country(origin)||'미선택')}. 해당 조치의 종료는 다른 규제·신규 조치까지 없다는 뜻이 아닙니다.</p><table><thead><tr><th>수입국</th><th>확인 상태</th><th>검토 범위·남은 자료</th></tr></thead><tbody>${markets.map(m=>{const r=industrialResearchStatus(product,origin,m);return `<tr data-research-state="${r.state}"><td>${country(m)}</td><td>${esc(r.label)}</td><td><small>${esc(r.note)} ${r.sources.map(link).join(' · ')}</small></td></tr>`;}).join('')}</tbody></table></details>`;
 }
