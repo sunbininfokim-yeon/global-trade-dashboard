@@ -78,6 +78,12 @@ const LABELS = {
     metro_councils_by_party: '광역의회 정당별', local_councils_by_party: '기초의회 정당별', by_group: '교섭단체별',
     by_uf: '주별', districts: '선거구', women_caucus: '여성 의원단', independents: '무소속', majority_party: '다수당',
     state_ministers: '국무장관', vice_premier: '부총리', ruler_of_abu_dhabi: '아부다비 통치자', became_ruler_of_dubai: '두바이 통치자 즉위',
+    chairman: '의장', presidential_council: '대통령평의회', high_council_of_state: '최고국가평의회',
+    government_of_national_unity: '통합정부(GNU)', tripoli: '트리폴리', command: '군 지휘', speaker_elected: '선출 의장',
+    sanaa_saba: '사나 측(사바통신)', revolution_leader: '혁명 지도자', spc_president: '최고정치위원회 의장',
+    presidency_secretary_general: '대통령실 사무총장', defence_minister: '국방장관', defense_minister: '국방장관',
+    local_titles_opened: '지방 직함', deputy_named_on_2026_10_13: '부의장(2026-10-13 지명)', in_sabha: '세바 회의',
+    titles_on_2026_11_01: '2026-11-01 직함',
     source_url: '출처', url: '출처', note: '비고', note_ko: '비고', since: '취임', appointed: '임명', elected: '선출',
     term: '임기', term_ko: '임기', party: '정당', caucus: '교섭단체', faction: '계파', district: '지역구',
     region: '지역', province: '주', prefecture: '도도부현', role: '직함', title: '직함', office: '직책', office_ko: '직책',
@@ -316,6 +322,7 @@ export const personnelCategories = (data) => {
 // 박스로 옮기지 못한 세부 값(근거 메모·날짜 표기 등)은 블록 끝 '세부 자료'에 남긴다 --
 // 원본에 있는 것을 화면이 조용히 버리지 않게.
 const HEADLINE = 7;
+const ROLE_KEYS = new Set(['chairman', 'chair', 'prime_minister', 'president', 'commander', 'speaker', 'leader', 'governor', 'emir', 'king', 'secretary_general', 'premier']);
 const LIST_WORDS = new Set(['people', 'members', 'named', 'list', 'listed_members', 'names', 'roster', 'rows']);
 
 const HANGUL = /[\uac00-\ud7a3]/;
@@ -376,6 +383,11 @@ const collectTiers = (key, value, title, tiers, depth = 0) => {
     if (isPerson(value)) own.people.push([value, label(key)]);
     tiers.push(own);
     Object.entries(value).forEach(([k, v]) => {
+        // {"chairman": "محمد تكالة"} 처럼 직함 키에 이름 문자열만 있는 줄도 사람이다.
+        if (typeof v === 'string' && ROLE_KEYS.has(k) && !/^https?:/.test(v)) {
+            own.people.push([{ name: v, role_ko: label(k), source_url: value.url || value.source_url }, label(k)]);
+            return;
+        }
         if (!v || typeof v !== 'object' || HIDDEN_KEYS.has(k)) return;
         if (isPerson(v) && !Array.isArray(v)) {
             own.people.push([v, label(k)]);
@@ -400,9 +412,9 @@ const tierBody = (tier) => {
     });
 };
 
-export const personnelPartHtml = (data, categories) => {
+export const personnelPartHtml = (data, categories, excludeKeys = new Set()) => {
     const byCategory = personnelCategories(data);
-    const entries = categories.flatMap((cat) => byCategory.get(cat) || []);
+    const entries = categories.flatMap((cat) => byCategory.get(cat) || []).filter(([k]) => !excludeKeys.has(k));
     if (!entries.length) return '';
     const tiers = [];
     entries.forEach(([k, v]) => collectTiers(k, v, label(k, true), tiers));
@@ -414,6 +426,20 @@ export const personnelPartHtml = (data, categories) => {
         <details class="elections-disclosure"><summary>세부 자료·근거</summary>${detail}</details>
         ${notesBlock(data)}
     </div>`;
+};
+
+// 분할 권력 화면(리비아·예멘)용: 지정한 맨 위 키들만 단으로 편다. 번호는 start 부터.
+export const personnelKeyTiers = (data, keys) => {
+    const tiers = [];
+    keys.filter((k) => data?.[k]).forEach((k) => {
+        const top = label(k, true);
+        const before = tiers.length;
+        collectTiers(k, data[k], top, tiers);
+        // 쪽 제목이 이미 그 묶음을 말하므로 단 제목에서 맨 위 이름은 뗀다.
+        if (keys.length === 1) tiers.slice(before).forEach((t) => { t.title = t.title === top ? top : t.title.replace(`${top} · `, ''); });
+    });
+    return tiers.filter((t) => t.seats?.length || t.counts || t.people?.length)
+        .map((t) => ({ title: t.title, count: t.people?.length || 0, html: tierBody(t) }));
 };
 
 export const OFFICE_LABELS = Object.fromEntries(CATEGORIES);

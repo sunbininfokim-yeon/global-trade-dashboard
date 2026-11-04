@@ -28,3 +28,20 @@ class PersonnelPublicTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PersonnelBoardCountriesTest(unittest.TestCase):
+    ROSTER_ONLY = ["ARM", "AZE", "EGY", "ESP", "GEO", "GRC", "IRQ", "KWT", "LBN", "LBY", "MAR", "PAN", "QAT", "YEM"]
+
+    def test_roster_countries_are_published_on_the_board(self):
+        result = subprocess.run([sys.executable, str(HERE / "upsert_board_countries.py"), "--check", *self.ROSTER_ONLY],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_divided_countries_name_their_sides(self):
+        import json
+        for iso in ("LBY", "YEM"):
+            profile = json.loads((HERE / "config" / "profiles" / f"{iso.lower()}.json").read_text(encoding="utf-8"))
+            self.assertEqual(profile["mode"], "divided_authority")
+            self.assertGreaterEqual(len(profile["authorities"]), 2)
+            self.assertNotIn("head", profile, "a divided country has no single head on the board")

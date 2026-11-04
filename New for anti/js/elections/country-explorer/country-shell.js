@@ -6,6 +6,7 @@ import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections } from './special/china.js';
 import { cnMapLegendHtml } from './special/chn-leaders.js';
 import { personnelCategories, personnelPartHtml, OFFICE_LABELS } from './special/personnel-roster.js';
+import { isDivided, dividedAuthorityHtml, dividedAuthorityKeys, dividedOverviewCards } from './special/divided-authority.js';
 import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';
 import { jpnSections } from './special/jpn.js';
 import { jpnExecutive } from './special/jpn-executive.js';
@@ -53,11 +54,15 @@ const personnelCatsFor = (country, section) => {
     return [...personnelCategories(country.personnel).keys()].filter((cat) => personnelSectionOf(cat, keys) === section);
 };
 const personnelPart = (country, section) => {
+    if (isDivided(country) && section === 'power_structure') return '';
     const cats = personnelCatsFor(country, section);
-    return cats.length ? personnelPartHtml(country.personnel, cats) : '';
+    return cats.length ? personnelPartHtml(country.personnel, cats, isDivided(country) ? dividedAuthorityKeys(country) : undefined) : '';
 };
 
+// 권력이 갈린 나라: 중국처럼 '권력 구조'를 맨 앞에 두고 대통령실·총리실 블록은 만들지 않는다.
+const DIVIDED_SECTIONS = [['권력 구조', 'power_structure'], ['의회', 'legislature'], ['일정', 'calendar']];
 const sectionsFor = (country) => {
+    if (isDivided(country)) return DIVIDED_SECTIONS;
     const base = baseSectionsFor(country.iso3);
     if (!country.personnel) return base;
     const keys = new Set(base.map(([, key]) => key));
@@ -144,7 +149,13 @@ const legislatureContent = (country) => {
     `;
 };
 
-const overview = (country) => `
+const overview = (country) => (isDivided(country) ? `
+    <div class="elections-card-grid">
+        ${dividedOverviewCards(country).map(([label, value]) => `<article class="elections-card"><div class="elections-card-label">${escapeHtml(label)}</div><div class="elections-card-value">${escapeHtml(value)}</div></article>`).join('')}
+        <article class="elections-card"><div class="elections-card-label">지도 표시</div><div class="elections-card-value">분쟁국 X</div></article>
+    </div>` : baseOverview(country));
+
+const baseOverview = (country) => `
     <div class="elections-card-grid">
         <article class="elections-card"><div class="elections-card-label">국가 수반</div><div class="elections-card-value">${escapeHtml(country.head?.name_ko || country.head?.name_en || '불명')}</div></article>
         <article class="elections-card"><div class="elections-card-label">집권 축</div><div class="elections-card-value">${escapeHtml(partyName(country.ruling_party))}</div></article>
@@ -172,6 +183,7 @@ const sourceObject = (country, section) => {
 // country's own module rather than through the shared flattener.
 const specialContent = (country, section) => {
     if (country.iso3 === 'ISR' && section === 'election_analysis') return israelAnalysisPlaceholder();
+    if (section === 'power_structure' && isDivided(country)) return dividedAuthorityHtml(country);
     if (section === 'race_progress') return raceProgressContent(country);
     if (section.startsWith('office_') || section === 'local_gov') return personnelPart(country, section) || null;
     if (country.iso3 === 'CHN' && section === 'party') return chnParty(country);

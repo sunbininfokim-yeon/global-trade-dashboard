@@ -370,6 +370,9 @@ def build_board(
         # Tier-3 / non-electoral briefs: power card + optional emirates list
         if profile.get("power"):
             row["power"] = profile["power"]
+        # 권력이 둘 이상으로 갈린 나라(리비아·예멘): 각 쪽의 이름과 인사 명단 키.
+        if profile.get("authorities"):
+            row["authorities"] = profile["authorities"]
         if profile.get("emirates"):
             row["emirates"] = profile["emirates"]
         if profile.get("document_ingest"):
