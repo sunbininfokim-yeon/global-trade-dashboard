@@ -1,7 +1,7 @@
 {
   "schema_version": "qra-engine-v1",
   "engine_version": "0.3.0",
-  "generated_at": "2026-11-03T01:40:53Z",
+  "generated_at": "2026-11-04T00:02:18Z",
   "from_year": 2020,
   "source": {
     "kind": "treasury_archives_plus_pdf_tables",
@@ -13,13 +13,13 @@
     "fiscaldata": true
   },
   "stats": {
-    "docs_discovered": 54,
-    "docs_downloaded": 54,
-    "events": 27,
+    "docs_discovered": 55,
+    "docs_downloaded": 55,
+    "events": 28,
     "parse_failures": 0,
-    "parse_ok_estimates": 27,
+    "parse_ok_estimates": 28,
     "parse_ok_policy": 27,
-    "parse_ok_sources_uses": 24,
+    "parse_ok_sources_uses": 25,
     "parse_ok_tbac": 1
   },
   "parse_failures_sample": [],
@@ -29,9 +29,14 @@
     "tga": {
       "source": "fiscaldata.dts.operating_cash_balance",
       "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/operating-cash-balance",
-      "asof": "2026-10-30",
-      "latest_bn": 951.593,
+      "asof": "2026-11-02",
+      "latest_bn": 930.757,
       "series": [
+        {
+          "date": "2026-11-02",
+          "tga_mn": 930757.0,
+          "tga_bn": 930.757
+        },
         {
           "date": "2026-10-30",
           "tga_mn": 951593.0,
@@ -326,14 +331,9 @@
           "date": "2026-08-07",
           "tga_mn": 954113.0,
           "tga_bn": 954.113
-        },
-        {
-          "date": "2026-08-06",
-          "tga_mn": 961726.0,
-          "tga_bn": 961.726
         }
       ],
-      "fetched_at": "2026-11-03T01:40:50Z"
+      "fetched_at": "2026-11-04T00:02:15Z"
     },
     "customs": {
       "source": "fiscaldata.mts.mts_table_3.Customs Duties",
@@ -486,33 +486,33 @@
           "fytd_usd": 7297256976.25
         }
       ],
-      "fetched_at": "2026-11-03T01:40:50Z",
+      "fetched_at": "2026-11-04T00:02:15Z",
       "note_ko": "음수 월 = 관세 환급이 수입을 상회(순유출)."
     },
     "debt_transactions": {
       "source": "fiscaldata.dts.public_debt_transactions",
       "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/public-debt-transactions",
-      "asof": "2026-10-30",
-      "latest_bn": 25.989,
+      "asof": "2026-11-02",
+      "latest_bn": -17.417,
       "components": [
         {
           "id": "bills",
           "label_ko": "T-Bills",
           "kind": "bill",
-          "issues_mn": -11.0,
+          "issues_mn": -12.0,
           "redemptions_mn": 0.0,
-          "net_mn": -11.0,
-          "value": -0.011,
+          "net_mn": -12.0,
+          "value": -0.012,
           "unit": "bn_usd"
         },
         {
           "id": "notes",
           "label_ko": "Notes",
           "kind": "coupon",
-          "issues_mn": 26000.0,
-          "redemptions_mn": 0.0,
-          "net_mn": 26000.0,
-          "value": 26.0,
+          "issues_mn": 236667.0,
+          "redemptions_mn": 254072.0,
+          "net_mn": -17405.0,
+          "value": -17.405,
           "unit": "bn_usd"
         },
         {
@@ -530,16 +530,16 @@
         {
           "kind": "bill",
           "label_ko": "T-Bills",
-          "issues_bn": -0.011,
+          "issues_bn": -0.012,
           "redemptions_bn": 0.0,
-          "net_bn": -0.011
+          "net_bn": -0.012
         },
         {
           "kind": "coupon",
           "label_ko": "Notes",
-          "issues_bn": 26.0,
-          "redemptions_bn": 0.0,
-          "net_bn": 26.0
+          "issues_bn": 236.667,
+          "redemptions_bn": 254.072,
+          "net_bn": -17.405
         },
         {
           "kind": "coupon",
@@ -550,29 +550,29 @@
         }
       ],
       "note_ko": "당일 시중성(Marketable) 발행−상환 순증($B). Bills=무이표, Notes/Bonds=이표.",
-      "fetched_at": "2026-11-03T01:40:51Z"
+      "fetched_at": "2026-11-04T00:02:16Z"
     },
     "debt_outstanding": {
       "source": "fiscaldata.od.debt_to_penny",
-      "asof": "2026-10-29",
-      "latest_tn": 40.594,
-      "public_tn": 32.712,
-      "intragov_tn": 7.881,
+      "asof": "2026-11-02",
+      "latest_tn": 40.502,
+      "public_tn": 32.72,
+      "intragov_tn": 7.782,
       "components": [
         {
           "id": "public",
           "label_ko": "시중 보유",
-          "value": 32.712,
+          "value": 32.72,
           "unit": "tn_usd"
         },
         {
           "id": "intragov",
           "label_ko": "정부내 보유",
-          "value": 7.881,
+          "value": 7.782,
           "unit": "tn_usd"
         }
       ],
-      "fetched_at": "2026-11-03T01:40:52Z"
+      "fetched_at": "2026-11-04T00:02:17Z"
     },
     "mts": {
       "source": "fiscaldata.mts.mts_table_2",
@@ -843,24 +843,20 @@
         }
       ],
       "note_ko": "월간 On-Budget. 적자는 음수. Fiscal Data MTS Table 2.",
-      "fetched_at": "2026-11-03T01:40:53Z"
+      "fetched_at": "2026-11-04T00:02:18Z"
     }
   },
   "tga_vs_qra": {
-    "tga_actual_bn": 951.593,
+    "tga_actual_bn": 930.757,
     "qra_end_cash_bn": 950.0,
-    "gap_bn": 1.593,
-    "tga_asof": "2026-10-30"
+    "gap_bn": -19.243,
+    "tga_asof": "2026-11-02"
   },
   "latest": {
-    "id": "2026-Q3",
-    "summary_ko": "August 3, 2026 발표. 당기 July–September 2026 순발행 739B, 기말현금 950B. 다음 분기 October–December 2026 예상 순발행 628B, 기말현금 850B. T-bill 스탠스=maintain · 쿠폰 스탠스=change_bias",
+    "id": "2026-Q4",
+    "summary_ko": "November 2, 2026 발표. 당기 October–December 2026 순발행 618B, 기말현금 850B. 다음 분기 January–March 2027 예상 순발행 800B, 기말현금 1000B.",
     "flags": [
-      "net_borrowing_up_vs_prior",
-      "tga_cash_high",
-      "bill_auction_maintain",
-      "coupon_change_bias",
-      "su_marketable_revision_up"
+      "net_borrowing_near_prior"
     ],
     "qra_issuance_components": [
       {
@@ -915,121 +911,97 @@
         {
           "id": "prior_actual",
           "label_ko": "전분기 실적",
-          "period": "April–June 2026",
-          "value": 190.0,
-          "end_cash_bn": 919.0,
+          "period": "July–September 2026",
+          "value": 742.0,
+          "end_cash_bn": 984.0,
           "kind": "actual"
         },
         {
           "id": "prior_forecast",
           "label_ko": "직전 공시 예측",
-          "period": "Jul - Sep 2026",
-          "value": 671.0,
-          "end_cash_bn": 950.0,
-          "announcement_date": "May 4, 2026",
+          "period": "Oct - Dec 2026",
+          "value": 628.0,
+          "end_cash_bn": 850.0,
+          "announcement_date": "August 3, 2026",
           "kind": "estimate"
         },
         {
           "id": "current",
           "label_ko": "당기 공시",
-          "period": "July–September 2026",
-          "value": 739.0,
-          "end_cash_bn": 950.0,
-          "vs_prior_bn": 68.0,
-          "announcement_date": "August 3, 2026",
+          "period": "October–December 2026",
+          "value": 618.0,
+          "end_cash_bn": 850.0,
+          "vs_prior_bn": -10.0,
+          "announcement_date": "November 2, 2026",
           "kind": "estimate"
         },
         {
           "id": "next_estimate",
           "label_ko": "다음 분기 예상",
-          "period": "October–December 2026",
-          "value": 628.0,
-          "end_cash_bn": 850.0,
+          "period": "January–March 2027",
+          "value": 800.0,
+          "end_cash_bn": 1000.0,
           "vs_prior_bn": null,
-          "announcement_date": "August 3, 2026",
+          "announcement_date": "November 2, 2026",
           "kind": "estimate"
         }
       ],
       "table": [
         {
           "label_ko": "전분기 실적",
-          "period": "April–June 2026",
-          "net_borrowing_bn": 190.0,
-          "end_cash_bn": 919.0,
+          "period": "July–September 2026",
+          "net_borrowing_bn": 742.0,
+          "end_cash_bn": 984.0,
           "announcement_date": null
         },
         {
           "label_ko": "직전 공시 예측",
-          "period": "Jul - Sep 2026",
-          "net_borrowing_bn": 671.0,
-          "end_cash_bn": 950.0,
-          "announcement_date": "May 4, 2026"
-        },
-        {
-          "label_ko": "당기 공시",
-          "period": "July–September 2026",
-          "net_borrowing_bn": 739.0,
-          "end_cash_bn": 950.0,
-          "announcement_date": "August 3, 2026"
-        },
-        {
-          "label_ko": "다음 분기 예상",
-          "period": "October–December 2026",
+          "period": "Oct - Dec 2026",
           "net_borrowing_bn": 628.0,
           "end_cash_bn": 850.0,
           "announcement_date": "August 3, 2026"
+        },
+        {
+          "label_ko": "당기 공시",
+          "period": "October–December 2026",
+          "net_borrowing_bn": 618.0,
+          "end_cash_bn": 850.0,
+          "announcement_date": "November 2, 2026"
+        },
+        {
+          "label_ko": "다음 분기 예상",
+          "period": "January–March 2027",
+          "net_borrowing_bn": 800.0,
+          "end_cash_bn": 1000.0,
+          "announcement_date": "November 2, 2026"
         }
       ],
       "note_ko": "같은 발표에서 당기 공시와 다음 분기 예상을 나눴다. 직전 공시 예측은 그 전 발표가 같은 분기에 적어 둔 값이다."
     },
     "estimates_quarters": [
       {
-        "period": "July–September 2026",
-        "kind": "estimate",
-        "net_borrowing_bn": 739.0,
-        "end_cash_balance_bn": 950.0,
-        "vs_prior_bn": 68.0
-      },
-      {
         "period": "October–December 2026",
         "kind": "estimate",
-        "net_borrowing_bn": 628.0,
+        "net_borrowing_bn": 618.0,
         "end_cash_balance_bn": 850.0,
+        "vs_prior_bn": -10.0
+      },
+      {
+        "period": "January–March 2027",
+        "kind": "estimate",
+        "net_borrowing_bn": 800.0,
+        "end_cash_balance_bn": 1000.0,
         "vs_prior_bn": null
       },
       {
-        "period": "April–June 2026",
+        "period": "July–September 2026",
         "kind": "actual",
-        "net_borrowing_bn": 190.0,
-        "end_cash_balance_bn": 919.0,
+        "net_borrowing_bn": 742.0,
+        "end_cash_balance_bn": 984.0,
         "vs_prior_bn": null
       }
     ],
     "sources_uses_latest_estimates": [
-      {
-        "period": "Jul - Sep 2026",
-        "row_kind": "estimate",
-        "announcement_date": "May 4, 2026",
-        "financing_need_bn": 557.0,
-        "marketable_borrowing_bn": 671.0,
-        "all_other_sources_bn": -64.0,
-        "total_sources_bn": 607.0,
-        "change_in_cash_bn": 50.0,
-        "end_cash_balance_bn": 950.0,
-        "soma_redemptions_bn": 0.0
-      },
-      {
-        "period": "Jul - Sep 2026",
-        "row_kind": "estimate",
-        "announcement_date": "August 3, 2026",
-        "financing_need_bn": 633.0,
-        "marketable_borrowing_bn": 739.0,
-        "all_other_sources_bn": -75.0,
-        "total_sources_bn": 664.0,
-        "change_in_cash_bn": 31.0,
-        "end_cash_balance_bn": 950.0,
-        "soma_redemptions_bn": 0.0
-      },
       {
         "period": "Oct - Dec 2026",
         "row_kind": "estimate",
@@ -1040,6 +1012,30 @@
         "total_sources_bn": 546.0,
         "change_in_cash_bn": -100.0,
         "end_cash_balance_bn": 850.0,
+        "soma_redemptions_bn": 0.0
+      },
+      {
+        "period": "Oct - Dec 2026",
+        "row_kind": "estimate",
+        "announcement_date": "November 2, 2026",
+        "financing_need_bn": 666.0,
+        "marketable_borrowing_bn": 618.0,
+        "all_other_sources_bn": -86.0,
+        "total_sources_bn": 532.0,
+        "change_in_cash_bn": -134.0,
+        "end_cash_balance_bn": 850.0,
+        "soma_redemptions_bn": 0.0
+      },
+      {
+        "period": "Jan - Mar 2027",
+        "row_kind": "estimate",
+        "announcement_date": "November 2, 2026",
+        "financing_need_bn": 564.0,
+        "marketable_borrowing_bn": 800.0,
+        "all_other_sources_bn": -86.0,
+        "total_sources_bn": 714.0,
+        "change_in_cash_bn": 150.0,
+        "end_cash_balance_bn": 1000.0,
         "soma_redemptions_bn": 0.0
       }
     ],
@@ -1091,60 +1087,11 @@
       }
     ],
     "urls": {
-      "policy": "https://home.treasury.gov/news/press-releases/sb0590",
-      "estimates": "https://home.treasury.gov/news/press-releases/sb0584",
-      "sources_uses": "https://home.treasury.gov/system/files/136/Sources-Uses-Public-Table-August-2026.pdf"
+      "estimates": "https://home.treasury.gov/news/press-releases/sb0675",
+      "sources_uses": "https://home.treasury.gov/system/files/136/Sources-Uses-Public-Table-November-2026.pdf"
     },
     "tables": {
       "sources_uses_rows": [
-        {
-          "period": "Oct - Dec 2021",
-          "row_kind": "actual",
-          "announcement_date": null,
-          "financing_need_bn": 480.0,
-          "marketable_borrowing_bn": 689.0,
-          "all_other_sources_bn": -18.0,
-          "total_sources_bn": 670.0,
-          "change_in_cash_bn": 191.0,
-          "end_cash_balance_bn": 406.0,
-          "soma_redemptions_bn": 0.0
-        },
-        {
-          "period": "Jan - Mar 2022",
-          "row_kind": "actual",
-          "announcement_date": null,
-          "financing_need_bn": 423.0,
-          "marketable_borrowing_bn": 668.0,
-          "all_other_sources_bn": 1.0,
-          "total_sources_bn": 669.0,
-          "change_in_cash_bn": 245.0,
-          "end_cash_balance_bn": 652.0,
-          "soma_redemptions_bn": 0.0
-        },
-        {
-          "period": "Apr - Jun 2022",
-          "row_kind": "actual",
-          "announcement_date": null,
-          "financing_need_bn": -180.0,
-          "marketable_borrowing_bn": 7.0,
-          "all_other_sources_bn": -55.0,
-          "total_sources_bn": -49.0,
-          "change_in_cash_bn": 131.0,
-          "end_cash_balance_bn": 782.0,
-          "soma_redemptions_bn": -30.0
-        },
-        {
-          "period": "Jul - Sep 2022",
-          "row_kind": "actual",
-          "announcement_date": null,
-          "financing_need_bn": 453.0,
-          "marketable_borrowing_bn": 457.0,
-          "all_other_sources_bn": -151.0,
-          "total_sources_bn": 307.0,
-          "change_in_cash_bn": -146.0,
-          "end_cash_balance_bn": 636.0,
-          "soma_redemptions_bn": -120.0
-        },
         {
           "period": "Oct - Dec 2022",
           "row_kind": "actual",
@@ -1315,18 +1262,6 @@
         },
         {
           "period": "Apr - Jun 2026",
-          "row_kind": "estimate",
-          "announcement_date": "May 4, 2026",
-          "financing_need_bn": 123.0,
-          "marketable_borrowing_bn": 189.0,
-          "all_other_sources_bn": -59.0,
-          "total_sources_bn": 130.0,
-          "change_in_cash_bn": 7.0,
-          "end_cash_balance_bn": 900.0,
-          "soma_redemptions_bn": 0.0
-        },
-        {
-          "period": "Apr - Jun 2026",
           "row_kind": "actual",
           "announcement_date": null,
           "financing_need_bn": 105.0,
@@ -1335,30 +1270,6 @@
           "total_sources_bn": 131.0,
           "change_in_cash_bn": 26.0,
           "end_cash_balance_bn": 919.0,
-          "soma_redemptions_bn": 0.0
-        },
-        {
-          "period": "Apr - Jun 2026",
-          "row_kind": "revisions",
-          "announcement_date": null,
-          "financing_need_bn": -17.0,
-          "marketable_borrowing_bn": 1.0,
-          "all_other_sources_bn": 0.0,
-          "total_sources_bn": 2.0,
-          "change_in_cash_bn": 19.0,
-          "end_cash_balance_bn": 19.0,
-          "soma_redemptions_bn": 0.0
-        },
-        {
-          "period": "Jul - Sep 2026",
-          "row_kind": "estimate",
-          "announcement_date": "May 4, 2026",
-          "financing_need_bn": 557.0,
-          "marketable_borrowing_bn": 671.0,
-          "all_other_sources_bn": -64.0,
-          "total_sources_bn": 607.0,
-          "change_in_cash_bn": 50.0,
-          "end_cash_balance_bn": 950.0,
           "soma_redemptions_bn": 0.0
         },
         {
@@ -1375,14 +1286,26 @@
         },
         {
           "period": "Jul - Sep 2026",
+          "row_kind": "actual",
+          "announcement_date": null,
+          "financing_need_bn": 596.0,
+          "marketable_borrowing_bn": 742.0,
+          "all_other_sources_bn": -82.0,
+          "total_sources_bn": 660.0,
+          "change_in_cash_bn": 65.0,
+          "end_cash_balance_bn": 984.0,
+          "soma_redemptions_bn": 0.0
+        },
+        {
+          "period": "Jul - Sep 2026",
           "row_kind": "revisions",
           "announcement_date": null,
-          "financing_need_bn": 76.0,
-          "marketable_borrowing_bn": 68.0,
-          "all_other_sources_bn": -11.0,
-          "total_sources_bn": 57.0,
-          "change_in_cash_bn": -19.0,
-          "end_cash_balance_bn": 0.0,
+          "financing_need_bn": -37.0,
+          "marketable_borrowing_bn": 4.0,
+          "all_other_sources_bn": -7.0,
+          "total_sources_bn": -3.0,
+          "change_in_cash_bn": 34.0,
+          "end_cash_balance_bn": 34.0,
           "soma_redemptions_bn": 0.0
         },
         {
@@ -1395,6 +1318,42 @@
           "total_sources_bn": 546.0,
           "change_in_cash_bn": -100.0,
           "end_cash_balance_bn": 850.0,
+          "soma_redemptions_bn": 0.0
+        },
+        {
+          "period": "Oct - Dec 2026",
+          "row_kind": "estimate",
+          "announcement_date": "November 2, 2026",
+          "financing_need_bn": 666.0,
+          "marketable_borrowing_bn": 618.0,
+          "all_other_sources_bn": -86.0,
+          "total_sources_bn": 532.0,
+          "change_in_cash_bn": -134.0,
+          "end_cash_balance_bn": 850.0,
+          "soma_redemptions_bn": 0.0
+        },
+        {
+          "period": "Oct - Dec 2026",
+          "row_kind": "revisions",
+          "announcement_date": null,
+          "financing_need_bn": 20.0,
+          "marketable_borrowing_bn": -10.0,
+          "all_other_sources_bn": -5.0,
+          "total_sources_bn": -14.0,
+          "change_in_cash_bn": -34.0,
+          "end_cash_balance_bn": 0.0,
+          "soma_redemptions_bn": 0.0
+        },
+        {
+          "period": "Jan - Mar 2027",
+          "row_kind": "estimate",
+          "announcement_date": "November 2, 2026",
+          "financing_need_bn": 564.0,
+          "marketable_borrowing_bn": 800.0,
+          "all_other_sources_bn": -86.0,
+          "total_sources_bn": 714.0,
+          "change_in_cash_bn": 150.0,
+          "end_cash_balance_bn": 1000.0,
           "soma_redemptions_bn": 0.0
         }
       ],
@@ -1448,12 +1407,6 @@
     }
   },
   "history_net_borrowing": [
-    {
-      "event_id": "2022-Q4",
-      "period": "October–December 2022",
-      "net_borrowing_bn": 550.0,
-      "end_cash_bn": 700.0
-    },
     {
       "event_id": "2023-Q1",
       "period": "January–March 2023",
@@ -1543,9 +1496,1137 @@
       "period": "July–September 2026",
       "net_borrowing_bn": 739.0,
       "end_cash_bn": 950.0
+    },
+    {
+      "event_id": "2026-Q4",
+      "period": "October–December 2026",
+      "net_borrowing_bn": 618.0,
+      "end_cash_bn": 850.0
     }
   ],
   "events": [
+    {
+      "id": "2026-Q4",
+      "year": 2026,
+      "quarter": 4,
+      "urls": {
+        "estimates": "https://home.treasury.gov/news/press-releases/sb0675",
+        "sources_uses": "https://home.treasury.gov/system/files/136/Sources-Uses-Public-Table-November-2026.pdf"
+      },
+      "estimates": {
+        "url": "https://home.treasury.gov/news/press-releases/sb0675",
+        "kind": "financing_estimates",
+        "year": 2026,
+        "quarter": 4,
+        "title": "Treasury Announces Marketable Borrowing Estimates | U.S. Department of the Treasury",
+        "text_chars": 11318,
+        "quarters": [
+          {
+            "period": "October–December 2026",
+            "kind": "estimate",
+            "net_borrowing_bn": 618.0,
+            "end_cash_balance_bn": 850.0,
+            "vs_prior_bn": -10.0
+          },
+          {
+            "period": "January–March 2027",
+            "kind": "estimate",
+            "net_borrowing_bn": 800.0,
+            "end_cash_balance_bn": 1000.0,
+            "vs_prior_bn": null
+          },
+          {
+            "period": "July–September 2026",
+            "kind": "actual",
+            "net_borrowing_bn": 742.0,
+            "end_cash_balance_bn": 984.0,
+            "vs_prior_bn": null
+          }
+        ],
+        "auctions": [],
+        "bill_stance": null,
+        "coupon_stance": null,
+        "stance_snippets": [],
+        "raw_matches": [
+          "During the October–December 2026 quarter, Treasury expects to borrow $618 billion in privately-held net marketable debt, assuming an end-of-December cash balance of $850 billion",
+          "During the January–March 2027 quarter, Treasury expects to borrow $800 billion in privately-held net marketable debt, assuming an end-of-March cash balance of $1.000 trillion",
+          "During the July–September 2026 quarter, Treasury borrowed $742 billion in privately-held net marketable debt and ended the quarter with a cash balance of $984 billion"
+        ],
+        "parse_ok": true
+      },
+      "policy": null,
+      "sources_uses": {
+        "source_pdf": "Sources-Uses-Public-Table-November-2026.pdf",
+        "title": "Sources and Uses Reconciliation Table",
+        "unit": "billions_usd",
+        "parse_ok": true,
+        "rows": [
+          {
+            "period": "Oct - Dec 2022",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 368.0,
+            "marketable_borrowing_bn": 373.0,
+            "all_other_sources_bn": -194.0,
+            "total_sources_bn": 179.0,
+            "change_in_cash_bn": -189.0,
+            "end_cash_balance_bn": 447.0,
+            "soma_redemptions_bn": -139.0
+          },
+          {
+            "period": "Jan - Mar 2023",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 656.0,
+            "marketable_borrowing_bn": 657.0,
+            "all_other_sources_bn": -270.0,
+            "total_sources_bn": 387.0,
+            "change_in_cash_bn": -269.0,
+            "end_cash_balance_bn": 178.0,
+            "soma_redemptions_bn": -221.0
+          },
+          {
+            "period": "Apr - Jun 2023",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 181.0,
+            "marketable_borrowing_bn": 657.0,
+            "all_other_sources_bn": -251.0,
+            "total_sources_bn": 406.0,
+            "change_in_cash_bn": 225.0,
+            "end_cash_balance_bn": 402.0,
+            "soma_redemptions_bn": -180.0
+          },
+          {
+            "period": "Jul - Sep 2023",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 520.0,
+            "marketable_borrowing_bn": 1010.0,
+            "all_other_sources_bn": -235.0,
+            "total_sources_bn": 775.0,
+            "change_in_cash_bn": 254.0,
+            "end_cash_balance_bn": 657.0,
+            "soma_redemptions_bn": -158.0
+          },
+          {
+            "period": "Oct - Dec 2023",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 402.0,
+            "marketable_borrowing_bn": 776.0,
+            "all_other_sources_bn": -262.0,
+            "total_sources_bn": 514.0,
+            "change_in_cash_bn": 112.0,
+            "end_cash_balance_bn": 769.0,
+            "soma_redemptions_bn": -171.0
+          },
+          {
+            "period": "Jan - Mar 2024",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 483.0,
+            "marketable_borrowing_bn": 748.0,
+            "all_other_sources_bn": -258.0,
+            "total_sources_bn": 490.0,
+            "change_in_cash_bn": 7.0,
+            "end_cash_balance_bn": 775.0,
+            "soma_redemptions_bn": -172.0
+          },
+          {
+            "period": "Apr - Jun 2024",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": -9.0,
+            "marketable_borrowing_bn": 234.0,
+            "all_other_sources_bn": -241.0,
+            "total_sources_bn": -7.0,
+            "change_in_cash_bn": 3.0,
+            "end_cash_balance_bn": 778.0,
+            "soma_redemptions_bn": -168.0
+          },
+          {
+            "period": "Jul - Sep 2024",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 502.0,
+            "marketable_borrowing_bn": 762.0,
+            "all_other_sources_bn": -152.0,
+            "total_sources_bn": 610.0,
+            "change_in_cash_bn": 108.0,
+            "end_cash_balance_bn": 886.0,
+            "soma_redemptions_bn": -91.0
+          },
+          {
+            "period": "Oct - Dec 2024",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 620.0,
+            "marketable_borrowing_bn": 620.0,
+            "all_other_sources_bn": -164.0,
+            "total_sources_bn": 456.0,
+            "change_in_cash_bn": -164.0,
+            "end_cash_balance_bn": 722.0,
+            "soma_redemptions_bn": -75.0
+          },
+          {
+            "period": "Jan - Mar 2025",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 526.0,
+            "marketable_borrowing_bn": 369.0,
+            "all_other_sources_bn": -159.0,
+            "total_sources_bn": 210.0,
+            "change_in_cash_bn": -316.0,
+            "end_cash_balance_bn": 406.0,
+            "soma_redemptions_bn": -75.0
+          },
+          {
+            "period": "Apr - Jun 2025",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": -64.0,
+            "marketable_borrowing_bn": 65.0,
+            "all_other_sources_bn": -77.0,
+            "total_sources_bn": -12.0,
+            "change_in_cash_bn": 51.0,
+            "end_cash_balance_bn": 457.0,
+            "soma_redemptions_bn": -15.0
+          },
+          {
+            "period": "Jul - Sep 2025",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 538.0,
+            "marketable_borrowing_bn": 1058.0,
+            "all_other_sources_bn": -85.0,
+            "total_sources_bn": 972.0,
+            "change_in_cash_bn": 434.0,
+            "end_cash_balance_bn": 891.0,
+            "soma_redemptions_bn": -15.0
+          },
+          {
+            "period": "Oct - Dec 2025",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 482.0,
+            "marketable_borrowing_bn": 550.0,
+            "all_other_sources_bn": -86.0,
+            "total_sources_bn": 464.0,
+            "change_in_cash_bn": -18.0,
+            "end_cash_balance_bn": 873.0,
+            "soma_redemptions_bn": -10.0
+          },
+          {
+            "period": "Jan - Mar 2026",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 493.0,
+            "marketable_borrowing_bn": 577.0,
+            "all_other_sources_bn": -64.0,
+            "total_sources_bn": 513.0,
+            "change_in_cash_bn": 20.0,
+            "end_cash_balance_bn": 893.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Apr - Jun 2026",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 105.0,
+            "marketable_borrowing_bn": 190.0,
+            "all_other_sources_bn": -59.0,
+            "total_sources_bn": 131.0,
+            "change_in_cash_bn": 26.0,
+            "end_cash_balance_bn": 919.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jul - Sep 2026",
+            "row_kind": "estimate",
+            "announcement_date": "August 3, 2026",
+            "financing_need_bn": 633.0,
+            "marketable_borrowing_bn": 739.0,
+            "all_other_sources_bn": -75.0,
+            "total_sources_bn": 664.0,
+            "change_in_cash_bn": 31.0,
+            "end_cash_balance_bn": 950.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jul - Sep 2026",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 596.0,
+            "marketable_borrowing_bn": 742.0,
+            "all_other_sources_bn": -82.0,
+            "total_sources_bn": 660.0,
+            "change_in_cash_bn": 65.0,
+            "end_cash_balance_bn": 984.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jul - Sep 2026",
+            "row_kind": "revisions",
+            "announcement_date": null,
+            "financing_need_bn": -37.0,
+            "marketable_borrowing_bn": 4.0,
+            "all_other_sources_bn": -7.0,
+            "total_sources_bn": -3.0,
+            "change_in_cash_bn": 34.0,
+            "end_cash_balance_bn": 34.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "estimate",
+            "announcement_date": "August 3, 2026",
+            "financing_need_bn": 646.0,
+            "marketable_borrowing_bn": 628.0,
+            "all_other_sources_bn": -81.0,
+            "total_sources_bn": 546.0,
+            "change_in_cash_bn": -100.0,
+            "end_cash_balance_bn": 850.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "estimate",
+            "announcement_date": "November 2, 2026",
+            "financing_need_bn": 666.0,
+            "marketable_borrowing_bn": 618.0,
+            "all_other_sources_bn": -86.0,
+            "total_sources_bn": 532.0,
+            "change_in_cash_bn": -134.0,
+            "end_cash_balance_bn": 850.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "revisions",
+            "announcement_date": null,
+            "financing_need_bn": 20.0,
+            "marketable_borrowing_bn": -10.0,
+            "all_other_sources_bn": -5.0,
+            "total_sources_bn": -14.0,
+            "change_in_cash_bn": -34.0,
+            "end_cash_balance_bn": 0.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jan - Mar 2027",
+            "row_kind": "estimate",
+            "announcement_date": "November 2, 2026",
+            "financing_need_bn": 564.0,
+            "marketable_borrowing_bn": 800.0,
+            "all_other_sources_bn": -86.0,
+            "total_sources_bn": 714.0,
+            "change_in_cash_bn": 150.0,
+            "end_cash_balance_bn": 1000.0,
+            "soma_redemptions_bn": 0.0
+          }
+        ],
+        "latest_estimates": [
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "estimate",
+            "announcement_date": "August 3, 2026",
+            "financing_need_bn": 646.0,
+            "marketable_borrowing_bn": 628.0,
+            "all_other_sources_bn": -81.0,
+            "total_sources_bn": 546.0,
+            "change_in_cash_bn": -100.0,
+            "end_cash_balance_bn": 850.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "estimate",
+            "announcement_date": "November 2, 2026",
+            "financing_need_bn": 666.0,
+            "marketable_borrowing_bn": 618.0,
+            "all_other_sources_bn": -86.0,
+            "total_sources_bn": 532.0,
+            "change_in_cash_bn": -134.0,
+            "end_cash_balance_bn": 850.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jan - Mar 2027",
+            "row_kind": "estimate",
+            "announcement_date": "November 2, 2026",
+            "financing_need_bn": 564.0,
+            "marketable_borrowing_bn": 800.0,
+            "all_other_sources_bn": -86.0,
+            "total_sources_bn": 714.0,
+            "change_in_cash_bn": 150.0,
+            "end_cash_balance_bn": 1000.0,
+            "soma_redemptions_bn": 0.0
+          }
+        ],
+        "latest_revisions": [
+          {
+            "period": "Jul - Sep 2026",
+            "row_kind": "revisions",
+            "announcement_date": null,
+            "financing_need_bn": -37.0,
+            "marketable_borrowing_bn": 4.0,
+            "all_other_sources_bn": -7.0,
+            "total_sources_bn": -3.0,
+            "change_in_cash_bn": 34.0,
+            "end_cash_balance_bn": 34.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "revisions",
+            "announcement_date": null,
+            "financing_need_bn": 20.0,
+            "marketable_borrowing_bn": -10.0,
+            "all_other_sources_bn": -5.0,
+            "total_sources_bn": -14.0,
+            "change_in_cash_bn": -34.0,
+            "end_cash_balance_bn": 0.0,
+            "soma_redemptions_bn": 0.0
+          }
+        ]
+      },
+      "tbac_financing": {
+        "source_pdf": "TBACRecommendedFinancingTableByRefundingQuarter-08052026.pdf",
+        "title": "TBAC Recommended Financing — AUGUST 2026-OCTOBER 2026 QUARTER",
+        "quarter_label": "AUGUST 2026-OCTOBER 2026 QUARTER",
+        "unit": "billions_usd",
+        "parse_ok": true,
+        "rows": [
+          {
+            "month": "Feb-26",
+            "section": "historical",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 42.0,
+            "c20y": 16.0,
+            "c30y": 25.0,
+            "tips5y": 9.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Mar-26",
+            "section": "historical",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 19.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Apr-26",
+            "section": "historical",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 26.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 30.0
+          },
+          {
+            "month": "May-26",
+            "section": "historical",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 42.0,
+            "c20y": 16.0,
+            "c30y": 25.0,
+            "tips5y": 19.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Jun-26",
+            "section": "historical",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 24.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Jul-26",
+            "section": "historical",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 21.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 30.0
+          },
+          {
+            "month": "Aug-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 42.0,
+            "c20y": 16.0,
+            "c30y": 25.0,
+            "tips5y": 8.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Sep-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 19.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Oct-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 26.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 30.0
+          },
+          {
+            "month": "Nov-26",
+            "section": "provisional",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 42.0,
+            "c20y": 16.0,
+            "c30y": 25.0,
+            "tips5y": 19.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Dec-26",
+            "section": "provisional",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 24.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Jan-27",
+            "section": "provisional",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 21.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 30.0
+          }
+        ],
+        "recommendation_months": [
+          {
+            "month": "Aug-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 42.0,
+            "c20y": 16.0,
+            "c30y": 25.0,
+            "tips5y": 8.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Sep-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 19.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Oct-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 26.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 30.0
+          }
+        ],
+        "qra_issuance_components": [
+          {
+            "id": "c2y",
+            "label_ko": "2Y",
+            "tenor": "2y",
+            "value": 207.0
+          },
+          {
+            "id": "c3y",
+            "label_ko": "3Y",
+            "tenor": "3y",
+            "value": 174.0
+          },
+          {
+            "id": "c5y",
+            "label_ko": "5Y",
+            "tenor": "5y",
+            "value": 210.0
+          },
+          {
+            "id": "c7y",
+            "label_ko": "7Y",
+            "tenor": "7y",
+            "value": 132.0
+          },
+          {
+            "id": "c10y",
+            "label_ko": "10Y",
+            "tenor": "10y",
+            "value": 120.0
+          },
+          {
+            "id": "c20y",
+            "label_ko": "20Y",
+            "tenor": "20y",
+            "value": 42.0
+          },
+          {
+            "id": "c30y",
+            "label_ko": "30Y",
+            "tenor": "30y",
+            "value": 69.0
+          }
+        ]
+      },
+      "causal": {
+        "flags": [
+          "net_borrowing_near_prior"
+        ],
+        "bill_stance": null,
+        "coupon_stance": null,
+        "edges": [
+          {
+            "cause": "해설서 규칙",
+            "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
+            "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
+            "confidence": "low",
+            "evidence": {
+              "rule": "net_vs_gross"
+            }
+          }
+        ],
+        "summary_ko": "November 2, 2026 발표. 당기 October–December 2026 순발행 618B, 기말현금 850B. 다음 분기 January–March 2027 예상 순발행 800B, 기말현금 1000B.",
+        "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
+      },
+      "qra_issuance_components": [
+        {
+          "id": "c2y",
+          "label_ko": "2Y",
+          "tenor": "2y",
+          "value": 207.0
+        },
+        {
+          "id": "c3y",
+          "label_ko": "3Y",
+          "tenor": "3y",
+          "value": 174.0
+        },
+        {
+          "id": "c5y",
+          "label_ko": "5Y",
+          "tenor": "5y",
+          "value": 210.0
+        },
+        {
+          "id": "c7y",
+          "label_ko": "7Y",
+          "tenor": "7y",
+          "value": 132.0
+        },
+        {
+          "id": "c10y",
+          "label_ko": "10Y",
+          "tenor": "10y",
+          "value": 120.0
+        },
+        {
+          "id": "c20y",
+          "label_ko": "20Y",
+          "tenor": "20y",
+          "value": 42.0
+        },
+        {
+          "id": "c30y",
+          "label_ko": "30Y",
+          "tenor": "30y",
+          "value": 69.0
+        }
+      ],
+      "tables": {
+        "sources_uses_rows": [
+          {
+            "period": "Oct - Dec 2022",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 368.0,
+            "marketable_borrowing_bn": 373.0,
+            "all_other_sources_bn": -194.0,
+            "total_sources_bn": 179.0,
+            "change_in_cash_bn": -189.0,
+            "end_cash_balance_bn": 447.0,
+            "soma_redemptions_bn": -139.0
+          },
+          {
+            "period": "Jan - Mar 2023",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 656.0,
+            "marketable_borrowing_bn": 657.0,
+            "all_other_sources_bn": -270.0,
+            "total_sources_bn": 387.0,
+            "change_in_cash_bn": -269.0,
+            "end_cash_balance_bn": 178.0,
+            "soma_redemptions_bn": -221.0
+          },
+          {
+            "period": "Apr - Jun 2023",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 181.0,
+            "marketable_borrowing_bn": 657.0,
+            "all_other_sources_bn": -251.0,
+            "total_sources_bn": 406.0,
+            "change_in_cash_bn": 225.0,
+            "end_cash_balance_bn": 402.0,
+            "soma_redemptions_bn": -180.0
+          },
+          {
+            "period": "Jul - Sep 2023",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 520.0,
+            "marketable_borrowing_bn": 1010.0,
+            "all_other_sources_bn": -235.0,
+            "total_sources_bn": 775.0,
+            "change_in_cash_bn": 254.0,
+            "end_cash_balance_bn": 657.0,
+            "soma_redemptions_bn": -158.0
+          },
+          {
+            "period": "Oct - Dec 2023",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 402.0,
+            "marketable_borrowing_bn": 776.0,
+            "all_other_sources_bn": -262.0,
+            "total_sources_bn": 514.0,
+            "change_in_cash_bn": 112.0,
+            "end_cash_balance_bn": 769.0,
+            "soma_redemptions_bn": -171.0
+          },
+          {
+            "period": "Jan - Mar 2024",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 483.0,
+            "marketable_borrowing_bn": 748.0,
+            "all_other_sources_bn": -258.0,
+            "total_sources_bn": 490.0,
+            "change_in_cash_bn": 7.0,
+            "end_cash_balance_bn": 775.0,
+            "soma_redemptions_bn": -172.0
+          },
+          {
+            "period": "Apr - Jun 2024",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": -9.0,
+            "marketable_borrowing_bn": 234.0,
+            "all_other_sources_bn": -241.0,
+            "total_sources_bn": -7.0,
+            "change_in_cash_bn": 3.0,
+            "end_cash_balance_bn": 778.0,
+            "soma_redemptions_bn": -168.0
+          },
+          {
+            "period": "Jul - Sep 2024",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 502.0,
+            "marketable_borrowing_bn": 762.0,
+            "all_other_sources_bn": -152.0,
+            "total_sources_bn": 610.0,
+            "change_in_cash_bn": 108.0,
+            "end_cash_balance_bn": 886.0,
+            "soma_redemptions_bn": -91.0
+          },
+          {
+            "period": "Oct - Dec 2024",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 620.0,
+            "marketable_borrowing_bn": 620.0,
+            "all_other_sources_bn": -164.0,
+            "total_sources_bn": 456.0,
+            "change_in_cash_bn": -164.0,
+            "end_cash_balance_bn": 722.0,
+            "soma_redemptions_bn": -75.0
+          },
+          {
+            "period": "Jan - Mar 2025",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 526.0,
+            "marketable_borrowing_bn": 369.0,
+            "all_other_sources_bn": -159.0,
+            "total_sources_bn": 210.0,
+            "change_in_cash_bn": -316.0,
+            "end_cash_balance_bn": 406.0,
+            "soma_redemptions_bn": -75.0
+          },
+          {
+            "period": "Apr - Jun 2025",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": -64.0,
+            "marketable_borrowing_bn": 65.0,
+            "all_other_sources_bn": -77.0,
+            "total_sources_bn": -12.0,
+            "change_in_cash_bn": 51.0,
+            "end_cash_balance_bn": 457.0,
+            "soma_redemptions_bn": -15.0
+          },
+          {
+            "period": "Jul - Sep 2025",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 538.0,
+            "marketable_borrowing_bn": 1058.0,
+            "all_other_sources_bn": -85.0,
+            "total_sources_bn": 972.0,
+            "change_in_cash_bn": 434.0,
+            "end_cash_balance_bn": 891.0,
+            "soma_redemptions_bn": -15.0
+          },
+          {
+            "period": "Oct - Dec 2025",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 482.0,
+            "marketable_borrowing_bn": 550.0,
+            "all_other_sources_bn": -86.0,
+            "total_sources_bn": 464.0,
+            "change_in_cash_bn": -18.0,
+            "end_cash_balance_bn": 873.0,
+            "soma_redemptions_bn": -10.0
+          },
+          {
+            "period": "Jan - Mar 2026",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 493.0,
+            "marketable_borrowing_bn": 577.0,
+            "all_other_sources_bn": -64.0,
+            "total_sources_bn": 513.0,
+            "change_in_cash_bn": 20.0,
+            "end_cash_balance_bn": 893.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Apr - Jun 2026",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 105.0,
+            "marketable_borrowing_bn": 190.0,
+            "all_other_sources_bn": -59.0,
+            "total_sources_bn": 131.0,
+            "change_in_cash_bn": 26.0,
+            "end_cash_balance_bn": 919.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jul - Sep 2026",
+            "row_kind": "estimate",
+            "announcement_date": "August 3, 2026",
+            "financing_need_bn": 633.0,
+            "marketable_borrowing_bn": 739.0,
+            "all_other_sources_bn": -75.0,
+            "total_sources_bn": 664.0,
+            "change_in_cash_bn": 31.0,
+            "end_cash_balance_bn": 950.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jul - Sep 2026",
+            "row_kind": "actual",
+            "announcement_date": null,
+            "financing_need_bn": 596.0,
+            "marketable_borrowing_bn": 742.0,
+            "all_other_sources_bn": -82.0,
+            "total_sources_bn": 660.0,
+            "change_in_cash_bn": 65.0,
+            "end_cash_balance_bn": 984.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jul - Sep 2026",
+            "row_kind": "revisions",
+            "announcement_date": null,
+            "financing_need_bn": -37.0,
+            "marketable_borrowing_bn": 4.0,
+            "all_other_sources_bn": -7.0,
+            "total_sources_bn": -3.0,
+            "change_in_cash_bn": 34.0,
+            "end_cash_balance_bn": 34.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "estimate",
+            "announcement_date": "August 3, 2026",
+            "financing_need_bn": 646.0,
+            "marketable_borrowing_bn": 628.0,
+            "all_other_sources_bn": -81.0,
+            "total_sources_bn": 546.0,
+            "change_in_cash_bn": -100.0,
+            "end_cash_balance_bn": 850.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "estimate",
+            "announcement_date": "November 2, 2026",
+            "financing_need_bn": 666.0,
+            "marketable_borrowing_bn": 618.0,
+            "all_other_sources_bn": -86.0,
+            "total_sources_bn": 532.0,
+            "change_in_cash_bn": -134.0,
+            "end_cash_balance_bn": 850.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Oct - Dec 2026",
+            "row_kind": "revisions",
+            "announcement_date": null,
+            "financing_need_bn": 20.0,
+            "marketable_borrowing_bn": -10.0,
+            "all_other_sources_bn": -5.0,
+            "total_sources_bn": -14.0,
+            "change_in_cash_bn": -34.0,
+            "end_cash_balance_bn": 0.0,
+            "soma_redemptions_bn": 0.0
+          },
+          {
+            "period": "Jan - Mar 2027",
+            "row_kind": "estimate",
+            "announcement_date": "November 2, 2026",
+            "financing_need_bn": 564.0,
+            "marketable_borrowing_bn": 800.0,
+            "all_other_sources_bn": -86.0,
+            "total_sources_bn": 714.0,
+            "change_in_cash_bn": 150.0,
+            "end_cash_balance_bn": 1000.0,
+            "soma_redemptions_bn": 0.0
+          }
+        ],
+        "tbac_recommendation_months": [
+          {
+            "month": "Aug-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 42.0,
+            "c20y": 16.0,
+            "c30y": 25.0,
+            "tips5y": 8.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Sep-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 19.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Oct-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 26.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 30.0
+          }
+        ]
+      },
+      "compare": {
+        "metric": "privately_held_net_marketable_bn",
+        "unit": "bn_usd",
+        "chart_type": "bar",
+        "title_ko": "순발행 비교 (전분실적 · 직전예측 · 당기공시 · 다음분기)",
+        "series": [
+          {
+            "id": "prior_actual",
+            "label_ko": "전분기 실적",
+            "period": "July–September 2026",
+            "value": 742.0,
+            "end_cash_bn": 984.0,
+            "kind": "actual"
+          },
+          {
+            "id": "prior_forecast",
+            "label_ko": "직전 공시 예측",
+            "period": "Oct - Dec 2026",
+            "value": 628.0,
+            "end_cash_bn": 850.0,
+            "announcement_date": "August 3, 2026",
+            "kind": "estimate"
+          },
+          {
+            "id": "current",
+            "label_ko": "당기 공시",
+            "period": "October–December 2026",
+            "value": 618.0,
+            "end_cash_bn": 850.0,
+            "vs_prior_bn": -10.0,
+            "announcement_date": "November 2, 2026",
+            "kind": "estimate"
+          },
+          {
+            "id": "next_estimate",
+            "label_ko": "다음 분기 예상",
+            "period": "January–March 2027",
+            "value": 800.0,
+            "end_cash_bn": 1000.0,
+            "vs_prior_bn": null,
+            "announcement_date": "November 2, 2026",
+            "kind": "estimate"
+          }
+        ],
+        "table": [
+          {
+            "label_ko": "전분기 실적",
+            "period": "July–September 2026",
+            "net_borrowing_bn": 742.0,
+            "end_cash_bn": 984.0,
+            "announcement_date": null
+          },
+          {
+            "label_ko": "직전 공시 예측",
+            "period": "Oct - Dec 2026",
+            "net_borrowing_bn": 628.0,
+            "end_cash_bn": 850.0,
+            "announcement_date": "August 3, 2026"
+          },
+          {
+            "label_ko": "당기 공시",
+            "period": "October–December 2026",
+            "net_borrowing_bn": 618.0,
+            "end_cash_bn": 850.0,
+            "announcement_date": "November 2, 2026"
+          },
+          {
+            "label_ko": "다음 분기 예상",
+            "period": "January–March 2027",
+            "net_borrowing_bn": 800.0,
+            "end_cash_bn": 1000.0,
+            "announcement_date": "November 2, 2026"
+          }
+        ],
+        "note_ko": "같은 발표에서 당기 공시와 다음 분기 예상을 나눴다. 직전 공시 예측은 그 전 발표가 같은 분기에 적어 둔 값이다."
+      }
+    },
     {
       "id": "2026-Q3",
       "year": 2026,
@@ -2006,286 +3087,7 @@
           }
         ]
       },
-      "tbac_financing": {
-        "source_pdf": "TBACRecommendedFinancingTableByRefundingQuarter-08052026.pdf",
-        "title": "TBAC Recommended Financing — AUGUST 2026-OCTOBER 2026 QUARTER",
-        "quarter_label": "AUGUST 2026-OCTOBER 2026 QUARTER",
-        "unit": "billions_usd",
-        "parse_ok": true,
-        "rows": [
-          {
-            "month": "Feb-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 42.0,
-            "c20y": 16.0,
-            "c30y": 25.0,
-            "tips5y": 9.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Mar-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 19.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Apr-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 26.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 30.0
-          },
-          {
-            "month": "May-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 42.0,
-            "c20y": 16.0,
-            "c30y": 25.0,
-            "tips5y": 19.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Jun-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 24.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Jul-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 21.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 30.0
-          },
-          {
-            "month": "Aug-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 42.0,
-            "c20y": 16.0,
-            "c30y": 25.0,
-            "tips5y": 8.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Sep-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 19.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Oct-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 26.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 30.0
-          },
-          {
-            "month": "Nov-26",
-            "section": "provisional",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 42.0,
-            "c20y": 16.0,
-            "c30y": 25.0,
-            "tips5y": 19.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Dec-26",
-            "section": "provisional",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 24.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Jan-27",
-            "section": "provisional",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 21.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 30.0
-          }
-        ],
-        "recommendation_months": [
-          {
-            "month": "Aug-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 42.0,
-            "c20y": 16.0,
-            "c30y": 25.0,
-            "tips5y": 8.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Sep-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 19.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Oct-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 26.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 30.0
-          }
-        ],
-        "qra_issuance_components": [
-          {
-            "id": "c2y",
-            "label_ko": "2Y",
-            "tenor": "2y",
-            "value": 207.0
-          },
-          {
-            "id": "c3y",
-            "label_ko": "3Y",
-            "tenor": "3y",
-            "value": 174.0
-          },
-          {
-            "id": "c5y",
-            "label_ko": "5Y",
-            "tenor": "5y",
-            "value": 210.0
-          },
-          {
-            "id": "c7y",
-            "label_ko": "7Y",
-            "tenor": "7y",
-            "value": 132.0
-          },
-          {
-            "id": "c10y",
-            "label_ko": "10Y",
-            "tenor": "10y",
-            "value": 120.0
-          },
-          {
-            "id": "c20y",
-            "label_ko": "20Y",
-            "tenor": "20y",
-            "value": 42.0
-          },
-          {
-            "id": "c30y",
-            "label_ko": "30Y",
-            "tenor": "30y",
-            "value": 69.0
-          }
-        ]
-      },
+      "tbac_financing": null,
       "causal": {
         "flags": [
           "net_borrowing_up_vs_prior",
@@ -2349,46 +3151,28 @@
       },
       "qra_issuance_components": [
         {
-          "id": "c2y",
-          "label_ko": "2Y",
-          "tenor": "2y",
-          "value": 207.0
-        },
-        {
           "id": "c3y",
           "label_ko": "3Y",
           "tenor": "3y",
-          "value": 174.0
-        },
-        {
-          "id": "c5y",
-          "label_ko": "5Y",
-          "tenor": "5y",
-          "value": 210.0
-        },
-        {
-          "id": "c7y",
-          "label_ko": "7Y",
-          "tenor": "7y",
-          "value": 132.0
+          "kind": "coupon",
+          "instrument": "note",
+          "value": 58.0
         },
         {
           "id": "c10y",
           "label_ko": "10Y",
           "tenor": "10y",
-          "value": 120.0
-        },
-        {
-          "id": "c20y",
-          "label_ko": "20Y",
-          "tenor": "20y",
+          "kind": "coupon",
+          "instrument": "note",
           "value": 42.0
         },
         {
           "id": "c30y",
           "label_ko": "30Y",
           "tenor": "30y",
-          "value": 69.0
+          "kind": "coupon",
+          "instrument": "bond",
+          "value": 25.0
         }
       ],
       "tables": {
@@ -2694,53 +3478,7 @@
             "soma_redemptions_bn": 0.0
           }
         ],
-        "tbac_recommendation_months": [
-          {
-            "month": "Aug-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 42.0,
-            "c20y": 16.0,
-            "c30y": 25.0,
-            "tips5y": 8.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Sep-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 19.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Oct-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 26.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 30.0
-          }
-        ]
+        "tbac_recommendation_months": []
       },
       "compare": {
         "metric": "privately_held_net_marketable_bn",
