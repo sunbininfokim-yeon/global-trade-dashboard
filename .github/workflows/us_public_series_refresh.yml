@@ -25,6 +25,10 @@ name: Refresh macro public series
 # 하위 지수의 전월비 순위를 각 나라 CPI 카드의 '항목별' 탭에 붙인다. 읽은 값은 config/cpi_items_v1.json 에 남는다.
 # 미 국채 입찰·바이백(wire_ust_auctions.py): TreasuryDirect(쿠폰 입찰 결과 -- 낙찰금리·응찰률·딜러/직접/간접 비율)와
 # Fiscal Data(바이백)로 미국 유동성 카드 2장(ust_auction_demand, ust_buybacks)을 만든다. 행은 public/data/ust_auctions_v1.json.
+# 미국 CPI 기여도(wire_us_cpi_contrib.py): BLS 상대중요도(12월 가중치)와 품목 지수로 헤드라인·근원 CPI의 품목별
+# 기여도(전월비·전년비, 25개월)를 public/data/us_cpi_contrib_v1.json 에 쓴다. 새 달이 나왔을 때만 BLS API
+# (BLS_API_KEY, 요청 약 11번)로 품목 지수를 받는다. 12월 가중치 표는 1년에 한 번 나오는 웹페이지라 저장해 둔
+# config/us_cpi_weights_v1.json 을 쓰고, 새 표가 나오면(매년 2월경) 로컬에서 받아 커밋한다.
 # 호주(wire_aus_public_series.py): ABS Data API(CPI·절사평균·노동력·국민계정·국제수지·상품교역·건축승인), FRED(OECD 금리), 세계은행 Pink Sheet(철광석·석탄). 키 없음. RBA는 접근 불가(403).
 # 인도네시아(wire_idn_public_series.py): BPS WebAPI(시크릿 BPS_API_KEY -- 없으면 건너뜀), FRED(외환보유액), Yahoo. 첫 실행 때 국가를 만든다. 패널에 'BPS API 사용' 표기(source_notices).
 # 미국 물가(BLS CPI·BEA PCE)와 연준 대차대조표·QE/QT·Z.1 헤지펀드 국채: 빌더와 wire가 있었지만 정기 실행에 빠져 있어
@@ -76,7 +80,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_free_cards.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_auctions.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_free_cards.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python wire_us_cpi_contrib.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_auctions.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
           }
           for attempt in 1 2 3; do
             refresh
@@ -92,6 +96,8 @@ jobs:
                     "New for anti/public/data/us_cpi_api_history_v1.json" \
                     "New for anti/public/data/us_pce_history_v1.json" \
                     "New for anti/public/data/ust_auctions_v1.json" \
+                    "New for anti/public/data/us_cpi_contrib_v1.json" \
+                    "New for anti/scripts/macro_monitor/config/us_cpi_weights_v1.json" \
                     "New for anti/public/data/hedge_fund_ust_v1.json" \
                     "New for anti/public/data/fed_qe_qt_history_v1.json" \
                     "New for anti/public/data/fed_balance_sheet_v1.json" \
