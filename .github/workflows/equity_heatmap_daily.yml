@@ -35,7 +35,9 @@ jobs:
 
   update:
     needs: validate
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    # On main: build + commit. workflow_dispatch on another branch: build and
+    # upload the file as an artifact only (a dry run from a runner IP).
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -45,15 +47,29 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      # Exits 1 when any one market failed, but still writes the file with
+      # the others refreshed (the failed one carried over, flagged stale) --
+      # so commit first, then surface the failure.
       - name: Build constituent moves
+        id: build
+        continue-on-error: true
         run: python 'New for anti/scripts/macro_monitor/build_equity_heatmap.py'
+      - name: Upload built file (dry run artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: equity-heatmap
+          path: |
+            New for anti/public/data/equity_heatmap_v1.json
+            New for anti/scripts/macro_monitor/config/equity_sector_cache_v1.json
+          if-no-files-found: warn
       - name: Commit refreshed data
+        if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add 'New for anti/public/data/equity_heatmap_v1.json'
+          git add 'New for anti/public/data/equity_heatmap_v1.json' 'New for anti/scripts/macro_monitor/config/equity_sector_cache_v1.json' 2>/dev/null || git add 'New for anti/public/data/equity_heatmap_v1.json'
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'chore: refresh equity heatmap constituents'
           for attempt in 1 2 3; do
@@ -61,3 +77,6 @@ jobs:
             git pull --rebase origin main
           done
           exit 1
+      - name: Surface market failures after persisting the rest
+        if: steps.build.outcome == 'failure'
+        run: exit 1

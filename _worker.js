@@ -1613,6 +1613,57 @@ async function handleMacro(request, env, ctx) {
             });
         }
 
+        // Daily closes for equity indices Yahoo carries no history for
+        // (CSI 300, Hang Seng Tech, VN-Index via Eastmoney; MOEX / RTS via the
+        // exchange's own ISS). Both are reshaped into Yahoo's chart JSON so
+        // the macro drawer's price/MA chart reads every index the same way.
+        // range is 'Ny' like the yfinance route.
+        if (source === 'eastmoney' || source === 'moex') {
+            const secid = url.searchParams.get('secid') || '';
+            const okId = source === 'eastmoney' ? /^\d{1,3}\.[A-Z0-9]{1,12}$/ : /^[A-Z0-9]{2,12}$/;
+            if (!okId.test(secid)) {
+                return new Response(JSON.stringify({ error: 'bad secid' }), { status: 400, headers: JSON_HEADERS });
+            }
+            const years = Math.min(Number((/^(\d+)y$/.exec(url.searchParams.get('range') || '') || [])[1] || 2), 15);
+            const from = new Date();
+            from.setFullYear(from.getFullYear() - years);
+            const iso = from.toISOString().slice(0, 10);
+            const asYahoo = (pairs) => ({
+                chart: { result: [{
+                    meta: { symbol: secid, dataGranularity: '1d' },
+                    // Noon UTC keeps the calendar date stable in any viewer timezone.
+                    timestamp: pairs.map(([d]) => Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10), 12) / 1000),
+                    indicators: { quote: [{ close: pairs.map(([, c]) => c) }] },
+                }], error: null },
+            });
+            return kvCachedJson(env, `${source}:${secid}:${years}y`, 6 * 3600, async () => {
+                const headers = { 'User-Agent': 'Mozilla/5.0', Accept: 'application/json' };
+                const pairs = [];
+                if (source === 'eastmoney') {
+                    const em = `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${encodeURIComponent(secid)}&fields1=f1,f2&fields2=f51,f53&klt=101&fqt=0&beg=${iso.replace(/-/g, '')}&end=20500101`;
+                    const res = await fetch(em, { headers });
+                    if (!res.ok) return { ok: false, status: res.status };
+                    const j = await res.json();
+                    for (const k of ((j.data || {}).klines || [])) {
+                        const [d, c] = String(k).split(',');
+                        if (d && Number.isFinite(+c)) pairs.push([d, +c]);
+                    }
+                } else {
+                    // ISS pages candles 500 at a time.
+                    for (let start = 0; start < 6000; start += 500) {
+                        const mx = `https://iss.moex.com/iss/engines/stock/markets/index/securities/${secid}/candles.json?from=${iso}&interval=24&iss.meta=off&candles.columns=begin,close&start=${start}`;
+                        const res = await fetch(mx, { headers });
+                        if (!res.ok) return { ok: false, status: res.status };
+                        const rows = ((await res.json()).candles || {}).data || [];
+                        rows.forEach(([d, c]) => { if (Number.isFinite(c)) pairs.push([String(d).slice(0, 10), c]); });
+                        if (rows.length < 500) break;
+                    }
+                }
+                if (!pairs.length) return { ok: false, status: 502 };
+                return { ok: true, body: asYahoo(pairs) };
+            });
+        }
+
         return new Response(JSON.stringify({ error: "Invalid macro source" }), { status: 400, headers: JSON_HEADERS });
 
     } catch (err) {
