@@ -5,7 +5,7 @@ import { usaLegislature } from './special/usa-legislature.js?v=2';
 import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections } from './special/china.js';
 import { cnMapLegendHtml } from './special/chn-leaders.js';
-import { personnelRosterHtml } from './special/personnel-roster.js';
+import { personnelCategories, personnelPartHtml, OFFICE_LABELS } from './special/personnel-roster.js';
 import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';
 import { jpnSections } from './special/jpn.js';
 import { jpnExecutive } from './special/jpn-executive.js';
@@ -30,11 +30,50 @@ const baseSectionsFor = (iso3) => iso3 === 'USA' ? usaSections
     : iso3 === 'IRN' ? [...iranSections, RACE_PROGRESS_TAB]
     : genericSections;
 
-// 인사 명단 파일이 있는 나라는 블록 하나를 더 붙인다 (public/data/personnel).
-const PERSONNEL_TAB = ['인사 명단', 'personnel'];
+// 인사 명단(public/data/personnel)이 있는 나라는 별도 블록을 만들지 않고, 그 나라에 실제로
+// 있는 기관 블록에 이름을 끼워 넣는다: 대통령제는 대통령실, 의원내각제는 총리실,
+// 이원집정부제는 대통령실·총리실·행정부가 각각 뜬다. 왕정은 왕실. 의회·지방·정당 성향은
+// 기존 의회·지방자치단체·정당 블록으로 간다.
+const OFFICE_ORDER = ['leader', 'monarch', 'president', 'pm'];
+const officeKey = (cat) => `office_${cat}`;
+const LOCAL_TAB = ['지방자치단체', 'local_gov'];
+// 갈래 → 그 갈래가 들어갈 블록 키.
+const personnelSectionOf = (cat, keys) => {
+    if (cat === 'leader' && keys.has('power_structure')) return 'power_structure';
+    if (OFFICE_ORDER.includes(cat)) return officeKey(cat);
+    if (cat === 'executive' || cat === 'other') return 'executive';
+    if (cat === 'legislature') return 'legislature';
+    if (cat === 'local') return 'local_gov';
+    if (cat === 'orientation') return 'factions';
+    return 'executive';
+};
+const personnelCatsFor = (country, section) => {
+    if (!country.personnel) return [];
+    const keys = new Set(baseSectionsFor(country.iso3).map(([, key]) => key));
+    return [...personnelCategories(country.personnel).keys()].filter((cat) => personnelSectionOf(cat, keys) === section);
+};
+const personnelPart = (country, section) => {
+    const cats = personnelCatsFor(country, section);
+    return cats.length ? personnelPartHtml(country.personnel, cats) : '';
+};
+
 const sectionsFor = (country) => {
     const base = baseSectionsFor(country.iso3);
-    return country.personnel ? [...base, PERSONNEL_TAB] : base;
+    if (!country.personnel) return base;
+    const keys = new Set(base.map(([, key]) => key));
+    const cats = new Set(personnelCategories(country.personnel).keys());
+    const offices = OFFICE_ORDER
+        .filter((cat) => cats.has(cat) && personnelSectionOf(cat, keys) === officeKey(cat))
+        .map((cat) => [OFFICE_LABELS[cat], officeKey(cat)]);
+    const tabs = [...base];
+    const execAt = tabs.findIndex(([, key]) => key === 'executive');
+    tabs.splice(execAt >= 0 ? execAt : Math.min(1, tabs.length), 0, ...offices);
+    if (cats.has('executive') && !keys.has('executive')) tabs.splice(tabs.findIndex(([, k]) => k === officeKey('pm')) + 1 || 1, 0, ['행정부', 'executive']);
+    if (cats.has('local') && !keys.has('local_gov')) {
+        const legAt = tabs.findIndex(([, key]) => key === 'legislature');
+        tabs.splice(legAt >= 0 ? legAt + 1 : tabs.length, 0, LOCAL_TAB);
+    }
+    return tabs;
 };
 
 // This is presentation-only flattening, not a political calculation or an
@@ -134,7 +173,7 @@ const sourceObject = (country, section) => {
 const specialContent = (country, section) => {
     if (country.iso3 === 'ISR' && section === 'election_analysis') return israelAnalysisPlaceholder();
     if (section === 'race_progress') return raceProgressContent(country);
-    if (section === 'personnel') return personnelRosterHtml(country.personnel);
+    if (section.startsWith('office_') || section === 'local_gov') return personnelPart(country, section) || null;
     if (country.iso3 === 'CHN' && section === 'party') return chnParty(country);
     if (country.iso3 === 'CHN' && section === 'military') return chnMilitary(country);
     if (country.iso3 === 'CHN' && section === 'state_council') return chnStateCouncil(country);
@@ -157,10 +196,21 @@ const specialContent = (country, section) => {
 const effectiveStatus = (manifest, country, section) => {
     const status = screenStatus(manifest, country.iso3, section);
     if (status !== 'disabled' || section === 'calendar') return status;
-    return specialContent(country, section) ? 'partial' : status;
+    return specialContent(country, section) || personnelPart(country, section) ? 'partial' : status;
 };
 
+// 기존 블록 내용 뒤에 그 블록 갈래의 인사 명단을 붙인다. 블록 내용이 비어 있거나
+// '수집 예정'이어도 인사 명단이 있으면 명단만 보여 준다.
+const EMPTY_NOTE = /이 화면은 공개 데이터가 확보되면 연결됩니다|표시할 요약 항목이 없습니다/;
 const sectionContent = (country, section, status) => {
+    const base = baseSectionContent(country, section, status);
+    if (section.startsWith('office_') || section === 'local_gov') return base;
+    const part = personnelPart(country, section);
+    if (!part) return base;
+    return EMPTY_NOTE.test(base) ? part : `${base}${part}`;
+};
+
+const baseSectionContent = (country, section, status) => {
     if (section === 'calendar') return calendar(country);
     // Tried before the disabled bail: a renderer that produces content proves
     // the data is there, whatever the manifest says about the screen key.

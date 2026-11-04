@@ -43,7 +43,7 @@ const LABELS = {
     congress_permanent_deputation: '하원 상임대표단', congress_groups_before_dissolution: '해산 전 하원 교섭단체',
     senate_permanent_deputation: '상원 상임대표단', no10_and_security: '총리실·안보', officers: '임원',
     directors: '이사', named: '명단', clubs: '의원단', leader: '지도자', women: '여성', vacancies: '공석',
-    chancellor: '총리', pole: '축', line: '설명', as_of: '기준일', list: '명부', date: '날짜', day: '날짜', persian_date: '이란력 날짜',
+    chancellor: '총리', reelected: '재선', succeeded: '승계', assumed_prime_minister_on: '총리 취임', pole: '축', line: '설명', as_of: '기준일', list: '명부', date: '날짜', day: '날짜', persian_date: '이란력 날짜',
     gregorian: '양력', number: '번호', proportional: '비례대표', negotiating_group: '교섭단체', emirate: '토후국',
     wording: '원문 표현', decision: '결정', text: '본문', period: '기간', attribute: '속성', individual: '개인',
     source_grade: '출처 등급', still_titled_on: '직함 확인일', election_day: '선거일', published: '게시일', men: '남성',
@@ -213,26 +213,34 @@ const notesBlock = (data) => {
         .map(([t, list]) => `<p class="pr-note"><b>${escapeHtml(t)}</b></p><ul class="pr-bullets">${list.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul>`).join('')}</details>`;
 };
 
-// 우측 '인사 명단' 창 안의 갈래. 나라마다 맨 위 키 이름이 달라 키를 갈래에 직접 짝짓고,
-// 표에 없는 키는 이름의 낱말로 고른다. 어느 쪽에도 안 걸리면 '기타'.
+// 우측 '인사 명단' 창 안의 갈래. '국가원수' 한 칸으로 뭉치지 않고 그 나라에 실제로 있는
+// 기관 이름으로 나눈다 -- 대통령제는 대통령실, 의원내각제는 총리실, 이원집정부제
+// (프랑스·러시아·대만 등)는 대통령실·총리실·행정부가 각각 따로 뜬다. 왕정은 왕실,
+// 이란은 최고지도자실. 자료에 그 기관이 없으면 그 탭도 없다.
+// 맨 위 키를 갈래에 직접 짝짓고, 표에 없는 키는 이름의 낱말로 고른다.
 const CATEGORIES = [
-    ['head', '국가원수·대통령실'],
-    ['executive', '행정부'],
+    ['leader', '최고지도자실'],
+    ['monarch', '왕실'],
+    ['president', '대통령실'],
+    ['pm', '총리실'],
+    ['executive', '행정부·내각'],
     ['legislature', '의회'],
     ['local', '지방'],
     ['other', '기타'],
 ];
 const CATEGORY_OF = {
-    amiri_diwan: 'head', crown_prince: 'head', deputy_emir: 'head', elysee: 'head', emir: 'head', federal_president: 'head',
-    first_vice_president: 'head', king: 'head', national_security: 'head', national_security_council: 'head', presidency: 'head',
-    president: 'head', presidential_administration: 'head', presidential_chancellery: 'head', presidential_court: 'head',
-    presidential_leadership_council: 'head', presidential_office: 'head', presidential_secretariat: 'head', royal_court: 'head',
-    secretariat: 'head', security_council: 'head', special_advisors: 'head', supreme_council: 'head', supreme_leader: 'head',
-    vice_president: 'head',
+    supreme_leader: 'leader', irgc: 'leader', basij: 'leader', armed_forces_staff: 'leader', orientation: 'orientation',
+    king: 'monarch', crown_prince: 'monarch', royal_court: 'monarch', emir: 'monarch', deputy_emir: 'monarch',
+    amiri_diwan: 'monarch', supreme_council: 'monarch',
+    president: 'president', vice_president: 'president', first_vice_president: 'president', federal_president: 'president',
+    elysee: 'president', presidency: 'president', presidential_administration: 'president', presidential_chancellery: 'president',
+    presidential_court: 'president', presidential_leadership_council: 'president', presidential_office: 'president',
+    presidential_secretariat: 'president', national_security: 'president', national_security_council: 'president',
+    security_council: 'president', secretariat: 'president', special_advisors: 'president',
+    prime_minister: 'pm', prime_ministers_office: 'pm', prime_minister_advisors: 'pm',
     cabinet_office: 'executive', cabinet_secretariat: 'executive', cabinet_secretary_general: 'executive',
     deputy_prime_minister: 'executive', executive: 'executive', executive_yuan: 'executive', government: 'executive',
-    presidency_minister: 'executive', prime_minister: 'executive', prime_minister_advisors: 'executive',
-    prime_ministers_office: 'executive', privy_council: 'executive',
+    presidency_minister: 'executive', privy_council: 'executive',
     assembly: 'legislature', assembly_of_experts: 'legislature', bundesrat: 'legislature', bundestag: 'legislature',
     chamber: 'legislature', commons: 'legislature', congress_groups_before_dissolution: 'legislature',
     congress_permanent_deputation: 'legislature', council_of_representatives: 'legislature', deputies: 'legislature',
@@ -249,36 +257,71 @@ const CATEGORY_OF = {
 export const personnelCategory = (key) => {
     if (CATEGORY_OF[key]) return CATEGORY_OF[key];
     if (/knesset|senate|house|assembly|parliament|chamber|deput|majlis|shura|congress|bundes|duma|sejm|legislat|diet/.test(key)) return 'legislature';
-    if (/president|royal|king|emir|supreme|elysee|secretariat|advis/.test(key)) return 'head';
-    if (/minister|government|cabinet|executive|chancell/.test(key)) return 'executive';
+    if (/prime_minister|chancellor/.test(key)) return 'pm';
+    if (/president|elysee|secretariat|advis/.test(key)) return 'president';
+    if (/king|royal|emir|crown/.test(key)) return 'monarch';
+    if (/minister|government|cabinet|executive/.test(key)) return 'executive';
     if (/governor|region|local|devolved|mayor|premier|province|municipal/.test(key)) return 'local';
     return 'other';
 };
 
-let rosterSeq = 0;
+// '행정부'·'정부' 묶음 안에 총리·총리실이 들어 있는 나라가 많다 (영국 executive.prime_minister,
+// 독일 government.chancellor, 스페인 executive.moncloa). 그 자식만 꺼내 총리실 탭으로 옮긴다.
+const HOIST = [
+    [/^(prime_minister|chancellor|chancellery|chancellery_chief|prime_ministers_office|no10.*|moncloa)$/, 'pm'],
+    [/^(president|vice_president|elysee|presidency|presidential_.+)$/, 'president'],
+];
+const hoistCategory = (key) => HOIST.find(([re]) => re.test(key))?.[1] || null;
 
-export const personnelRosterHtml = (data) => {
-    if (!data || typeof data !== 'object') return null;
-    const byCategory = new Map(CATEGORIES.map(([id]) => [id, []]));
+const splitEntries = (data) => {
+    const entries = [];
     Object.entries(data)
         .filter(([k]) => !META_KEYS.has(k) && !NOTE_KEYS.has(k) && !HIDDEN_KEYS.has(k))
         .forEach(([k, v]) => {
-            const body = renderNode(k, v, 0);
-            if (!body) return;
-            const n = Array.isArray(v) ? ` <small>${v.length}</small>` : '';
-            byCategory.get(personnelCategory(k)).push(`<section class="pr-section"><p class="section-title">${escapeHtml(label(k, true))}${n}</p>${body}</section>`);
+            const cat = personnelCategory(k);
+            if (cat === 'executive' && v && typeof v === 'object' && !Array.isArray(v)) {
+                const rest = {};
+                Object.entries(v).forEach(([ck, cv]) => {
+                    const hc = hoistCategory(ck);
+                    if (hc && cv && typeof cv === 'object') entries.push([ck, cv, hc]);
+                    else rest[ck] = cv;
+                });
+                entries.push([k, rest, cat]);
+            } else entries.push([k, v, cat]);
         });
-    const tabs = CATEGORIES.filter(([id]) => byCategory.get(id).length);
-    rosterSeq += 1;
-    const name = `pr-tab-${rosterSeq}`;
+    return entries;
+};
+
+// 갈래별 단락 HTML. 별도 '인사 명단' 창을 만들지 않고, 국가 화면의 기존 블록
+// (대통령실·총리실·행정부·의회·지방자치단체·정당)에 각 갈래를 끼워 넣는다.
+// 한 화면을 그리는 동안 블록마다 다시 부르므로 자료 객체별로 한 번만 만든다.
+const categoryCache = new WeakMap();
+export const personnelCategories = (data) => {
+    if (!data || typeof data !== 'object') return new Map();
+    if (categoryCache.has(data)) return categoryCache.get(data);
+    const byCategory = new Map();
+    categoryCache.set(data, byCategory);
+    splitEntries(data).forEach(([k, v, cat]) => {
+        const body = renderNode(k, v, 0);
+        if (!body) return;
+        const n = Array.isArray(v) ? ` <small>${v.length}</small>` : '';
+        byCategory.set(cat, [...(byCategory.get(cat) || []),
+            `<section class="pr-section"><p class="section-title">${escapeHtml(label(k, true))}${n}</p>${body}</section>`]);
+    });
+    return byCategory;
+};
+
+// 블록 하나에 들어갈 인사 단락. 갈래가 하나도 없으면 '' -- 그 블록은 손대지 않는다.
+export const personnelPartHtml = (data, categories) => {
+    const byCategory = personnelCategories(data);
+    const sections = categories.flatMap((cat) => byCategory.get(cat) || []);
+    if (!sections.length) return '';
     return `<div class="pr-roster">
-        <p class="elections-panel-note">기준일 ${escapeHtml(data.as_of || '')}${data.cutoff_ko ? ` · ${escapeHtml(data.cutoff_ko)}` : ''}</p>
+        <p class="section-title pr-heading">인사</p>
+        <p class="elections-panel-note">기준일 ${escapeHtml(data.as_of || '')} · 공식 사이트·관보·의회 페이지에서 확인한 이름입니다. 이름을 누르면 출처가 열립니다.</p>
+        ${sections.join('')}
         ${notesBlock(data)}
-        ${tabs.map(([id], i) => `<input class="pr-radio" type="radio" name="${name}" id="${name}-${id}" data-pr-tab="${id}"${i === 0 ? ' checked' : ''}>`).join('')}
-        <div class="cn-lead-tabs pr-tabs" role="group" aria-label="인사 갈래">
-            ${tabs.map(([id, text]) => `<label for="${name}-${id}" data-pr-tab="${id}">${escapeHtml(text)}</label>`).join('')}
-        </div>
-        ${tabs.map(([id]) => `<div class="pr-pane" data-pr-pane="${id}">${byCategory.get(id).join('')}</div>`).join('')}
-        <p class="elections-panel-note">공식 사이트·관보·의회 페이지에서 확인한 이름만 담았습니다. 이름을 누르면 출처가 열립니다.</p>
     </div>`;
 };
+
+export const OFFICE_LABELS = Object.fromEntries(CATEGORIES);
