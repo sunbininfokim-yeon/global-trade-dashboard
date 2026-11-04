@@ -1,0 +1,63 @@
+name: Equity heatmap daily
+
+# Refreshes public/data/equity_heatmap_v1.json (Nasdaq-100 / S&P 500
+# constituent moves for the macro monitor's treemap) after the US close.
+# 22:30 UTC is 17:30 ET in winter and 18:30 ET in summer -- after the close
+# either way, so Yahoo's daily bar is final. Listed in deploy.yml's
+# workflow_run so the refreshed file actually reaches Cloudflare. On a US
+# holiday as_of does not move, the file is byte-identical, nothing commits.
+
+on:
+  schedule:
+    - cron: '30 22 * * 1-5'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/macro_monitor/build_equity_heatmap.py'
+      - '.github/workflows/equity_heatmap_daily.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: equity-heatmap-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m py_compile 'New for anti/scripts/macro_monitor/build_equity_heatmap.py'
+
+  update:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build constituent moves
+        run: python 'New for anti/scripts/macro_monitor/build_equity_heatmap.py'
+      - name: Commit refreshed data
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/equity_heatmap_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh equity heatmap constituents'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1
