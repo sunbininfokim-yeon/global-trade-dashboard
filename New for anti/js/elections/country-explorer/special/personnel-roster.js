@@ -44,7 +44,8 @@ const LABELS = {
     congress_permanent_deputation: '하원 상임대표단', congress_groups_before_dissolution: '해산 전 하원 교섭단체',
     senate_permanent_deputation: '상원 상임대표단', no10_and_security: '총리실·안보', officers: '임원',
     directors: '이사', named: '명단', clubs: '의원단', leader: '지도자', women: '여성', vacancies: '공석',
-    chancellor: '총리', reelected: '재선', succeeded: '승계', assumed_prime_minister_on: '총리 취임', pole: '축', line: '설명', as_of: '기준일', list: '명부', date: '날짜', day: '날짜', persian_date: '이란력 날짜',
+    deputy_commander: '부사령관', navy_commander: '해군 사령관', previous_appointment: '전임', ground_forces_commander: '지상군 사령관',
+    aerospace_commander: '항공우주군 사령관', quds_force: '쿠드스군', chief_of_staff_ko: '참모총장', chancellor: '총리', reelected: '재선', succeeded: '승계', assumed_prime_minister_on: '총리 취임', pole: '축', line: '설명', as_of: '기준일', list: '명부', date: '날짜', day: '날짜', persian_date: '이란력 날짜',
     gregorian: '양력', number: '번호', proportional: '비례대표', negotiating_group: '교섭단체', emirate: '토후국',
     wording: '원문 표현', decision: '결정', text: '본문', period: '기간', attribute: '속성', individual: '개인',
     source_grade: '출처 등급', still_titled_on: '직함 확인일', election_day: '선거일', published: '게시일', men: '남성',
@@ -112,7 +113,7 @@ const scalarText = (v) => (v === true ? '예' : v === false ? '아니오' : Stri
 const link = (url, text = '출처') => (safeUrl(url)
     ? `<a class="elections-person-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>` : '');
 const firstUrl = (obj) => URL_KEYS.map((k) => obj[k]).find(safeUrl) || '';
-const nameOf = (obj) => [obj.name_ko, obj.name, obj.name_en].find((v) => typeof v === 'string' && v.trim());
+const nameOf = (obj) => [obj.name_ko, obj.name, obj.name_en, obj.name_as_signed, obj.full_name].find((v) => typeof v === 'string' && v.trim());
 
 const isPerson = (v) => v && typeof v === 'object' && !Array.isArray(v) && Boolean(nameOf(v));
 const seatValue = (v) => SEAT_KEYS.map((k) => v[k]).find((x) => typeof x === 'number');
@@ -315,9 +316,19 @@ export const personnelCategories = (data) => {
 // 박스로 옮기지 못한 세부 값(근거 메모·날짜 표기 등)은 블록 끝 '세부 자료'에 남긴다 --
 // 원본에 있는 것을 화면이 조용히 버리지 않게.
 const HEADLINE = 7;
+const LIST_WORDS = new Set(['people', 'members', 'named', 'list', 'listed_members', 'names', 'roster', 'rows']);
 
+const HANGUL = /[\uac00-\ud7a3]/;
+const boxTitle = (p, fallbackTitle) => {
+    const strings = (keys) => keys.map((k) => p[k]).filter((v) => typeof v === 'string' && v.trim());
+    return strings(['role_ko', 'title_ko', 'office_ko', 'post_ko'])[0]
+        || strings(PERSON_TITLE_KEYS).find((v) => HANGUL.test(v))
+        || (fallbackTitle && HANGUL.test(fallbackTitle) ? fallbackTitle : '')
+        || strings(PERSON_TITLE_KEYS).find((v) => /^[\x20-\x7e]+$/.test(v))
+        || fallbackTitle || strings(PERSON_TITLE_KEYS)[0] || '';
+};
 const personBox = (p, fallbackTitle) => {
-    const title = PERSON_TITLE_KEYS.map((k) => p[k]).find((v) => typeof v === 'string' && v.trim()) || fallbackTitle || '';
+    const title = boxTitle(p, fallbackTitle);
     const chips = PERSON_CHIP_KEYS.map((k) => p[k]).filter((v) => isScalar(v) && v !== null && v !== '').map(scalarText);
     const dates = PERSON_DATE_KEYS.filter((k) => isScalar(p[k]) && p[k] !== null && p[k] !== '')
         .map((k) => `${label(k)} ${scalarText(p[k])}`);
@@ -334,9 +345,11 @@ const personBox = (p, fallbackTitle) => {
 const collectTiers = (key, value, title, tiers, depth = 0) => {
     if (value === null || value === undefined || isScalar(value) || HIDDEN_KEYS.has(key) || depth > 3) return;
     if (Array.isArray(value)) {
-        if (value.length && value.every(isGroup)) tiers.push({ title, seats: value });
-        else if (value.length && value.every(isPerson)) tiers.push({ title, people: value.map((p) => [p, '']) });
-        else value.forEach((item, i) => collectTiers(key, item, value.length > 1 ? `${title} ${i + 1}` : title, tiers, depth + 1));
+        if (value.length && value.every(isGroup)) { tiers.push({ title, seats: value }); return; }
+        const people = value.filter((item) => isPerson(item) && !isGroup(item));
+        if (people.length) tiers.push({ title, people: people.map((p) => [p, '']) });
+        value.filter((item) => item && typeof item === 'object' && !isPerson(item))
+            .forEach((item, i, rest) => collectTiers(key, item, rest.length > 1 ? `${title} ${i + 1}` : title, tiers, depth + 1));
         return;
     }
     if (isCountMap(value)) { tiers.push({ title, counts: value }); return; }
@@ -352,7 +365,7 @@ const collectTiers = (key, value, title, tiers, depth = 0) => {
                     collectTiers(gk, gv, `${title} · ${label(gk)}`, tiers, depth + 2);
                 }
             });
-        } else collectTiers(k, v, `${title} · ${label(k)}`, tiers, depth + 1);
+        } else collectTiers(k, v, LIST_WORDS.has(k) ? title : `${title} · ${label(k)}`, tiers, depth + 1);
     });
 };
 

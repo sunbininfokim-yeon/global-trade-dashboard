@@ -50,3 +50,14 @@ test('internal ids stay hidden and unsafe urls never become links', () => {
     assert.match(html, /X/);
     assert.doesNotMatch(html, /javascript:/);
 });
+
+test('roster tiers use the same numbered org-chart boxes as the USA and China screens', () => {
+    const kor = personnelPartHtml(load('KOR'), ['president']);
+    assert.match(kor, /<p class="section-title">1 · 대통령<\/p>/);
+    assert.match(kor, /elections-org-box/);
+    assert.match(kor, /박스를 누르면 전원 \d+인/, 'long tiers fold like the Politburo roster');
+    assert.match(kor, /세부 자료·근거/, 'nothing from the source is dropped');
+    const rus = personnelPartHtml(load('RUS'), ['president']);
+    assert.doesNotMatch(rus, /elections-org-box-ko">직책</, 'boxes keep the printed title even when it is not Korean');
+    assert.match(rus, /В\.Путин/);
+});
