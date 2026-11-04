@@ -2,12 +2,13 @@
   "schema": "isr_personnel_v1",
   "as_of": "2026-11-04",
   "country": "ISR",
-  "cutoff_ko": "대통령, 총리, 제25대 크네세트 의장까지다. 제26대 선거는 2026년 10월 27일이고 결과 표는 열리지 않았다. 장관 전원과 블록 의석은 넣지 않는다.",
+  "cutoff_ko": "대통령, 총리, 제25대 의장, 제26대 10월 30일 의석 발표까지다. 실시간 개표판은 비어 있었고 발표문과 합치지 않는다. 블록 합과 장관 전원은 넣지 않는다.",
   "not_in_this_file": [
-    "제26대 의석. 중앙선거위원회 결과 페이지가 표를 돌려주지 않았다.",
-    "제25대 블록 의석. 해산 전 분열은 적고 정수는 없다.",
+    "실시간 개표판. 그 페이지는 표가 없었다.",
+    "제25대 블록 의석.",
     "장관 전원.",
-    "후보 명부의 금지 결정을 당선 결과로 쓰지 않는다. 그 페이지는 10월 13일이고 명부가 최종이 아니라고 적는다."
+    "신문이 적은 우파 53, 변화 48 같은 블록 합.",
+    "10월 13일 후보 안내의 금지 결정을 10월 30일 의석과 합치지 않는다."
   ],
   "president": {
     "name": "Yitzhak Herzog",
@@ -31,6 +32,10 @@
       "list_page": "http://www.gov.il/en/pages/candidates-lists-26",
       "note": "후보 안내 페이지는 명부가 아직 최종이 아니고 위원회 승인도 남았다고 적는다."
     },
+    "still_called_prime_minister": [
+      {"day": "2026-10-02", "government": "37", "url": "http://www.gov.il/he/pages/spoke-pm021026"},
+      {"day": "2026-10-30", "url": "https://www.gov.il/he/pages/results-26"}
+    ],
     "new_government_after_2026_10_27": null
   },
   "knesset_25": {
@@ -57,17 +62,41 @@
     "date_url": "https://www.gov.il/he/pages/knesset26-date",
     "interior_page_updated": "2026-10-20",
     "interior_url": "http://www.gov.il/he/pages/knesset-elections-2026",
-    "results_url": "https://votes26.bechirot.gov.il/nationalresults?lang=he",
-    "results": null,
-    "note": "결과 페이지는 열렸으나 표가 비어 있었다. 의석을 만들지 않았다."
+    "live_board_url": "https://votes26.bechirot.gov.il/nationalresults?lang=he",
+    "live_board": null,
+    "published": "2026-10-30",
+    "source_url": "https://www.gov.il/he/pages/results-26",
+    "submit_to_the_president": "2026-11-04",
+    "status": "발표문은 최종 진상 결과라고 하고, 선거 순수성 점검과 가벼운 수정 뒤 11월 4일 대통령에게 제출된다고 적는다. 제출 완료 페이지는 열리지 않았다.",
+    "counted": 5716665,
+    "valid": 5690778,
+    "invalid": 25887,
+    "turnout": "77.9%",
+    "threshold": {"share": "3.25%", "minimum_votes_stated": 184947, "note": "유효표의 3.25%는 184,950.285다. 발표의 184,947과 맞추지 않았다."},
+    "mandates": [
+      {"list": "הליכוד", "seats": 27},
+      {"list": "ישר!", "seats": 21},
+      {"list": "ביחד", "seats": 12},
+      {"list": "הרשימה המשותפת", "seats": 11},
+      {"list": "הדמוקרטים", "seats": 8},
+      {"list": "רע״ם", "seats": 8},
+      {"list": "ישראל ביתנו", "seats": 7},
+      {"list": "עוצמה יהודית", "seats": 7},
+      {"list": "יהדות התורה", "seats": 7},
+      {"list": "ש״ס", "seats": 6},
+      {"list": "הציונות הדתית", "seats": 6}
+    ],
+    "named_on_the_same_page": {"prime_minister": "בנימין נתניהו", "opposition_leader": "יאיר לפיד", "yashar_chair": "גדי איזנקוט"},
+    "october_13_bars_not_the_seat_table": {"url": "http://www.gov.il/en/pages/candidates-lists-26", "barred_pending_appeal": ["Ra'am", "Joint Arab List"]},
+    "investigation": "대리 사무총장 딘 리브네가 위원장 동의로 말했다. 신베트 수사는 대통령에게 낼 결과를 바꾸지 않고 특정 부문을 가리키지 않는다. 수사는 끝나지 않았다."
   },
   "orientation": {
-    "note": "3월 법령의 총리는 네타냐후다. 제25대는 7월 17일 닫혔다. 제26대 선거는 10월 27일이고 의석표는 없다.",
+    "note": "10월 30일 발표의 의석 합은 120이다. 네타냐후는 그 글에서 아직 총리다. 제26대 의장은 없다.",
     "poles": [
       {"pole": "대통령", "line": "이츠하크 헤르초그. 2026년 3월 26일과 3월 31일 법령, 4월 14일 기념식에 대통령으로 서명하거나 참석했다."},
-      {"pole": "총리", "line": "베냐민 네타냐후. 같은 법령과 기념식의 총리다. 10월 13일 후보 안내는 리쿠드 명부 첫머리를 그와 적고, 그 명부는 최종이 아니라고 한다. 10월 27일 이후 새 정부는 열리지 않았다."},
+      {"pole": "총리", "line": "베냐민 네타냐후. 10월 2일 총리실과 10월 30일 선거 발표가 그를 총리로 적는다. 그 발표의 리쿠드는 27석이다. 새 정부는 없다."},
       {"pole": "제25대", "line": "의장 아미르 오하나. 7월 17일 제25대를 닫고 다음 회의는 선거 2주 뒤라고 말했다. 7월 16일 통합토라유대는 데겔 하토라와 아구다트 이스라엘로, 하다시-타알은 둘로 나뉜다고 위원회가 승인했다. 의석 수는 없다."},
-      {"pole": "제26대", "line": "선거일은 2026년 10월 27일이다. 대법관 노암 솔베르그가 2023년 4월 20일 의견으로 그 날을 적었다. 결과 표는 비어 있었다."}
+      {"pole": "제26대", "line": "10월 30일 발표는 120석이다. 리쿠드 27, 예샤르 21, 베야하드 12, 공동명단 11, 민주당 8, 라암 8, 이스라엘 베이테이누 7, 유대인의 힘 7, 통합토라유대 7, 샤스 6, 종교시온주의 6. 나머지 명단은 봉쇄 조항을 넘지 못했고 이름은 없다. 같은 글의 예샤르 대표는 가디 아이젠코트, 야당 대표는 야이르 라피드다. 제출 예정일은 11월 4일이고 제출 완료는 열리지 않았다."}
     ]
   }
 }
