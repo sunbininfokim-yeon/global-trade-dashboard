@@ -1,3 +1,4 @@
+import {industrialUSVerification} from './refractory-solvents-evidence.mjs';
 import { JAPAN_VERIFICATIONS } from './japan-verification.mjs';
 import { CHINA_VERIFICATIONS } from './china-verification.mjs';
 import { VIETNAM_VERIFICATIONS } from './vietnam-verification.mjs';
@@ -79,7 +80,7 @@ export const PRODUCT_VERIFICATIONS = rows;
 // Our investigation coverage and the government's proceeding are independent.
 // Missing data must never be relabelled as an official pending determination.
 export function adCoverageStatus(product, country = 'KOR') {
-  const row = country === 'KOR' ? rows[product] : country === 'VNM' ? VIETNAM_VERIFICATIONS[product] : country === 'CHN' ? CHINA_VERIFICATIONS[product] : country === 'JPN' ? JAPAN_VERIFICATIONS[product] : null, status = row?.ad.status;
+  const row = industrialUSVerification(product,country) || (country === 'KOR' ? rows[product] : country === 'VNM' ? VIETNAM_VERIFICATIONS[product] : country === 'CHN' ? CHINA_VERIFICATIONS[product] : country === 'JPN' ? JAPAN_VERIFICATIONS[product] : null), status = row?.ad.status;
   const basic = {
     research: { state: 'not_recorded', label: '조사 기록 없음', note: '이 품목·원산지의 조사 기록이 없습니다.' },
     procedure: { state: 'unconfirmed', label: '공식 절차 미확인', note: '사건 존재·판정 대기 여부를 확인하지 못했습니다.' },
@@ -88,7 +89,14 @@ export function adCoverageStatus(product, country = 'KOR') {
   };
   if (!row) return basic;
   basic.checked_on = row.checked_on || KOREA_AD_REVIEW.checked_on;
-  if (status === 'reviewed_no_direct_match') {
+  if(status==='industrial_us_case_reviewed'){
+    basic.research={state:'official_case_documents_reviewed',label:'미국 사건 공고 확인',note:'이 선택 원산지·제품의 선별 공고 확인. 현재 기업별 적용 전수 검토는 미완료입니다.'};
+    basic.procedure={state:'selected_official_action_confirmed',label:row.ad.records.map(r=>r.procedure_label).join(' / '),note:'확인한 사건·절차만 표시하며 기업별 예치·정산·명령 연장을 추정하지 않습니다.'};
+    basic.next_step='정확한 제조/수출 법인·제품 범위·현행 예치 지침 확인';
+  } else if(status==='industrial_case_not_reviewed'){
+    basic.research={state:'company_product_confirmed',label:'기업 제품 확인 · 사건 조사 미완료',note:'공식 회사의 취급 제품 확인과 정부 조사 여부는 별개입니다.'};
+    basic.next_step='해당 원산지의 미국 공식 사건·제품 범위 조사';
+  } else if (status === 'reviewed_no_direct_match') {
     basic.research = { state: 'roster_reviewed', label: '사건 목록 조사 완료 · 제한 범위', note: '한국 활성 사건의 제품명 대조만 완료했습니다. 개별 제품·법인 적용 검토는 미완료입니다.' };
     basic.procedure = { state: 'case_unconfirmed', label: '대응 사건 미확인', note: '검토한 목록에서 직접 대응 사건을 찾지 못했습니다. 정부 판정 대기로 확인된 상태가 아닙니다.' };
     basic.next_step = '제품 사양·최신 공고·개별 적용 범위 추가 확인 필요';
@@ -136,10 +144,11 @@ export function adCoverageStatus(product, country = 'KOR') {
 }
 
 export function productVerification(product, country = 'KOR') {
-  const row = country === 'VNM' ? VIETNAM_VERIFICATIONS[product] : country === 'CHN' ? (CHINA_VERIFICATIONS[product] || rows[product]) : country === 'JPN' ? (JAPAN_VERIFICATIONS[product] || rows[product]) : rows[product];
+  const extra=industrialUSVerification(product,country);
+  const row = extra || (country === 'VNM' ? VIETNAM_VERIFICATIONS[product] : country === 'CHN' ? (CHINA_VERIFICATIONS[product] || rows[product]) : country === 'JPN' ? (JAPAN_VERIFICATIONS[product] || rows[product]) : rows[product]);
   if (!row) return null;
   const result = structuredClone({ product, checked_on: KOREA_AD_REVIEW.checked_on, ...row });
-  result.ad = country === 'KOR' ? { ...result.ad, country: 'KOR', review: structuredClone(KOREA_AD_REVIEW) } : country === 'VNM' ? { ...result.ad, country: 'VNM' } : country === 'CHN' && CHINA_VERIFICATIONS[product] ? { ...result.ad, country: 'CHN' } : country === 'JPN' && JAPAN_VERIFICATIONS[product] ? { ...result.ad, country: 'JPN' }
+  result.ad = extra ? {...result.ad,country} : country === 'KOR' ? { ...result.ad, country: 'KOR', review: structuredClone(KOREA_AD_REVIEW) } : country === 'VNM' ? { ...result.ad, country: 'VNM' } : country === 'CHN' && CHINA_VERIFICATIONS[product] ? { ...result.ad, country: 'CHN' } : country === 'JPN' && JAPAN_VERIFICATIONS[product] ? { ...result.ad, country: 'JPN' }
     : { status: 'origin_not_reviewed', country: country || null, rate_pct: null, case_ids: [], label: '이 원산지의 AD/CVD 검토 자료 미수록', note: '한국산 검토 결과를 다른 원산지 또는 미선택 원산지에 적용하지 않습니다.' };
   result.coverage = adCoverageStatus(product, country);
   return result;

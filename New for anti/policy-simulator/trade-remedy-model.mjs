@@ -13,12 +13,14 @@ const day=v=>{if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(v)||!Number.is
 const dec=(v,max=1e12)=>{if(!/^(?:0|[1-9]\d*)(?:\.\d{1,6})?$/.test(String(v)))throw Error('0 이상 소수점6자리 이내 숫자 필요');if(Number(v)>max)throw Error('입력 범위 초과');const[a,b='']=String(v).split('.');return BigInt(a)*1000000n+BigInt(b.padEnd(6,'0'));};
 const usd=(n,d)=>{const sign=n<0n?'-':'',x=n<0n?-n:n,c=(x*200n+d)/(2n*d);return `${c?sign:''}${c/100n}.${String(c%100n).padStart(2,'0')}`;};
 export function lookupRemedy(input,quotes=REMEDY_QUOTES){
+  if(input.import_country && input.import_country!=='USA')return {status:'unresolved',rate_pct:null,reason:'미국 수입 예치 계산입니다. 다른 수입국 사건은 별도 검증·모델 필요'};
   const entry=day(input.entry_date),q=quotes.find(x=>x.id===input.quote_id);
   if(!q||q.country!==input.country||q.product!==input.product||q.duty!==input.duty||q.company!==input.company)return {status:'unresolved',rate_pct:null,reason:'공고의 원산지·품목·제도·정확한 법인 일치 필요'};
   if(q.status!=='publication_snapshot'||entry<q.effective||entry>q.verified_through)return {status:'unresolved',rate_pct:null,reason:'자료 검증 범위 밖 통관일. 예치율 만료를 뜻하지 않으며 최신 지침 추가 확인 필요'};
   return {...structuredClone(q),status:'historical_published_reference',entry_date:entry};
 }
 export function simulateRemedy(input){
+  if(input.import_country && input.import_country!=='USA')throw Error('미국 수입 계산에 한국 등 다른 수입국 사건을 사용할 수 없습니다');
   if(!['AD','CVD'].includes(input.duty))throw Error('AD 또는 CVD 선택 필요');
   if(input.scope_confirmed!==true||input.identity_confirmed!==true)throw Error('제품·원산지와 생산자/수출자 법인 적용 조건 확인 필요');
   if(!/^[A-Z]{3}$/.test(input.country||'')||!input.product?.trim())throw Error('제품·원산지 선택 필요');
@@ -36,7 +38,7 @@ export function simulateRemedy(input){
   const value=dec(input.entered_value_usd),a=dec(ref.rate_pct,10000),b=dec(input.scenario_rate_pct,10000),f=dec(input.annual_finance_pct,100),days=dec(input.holding_days,36500);
   if(!value||days%1000000n)throw Error('신고가격 양수·기간 정수 일수 필요');
   const d=100000000000000n,fd=d*1000000000000n*36500n;
-  return {status:'calculated',model_version:'trade-remedy-deposit-1',duty:input.duty,reference:ref,inputs:structuredClone(input),
+  return {status:'calculated',import_country:'USA',model_version:'trade-remedy-deposit-1',duty:input.duty,reference:ref,inputs:structuredClone(input),
     reference_deposit_usd:usd(value*a,d),scenario_deposit_usd:usd(value*b,d),deposit_change_usd:usd(value*(b-a),d),
     reference_financing_usd:usd(value*a*f*days,fd),scenario_financing_usd:usd(value*b*f*days,fd),
     limitations:['AD와 CVD는 별도 계산이며 일반관세·수수료와 합산하지 않음','최종 관세·환급·실제 덤핑마진 예측 아님','원산지는 본사·선적국이 아님','과거 검증 범위 밖을 현행 세율로 연장하지 않음']};

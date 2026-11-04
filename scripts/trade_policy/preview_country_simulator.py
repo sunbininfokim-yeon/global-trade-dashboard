@@ -11,7 +11,7 @@ import json
 
 ROOT = Path(__file__).resolve().parents[2] / 'New for anti'
 ASSETS = {
-    **{f'/policy-simulator/{n}.mjs': (f'policy-simulator/{n}.mjs', 'text/javascript') for n in ['remedy-monitor-catalog', 'remedy-discovery-snapshot', 'observed-inputs']},
+    **{f'/policy-simulator/{n}.mjs': (f'policy-simulator/{n}.mjs', 'text/javascript') for n in ['refractory-solvents-evidence', 'remedy-monitor-catalog', 'remedy-discovery-snapshot', 'observed-inputs']},
     '/policy-simulator/trade-remedy-model.mjs': ('policy-simulator/trade-remedy-model.mjs', 'text/javascript'),
     '/policy-simulator/trade-remedy-panel.mjs': ('policy-simulator/trade-remedy-panel.mjs', 'text/javascript'),
     '/policy-simulator/japan-verification.mjs': ('policy-simulator/japan-verification.mjs', 'text/javascript'),

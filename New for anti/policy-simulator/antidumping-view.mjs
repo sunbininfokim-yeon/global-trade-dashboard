@@ -1,3 +1,4 @@
+import {INDUSTRIAL_PRODUCTS,industrialEvidenceMarkup} from './refractory-solvents-evidence.mjs';
 import {REMEDY_DISCOVERY} from './remedy-discovery-snapshot.mjs';
 import {REMEDY_MONITOR_CATALOG,scheduleReviews} from './remedy-monitor-catalog.mjs';
 import { remedyPanel, mountRemedyPanel, remedyOutput, resetRemedyPanel } from './trade-remedy-panel.mjs';
@@ -26,6 +27,7 @@ let industryId = 'transformer', profileId = '', evidenceOrigin = 'KOR';
 const originName = () => ({KOR:'한국',VNM:'베트남',CHN:'중국',JPN:'일본'})[evidenceOrigin];
 let companySearch = '', allCompaniesOpen = false, overview = true, calculatorOpen = false;
 const selectedIndustry = () => COMPANY_INDUSTRIES.find(x => x.id === industryId);
+const industrialProduct = () => INDUSTRIAL_PRODUCTS.some(p=>p.id===selectedIndustry().product);
 const hasADCase = () => evidenceOrigin === 'KOR' && Boolean(selectedIndustry().case_id);
 let example = createADExample(draft), editedFields = new Set(), processRecordId = '';
 let methodSegment = '2026-16663', methodRows = [], equalWeights = false;
@@ -114,11 +116,11 @@ function verificationLabel(product) {
 }
 function processSelection() {
   const industry = selectedIndustry(), c = selectedCase(), manual = draft.reference_mode === 'manual';
-  if (evidenceOrigin !== 'KOR') return `<div class="ts-ad-selection" aria-label="산업과 원산지 선택">${industryPicker()}<p class="ts-ad-selection-context">선택: ${esc(industry.label)} · ${originName()}산 · 공식 자료 선별 조사</p><p class="ts-help">${originName()} 생산·수출 법인의 공표 시점 이력이 확인된 경우 아래 선택 계산에 연결됩니다. 미수록 법인은 미확인입니다. 한국 본사나 한국산 예치율을 적용하지 않습니다. 확인한 사건·제품 범위는 아래 원문 조사 결과에서 볼 수 있습니다.</p></div>`;
+  if (evidenceOrigin !== 'KOR' && !industrialProduct()) return `<div class="ts-ad-selection" aria-label="산업과 원산지 선택">${industryPicker()}<p class="ts-ad-selection-context">선택: ${esc(industry.label)} · ${originName()}산 · 공식 자료 선별 조사</p><p class="ts-help">${originName()} 생산·수출 법인의 공표 시점 이력이 확인된 경우 아래 선택 계산에 연결됩니다. 미수록 법인은 미확인입니다. 한국 본사나 한국산 예치율을 적용하지 않습니다. 확인한 사건·제품 범위는 아래 원문 조사 결과에서 볼 수 있습니다.</p></div>`;
   if (!hasADCase()) return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">${industryPicker()}${overviewButton()}
-    <fieldset><legend>2. 기업 선택 · 선택사항 <span>${evidenceOrigin === 'KOR' ? industry.profiles.length : 0}개 기업</span></legend><div class="ts-ad-companies">${(evidenceOrigin === 'KOR' ? industry.profiles : []).map(id => `<button type="button" data-ad-profile="${id}" aria-label="${esc(COMPANY_PROFILES[id].name)}" aria-pressed="${!overview && profileId === id}"><b>${esc(COMPANY_PROFILES[id].name)}</b><small>${esc(verificationLabel(industry.product))}</small></button>`).join('')}</div></fieldset>
+    <fieldset><legend>2. 기업 선택 · 선택사항 <span>${industry.profiles.length}개 기업</span></legend><div class="ts-ad-companies">${industry.profiles.map(id => `<button type="button" data-ad-profile="${id}" aria-label="${esc(COMPANY_PROFILES[id].name)}" aria-pressed="${!overview && profileId === id}"><b>${esc(COMPANY_PROFILES[id].name)}</b><small>${esc(verificationLabel(industry.product))}</small></button>`).join('')}</div></fieldset>
     <p class="ts-ad-selection-context" role="status">선택: ${esc(industry.label)} → <b>${overview ? '품목 전체' : esc(COMPANY_PROFILES[profileId].name)}</b> · ${originName()}산 · 기업별 예치율 미확정</p>
-    <p class="ts-help">공식 제품군과 한국 활성 사건 목록의 확인 결과를 연결했습니다. 아래 공식 자료 확인 결과에서 조사 범위와 남은 확인사항을 볼 수 있습니다. 기업별 AD 예치율 미확정은 0%를 뜻하지 않습니다.${industry.source ? ` <a href="${esc(industry.source)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a>` : ''}</p></div>`;
+    <p class="ts-help">공식 기업 제품군과 선별 공고의 확인 결과를 연결했습니다. 기업 본사 소재지나 제품 취급이 생산 원산지·기업별 세율을 확정하지 않습니다. 아래 공식 자료 확인 결과에서 조사 범위와 남은 확인사항을 볼 수 있습니다. 기업별 AD 예치율 미확정은 0%를 뜻하지 않습니다.${industry.source ? ` <a href="${esc(industry.source)}" target="_blank" rel="noopener noreferrer">기업 제품 원문</a>` : ''}</p></div>`;
   const company = c.companies.find(x => x.id === draft.company_id);
   return `<div class="ts-ad-selection" aria-label="산업과 기업 선택">
     ${industryPicker()}${overviewButton()}
@@ -140,10 +142,10 @@ function monitorNotices() {
   const product=selectedIndustry().product;
   const cases=REMEDY_MONITOR_CATALOG.cases.filter(c=>c.country===evidenceOrigin&&c.product===product);
   const schedules=scheduleReviews(new Date().toISOString().slice(0,10)).filter(c=>c.country===evidenceOrigin&&c.product===product);
-  return industryMonitorMarkup(product,evidenceOrigin)+cases.map(c=>noticeReviewMarkup(REMEDY_DISCOVERY,c.case_id)).join('')+schedules.map(s=>`<p class="ts-help">공식 일정 선별 확인 ${s.checked_on} · ${s.case_id} · POR ${s.por_start} ~ ${s.por_end} · 최종결과 예정 ${s.announced_for} · ${s.status==='due_requires_official_result_or_extension'?'예정일 도래 · 결과/연장 확인 필요':'예정 · 완료 미확인'} · <a href="${s.url}" target="_blank" rel="noopener noreferrer">Commerce 일정 원문</a><br>${s.note}</p>`).join('');
+  return industrialEvidenceMarkup(product,evidenceOrigin)+industryMonitorMarkup(product,evidenceOrigin)+cases.map(c=>noticeReviewMarkup(REMEDY_DISCOVERY,c.case_id)).join('')+schedules.map(s=>`<p class="ts-help">공식 일정 선별 확인 ${s.checked_on} · ${s.case_id} · POR ${s.por_start} ~ ${s.por_end} · 최종결과 예정 ${s.announced_for} · ${s.status==='due_requires_official_result_or_extension'?'예정일 도래 · 결과/연장 확인 필요':'예정 · 완료 미확인'} · <a href="${s.url}" target="_blank" rel="noopener noreferrer">Commerce 일정 원문</a><br>${s.note}</p>`).join('');
 }
 function coverageGap() {
-  const industry = selectedIndustry(), p = overview || evidenceOrigin !== 'KOR' ? null : COMPANY_PROFILES[profileId];
+  const industry = selectedIndustry(), p = overview || (evidenceOrigin !== 'KOR' && !industrialProduct()) ? null : COMPANY_PROFILES[profileId];
   const productSource = p ? companyCalibration(profileId, industry.product).selected_product_source?.url : null;
   const verification = productVerification(industry.product, evidenceOrigin);
   const gap = ['historical_order_revoked','ad_order_confirmed','final_notice_source_conflict'].includes(verification?.ad.status) ? verification.ad.label : verification?.ad.status === 'ad_cvd_order_confirmed' ? 'AD·CVD 명령 유지 공고 연결 · 기업별 현행 예치율 확인 및 계산 연결은 보류 중입니다.' : verification?.ad.status === 'cvd_confirmed_ad_terminated' ? '과거 AD 조사 종료 · CVD 명령 및 공식 재심 발표 예정 확인. 최신 기업별 예치율은 미확인입니다.' : verification?.ad.status === 'official_case_confirmed_deposit_unresolved' ? '공식 사건과 과거 최종 마진을 확인했습니다. 예치율 적용 조건은 추가 검토 중입니다.' : verification?.ad.status === 'related_scope_review_required' ? '관련 조사 공고 확인 · 실제 제품 범위와 기업별 예치율은 추가 확인이 필요합니다.' : verification?.ad.status === 'bounded_search_no_confirmed_case' ? '품목별 공식 조사 근거 연결 · 선택 원산지 대응 사건·기업별 예치율 미확인. 아래에서 다른 제품·원산지 사건의 구분 근거를 볼 수 있습니다.' : '이 기업·품목의 반덤핑 공고와 예치율은 아직 연결하지 않았습니다.';
@@ -274,6 +276,7 @@ export function mountAntidumping(root, { openCompany } = {}) {
   }, { signal });
   root.addEventListener('click', event => {
     const el = event.target.closest('button'); if (!el || !root.contains(el)) return;
+    if(el.hasAttribute('data-ad-related-origin')){if(!['KOR','CHN'].includes(el.dataset.adRelatedOrigin))return;evidenceOrigin=el.dataset.adRelatedOrigin;result=null;unconfirm();chooseIndustry(selectedIndustry());return;}
     if (el.hasAttribute('data-ad-overview')) { overview = true; calculatorOpen = false; processRecordId = ''; paint(); return; }
     if (el.hasAttribute('data-ad-case')) {
       if (evidenceOrigin !== 'KOR') return;
@@ -297,12 +300,12 @@ export function mountAntidumping(root, { openCompany } = {}) {
       root.querySelector(`[data-ad-industry="${industryId}"]`).focus({ preventScroll: true });
     }
     else if (el.hasAttribute('data-ad-profile')) {
-      if (evidenceOrigin !== 'KOR') return;
+      if (evidenceOrigin !== 'KOR' && !industrialProduct()) return;
       if (!selectedIndustry().profiles.includes(el.dataset.adProfile) || (!overview && profileId === el.dataset.adProfile)) return;
       overview = false;
       profileId = el.dataset.adProfile; paint(); root.querySelector(`[data-ad-profile="${profileId}"]`).focus({ preventScroll: true });
     }
-    else if (el.hasAttribute('data-ad-open-company') && !hasADCase() && evidenceOrigin === 'KOR') openCompany?.(profileId, selectedIndustry().product);
+    else if (el.hasAttribute('data-ad-open-company') && !hasADCase() && (evidenceOrigin === 'KOR' || industrialProduct())) openCompany?.(profileId, selectedIndustry().product);
     else if (el.hasAttribute('data-ad-reset')) { evidenceOrigin = 'KOR'; overview = true; calculatorOpen = true; companySearch = ''; allCompaniesOpen = false; draft = initial(); industryId = 'transformer'; profileId = ''; example = createADExample(draft); editedFields = new Set(); processRecordId = ''; result = null; dirty = true; methodSegment = '2026-16663'; seedMethod(); root.innerHTML = antidumpingMarkup(); }
     else if (el.hasAttribute('data-ad-example')) { draft.entry_date = catalog.checked_on; example = createADExample(draft); Object.assign(draft, example.values); editedFields = new Set(); unconfirm(); dirty = true; paint(); }
     else if (el.hasAttribute('data-ad-days')) { draft.holding_days = el.dataset.adDays; editedFields.add('holding_days'); root.querySelector('[data-ad-key="holding_days"]').value = draft.holding_days; clear(); }
