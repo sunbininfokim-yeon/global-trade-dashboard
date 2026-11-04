@@ -340,6 +340,25 @@ const personBox = (p, fallbackTitle) => {
     });
 };
 
+// 같은 명단 안의 급. 한국 대통령실 기준으로 실장급 > 수석·차장급 > 비서관급이고, 다른 나라도
+// 직함 낱말로 같은 층을 고른다 (영·불·러). 부실장·차장·deputy·заместитель 은 실장 낱말을
+// 품고 있어도 둘째 층이라 먼저 본다. 급이 하나뿐인 명단은 나누지 않는다.
+const RANKS = [
+    // 한국 부속실장·국정상황실장은 이름에 '실장'이 있어도 비서관급(1급)이다.
+    [3, /부속실장|상황실장/],
+    [2, /부실장|차장|부비서장|deputy|vice[- ]|adjoint|sous-|заместитель|vice-?chief/i],
+    [1, /실장|비서장|사무총장|chief|head of|руководитель|secretary[- ]general|secrétaire général|director|directeur|^dirett|jefe|chefe/i],
+    [2, /수석|senior|первый/i],
+];
+const RANK_LABELS = { 1: '실장급', 2: '수석·차장급', 3: '비서관·보좌급' };
+export const rankOf = (titleText) => RANKS.find(([, re]) => re.test(titleText || ''))?.[0] || 3;
+const splitByRank = (title, people) => {
+    const ranked = people.map(([p, t]) => [p, t, rankOf(boxTitle(p, t))]);
+    const levels = [...new Set(ranked.map(([, , r]) => r))].sort();
+    if (levels.length < 2) return [{ title, people }];
+    return levels.map((r) => ({ title: `${title} · ${RANK_LABELS[r]}`, people: ranked.filter(([, , x]) => x === r).map(([p, t]) => [p, t]) }));
+};
+
 // 한 갈래를 단으로 편다. 사람이 바로 들어 있는 값은 그 단의 박스가 되고, 사람 목록이나
 // 하위 묶음은 'A · B' 이름의 하위 단이 된다.
 const collectTiers = (key, value, title, tiers, depth = 0) => {
@@ -347,7 +366,7 @@ const collectTiers = (key, value, title, tiers, depth = 0) => {
     if (Array.isArray(value)) {
         if (value.length && value.every(isGroup)) { tiers.push({ title, seats: value }); return; }
         const people = value.filter((item) => isPerson(item) && !isGroup(item));
-        if (people.length) tiers.push({ title, people: people.map((p) => [p, '']) });
+        if (people.length) tiers.push(...splitByRank(title, people.map((p) => [p, ''])));
         value.filter((item) => item && typeof item === 'object' && !isPerson(item))
             .forEach((item, i, rest) => collectTiers(key, item, rest.length > 1 ? `${title} ${i + 1}` : title, tiers, depth + 1));
         return;

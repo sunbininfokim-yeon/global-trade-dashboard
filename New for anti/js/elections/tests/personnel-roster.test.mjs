@@ -55,9 +55,27 @@ test('roster tiers use the same numbered org-chart boxes as the USA and China sc
     const kor = personnelPartHtml(load('KOR'), ['president']);
     assert.match(kor, /<p class="section-title">1 · 대통령<\/p>/);
     assert.match(kor, /elections-org-box/);
-    assert.match(kor, /박스를 누르면 전원 \d+인/, 'long tiers fold like the Politburo roster');
     assert.match(kor, /세부 자료·근거/, 'nothing from the source is dropped');
     const rus = personnelPartHtml(load('RUS'), ['president']);
     assert.doesNotMatch(rus, /elections-org-box-ko">직책</, 'boxes keep the printed title even when it is not Korean');
     assert.match(rus, /В\.Путин/);
+    assert.match(rus, /박스를 누르면 전원 \d+인/, 'long tiers fold like the Politburo roster');
+});
+
+import { rankOf } from '../country-explorer/special/personnel-roster.js';
+
+test('staff lists split by grade: 실장급, 수석·차장급, 비서관급', () => {
+    assert.equal(rankOf('대통령비서실장'), 1);
+    assert.equal(rankOf('정책실장'), 1);
+    assert.equal(rankOf('정무수석비서관'), 2);
+    assert.equal(rankOf('국가안보실 제2차장'), 2);
+    assert.equal(rankOf('제1부속실장'), 3, '부속실장 is 비서관급 despite the word 실장');
+    assert.equal(rankOf('총무비서관'), 3);
+    assert.equal(rankOf('Руководитель Администрации Президента'), 1);
+    assert.equal(rankOf('Первый заместитель Руководителя Администрации Президента'), 2);
+    assert.equal(rankOf('비서실 부실장'), 2);
+    const kor = personnelPartHtml(load('KOR'), ['president']);
+    assert.match(kor, /비서실 · 실장급 2인/);
+    assert.match(kor, /비서실 · 수석·차장급/);
+    assert.match(kor, /비서실 · 비서관·보좌급/);
 });
