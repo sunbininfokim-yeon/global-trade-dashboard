@@ -187,6 +187,7 @@ const vicePremierBoxes = (leadership) => {
             ko: index === 0 ? '상무부총리' : '부총리',
             title: shortTitle(index === 0 ? '상무부총리' : '부총리', row.title_ko),
             person: personWithStatus(row),
+            personUrl: row.official_url || null,
             strike: isFallen(row),
         })),
     ];
@@ -199,6 +200,7 @@ const stateCouncilorBoxes = (leadership) => {
     return (council.state_councilors || []).map((row) => orgBox({
         ko: row.title_ko || '국무위원',
         person: personWithStatus(row),
+        personUrl: row.official_url || null,
         strike: isFallen(row),
         note: row.note_ko,
     }));
@@ -239,6 +241,7 @@ const constituentDepartmentBox = (dept) => {
         en: dept.title_en || dept.title_zh || '',
         title: minister?.title_ko || '',
         person: vacant ? personName(minister) : personWithStatus(minister),
+        personUrl: minister?.official_url || null,
         vacant,
         strike: isFallen(minister),
         former: formerNames([dept.predecessor].filter(Boolean)),
@@ -482,7 +485,7 @@ export const chnStateCouncil = (country) => {
     const ministrySection = councilors.length ? 4 : 3;
     return `
         <p class="section-title">1 · 총리</p>
-        ${orgGrid([orgBox({ ko: '국무원 총리', person: personWithStatus(council.premier) })])}
+        ${orgGrid([orgBox({ ko: '국무원 총리', person: personWithStatus(council.premier), personUrl: council.premier?.official_url || council.official_url || null })])}
 
         <p class="section-title">2 · 부총리 ${vicePremiers.length ? `${vicePremiers.length}인` : ''}</p>
         ${vicePremiers.length ? orgGrid(vicePremiers) : '<p class="elections-muted">확보된 부총리 명부가 없습니다.</p>'}
@@ -497,7 +500,8 @@ export const chnStateCouncil = (country) => {
         ${noteLine(`구성 부문 ${ministries.length}곳 가운데 이름이 확보된 곳은 ${filled}곳입니다. 비어 있는 칸은 명단 미수집이며, 그 부처가 없거나 부처장이 공석이라는 뜻이 아닙니다.`)}
         ${noteLine('부처 박스의 둘째 줄(당위서기/당조서기)은 그 부처 당 조직의 서기입니다. 부장과 다른 사람인 곳이 대부분입니다 -- 당위·당조가 국가기구의 인사보다 앞섭니다.')}
 
-        ${noteLine('국무원은 국가기구입니다. 실제 의사결정은 공산당 화면의 당 기구에서 먼저 이뤄집니다 — 두 화면을 같이 보셔야 합니다.')}
+        ${noteLine(council.note_ko)}
+        ${noteLine('국무원은 국가기구입니다. 실제 의사결정은 공산당 화면의 당 기구에서 먼저 이뤄집니다 — 두 화면을 같이 보셔야 합니다. 이름을 누르면 중국정부망이 적은 그 기관 사이트가 열립니다.')}
         ${noteLine('전국인민대표대회 화면은 데이터 계약상 만들지 않습니다.')}
         ${footer(leadership)}
     `;
