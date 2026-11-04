@@ -802,6 +802,100 @@ const mmEquityMaView = (ind, range) => {
     <p class="fin-note">일별 종가, 최근 ${finEsc(range.replace('y', '년'))}(${n}거래일) · Yahoo Finance ${finEsc(symbol)}. 5/20/60/120/240일 이동평균은 단순이동평균(SMA)입니다.</p>`;
 };
 
+// One trading day per cell, one week per column, Mon-Fri down the side --
+// GitHub-contribution layout, so a run of red weeks or a single crash day
+// shows up without reading a line chart. Reuses the MA tab's daily fetch
+// (same /api/macro yfinance proxy and cache); '2y' is pulled so the first
+// cell of the 12-month window still has a previous close to compare with.
+// Colour scale is clamped per index at its own 95th-percentile |move|
+// (floor 1%): a fixed ±3% would paint VIX almost all saturated and a
+// low-vol index almost all grey.
+const MM_HEAT_UP = '16,185,129', MM_HEAT_DOWN = '239,68,68';  // --positive / --negative
+const MM_HEAT_DAYS = ['월', '화', '수', '목', '금'];
+
+const mmEquityHeatmapView = (ind) => {
+    const symbol = String(ind.source || '').slice('yahoo:'.length);
+    if (!symbol) return '<p class="fin-note">연결된 시세 심볼이 없습니다.</p>';
+    const data = mmFetchDailyForMa(symbol, '2y');
+    if (data instanceof Error) {
+        return `<p class="fin-note">일봉 데이터를 못 받았습니다 — ${finEsc(data.message)}</p>`;
+    }
+    if (!data) {
+        return '<p class="fin-loading">일봉을 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p>';
+    }
+    const { dates, close } = data;
+    if (close.length < 3) return '<p class="fin-note">일봉이 부족해 히트맵을 그릴 수 없습니다.</p>';
+
+    const dayNum = (iso) => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d) / 86400000; };
+    const lastDay = dayNum(dates[dates.length - 1]);
+    const rows = [];
+    for (let i = 1; i < close.length; i++) {
+        const dn = dayNum(dates[i]);
+        if (lastDay - dn > 365) continue;
+        const wd = (new Date(dn * 86400000).getUTCDay() + 6) % 7;  // Mon=0
+        if (wd > 4) continue;  // a stray weekend print (some exchanges) has no row
+        rows.push({ date: dates[i], dn, wd, close: close[i], prev: close[i - 1], pct: (close[i] / close[i - 1] - 1) * 100 });
+    }
+    if (!rows.length) return '<p class="fin-note">최근 1년 거래일이 없습니다.</p>';
+
+    const abs = rows.map((r) => Math.abs(r.pct)).sort((a, b) => a - b);
+    const clamp = Math.max(1, Math.ceil(abs[Math.floor(abs.length * 0.95)] * 2) / 2);
+    const fill = (p) => {
+        const t = Math.min(Math.abs(p) / clamp, 1);
+        if (t < 0.02) return 'rgba(100,116,139,.28)';
+        return `rgba(${p > 0 ? MM_HEAT_UP : MM_HEAT_DOWN},${(0.18 + 0.82 * t).toFixed(2)})`;
+    };
+
+    // Week columns are anchored to Monday of the first row's week.
+    const firstMon = rows[0].dn - rows[0].wd;
+    const C = 13, G = 2, LX = 22, TY = 16;
+    const nWeeks = Math.floor((lastDay - firstMon) / 7) + 1;
+    const W = LX + nWeeks * (C + G), H = TY + 5 * (C + G) + 2;
+    const sign = (p) => `${p > 0 ? '+' : ''}${p.toFixed(2)}%`;
+
+    let monthLabels = '', prevMonth = '';
+    rows.forEach((r) => {
+        const m = r.date.slice(0, 7);
+        if (m === prevMonth) return;
+        prevMonth = m;
+        const col = Math.floor((r.dn - firstMon) / 7);
+        monthLabels += `<text x="${LX + col * (C + G)}" y="10" class="mm-tick">${Number(m.slice(5))}월</text>`;
+    });
+
+    const cells = rows.map((r) => {
+        const col = Math.floor((r.dn - firstMon) / 7);
+        return `<rect x="${LX + col * (C + G)}" y="${TY + r.wd * (C + G)}" width="${C}" height="${C}" rx="2"
+            fill="${fill(r.pct)}"><title>${r.date} (${MM_HEAT_DAYS[r.wd]}) · 종가 ${mmFmt(r.close, 2)} · ${sign(r.pct)}</title></rect>`;
+    }).join('');
+
+    const up = rows.filter((r) => r.pct > 0).length, down = rows.filter((r) => r.pct < 0).length;
+    const best = rows.reduce((a, b) => (b.pct > a.pct ? b : a));
+    const worst = rows.reduce((a, b) => (b.pct < a.pct ? b : a));
+    const yr = (rows[rows.length - 1].close / rows[0].prev - 1) * 100;
+    const legendSteps = [-1, -0.5, 0, 0.5, 1].map((t) => t * clamp);
+
+    return `
+    <svg class="mm-heatmap" viewBox="0 0 ${W} ${H}" role="img"
+         aria-label="${finEsc(ind.label_ko)} 최근 1년 일별 등락 히트맵">
+        ${monthLabels}
+        ${[0, 2, 4].map((d) => `<text x="0" y="${TY + d * (C + G) + C - 3}" class="mm-tick">${MM_HEAT_DAYS[d]}</text>`).join('')}
+        ${cells}
+    </svg>
+    <div class="mm-heat-legend">
+        <span>하락</span>
+        ${legendSteps.map((p) => `<i style="background:${fill(p)}" title="${sign(p)}"></i>`).join('')}
+        <span>상승</span>
+        <span class="mm-heat-scale">색 최대 ±${clamp}%</span>
+    </div>
+    <div class="mm-heat-stats">
+        <span>상승 <b class="mm-up">${up}일</b> · 하락 <b class="mm-down">${down}일</b></span>
+        <span>최대 상승 <b class="mm-up">${sign(best.pct)}</b> ${finEsc(best.date)}</span>
+        <span>최대 하락 <b class="mm-down">${sign(worst.pct)}</b> ${finEsc(worst.date)}</span>
+        <span>1년 누적 <b class="${yr >= 0 ? 'mm-up' : 'mm-down'}">${sign(yr)}</b></span>
+    </div>
+    <p class="fin-note">전일 종가 대비 등락률 · 최근 1년 ${rows.length}거래일 · Yahoo Finance ${finEsc(symbol)}. 칸에 마우스를 올리면 날짜·종가·등락률이 나옵니다. 휴장일은 빈칸입니다.</p>`;
+};
+
 const mmLineChart = (dates, values, opts = {}) => {
     const idx = values.map((v, i) => [i, v]).filter(([, v]) => Number.isFinite(v));
     if (idx.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
@@ -1597,6 +1691,7 @@ const mmViewsFor = (ind) => {
     // either, and this tab would just be a permanent loading spinner for them.
     if (ind.category === 'equity' && String(ind.source || '').startsWith('yahoo:')) {
         views.push({ id: 'ma', label: '이동평균' });
+        views.push({ id: 'heatmap', label: '일별 히트맵' });
     }
     // Secondary panels come last so the engine's primary view stays default.
     const sv = (ind.ui || {}).secondary_view;
@@ -1739,6 +1834,7 @@ const mmChartDrawer = () => {
 
     let body = '';
     if (view === 'ma') body = mmEquityMaView(ind, windowOpts.includes(MM_CHART.window) ? MM_CHART.window : '5y');
+    else if (view === 'heatmap') body = mmEquityHeatmapView(ind);
     else if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
     else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
     else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
