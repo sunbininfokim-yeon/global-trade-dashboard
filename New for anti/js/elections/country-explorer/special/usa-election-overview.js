@@ -1,11 +1,11 @@
 import { escapeHtml } from '../../ui.js';
-import { officialResult, officialLine } from '../../data/official-results.js';
+import { officialResult, officialLine } from '../../data/official-results.js?v=2';
 import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_OFFICES, mediaCall } from '../../data/election-overview.js?v=6';
 import { normalizeParty, pollSignal, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
 import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
 import { governorContextHtml, governorElectionSummaryHtml } from './usa-candidate-context.js';
 import { stateFundraisingHtml } from './usa-state-fundraising.js';
-import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=5';
+import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=6';
 
 const number = (value) => Number.isFinite(value) ? String(value) : '—';
 const tile = (label, value, cls, key, office) => `<button type="button" class="elections-rating-tile ${cls}" data-rating-filter="${key}" aria-expanded="false" aria-controls="elections-${office}-${key}"><span>${label}</span><strong>${number(value)}</strong></button>`;

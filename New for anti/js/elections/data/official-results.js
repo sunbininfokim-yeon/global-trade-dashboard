@@ -13,8 +13,9 @@ export const officialLine = (result, { full = false } = {}) => {
     if (!result?.candidates?.length) return '';
     const top = result.candidates.slice(0, 2)
         .map((c) => `${full ? c.name : lastName(c.name)} ${PARTY[c.party] || c.party || ''} ${fmtPct(c.pct)}`.replace(/\s+/g, ' ').trim());
+    const unit = result.reporting_unit === 'county' ? '카운티' : '투표구';
     const precincts = Number.isFinite(result.precincts_total) && result.precincts_total > 0
-        ? ` · 투표구 ${result.precincts_reporting ?? 0}/${result.precincts_total}` : '';
+        ? ` · ${unit} ${result.precincts_reporting ?? 0}/${result.precincts_total} 보고` : '';
     const lead = result.leader?.party;
     const cls = lead === 'DEM' ? 'is-dem' : lead === 'REP' ? 'is-gop' : lead === 'IND' ? 'is-ind' : '';
     return `<small class="elections-official-count ${cls}" title="${escapeHtml(`${result.authority_ko || '주 선거 당국'} 공개 · ${result.fetched_at || ''}`)}">주정부 개표(비공식): ${escapeHtml(top.join(' · '))}${escapeHtml(precincts)}${result.stale ? ' · 갱신 지연' : ''}</small>`;

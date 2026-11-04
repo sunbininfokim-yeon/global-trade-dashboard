@@ -12,7 +12,8 @@ test('official count line names the state source, both leaders and precincts, an
     const html = officialLine(race);
     assert.match(html, /주정부 개표\(비공식\)/);
     assert.match(html, /Ossoff D 59\.0% · Collins R 41\.0%/);
-    assert.match(html, /투표구 1200\/2600/);
+    assert.match(html, /투표구 1200\/2600 보고/);
+    assert.match(officialLine({ ...race, reporting_unit: 'county', precincts_reporting: 24, precincts_total: 64 }), /카운티 24\/64 보고/);
     assert.match(html, /is-dem/);
     assert.doesNotMatch(html, /당선/);
     assert.match(officialLine({ ...race, stale: true }), /갱신 지연/);

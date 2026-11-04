@@ -1,5 +1,5 @@
 import { escapeHtml } from '../../ui.js';
-import { officialResult, officialLine } from '../../data/official-results.js';
+import { officialResult, officialLine } from '../../data/official-results.js?v=2';
 
 // 상원 여론조사 한눈에: one row per contested Senate race, each pollster's
 // latest poll as a dot on a Democratic <-> Republican margin axis. This only
