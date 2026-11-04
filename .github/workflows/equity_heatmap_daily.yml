@@ -38,7 +38,7 @@ jobs:
     # Runs on PRs too, as a dry run from a runner IP: builds and uploads the
     # file as an artifact; only main commits it.
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     permissions:
       contents: write
     steps:
@@ -52,7 +52,7 @@ jobs:
       - name: Build constituent moves
         id: build
         continue-on-error: true
-        run: python 'New for anti/scripts/macro_monitor/build_equity_heatmap.py'
+        run: python -u 'New for anti/scripts/macro_monitor/build_equity_heatmap.py'
       - name: Upload built file (dry run artifact)
         uses: actions/upload-artifact@v4
         with:
