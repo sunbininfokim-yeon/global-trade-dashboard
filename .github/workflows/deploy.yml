@@ -145,6 +145,23 @@ jobs:
         run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # The Worker cron that starts us_kr_direction_preopen.yml needs a GitHub
+      # token (Actions write) to call workflow_dispatch. It is kept as a GitHub
+      # Actions secret, the one place the user sets it, and copied to the
+      # Worker on every deploy so a rotated token reaches it without a manual
+      # `wrangler secret put`. Absent secret: skipped with a warning, and the
+      # workflow falls back to GitHub's own (late) schedule.
+      - name: Sync GH_DISPATCH_TOKEN to the Worker
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_DISPATCH_TOKEN" ]; then
+            echo "::warning::GH_DISPATCH_TOKEN secret is not set; the pre-open direction run will only start on GitHub's delayed schedule"
+            exit 0
+          fi
+          printf '%s' "$GH_DISPATCH_TOKEN" | npx wrangler secret put GH_DISPATCH_TOKEN
       # 인도네시아 의미검색: the flag ships in wrangler.jsonc; the key is a Worker
       # secret. Logs only whether the secret exists (never its value) and what
       # the live API reports. Never fails the deploy -- data still ships.

@@ -8,7 +8,8 @@ name: US KR direction preopen
 # _daily's 06:13 KST cron has landed at 09:24-11:53 KST (2026-10-27..11-04),
 # i.e. after the cutoff every time. The on-time trigger is the Cloudflare
 # Worker cron (wrangler.jsonc, 21:25 and 22:05 UTC Sun-Thu), which calls
-# workflow_dispatch with GH_DISPATCH_TOKEN. The schedule below is a fallback
+# workflow_dispatch with GH_DISPATCH_TOKEN (a GitHub Actions secret that
+# deploy.yml copies to the Worker). The schedule below is a fallback
 # only; a run that starts after the cutoff exits without touching anything.
 #
 # Daily job calls predict only -- never train. Model changes need a new
