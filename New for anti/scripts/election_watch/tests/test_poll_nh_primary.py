@@ -16,6 +16,17 @@ ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / 'config/usa_polls'
 PUBLIC = ROOT.parent.parent / 'public/data'
 DAY = '2026-10-09'
+PRE_ELECTION = '2026-11-02'
+
+
+def pre_election(polls):
+    polls = dict(polls, as_of=min(polls['as_of'], PRE_ELECTION))
+    # 선거 뒤 발행본은 경합을 awaiting_certified_result 로 닫는다. 선거 전 검토 상태를 재현하므로
+    # 그 단계도 선거 전으로 되돌린다 (인증 결과는 건드리지 않는다).
+    polls['races'] = {rid: dict(r, as_of=min(r.get('as_of', polls['as_of']), PRE_ELECTION),
+                                phase=('pre_election' if r.get('phase') == 'awaiting_certified_result' else r.get('phase', 'pre_election')))
+                      for rid, r in polls['races'].items()}
+    return polls
 
 
 def read(path):
@@ -167,6 +178,9 @@ class NewHampshireEvidenceTests(unittest.TestCase):
         polls, _ = rebuild(read(PUBLIC/'usa_election_live_polls_v1.json'),
             read(PUBLIC/'usa_election_poll_history_2026.json'), [packet], PUBLIC)
         access = read(PUBLIC/'usa_governor_source_access/2026/NH.json')
+        # 선거일(11-03) 다음 날부터 build_state 는 인증 전 여론조사를 닫는다. 이 검사는 선거 전
+        # 검토 상태를 보는 것이므로, 공개 스냅샷의 날짜를 선거일 전으로 고정한다.
+        polls = pre_election(polls)
         state = build_state('NH', 'B', read(CONFIG/'state_evidence_plan_2026.json'),
             read(CONFIG/'targets_2026.json'), read(ROOT/'config/federal_matchups/2026.json'),
             read(ROOT/'config/governor_matchups/2026.json'), polls,
