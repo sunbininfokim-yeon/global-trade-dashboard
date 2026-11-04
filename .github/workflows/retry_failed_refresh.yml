@@ -1,0 +1,43 @@
+name: Retry a failed scheduled refresh
+
+# When a scheduled macro data refresh fails (a source timed out, a push lost a race), start it
+# again once on the latest main, after a pause. A "Re-run" in the Actions UI would not do: it
+# replays the old commit, so a push that was rejected for being behind is rejected again
+# (2026-11-04, twice). The retry is a workflow_dispatch run, and only *scheduled* failures are
+# retried, so a retry that fails too stops there -- no loops.
+
+on:
+  workflow_run:
+    workflows:
+      - Refresh macro public series
+      - Refresh Treasury QRA (refunding windows)
+      - Refresh KR/JP policy boards
+      - Refresh FOMC/Beige Book collection
+      - Refresh T-bill auction sizes (QRA maturity tab)
+      - Refresh Fed SOMA Treasury maturity buckets
+      - Refresh peer real GDP growth (World Bank, annual)
+      - Refresh macro live overlay (TGA, yields, FX, indices)
+      - Macro Liquidity Intel
+      - Refresh sovereign debt and interest actuals
+      - Refresh Japan growth diagnostics
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  retry:
+    if: github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.event == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch the workflow again on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_PATH: ${{ github.event.workflow_run.path }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          FAILED_RUN: ${{ github.event.workflow_run.html_url }}
+        run: |
+          sleep 300   # let whatever it collided with finish, and a flaky source recover
+          echo "retrying '$WORKFLOW_NAME' after $FAILED_RUN"
+          gh workflow run "$(basename "$WORKFLOW_PATH")" --repo "$GITHUB_REPOSITORY" --ref main

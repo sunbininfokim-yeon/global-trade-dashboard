@@ -19,3 +19,6 @@ class PublisherChainTests(unittest.TestCase):
 
     def test_existing_shell_main_push_is_detected(self):
         self.assertTrue(pushes_to_main('git push origin HEAD:main'))
+
+    def test_push_retry_script_is_a_main_writer(self):
+        self.assertTrue(pushes_to_main('bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"'))

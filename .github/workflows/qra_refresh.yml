@@ -65,7 +65,4 @@ jobs:
                   "New for anti/public/data/tbill_issuance_v1.json" \
                   "New for anti/public/data/macro_monitor_v1.json"
           git commit -m "chore: refresh Treasury QRA" || exit 0
-          # Another collector may have pushed to main while this ran (2026-11-04: this
-          # failed twice behind the public-series refresh). Rebase onto it and push again;
-          # a conflict on the same data file still fails the run, so it shows.
-          git push || { git fetch origin main && git rebase origin/main && git push; }
+          bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"

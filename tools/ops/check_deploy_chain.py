@@ -23,6 +23,9 @@ DEPLOY = WF / "deploy.yml"
 # A push that lands on main: bare `git push`, or an explicit main target.
 # Pushes to a review branch (`git push origin "$branch"`) do not count.
 PUSH_TO_MAIN = re.compile(r"\bgit push\b(?:\s+origin\s+(?:HEAD:)?main\b)?\s*(?:$|&&|\|\||;|\))")
+# tools/ops/git_push_retry.sh pushes the run's branch (main for scheduled refreshes) with
+# rebase-and-retry. Calling it is a push to main for this check.
+PUSH_SCRIPT = re.compile(r"\bgit_push_retry\.sh\b")
 
 
 def workflow_name(text):
@@ -33,7 +36,7 @@ def workflow_name(text):
 def pushes_to_main(text, root=ROOT):
     for line in text.splitlines():
         code = line.split("#", 1)[0]
-        if PUSH_TO_MAIN.search(code):
+        if PUSH_TO_MAIN.search(code) or PUSH_SCRIPT.search(code):
             return True
     # A workflow may delegate its push to a checked-in publisher. Inspect
     # directly invoked Python scripts too, so moving a push cannot hide it.
