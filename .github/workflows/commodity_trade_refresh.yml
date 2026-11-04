@@ -144,5 +144,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'data: refresh monthly commodity trade and source health'
-          git push origin HEAD
+          bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"
           gh pr create --base main --head "automation/commodity-monthly-${GITHUB_RUN_ID}" --title 'Monthly commodity trade update' --body 'Collection contracts and release validation passed in the producing workflow. Review commodity_trade_refresh_status_v1.json for source failures or missing authentication; partial data is not complete coverage. Merge uses the existing production deployment.'
