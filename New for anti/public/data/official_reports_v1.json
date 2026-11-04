@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-03T19:34:09.642076+00:00",
+  "generated_at": "2026-11-04T00:38:17.045680+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,12 +15,12 @@
     }
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 0,
-    "raw_items": 171,
-    "scored": 171,
+    "sources_ok": 9,
+    "sources_failed": 1,
+    "raw_items": 165,
+    "scored": 165,
     "selected": 40,
-    "indicators": 11
+    "indicators": 13
   },
   "feed_status": [
     {
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": true,
-      "count": 6,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -246,6 +246,34 @@
       "published_at": "2026-09-10T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "published_at": "2026-10-22T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (October 20)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "published_at": "2026-10-22T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -347,42 +375,6 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "20a7e12fa7189485",
-      "published_at": "2026-10-22T20:51:22+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/10/national-seafood-month-2026/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "agriculture",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "National Seafood Month, 2026",
-        "original_lang": "en",
-        "ko": "[USA·안보] National Seafood Month, 2026"
-      },
-      "summary": "By the President of the United States of America A Proclamation Across our Nation’s harbors and fishing communities, the unrivaled skill and resolve of American fishermen and seafood producers turn the bounty of our waters into food for our families and enduring economic strength",
-      "scores": {
-        "significance": 3.473,
-        "final": 3.473
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1086,41 +1078,6 @@
       "site_slot": null
     },
     {
-      "id": "ce3ce3afb13d2ba7",
-      "published_at": "2026-10-23T13:16:54+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/first-lady-melania-trump-secures-ceasefire-between-russia-and-ukraine-localized-to-oleshky/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "First Lady Melania Trump Secures Ceasefire Between Russia and Ukraine, Localized to Oleshky",
-        "original_lang": "en",
-        "ko": "[USA·안보] First Lady Melania Trump Secures Ceasefire Between Russia and Ukraine, Localized to Oleshky"
-      },
-      "summary": "First Lady Melania Trump successfully secured a ceasefire between Russia and Ukraine, localized to the city of Oleshky. Both nations agreed to temporarily stop all military action in Oleshky to allow for humanitarian aid to enter and to prepare a civilian evacuation through a des",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "cc44b028b9d9b6f1",
       "published_at": "2026-09-10T14:00:00+00:00",
       "source": {
@@ -1649,6 +1606,76 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "9151e2346fa707e2",
+      "published_at": "2026-10-22T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "34ef2dd56ae93a89",
+      "published_at": "2026-10-22T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (October 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (October 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1772,6 +1799,28 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the SONIA Stakeholder Advisory Group - 25 September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/sonia-stakeholder-advisory-group-25-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Money Market Committee meeting – September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
@@ -1873,42 +1922,6 @@
       },
       "rank_reasons": [
         "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "20a7e12fa7189485",
-      "published_at": "2026-10-22T20:51:22+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/presidential-actions/2026/10/national-seafood-month-2026/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "agriculture",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "National Seafood Month, 2026",
-        "original_lang": "en",
-        "ko": "[USA·안보] National Seafood Month, 2026"
-      },
-      "summary": "By the President of the United States of America A Proclamation Across our Nation’s harbors and fishing communities, the unrivaled skill and resolve of American fishermen and seafood producers turn the bounty of our waters into food for our families and enduring economic strength",
-      "scores": {
-        "significance": 3.473,
-        "final": 3.473
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -2612,41 +2625,6 @@
       "site_slot": null
     },
     {
-      "id": "ce3ce3afb13d2ba7",
-      "published_at": "2026-10-23T13:16:54+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/10/first-lady-melania-trump-secures-ceasefire-between-russia-and-ukraine-localized-to-oleshky/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "First Lady Melania Trump Secures Ceasefire Between Russia and Ukraine, Localized to Oleshky",
-        "original_lang": "en",
-        "ko": "[USA·안보] First Lady Melania Trump Secures Ceasefire Between Russia and Ukraine, Localized to Oleshky"
-      },
-      "summary": "First Lady Melania Trump successfully secured a ceasefire between Russia and Ukraine, localized to the city of Oleshky. Both nations agreed to temporarily stop all military action in Oleshky to allow for humanitarian aid to enter and to prepare a civilian evacuation through a des",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "cc44b028b9d9b6f1",
       "published_at": "2026-09-10T14:00:00+00:00",
       "source": {
@@ -3175,6 +3153,76 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "9151e2346fa707e2",
+      "published_at": "2026-10-22T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261020.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "34ef2dd56ae93a89",
+      "published_at": "2026-10-22T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261020.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (October 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (October 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ]
 }
