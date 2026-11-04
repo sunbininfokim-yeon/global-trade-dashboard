@@ -16,6 +16,7 @@ import { applyEopChart } from './special/usa-executive.js';
 import { applyCnPartyChart } from './special/chn-org.js';
 import { loadCnPartyChart, loadCnLeaders } from '../data/chn-service.js';
 import { focusCnRegion } from './special/chn-leaders.js';
+import { loadPersonnel } from '../data/personnel-service.js';
 
 export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onRoute }) => {
     const modal = createModal(host.roots.modal);
@@ -122,6 +123,9 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             }
             // 중국 당 주요 직위 골격도 같은 방식이다 -- 화면이 그려지기 전에 한 번만
             // 읽고, 못 읽으면 모듈 내장 골격으로 그린다.
+            // 국가별 인사 명단. 파일이 있는 나라에만 '인사 명단' 블록이 붙는다.
+            if (country.personnel === undefined) country.personnel = await loadPersonnel(iso3);
+            if (isStale()) return;
             if (iso3 === 'CHN') {
                 const [chart, leaders] = await Promise.all([loadCnPartyChart(), loadCnLeaders()]);
                 applyCnPartyChart(chart);

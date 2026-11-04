@@ -5,6 +5,7 @@ import { usaLegislature } from './special/usa-legislature.js?v=2';
 import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections } from './special/china.js';
 import { cnMapLegendHtml } from './special/chn-leaders.js';
+import { personnelRosterHtml } from './special/personnel-roster.js';
 import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';
 import { jpnSections } from './special/jpn.js';
 import { jpnExecutive } from './special/jpn-executive.js';
@@ -20,7 +21,7 @@ const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'e
 // USA already declares its own race_progress tab (2026 선거 과정); China/Iran's
 // custom tab sets predate this screen, so it's appended here rather than
 // duplicated into their own files.
-const sectionsFor = (iso3) => iso3 === 'USA' ? usaSections
+const baseSectionsFor = (iso3) => iso3 === 'USA' ? usaSections
     : iso3 === 'ISR' ? [['선거 분석', 'election_analysis'], ...genericSections]
     : iso3 === 'JPN' ? jpnSections
     // 중국은 경쟁 선거가 없어 같은 race_progress 자리에 당 전체회의 일정을 싣는다
@@ -28,6 +29,13 @@ const sectionsFor = (iso3) => iso3 === 'USA' ? usaSections
     : iso3 === 'CHN' ? [...chinaSections, ['공산당 회의', 'race_progress']]
     : iso3 === 'IRN' ? [...iranSections, RACE_PROGRESS_TAB]
     : genericSections;
+
+// 인사 명단 파일이 있는 나라는 블록 하나를 더 붙인다 (public/data/personnel).
+const PERSONNEL_TAB = ['인사 명단', 'personnel'];
+const sectionsFor = (country) => {
+    const base = baseSectionsFor(country.iso3);
+    return country.personnel ? [...base, PERSONNEL_TAB] : base;
+};
 
 // This is presentation-only flattening, not a political calculation or an
 // attempt to join missing records.  It lets the common shell surface nested
@@ -126,6 +134,7 @@ const sourceObject = (country, section) => {
 const specialContent = (country, section) => {
     if (country.iso3 === 'ISR' && section === 'election_analysis') return israelAnalysisPlaceholder();
     if (section === 'race_progress') return raceProgressContent(country);
+    if (section === 'personnel') return personnelRosterHtml(country.personnel);
     if (country.iso3 === 'CHN' && section === 'party') return chnParty(country);
     if (country.iso3 === 'CHN' && section === 'military') return chnMilitary(country);
     if (country.iso3 === 'CHN' && section === 'state_council') return chnStateCouncil(country);
@@ -176,7 +185,7 @@ const sectionContent = (country, section, status) => {
 const MAP_SECTION = 'subnational_map';
 
 export const renderCountryShell = (root, { country, manifest, onBack, modal, host, onRoute, onElectionMode }) => {
-    const tabs = sectionsFor(country.iso3);
+    const tabs = sectionsFor(country);
     const hasMapBlock = tabs.some(([, key]) => key === MAP_SECTION);
     let active = null;
 
