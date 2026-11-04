@@ -365,7 +365,10 @@ def build_tw() -> dict[str, dict]:
     if len(listed) < 900:
         raise RuntimeError(f"TWSE company list has {len(listed)} rows")
     info = {r["公司代號"].strip(): r for r in listed if r.get("公司代號", "").strip().isdigit()}
-    close = {r["Code"].strip(): num(r.get("ClosingPrice")) for r in get(TWSE_DAY_URL)}
+    day_rows = get(TWSE_DAY_URL)
+    close = {r["Code"].strip(): num(r.get("ClosingPrice")) for r in day_rows}
+    roc = str((day_rows[0] if day_rows else {}).get("Date") or "")   # ROC date, e.g. 1151103
+    twse_day = f"{int(roc[:-4]) + 1911}-{roc[-4:-2]}-{roc[-2:]}" if len(roc) >= 7 else None
     caps = []
     for code, r in info.items():
         shares, px = num(r.get("已發行普通股數或TDR原股發行股數")), close.get(code)
@@ -382,6 +385,17 @@ def build_tw() -> dict[str, dict]:
         members[code] = {"n": name, "l": name, "mc": mc, "y": ysym,
                          "sec": TWSE_INDUSTRY_KO.get(r.get("產業別", "").strip(), "기타")}
     prices = spark(sorted(m["y"] for m in members.values()))
+    # Yahoo's TW daily series skips sessions now and then (2026-11-03 was
+    # missing for every .TW ticker), which turns the 1-day move into a
+    # 2-day one. Splice the exchange's own close in for that date.
+    if twse_day:
+        for code, m in members.items():
+            pr, px = prices.get(m["y"]), close.get(code)
+            if pr and px and twse_day not in pr["dates"]:
+                pos = sum(1 for d in pr["dates"] if d < twse_day)
+                if 0 < pos <= len(pr["dates"]):
+                    pr["dates"].insert(pos, twse_day)
+                    pr["close"].insert(pos, px)
     return {"taiex": {"label_ko": "대만 가권 시총 상위 150", "ccy": "TWD", "size_by": "mc", **finish_index(members, prices)}}
 
 
