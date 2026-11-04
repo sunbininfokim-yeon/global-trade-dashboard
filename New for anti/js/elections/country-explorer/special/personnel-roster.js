@@ -1,4 +1,5 @@
 import { escapeHtml } from '../../ui.js';
+import { orgBox, orgGrid, expandableGrid } from './org-chart.js';
 
 // 국가별 '인사 명단' 화면. 자료는 public/data/personnel/<ISO3>.json
 // (scripts/election_watch/build_personnel_public.py 가 config/*_personnel_*.json 에서 낸다).
@@ -302,24 +303,83 @@ export const personnelCategories = (data) => {
     const byCategory = new Map();
     categoryCache.set(data, byCategory);
     splitEntries(data).forEach(([k, v, cat]) => {
-        const body = renderNode(k, v, 0);
-        if (!body) return;
-        const n = Array.isArray(v) ? ` <small>${v.length}</small>` : '';
-        byCategory.set(cat, [...(byCategory.get(cat) || []),
-            `<section class="pr-section"><p class="section-title">${escapeHtml(label(k, true))}${n}</p>${body}</section>`]);
+        if (!renderNode(k, v, 0)) return;
+        byCategory.set(cat, [...(byCategory.get(cat) || []), [k, v]]);
     });
     return byCategory;
 };
 
-// 블록 하나에 들어갈 인사 단락. 갈래가 하나도 없으면 '' -- 그 블록은 손대지 않는다.
+// ---- 미국 행정부·중국 당 조직도와 같은 양식 ---------------------------------------
+// 단마다 '번호 · 이름' 제목을 달고 사람은 조직도 박스(org-chart.js)로 그린다. 많은 단은
+// 중국 정치국처럼 앞 7인만 박스로 내고 박스를 누르면 전원이 펼쳐진다. 의석표는 막대다.
+// 박스로 옮기지 못한 세부 값(근거 메모·날짜 표기 등)은 블록 끝 '세부 자료'에 남긴다 --
+// 원본에 있는 것을 화면이 조용히 버리지 않게.
+const HEADLINE = 7;
+
+const personBox = (p, fallbackTitle) => {
+    const title = PERSON_TITLE_KEYS.map((k) => p[k]).find((v) => typeof v === 'string' && v.trim()) || fallbackTitle || '';
+    const chips = PERSON_CHIP_KEYS.map((k) => p[k]).filter((v) => isScalar(v) && v !== null && v !== '').map(scalarText);
+    const dates = PERSON_DATE_KEYS.filter((k) => isScalar(p[k]) && p[k] !== null && p[k] !== '')
+        .map((k) => `${label(k)} ${scalarText(p[k])}`);
+    return orgBox({
+        ko: title || '직책',
+        person: nameOf(p),
+        personUrl: firstUrl(p) || null,
+        note: [...chips, ...dates].join(' · '),
+    });
+};
+
+// 한 갈래를 단으로 편다. 사람이 바로 들어 있는 값은 그 단의 박스가 되고, 사람 목록이나
+// 하위 묶음은 'A · B' 이름의 하위 단이 된다.
+const collectTiers = (key, value, title, tiers, depth = 0) => {
+    if (value === null || value === undefined || isScalar(value) || HIDDEN_KEYS.has(key) || depth > 3) return;
+    if (Array.isArray(value)) {
+        if (value.length && value.every(isGroup)) tiers.push({ title, seats: value });
+        else if (value.length && value.every(isPerson)) tiers.push({ title, people: value.map((p) => [p, '']) });
+        else value.forEach((item, i) => collectTiers(key, item, value.length > 1 ? `${title} ${i + 1}` : title, tiers, depth + 1));
+        return;
+    }
+    if (isCountMap(value)) { tiers.push({ title, counts: value }); return; }
+    const own = { title, people: [] };
+    if (isPerson(value)) own.people.push([value, label(key)]);
+    tiers.push(own);
+    Object.entries(value).forEach(([k, v]) => {
+        if (!v || typeof v !== 'object' || HIDDEN_KEYS.has(k)) return;
+        if (isPerson(v) && !Array.isArray(v)) {
+            own.people.push([v, label(k)]);
+            Object.entries(v).forEach(([gk, gv]) => {
+                if (gv && typeof gv === 'object' && (Array.isArray(gv) ? gv.some(isPerson) || gv.every(isGroup) : isPerson(gv))) {
+                    collectTiers(gk, gv, `${title} · ${label(gk)}`, tiers, depth + 2);
+                }
+            });
+        } else collectTiers(k, v, `${title} · ${label(k)}`, tiers, depth + 1);
+    });
+};
+
+const tierBody = (tier) => {
+    if (tier.seats) return groupRows(tier.seats);
+    if (tier.counts) return countChips(tier.counts);
+    const boxes = tier.people.map(([p, t]) => personBox(p, t));
+    if (boxes.length <= HEADLINE + 1) return orgGrid(boxes);
+    return expandableGrid({
+        boxes: boxes.slice(0, HEADLINE),
+        hint: `앞 ${HEADLINE}인 · 박스를 누르면 전원 ${boxes.length}인`,
+        body: orgGrid(boxes.slice(HEADLINE)),
+    });
+};
+
 export const personnelPartHtml = (data, categories) => {
     const byCategory = personnelCategories(data);
-    const sections = categories.flatMap((cat) => byCategory.get(cat) || []);
-    if (!sections.length) return '';
+    const entries = categories.flatMap((cat) => byCategory.get(cat) || []);
+    if (!entries.length) return '';
+    const tiers = [];
+    entries.forEach(([k, v]) => collectTiers(k, v, label(k, true), tiers));
+    const shown = tiers.filter((t) => t.seats?.length || t.counts || t.people?.length);
+    const detail = entries.map(([k, v]) => `<section class="pr-section"><p class="pr-note"><b>${escapeHtml(label(k, true))}</b></p>${renderNode(k, v, 0)}</section>`).join('');
     return `<div class="pr-roster">
-        <p class="section-title pr-heading">인사</p>
-        <p class="elections-panel-note">기준일 ${escapeHtml(data.as_of || '')} · 공식 사이트·관보·의회 페이지에서 확인한 이름입니다. 이름을 누르면 출처가 열립니다.</p>
-        ${sections.join('')}
+        ${shown.map((t, i) => `<p class="section-title">${i + 1} · ${escapeHtml(t.title)}${t.people?.length > 1 ? ` ${t.people.length}인` : ''}${t.seats ? ` · 의석` : ''}</p>${tierBody(t)}`).join('')}
+        <p class="elections-panel-note">인사 기준일 ${escapeHtml(data.as_of || '')} · 공식 사이트·관보·의회 페이지에서 확인한 이름입니다. 이름을 누르면 출처가 열립니다.</p>
+        <details class="elections-disclosure"><summary>세부 자료·근거</summary>${detail}</details>
         ${notesBlock(data)}
     </div>`;
 };
