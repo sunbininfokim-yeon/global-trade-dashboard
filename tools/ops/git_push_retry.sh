@@ -4,7 +4,11 @@
 # were both rejected behind the public-series push). Rebase onto the new main and try again;
 # a conflict on the same file still fails the run, so it shows instead of being forced through.
 set -u
-branch="${GITHUB_REF_NAME:-$(git rev-parse --abbrev-ref HEAD)}"   # the branch this run checked out
+# The branch actually checked out. GITHUB_REF_NAME is the ref the run started on, which is
+# main for a scheduled run even after a step switches to a review branch -- pushing there
+# would land unreviewed data on main. Fall back to it only on a detached HEAD.
+branch="$(git rev-parse --abbrev-ref HEAD)"
+if [ "$branch" = "HEAD" ]; then branch="${GITHUB_REF_NAME:?no branch to push}"; fi
 for attempt in 1 2 3 4; do
   if git push origin "HEAD:$branch"; then exit 0; fi
   echo "push rejected (attempt $attempt); rebasing onto the latest $branch"
