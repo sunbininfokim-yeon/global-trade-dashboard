@@ -1,0 +1,112 @@
+# Review/apply by Claude Code, owner of .github/workflows/**.
+# This file is outside .github and schedules nothing until explicitly integrated.
+name: US KR direction preopen (proposal)
+on:
+  schedule:
+    # 06:20 and 06:50 KST Mon-Fri. The second attempt is a bounded retry.
+    # GitHub schedule delivery is not guaranteed; runner rejects after 08:30.
+    - cron: '20,50 21 * * 0-4'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Korean target session YYYY-MM-DD; blank means current KST date
+        required: false
+        type: string
+concurrency:
+  group: us-kr-direction-preopen
+  cancel-in-progress: false
+jobs:
+  preopen:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: New for anti/scripts/market_microstructure/requirements-us-kr-preopen.txt
+      - name: Install frozen runtime
+        run: pip install -r 'New for anti/scripts/market_microstructure/requirements-us-kr-preopen.txt'
+      - name: Check frozen inference and recording contract
+        run: |
+          python -m unittest discover -s 'New for anti/scripts/market_microstructure/tests' -p test_us_kr_direction_engine.py
+          python -m unittest discover -s 'New for anti/scripts/market_microstructure/tests' -p test_run_us_kr_preopen.py
+      - name: Resolve actual Korean target session
+        id: session
+        env:
+          REQUESTED_TARGET: ${{ inputs.target }}
+        run: |
+          python - <<'PY'
+          import os, sys
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          sys.path.insert(0, 'New for anti/scripts/market_microstructure')
+          from option_direction_model import calendar
+          from research_direction_diagnostics import ReviewedCalendar
+          day = os.environ.get('REQUESTED_TARGET') or datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d')
+          valid = ReviewedCalendar(calendar()).is_session(day)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('target=' + day + '\n')
+              f.write('valid=' + str(valid).lower() + '\n')
+          PY
+      - name: Checkout existing KRX raw input
+        if: steps.session.outputs.valid == 'true'
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: sunbininfokim-yeon/krx-month-paste
+          token: ${{ secrets.KRX_MONTH_PASTE_TOKEN }}
+          path: krx-month-paste
+          sparse-checkout: data/raw/krx_15007
+          sparse-checkout-cone-mode: false
+      - name: Collect and infer; never train
+        id: forecast
+        if: steps.session.outputs.valid == 'true'
+        env:
+          TARGET: ${{ steps.session.outputs.target }}
+        shell: bash
+        run: |
+          set +e
+          python 'New for anti/scripts/market_microstructure/run_us_kr_preopen.py' \
+            --target "$TARGET" \
+            --model 'New for anti/scripts/market_microstructure/models/shadow/us_kr_preopen_20261022_v1.json' \
+            --krx-root 'krx-month-paste/data/raw/krx_15007' \
+            --refresh-prices \
+            --run-dir "runner-state/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+            --archive-dir data/forecasts/us_kr_direction \
+            --public-output 'New for anti/public/data/us_kr_direction_v1.json'
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          # Publication and audit steps still run for unavailable data.
+          # The final step restores failure for a nonzero collection outcome.
+          exit 0
+      - name: Save run receipts and input snapshot
+        if: always() && steps.session.outputs.valid == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-kr-direction-${{ github.run_id }}-${{ github.run_attempt }}
+          path: runner-state/
+          retention-days: 30
+      - name: Commit only forecast data
+        if: steps.session.outputs.valid == 'true' && (steps.forecast.outputs.code == '0' || steps.forecast.outputs.code == '2')
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/us_kr_direction_v1.json'
+          if [ -d data/forecasts/us_kr_direction ]; then git add data/forecasts/us_kr_direction; fi
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: record US KR preopen direction'
+          # Concurrent publishing jobs must be reconciled with the artifact
+          # contract; a failed push is a failed delivery, never a green success.
+          git push
+      - name: Report unavailable or failed forecast
+        if: always() && steps.session.outputs.valid == 'true'
+        env:
+          FORECAST_CODE: ${{ steps.forecast.outputs.code }}
+        run: |
+          if [ "$FORECAST_CODE" != '0' ]; then
+            echo '::error::Preopen direction was unavailable or failed; inspect saved receipts.'
+            exit 1
+          fi
