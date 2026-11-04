@@ -37,6 +37,8 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(senate['leader']['party'], 'DEM')
         self.assertEqual(senate['status'], 'unofficial_count')
         self.assertIn('USA:IA:governor', races)
+        self.assertEqual(senate['reporting_unit'], 'county')
+        self.assertNotIn(' and ', races['USA:IA:governor']['candidates'][0]['name'], 'running mate dropped')
         co = parse_clarity('CO', load('clarity_co_summary_20261104.json'))
         self.assertEqual(sorted(co), ['USA:CO:governor', 'USA:CO:house:08', 'USA:CO:senate'])
         self.assertEqual({c['party'] for c in co['USA:CO:senate']['candidates']} >= {'DEM', 'REP', 'LIB'}, True, 'LBR maps to LIB')

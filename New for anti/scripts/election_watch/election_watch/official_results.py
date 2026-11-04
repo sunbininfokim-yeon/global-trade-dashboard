@@ -44,7 +44,14 @@ def party_code(raw: Any) -> str | None:
     return PARTY.get(text, text or None)
 
 
-def _race(state, rid, contest, candidates, reporting, total, total_votes):
+def _ticket_head(rid: str, name: str) -> str:
+    # Governor tickets print the running mate too ('A / B', 'A and B'); keep the governor.
+    if rid.endswith(':governor'):
+        return re.split(r'\s+/\s+|\s+and\s+', name, maxsplit=1)[0].strip()
+    return name
+
+
+def _race(state, rid, contest, candidates, reporting, total, total_votes, unit='precinct'):
     cast = sum(c['votes'] for c in candidates)
     for c in candidates:
         c['pct'] = round(100 * c['votes'] / cast, 2) if cast else None
@@ -54,7 +61,7 @@ def _race(state, rid, contest, candidates, reporting, total, total_votes):
         leader = {'name': ranked[0]['name'], 'party': ranked[0]['party'],
                   'margin_pct': round(ranked[0]['pct'] - ranked[1]['pct'], 2)}
     return {'race_id': rid, 'state': state, 'contest_name': contest,
-            'precincts_reporting': reporting, 'precincts_total': total,
+            'precincts_reporting': reporting, 'precincts_total': total, 'reporting_unit': unit,
             'total_votes': total_votes if total_votes is not None else cast,
             'candidates': ranked, 'leader': leader, 'status': 'unofficial_count'}
 
@@ -70,10 +77,11 @@ def parse_clarity(state: str, summary: list[dict]) -> dict[str, dict]:
         for i, name in enumerate(names):
             if not name or str(name).strip().lower() in ('write-in', 'write-ins', 'write in'):
                 continue
-            candidates.append({'name': str(name).strip(), 'party': party_code(parties[i] if i < len(parties) else None),
+            candidates.append({'name': _ticket_head(rid, str(name).strip()), 'party': party_code(parties[i] if i < len(parties) else None),
                                'votes': int(votes[i]) if i < len(votes) and votes[i] is not None else 0})
         total = (row.get('T') or [None])[0]
-        races[rid] = _race(state, rid, row.get('C'), candidates, row.get('PR'), row.get('TP'), total)
+        # A state-level Clarity summary counts reporting counties, not precincts.
+        races[rid] = _race(state, rid, row.get('C'), candidates, row.get('PR'), row.get('TP'), total, unit='county')
     return races
 
 
@@ -97,7 +105,7 @@ def parse_enhanced_voting(state: str, export: dict) -> dict[str, dict]:
         for option in item.get('ballotOptions') or []:
             name = NAME_PARTY.sub('', str(option.get('name') or '')).strip()
             name = re.sub(r'\s*\(I\)\s*$', '', name)  # incumbent marker
-            candidates.append({'name': name, 'party': party_code(option.get('politicalParty')),
+            candidates.append({'name': _ticket_head(rid, name), 'party': party_code(option.get('politicalParty')),
                                'votes': int(option.get('voteCount') or 0),
                                'incumbent': '(I)' in str(option.get('name') or '')})
         reporting, total = precincts.get(rid, [item.get('precinctsReporting'), item.get('precinctsParticipating')])
