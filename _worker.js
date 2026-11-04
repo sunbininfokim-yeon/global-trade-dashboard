@@ -1480,7 +1480,10 @@ async function handleMacro(request, env, ctx) {
             // panel's sparklines read the same rows as a short series, which is
             // why the cap is a few hundred rather than a handful.
             const limitParam = parseInt(url.searchParams.get('limit'), 10);
-            const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 400) : 1;
+            // The daily refresh also falls back here for whole series when GitHub's
+            // runners time out on fred.stlouisfed.org (weekly H.4.1 since 2002 is
+            // ~1,250 rows), hence the 10,000 cap.
+            const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 10000) : 1;
 
             return kvCachedJson(env, `fred:${series_id}:${limit}`, 3600, async () => {
                 const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(series_id)}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=${limit}`;

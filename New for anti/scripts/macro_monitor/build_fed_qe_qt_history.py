@@ -20,36 +20,23 @@ this repo does not have and should not guess at.
 from __future__ import annotations
 
 import argparse
-import csv
-import io
-import urllib.request
 import json
+import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from macro_monitor import us_public_series as ups  # noqa: E402
+
 OUT = Path(__file__).resolve().parents[2] / "public" / "data" / "fed_qe_qt_history_v1.json"
-FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}"
 
 SERIES = {"treasuries": "TREAST", "mbs": "WSHOMCB"}
 
 
-def fetch(sid: str, timeout: int = 30) -> list[tuple[str, float]]:
-    req = urllib.request.Request(FRED_CSV.format(sid=sid),
-                                 headers={"User-Agent": "macro-monitor/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        text = resp.read().decode("utf-8")
-    rows = []
-    for row in csv.DictReader(io.StringIO(text)):
-        date = (row.get("observation_date") or row.get("DATE") or "").strip()
-        raw = (row.get(sid) or "").strip()
-        if not date or not raw or raw == ".":
-            continue
-        try:
-            rows.append((date, float(raw)))
-        except ValueError:
-            continue
-    return rows
+def fetch(sid: str) -> list[tuple[str, float]]:
+    """FRED series as (YYYY-MM-DD, value); retries, then falls back to the Worker -- see us_public_series.fetch_fred."""
+    return ups.fetch_fred(sid)
 
 
 def month_end_snapshot(weekly: list[tuple[str, float]]) -> dict[str, float]:

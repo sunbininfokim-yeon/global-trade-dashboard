@@ -32,17 +32,17 @@ All series are FRED public CSV, no key:
 from __future__ import annotations
 
 import argparse
-import csv
-import io
 import json
-import urllib.request
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from macro_monitor import us_public_series as ups  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2] / "public" / "data"
 DEFAULT_OUT = ROOT / "fed_balance_sheet_v1.json"
 
-FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}"
 
 # The H.4.1 liability side, ordered as they stack from the axis upward.
 # Reserve balances lead deliberately -- see the module docstring.
@@ -89,22 +89,9 @@ ASSET_RESIDUAL = {"id": "other_assets", "label_ko": "기타 자산",
 RATIO_THRESHOLD_PCT = 10.0
 
 
-def fetch(sid: str, timeout: int = 30) -> list[tuple[str, float]]:
-    req = urllib.request.Request(FRED_CSV.format(sid=sid),
-                                 headers={"User-Agent": "macro-monitor/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        text = resp.read().decode("utf-8")
-    rows = []
-    for row in csv.DictReader(io.StringIO(text)):
-        date = (row.get("observation_date") or row.get("DATE") or "").strip()
-        raw = (row.get(sid) or "").strip()
-        if not date or not raw or raw == ".":
-            continue
-        try:
-            rows.append((date, float(raw)))
-        except ValueError:
-            continue
-    return rows
+def fetch(sid: str) -> list[tuple[str, float]]:
+    """FRED series as (YYYY-MM-DD, value); retries, then falls back to the Worker -- see us_public_series.fetch_fred."""
+    return ups.fetch_fred(sid)
 
 
 def as_of(series: list[tuple[str, float]], date: str) -> float | None:
