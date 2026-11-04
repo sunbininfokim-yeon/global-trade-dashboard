@@ -68,6 +68,11 @@
     // year forward (2023 -> 2024 -> 2025) needs every commodity cached for the
     // next year first, and at 8 fetches per tick four ticks a day made each
     // step take a day or more.
-    "crons": ["0 * * * *"]
+    // The two SUN-THU entries (06:25 / 07:05 KST Mon-Fri) start the
+    // US KR direction preopen workflow. GitHub's own schedule lands hours
+    // late, past the runner's 08:30 KST cutoff; Cloudflare's does not.
+    // scheduled() tells them apart by event.cron -- keep these strings in
+    // step with PREOPEN_CRONS in _worker.js.
+    "crons": ["0 * * * *", "25 21 * * SUN-THU", "5 22 * * SUN-THU"]
   }
 }
