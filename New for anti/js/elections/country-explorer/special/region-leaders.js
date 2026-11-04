@@ -12,7 +12,7 @@ import { personnelCategory } from './personnel-roster.js';
 //      문자가 다른 나라는 아래 표로 코드에 잇는다.
 // 맞는 줄이 없는 지역도 눌리고, '명단 수집 전'이라고 말한다 -- 아무 반응 없는 지도가 가장 나쁘다.
 
-const REGION_KEYS = ['region', 'prefecture', 'sido', 'province', 'state', 'uf', 'jurisdiction', 'emirate', 'governorate', 'land', 'oblast', 'department'];
+const REGION_KEYS = ['region', 'locality', 'prefecture', 'sido', 'province', 'state', 'uf', 'jurisdiction', 'emirate', 'governorate', 'land', 'oblast', 'department'];
 
 const KOR = {
     서울특별시: ['KR-11'], 부산광역시: ['KR-26'], 대구광역시: ['KR-27'], 인천광역시: ['KR-28'], 광주광역시: ['KR-29'],
@@ -32,11 +32,18 @@ const SAU = {
     القصيم: ['SA-05'], حائل: ['SA-06'], تبوك: ['SA-07'], 'الحدود الشمالية': ['SA-08'], جازان: ['SA-09'], نجران: ['SA-10'],
     الباحة: ['SA-11'], الجوف: ['SA-12'], عسير: ['SA-14'],
 };
-const ALIASES = { KOR, JPN, SAU };
+const TWN = {
+    臺北市: ['TW-TPE'], 台北市: ['TW-TPE'], 新北市: ['TW-TPQ'], 桃園市: ['TW-TAO'], 臺中市: ['TW-TXG'], 台中市: ['TW-TXG'],
+    臺南市: ['TW-TNN'], 台南市: ['TW-TNN'], 高雄市: ['TW-KHH'], 基隆市: ['TW-KEE'], 新竹市: ['TW-HSZ'], 嘉義市: ['TW-CYI'],
+    新竹縣: ['TW-HSQ'], 苗栗縣: ['TW-MIA'], 彰化縣: ['TW-CHA'], 南投縣: ['TW-NAN'], 雲林縣: ['TW-YUN'], 嘉義縣: ['TW-CYQ'],
+    屏東縣: ['TW-PIF'], 宜蘭縣: ['TW-ILA'], 花蓮縣: ['TW-HUA'], 臺東縣: ['TW-TTT'], 台東縣: ['TW-TTT'], 澎湖縣: ['TW-PEN'],
+    金門縣: ['TW-KIN'],
+};
+const ALIASES = { KOR, JPN, SAU, TWN };
 
 // 지역 수장의 기본 직함(줄에 직함이 없을 때).
 const HEAD_TITLE = {
-    KOR: '광역단체장', JPN: '지사', SAU: '지역 아미르', BRA: '주지사', MEX: '주지사', ARG: '주지사', CAN: '주 총리', DEU: '주 총리',
+    KOR: '광역단체장', JPN: '지사', TWN: '시장·현장', SAU: '지역 아미르', BRA: '주지사', MEX: '주지사', ARG: '주지사', CAN: '주 총리', DEU: '주 총리',
     AUS: '주 총리', IND: '주 총리', RUS: '지역 수장', TUR: '도지사(vali)', ITA: '주 대표', ESP: '자치지방 수반', NGA: '주지사',
     IDN: '주지사', PHL: '주지사', COL: '주지사', CHL: '주지사', PAN: '주지사', EGY: '주지사', IRQ: '주지사', KWT: '주지사',
 };
