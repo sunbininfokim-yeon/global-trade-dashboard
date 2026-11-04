@@ -89,12 +89,14 @@ def compute(latest: str) -> dict:
         for basket, exclude, code in (("headline", (), "SA0"), ("core", uc.CORE_EXCLUDE, "SA0L1E")):
             row = {}
             for mode in ("mom", "yoy"):
+                pub = uc.published(data, code, month, mode)
+                if pub is None:                   # no published figure (2025-10: BLS skipped it in the shutdown)
+                    continue
                 got = uc.contributions(nodes, ri_by_year, data, month, mode, exclude)
                 if got is None:
                     continue
-                pub = uc.published(data, code, month, mode)
                 row[mode] = {"published_pct": pub, "sum_pp": got["sum_pp"],
-                             "residual_pp": round(pub - got["sum_pp"], 3) if pub is not None else None,
+                             "residual_pp": round(pub - got["sum_pp"], 3),
                              "rows": {str(k): v for k, v in got["by_node"].items()}}
             if row:
                 out[basket][month] = row

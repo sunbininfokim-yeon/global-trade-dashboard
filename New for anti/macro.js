@@ -21,6 +21,8 @@ let MM_COUNTRY = null;          // currently opened country payload
 let MM_TAB = 'liquidity';
 let MM_CHART = null;            // { indicatorId, window }
 let MM_CPI_STRUCTURE = null;    // U.S. CPI relationship map/snapshot, loaded on demand
+let MM_CPI_CONTRIB = null;      // us_cpi_contrib_v1.json: item contributions, loaded when the tab opens
+let MM_CPI_CONTRIB_PROMISE = null;
 let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
@@ -63,6 +65,21 @@ const mmStatementDiffFetch = async () => {
             });
     }
     return MM_STATEMENT_DIFF_PROMISE;
+};
+
+// us_cpi_contrib_v1.json (wire_us_cpi_contrib.py): every weighted CPI item's contribution, 25 months,
+// headline and core, MoM and YoY -- ~600 KB, so it is read only when the 기여도 tab is opened.
+const mmCpiContribFetch = () => {
+    if (!MM_CPI_CONTRIB_PROMISE) {
+        MM_CPI_CONTRIB_PROMISE = fetch('/public/data/us_cpi_contrib_v1.json', { cache: 'no-cache' })
+            .then((res) => {
+                if (!res.ok) throw new Error(`기여도 데이터를 못 받았습니다 (${res.status})`);
+                return res.json();
+            })
+            .then((doc) => { MM_CPI_CONTRIB = doc; if (MM_CHART) mmPaint(); return doc; })
+            .catch((err) => { MM_CPI_CONTRIB = { error: String(err.message || err) }; if (MM_CHART) mmPaint(); });
+    }
+    return MM_CPI_CONTRIB_PROMISE;
 };
 
 // cb_policy_v1.json: the policy-board panels of the Bank of Korea, Bank of Japan,
@@ -1478,6 +1495,138 @@ const mmMoversView = (ind) => {
     <p class="fin-note">${finEsc(mv.reference_period || '')} 발표 기준. ${finEsc(mv.note_ko || '')}</p>`;
 };
 
+// US CPI contributions: which parts of the basket added how many percentage points, for any of the
+// last 25 months. Three panels on one tab -- the months as stacked bars (click one to read it), the
+// eight groups as one stacked bar, and the whole hierarchy as an expandable table (or every item flat).
+const MM_CPI_GROUP_COLORS = ['#f59e0b', '#60a5fa', '#a78bfa', '#34d399', '#f472b6', '#22d3ee', '#fb7185', '#a3e635'];
+
+const mmCpiName = (n) => n.name_ko || n.name;
+
+const mmCpiContribView = (ind, mode) => {
+    const meta = ind.cpi_contrib || {};
+    if (!MM_CPI_CONTRIB) {
+        mmCpiContribFetch();
+        return '<p class="fin-note">기여도 데이터를 불러오는 중입니다…</p>';
+    }
+    if (MM_CPI_CONTRIB.error) return `<p class="fin-note">${finEsc(MM_CPI_CONTRIB.error)}</p>`;
+    const doc = MM_CPI_CONTRIB;
+    const basket = (doc.baskets || {})[meta.basket] || {};
+    const months = (doc.months || []).filter((m) => basket[m] && basket[m][mode]);
+    if (!months.length) return '<p class="fin-note">이 달의 기여도 자료가 없습니다.</p>';
+    const month = months.includes(MM_CHART.cpiMonth) ? MM_CHART.cpiMonth : months[months.length - 1];
+    MM_CHART.cpiMonth = month;
+    const nodes = doc.nodes || [];
+    const kids = nodes.map(() => []);
+    nodes.forEach((n, k) => { if (n.parent !== null && n.parent !== undefined) kids[n.parent].push(k); });
+    const isCore = meta.basket === 'core';
+    const groups = kids[0].filter((k) => !isCore || nodes[k].core);
+    const color = new Map(groups.map((k, i) => [k, MM_CPI_GROUP_COLORS[i % MM_CPI_GROUP_COLORS.length]]));
+    const rowsOf = (m) => ((basket[m] || {})[mode] || {}).rows || {};
+    const cur = basket[month][mode];
+    const rows = rowsOf(month);
+    const pp = (v, d = 2) => (Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(d)}` : '—');
+    const modeKo = mode === 'mom' ? '전월비' : '전년비';
+
+    // Months: stacked bars of the eight groups, positives up and negatives down.
+    const W = 640, H = 170, pad = 22;
+    let hi = 0, lo = 0;
+    months.forEach((m) => {
+        const r = rowsOf(m);
+        let up = 0, dn = 0;
+        groups.forEach((k) => { const c = (r[k] || [])[1] || 0; if (c > 0) up += c; else dn += c; });
+        hi = Math.max(hi, up); lo = Math.min(lo, dn);
+    });
+    const span = (hi - lo) || 1;
+    const y = (v) => pad + (hi - v) / span * (H - 2 * pad);
+    const bw = (W - 20) / months.length;
+    const bars = months.map((m, i) => {
+        const r = rowsOf(m);
+        let up = 0, dn = 0;
+        const x = 10 + i * bw;
+        const segs = groups.map((k) => {
+            const c = (r[k] || [])[1] || 0;
+            if (!c) return '';
+            const from = c > 0 ? up : dn;
+            const to = from + c;
+            if (c > 0) up = to; else dn = to;
+            const y1 = y(Math.max(from, to)), y2 = y(Math.min(from, to));
+            return `<rect x="${(x + 1).toFixed(1)}" y="${y1.toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${Math.max(0.5, y2 - y1).toFixed(1)}" fill="${color.get(k)}"/>`;
+        }).join('');
+        const pub = (basket[m][mode] || {}).published_pct;
+        const sel = m === month;
+        return `<g class="mm-cpi-month${sel ? ' on' : ''}" data-mm-cpi-month="${m}" style="cursor:pointer">
+            <rect x="${x.toFixed(1)}" y="0" width="${bw.toFixed(1)}" height="${H}" fill="${sel ? 'rgba(148,163,184,0.18)' : 'transparent'}"/>
+            ${segs}
+            ${Number.isFinite(pub) ? `<circle cx="${(x + bw / 2).toFixed(1)}" cy="${y(pub).toFixed(1)}" r="2.4" fill="#e2e8f0"/>` : ''}
+            ${(i % 3 === 0 || sel) ? `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="9" fill="${sel ? '#e2e8f0' : '#64748b'}">${m.slice(2).replace('-', '.')}</text>` : ''}
+            <title>${m} 공표 ${pp(pub)}%</title>
+        </g>`;
+    }).join('');
+    const monthsSvg = `<svg viewBox="0 0 ${W} ${H}" class="mm-cpi-months" role="img" aria-label="월별 기여도">
+        <line x1="10" x2="${W - 10}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="#475569" stroke-width="0.6"/>
+        ${bars}</svg>`;
+
+    // This month: the groups as one stacked bar (shares of the positive and negative sides).
+    const g = groups.map((k) => ({ k, c: (rows[k] || [])[1] || 0 })).sort((a, b) => b.c - a.c);
+    const pos = g.filter((x) => x.c > 0).reduce((a, x) => a + x.c, 0);
+    const neg = -g.filter((x) => x.c < 0).reduce((a, x) => a + x.c, 0);
+    const tot = pos + neg || 1;
+    const strip = `<div class="mm-cpi-strip">${g.filter((x) => x.c).map((x) => `<span style="width:${(Math.abs(x.c) / tot * 100).toFixed(2)}%;background:${color.get(x.k)};${x.c < 0 ? 'opacity:0.45;' : ''}" title="${finEsc(mmCpiName(nodes[x.k]))} ${pp(x.c)}%p"></span>`).join('')}</div>
+        <div class="mm-cpi-legend">${g.map((x) => `<span><i style="background:${color.get(x.k)}"></i>${finEsc(mmCpiName(nodes[x.k]))} <b>${pp(x.c)}</b></span>`).join('')}</div>`;
+
+    // Hierarchy (expandable) or every item flat.
+    const open = MM_CHART.cpiOpen || (MM_CHART.cpiOpen = new Set());
+    const flat = MM_CHART.cpiFlat === true;
+    const maxAbs = Math.max(...Object.values(rows).map((r) => Math.abs(r[1] || 0)), 0.0001);
+    const line = (k, depth) => {
+        const r = rows[k];
+        if (!r) return '';
+        const has = kids[k].some((c) => rows[c]);
+        const isOpen = open.has(k);
+        const c = r[1] || 0;
+        const w = Math.abs(c) / maxAbs * 100;
+        return `<tr class="mm-cpi-row lv${Math.min(depth, 4)}">
+            <td class="co-label" style="padding-left:${6 + depth * 14}px">
+                ${has && !flat ? `<button type="button" class="mm-cpi-tog" data-mm-cpi-node="${k}">${isOpen ? '▾' : '▸'}</button>` : '<span class="mm-cpi-tog-sp"></span>'}
+                ${finEsc(mmCpiName(nodes[k]))}</td>
+            <td>${Number.isFinite(r[2]) ? r[2].toFixed(2) : '—'}%</td>
+            <td>${Number.isFinite(r[0]) ? `${pp(r[0])}%` : '<small>상위 따름</small>'}</td>
+            <td>${pp(c, 3)}</td>
+            <td class="mm-cpi-barcell"><span class="mm-cpi-bar ${c < 0 ? 'neg' : ''}" style="width:${w.toFixed(1)}%"></span></td>
+        </tr>`;
+    };
+    const walk = (k, depth) => {
+        const ch = kids[k].filter((c) => rows[c]).sort((a, b) => (rows[b][1] || 0) - (rows[a][1] || 0));
+        return ch.map((c) => line(c, depth) + (open.has(c) ? walk(c, depth + 1) : '')).join('');
+    };
+    const leafIds = Object.keys(rows).map(Number).filter((k) => !kids[k].some((c) => rows[c]));
+    const body = flat
+        ? leafIds.sort((a, b) => (rows[b][1] || 0) - (rows[a][1] || 0)).map((k) => line(k, 0)).join('')
+        : walk(0, 0);
+    const i = months.indexOf(month);
+    return `
+        <div class="mm-cpi-head">
+            <button type="button" class="pf-mode-btn" data-mm-cpi-month="${months[Math.max(0, i - 1)]}" ${i === 0 ? 'disabled' : ''}>◀</button>
+            <b>${month}</b> ${modeKo}
+            <button type="button" class="pf-mode-btn" data-mm-cpi-month="${months[Math.min(months.length - 1, i + 1)]}" ${i === months.length - 1 ? 'disabled' : ''}>▶</button>
+            <span class="mm-cpi-sum">공표 <b>${pp(cur.published_pct)}%</b> · 항목 합계 ${pp(cur.sum_pp)}%p · 잔차 ${pp(cur.residual_pp)}%p</span>
+        </div>
+        <p class="mm-view-title">월별 기여도 (막대 = 8개 대분류, 점 = 공표치 · 막대를 누르면 그 달로)</p>
+        ${monthsSvg}
+        <p class="mm-view-title">${month} 대분류 기여도 (%p)</p>
+        ${strip}
+        <div class="mm-cpi-tools">
+            <button type="button" class="pf-mode-btn ${flat ? '' : 'on'}" data-mm-cpi-flat="0">계층</button>
+            <button type="button" class="pf-mode-btn ${flat ? 'on' : ''}" data-mm-cpi-flat="1">세부 품목 전체 (${leafIds.length}개)</button>
+            ${flat ? '' : `<button type="button" class="pf-mode-btn" data-mm-cpi-expand="all">모두 펼치기</button>
+            <button type="button" class="pf-mode-btn" data-mm-cpi-expand="none">접기</button>`}
+        </div>
+        <div class="co-table-wrap mm-table"><table class="co-table mm-cpi-table">
+            <thead><tr><th>항목</th><th>가중치</th><th>${modeKo}</th><th>기여도(%p)</th><th></th></tr></thead>
+            <tbody>${body}</tbody></table></div>
+        <p class="fin-note">${finEsc(doc.method_ko || '')}${isCore ? ' 근원은 식품·가정용 에너지·자동차 연료를 뺀 품목을 근원 지수 안의 비중으로 다시 나눈 값입니다.' : ''} 가중치는 BLS 상대중요도(${finEsc(String(doc.weights_december || ''))}년 12월 기준까지). 출처: BLS.</p>`;
+};
+
 // US Treasury coupon auctions: each tenor's newest result next to the change
 // from that tenor's previous auction. Shares are of the competitive amount
 // awarded (dealer takedown convention); no tail -- WI yields are licensed.
@@ -1559,7 +1708,11 @@ const mmViewsFor = (ind) => {
     if (ind.chart_type === 'bar' && has(ind.outcomes)) {
         views.push({ id: 'outcomes', label: '확률' });
     }
-    if (has((ind.movers || {}).up) || has((ind.movers || {}).down)) {
+    // US CPI carries real item contributions; the unweighted top/bottom-3 list would only repeat a
+    // worse version of the same question, so it gives way.
+    if (ind.cpi_contrib) {
+        views.push({ id: 'cpi_contrib', label: '기여도' });
+    } else if (has((ind.movers || {}).up) || has((ind.movers || {}).down)) {
         views.push({ id: 'movers', label: '항목별' });
     }
     if (has((ind.auctions || {}).latest_by_tenor)) views.push({ id: 'auctions', label: '입찰 결과' });
@@ -1743,6 +1896,7 @@ const mmChartDrawer = () => {
     else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
     else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
     else if (view === 'movers') body = mmMoversView(ind);
+    else if (view === 'cpi_contrib') body = mmCpiContribView(ind, mode || 'yoy');
     else if (view === 'auctions') body = mmAuctionsView(ind);
     else if (view === 'buybacks') body = mmBuybacksView(ind);
     else if (view === 'status') body = mmStatusView(ind);
@@ -3430,6 +3584,26 @@ const renderMacroMonitor = async () => {
             if (win && MM_CHART) { MM_CHART.window = win.getAttribute('data-mm-window'); mmPaint(); return; }
             const vw = t.closest('[data-mm-view]');
             if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
+            const cm = t.closest('[data-mm-cpi-month]');
+            if (cm && MM_CHART) { MM_CHART.cpiMonth = cm.getAttribute('data-mm-cpi-month'); mmPaint(); return; }
+            const cn = t.closest('[data-mm-cpi-node]');
+            if (cn && MM_CHART) {
+                const k = Number(cn.getAttribute('data-mm-cpi-node'));
+                const open = MM_CHART.cpiOpen || (MM_CHART.cpiOpen = new Set());
+                if (open.has(k)) open.delete(k); else open.add(k);
+                mmPaint();
+                return;
+            }
+            const cf = t.closest('[data-mm-cpi-flat]');
+            if (cf && MM_CHART) { MM_CHART.cpiFlat = cf.getAttribute('data-mm-cpi-flat') === '1'; mmPaint(); return; }
+            const ce = t.closest('[data-mm-cpi-expand]');
+            if (ce && MM_CHART) {
+                const all = ce.getAttribute('data-mm-cpi-expand') === 'all';
+                MM_CHART.cpiOpen = new Set(all && MM_CPI_CONTRIB && MM_CPI_CONTRIB.nodes
+                    ? MM_CPI_CONTRIB.nodes.map((_, k) => k) : []);
+                mmPaint();
+                return;
+            }
             const md = t.closest('[data-mm-mode]');
             if (md && MM_CHART) { MM_CHART.mode = md.getAttribute('data-mm-mode'); mmPaint(); return; }
             // Swapping headline for core keeps the window, view and YoY/MoM
