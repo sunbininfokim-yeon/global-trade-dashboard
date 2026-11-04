@@ -27,7 +27,9 @@ from election_watch.official_results import parse_clarity, parse_enhanced_voting
 CONFIG = ROOT / 'config' / 'official_results_2026.json'
 PUBLIC = ROOT.parents[1] / 'public' / 'data'
 OUT = PUBLIC / 'usa_election_official_results_v1.json'
-UA = 'Mozilla/5.0 (global-trade-dashboard official results collector)'
+# Clarity's bot gate answers HeadlessChrome's default user agent with 403; the same agent
+# tools/ops/fetch_sources.py uses passes (11-04 probes).
+UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
 
 
 class Fetcher:
@@ -50,7 +52,7 @@ class Fetcher:
             from playwright.sync_api import sync_playwright
             self.pw = sync_playwright().start()
             self.browser = self.pw.chromium.launch()
-        page = self.browser.new_page()
+        page = self.browser.new_page(user_agent=UA)
         try:
             page.goto(url, wait_until='networkidle', timeout=90000)
             page.wait_for_timeout(1500)
@@ -79,7 +81,9 @@ def collect_source(source: dict, fetcher) -> tuple[dict, dict]:
         export = json.loads(fetcher.text(source['url']))
         races = parse_enhanced_voting(source['state'], export)
         receipt = {'state': source['state'], 'kind': 'enhanced_voting', 'url': source['url'],
-                   'page_url': source.get('page_url'), 'published_at': export.get('createdAt'), 'fetched_at': now}
+                   'page_url': source.get('page_url'), 'published_at': export.get('createdAt'), 'fetched_at': now,
+                   # Precinct counts come only from county rows; record how many arrived.
+                   'county_rows': len((export.get('results') or {}).get('localResults') or [])}
     else:
         raise ValueError(f"unknown source kind {source['kind']}")
     receipt['authority_ko'] = source.get('authority_ko')
