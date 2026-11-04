@@ -1,10 +1,11 @@
 import { escapeHtml } from '../../ui.js';
+import { officialResult, officialLine } from '../../data/official-results.js';
 import { currentElectionSeats, electionRatingSummary, electionOutlook, ELECTION_OFFICES, mediaCall } from '../../data/election-overview.js?v=6';
 import { normalizeParty, pollSignal, raceClosedByDate } from '../../data/usa-election-context.js?v=2';
 import { electionMatchup, ballotPartyLabel, ballotPartyClass, senateTenureLabel, displayPersonName, usaStateNameKo, pollMatchesMatchup, candidatePartyOrder } from '../../data/election-matchups.js?v=2';
 import { governorContextHtml, governorElectionSummaryHtml } from './usa-candidate-context.js';
 import { stateFundraisingHtml } from './usa-state-fundraising.js';
-import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=4';
+import { officePollSummaryHtml } from './usa-senate-poll-chart.js?v=5';
 
 const number = (value) => Number.isFinite(value) ? String(value) : '—';
 const tile = (label, value, cls, key, office) => `<button type="button" class="elections-rating-tile ${cls}" data-rating-filter="${key}" aria-expanded="false" aria-controls="elections-${office}-${key}"><span>${label}</span><strong>${number(value)}</strong></button>`;
@@ -33,7 +34,7 @@ const contestList = (races, country, board, health, days, now) => races.map((rac
         <small>현재 의원${office === 'senate' ? ' · 2석' : matchup?.incumbent_ballot_status === 'not_running' ? ' · 이번 본선 불출마' : ''}</small>
         <span class="elections-contest-pair">${currentMembers.length ? currentMembers.map((m) => personBox(m.abbr,m.name,office === 'senate' ? senateTenureLabel(m) : '') + (office === 'senate' ? `<small>${m.up_in_2026 === true ? '이번 선거' : m.up_in_2026 === false ? '비선거' : '일정 확인 필요'}</small>` : '')).join('') : '<span>공석·현직 명부 확인 필요</span>'}</span>
         <small>이번 선거 구도${matchup?.status === 'certified_ballot' ? ' · 공식 본선 명부' : matchup ? ' · 공개 주요 후보 명부' : ''}</small><span class="elections-contest-pair">${field}</span>
-        ${callLine(mediaCall(board, race.race_id))}<small>${poll ? poll.required_candidates?.length && !pollMatchesMatchup(poll,matchup) ? '조사 후보와 본선 명부 대조 대기' : escapeHtml(compactPollLabel(poll, board, health, days)) : '여론조사 감시 미연결'}</small></button>`;
+        ${callLine(mediaCall(board, race.race_id))}${officialLine(officialResult(board, race.race_id))}<small>${poll ? poll.required_candidates?.length && !pollMatchesMatchup(poll,matchup) ? '조사 후보와 본선 명부 대조 대기' : escapeHtml(compactPollLabel(poll, board, health, days)) : '여론조사 감시 미연결'}</small></button>`;
 }).join('') || '<p class="elections-muted">해당 분류의 선거가 없습니다.</p>';
 
 export const bindElectionOverview = (root, onOpen) => {

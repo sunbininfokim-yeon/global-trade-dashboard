@@ -8,7 +8,7 @@ import { createModal } from '../modal.js';
 import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
 import { loadStateFinance, loadStateFinanceIndex, loadFinanceDisplayContract, loadUsaElectionFinance, prefetchStateFinance } from '../data/finance-service.js?v=4';
 import { MAPPING_FAILED } from './special/usa-state-superpac.js?v=11';
-import { loadLivePolls } from '../data/poll-service.js?v=4';
+import { loadLivePolls } from '../data/poll-service.js?v=5';
 import { loadUsaElectionRatings } from '../data/rating-service.js';
 import { nationalMonitoringStates, renderUsaElectionNational } from './special/usa-election-national.js?v=14';
 import { loadCongressionalDistricts, prefetchCongressionalDistricts } from '../data/geo-service.js?v=2';
