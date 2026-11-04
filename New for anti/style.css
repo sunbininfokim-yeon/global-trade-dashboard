@@ -7294,8 +7294,8 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .cn-lead-pb-row { display: grid !important; grid-template-columns: 1fr auto; gap: 2px 10px; }
 .cn-lead-pb-row small { grid-column: 1 / -1; color: #94a3b8; font-size: 11px; }
 
-/* ---- KODEX 200 다음 거래일 방향 (참고) — #797 shadow engine ----
-   Deliberately gray: the engine has no validated edge, so no up/down colors. */
+/* ---- 다음 거래일 방향 (참고) — #868 US→KR preopen runner ----
+   Deliberately gray: research output, so no up/down colors. */
 .signal-fixed-split {
     position: relative; display: flex; gap: 2px; height: 5px; margin: 3px 0 2px;
     border-radius: 3px; overflow: hidden; background: rgba(148, 163, 184, 0.55);
@@ -7303,33 +7303,41 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .signal-fixed-split i { display: block; background: rgba(255, 255, 255, 0.22); }
 .signal-fixed-split b { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--text-primary); }
 
+.ms-dir-section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.ms-dir-section-head h2 { margin-bottom: 0; }
+.ms-dir-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
 .ms-dir-card {
-    max-width: 460px; padding: 14px 16px; border: 1px solid var(--border);
+    min-width: 0; padding: 14px 16px; border: 1px solid var(--border);
     border-radius: 10px; background: rgba(255, 255, 255, 0.03);
 }
-.ms-dir-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
-.ms-dir-title { font-size: 13px; color: var(--text-secondary); }
+.ms-dir-head { margin-bottom: 8px; }
+.ms-dir-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
 .ms-dir-badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
 .ms-dir-badge.is-research { background: rgba(250, 204, 21, 0.14); color: #fde68a; }
 .ms-dir-badge.is-muted { background: rgba(255, 255, 255, 0.07); color: var(--text-secondary); }
-.ms-dir-target { font-size: 12px; color: rgba(148, 163, 184, 0.8); }
-.ms-dir-split { display: flex; justify-content: space-between; align-items: flex-end; margin: 6px 0 8px; }
-.ms-dir-split span { display: block; font-size: 12px; color: var(--text-secondary); }
-.ms-dir-split strong { display: block; font-size: 24px; font-weight: 600; color: var(--text-secondary); }
-.ms-dir-split .is-down { text-align: right; }
-.ms-dir-split .is-down strong { color: var(--text-primary); }
-.ms-dir-split.is-late strong { color: var(--text-secondary); }
-.ms-dir-bar { position: relative; display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; }
+.ms-dir-row { margin: 10px 0 0; }
+.ms-dir-row-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+.ms-dir-row-label { font-size: 12px; color: var(--text-secondary); }
+.ms-dir-pair { display: flex; gap: 10px; font-size: 13px; color: var(--text-secondary); }
+.ms-dir-pair .is-lead { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+.ms-dir-row.is-late .ms-dir-pair .is-lead { color: var(--text-secondary); }
+.ms-dir-na { color: rgba(148, 163, 184, 0.6); }
+.ms-dir-bar { position: relative; display: flex; gap: 2px; height: 7px; border-radius: 4px; overflow: hidden; }
 .ms-dir-bar i { display: block; background: rgba(255, 255, 255, 0.18); }
 .ms-dir-bar em { flex: 1; background: rgba(148, 163, 184, 0.6); }
 .ms-dir-bar b { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--text-primary); }
-.ms-dir-mid { text-align: center; font-size: 11px; color: rgba(148, 163, 184, 0.7); margin-top: 3px; }
+.ms-dir-aside {
+    display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--text-secondary);
+    margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--border);
+}
+.ms-dir-aside + .ms-dir-aside { margin-top: 0; border-top: 0; padding-top: 3px; }
+.ms-dir-ref { font-size: 10.5px; padding: 0 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.07); }
 .ms-dir-empty { font-size: 26px; font-weight: 600; color: rgba(148, 163, 184, 0.6); margin: 4px 0; }
 .ms-dir-note {
     font-size: 12px; line-height: 1.55; color: var(--text-secondary);
     margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--border);
 }
-.ms-dir-foot { font-size: 11px; color: rgba(148, 163, 184, 0.7); margin-top: 6px; }
+.ms-dir-foot { font-size: 11px; color: rgba(148, 163, 184, 0.7); margin-top: 8px; }
 
 /* --- 국가별 인사 명단 (personnel-roster.js) ----------------------------------- */
 .pr-roster { font-size: 12px; color: #cbd5e1; }
