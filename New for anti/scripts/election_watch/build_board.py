@@ -373,6 +373,10 @@ def build_board(
         # 권력이 둘 이상으로 갈린 나라(리비아·예멘): 각 쪽의 이름과 인사 명단 키.
         if profile.get("authorities"):
             row["authorities"] = profile["authorities"]
+        # 쪽(정부 측·반군 측) 대시보드와 지역별 대략적 통제 지도.
+        for key in ("camps", "control_map"):
+            if profile.get(key):
+                row[key] = profile[key]
         if profile.get("emirates"):
             row["emirates"] = profile["emirates"]
         if profile.get("document_ingest"):

@@ -39,3 +39,30 @@ test('conflict countries get an X built from GeoJSON lines', () => {
     assert.deepEqual(a[0], [11.8, 21.8]);
     assert.ok(a.length > 10 && b.length > 10, 'lines are densified to follow the globe');
 });
+
+import { campTabs, campHtml, controlColor, controlCamp, controlMapSummaryHtml } from '../country-explorer/special/divided-authority.js';
+
+test('each side of a divided country gets its own structured dashboard', () => {
+    const lby = row('LBY');
+    assert.deepEqual(campTabs(lby).map(([, key]) => key), ['camp_government', 'camp_opposition']);
+    const opp = campHtml(lby, 'camp_opposition');
+    for (const label of ['위상', '근거지', '무장 세력', '대외 후원', '정통성 주장', '통제 지역', '지도부']) assert.match(opp, new RegExp(label));
+    assert.match(opp, /벵가지/);
+    assert.match(opp, /검증 전/, 'background facts are labelled as unverified');
+    assert.match(campHtml(row('YEM'), 'camp_opposition'), /후티/);
+    assert.equal(campHtml(row('GRC'), 'camp_government'), null);
+});
+
+test('every admin1 region of Libya and Yemen is assigned to a side, contested ones dimmed', () => {
+    for (const iso of ['LBY', 'YEM']) {
+        const country = row(iso);
+        const geo = JSON.parse(readFileSync(new URL(`../../../public/data/admin1/${iso}.json`, import.meta.url)));
+        for (const f of geo.features) {
+            assert.ok(controlCamp(country, f.properties.code), `${iso} ${f.properties.code} has no side`);
+            assert.equal(controlColor(country, f.properties.code).length, 4);
+        }
+        assert.match(controlMapSummaryHtml(country), /지역을 누르면/);
+    }
+    assert.equal(controlCamp(row('YEM'), 'YE-SA'), 'opposition');
+    assert.ok(controlColor(row('YEM'), 'YE-TA')[3] < controlColor(row('YEM'), 'YE-AD')[3]);
+});

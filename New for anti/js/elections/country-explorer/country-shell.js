@@ -6,7 +6,7 @@ import { usaExecutive } from './special/usa-executive.js';
 import { chinaSections } from './special/china.js';
 import { cnMapLegendHtml } from './special/chn-leaders.js';
 import { personnelCategories, personnelPartHtml, OFFICE_LABELS } from './special/personnel-roster.js';
-import { isDivided, dividedAuthorityHtml, dividedAuthorityKeys, dividedOverviewCards } from './special/divided-authority.js';
+import { isDivided, dividedAuthorityHtml, dividedAuthorityKeys, dividedOverviewCards, campTabs, campHtml, controlMapSummaryHtml } from './special/divided-authority.js';
 import { chnParty, chnMilitary, chnStateCouncil } from './special/chn-org.js';
 import { jpnSections } from './special/jpn.js';
 import { jpnExecutive } from './special/jpn-executive.js';
@@ -60,9 +60,11 @@ const personnelPart = (country, section) => {
 };
 
 // 권력이 갈린 나라: 중국처럼 '권력 구조'를 맨 앞에 두고 대통령실·총리실 블록은 만들지 않는다.
-const DIVIDED_SECTIONS = [['권력 구조', 'power_structure'], ['의회', 'legislature'], ['일정', 'calendar']];
+// 쪽마다 별도 대시보드(정부 측 / 반군·경쟁 세력)를 두고, 지도 블록은 통제 지역 요약이다.
 const sectionsFor = (country) => {
-    if (isDivided(country)) return DIVIDED_SECTIONS;
+    if (isDivided(country)) {
+        return [['지도', 'subnational_map'], ['권력 구조', 'power_structure'], ...campTabs(country), ['의회', 'legislature'], ['일정', 'calendar']];
+    }
     const base = baseSectionsFor(country.iso3);
     if (!country.personnel) return base;
     const keys = new Set(base.map(([, key]) => key));
@@ -184,6 +186,8 @@ const sourceObject = (country, section) => {
 const specialContent = (country, section) => {
     if (country.iso3 === 'ISR' && section === 'election_analysis') return israelAnalysisPlaceholder();
     if (section === 'power_structure' && isDivided(country)) return dividedAuthorityHtml(country);
+    if (section.startsWith('camp_')) return campHtml(country, section);
+    if (section === 'subnational_map' && isDivided(country)) return controlMapSummaryHtml(country);
     if (section === 'race_progress') return raceProgressContent(country);
     if (section.startsWith('office_') || section === 'local_gov') return personnelPart(country, section) || null;
     if (country.iso3 === 'CHN' && section === 'party') return chnParty(country);
