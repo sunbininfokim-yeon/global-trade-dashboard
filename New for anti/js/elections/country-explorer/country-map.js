@@ -2,6 +2,7 @@ import { loadAdmin1 } from '../data/geo-service.js?v=2';
 import { classColors, stateClass2024 } from '../data/usa-election-context.js?v=2';
 import { loadCnLeaders } from '../data/chn-service.js';
 import { cnRegionColor, cnRegionForCode } from './special/chn-leaders.js';
+import { controlColor, controlCamp } from './special/divided-authority.js';
 
 const neutral = [51, 65, 85, 235];
 const selected = [14, 116, 144, 245];
@@ -153,7 +154,7 @@ const stateIndex = (country) => new Map(
 
 // fitView:false 는 카메라를 건드리지 않고 색만 바꾼다. 주를 누른 직후 "눌렀다"는 표시를 지도에
 // 먼저 주려고 같은 지도를 다시 칠할 때 쓴다 -- 사용자가 확대해 둔 시점이 되돌아가면 안 된다.
-export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, fitView = true, onStateOpen, onRegionOpen = null }) => {
+export const renderCountryMap = async ({ host, country, selectedStateId = null, electionMode = false, isStale = null, fitView = true, onStateOpen, onRegionOpen = null, onCampOpen = null }) => {
     // 중국 인사 자료는 경계 도형과 동시에 받는다 -- 차례로 받으면 지도가 그만큼 늦게 뜬다.
     const cnLeadersPromise = country.iso3 === 'CHN' ? loadCnLeaders() : null;
     let raw;
@@ -179,7 +180,8 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
         data: geo,
         stroked: true,
         filled: true,
-        pickable: country.iso3 === 'USA' || Boolean(cnLeaders && onRegionOpen),
+        // 분쟁국은 지역별 통제 세력으로 칠하고, 누르면 그 쪽 대시보드가 열린다.
+        pickable: country.iso3 === 'USA' || Boolean(cnLeaders && onRegionOpen) || Boolean(country.control_map && onCampOpen),
         lineWidthMinPixels: 1,
         updateTriggers: { getFillColor: [selectedStateId, electionMode] },
         getLineColor: [203, 213, 225, 190],
@@ -190,16 +192,28 @@ export const renderCountryMap = async ({ host, country, selectedStateId = null, 
                 const stateId = feature.properties?.code?.replace(/^US-/, '');
                 return classColors[stateClass2024(stateId)];
             }
+            if (country.control_map) return controlColor(country, feature.properties?.code) || neutral;
             if (cnLeaders) return cnRegionColor(cnLeaders, feature.properties?.code) || neutral;
             return state ? partyColor(state.governor?.abbr) : neutral;
         },
     });
+    const contested = country.control_map ? {
+        ...geo, features: (geo.features || []).filter((f) => country.control_map.regions?.[f.properties?.code]?.contested),
+    } : null;
+    const contestedLayer = contested?.features.length ? new host.layers.GeoJsonLayer({
+        id: `elections-${country.iso3}-contested`, data: contested, stroked: true, filled: false, pickable: false,
+        lineWidthUnits: 'pixels', lineWidthMinPixels: 2, getLineWidth: 2, getLineColor: [248, 250, 252, 220],
+    }) : null;
     host.setElectionMap([
         ...host.worldBaseLayers({ id: `elections-${country.iso3}-base`, landColor: [22, 32, 48, 255], lineColor: [71, 85, 105, 110] }),
         layer,
+        ...(contestedLayer ? [contestedLayer] : []),
     ], country.iso3 === 'USA' ? (info) => {
         const state = usaStates.get(info?.object?.properties?.code);
         if (state) onStateOpen(state.id);
+    } : country.control_map && onCampOpen ? (info) => {
+        const camp = controlCamp(country, info?.object?.properties?.code);
+        if (camp) onCampOpen(camp);
     } : cnLeaders && onRegionOpen ? (info) => {
         const region = cnRegionForCode(info?.object?.properties?.code);
         if (region) onRegionOpen(region);

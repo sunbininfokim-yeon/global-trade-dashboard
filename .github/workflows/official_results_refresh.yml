@@ -1,0 +1,46 @@
+name: Refresh official election results
+
+# State-published, uncertified election-night counts (GA Enhanced Voting, CO/IA Clarity ENR).
+# The cloud agent sandbox cannot reach these hosts, and Clarity answers plain HTTP with an
+# empty bot-challenge 202, so the collector runs here with headless Chromium.
+# Sources: New for anti/scripts/election_watch/config/official_results_2026.json
+
+on:
+  schedule:
+    # Counting continues for days after 11-03; every 20 minutes is enough for a summary file.
+    - cron: '7,27,47 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: official-results
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install headless browser
+        run: |
+          python3 -m pip install --quiet playwright==1.47.0
+          python3 -m playwright install --with-deps chromium
+      - name: Unit tests
+        working-directory: New for anti/scripts/election_watch
+        run: python3 -m unittest tests.test_official_results -v
+      - name: Collect
+        working-directory: New for anti/scripts/election_watch
+        run: python3 collect_official_results.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898281+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/usa_election_official_results_v1.json"
+          git commit -m "chore: refresh official election results" || exit 0
+          bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"

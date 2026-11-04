@@ -1,0 +1,133 @@
+import copy
+import json
+import sys
+import tempfile
+import unittest
+
+import importlib.util
+if any(importlib.util.find_spec(p) is None for p in ['numpy','pandas','scipy','sklearn','exchange_calendars']):
+    raise unittest.SkipTest('install requirements-us-kr-preopen.txt for optional direction tests')
+
+from datetime import datetime
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
+
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+import run_us_kr_preopen as runner
+
+
+class RunnerTests(unittest.TestCase):
+    def forecast(self,status='research_preopen_forecast',target='2026-11-05'):
+        score={'probability':.51,'score_0_100':51,'direction':'UP','information_state':'model_score_with_calibration'}
+        return {'status':status,'target_date':target,'generated_at':'2026-11-05T07:00:00+09:00',
+                'model_id':'a'*64,'input_hashes':{'board':'one'},'results':{'KOSPI':{'scores':{'opening_up':score}}} if status!='unavailable' else {},
+                'KR_source_date':'2026-11-04','required_US_session':'2026-11-04',
+                'forecast_cutoff_KST':'2026-11-05T08:30:00+09:00','trained_through':'2026-10-22','reasons':[]}
+
+    def test_first_record_is_immutable_and_revision_not_primary(self):
+        with tempfile.TemporaryDirectory() as td:
+            f=self.forecast();first,path=runner.archive_forecast(f,td);original=path.read_bytes()
+            self.assertTrue(first['eligible_for_primary_evaluation'])
+            same=copy.deepcopy(f);same['generated_at']='2026-11-05T07:10:00+09:00'
+            old,samepath=runner.archive_forecast(same,td)
+            self.assertEqual(old['generated_at'],f['generated_at']);self.assertEqual(path,samepath)
+            changed=copy.deepcopy(same);changed['input_hashes']['board']='two'
+            revision,rpath=runner.archive_forecast(changed,td)
+            self.assertFalse(revision['eligible_for_primary_evaluation']);self.assertNotEqual(path,rpath)
+            self.assertEqual(path.read_bytes(),original)
+
+    def test_unavailable_and_replay_never_become_first_forecast(self):
+        with tempfile.TemporaryDirectory() as td:
+            for status in ['unavailable','retrospective_replay']:
+                record,path=runner.archive_forecast(self.forecast(status),td)
+                self.assertIsNone(path);self.assertFalse(record['eligible_for_primary_evaluation'])
+            self.assertEqual(list(Path(td).iterdir()),[])
+
+    def test_failed_same_target_refresh_keeps_explicit_previous_record(self):
+        old=runner.display_payload(self.forecast())
+        failed=self.forecast('unavailable');failed['reasons']=['source missing']
+        new=runner.display_payload(failed,old)
+        self.assertEqual(new['cards'],old['cards']);self.assertEqual(new['generated_at'],old['generated_at'])
+        self.assertEqual(new['refresh']['status'],'unavailable')
+
+    def test_new_target_does_not_inherit_yesterday_score(self):
+        old=runner.display_payload(self.forecast(target='2026-11-04'))
+        new=runner.display_payload(self.forecast('unavailable'),old)
+        self.assertEqual(new['cards'],[]);self.assertEqual(new['target_date'],'2026-11-05')
+        self.assertEqual(new['last_available']['target_date'],'2026-11-04')
+
+    def test_raw_merge_only_changes_detailed_leaf(self):
+        b={'kr':{'investor_nets':{'detailed_15007':{'old':1},'other':99}},'us_oi_snap':{'keep':2}}
+        with tempfile.TemporaryDirectory() as td:
+            folder=Path(td)/'2026-11-04';folder.mkdir()
+            for n in runner.REQUIRED_FILES:(folder/n).write_text('fixture')
+            with patch.object(runner,'merge_date_folder',return_value={'new':2}):
+                out,report=runner.board_with_raw(b,Path(td),'2026-11-04')
+            self.assertEqual(b['kr']['investor_nets']['detailed_15007'],{'old':1})
+            self.assertEqual(out['us_oi_snap'],b['us_oi_snap'])
+            self.assertEqual(out['kr']['investor_nets']['other'],99)
+            self.assertEqual(report['status'],'merged_expected_source_only')
+
+    def test_no_fallback_to_old_raw_folder(self):
+        b={'kr':{'investor_nets':{'detailed_15007':{}}}}
+        with tempfile.TemporaryDirectory() as td:
+            (Path(td)/'2026-11-03').mkdir()
+            out,r=runner.board_with_raw(b,Path(td),'2026-11-04')
+            self.assertEqual(out,b);self.assertEqual(r['date'],'2026-11-04')
+            self.assertEqual(r['status'],'expected_folder_incomplete')
+
+    def test_missing_window_history_is_backfilled_but_future_folder_is_not_used(self):
+        b={'kr':{'investor_nets':{'detailed_15007':{}}}}
+        with tempfile.TemporaryDirectory() as td:
+            for day in ['2026-11-03','2026-11-04','2026-11-05']:
+                folder=Path(td)/day;folder.mkdir()
+                for n in runner.REQUIRED_FILES:(folder/n).write_text('fixture')
+            with patch.object(runner,'merge_date_folder',return_value={}) as merge:
+                out,r=runner.board_with_raw(b,Path(td),'2026-11-04')
+            self.assertEqual(r['merged_dates'],['2026-11-03','2026-11-04'])
+            self.assertEqual(merge.call_count,2)
+
+    def test_partial_kr_window_not_zero_filled(self):
+        with patch.object(runner,'fetch_naver_chart',return_value={}):
+            with self.assertRaises(ValueError):runner.collect_kr_prices('2026-11-04',datetime.now())
+
+    def args(self,root):
+        model=root/'model.json';model.write_text('{}')
+        board=root/'board.json';board.write_text('{}')
+        return SimpleNamespace(model=model,board=board,target='2026-11-05',replay=False,
+            stocks=None,kospi=None,us=None,krx_root=None,refresh_prices=True,
+            run_dir=root/'run',archive_dir=root/'archive',public_output=None)
+
+    def test_replay_publication_rejected_before_collection(self):
+        with tempfile.TemporaryDirectory() as td:
+            a=self.args(Path(td));a.replay=True;a.public_output=Path(td)/'us_kr_direction_v1.json'
+            with self.assertRaises(ValueError):runner.run(a)
+            self.assertFalse(a.run_dir.exists())
+
+    def test_unclosed_session_skips_network(self):
+        with tempfile.TemporaryDirectory() as td:
+            args=self.args(Path(td));failed=self.forecast('unavailable')
+            with patch.object(runner,'validate_model'),patch.object(runner,'collect_kr_prices') as kr,patch.object(runner,'collect_us_prices') as us,patch.object(runner,'predict',return_value=failed):
+                code=runner.run(args,now=datetime.fromisoformat('2026-11-04T20:00:00+09:00'))
+            self.assertEqual(code,2);kr.assert_not_called();us.assert_not_called()
+
+    def test_generation_time_is_after_collection_not_start_time(self):
+        with tempfile.TemporaryDirectory() as td:
+            args=self.args(Path(td));times=iter([datetime.fromisoformat(t) for t in
+                ['2026-11-05T08:29:00+09:00','2026-11-05T08:31:00+09:00']])
+            with patch.object(runner,'validate_model'),patch.object(runner,'collect_kr_prices',return_value=({'candidates':[]},{'candidates':[]})),patch.object(runner,'collect_us_prices',return_value={'symbols':{}}),patch.object(runner,'predict',return_value=self.forecast('unavailable')) as predict:
+                runner.run(args,clock=lambda:next(times))
+            self.assertEqual(predict.call_args.kwargs['now'].minute,31)
+
+    def test_collection_failure_blocks_successful_stale_inference(self):
+        with tempfile.TemporaryDirectory() as td:
+            args=self.args(Path(td))
+            with patch.object(runner,'validate_model'),patch.object(runner,'collect_kr_prices',side_effect=OSError('source offline')),patch.object(runner,'predict',return_value=self.forecast()):
+                code=runner.run(args,now=datetime.fromisoformat('2026-11-05T08:00:00+09:00'))
+            self.assertEqual(code,2)
+            out=json.loads((args.run_dir/'forecast.json').read_text());self.assertEqual(out['results'],{})
+            self.assertFalse(args.archive_dir.exists())
+
+
+if __name__=='__main__':unittest.main()

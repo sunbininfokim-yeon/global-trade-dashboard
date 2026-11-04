@@ -1,0 +1,43 @@
+{
+  "private_source_ref": "3a27fa40872926d3e907abd2cb00ec08b4c32072",
+  "path": "data/normalized/krx_12008_kospi_investor/year=2026/month=10/part.jsonl.gz",
+  "git_blob": "33138e42f08d9e9dc66eef6244e4d128a7c17d76",
+  "sha256": "c7d7715672175a79ae6a5b2cc3c898ba466457cd0d1586eaed0dea41fc04e3c6",
+  "checked_example": {
+    "date": "2026-10-02",
+    "product": "kospi_cash",
+    "security_scope": null,
+    "quality": "observed",
+    "unit": "krw",
+    "source_unit": "million_krw",
+    "query_params": {
+      "query_type": "일별추이",
+      "market": "KOSPI",
+      "market_ko": "유가증권",
+      "metric": "trading_value",
+      "metric_ko": "거래대금",
+      "period": "일자별",
+      "investors": [
+        "foreign",
+        "other_foreign",
+        "institution",
+        "retail",
+        "total"
+      ],
+      "source_unit_by_side": {
+        "buy": "million_krw",
+        "sell": "million_krw"
+      }
+    },
+    "market_total_buy_krw": 15981136000000.0,
+    "market_total_sell_krw": 15981000000.0,
+    "market_total_net_krw": 15965155000000.0
+  },
+  "excluded_reasons": [
+    "stock_only_scope_not_explicit",
+    "market_buy_sell_not_balanced"
+  ],
+  "inspection_scope": "sample only, not complete historical audit; do not generalize this defect to current private HEAD",
+  "latest_private_tree_checked": "b5159495774a6bdf79a96fa4bc05dd258713393c",
+  "latest_tree_explicit_stock_scope_hive_present": false
+}

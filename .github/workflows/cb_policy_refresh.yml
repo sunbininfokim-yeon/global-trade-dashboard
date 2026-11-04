@@ -65,4 +65,4 @@ jobs:
                   "New for anti/scripts/macro_monitor/config/ecb_gc_v1.json" \
                   "New for anti/public/data/cb_policy_v1.json"
           git commit -m "chore: refresh central-bank policy boards" || exit 0
-          git push
+          bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"

@@ -1,4 +1,5 @@
 import { escapeHtml } from '../../ui.js';
+import { officialResult, officialLine } from '../../data/official-results.js?v=2';
 
 // 상원 여론조사 한눈에: one row per contested Senate race, each pollster's
 // latest poll as a dot on a Democratic <-> Republican margin axis. This only
@@ -98,7 +99,7 @@ const latestText = (race) => {
     return `최근 ${l.o.pollster} ${day} · ${l.s.left.name.split(' ').at(-1)} ${pct(l.s.left.pct)} · ${l.s.rep.name.split(' ').at(-1)} ${pct(l.s.rep.pct)}${l.low ? ` · ${LOW_LABEL[l.low] || '미검토'}` : l.reference ? ' · 참고' : ''}`;
 };
 
-const raceRow = (board_race, now, office = 'senate', low = null, call = null) => {
+const raceRow = (board_race, now, office = 'senate', low = null, call = null, official = null) => {
     const race = withLow(board_race, low);
     const lowCounted = new Set(lowVerdict(low) ? low.combined_14.unreviewed_ids || [] : []);
     const dots = dotsFor(race, now).map((d) => ({ ...d, lowCounted: lowCounted.has(d.o.id) }));
@@ -119,7 +120,7 @@ const raceRow = (board_race, now, office = 'senate', low = null, call = null) =>
         <span class="elections-senate-state"><strong>${escapeHtml(race.state)}</strong><small>${escapeHtml(names)}${leftParty === 'IND' ? ' (무소속)' : ''}</small></span>
         <span class="elections-senate-latest">${escapeHtml(latestText(race))}</span>
         <span class="elections-senate-axis" aria-hidden="true"><i class="elections-senate-zero"></i>${dotHtml}</span>
-        <span class="elections-senate-verdict ${v.cls}">${escapeHtml(v.text)}${counted.length ? `<small>집계 ${counted.length}곳: ${leftParty === 'IND' ? 'I' : 'D'} ${leftLead} · R ${repLead}</small>` : v.party ? `<small>신뢰도 낮음 · ${lowCounted.size}건 기준</small>` : `<small>참고 ${dots.length}건</small>`}</span>
+        <span class="elections-senate-verdict ${v.cls}">${escapeHtml(v.text)}${counted.length ? `<small>집계 ${counted.length}곳: ${leftParty === 'IND' ? 'I' : 'D'} ${leftLead} · R ${repLead}</small>` : v.party ? `<small>신뢰도 낮음 · ${lowCounted.size}건 기준</small>` : `<small>참고 ${dots.length}건</small>`}${officialLine(official)}</span>
     </button>`;
 };
 
@@ -155,7 +156,7 @@ export const officePollSummaryHtml = (office, contests, board, { now = Date.now(
             ${lowTotal ? `<small class="is-low-confidence">이 중 원문 미검토·참고 조사 판정 ${lowTotal}${unit} (DEM ${low.DEM} · GOP ${low.GOP}${low.IND ? ` · 무소속 ${low.IND}` : ''}) · 신뢰도 낮음</small>` : ''}
             ${single ? `<small>${escapeHtml(latestText(rows[0]))}</small>` : ''}<small>최근 14일 판정 · 눌러서 ${single ? '자세히' : '선거별 보기'}</small></summary>
         ${rows.length ? `<div class="elections-senate-scale" aria-hidden="true"><span class="is-dem">← 민주${office === 'senate' ? '·무소속' : ''}</span><span>±${AXIS}%p · 0</span><span class="is-gop">공화 →</span></div>
-        <div class="elections-senate-rows">${rows.map((r) => raceRow(r, now, office, lowOf(r), (board?.mediaCalls?.calls || []).find((c) => c.race_id === r.race_id && ['called', 'runoff'].includes(c.status)))).join('')}</div>` : ''}
+        <div class="elections-senate-rows">${rows.map((r) => raceRow(r, now, office, lowOf(r), (board?.mediaCalls?.calls || []).find((c) => c.race_id === r.race_id && ['called', 'runoff'].includes(c.status)), board?.officialResults?.races?.[r.race_id])).join('')}</div>` : ''}
         <p class="elections-panel-note">조사 없음 ${contests.length - polled.length}${unit}. 우세는 최근 14일 안의 조사 판정입니다. 검토 보드 판정이 없으면 원문 미검토·참고 조사로 판정하고 '미검토 포함'으로 표시합니다(신뢰도 낮음, 캠프 내부·원문 불일치는 제외). ● 검토 집계 포함, ◍ 미검토 판정 포함, ○ 참고, 점선=원문 미검토. 평균이나 당선 예측이 아닙니다.</p>
     </details>`;
 };
