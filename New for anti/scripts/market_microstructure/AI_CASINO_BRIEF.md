@@ -9,7 +9,7 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 비유: 주차장(코스피 거래)에 차 100대가 들어오면, 그 중 약 25대가 ‘가속 페달 달린 특수차(레버·인버스 ETF)’입니다. 특수차 1대는 일반차 2대 분량의 힘을 씁니다(2배 레버).
 
 - 레버·인버스 ETF가 코스피 현금 거래의 상당 부분을 차지할 수 있음
-- ETF 시장 안에서는 레버·인버스가 약 36.2%
+- ETF 시장 안에서는 레버·인버스가 약 36.3%
 - 단일종목 레버는 소수, 대부분은 지수형
 - 하닉: 현물 거래 100원이면 레버 ETF가 약 9원 같이 움직임(당일 기준)
 - 삼전: 현물 100원 대비 레버 ETF 약 4원
@@ -147,7 +147,7 @@ KR LETF AUM **2.39조** ($1.71bn) · 일거래 **0.601조** · 노셔널 $3.41bn
 | 0195S0 | TIGER SK하이닉스단일종목레버리지 | 2.0 | 0.850 | 0.106 |
 | 0197X0 | SOL SK하이닉스선물단일종목인버스2X | -2.0 | 0.085 | 0.208 |
 
-HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)) · HK turnover 14.04% of KR cash turnover (observed) · crypto OI $0.0bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
+HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)) · HK turnover 11.26% of KR cash turnover (observed) · crypto OI $0.0bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
 
 ## Ranked leverage ETFs (click / open detail)
 
