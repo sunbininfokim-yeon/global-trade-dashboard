@@ -4,36 +4,20 @@ on:
     branches: [claude/stage-diag]
     paths: ['.github/workflows/tmp_stage_diag.yml']
 jobs:
-  dump:
+  probe:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install pandas numpy pyyaml
-      - working-directory: "New for anti/scripts/yield_model"
-        run: |
-          python3 build_registry.py
-          python3 - <<'PY'
-          import os, json
-          from datetime import date, timedelta
-          from stage_conditions import build as b
-          pts = b.load_points()
-          today = date.today() - timedelta(days=3)
-          os.makedirs("../../../diag", exist_ok=True)
-          keys = ["ukraine_winter_wheat", "ukraine_corn", "ukraine_sunflower", "national_coffee_belt", "national_arabica_belt"]
-          json.dump({k: pts.get(k) for k in keys}, open("../../../diag/points.json", "w"))
-          for k in keys:
-              if k in pts:
-                  b.point_daily(pts[k], today).to_csv(f"../../../diag/{k}.csv", index=False)
-                  print(k, "ok")
-          PY
       - run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add diag
-          git commit -m "diag dump"
-          git push
+          python3 - <<'PY'
+          import json, urllib.request
+          base = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/"
+          for ds, q in [("agr_r_crops", "geo=FR21&geo=FR22&geo=FR24"), ("apro_cpshr_h", "geo=FR21"), ("apro_cpnhr_h", "geo=FR21")]:
+              try:
+                  d = json.load(urllib.request.urlopen(base + ds + "?" + q, timeout=120))
+                  dims = {k: list(v["category"]["index"].keys())[:60] for k, v in d["dimension"].items()}
+                  print("==", ds, d.get("label"))
+                  for k, v in dims.items(): print(k, v)
+                  print("n values", len(d.get("value", {})))
+              except Exception as e:
+                  print("==", ds, "ERR", e)
+          PY
