@@ -1,7 +1,7 @@
 {
   "schema_version": "qra-engine-v1",
   "engine_version": "0.3.0",
-  "generated_at": "2026-11-04T02:47:10Z",
+  "generated_at": "2026-11-05T00:27:11Z",
   "from_year": 2020,
   "source": {
     "kind": "treasury_archives_plus_pdf_tables",
@@ -13,12 +13,12 @@
     "fiscaldata": true
   },
   "stats": {
-    "docs_discovered": 55,
-    "docs_downloaded": 55,
+    "docs_discovered": 28,
+    "docs_downloaded": 28,
     "events": 28,
     "parse_failures": 0,
     "parse_ok_estimates": 28,
-    "parse_ok_policy": 27,
+    "parse_ok_policy": 0,
     "parse_ok_sources_uses": 25,
     "parse_ok_tbac": 1
   },
@@ -29,9 +29,14 @@
     "tga": {
       "source": "fiscaldata.dts.operating_cash_balance",
       "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/operating-cash-balance",
-      "asof": "2026-11-02",
-      "latest_bn": 930.757,
+      "asof": "2026-11-03",
+      "latest_bn": 938.208,
       "series": [
+        {
+          "date": "2026-11-03",
+          "tga_mn": 938208.0,
+          "tga_bn": 938.208
+        },
         {
           "date": "2026-11-02",
           "tga_mn": 930757.0,
@@ -326,14 +331,9 @@
           "date": "2026-08-10",
           "tga_mn": 966851.0,
           "tga_bn": 966.851
-        },
-        {
-          "date": "2026-08-07",
-          "tga_mn": 954113.0,
-          "tga_bn": 954.113
         }
       ],
-      "fetched_at": "2026-11-04T02:47:06Z"
+      "fetched_at": "2026-11-05T00:27:07Z"
     },
     "customs": {
       "source": "fiscaldata.mts.mts_table_3.Customs Duties",
@@ -486,33 +486,33 @@
           "fytd_usd": 7297256976.25
         }
       ],
-      "fetched_at": "2026-11-04T02:47:07Z",
+      "fetched_at": "2026-11-05T00:27:08Z",
       "note_ko": "음수 월 = 관세 환급이 수입을 상회(순유출)."
     },
     "debt_transactions": {
       "source": "fiscaldata.dts.public_debt_transactions",
       "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/public-debt-transactions",
-      "asof": "2026-11-02",
-      "latest_bn": -17.417,
+      "asof": "2026-11-03",
+      "latest_bn": 45.404,
       "components": [
         {
           "id": "bills",
           "label_ko": "T-Bills",
           "kind": "bill",
-          "issues_mn": -12.0,
-          "redemptions_mn": 0.0,
-          "net_mn": -12.0,
-          "value": -0.012,
+          "issues_mn": 315296.0,
+          "redemptions_mn": 269876.0,
+          "net_mn": 45420.0,
+          "value": 45.42,
           "unit": "bn_usd"
         },
         {
           "id": "notes",
           "label_ko": "Notes",
           "kind": "coupon",
-          "issues_mn": 236667.0,
-          "redemptions_mn": 254072.0,
-          "net_mn": -17405.0,
-          "value": -17.405,
+          "issues_mn": -16.0,
+          "redemptions_mn": 0.0,
+          "net_mn": -16.0,
+          "value": -0.016,
           "unit": "bn_usd"
         },
         {
@@ -530,16 +530,16 @@
         {
           "kind": "bill",
           "label_ko": "T-Bills",
-          "issues_bn": -0.012,
-          "redemptions_bn": 0.0,
-          "net_bn": -0.012
+          "issues_bn": 315.296,
+          "redemptions_bn": 269.876,
+          "net_bn": 45.42
         },
         {
           "kind": "coupon",
           "label_ko": "Notes",
-          "issues_bn": 236.667,
-          "redemptions_bn": 254.072,
-          "net_bn": -17.405
+          "issues_bn": -0.016,
+          "redemptions_bn": 0.0,
+          "net_bn": -0.016
         },
         {
           "kind": "coupon",
@@ -550,19 +550,19 @@
         }
       ],
       "note_ko": "당일 시중성(Marketable) 발행−상환 순증($B). Bills=무이표, Notes/Bonds=이표.",
-      "fetched_at": "2026-11-04T02:47:08Z"
+      "fetched_at": "2026-11-05T00:27:09Z"
     },
     "debt_outstanding": {
       "source": "fiscaldata.od.debt_to_penny",
-      "asof": "2026-11-02",
-      "latest_tn": 40.502,
-      "public_tn": 32.72,
+      "asof": "2026-11-03",
+      "latest_tn": 40.547,
+      "public_tn": 32.765,
       "intragov_tn": 7.782,
       "components": [
         {
           "id": "public",
           "label_ko": "시중 보유",
-          "value": 32.72,
+          "value": 32.765,
           "unit": "tn_usd"
         },
         {
@@ -572,7 +572,7 @@
           "unit": "tn_usd"
         }
       ],
-      "fetched_at": "2026-11-04T02:47:08Z"
+      "fetched_at": "2026-11-05T00:27:09Z"
     },
     "mts": {
       "source": "fiscaldata.mts.mts_table_2",
@@ -843,14 +843,14 @@
         }
       ],
       "note_ko": "월간 On-Budget. 적자는 음수. Fiscal Data MTS Table 2.",
-      "fetched_at": "2026-11-04T02:47:10Z"
+      "fetched_at": "2026-11-05T00:27:11Z"
     }
   },
   "tga_vs_qra": {
-    "tga_actual_bn": 930.757,
+    "tga_actual_bn": 938.208,
     "qra_end_cash_bn": 950.0,
-    "gap_bn": -19.243,
-    "tga_asof": "2026-11-02"
+    "gap_bn": -11.792,
+    "tga_asof": "2026-11-03"
   },
   "latest": {
     "id": "2026-Q4",
@@ -1041,7 +1041,7 @@
     ],
     "tbac_recommendation_months": [
       {
-        "month": "Aug-26",
+        "month": "Nov-26",
         "section": "recommendations",
         "c2y": 69.0,
         "c3y": 58.0,
@@ -1050,28 +1050,13 @@
         "c10y": 42.0,
         "c20y": 16.0,
         "c30y": 25.0,
-        "tips5y": 8.0,
-        "tips10y": null,
-        "tips30y": null,
-        "frn2y": 28.0
-      },
-      {
-        "month": "Sep-26",
-        "section": "recommendations",
-        "c2y": 69.0,
-        "c3y": 58.0,
-        "c5y": 70.0,
-        "c7y": 44.0,
-        "c10y": 39.0,
-        "c20y": 13.0,
-        "c30y": 22.0,
         "tips5y": 19.0,
         "tips10y": null,
         "tips30y": null,
         "frn2y": 28.0
       },
       {
-        "month": "Oct-26",
+        "month": "Dec-26",
         "section": "recommendations",
         "c2y": 69.0,
         "c3y": 58.0,
@@ -1080,7 +1065,22 @@
         "c10y": 39.0,
         "c20y": 13.0,
         "c30y": 22.0,
-        "tips5y": 26.0,
+        "tips5y": 24.0,
+        "tips10y": null,
+        "tips30y": null,
+        "frn2y": 28.0
+      },
+      {
+        "month": "Jan-27",
+        "section": "recommendations",
+        "c2y": 69.0,
+        "c3y": 58.0,
+        "c5y": 70.0,
+        "c7y": 44.0,
+        "c10y": 39.0,
+        "c20y": 13.0,
+        "c30y": 22.0,
+        "tips5y": 21.0,
         "tips10y": null,
         "tips30y": null,
         "frn2y": 30.0
@@ -1359,7 +1359,7 @@
       ],
       "tbac_recommendation_months": [
         {
-          "month": "Aug-26",
+          "month": "Nov-26",
           "section": "recommendations",
           "c2y": 69.0,
           "c3y": 58.0,
@@ -1368,28 +1368,13 @@
           "c10y": 42.0,
           "c20y": 16.0,
           "c30y": 25.0,
-          "tips5y": 8.0,
-          "tips10y": null,
-          "tips30y": null,
-          "frn2y": 28.0
-        },
-        {
-          "month": "Sep-26",
-          "section": "recommendations",
-          "c2y": 69.0,
-          "c3y": 58.0,
-          "c5y": 70.0,
-          "c7y": 44.0,
-          "c10y": 39.0,
-          "c20y": 13.0,
-          "c30y": 22.0,
           "tips5y": 19.0,
           "tips10y": null,
           "tips30y": null,
           "frn2y": 28.0
         },
         {
-          "month": "Oct-26",
+          "month": "Dec-26",
           "section": "recommendations",
           "c2y": 69.0,
           "c3y": 58.0,
@@ -1398,7 +1383,22 @@
           "c10y": 39.0,
           "c20y": 13.0,
           "c30y": 22.0,
-          "tips5y": 26.0,
+          "tips5y": 24.0,
+          "tips10y": null,
+          "tips30y": null,
+          "frn2y": 28.0
+        },
+        {
+          "month": "Jan-27",
+          "section": "recommendations",
+          "c2y": 69.0,
+          "c3y": 58.0,
+          "c5y": 70.0,
+          "c7y": 44.0,
+          "c10y": 39.0,
+          "c20y": 13.0,
+          "c30y": 22.0,
+          "tips5y": 21.0,
           "tips10y": null,
           "tips30y": null,
           "frn2y": 30.0
@@ -1892,57 +1892,12 @@
         ]
       },
       "tbac_financing": {
-        "source_pdf": "TBACRecommendedFinancingTableByRefundingQuarter-08052026.pdf",
-        "title": "TBAC Recommended Financing — AUGUST 2026-OCTOBER 2026 QUARTER",
-        "quarter_label": "AUGUST 2026-OCTOBER 2026 QUARTER",
+        "source_pdf": "TBACRecommendedFinancingTableByRefundingQuarter-11042026.pdf",
+        "title": "TBAC Recommended Financing — NOVEMBER 2026-JANUARY 2027 QUARTER",
+        "quarter_label": "NOVEMBER 2026-JANUARY 2027 QUARTER",
         "unit": "billions_usd",
         "parse_ok": true,
         "rows": [
-          {
-            "month": "Feb-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 42.0,
-            "c20y": 16.0,
-            "c30y": 25.0,
-            "tips5y": 9.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Mar-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 19.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Apr-26",
-            "section": "historical",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
-            "tips5y": 26.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 30.0
-          },
           {
             "month": "May-26",
             "section": "historical",
@@ -1990,7 +1945,7 @@
           },
           {
             "month": "Aug-26",
-            "section": "recommendations",
+            "section": "historical",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2005,7 +1960,7 @@
           },
           {
             "month": "Sep-26",
-            "section": "recommendations",
+            "section": "historical",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2020,7 +1975,7 @@
           },
           {
             "month": "Oct-26",
-            "section": "recommendations",
+            "section": "historical",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2035,7 +1990,7 @@
           },
           {
             "month": "Nov-26",
-            "section": "provisional",
+            "section": "recommendations",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2050,7 +2005,7 @@
           },
           {
             "month": "Dec-26",
-            "section": "provisional",
+            "section": "recommendations",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2065,7 +2020,7 @@
           },
           {
             "month": "Jan-27",
-            "section": "provisional",
+            "section": "recommendations",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2077,12 +2032,10 @@
             "tips10y": null,
             "tips30y": null,
             "frn2y": 30.0
-          }
-        ],
-        "recommendation_months": [
+          },
           {
-            "month": "Aug-26",
-            "section": "recommendations",
+            "month": "Feb-27",
+            "section": "provisional",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2090,14 +2043,14 @@
             "c10y": 42.0,
             "c20y": 16.0,
             "c30y": 25.0,
-            "tips5y": 8.0,
+            "tips5y": 9.0,
             "tips10y": null,
             "tips30y": null,
             "frn2y": 28.0
           },
           {
-            "month": "Sep-26",
-            "section": "recommendations",
+            "month": "Mar-27",
+            "section": "provisional",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2111,8 +2064,8 @@
             "frn2y": 28.0
           },
           {
-            "month": "Oct-26",
-            "section": "recommendations",
+            "month": "Apr-27",
+            "section": "provisional",
             "c2y": 69.0,
             "c3y": 58.0,
             "c5y": 70.0,
@@ -2121,6 +2074,53 @@
             "c20y": 13.0,
             "c30y": 22.0,
             "tips5y": 26.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 30.0
+          }
+        ],
+        "recommendation_months": [
+          {
+            "month": "Nov-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 42.0,
+            "c20y": 16.0,
+            "c30y": 25.0,
+            "tips5y": 19.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Dec-26",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 24.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Jan-27",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 21.0,
             "tips10y": null,
             "tips30y": null,
             "frn2y": 30.0
@@ -2504,7 +2504,7 @@
         ],
         "tbac_recommendation_months": [
           {
-            "month": "Aug-26",
+            "month": "Nov-26",
             "section": "recommendations",
             "c2y": 69.0,
             "c3y": 58.0,
@@ -2513,28 +2513,13 @@
             "c10y": 42.0,
             "c20y": 16.0,
             "c30y": 25.0,
-            "tips5y": 8.0,
-            "tips10y": null,
-            "tips30y": null,
-            "frn2y": 28.0
-          },
-          {
-            "month": "Sep-26",
-            "section": "recommendations",
-            "c2y": 69.0,
-            "c3y": 58.0,
-            "c5y": 70.0,
-            "c7y": 44.0,
-            "c10y": 39.0,
-            "c20y": 13.0,
-            "c30y": 22.0,
             "tips5y": 19.0,
             "tips10y": null,
             "tips30y": null,
             "frn2y": 28.0
           },
           {
-            "month": "Oct-26",
+            "month": "Dec-26",
             "section": "recommendations",
             "c2y": 69.0,
             "c3y": 58.0,
@@ -2543,7 +2528,22 @@
             "c10y": 39.0,
             "c20y": 13.0,
             "c30y": 22.0,
-            "tips5y": 26.0,
+            "tips5y": 24.0,
+            "tips10y": null,
+            "tips30y": null,
+            "frn2y": 28.0
+          },
+          {
+            "month": "Jan-27",
+            "section": "recommendations",
+            "c2y": 69.0,
+            "c3y": 58.0,
+            "c5y": 70.0,
+            "c7y": 44.0,
+            "c10y": 39.0,
+            "c20y": 13.0,
+            "c30y": 22.0,
+            "tips5y": 21.0,
             "tips10y": null,
             "tips30y": null,
             "frn2y": 30.0
@@ -2632,7 +2632,6 @@
       "year": 2026,
       "quarter": 3,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sb0590",
         "estimates": "https://home.treasury.gov/news/press-releases/sb0584",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-Uses-Public-Table-August-2026.pdf"
       },
@@ -2677,44 +2676,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sb0590",
-        "kind": "official_remarks",
-        "year": 2026,
-        "quarter": 3,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 13265,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "maintain",
-        "coupon_stance": "change_bias",
-        "stance_snippets": [
-          "maintain current auction sizes in benchmark bills",
-          "evaluate potential future changes to nominal coupon"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-Uses-Public-Table-August-2026.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -3092,12 +3054,10 @@
         "flags": [
           "net_borrowing_up_vs_prior",
           "tga_cash_high",
-          "bill_auction_maintain",
-          "coupon_change_bias",
           "su_marketable_revision_up"
         ],
-        "bill_stance": "maintain",
-        "coupon_stance": "change_bias",
+        "bill_stance": null,
+        "coupon_stance": null,
         "edges": [
           {
             "cause": "순발행 추정치 직전대비 +$68B",
@@ -3119,24 +3079,6 @@
             }
           },
           {
-            "cause": "현재 전망 유지",
-            "action": "T-bill 벤치마크 입찰 규모 유지(원문)",
-            "market_implication": "단기채 순발행은 재정흐름에 따라 여전히 변동 가능(입찰≠순발행)",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "maintain"
-            }
-          },
-          {
-            "cause": "재정·SOMA·수요 불확실성",
-            "action": "명목 쿠폰/FRN 발행 '변화(changes)' 평가(원문) — 증감 모두 열어둠",
-            "market_implication": "방향 중립; 다음 분기 숫자 확인 필요",
-            "confidence": "med",
-            "evidence": {
-              "coupon_stance": "change_bias"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -3146,35 +3088,10 @@
             }
           }
         ],
-        "summary_ko": "August 3, 2026 발표. 당기 July–September 2026 순발행 739B, 기말현금 950B. 다음 분기 October–December 2026 예상 순발행 628B, 기말현금 850B. T-bill 스탠스=maintain · 쿠폰 스탠스=change_bias",
+        "summary_ko": "August 3, 2026 발표. 당기 July–September 2026 순발행 739B, 기말현금 950B. 다음 분기 October–December 2026 예상 순발행 628B, 기말현금 850B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -3562,7 +3479,6 @@
       "year": 2026,
       "quarter": 2,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sb0489",
         "estimates": "https://home.treasury.gov/news/press-releases/sb0485",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-Uses-Table-May2026.pdf"
       },
@@ -3607,44 +3523,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sb0489",
-        "kind": "official_remarks",
-        "year": 2026,
-        "quarter": 2,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 15131,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": "increase_bias",
-        "stance_snippets": [
-          "increasing bill auction sizes",
-          "evaluate potential future increases to nominal coupon"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-Uses-Table-May2026.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -4010,12 +3889,10 @@
         "flags": [
           "net_borrowing_up_vs_prior",
           "tga_cash_high",
-          "bill_auction_increase",
-          "coupon_increase_bias",
           "su_marketable_revision_up"
         ],
-        "bill_stance": "increase",
-        "coupon_stance": "increase_bias",
+        "bill_stance": null,
+        "coupon_stance": null,
         "edges": [
           {
             "cause": "순발행 추정치 직전대비 +$79B",
@@ -4037,25 +3914,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increasing bill auction sizes"
-            }
-          },
-          {
-            "cause": "구조적 수요·재정 전망 평가",
-            "action": "명목 쿠폰/FRN 발행 '증가(increases)' 평가(원문)",
-            "market_implication": "장기물 공급↑ 시 장기금리 상승 압력 서사",
-            "confidence": "med",
-            "evidence": {
-              "coupon_stance": "increase_bias"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -4065,35 +3923,10 @@
             }
           }
         ],
-        "summary_ko": "May 4, 2026 발표. 당기 April–June 2026 순발행 189B, 기말현금 900B. 다음 분기 July–September 2026 예상 순발행 671B, 기말현금 950B. T-bill 스탠스=increase · 쿠폰 스탠스=increase_bias",
+        "summary_ko": "May 4, 2026 발표. 당기 April–June 2026 순발행 189B, 기말현금 900B. 다음 분기 July–September 2026 예상 순발행 671B, 기말현금 950B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -4469,7 +4302,6 @@
       "year": 2026,
       "quarter": 1,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sb0384",
         "estimates": "https://home.treasury.gov/news/press-releases/sb0377",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-Uses-Table-February-2026.pdf"
       },
@@ -4514,44 +4346,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sb0384",
-        "kind": "official_remarks",
-        "year": 2026,
-        "quarter": 1,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 14296,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "reduce",
-        "coupon_stance": "increase_bias",
-        "stance_snippets": [
-          "reducing short-dated bill auction",
-          "evaluate potential future increases to nominal coupon"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-Uses-Table-February-2026.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -4903,31 +4698,11 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_near_prior",
-          "bill_auction_reduce",
-          "coupon_increase_bias"
+          "net_borrowing_near_prior"
         ],
-        "bill_stance": "reduce",
-        "coupon_stance": "increase_bias",
+        "bill_stance": null,
+        "coupon_stance": null,
         "edges": [
-          {
-            "cause": "세수·현금 유입 전망",
-            "action": "T-bill 입찰 규모 축소(원문)",
-            "market_implication": "단기 순상환 시 준비금/RRP 경로에 유동성 공급 서사",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "reduce"
-            }
-          },
-          {
-            "cause": "구조적 수요·재정 전망 평가",
-            "action": "명목 쿠폰/FRN 발행 '증가(increases)' 평가(원문)",
-            "market_implication": "장기물 공급↑ 시 장기금리 상승 압력 서사",
-            "confidence": "med",
-            "evidence": {
-              "coupon_stance": "increase_bias"
-            }
-          },
           {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
@@ -4938,35 +4713,10 @@
             }
           }
         ],
-        "summary_ko": "February 2, 2026 발표. 당기 January–March 2026 순발행 574B, 기말현금 850B. 다음 분기 April–June 2026 예상 순발행 109B, 기말현금 900B. T-bill 스탠스=reduce · 쿠폰 스탠스=increase_bias",
+        "summary_ko": "February 2, 2026 발표. 당기 January–March 2026 순발행 574B, 기말현금 850B. 다음 분기 April–June 2026 예상 순발행 109B, 기말현금 900B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -5330,7 +5080,6 @@
       "year": 2025,
       "quarter": 4,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sb0305",
         "estimates": "https://home.treasury.gov/news/press-releases/sb0300",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-Uses-Table-November-2025.pdf"
       },
@@ -5375,44 +5124,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sb0305",
-        "kind": "official_remarks",
-        "year": 2025,
-        "quarter": 4,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 14435,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": "maintain",
-        "stance_snippets": [
-          "increasing bill auction sizes",
-          "anticipates maintaining nominal coupon"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-Uses-Table-November-2025.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -5752,32 +5464,11 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_near_prior",
-          "bill_auction_increase",
-          "coupon_maintain"
+          "net_borrowing_near_prior"
         ],
-        "bill_stance": "increase",
-        "coupon_stance": "maintain",
+        "bill_stance": null,
+        "coupon_stance": null,
         "edges": [
-          {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increasing bill auction sizes"
-            }
-          },
-          {
-            "cause": "현 입찰 규모로 조달 여력 충분(원문 취지)",
-            "action": "명목 쿠폰/FRN 입찰 규모 당분간 유지",
-            "market_implication": "쿠폰 순발행은 만기상환·바이백에 따라 달라질 수 있음",
-            "confidence": "med",
-            "evidence": {
-              "coupon_stance": "maintain"
-            }
-          },
           {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
@@ -5788,35 +5479,10 @@
             }
           }
         ],
-        "summary_ko": "November 3, 2025 발표. 당기 October–December 2025 순발행 569B, 기말현금 850B. 다음 분기 January–March 2026 예상 순발행 578B, 기말현금 850B. T-bill 스탠스=increase · 쿠폰 스탠스=maintain",
+        "summary_ko": "November 3, 2025 발표. 당기 October–December 2025 순발행 569B, 기말현금 850B. 다음 분기 January–March 2026 예상 순발행 578B, 기말현금 850B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -6168,7 +5834,6 @@
       "year": 2025,
       "quarter": 3,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sb0212",
         "estimates": "https://home.treasury.gov/news/press-releases/sb0209",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-and-Uses-Table-July-2025.pdf"
       },
@@ -6213,44 +5878,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sb0212",
-        "kind": "official_remarks",
-        "year": 2025,
-        "quarter": 3,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 15585,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": "maintain",
-        "stance_snippets": [
-          "increases in short-dated Treasury bill auction sizes",
-          "anticipates maintaining nominal coupon"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-and-Uses-Table-July-2025.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -6579,12 +6207,10 @@
       "causal": {
         "flags": [
           "net_borrowing_up_vs_prior",
-          "bill_auction_increase",
-          "coupon_maintain",
           "su_marketable_revision_up"
         ],
-        "bill_stance": "increase",
-        "coupon_stance": "maintain",
+        "bill_stance": null,
+        "coupon_stance": null,
         "edges": [
           {
             "cause": "순발행 추정치 직전대비 +$453B",
@@ -6597,25 +6223,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increases in short-dated Treasury bill auction sizes"
-            }
-          },
-          {
-            "cause": "현 입찰 규모로 조달 여력 충분(원문 취지)",
-            "action": "명목 쿠폰/FRN 입찰 규모 당분간 유지",
-            "market_implication": "쿠폰 순발행은 만기상환·바이백에 따라 달라질 수 있음",
-            "confidence": "med",
-            "evidence": {
-              "coupon_stance": "maintain"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -6625,35 +6232,10 @@
             }
           }
         ],
-        "summary_ko": "July 28, 2025 발표. 당기 July–September 2025 순발행 1007B, 기말현금 850B. 다음 분기 October–December 2025 예상 순발행 590B, 기말현금 850B. T-bill 스탠스=increase · 쿠폰 스탠스=maintain",
+        "summary_ko": "July 28, 2025 발표. 당기 July–September 2025 순발행 1007B, 기말현금 850B. 다음 분기 October–December 2025 예상 순발행 590B, 기말현금 850B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -6993,7 +6575,6 @@
       "year": 2025,
       "quarter": 2,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sb0120",
         "estimates": "https://home.treasury.gov/news/press-releases/sb0115",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources_and_Uses_Table_April_2025.pdf"
       },
@@ -7038,44 +6619,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sb0120",
-        "kind": "official_remarks",
-        "year": 2025,
-        "quarter": 2,
-        "title": "Quarterly Refunding Statement of Acting Assistant Secretary for Financial Markets Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 15580,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "reduce",
-        "coupon_stance": "maintain",
-        "stance_snippets": [
-          "reductions to bill auction",
-          "anticipates maintaining nominal coupon"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources_and_Uses_Table_April_2025.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -7390,12 +6934,10 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_reduce",
-          "coupon_maintain"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "reduce",
-        "coupon_stance": "maintain",
+        "bill_stance": null,
+        "coupon_stance": null,
         "edges": [
           {
             "cause": "순발행 추정치 직전대비 +$391B",
@@ -7408,24 +6950,6 @@
             }
           },
           {
-            "cause": "세수·현금 유입 전망",
-            "action": "T-bill 입찰 규모 축소(원문)",
-            "market_implication": "단기 순상환 시 준비금/RRP 경로에 유동성 공급 서사",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "reduce"
-            }
-          },
-          {
-            "cause": "현 입찰 규모로 조달 여력 충분(원문 취지)",
-            "action": "명목 쿠폰/FRN 입찰 규모 당분간 유지",
-            "market_implication": "쿠폰 순발행은 만기상환·바이백에 따라 달라질 수 있음",
-            "confidence": "med",
-            "evidence": {
-              "coupon_stance": "maintain"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -7435,35 +6959,10 @@
             }
           }
         ],
-        "summary_ko": "April 28, 2025 발표. 당기 April–June 2025 순발행 514B, 기말현금 850B. 다음 분기 July–September 2025 예상 순발행 554B, 기말현금 850B. T-bill 스탠스=reduce · 쿠폰 스탠스=maintain",
+        "summary_ko": "April 28, 2025 발표. 당기 April–June 2025 순발행 514B, 기말현금 850B. 다음 분기 July–September 2025 예상 순발행 554B, 기말현금 850B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -7815,7 +7314,6 @@
       "year": 2025,
       "quarter": 1,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sb0010",
         "estimates": "https://home.treasury.gov/news/press-releases/sb0007",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-and-Uses-Table-Feb-2025.pdf"
       },
@@ -7860,44 +7358,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sb0010",
-        "kind": "official_remarks",
-        "year": 2025,
-        "quarter": 1,
-        "title": "Quarterly Refunding Statement of Acting Assistant Secretary for Financial Markets Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 13509,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "reduce",
-        "coupon_stance": "maintain",
-        "stance_snippets": [
-          "reductions to bill auction",
-          "anticipates maintaining nominal coupon"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-and-Uses-Table-Feb-2025.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -8200,31 +7661,11 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_near_prior",
-          "bill_auction_reduce",
-          "coupon_maintain"
+          "net_borrowing_near_prior"
         ],
-        "bill_stance": "reduce",
-        "coupon_stance": "maintain",
+        "bill_stance": null,
+        "coupon_stance": null,
         "edges": [
-          {
-            "cause": "세수·현금 유입 전망",
-            "action": "T-bill 입찰 규모 축소(원문)",
-            "market_implication": "단기 순상환 시 준비금/RRP 경로에 유동성 공급 서사",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "reduce"
-            }
-          },
-          {
-            "cause": "현 입찰 규모로 조달 여력 충분(원문 취지)",
-            "action": "명목 쿠폰/FRN 입찰 규모 당분간 유지",
-            "market_implication": "쿠폰 순발행은 만기상환·바이백에 따라 달라질 수 있음",
-            "confidence": "med",
-            "evidence": {
-              "coupon_stance": "maintain"
-            }
-          },
           {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
@@ -8235,35 +7676,10 @@
             }
           }
         ],
-        "summary_ko": "February 3, 2025 발표. 당기 January–March 2025 순발행 815B, 기말현금 850B. 다음 분기 April–June 2025 예상 순발행 123B, 기말현금 850B. T-bill 스탠스=reduce · 쿠폰 스탠스=maintain",
+        "summary_ko": "February 3, 2025 발표. 당기 January–March 2025 순발행 815B, 기말현금 850B. 다음 분기 April–June 2025 예상 순발행 123B, 기말현금 850B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -8603,7 +8019,6 @@
       "year": 2024,
       "quarter": 4,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy2697",
         "estimates": "https://home.treasury.gov/news/press-releases/jy2688",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-and-Uses-Table-Oct-2024.pdf"
       },
@@ -8648,43 +8063,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy2697",
-        "kind": "official_remarks",
-        "year": 2024,
-        "quarter": 4,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 14531,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "increasing bill auction sizes"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-and-Uses-Table-Oct-2024.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -8975,22 +8354,11 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_near_prior",
-          "bill_auction_increase"
+          "net_borrowing_near_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
-          {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increasing bill auction sizes"
-            }
-          },
           {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
@@ -9001,35 +8369,10 @@
             }
           }
         ],
-        "summary_ko": "October 28, 2024 발표. 당기 October–December 2024 순발행 546B, 기말현금 700B. 다음 분기 January–March 2025 예상 순발행 823B, 기말현금 850B. T-bill 스탠스=increase",
+        "summary_ko": "October 28, 2024 발표. 당기 October–December 2024 순발행 546B, 기말현금 700B. 다음 분기 January–March 2025 예상 순발행 823B, 기말현금 850B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -9357,7 +8700,6 @@
       "year": 2024,
       "quarter": 3,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy2512",
         "estimates": "https://home.treasury.gov/news/press-releases/jy2506",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources_Uses.July_2024.pdf"
       },
@@ -9402,43 +8744,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy2512",
-        "kind": "official_remarks",
-        "year": 2024,
-        "quarter": 3,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 13906,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "increasing all bill auction sizes"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources_Uses.July_2024.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -9765,10 +9071,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_down_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_down_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -9782,16 +9087,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increasing all bill auction sizes"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -9801,35 +9096,10 @@
             }
           }
         ],
-        "summary_ko": "July 29, 2024 발표. 당기 July–September 2024 순발행 740B, 기말현금 850B. 다음 분기 October–December 2024 예상 순발행 565B, 기말현금 700B. T-bill 스탠스=increase",
+        "summary_ko": "July 29, 2024 발표. 당기 July–September 2024 순발행 740B, 기말현금 850B. 다음 분기 October–December 2024 예상 순발행 565B, 기말현금 700B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -10193,7 +9463,6 @@
       "year": 2024,
       "quarter": 2,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy2315",
         "estimates": "https://home.treasury.gov/news/press-releases/jy2304"
       },
       "estimates": {
@@ -10237,51 +9506,14 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy2315",
-        "kind": "official_remarks",
-        "year": 2024,
-        "quarter": 2,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 15406,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "increase the 4-, 6-, and 8-week bill auction sizes"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": null,
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -10295,16 +9527,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increase the 4-, 6-, and 8-week bill auction sizes"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -10314,35 +9536,10 @@
             }
           }
         ],
-        "summary_ko": "최근 발표. 당기 April–June 2024 순발행 243B, 기말현금 750B. 다음 분기 July–September 2024 예상 순발행 847B, 기말현금 850B. T-bill 스탠스=increase",
+        "summary_ko": "최근 발표. 당기 April–June 2024 순발행 243B, 기말현금 750B. 다음 분기 July–September 2024 예상 순발행 847B, 기말현금 850B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [],
         "tbac_recommendation_months": []
@@ -10429,7 +9626,6 @@
       "year": 2024,
       "quarter": 1,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy2062",
         "estimates": "https://home.treasury.gov/news/press-releases/jy2054",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-and-Uses-January-qtr12024.pdf"
       },
@@ -10474,43 +9670,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy2062",
-        "kind": "official_remarks",
-        "year": 2024,
-        "quarter": 1,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 13953,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 54.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "billion per month. As a result, the auction sizes of the 2-, 3-, 5-, and 7-year will increase"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $54 billion",
-          "A 10-year note in the amount of $42 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-and-Uses-January-qtr12024.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -10813,10 +9973,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_down_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_down_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -10830,16 +9989,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "billion per month. As a result, the auction sizes of the 2-, 3-, 5-, and 7-year will increase"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -10849,35 +9998,10 @@
             }
           }
         ],
-        "summary_ko": "January 29, 2024 발표. 당기 January–March 2024 순발행 760B, 기말현금 750B. 다음 분기 April–June 2024 예상 순발행 202B, 기말현금 750B. T-bill 스탠스=increase",
+        "summary_ko": "January 29, 2024 발표. 당기 January–March 2024 순발행 760B, 기말현금 750B. 다음 분기 April–June 2024 예상 순발행 202B, 기말현금 750B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 54.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -11217,7 +10341,6 @@
       "year": 2023,
       "quarter": 4,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy1864",
         "estimates": "https://home.treasury.gov/news/press-releases/jy1851",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources_and_Uses_Oct_2023.pdf"
       },
@@ -11262,43 +10385,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy1864",
-        "kind": "official_remarks",
-        "year": 2023,
-        "quarter": 4,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 14156,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 48.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 40.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 24.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "billion per month. As a result, the auction sizes of the 2-, 3-, 5-, and 7-year will increase"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $48 billion",
-          "A 10-year note in the amount of $40 billion",
-          "A 30-year bond in the amount of $24 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources_and_Uses_Oct_2023.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -11637,10 +10724,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_down_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_down_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -11654,16 +10740,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "billion per month. As a result, the auction sizes of the 2-, 3-, 5-, and 7-year will increase"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -11673,35 +10749,10 @@
             }
           }
         ],
-        "summary_ko": "October 30, 2023 발표. 당기 October–December 2023 순발행 776B, 기말현금 750B. 다음 분기 January–March 2024 예상 순발행 816B, 기말현금 750B. T-bill 스탠스=increase",
+        "summary_ko": "October 30, 2023 발표. 당기 October–December 2023 순발행 776B, 기말현금 750B. 다음 분기 January–March 2024 예상 순발행 816B, 기말현금 750B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 48.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 40.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 24.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -12077,7 +11128,6 @@
       "year": 2023,
       "quarter": 3,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy1671",
         "estimates": "https://home.treasury.gov/news/press-releases/jy1662",
         "sources_uses": "https://home.treasury.gov/system/files/136/SourcesUsesJul2023.pdf"
       },
@@ -12122,43 +11172,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy1671",
-        "kind": "official_remarks",
-        "year": 2023,
-        "quarter": 3,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 14815,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 38.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 23.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "billion per month. As a result, the auction sizes of the 2-, 3-, 5-, and 7-year will increase"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $42 billion",
-          "A 10-year note in the amount of $38 billion",
-          "A 30-year bond in the amount of $23 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "SourcesUsesJul2023.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -12485,10 +11499,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -12502,16 +11515,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "billion per month. As a result, the auction sizes of the 2-, 3-, 5-, and 7-year will increase"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -12521,35 +11524,10 @@
             }
           }
         ],
-        "summary_ko": "July 31, 2023 발표. 당기 July–September 2023 순발행 1007B, 기말현금 650B. 다음 분기 October–December 2023 예상 순발행 852B, 기말현금 750B. T-bill 스탠스=increase",
+        "summary_ko": "July 31, 2023 발표. 당기 July–September 2023 순발행 1007B, 기말현금 650B. 다음 분기 October–December 2023 예상 순발행 852B, 기말현금 750B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 38.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 23.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -12913,7 +11891,6 @@
       "year": 2023,
       "quarter": 2,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy1460",
         "estimates": "https://home.treasury.gov/news/press-releases/jy1453",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources_Uses_Apr_2023.pdf"
       },
@@ -12958,41 +11935,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy1460",
-        "kind": "official_remarks",
-        "year": 2023,
-        "quarter": 2,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 14489,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 40.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 35.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 21.0
-          }
-        ],
-        "bill_stance": null,
-        "coupon_stance": null,
-        "stance_snippets": [],
-        "raw_matches": [
-          "A 3-year note in the amount of $40 billion",
-          "A 10-year note in the amount of $35 billion",
-          "A 30-year bond in the amount of $21 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources_Uses_Apr_2023.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -13383,32 +12326,7 @@
         "summary_ko": "May 1, 2023 발표. 당기 April–June 2023 순발행 726B, 기말현금 550B. 다음 분기 July–September 2023 예상 순발행 733B, 기말현금 600B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 40.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 35.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 21.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -13808,7 +12726,6 @@
       "year": 2023,
       "quarter": 1,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy1238",
         "estimates": "https://home.treasury.gov/news/press-releases/jy1231",
         "sources_uses": "https://home.treasury.gov/system/files/136/SourcesandUsesJan2023.pdf"
       },
@@ -13853,41 +12770,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy1238",
-        "kind": "official_remarks",
-        "year": 2023,
-        "quarter": 1,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 14996,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 40.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 35.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 21.0
-          }
-        ],
-        "bill_stance": null,
-        "coupon_stance": null,
-        "stance_snippets": [],
-        "raw_matches": [
-          "A 3-year note in the amount of $40 billion",
-          "A 10-year note in the amount of $35 billion",
-          "A 30-year bond in the amount of $21 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "SourcesandUsesJan2023.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -14276,32 +13159,7 @@
         "summary_ko": "January 30, 2023 발표. 당기 January–March 2023 순발행 932B, 기말현금 500B. 다음 분기 April–June 2023 예상 순발행 278B, 기말현금 550B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 40.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 35.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 21.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -14689,7 +13547,6 @@
       "year": 2022,
       "quarter": 4,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy1072",
         "estimates": "https://home.treasury.gov/news/press-releases/jy1063",
         "sources_uses": "https://home.treasury.gov/system/files/136/oct2022_sources_uses-table.pdf"
       },
@@ -14734,43 +13591,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy1072",
-        "kind": "official_remarks",
-        "year": 2022,
-        "quarter": 4,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 13994,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 40.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 35.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 21.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "billion increase from the June reopening auction size and consistent with the $1 billion increase"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $40 billion",
-          "A 10-year note in the amount of $35 billion",
-          "A 30-year bond in the amount of $21 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "oct2022_sources_uses-table.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -15109,10 +13930,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -15126,16 +13946,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "billion increase from the June reopening auction size and consistent with the $1 billion increase"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -15145,35 +13955,10 @@
             }
           }
         ],
-        "summary_ko": "October 31, 2022 발표. 당기 October–December 2022 순발행 550B, 기말현금 700B. 다음 분기 January–March 2023 예상 순발행 578B, 기말현금 500B. T-bill 스탠스=increase",
+        "summary_ko": "October 31, 2022 발표. 당기 October–December 2022 순발행 550B, 기말현금 700B. 다음 분기 January–March 2023 예상 순발행 578B, 기말현금 500B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 40.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 35.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 21.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -15549,7 +14334,6 @@
       "year": 2022,
       "quarter": 3,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy0908",
         "estimates": "https://home.treasury.gov/news/press-releases/jy0902",
         "sources_uses": "https://home.treasury.gov/system/files/136/SourcesandUsesJuly2022.pdf"
       },
@@ -15594,43 +14378,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy0908",
-        "kind": "official_remarks",
-        "year": 2022,
-        "quarter": 3,
-        "title": "Quarterly Refunding Statement of Assistant Secretary for Financial Markets Josh Frost | U.S. Department of the Treasury",
-        "text_chars": 15847,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 35.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 21.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "billion increase from the May reopening auction size), and increase"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $42 billion",
-          "A 10-year note in the amount of $35 billion",
-          "A 30-year bond in the amount of $21 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "SourcesandUsesJuly2022.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -15957,10 +14705,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -15974,16 +14721,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "billion increase from the May reopening auction size), and increase"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -15993,35 +14730,10 @@
             }
           }
         ],
-        "summary_ko": "August 1, 2022 발표. 당기 July–September 2022 순발행 444B, 기말현금 650B. 다음 분기 October–December 2022 예상 순발행 400B, 기말현금 700B. T-bill 스탠스=increase",
+        "summary_ko": "August 1, 2022 발표. 당기 July–September 2022 순발행 444B, 기말현금 650B. 다음 분기 October–December 2022 예상 순발행 400B, 기말현금 700B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 35.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 21.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -16385,7 +15097,6 @@
       "year": 2022,
       "quarter": 2,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy0762",
         "estimates": "https://home.treasury.gov/news/press-releases/jy0755",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources_and_Uses_May_2022.pdf"
       },
@@ -16430,41 +15141,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy0762",
-        "kind": "official_remarks",
-        "year": 2022,
-        "quarter": 2,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 17952,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 45.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 36.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 22.0
-          }
-        ],
-        "bill_stance": null,
-        "coupon_stance": null,
-        "stance_snippets": [],
-        "raw_matches": [
-          "A 3-year note in the amount of $45 billion",
-          "A 10-year note in the amount of $36 billion",
-          "A 30-year bond in the amount of $22 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources_and_Uses_May_2022.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -16771,32 +15448,7 @@
         "summary_ko": "May 2, 2022 발표. 당기 April–June 2022 순발행 -26B, 기말현금 800B. 다음 분기 July–September 2022 예상 순발행 182B, 기말현금 650B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 45.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 36.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 22.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -17112,7 +15764,6 @@
       "year": 2022,
       "quarter": 1,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy0581",
         "estimates": "https://home.treasury.gov/news/press-releases/jy0575",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources_and_Uses_January_2022.pdf"
       },
@@ -17157,43 +15808,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy0581",
-        "kind": "official_remarks",
-        "year": 2022,
-        "quarter": 1,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 15876,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 50.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 37.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 23.0
-          }
-        ],
-        "bill_stance": "reduce",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "billion (resulting in a $22 billion auction size for each). Treasury anticipates decreas"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $50 billion",
-          "A 10-year note in the amount of $37 billion",
-          "A 30-year bond in the amount of $23 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources_and_Uses_January_2022.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -17496,10 +16111,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_reduce"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "reduce",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -17513,15 +16127,6 @@
             }
           },
           {
-            "cause": "세수·현금 유입 전망",
-            "action": "T-bill 입찰 규모 축소(원문)",
-            "market_implication": "단기 순상환 시 준비금/RRP 경로에 유동성 공급 서사",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "reduce"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -17531,35 +16136,10 @@
             }
           }
         ],
-        "summary_ko": "January 31, 2022 발표. 당기 January–March 2022 순발행 729B, 기말현금 650B. 다음 분기 April–June 2022 예상 순발행 66B, 기말현금 700B. T-bill 스탠스=reduce",
+        "summary_ko": "January 31, 2022 발표. 당기 January–March 2022 순발행 729B, 기말현금 650B. 다음 분기 April–June 2022 예상 순발행 66B, 기말현금 700B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 50.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 37.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 23.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -17899,7 +16479,6 @@
       "year": 2021,
       "quarter": 4,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy0462",
         "estimates": "https://home.treasury.gov/news/press-releases/jy0452",
         "sources_uses": "https://home.treasury.gov/system/files/136/SourcesandUsesOctober2021FINAL.pdf"
       },
@@ -17944,43 +16523,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy0462",
-        "kind": "official_remarks",
-        "year": 2021,
-        "quarter": 4,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 17385,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 56.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 39.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 25.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "increases in regular benchmark bill auction sizes"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $56 billion",
-          "A 10-year note in the amount of $39 billion",
-          "A 30-year bond in the amount of $25 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "SourcesandUsesOctober2021FINAL.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -18307,10 +16850,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -18324,16 +16866,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increases in regular benchmark bill auction sizes"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -18343,35 +16875,10 @@
             }
           }
         ],
-        "summary_ko": "November 1, 2021 발표. 당기 October–December 2021 순발행 1015B, 기말현금 650B. 다음 분기 January–March 2022 예상 순발행 476B, 기말현금 650B. T-bill 스탠스=increase",
+        "summary_ko": "November 1, 2021 발표. 당기 October–December 2021 순발행 1015B, 기말현금 650B. 다음 분기 January–March 2022 예상 순발행 476B, 기말현금 650B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 56.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 39.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 25.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -18735,7 +17242,6 @@
       "year": 2021,
       "quarter": 3,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy0307",
         "estimates": "https://home.treasury.gov/news/press-releases/jy0302",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-and-Uses-July-2021.pdf"
       },
@@ -18780,41 +17286,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy0307",
-        "kind": "official_remarks",
-        "year": 2021,
-        "quarter": 3,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 13715,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 41.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 27.0
-          }
-        ],
-        "bill_stance": null,
-        "coupon_stance": null,
-        "stance_snippets": [],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $41 billion",
-          "A 30-year bond in the amount of $27 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-and-Uses-July-2021.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -19157,32 +17629,7 @@
         "summary_ko": "August 2, 2021 발표. 당기 July–September 2021 순발행 673B, 기말현금 750B. 다음 분기 October–December 2021 예상 순발행 703B, 기말현금 800B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 41.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 27.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -19534,7 +17981,6 @@
       "year": 2021,
       "quarter": 2,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy0164",
         "estimates": "https://home.treasury.gov/news/press-releases/jy0158",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-and-Uses-April-2021.pdf"
       },
@@ -19579,41 +18025,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy0164",
-        "kind": "official_remarks",
-        "year": 2021,
-        "quarter": 2,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 15997,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 41.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 27.0
-          }
-        ],
-        "bill_stance": null,
-        "coupon_stance": null,
-        "stance_snippets": [],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $41 billion",
-          "A 30-year bond in the amount of $27 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-and-Uses-April-2021.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -19956,32 +18368,7 @@
         "summary_ko": "May 3, 2021 발표. 당기 April–June 2021 순발행 463B, 기말현금 800B. 다음 분기 July–September 2021 예상 순발행 821B, 기말현금 750B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 41.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 27.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -20333,7 +18720,6 @@
       "year": 2021,
       "quarter": 1,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/jy0016",
         "estimates": "https://home.treasury.gov/news/press-releases/jy0011",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources_and_Uses_January_2021_Final.pdf"
       },
@@ -20378,41 +18764,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/jy0016",
-        "kind": "official_remarks",
-        "year": 2021,
-        "quarter": 1,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 15600,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 58.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 41.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 27.0
-          }
-        ],
-        "bill_stance": null,
-        "coupon_stance": null,
-        "stance_snippets": [],
-        "raw_matches": [
-          "A 3-year note in the amount of $58 billion",
-          "A 10-year note in the amount of $41 billion",
-          "A 30-year bond in the amount of $27 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources_and_Uses_January_2021_Final.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -20791,32 +19143,7 @@
         "summary_ko": "February 1, 2021 발표. 당기 January–March 2021 순발행 274B, 기말현금 800B. 다음 분기 April–June 2021 예상 순발행 95B, 기말현금 500B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 58.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 41.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 27.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -21204,7 +19531,6 @@
       "year": 2020,
       "quarter": 4,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sm1176",
         "estimates": "https://home.treasury.gov/news/press-releases/sm1172",
         "sources_uses": "https://home.treasury.gov/system/files/136/Sources-and-Uses-Nov-2-2020.pdf"
       },
@@ -21249,43 +19575,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sm1176",
-        "kind": "official_remarks",
-        "year": 2020,
-        "quarter": 4,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 17043,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 54.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 41.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 27.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "increased both bill and coupon auction sizes"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $54 billion",
-          "A 10-year note in the amount of $41 billion",
-          "A 30-year bond in the amount of $27 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "Sources-and-Uses-Nov-2-2020.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -21600,10 +19890,9 @@
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_down_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_down_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -21617,16 +19906,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increased both bill and coupon auction sizes"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -21636,35 +19915,10 @@
             }
           }
         ],
-        "summary_ko": "November 2, 2020 발표. 당기 October–December 2020 순발행 617B, 기말현금 800B. 다음 분기 January–March 2021 예상 순발행 1127B, 기말현금 800B. T-bill 스탠스=increase",
+        "summary_ko": "November 2, 2020 발표. 당기 October–December 2020 순발행 617B, 기말현금 800B. 다음 분기 January–March 2021 예상 순발행 1127B, 기말현금 800B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 54.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 41.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 27.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
@@ -22016,7 +20270,6 @@
       "year": 2020,
       "quarter": 3,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sm1081",
         "estimates": "https://home.treasury.gov/news/press-releases/sm1077"
       },
       "estimates": {
@@ -22060,51 +20313,14 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sm1081",
-        "kind": "official_remarks",
-        "year": 2020,
-        "quarter": 3,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 17095,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 48.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 38.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 26.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "increased both bill issuance and coupon auction sizes"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $48 billion",
-          "A 10-year note in the amount of $38 billion",
-          "A 30-year bond in the amount of $26 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": null,
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -22118,16 +20334,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increased both bill issuance and coupon auction sizes"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -22137,35 +20343,10 @@
             }
           }
         ],
-        "summary_ko": "최근 발표. 당기 July–September 2020 순발행 947B, 기말현금 800B. 다음 분기 October–December 2020 예상 순발행 1216B, 기말현금 800B. T-bill 스탠스=increase",
+        "summary_ko": "최근 발표. 당기 July–September 2020 순발행 947B, 기말현금 800B. 다음 분기 October–December 2020 예상 순발행 1216B, 기말현금 800B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 48.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 38.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 26.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [],
         "tbac_recommendation_months": []
@@ -22252,7 +20433,6 @@
       "year": 2020,
       "quarter": 2,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sm1001",
         "estimates": "https://home.treasury.gov/news/press-releases/sm997"
       },
       "estimates": {
@@ -22296,51 +20476,14 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sm1001",
-        "kind": "official_remarks",
-        "year": 2020,
-        "quarter": 2,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 16032,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 42.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 32.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 22.0
-          }
-        ],
-        "bill_stance": "increase",
-        "coupon_stance": null,
-        "stance_snippets": [
-          "increased by $2 billion (resulting in a $20 billion auction size"
-        ],
-        "raw_matches": [
-          "A 3-year note in the amount of $42 billion",
-          "A 10-year note in the amount of $32 billion",
-          "A 30-year bond in the amount of $22 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": null,
       "tbac_financing": null,
       "causal": {
         "flags": [
-          "net_borrowing_up_vs_prior",
-          "bill_auction_increase"
+          "net_borrowing_up_vs_prior"
         ],
-        "bill_stance": "increase",
+        "bill_stance": null,
         "coupon_stance": null,
         "edges": [
           {
@@ -22354,16 +20497,6 @@
             }
           },
           {
-            "cause": "단기 재정·현금 수요 / 계절성",
-            "action": "T-bill 입찰 규모 확대(원문)",
-            "market_implication": "RRP·MMF·단기 금리 경로에 영향; QT(SOMA run-off) 충격 완충 서사와 자주 결합",
-            "confidence": "med",
-            "evidence": {
-              "bill_stance": "increase",
-              "snippet": "increased by $2 billion (resulting in a $20 billion auction size"
-            }
-          },
-          {
             "cause": "해설서 규칙",
             "action": "Net Marketable Borrowing ≠ 총발행; 만기상환·SOMA add-on·바이백 구분",
             "market_implication": "표의 NEW MONEY / TBAC 권장과 QRA 본문 순발행을 혼동하지 말 것",
@@ -22373,35 +20506,10 @@
             }
           }
         ],
-        "summary_ko": "최근 발표. 당기 April–June 2020 순발행 2999B, 기말현금 800B. 다음 분기 July–September 2020 예상 순발행 677B, 기말현금 800B. T-bill 스탠스=increase",
+        "summary_ko": "최근 발표. 당기 April–June 2020 순발행 2999B, 기말현금 800B. 다음 분기 July–September 2020 예상 순발행 677B, 기말현금 800B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 42.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 32.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 22.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [],
         "tbac_recommendation_months": []
@@ -22488,7 +20596,6 @@
       "year": 2020,
       "quarter": 1,
       "urls": {
-        "policy": "https://home.treasury.gov/news/press-releases/sm896",
         "estimates": "https://home.treasury.gov/news/press-releases/sm893",
         "sources_uses": "https://home.treasury.gov/system/files/136/SourcesandUsesJanuary2020%2001-28-20.pdf"
       },
@@ -22533,41 +20640,7 @@
         ],
         "parse_ok": true
       },
-      "policy": {
-        "url": "https://home.treasury.gov/news/press-releases/sm896",
-        "kind": "official_remarks",
-        "year": 2020,
-        "quarter": 1,
-        "title": "Quarterly Refunding Statement of Deputy Assistant Secretary for Federal Finance Brian Smith | U.S. Department of the Treasury",
-        "text_chars": 15719,
-        "quarters": [],
-        "auctions": [
-          {
-            "tenor": "3-year",
-            "instrument": "note",
-            "amount_bn": 38.0
-          },
-          {
-            "tenor": "10-year",
-            "instrument": "note",
-            "amount_bn": 27.0
-          },
-          {
-            "tenor": "30-year",
-            "instrument": "bond",
-            "amount_bn": 19.0
-          }
-        ],
-        "bill_stance": null,
-        "coupon_stance": null,
-        "stance_snippets": [],
-        "raw_matches": [
-          "A 3-year note in the amount of $38 billion",
-          "A 10-year note in the amount of $27 billion",
-          "A 30-year bond in the amount of $19 billion"
-        ],
-        "parse_ok": true
-      },
+      "policy": null,
       "sources_uses": {
         "source_pdf": "SourcesandUsesJanuary2020_01-28-20.pdf",
         "title": "Sources and Uses Reconciliation Table",
@@ -22898,32 +20971,7 @@
         "summary_ko": "February 3, 2020 발표. 당기 January–March 2020 순발행 367B, 기말현금 400B. 다음 분기 April–June 2020 예상 순발행 -56B, 기말현금 400B.",
         "limitations_ko": "인과 에지는 재무부 원문 숫자/문구 + 고정 해설 템플릿이다. 금리·주가 예측이 아니며, 기자 해석과의 일치는 별도 대조가 필요하다."
       },
-      "qra_issuance_components": [
-        {
-          "id": "c3y",
-          "label_ko": "3Y",
-          "tenor": "3y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 38.0
-        },
-        {
-          "id": "c10y",
-          "label_ko": "10Y",
-          "tenor": "10y",
-          "kind": "coupon",
-          "instrument": "note",
-          "value": 27.0
-        },
-        {
-          "id": "c30y",
-          "label_ko": "30Y",
-          "tenor": "30y",
-          "kind": "coupon",
-          "instrument": "bond",
-          "value": 19.0
-        }
-      ],
+      "qra_issuance_components": [],
       "tables": {
         "sources_uses_rows": [
           {
