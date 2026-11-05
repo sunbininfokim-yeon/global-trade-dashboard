@@ -4937,7 +4937,7 @@ const renderStageConditionSummary = (sc) => {
         <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
             <div class="climate-metric-row" style="border:none;">
                 <span class="nm" style="font-weight:600;color:#e2e8f0;">${sc.season} 기상 조건 (단계별)</span>
-                <span class="climate-status-pill ${STAGE_STATUS_PILL[o.verdict] || 'blue'}">${o.verdict_ko || '—'}</span>
+                <span class="climate-status-pill ${o.history_check === 'unmatched' ? 'gray' : (STAGE_STATUS_PILL[o.verdict] || 'blue')}"${o.history_check === 'unmatched' ? ' title="과거에 같은 판정이 실제 수확량과 맞지 않았습니다"' : ''}>${o.verdict_ko || '—'}${o.history_check === 'unmatched' ? ' (참고)' : ''}</span>
             </div>
             <div class="climate-sub">${o.reason_ko || ''}</div>
             ${rows}

@@ -77,5 +77,27 @@ class StageConditionTests(unittest.TestCase):
         self.assertEqual(B.harvest_year(stages, placed), 2026)
 
 
+class VerdictCheckTests(unittest.TestCase):
+    def hist(self, unf, neu, fav, n=(6, 14, 7)):
+        return {"n": sum(n), "classes": {
+            "unfavorable": {"n": n[0], "mean_residual_pct": unf},
+            "neutral": {"n": n[1], "mean_residual_pct": neu},
+            "favorable": {"n": n[2], "mean_residual_pct": fav}}}
+
+    def test_matched_and_unmatched(self):
+        # Ukraine wheat 2000-2026: favourable years +14.8%, unfavourable -0.6%.
+        h = self.hist(-0.6, -1.3, 14.8)
+        self.assertEqual(B.verdict_check(h, "favorable"), "matched")
+        self.assertEqual(B.verdict_check(h, "unfavorable"), "unmatched")
+        self.assertIsNone(B.verdict_check(h, "neutral"))
+        self.assertIsNone(B.verdict_check(None, "unfavorable"))
+
+    def test_call_made_in_most_seasons_says_nothing(self):
+        # Uganda coffee: unfavourable in 23 of 31 seasons.
+        h = self.hist(-0.2, -0.6, 31.2, n=(23, 6, 2))
+        self.assertEqual(B.verdict_check(h, "unfavorable"), "unmatched")
+        self.assertEqual(B.verdict_check(h, "favorable"), "unmatched")  # 2 seasons is too few
+
+
 if __name__ == "__main__":
     unittest.main()
