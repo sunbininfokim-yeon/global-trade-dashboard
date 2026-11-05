@@ -1,0 +1,39 @@
+name: tmp stage diag
+on:
+  push:
+    branches: [claude/stage-diag]
+    paths: ['.github/workflows/tmp_stage_diag.yml']
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy pyyaml
+      - working-directory: "New for anti/scripts/yield_model"
+        run: |
+          python3 build_registry.py
+          python3 - <<'PY'
+          import os, json
+          from datetime import date, timedelta
+          from stage_conditions import build as b
+          pts = b.load_points()
+          today = date.today() - timedelta(days=3)
+          os.makedirs("../../../diag", exist_ok=True)
+          keys = ["ukraine_winter_wheat", "ukraine_corn", "ukraine_sunflower", "national_coffee_belt", "national_arabica_belt"]
+          json.dump({k: pts.get(k) for k in keys}, open("../../../diag/points.json", "w"))
+          for k in keys:
+              if k in pts:
+                  b.point_daily(pts[k], today).to_csv(f"../../../diag/{k}.csv", index=False)
+                  print(k, "ok")
+          PY
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add diag
+          git commit -m "diag dump"
+          git push
