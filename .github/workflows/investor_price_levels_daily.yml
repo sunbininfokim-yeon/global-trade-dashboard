@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: sunbininfokim-yeon/krx-month-paste
-          token: ${{ secrets.KRX_MONTH_PASTE_TOKEN }}
+          token: ${{ secrets.GH_DISPATCH_TOKEN }}  # same GitHub PAT that starts the pre-open run; reads krx-month-paste
           path: krx-month-paste
           sparse-checkout: |
             data/normalized/krx_12008_kospi_stock_investor

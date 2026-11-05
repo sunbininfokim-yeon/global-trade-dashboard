@@ -1,0 +1,173 @@
+name: US KR direction preopen
+
+# KOSPI·삼성전자·SK하이닉스 next-session direction (#868 frozen model): runs
+# after the US close and must finish before 08:30 KST, when the runner stops
+# accepting a forecast as pre-open.
+#
+# GitHub's own schedule is not enough for that window. market_microstructure
+# _daily's 06:13 KST cron has landed at 09:24-11:53 KST (2026-10-27..11-04),
+# i.e. after the cutoff every time. The on-time trigger is the Cloudflare
+# Worker cron (wrangler.jsonc, 21:25 and 22:05 UTC Sun-Thu), which calls
+# workflow_dispatch with GH_DISPATCH_TOKEN (a GitHub Actions secret that
+# deploy.yml copies to the Worker). The schedule below is a fallback
+# only; a run that starts after the cutoff exits without touching anything.
+#
+# Daily job calls predict only -- never train. Model changes need a new
+# artifact path in a reviewed PR.
+
+on:
+  schedule:
+    # 06:25 KST Mon-Fri = 21:25 UTC Sun-Thu (US Fri close -> KR Mon).
+    - cron: '25 21 * * 0-4'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Korean target session YYYY-MM-DD; blank means today (KST)
+        required: false
+        type: string
+
+concurrency:
+  group: us-kr-direction-preopen
+  cancel-in-progress: false
+
+jobs:
+  preopen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    env:
+      MM: New for anti/scripts/market_microstructure
+      PUBLIC_OUT: New for anti/public/data/us_kr_direction_v1.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve target and skip what would not be a pre-open forecast
+        id: gate
+        env:
+          REQUESTED_TARGET: ${{ inputs.target }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          now = datetime.now(ZoneInfo('Asia/Seoul'))
+          target = os.environ.get('REQUESTED_TARGET') or now.strftime('%Y-%m-%d')
+          run, why = True, ''
+          if not os.environ.get('REQUESTED_TARGET') and now.strftime('%H:%M') >= '08:30':
+              run, why = False, f'started {now:%H:%M} KST, after the 08:30 cutoff'
+          try:
+              doc = json.load(open(os.environ['PUBLIC_OUT']))
+              if doc.get('target_date') == target and doc.get('status') == 'research_preopen_forecast':
+                  run, why = False, f'{target} already has a pre-open forecast'
+          except FileNotFoundError:
+              pass
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'target={target}\nrun={str(run).lower()}\n')
+          print(f'target={target} run={run} {why}')
+          PY
+
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.run == 'true'
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: New for anti/scripts/market_microstructure/requirements-us-kr-preopen.txt
+
+      - name: Install frozen runtime
+        if: steps.gate.outputs.run == 'true'
+        run: pip install -r "$MM/requirements-us-kr-preopen.txt"
+
+      - name: Is the target a KRX session?
+        id: session
+        if: steps.gate.outputs.run == 'true'
+        working-directory: New for anti/scripts/market_microstructure
+        env:
+          TARGET: ${{ steps.gate.outputs.target }}
+        run: |
+          python - <<'PY'
+          import os
+          from option_direction_model import calendar
+          from research_direction_diagnostics import ReviewedCalendar
+          valid = ReviewedCalendar(calendar()).is_session(os.environ['TARGET'])
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('valid=' + str(valid).lower() + '\n')
+          print(os.environ['TARGET'], 'is a session' if valid else 'is not a KRX session; nothing to forecast')
+          PY
+
+      - name: Check frozen inference and recording contract
+        if: steps.session.outputs.valid == 'true'
+        run: |
+          python -m unittest discover -s "$MM/tests" -p test_us_kr_direction_engine.py
+          python -m unittest discover -s "$MM/tests" -p test_run_us_kr_preopen.py
+
+      # Same private hive and token as market_microstructure_daily. A failed
+      # checkout (expired token) leaves the runner with the committed board
+      # only, which it reports as missing source-day input -- never a stale fill.
+      - name: Checkout KRX 15007 raw exports
+        id: krx
+        if: steps.session.outputs.valid == 'true'
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: sunbininfokim-yeon/krx-month-paste
+          token: ${{ secrets.GH_DISPATCH_TOKEN }}  # same GitHub PAT that starts the pre-open run; reads krx-month-paste
+          path: krx-month-paste
+          sparse-checkout: data/raw/krx_15007
+          sparse-checkout-cone-mode: false
+
+      - name: Collect and infer; never train
+        id: forecast
+        if: steps.session.outputs.valid == 'true'
+        env:
+          TARGET: ${{ steps.gate.outputs.target }}
+        run: |
+          set +e
+          python "$MM/run_us_kr_preopen.py" \
+            --target "$TARGET" \
+            --model "$MM/models/shadow/us_kr_preopen_20261022_v1.json" \
+            --krx-root krx-month-paste/data/raw/krx_15007 \
+            --refresh-prices \
+            --run-dir "runner-state/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+            --archive-dir data/forecasts/us_kr_direction \
+            --public-output "$PUBLIC_OUT"
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Save run receipts and input snapshot
+        if: always() && steps.session.outputs.valid == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-kr-direction-${{ github.run_id }}-${{ github.run_attempt }}
+          path: runner-state/
+          retention-days: 30
+
+      # 0 = pre-open forecast, 2 = unavailable. Both publish: the card must
+      # say 자료 없음 for today rather than keep yesterday's numbers.
+      - name: Commit forecast data
+        if: steps.forecast.outputs.code == '0' || steps.forecast.outputs.code == '2'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$PUBLIC_OUT"
+          if [ -d data/forecasts/us_kr_direction ]; then git add data/forecasts/us_kr_direction; fi
+          if git diff --cached --quiet; then echo 'nothing changed'; exit 0; fi
+          git commit -m "chore: record US KR preopen direction ${{ steps.gate.outputs.target }}"
+          bash tools/ops/git_push_retry.sh
+
+      - name: Report outcome
+        if: always() && steps.session.outputs.valid == 'true'
+        env:
+          CODE: ${{ steps.forecast.outputs.code }}
+          KRX_CHECKOUT: ${{ steps.krx.outcome }}
+          TARGET: ${{ steps.gate.outputs.target }}
+        run: |
+          if [ "$KRX_CHECKOUT" != 'success' ]; then
+            echo "::warning::krx-month-paste checkout failed ($KRX_CHECKOUT) -- GH_DISPATCH_TOKEN may be missing krx-month-paste access or have expired."
+          fi
+          case "$CODE" in
+            0) echo "### $TARGET pre-open forecast published" >> "$GITHUB_STEP_SUMMARY" ;;
+            2) echo "::warning::$TARGET forecast unavailable -- the card shows 자료 없음. Reasons are in the run receipts artifact."
+               echo "### $TARGET unavailable (see artifact run_report.json)" >> "$GITHUB_STEP_SUMMARY" ;;
+            *) echo "::error::runner crashed (exit '$CODE')"; exit 1 ;;
+          esac

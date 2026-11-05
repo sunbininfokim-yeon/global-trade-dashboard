@@ -133,10 +133,53 @@ export default {
     // UN Comtrade round trip -- half a minute on a 60+ country query. Each run
     // fills the commodities that have gone cold, up to a budget; see
     // warmComtradeCache for why it does not refill all of them at once.
+    //
+    // The SUN-THU crons instead start the pre-open direction workflow on time
+    // (see dispatchPreopenDirection below).
     async scheduled(event, env, ctx) {
+        if (PREOPEN_CRONS.includes(event.cron)) {
+            ctx.waitUntil(dispatchPreopenDirection(env));
+            return;
+        }
         ctx.waitUntil(warmComtradeCache(env));
     }
 };
+
+
+// === 개장전 방향 예측 트리거 =================================================
+//
+// .github/workflows/us_kr_direction_preopen.yml 은 미국 장 마감 뒤, 한국
+// 08:30 KST 전에 끝나야 한다. GitHub 자체 cron 은 06:13 KST 예약이 09:24~11:53
+// 에 도는 식으로 몇 시간씩 늦어(2026-10-27~11-04) 매번 마감을 넘겼다. 그래서
+// 제때 도는 Cloudflare cron 이 workflow_dispatch 를 대신 부른다. 두 번째 시각은
+// 재시도용이고, 이미 그날 예측이 있으면 workflow 가 스스로 건너뛴다.
+// GH_DISPATCH_TOKEN: 이 저장소 Actions write 권한의 fine-grained PAT. GitHub
+// Actions secret 에 두면 deploy.yml 이 배포 때마다 Worker secret 으로 복사한다.
+// 없으면 GitHub cron 만 남는다.
+const PREOPEN_CRONS = ['25 21 * * SUN-THU', '5 22 * * SUN-THU'];
+const PREOPEN_WORKFLOW_URL =
+    'https://api.github.com/repos/sunbininfokim-yeon/global-trade-dashboard/actions/workflows/us_kr_direction_preopen.yml/dispatches';
+
+async function dispatchPreopenDirection(env) {
+    if (!env.GH_DISPATCH_TOKEN) {
+        console.warn('preopen dispatch skipped: GH_DISPATCH_TOKEN is not set');
+        return;
+    }
+    const res = await fetch(PREOPEN_WORKFLOW_URL, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${env.GH_DISPATCH_TOKEN}`,
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+            'User-Agent': 'global-trade-dashboard-worker',
+        },
+        body: JSON.stringify({ ref: 'main' }),
+    });
+    // 204 = queued. Anything else is logged so `wrangler tail` shows why.
+    if (res.status !== 204) {
+        console.error(`preopen dispatch failed: HTTP ${res.status} ${(await res.text()).slice(0, 300)}`);
+    }
+}
 
 
 // === NASA 야간광 타일 프록시 =============================================
