@@ -92,3 +92,24 @@ CBO 초안은 원래 버전·기준선·기간·연간 환산 여부를 유지�
 법안 연결은 Congress/type/number 전체 ID가 일치해야 한다. 제목 유사도로 재정효과를 배정하지 않는다.
 
 새 API 키·유료 AI 호출은 없다. 전체 비압축 묶음은 현재 약 5 MB이며 법안 페이지에서는 버튼 클릭 시만 읽는다.
+
+## 현재 임시예산·협상 해설
+
+`funding_context_review.json`은 법률 사실과 날짜가 있는 협상 입장/보도/분석을 사람이 검토한 입력이다.
+금액 수집 시각과 해설 검토 시각을 섞지 않도록 별도 공개 파일을 만든다.
+
+```sh
+python3 'New for anti/scripts/us_budget/build_funding_context.py'
+python3 'New for anti/scripts/us_budget/build_funding_context.py' --check
+```
+
+`--law-file /path/to/law.htm`을 추가하면 검토된 GovInfo 원문 해시·법안·기한을 대조한다.
+현재 프로필은 2026-11-05 검토, 의회 진행 집계는 11-03, 쟁점별 근거는 각 표시 날짜 기준이다.
+CR에서 이미 조치한 사안은 미해결 협상 쟁점과 별도 상태다. 정파별 책임 주장은 당사자 입장이다.
+검토 유효일(현재 11-12) 또는 일반 CR 기한을 넘으면 재확인 필요로 표시한다. 자동 날짜 연장은 없다.
+새 합의·후속 법률을 확인하면 출처/상태를 함께 재검토한 후 다시 생성한다. 새 AI/API 키는 필요 없다.
+
+화면은 최신 완료 FY 실적을 기본 선택한다. FY2027 outlays는 OMB 계정표 합계, receipts는 세입표,
+deficit은 차이로 계산한 연간 추정이며 CR 기간의 금액이 아니다.
+FY2026 총액과 Treasury 표 6의 부처·조정항목 실적은 표시하지만 미확인 BEA/계정 분류는 채우지 않는다.
+완료 FY의 `budget.agency_actuals`를 연간 묶음에 보관해 live FYTD가 다음 FY로 넘어가도 상세가 사라지지 않는다.

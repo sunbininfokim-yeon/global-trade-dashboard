@@ -16,6 +16,8 @@
 
 import { usableLive, usableBundle, collectionState } from './data.mjs?v=1';
 import { renderFunding } from './finance.mjs?v=1';
+import { renderContext, renderBasis, initialYear } from './context.mjs?v=1';
+import { completedAgencyActuals, actualMetric, sortActuals } from './actuals.mjs?v=1';
 export { usableLive } from './data.mjs?v=1';
 
 const DATA = '/public/data/us_budget/';
@@ -28,7 +30,7 @@ function loadStyle() {
   return (stylePromise ||= new Promise((resolve, reject) => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = new URL('./style.css?v=1', import.meta.url).href;
+    link.href = new URL('./style.css?v=2', import.meta.url).href;
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylePromise = null; reject(new Error('예산 화면 스타일을 불러오지 못했습니다.')); };
     document.head.appendChild(link);
@@ -49,13 +51,17 @@ export function prepare() {
     getJson('mts_live_v1.json').catch(() => null),
     getJson('budget_live_v1.json').catch(() => null),
     getJson('collection_status_v1.json').catch(() => null),
+    getJson('funding_context_v1.json').catch(() => null),
   ]).catch((err) => { bundlePromise = null; throw err; });
   return Promise.all([loadStyle(), bundlePromise]);
 }
 
 export function markup() {
   return `<div id="budget-flow" class="bf-body" aria-label="미국 연방예산">
- <div class="bf-head"><div><h2>미국 연방예산</h2><div class="bf-muted">지출 구조부터 세부 내역까지 · 공식 공개자료</div></div><label class="bf-muted">회계연도 <select id="bf-year" aria-label="회계연도"></select></label></div>
+ <div class="bf-head"><div><h2>미국 연방예산</h2><div class="bf-muted">운영 근거 · 집행 실적 · 정부안</div></div></div>
+ <section class="bf-panel bf-current" id="bf-current" aria-label="현재 운영 예산"></section>
+ <div class="bf-toolbar"><label class="bf-muted">비교할 회계연도·자료 <select id="bf-year" aria-label="회계연도"></select></label></div>
+ <section class="bf-panel" id="bf-basis" aria-label="선택한 금액의 의미"></section>
  <div class="bf-top" aria-label="재정 항목"><button type="button" data-main="outlays" aria-pressed="true"><span>세출</span><strong id="bf-outlays"></strong><span class="bf-muted">조 달러</span></button><button type="button" data-main="receipts" aria-pressed="false"><span>세입</span><strong id="bf-receipts"></strong><span class="bf-muted">조 달러</span></button><button type="button" data-main="deficit" aria-pressed="false"><span>재정적자</span><strong id="bf-deficit"></strong><span class="bf-muted">조 달러</span></button></div>
  <div class="bf-muted" id="bf-source"></div>
  <div class="bf-message" id="bf-data-status" role="status"></div>
@@ -73,9 +79,9 @@ export function mount(root) {
   if (!root || !bundlePromise) return () => {};
   let alive = true;
   const observers = [];
-  bundlePromise.then(([annual, live, collected, status]) => {
+  bundlePromise.then(([annual, live, collected, status, context]) => {
     const valid = usableBundle(collected);
-    if (alive) start(root, valid ? valid.annual : annual, valid ? valid.live : usableLive(live), observers, valid, status);
+    if (alive) start(root, valid ? valid.annual : annual, valid ? valid.live : usableLive(live), observers, valid, status, context);
   })
     .catch((err) => {
       if (!alive) return;
@@ -87,7 +93,7 @@ export function mount(root) {
   return () => { alive = false; observers.forEach((o) => o.disconnect()); };
 }
 
-function start(root, annual, live, observers, collected, status) {
+function start(root, annual, live, observers, collected, status, context) {
   // Work on a copy: the cached bundle is shared across visits.
   const bundle = JSON.parse(JSON.stringify(annual));
   const data = bundle.budget;
@@ -109,7 +115,7 @@ function start(root, annual, live, observers, collected, status) {
   const monthly = live ? live.months : data.monthly;
   const fytd = live?.fytd && live.fytd.fy === PROPOSAL && !live.fytd.complete ? live.fytd : null;
 
-  const state = { fy: PROPOSAL, main: 'outlays', bucket: 'discretionary', group: 'function', sort: 'value', expanded: false, period: 'annual', month: monthly.at(-1).month };
+  const state = { fy: initialYear(bundle), main: 'outlays', bucket: 'discretionary', group: 'function', sort: 'value', expanded: false, period: 'annual', month: monthly.at(-1).month };
   const isProposal = () => state.fy === PROPOSAL;
   const valueStatus = () => (isProposal() ? '정부안·추정' : '실적');
   const comparison = () => (isProposal() ? future.baseline : `${state.fy - 1} 실적 → ${state.fy} 실적`);
@@ -123,12 +129,13 @@ function start(root, annual, live, observers, collected, status) {
   const pct = (n, p) => { const v = rate(n, p); return v === null ? '증감률 제외' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`; };
 
   const health = collectionState(collected, status);
+  $('#bf-current').innerHTML = renderContext(context);
   const dateLabel = n => Number.isFinite(n) ? new Date(n).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) : '미확인';
   $('#bf-data-status').textContent = `${health.text} 마지막 확인: ${dateLabel(health.checked)} · 마지막 성공: ${dateLabel(health.good)} · MTS 기준월: ${monthly.at(-1).month}`;
   $('#bf-data-status').dataset.state = health.state;
   $('#bf-stage-info').textContent = `정부안: 연간 지출 추정 · 의회 확정 예산권한 금액: 미집계 · 집행 실적: Treasury 현금 지출. 확인된 관련 법률과 CBO 추정은 아래에서 별도로 확인합니다.`;
 
-  $('#bf-year').innerHTML = Object.keys(data.years).map((y) => `<option value="${y}">FY${y} ${Number(y) === PROPOSAL ? '정부안' : '실적'}</option>`).join('');
+  $('#bf-year').innerHTML = Object.keys(data.years).map((y) => `<option value="${y}">FY${y} ${Number(y) === PROPOSAL ? '정부안 · 연간 추정' : '결산 실적'}</option>`).join('');
   $('#bf-month').innerHTML = monthly.map((r) => `<option>${esc(r.month)}</option>`).join('');
   $('#bf-history-title').textContent = `추이 펼치기 · 최근 ${actualYears.length}개 실적 연도 + FY${PROPOSAL} 정부안 / 36개월 실적`;
   $('#bf-month-range').textContent = `월별 실적: ${monthly[0].month}~${monthly.at(-1).month} · Treasury MTS${live ? ` ${live.mts_record_date} 발표본까지` : ''} · FY${PROPOSAL} 월별 전망은 포함하지 않습니다.`;
@@ -147,6 +154,8 @@ function start(root, annual, live, observers, collected, status) {
   function outlays() {
     const c = data.types[state.fy];
     if (!c) {
+      const observed=completedAgencyActuals(live,bundle,state.fy);
+      if(observed) { actualOutlays(observed); return; }
       const fallback = Math.max(...Object.keys(data.types).map(Number).filter((y) => y !== PROPOSAL));
       $('#bf-content').innerHTML = `<h3>FY${state.fy} 세출</h3><div class="bf-message">총지출 실적은 확보했으나 의무·재량별 실적 분류는 미확인입니다. 추정치로 채우지 않습니다.</div><button type="button" id="bf-actual">FY${fallback} 분류·세부 내역 보기</button>`;
       $('#bf-actual').onclick = () => { state.fy = fallback; render(); };
@@ -160,6 +169,26 @@ function start(root, annual, live, observers, collected, status) {
     $('#bf-breakdown').before(controls);
     $$('[data-group]').forEach(b => { b.onclick=()=>{state.group=b.dataset.group;state.expanded=false;outlays();}; });
     breakdown();
+  }
+
+  function actualOutlays(observed) {
+    const ordered=sortActuals(observed.rows,state.sort),shown=state.expanded?ordered:ordered.slice(0,6);
+    const amount=n=>Number.isFinite(n)?bn(n):'미확인';
+    const label=r=>({ 'Executive Office of the President':'대통령실 · Executive Office of the President',
+      'Department of Defense':'국방부 · Department of Defense','Department of Agriculture':'농무부 · Department of Agriculture',
+      'Department of Health and Human Services':'보건복지부 · Department of Health and Human Services',
+      'Department of Energy':'에너지부 · Department of Energy','Department of the Treasury':'재무부 · Department of the Treasury',
+      'Social Security Administration':'사회보장청 · Social Security Administration'}[r.name] || r.name);
+    $('#bf-content').innerHTML=`<h3>FY${state.fy} 실제 세출 · 부처별 현금지출</h3>
+      <p>${esc(observed.note)} 같은 MTS 발표본의 FY${observed.baseline_fy} 전체 기간과 비교합니다.</p>
+      <p class="bf-message">총액·부처별 실적은 확보했습니다. 의무·재량 구분과 계정별 실제 내역은 미연결입니다. 음수는 상쇄 수입·환급 등 조정을 반영한 순액이며 0으로 바꾸지 않습니다.</p>
+      <div class="bf-toolbar">${[['value','지출액순'],['rate','증가율순'],['delta','증가액순']].map(([key,name])=>`<button type="button" data-cash-sort="${key}" aria-pressed="${state.sort===key}">${name}</button>`).join('')}</div>
+      <div class="bf-cash-head"><span>부처·조정 항목</span><span>FY${state.fy} 실적</span><span>전년 대비</span></div>
+      ${shown.map(r=>`<div class="bf-cash-row"><span>${esc(label(r))}</span><span class="bf-num">${amount(r.value)}</span><span class="bf-num">${actualMetric(r,'delta')===null?'비교 제외':signed(actualMetric(r,'delta'))}<br><span class="bf-muted">${actualMetric(r,'rate')===null?'증감률 제외':`${actualMetric(r,'rate').toFixed(1)}%`}</span></span></div>`).join('')}
+      <p class="bf-muted">금액 확인 ${observed.observed}개 · 미확인 ${observed.missing}개. 확인된 금액 합계는 총세출과 대조했습니다. 미확인을 0으로 해석하지 않습니다.</p>
+      <button type="button" id="bf-cash-expand">${state.expanded?'상위 항목만 보기':`전체 ${ordered.length}개 부처·조정 항목 보기`}</button>`;
+    $$('[data-cash-sort]').forEach(b=>{b.onclick=()=>{state.sort=b.dataset.cashSort;actualOutlays(observed);};});
+    $('#bf-cash-expand').onclick=()=>{state.expanded=!state.expanded;actualOutlays(observed);};
   }
 
   function getRows() {
@@ -215,6 +244,7 @@ function start(root, annual, live, observers, collected, status) {
 
   function receipts() {
     const y = data.years[state.fy];
+    $('#bf-basis').innerHTML = renderBasis(bundle,state.fy);
     const items = data.receipts[state.fy];
     if (!items) { $('#bf-content').innerHTML = `<h3>FY${state.fy} 세입</h3><div class="bf-message">세목별 금액이 아직 없습니다.</div>`; return; }
     $('#bf-content').innerHTML = `<h3>세입은 어디에서 들어오나</h3><div class="bf-overview">${donut(items, y.receipts, '세입 구성')}<div class="bf-legend">${items.map((r, i) => `<button type="button" data-tax="${i}" aria-pressed="false"><span class="bf-dot" style="background:${palette[i]}"></span><span>${esc(r.name)}</span><b>${bn(r.value)}<br><span class="bf-muted">${(r.value / y.receipts * 100).toFixed(1)}%</span></b></button>`).join('')}</div></div><div id="bf-tax-detail" class="bf-muted">세목을 선택하면 확인된 연도별 금액이 나옵니다.</div><div class="bf-message">국채 발행은 세입에 포함되지 않습니다.</div>`;

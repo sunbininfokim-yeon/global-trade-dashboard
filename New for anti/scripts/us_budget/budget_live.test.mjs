@@ -5,13 +5,22 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { usableBundle, usableLive, collectionState } from '../../policy-budget/data.mjs';
 import { usableFunding, financeForBill, renderBillFinance, renderFunding, mountBillFinance } from '../../policy-budget/finance.mjs';
+import { usableContext,contextState,renderContext,initialYear,renderBasis } from '../../policy-budget/context.mjs';
+import { completedAgencyActuals,actualMetric,sortActuals } from '../../policy-budget/actuals.mjs';
 
 const dir = process.env.US_BUDGET_STAGED_DIR || fileURLToPath(new URL('../../public/data/us_budget/', import.meta.url));
 const bundle = JSON.parse(readFileSync(resolve(dir, 'budget_live_v1.json')));
 const status = JSON.parse(readFileSync(resolve(dir, 'collection_status_v1.json')));
 const frozen = JSON.parse(readFileSync(new URL('../../public/data/us_budget/annual_v1.json', import.meta.url)));
+// Synthetic completed-year contract, independent of future live MTS rollovers.
+const historicalAnnual={schema_version:2,budget:{years:{2026:{status:'actual',outlays:95}}}};
+const historicalLive={fytd:{fy:2026,through:'2026-09',complete:true,outlays:95,agencies:[
+  {id:'a',name:'Agency A',value:110,prior:100,status:'actual'},
+  {id:'b',name:'Offsets',value:-15,prior:-10,status:'actual'},
+  {id:'c',name:'Unconfirmed',value:null,prior:null,status:'missing'}]}};
 const copy = () => structuredClone(bundle);
 const close = (a, b, tolerance = 1) => assert.ok(Math.abs(a - b) <= tolerance, `${a} != ${b}`);
+const context=JSON.parse(readFileSync(new URL('../../public/data/us_budget/funding_context_v1.json',import.meta.url)));
 
 test('regenerated annual and monthly bundle passes the production data contract', () => {
   assert.equal(usableBundle(bundle), bundle);
@@ -159,4 +168,92 @@ test('bill finance downloads only on click and ignores replies after leaving the
   cleanup();finish({ok:true,json:async()=>bundle});await load;
   assert.equal(button.onclick,null);
   assert.equal(result.innerHTML,undefined);
+});
+
+test('current funding context reproduces the reviewed source profile', () => {
+  assert.equal(usableContext(context),context);
+  const profile=JSON.parse(readFileSync(new URL('./funding_context_review.json',import.meta.url)));
+  assert.deepEqual(context,profile);
+  assert.equal(context.procedure.as_of,'2026-11-03');
+  assert.equal(context.procedure.senate_passed,0);
+});
+
+test('context does not assert current funding beyond its review window or CR deadline', () => {
+  assert.equal(contextState(context,new Date('2026-11-05T12:00:00Z')),'reviewed');
+  for(const day of ['2026-10-30T12:00:00Z','2026-11-13T12:00:00Z','2026-12-12T12:00:00Z']) {
+    assert.equal(contextState(context,new Date(day)),'needs_review');
+    assert.match(renderContext(context,new Date(day)),/현황 재확인 필요/);
+  }
+  const extended=structuredClone(context);extended.review_valid_until='2027-01-01';
+  assert.equal(contextState(extended,new Date('2026-12-12T12:00:00Z')),'needs_review');
+});
+
+test('resolved CR conditions and dated negotiation positions have separate labels', () => {
+  const html=renderContext(context,new Date('2026-11-05T12:00:00Z'));
+  assert.match(html,/CR에서 일단 조치한 사항/);
+  assert.match(html,/출처에서 미해결로 확인된 쟁점/);
+  assert.match(html,/2026-10-27/);
+  assert.match(html,/임시예산 기간 전체 금액은 미집계/);
+  assert.doesNotMatch(html,/셧다운 확정|8\.093/);
+});
+
+test('bad context sources, future evidence or impossible passage counts are rejected', () => {
+  for(const mutate of [d=>d.sources[0].url='javascript:alert(1)',d=>d.sources[0].url='https://example.com/',
+    d=>d.procedure.senate_passed=13,d=>d.issues[0].as_of='2026-10-20',d=>d.reviewed_on='2026-11-01']) {
+    const d=structuredClone(context);mutate(d);assert.equal(usableContext(d),null);
+  }
+  const escaped=structuredClone(context);escaped.issues[0].summary='<img src=x onerror=alert(1)>';
+  assert.doesNotMatch(renderContext(escaped,new Date('2026-11-05T12:00:00Z')),/<img/);
+  assert.match(renderContext(null),/現況|현황을 확인하지 못/);
+});
+
+test('default year is the latest actual and proposal arithmetic is explicit', () => {
+  assert.equal(initialYear(bundle.annual),Math.max(...Object.keys(bundle.annual.budget.years).map(Number)));
+  assert.equal(initialYear(frozen),2026);
+  assert.match(renderBasis(frozen,2027),/계정표를 합산/);
+  assert.match(renderBasis(frozen,2027),/세출−세입/);
+  assert.match(renderBasis(frozen,2026),/결산 실적/);
+  assert.match(renderBasis(frozen,2026),/FY2026 상세는 비어 있는데 FY2027/);
+});
+
+test('completed Treasury contract retains negatives and missing values', () => {
+  const data=completedAgencyActuals(historicalLive,historicalAnnual,2026);
+  assert.ok(data);assert.equal(data.rows.length,3);
+  assert.equal(data.missing,1);
+  assert.equal(data.rows.find(r=>r.name==='Offsets').value,-15);
+  assert.equal(data.rows.find(r=>r.status==='missing').value,null);
+  close(data.rows.reduce((n,r)=>n+(r.value??0),0),historicalAnnual.budget.years[2026].outlays);
+  const legacy=structuredClone(historicalAnnual);legacy.schema_version=1;delete legacy.budget.years[2026].status;
+  assert.equal(completedAgencyActuals(historicalLive,legacy,2026).rows.length,3);
+});
+
+test('partial FY, mismatched totals and duplicate agencies cannot look like annual actuals', () => {
+  const a=structuredClone(historicalAnnual);
+  for(const mutate of [d=>d.fytd.complete=false,d=>d.fytd.fy=2027,d=>d.fytd.agencies[0].value+=1e6,
+    d=>d.fytd.agencies.push(d.fytd.agencies[0])]) {
+    const live=structuredClone(historicalLive);mutate(live);
+    assert.equal(completedAgencyActuals(live,a,2026),null);
+  }
+});
+
+test('completed-year agency detail survives the next FY monthly rollover', () => {
+  const fy=Math.max(...Object.keys(bundle.annual.budget.agency_actuals).map(Number));
+  assert.ok(bundle.annual.budget.agency_actuals[fy]);
+  const rolled=structuredClone(bundle.live);
+  rolled.fytd={fy:fy+1,through:`${fy}-10`,complete:false,outlays:1,agencies:[]};
+  assert.equal(completedAgencyActuals(rolled,bundle.annual,fy).fy,fy);
+  assert.equal(completedAgencyActuals(rolled,bundle.annual,fy+1),null);
+});
+
+test('actual sorting preserves missing values and excludes invalid growth baselines', () => {
+  const data=completedAgencyActuals(historicalLive,historicalAnnual,2026),before=JSON.stringify(data.rows);
+  for(const sort of ['value','delta','rate']) {
+    const ordered=sortActuals(data.rows,sort);
+    assert.equal(actualMetric(ordered.at(-1),sort),null);
+    const valid=ordered.map(r=>actualMetric(r,sort)).filter(n=>n!==null);
+    assert.ok(valid.every((n,i)=>!i||n<=valid[i-1]));
+  }
+  assert.equal(actualMetric({value:5,prior:0},'rate'),null);
+  assert.equal(actualMetric({value:5,prior:-2},'rate'),null);
+  assert.equal(JSON.stringify(data.rows),before);
 });
