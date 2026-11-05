@@ -111,7 +111,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: sunbininfokim-yeon/krx-month-paste
-          token: ${{ secrets.KRX_MONTH_PASTE_TOKEN }}
+          token: ${{ secrets.GH_DISPATCH_TOKEN }}  # same GitHub PAT that starts the pre-open run; reads krx-month-paste
           path: krx-month-paste
           sparse-checkout: data/raw/krx_15007
           sparse-checkout-cone-mode: false
@@ -163,7 +163,7 @@ jobs:
           TARGET: ${{ steps.gate.outputs.target }}
         run: |
           if [ "$KRX_CHECKOUT" != 'success' ]; then
-            echo "::warning::krx-month-paste checkout failed ($KRX_CHECKOUT) -- KRX_MONTH_PASTE_TOKEN may have expired."
+            echo "::warning::krx-month-paste checkout failed ($KRX_CHECKOUT) -- GH_DISPATCH_TOKEN may be missing krx-month-paste access or have expired."
           fi
           case "$CODE" in
             0) echo "### $TARGET pre-open forecast published" >> "$GITHUB_STEP_SUMMARY" ;;
