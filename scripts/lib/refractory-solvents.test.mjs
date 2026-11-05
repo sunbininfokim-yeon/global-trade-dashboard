@@ -9,9 +9,9 @@ import {AD_CATALOG} from '../../New for anti/policy-simulator/antidumping-catalo
 import {mountAntidumping,selectAntidumping,antidumpingMarkup} from '../../New for anti/policy-simulator/antidumping-view.mjs';
 import {REMEDY_MONITOR_CATALOG} from '../../New for anti/policy-simulator/remedy-monitor-catalog.mjs';
 
-test('two source-backed companies expose three refractory and four separate solvent products, without invented business inputs',()=>{
- assert.equal(INDUSTRIAL_PRODUCTS.length,7);
- for(const p of INDUSTRIAL_PRODUCTS){const group=COMPANY_INDUSTRIES.find(g=>g.product===p.id),firm=COMPANY_PROFILES[p.profile];assert.equal(group.case_id,null);assert.ok(group.profiles.includes(p.profile));assert.equal(firm.financial,null);assert.equal(firm.ad,null);assert.equal(firm.product_origin,null);assert.equal(firm.product_price,null);assert.equal(companyADLink(p.profile,p.id),null);assert.equal(companyCalibration(p.profile,p.id).selected_product_source.checked_on,'2026-11-04');assert.equal(PRODUCTS[p.id].hts,'');assert.deepEqual(policyOptions(p.id,'CHN'),[]);assert.deepEqual(policyOptions(p.id,'KOR'),[]);}
+test('two source-backed companies expose three refractory and ten separate solvent products, without invented business inputs',()=>{
+ assert.equal(INDUSTRIAL_PRODUCTS.length,13);
+ for(const p of INDUSTRIAL_PRODUCTS){const group=COMPANY_INDUSTRIES.find(g=>g.product===p.id),firm=COMPANY_PROFILES[p.profile];assert.equal(group.case_id,null);assert.ok(group.profiles.includes(p.profile));assert.equal(firm.financial,null);assert.equal(firm.ad,null);assert.equal(firm.product_origin,null);assert.equal(firm.product_price,null);assert.equal(companyADLink(p.profile,p.id),null);assert.equal(companyCalibration(p.profile,p.id).selected_product_source.checked_on,p.checked_on||'2026-11-04');assert.equal(PRODUCTS[p.id].hts,'');assert.deepEqual(policyOptions(p.id,'CHN'),[]);assert.deepEqual(policyOptions(p.id,'KOR'),[]);}
  assert.match(COMPANY_PROFILES['foosung-corporation'].note,/제조사와 구분/);
 });
 test('importing market, origin, and product are all needed to match a proceeding',()=>{
@@ -127,4 +127,52 @@ test('USITC JSON searches preserve a successful control and remain distinct from
   assert.match(industrialEvidenceMarkup(p,'CHN'),/data-substance-identity/);assert.equal(productVerification(p,'CHN').checked_on,'2026-11-05');
  }
  assert.equal(INDUSTRIAL_IDENTITIES['methyl-ethyl-ketone'].cas,'78-93-3');assert.equal(INDUSTRIAL_IDENTITIES.dimethylformamide.cas,'68-12-2');assert.ok(!INDUSTRIAL_IDENTITIES['methyl-ethyl-ketone'].aliases.includes('MIBK'));assert.ok(!INDUSTRIAL_IDENTITIES.dimethylformamide.aliases.includes('Dimethyl fumarate'));
+});
+
+const addedSolvents=['dimethyl-carbonate','toluene','methanol','perchloroethylene','chloroform','trichloroethylene'];
+test('additional official-catalog solvents stay selectable without borrowing EA or acetone duties or changing old evidence dates',()=>{
+ for(const product of addedSolvents){
+  assert.equal(COMPANY_INDUSTRIES.find(p=>p.product===product).profiles[0],'foosung-corporation');
+  assert.equal(companyCalibration('foosung-corporation',product).selected_product_source.checked_on,'2026-11-05');
+  assert.deepEqual(industrialCases(product),[]);assert.deepEqual(productVerification(product,'CHN').ad.case_ids,[]);
+  assert.equal(productVerification(product,'CHN').ad.rate_pct,null);assert.equal(companyADLink('foosung-corporation',product),null);
+  assert.deepEqual(policyOptions(product,'CHN'),[]);assert.equal(PRODUCTS[product].hts,'');
+  const rows=industrialComparisonEvidence(product,'KOR');assert.equal(rows.length,1);assert.ok(verifiedEmptyComparison(rows[0]));
+  assert.equal(industrialResearchStatus(product,'CHN','KOR').state,'bounded_search_no_confirmed_case');
+  assert.match(industrialResearchStatus(product,'CHN','KOR').note,/한정된 품명 검색/);
+  assert.equal(industrialResearchStatus(product,'JPN','KOR').state,'not_researched');
+ }
+ assert.equal(companyCalibration('foosung-corporation','acetone').selected_product_source.checked_on,'2026-11-04');
+ assert.equal(industrialCases('acetone','KOR','USA')[0].checked_on,'2026-11-04');
+});
+test('a failed US solvent query remains unavailable instead of a zero-result success or a government pending decision',()=>{
+ const rows=industrialComparisonEvidence('dimethyl-carbonate','USA'),r=industrialResearchStatus('dimethyl-carbonate','CHN','USA');
+ assert.equal(rows.length,1);assert.equal(rows[0].http_status,503);assert.equal(rows[0].result_count,null);assert.equal(verifiedEmptyComparison(rows[0]),false);
+ assert.equal(r.state,'search_unavailable');assert.equal(r.absence_confirmed,false);assert.equal(r.rate_pct,null);
+ assert.equal(adCoverageStatus('dimethyl-carbonate','CHN').research.state,'search_unavailable');assert.equal(adCoverageStatus('dimethyl-carbonate','CHN').procedure.state,'unconfirmed');
+ assert.equal(industrialResearchStatus('toluene','CHN','USA').state,'not_researched');
+ const html=industrialEvidenceMarkup('dimethyl-carbonate','CHN');assert.match(html,/HTTP 503/);assert.match(html,/data-research-state="search_unavailable"/);assert.match(html,/data-research-state="bounded_search_no_confirmed_case"/);
+});
+test('PCE final compliance extension and TCE proposed extension remain different regulations without an AD rate or blanket China-only ban',()=>{
+ const pce=industrialImportRequirements('perchloroethylene','CHN').find(r=>r.id==='us-pce-risk-management');
+ const tce=industrialImportRequirements('trichloroethylene','KOR').find(r=>r.id==='us-tce-risk-management');
+ assert.deepEqual(pce.events.map(e=>e.stage),['final','final']);assert.deepEqual(tce.events.map(e=>e.stage),['final','postponed_conditions','proposed']);
+ assert.equal(tce.events[2].date,'2026-10-14');assert.match(tce.note,/확정 규칙이 아닙니다/);assert.match(tce.note,/전체 금지 해제가 아닙니다/);
+ assert.match(pce.note,/2027-06-21/);assert.match(pce.note,/전면 수입금지가 아닙니다/);
+ for(const rule of [pce,tce]){assert.equal(rule.origin_specific,false);assert.equal(rule.checked_on,'2026-11-05');assert.equal(rule.rate_pct,null);assert.equal(rule.calculation_ready,false);}
+ assert.ok(!industrialImportRequirements('chloroform','CHN').some(r=>r.id==='us-pce-risk-management'||r.id==='us-tce-risk-management'));
+ assert.match(industrialEvidenceMarkup('trichloroethylene','CHN'),/기한 연장 제안/);
+});
+test('mounted solvent selection replaces unrelated process evidence and never enables a fabricated calculator',()=>{
+ const nodes=new Map(),handlers={};const root={contains:()=>true,querySelector(s){if(!nodes.has(s))nodes.set(s,{innerHTML:'',focus(){},classList:{add(){}}});return nodes.get(s);},querySelectorAll:()=>[],addEventListener(t,f){(handlers[t]??=[]).push(f);}};
+ const clean=mountAntidumping(root);
+ const send=(type,attr,value,dataset={})=>{const el={value,dataset,hasAttribute:k=>k===attr,closest(){return this;}};handlers[type].forEach(f=>f({target:el}));};
+ send('input','data-ad-family','chemicals');
+ for(const product of addedSolvents){
+  send('click','data-ad-industry',null,{adIndustry:product});
+  assert.match(root.querySelector('[data-ad-process]').innerHTML,/후성코퍼레이션/);
+  const html=root.querySelector('[data-ad-notice-review]').innerHTML;assert.ok(!html.includes('구제23-2026-6호'));assert.ok(!html.includes('A-580-899'));
+  assert.ok(!root.querySelector('[data-ad-editor]').innerHTML.includes('data-ad-form'));
+ }
+ assert.match(root.querySelector('[data-ad-notice-review]').innerHTML,/TCE 용도별 금지/);clean();
 });

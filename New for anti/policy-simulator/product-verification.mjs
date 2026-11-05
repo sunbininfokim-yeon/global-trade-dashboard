@@ -97,6 +97,9 @@ export function adCoverageStatus(product, country = 'KOR') {
     basic.research={state:'bounded_search_no_confirmed_case',label:'제한 조사 · 대응 사건 미발견',note:row.ad.research_status.note};
     basic.procedure={state:'unconfirmed',label:'공식 적용 사건 미확인',note:'현행 명령 전수 대조 미완료. 규제 없음·0%·정부 판정 대기로 확정하지 않습니다.'};
     basic.next_step='공식 전체 명령 목록·정확한 제품 범위·거래별 지침 추가 확인';
+  } else if(status==='industrial_search_unavailable'){
+    basic.research={state:'search_unavailable',label:'공식 검색 조회 실패 · 확인 보류',note:row.ad.research_status.note};
+    basic.next_step='공식 검색 서비스 복구 후 재검토 · 현재 결과 건수 미확인';
   } else if(status==='industrial_case_not_reviewed'){
     basic.research={state:'company_product_confirmed',label:'기업 제품 확인 · 사건 조사 미완료',note:'공식 회사의 취급 제품 확인과 정부 조사 여부는 별개입니다.'};
     basic.next_step='해당 원산지의 미국 공식 사건·제품 범위 조사';

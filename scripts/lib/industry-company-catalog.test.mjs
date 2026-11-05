@@ -56,7 +56,7 @@ test('LG Chem SAP official zero begins at the final effective date and does not 
   assert.equal(companyADLink('ad-lg-chem', 'aramid'), null);
 });
 test('industrial families including refractory products preserve distinct products and evidence gaps', () => {
-  assert.equal(INDUSTRY_FAMILIES.length, 8); assert.equal(COMPANY_INDUSTRIES.length, 29);
+  assert.equal(INDUSTRY_FAMILIES.length, 8); assert.equal(COMPANY_INDUSTRIES.length, 35);
   for (const industry of COMPANY_INDUSTRIES) {
     assert.ok(PRODUCTS[industry.product]); assert.ok(INDUSTRY_FAMILIES.some(f => f.id === industry.family));
     assert.ok(industry.profiles.length); assert.ok(industry.profiles.every(id => COMPANY_PROFILES[id]));

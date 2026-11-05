@@ -46,7 +46,7 @@ export function companyCalibration(id, product = COMPANY_PROFILES[id]?.product) 
   const industry = COMPANY_INDUSTRIES.find(i => i.product === product && i.profiles.includes(id));
   const productSource = industry?.sources?.[id] || industry?.source;
   return { company_data_basis: 'user_product_inputs', firm_elasticity_basis: 'user_assumption', ...(p ? { public_company_context: structuredClone(p) } : {}),
-    ...(productSource ? { selected_product_source: { product, url: productSource, checked_on: p.source?.checked_on || '2026-10-12' } } : {}) };
+    ...(productSource ? { selected_product_source: { product, url: productSource, checked_on: industry.checked_on || p.source?.checked_on || '2026-10-12' } } : {}) };
 }
 
 // Discovery groups are not AD scope determinations. Only case_id groups have
@@ -58,7 +58,7 @@ export const INDUSTRY_FAMILIES = [
   { id: 'auto', label: '자동차·부품' }, {id:'refractories',label:'내화재·세라믹'},
 ];
 export const COMPANY_INDUSTRIES = [
-  ...INDUSTRIAL_PRODUCTS.map(p=>({id:p.id,family:p.family,label:p.label,product:p.id,description:p.family==='refractories'?'성분·결합·형상별 사건 범위 확인':'취급 용제 · 수입국별 사건 구분',case_id:null,profiles:[p.profile],source:p.source.url})),
+  ...INDUSTRIAL_PRODUCTS.map(p=>({id:p.id,family:p.family,label:p.label,product:p.id,description:p.family==='refractories'?'성분·결합·형상별 사건 범위 확인':'취급 용제 · 수입국별 사건 구분',case_id:null,profiles:[p.profile],source:p.source.url,checked_on:p.checked_on})),
   { id: 'transformer', family: 'power', label: '변압기', product: 'transformer', description: '한국산 대형 전력용 변압기', case_id: 'A-580-867', profiles: ['ls-electric', 'hyosung'] },
   { id: 'switchgear', family: 'power', label: '차단기·배전기기', product: 'switchgear', description: '차단기·배전반 등 전력기기', case_id: null, profiles: ['ls-electric', 'hyosung'] },
   { id: 'cable', family: 'cables', label: '전력 케이블', product: 'power-cable', description: '초고압 전력 케이블 · 사양별 분류 필요', case_id: null, profiles: ['ls-cable', 'taihan'] },

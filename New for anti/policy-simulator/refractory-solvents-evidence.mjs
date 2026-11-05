@@ -12,6 +12,14 @@ export const INDUSTRIAL_PRODUCTS = [
   {id:'high-alumina-bricks', label:'고알루미나 내화벽돌', family:'refractories', profile:'chosun-refractories', source:CHOSUN_SHAPED, scope:'고알루미나·특수 알루미나질 벽돌. 마그카본 벽돌과 성분·결합·형상이 다르며 동일 사건·세율을 상속하지 않습니다.'},
   {id:'monolithic-refractories', label:'부정형 내화재 · 캐스터블·몰탈', family:'refractories', profile:'chosun-refractories', source:CHOSUN_MONOLITHIC, scope:'캐스터블·스프레이재·몰탈 등 혼합물. 정형 내화벽돌과 다른 제품군이며 성분·용도·공급 형태에 따라 분류·사건 범위가 달라집니다.'},
   ...[['ethyl-acetate','초산에틸 · EA','초산에틸(Ethyl Acetate). 중국산 한국 수입 조사와 미국 수입 사건을 구분합니다. 초산·초산비닐·초산부틸로 확대하지 않습니다.'],['methyl-ethyl-ketone','메틸에틸케톤 · MEK','MEK(Methyl Ethyl Ketone). EA·아세톤과 다른 물질이며, 용제라는 이유로 다른 물질의 반덤핑을 적용하지 않습니다.'],['dimethylformamide','디메틸포름아미드 · DMF','DMF(Dimethylformamide). 순도·혼합물·원산지·실제 제조/수출 법인 확인이 필요합니다.'],['acetone','아세톤 · ACT','아세톤(Acetone). 중국산·한국산과 수입국을 구분합니다. 한국산 미국 사건의 공고 제조사 세율을 후성의 고유 세율로 사용하지 않습니다.']].map(([id,label,scope])=>({id,label,scope,family:'chemicals',profile:'foosung-corporation',source:FOOSUNG_PRODUCTS})),
+  ...[
+    ['dimethyl-carbonate','디메틸카보네이트 · DMC','Dimethyl carbonate. 다른 카보네이트·디메틸에테르와 구분하며 순도·혼합물·실제 제조/수출 법인·원산지를 확인합니다.'],
+    ['toluene','톨루엔 · TOL','Toluene. 톨루엔 디이소시아네이트(TDI)는 별도 물질이며 관련 사건을 톨루엔에 이식하지 않습니다.'],
+    ['methanol','메탄올 · MeOH','Methanol. 에탄올·벤질알코올·기타 알코올 사건과 구분하며 등급·조성·원산지·수입국별 범위를 확인합니다.'],
+    ['perchloroethylene','퍼클로로에틸렌 · PCE','Perchloroethylene. TCE·클로로포름·염화메틸렌과 구분합니다. 미국 EPA 용도별 규제는 반덤핑 세율과 별개입니다.'],
+    ['chloroform','클로로포름 · TCM','Chloroform. PCE·TCE·염화메틸렌과 다른 물질이며 같은 염소계 용제의 사건·사용금지를 상속하지 않습니다.'],
+    ['trichloroethylene','트리클로로에틸렌 · TCE','Trichloroethylene. PCE·클로로포름과 구분합니다. 미국 용도별 금지·예외·준수기한 및 제안과 확정 규칙을 따로 확인합니다.'],
+  ].map(([id,label,scope])=>({id,label,scope,family:'chemicals',profile:'foosung-corporation',source:FOOSUNG_PRODUCTS,checked_on:INDUSTRIAL_COMPARISON_CHECKED_ON})),
 ];
 const continuation = fr('2021-17790','2021-08-19','Commerce · 중국·멕시코 AD / 중국 CVD 명령 유지');
 const mek = source('인도 DGTR · MEK 2018-02-01 최종 권고, 표 pp.40~41','https://dgtr.gov.in/sites/default/files/2024-07/FF%20NCV%201.2.18.pdf');
@@ -65,7 +73,7 @@ export function industrialCases(product, origin=null, importCountry=null) {
 export function industrialUSVerification(product,origin) {
   const p=INDUSTRIAL_PRODUCTS.find(p=>p.id===product); if(!p)return null;
   const records=industrialCases(product,origin,'USA'), research=industrialResearchStatus(product,origin,'USA');
-  return {checked_on:research.checked_on||INDUSTRIAL_CHECKED_ON,ad:{country:origin,import_country:'USA',status:records.length?'industrial_us_case_reviewed':research.state==='bounded_search_no_confirmed_case'?'industrial_bounded_search':'industrial_case_not_reviewed',label:records.length?'미국 수입 공식 사건 확인 · 기업별 적용 미확정':research.label,rate_pct:null,case_ids:records.map(r=>r.case_id),sources:[p.source,...research.sources,...records.flatMap(r=>[r.source,...r.related_sources])],note:research.note,research_status:research,records}};
+  return {checked_on:research.checked_on||p.checked_on||INDUSTRIAL_CHECKED_ON,ad:{country:origin,import_country:'USA',status:records.length?'industrial_us_case_reviewed':research.state==='bounded_search_no_confirmed_case'?'industrial_bounded_search':research.state==='search_unavailable'?'industrial_search_unavailable':'industrial_case_not_reviewed',label:records.length?'미국 수입 공식 사건 확인 · 기업별 적용 미확정':research.label,rate_pct:null,case_ids:records.map(r=>r.case_id),sources:[p.source,...research.sources,...records.flatMap(r=>[r.source,...r.related_sources])],note:research.note,research_status:research,records}};
 }
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const country=c=>({USA:'미국',KOR:'한국',CHN:'중국',JPN:'일본',VNM:'베트남',MEX:'멕시코',IND:'인도'})[c]||c;
@@ -73,8 +81,8 @@ const link=s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"
 export function industrialEvidenceMarkup(product,origin=null,{originControls=true}={}) {
   const p=INDUSTRIAL_PRODUCTS.find(p=>p.id===product); if(!p)return '';
   const records=industrialCases(product),matched=records.filter(r=>r.origin===origin);
-  return `<section class="ts-ad-notices" data-industrial-evidence><h2>수입국별 관련 사건</h2><p class="ts-help">기업의 취급·생산 품목과 실제 반덤핑 적용은 별개입니다. 현재 원산지 ${esc(country(origin)||'미선택')} · 기본 자료 확인 ${INDUSTRIAL_CHECKED_ON} / 추가 대조는 행별 확인일. 수입국별 조사·부과 절차를 합치지 않습니다. 과거 권고와 현행 부과를 구분합니다.</p>${link(p.source)}${INDUSTRIAL_IDENTITIES[product]?`<p class="ts-help" data-substance-identity>물질 식별 CAS ${INDUSTRIAL_IDENTITIES[product].cas} · ${esc(INDUSTRIAL_IDENTITIES[product].aliases.join(' / '))}. ${link(INDUSTRIAL_IDENTITIES[product].source)} · 물질 식별은 사건 범위·관세 적용 확정과 별개입니다.</p>`:''}${researchStatusMarkup(product,origin)}
-    ${records.length?records.map(r=>{const same=r.origin===origin;return `<article data-industrial-case="${r.id}" data-import-country="${r.import_country}"><h3>${country(r.origin)}산 → ${country(r.import_country)} 수입 · ${r.duty}</h3><p><b>${esc(r.case_id)} · ${esc(r.procedure_label)}</b></p>${same?'':`<p class="ts-unverified">현재 선택 원산지와 다름 · 관련 사건 참고만</p>${originControls?`<button type="button" data-ad-related-origin="${r.origin}">${country(r.origin)}산 자료 선택</button>`:`<small>위 제품 원산지 입력에서 ${country(r.origin)}을 선택하면 일치 여부를 확인할 수 있습니다.</small>`}`}<p class="ts-help">${esc(r.note)}</p>${r.reported_values?.length?`<ul data-historical-recommendation>${r.reported_values.map(v=>`<li>${esc(v.entity)} · ${v.amount.toLocaleString('en-US',{minimumFractionDigits:2})} ${esc(v.unit)} · 과거 ${v.kind.includes('reference_price')?'기준가격 권고':'종량세 권고'} / ${r.stage==='historical_measure_termination_reported'?'기존 조치 종료 보고':'현행 부과 미확인'}</li>`).join('')}</ul>`:''}${r.alleged_values?.length?`<p data-petitioner-allegation>신청인 제시 덤핑률 ${r.alleged_values[0].amount.toFixed(2)}% · 개시보고의 주장 / 확정·잠정 관세 아님</p>`:''}${r.company_roles?.map(v=>`<p data-company-proceeding-role>${esc(v.name)} · 공식 기록 역할: 국내수입자 답변서 제출 ${v.submitted} / 중국 생산자·수출자 세율 아님</p>`).join('')||''}${r.por_start?`<small>POR ${r.por_start} ~ ${r.por_end}</small>`:''}${same?`<div class="ts-ad-stages" aria-label="${country(r.import_country)} 사건 확인 단계">${r.steps.map(([label,state,date])=>`<p data-evidence-stage="${state}">${state==='confirmed'?'●':'○'} ${esc(label)} · ${date||'근거 미확인'}</p>`).join('')}</div>`:''}<p>${link(r.source)}${r.related_sources.map(s=>' · '+link(s)).join('')}</p><small>자료 확인 ${r.checked_on} · 기업별 세율 적용 미확인 · 자동 세율·단계 계산 미반영</small></article>`;}).join(''):'<p class="ts-unverified">제품 취급 확인 · 해당 제품의 공식 반덤핑 사건 조사 미완료. 판정 대기나 0%가 아닙니다.</p>'}
+  return `<section class="ts-ad-notices" data-industrial-evidence><h2>수입국별 관련 사건</h2><p class="ts-help">기업의 취급·생산 품목과 실제 반덤핑 적용은 별개입니다. 현재 원산지 ${esc(country(origin)||'미선택')} · 제품 자료 확인 ${p.checked_on||INDUSTRIAL_CHECKED_ON} / 사건·검색은 행별 확인일. 수입국별 조사·부과 절차를 합치지 않습니다. 과거 권고와 현행 부과를 구분합니다.</p>${link(p.source)}${INDUSTRIAL_IDENTITIES[product]?`<p class="ts-help" data-substance-identity>물질 식별 CAS ${INDUSTRIAL_IDENTITIES[product].cas} · ${esc(INDUSTRIAL_IDENTITIES[product].aliases.join(' / '))}. ${link(INDUSTRIAL_IDENTITIES[product].source)} · 물질 식별은 사건 범위·관세 적용 확정과 별개입니다.</p>`:''}${researchStatusMarkup(product,origin)}
+    ${records.length?records.map(r=>{const same=r.origin===origin;return `<article data-industrial-case="${r.id}" data-import-country="${r.import_country}"><h3>${country(r.origin)}산 → ${country(r.import_country)} 수입 · ${r.duty}</h3><p><b>${esc(r.case_id)} · ${esc(r.procedure_label)}</b></p>${same?'':`<p class="ts-unverified">현재 선택 원산지와 다름 · 관련 사건 참고만</p>${originControls?`<button type="button" data-ad-related-origin="${r.origin}">${country(r.origin)}산 자료 선택</button>`:`<small>위 제품 원산지 입력에서 ${country(r.origin)}을 선택하면 일치 여부를 확인할 수 있습니다.</small>`}`}<p class="ts-help">${esc(r.note)}</p>${r.reported_values?.length?`<ul data-historical-recommendation>${r.reported_values.map(v=>`<li>${esc(v.entity)} · ${v.amount.toLocaleString('en-US',{minimumFractionDigits:2})} ${esc(v.unit)} · 과거 ${v.kind.includes('reference_price')?'기준가격 권고':'종량세 권고'} / ${r.stage==='historical_measure_termination_reported'?'기존 조치 종료 보고':'현행 부과 미확인'}</li>`).join('')}</ul>`:''}${r.alleged_values?.length?`<p data-petitioner-allegation>신청인 제시 덤핑률 ${r.alleged_values[0].amount.toFixed(2)}% · 개시보고의 주장 / 확정·잠정 관세 아님</p>`:''}${r.company_roles?.map(v=>`<p data-company-proceeding-role>${esc(v.name)} · 공식 기록 역할: 국내수입자 답변서 제출 ${v.submitted} / 중국 생산자·수출자 세율 아님</p>`).join('')||''}${r.por_start?`<small>POR ${r.por_start} ~ ${r.por_end}</small>`:''}${same?`<div class="ts-ad-stages" aria-label="${country(r.import_country)} 사건 확인 단계">${r.steps.map(([label,state,date])=>`<p data-evidence-stage="${state}">${state==='confirmed'?'●':'○'} ${esc(label)} · ${date||'근거 미확인'}</p>`).join('')}</div>`:''}<p>${link(r.source)}${r.related_sources.map(s=>' · '+link(s)).join('')}</p><small>자료 확인 ${r.checked_on} · 기업별 세율 적용 미확인 · 자동 세율·단계 계산 미반영</small></article>`;}).join(''):'<p class="ts-unverified">공식 연결 사건 미확보 · 수입국별 검색·검토 상태는 위 표 참조. 판정 대기나 0%가 아닙니다.</p>'}
     ${importRequirementsMarkup(product,origin)}${records.length&&!matched.length?'<p class="ts-help">현재 선택 원산지에 일치하는 확인 사건 없음 · 다른 원산지의 세율을 적용하지 않습니다.</p>':''}</section>`;
 }
 
@@ -86,7 +94,15 @@ export function industrialImportRequirements(product,origin) {
   if(origin==='CHN') rows.push({id:'us-section301-check',import_country:'USA',kind:'additional_tariff_scope_check',origin_specific:true,status:'framework_checked_hts_exclusions_unverified',label:'미국 · Section 301 품목·제외조건 대조',note:'중국산 적용 목록과 제외 절차가 별도로 있습니다. 정확한 HTS·통관일·유효한 제외를 확인해야 합니다. 이 제품의 적용 여부와 현행 추가세율은 미확인이며 AD/CVD와 자동 합산하지 않습니다.',source:source('USTR · China Section 301 Tariff Actions and Exclusion Process','https://ustr.gov/issue-areas/enforcement/section-301-investigations/tariff-actions')});
   if(origin==='CHN') rows.push({id:'us-uflpa',import_country:'USA',kind:'conditional_import_prohibition',origin_specific:true,status:'legal_basis_checked_shipment_unverified',label:'미국 · UFLPA 공급망 확인',note:'신장 지역에서 전부·일부 생산되거나 법률상 지정 목록의 기업이 생산한 물품은 수입금지 추정 대상입니다. 모든 중국산의 일괄 금지가 아닙니다. 실제 공급망·현행 지정 목록 대조는 미완료이며 조선내화·후성의 위반을 확인한 것이 아닙니다.',source:source('Public Law 117-78 §3 · 수입금지 추정과 예외','https://www.govinfo.gov/content/pkg/PLAW-117publ78/html/PLAW-117publ78.htm')});
   if(INDUSTRIAL_PRODUCTS.find(p=>p.id===product).family==='chemicals') rows.push({id:'us-tsca',import_country:'USA',kind:'chemical_import_compliance',origin_specific:false,status:'framework_checked_substance_conditions_unverified',label:'미국 · TSCA 화학물질 수입 요건',note:'중국 전용 관세가 아닙니다. 적용 대상 화학물질은 TSCA 적합성 인증과 해당 물질의 목록·신규용도·개별 규칙 등을 확인해야 합니다. CAS·조성·용도·거래별 적합성 검증은 미완료입니다.',source:source('EPA · TSCA Requirements for Importing Chemicals','https://www.epa.gov/tsca-import-export-requirements/tsca-requirements-importing-chemicals')});
-  return rows.map(r=>({...r,checked_on:INDUSTRIAL_CHECKED_ON,calculation_ready:false,rate_pct:null}));
+  if(product==='perchloroethylene') rows.push({id:'us-pce-risk-management',import_country:'USA',kind:'substance_use_restrictions',origin_specific:false,status:'final_rule_checked_use_conditions_unverified',checked_on:INDUSTRIAL_COMPARISON_CHECKED_ON,label:'미국 · PCE 용도별 제한 / 일부 준수기한 연장 확정',
+    events:[{stage:'final',date:'2024-12',subject:'PCE 위험관리 규칙'},{stage:'final',date:'2026-07',subject:'일부 작업장 보호계획 준수기한 연장'}],
+    note:'EPA는 2024년 12월 최종 규칙의 소비자용·일부 산업용 단계적 제한과 엄격한 조건하에 허용하는 수입·제조 등을 구분합니다. 2026년 7월 일부 작업장 보호계획 준수기한 연장을 확정했습니다. 비연방 사업장의 초기 측정 2027-06-21, 노출한도·구역·교육·호흡보호 등 2027-09-20, 노출관리계획 2027-12-20입니다. 모든 용도·사업장에 일괄 적용되는 날짜나 전면 수입금지가 아닙니다. 실제 용도·사업장·예외는 추가 대조가 필요하며 AD 세율과 별개입니다.',
+    source:source('EPA · PCE 위험관리 / 최종 규칙·2026년 기한 연장','https://www.epa.gov/assessing-and-managing-chemicals-under-tsca/risk-management-perchloroethylene-pce')});
+  if(product==='trichloroethylene') rows.push({id:'us-tce-risk-management',import_country:'USA',kind:'substance_use_restrictions',origin_specific:false,status:'final_rule_and_proposal_checked_use_conditions_unverified',checked_on:INDUSTRIAL_COMPARISON_CHECKED_ON,label:'미국 · TCE 용도별 금지 / 일부 기한 연장 제안',
+    events:[{stage:'final',date:'2024-12',subject:'TCE 위험관리 규칙'},{stage:'postponed_conditions',date:'2026-05',subject:'6(g) 예외에 붙는 조건의 효력일 / 사법심사 종료까지'},{stage:'proposed',date:'2026-10-14',subject:'일부 준수기한 연장 / 확정 아님'}],
+    note:'EPA의 2024년 12월 최종 규칙은 대부분 용도의 금지와 일부 장기 단계적 폐지·작업자 보호를 규정합니다. 2026년 5월 연기는 6(g) 예외에 붙는 조건의 효력일에 한정되며 전체 금지 해제가 아닙니다. 2026-10-14 일부 반응물·가공보조제·관련 폐수 및 HFC-134a 중간체의 준수기한을 2027-12-31로 옮기는 제안이 나왔으나 확정 규칙이 아닙니다. 기존 금지와 해당 임시 작업장 보호를 유지한다는 EPA 설명을 연결합니다. 실제 용도·예외·적용일은 미확인이고 제안일을 현행 기한으로 계산하지 않습니다. AD 세율과 별개입니다.',
+    source:source('EPA · TCE 위험관리 / 최종 규칙·예외 조건 연기·기한 연장 제안','https://www.epa.gov/assessing-and-managing-chemicals-under-tsca/risk-management-trichloroethylene-tce')});
+  return rows.map(r=>({...r,checked_on:r.checked_on||INDUSTRIAL_CHECKED_ON,calculation_ready:false,rate_pct:null}));
 }
 function importRequirementsMarkup(product,origin) {
  const rows=industrialImportRequirements(product,origin);
@@ -106,12 +122,17 @@ export function industrialResearchStatus(product,origin,importCountry) {
     else if(records.every(r=>r.stage==='investigation_in_progress')) {state='official_investigation_identified';label='공식 조사 개시 확인 · 부과 미확인';}
     else {state='official_case_identified';label='공식 사건 확인 · 기업별 현행 세율 미확인';}
     note=records.map(r=>r.note).join(' ');
-  } else if(origin==='CHN'&&['methyl-ethyl-ketone','dimethylformamide'].includes(product)&&['USA','KOR'].includes(importCountry)&&comparisons.length>0&&comparisons.every(verifiedEmptyComparison)) {
+  } else if(origin==='CHN'&&['USA','KOR'].includes(importCountry)&&comparisons.length>0&&comparisons.every(verifiedEmptyComparison)) {
     state='bounded_search_no_confirmed_case';label=importCountry==='KOR'?'KTC 공식 품명검색 · 대응 사건 미발견':'USITC 공식 사건검색 · 대응 사건 미발견';
     note=importCountry==='USA'?'2026-11-05 USITC IDS 공개 사건 검색에 영문명·동의어·CAS를 직접 대조해 대응 사건을 찾지 못했습니다. 내화벽돌 검색 5건으로 양성 대조와 JSON 결과·검색어 반영을 검증했습니다. 이 검색은 모든 원산지의 사건 자료이며 현재 중국산 상무부 명령 전수 판정이 아닙니다. ACCESS 결과 오류로 현행 전체 명령·예치 지침 대조는 미완료입니다. USITC XLS는 실제 기준일이 2014-11-03이므로 현재 판정에서 제외했습니다. 규제 없음·면제·0%·정부 판정 대기를 뜻하지 않습니다.':'2026-11-05 KTC 내부 품목 검색에 한글명·약어·부분어를 직접 전달하고 검색어 반영 및 빈 결과를 확인했습니다. 초산에틸 검색에서 실제 사건이 나오는 대조도 수행했습니다. 현행 모든 부과 규칙·제품 범위 전수 검토는 아니며 규제 없음·면제·0%·판정 대기를 뜻하지 않습니다.';
+    if(importCountry==='KOR'&&!['methyl-ethyl-ketone','dimethylformamide'].includes(product)) note=`${INDUSTRIAL_COMPARISON_CHECKED_ON} KTC 내부 품목 검색에서 검색어 ${comparisons.map(r=>r.query).join(' / ')}의 반영·표·빈 결과를 확인했습니다. 초산에틸 검색 5행으로 양성 대조했습니다. 이 한정된 품명 검색은 모든 동의어·과거/현행 부과 규칙·회사별 제품 범위의 전수 검토가 아닙니다. 규제 없음·면제·0%·정부 판정 대기를 뜻하지 않습니다.`;
     sources=comparisons.filter(verifiedEmptyComparison).map(r=>r.source);
+  } else if(comparisons.some(r=>r.status==='official_search_unavailable')) {
+    state='search_unavailable';label='공식 검색 조회 실패 · 사건 확인 보류';
+    note=`${INDUSTRIAL_COMPARISON_CHECKED_ON} 공식 검색에서 ${comparisons.filter(r=>r.status==='official_search_unavailable').map(r=>`HTTP ${r.http_status}`).join(' / ')} 오류가 발생했습니다. 결과 건수는 미확인이며 실패를 0건·규제 없음·판정 대기로 처리하지 않습니다. 후속 자동 재시도·차단 우회는 하지 않았습니다.`;
+    sources=comparisons.map(r=>r.source);
   }
-  return {state,label,note,checked_on:state==='not_researched'?null:(comparisons.length>0&&comparisons.every(verifiedEmptyComparison)||records.some(r=>r.checked_on===INDUSTRIAL_COMPARISON_CHECKED_ON))?INDUSTRIAL_COMPARISON_CHECKED_ON:INDUSTRIAL_CHECKED_ON,absence_confirmed:false,rate_pct:null,calculation_ready:false,sources};
+  return {state,label,note,checked_on:state==='not_researched'?null:(comparisons.length>0&&comparisons.every(verifiedEmptyComparison)||state==='search_unavailable'||records.some(r=>r.checked_on===INDUSTRIAL_COMPARISON_CHECKED_ON))?INDUSTRIAL_COMPARISON_CHECKED_ON:INDUSTRIAL_CHECKED_ON,absence_confirmed:false,rate_pct:null,calculation_ready:false,sources};
 }
 function researchStatusMarkup(product,origin) {
  const markets=[...new Set(['USA','KOR',...industrialCases(product,origin).map(r=>r.import_country)])];
@@ -126,7 +147,7 @@ export const INDUSTRIAL_COMPARISON_EVIDENCE = [
  ...[['methyl-ethyl-ketone',['메틸에틸케톤','MEK','케톤','부탄온']],['dimethylformamide',['디메틸포름아미드','DMF','포름']]].flatMap(([product,terms])=>terms.map(term=>({product,import_country:'KOR',source:ktcQuery(term),checked_on:INDUSTRIAL_COMPARISON_CHECKED_ON,query:term,query_echo_verified:true,http_status:200,expected_table_present:true,empty_result_message:true,result_count:0,positive_control:{query:'초산에틸',observed_first_page_rows:5},status:'official_search_no_match',sha256:KTC_SEARCH_HASHES[term],absence_confirmed:false}))),
 ];
 export function industrialComparisonEvidence(product,importCountry='KOR') {
- return [...INDUSTRIAL_COMPARISON_EVIDENCE,...USITC_COMPARISON_EVIDENCE].filter(r=>r.product===product&&r.import_country===importCountry).map(r=>structuredClone(r));
+ return [...INDUSTRIAL_COMPARISON_EVIDENCE,...USITC_COMPARISON_EVIDENCE,...ADDITIONAL_SOLVENT_COMPARISON_EVIDENCE].filter(r=>r.product===product&&r.import_country===importCountry).map(r=>structuredClone(r));
 }
 export const INDUSTRIAL_SOURCE_EXCLUSIONS = [{
  source:source('USITC · AD/CVD Orders (XLS) / 기준일 확인 후 현행 대조 제외','https://www.usitc.gov/sites/default/files/import_injury/documents/orders_2.xls'),
@@ -143,3 +164,41 @@ export const INDUSTRIAL_IDENTITIES = {
  'methyl-ethyl-ketone':{cas:'78-93-3',aliases:['2-Butanone','Methyl ethyl ketone','Ethyl methyl ketone','MEK','Methyl acetone'],source:source('CDC/NIOSH · 2-Butanone 물질 식별','https://www.cdc.gov/niosh/npg/npgd0069.html')},
  'dimethylformamide':{cas:'68-12-2',aliases:['Dimethylformamide','Dimethyl formamide','N,N-Dimethylformamide','DMF'],source:source('CDC/NIOSH · Dimethylformamide 물질 식별','https://www.cdc.gov/niosh/npg/npgd0226.html')},
 };
+
+// Product-name-only KTC searches; a single term does not establish absence of a measure.
+const ADDITIONAL_SOLVENT_KTC_RECEIPTS = [
+  {
+    "product": "dimethyl-carbonate",
+    "query": "카보네이트",
+    "sha256": "67f6969aeabd6d2c9fcff05f501d9d9c3d2564bf8320a40db38d8dca584f73c8"
+  },
+  {
+    "product": "toluene",
+    "query": "톨루엔",
+    "sha256": "560dcc99fa82be1f5aa0da65122e90530c602a00799f4b6dab85cffd0428bcbd"
+  },
+  {
+    "product": "methanol",
+    "query": "메탄올",
+    "sha256": "5b65ccc0fce677d25d742924cb12d36681db2c2d4e7753c78e7a61232133f7bd"
+  },
+  {
+    "product": "perchloroethylene",
+    "query": "퍼클로로에틸렌",
+    "sha256": "be806b87e3b33b9402cd5313c049e544c9d68539dcee39c036d493ee721bdb3b"
+  },
+  {
+    "product": "chloroform",
+    "query": "클로로포름",
+    "sha256": "1f997af0f533846ac7729b9be74af6fd35a1078fc1af6467fefb3a30fb2766e3"
+  },
+  {
+    "product": "trichloroethylene",
+    "query": "트리클로로에틸렌",
+    "sha256": "4f6dad45090197db791f60df8dd4a1ce8c7283b5c6866a27a99d49a4f4cd9b54"
+  }
+];
+export const ADDITIONAL_SOLVENT_COMPARISON_EVIDENCE = [
+ ...ADDITIONAL_SOLVENT_KTC_RECEIPTS.map(r=>({...r,import_country:'KOR',checked_on:INDUSTRIAL_COMPARISON_CHECKED_ON,source:ktcQuery(r.query),query_echo_verified:true,http_status:200,expected_table_present:true,empty_result_message:true,result_count:0,positive_control:{query:'초산에틸',observed_first_page_rows:5,sha256:'904629ac3e58354d46a765a4ce083b918facf82ea4f0f027a9935bdd627d5fb4'},status:'official_search_no_match',absence_confirmed:false})),
+ {product:'dimethyl-carbonate',import_country:'USA',checked_on:INDUSTRIAL_COMPARISON_CHECKED_ON,query:'dimethyl carbonate',source:source('USITC IDS · DMC 공식 검색 / 조회 실패','https://ids.usitc.gov/case?type=basic&query=dimethyl%20carbonate'),status:'official_search_unavailable',http_status:503,result_count:null,query_echo_verified:false,expected_result_structure:false,empty_cases_array:false,absence_confirmed:false},
+];
