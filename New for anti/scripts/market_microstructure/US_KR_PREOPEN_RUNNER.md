@@ -3,6 +3,12 @@
 한국 다음 거래일의 시작·종가·방향 유지·추가 진행을 고정 연구모델로 계산한다.
 비용/손익은 계산하지 않는다. 일일 실행에서 train을 호출하지 않는다.
 
+2026-11-05 보강: 주 모델을 바꾸지 않고 고정 비교 모델·실패 시도 기록·전향 평가 CLI를 추가했다.
+실행/보관/평가 계약은 [US_KR_FORWARD_EVALUATION.md](US_KR_FORWARD_EVALUATION.md),
+다음 날부터의 수집 조건은 [CURSOR_US_KR_DAILY_INPUTS_20261105.md](CURSOR_US_KR_DAILY_INPUTS_20261105.md).
+아래의 workflow 미적용 설명은 #868 당시 상태다. 이후 main에는 Claude의 실제
+`us_kr_direction_preopen.yml`이 연결됐으며, 이번 보강은 그 workflow/UI를 수정하지 않는다.
+
 ## 한 번에 수집·추론·기록·표시용 JSON 생성
 
 저장소 root에서:
