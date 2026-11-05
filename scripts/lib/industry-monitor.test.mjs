@@ -6,9 +6,9 @@ import { AD_CATALOG } from '../../New for anti/policy-simulator/antidumping-cata
 import { policyOptions } from '../../New for anti/policy-simulator/policy-catalog.mjs';
 import { mountAntidumping } from '../../New for anti/policy-simulator/antidumping-view.mjs';
 
-test('all 17 non-calculable industry products expose bounded evidence without activating rates', () => {
+test('all 30 non-calculable industry products expose bounded evidence without activating rates', () => {
   const products=COMPANY_INDUSTRIES.filter(i=>!i.case_id), original=JSON.stringify(AD_CATALOG);
-  assert.equal(products.length,17);
+  assert.equal(products.length,30);
   for (const {product} of products) {
     const r=industryMonitor(product), html=industryMonitorMarkup(product);
     assert.ok(r.sources.length>0,product); assert.equal(r.calculation_enabled,false);
