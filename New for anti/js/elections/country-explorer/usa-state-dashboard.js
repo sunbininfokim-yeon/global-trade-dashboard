@@ -19,7 +19,7 @@ export const statePollEvidenceHtml = (stateId, board, health, days = 7, selected
     }, options);
 };
 
-export const districtFocusHtml = (state, district, financeRaces, contract, board, health, days = 7) => {
+export const districtFocusHtml = (state, district, financeRaces, contract, board, health, days = 7, { now = Date.now() } = {}) => {
     if (district == null) return '';
     const key = String(district).padStart(2,'0');
     const member = state.federal_delegation?.house_members?.find((m) => String(m.district ?? '00').padStart(2,'0') === key);
@@ -28,7 +28,7 @@ export const districtFocusHtml = (state, district, financeRaces, contract, board
     const poll = board?.races?.[id];
     return `<section class="elections-district-focus" tabindex="-1"><header><h3>${escapeHtml(state.id)} · 하원 ${key === '00' ? '전역구' : Number(key) + '구'}</h3><button type="button" data-clear-district aria-label="선거구 선택 해제">×</button></header>
         <p>현재 의원: ${member ? person(member) : '공석·현직 명부 미확인'}</p>
-        ${candidateMatchupHtml(poll, finance, contract, board, health, days, {matchup: electionMatchup(state,id,poll),openPrimary:state.id === 'LA'})}
+        ${candidateMatchupHtml(poll, finance, contract, board, health, days, {now, matchup: electionMatchup(state,id,poll,now),openPrimary:state.id === 'LA'})}
         <p class="elections-panel-note">참고 · 공시 누적 합계 (본선·경선·과거 포함, 위 후보별 본선 금액과 별개)</p>
         ${financeEvidenceHtml(finance,contract)}
         <p class="elections-panel-note">${finance ? '아래 슈퍼팩 목록에서 경선·과거 공시와 정당별 누적 금액을 더 볼 수 있습니다.' : '이 선거구의 외부 지출 자료 연결 대기'}</p></section>`;

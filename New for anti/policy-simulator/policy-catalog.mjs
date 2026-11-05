@@ -1,3 +1,4 @@
+import {INDUSTRIAL_PRODUCTS} from './refractory-solvents-evidence.mjs';
 import { marketCalibration } from './default-basis.mjs';
 import { SUPPLIER_SNAPSHOT } from './suppliers-2025.mjs';
 import { ELASTICITIES, elasticityCalibration } from './elasticities.mjs';
@@ -67,6 +68,7 @@ export const PRODUCTS = {
   'truck-tire': { label: '트럭·버스 타이어', hts: '', scope: '차종·사양·원산지·사건 범위를 확인하세요. 승용차·경트럭 타이어 공고를 자동 적용하지 않습니다.' },
   'carbon-fiber': { label: '탄소섬유', hts: '', scope: '섬유·직물·프리프레그 등 실제 형태를 확인하세요. 폴리에스터 타이어코드 HTS·탄력성·관세를 대신 쓰지 않습니다.' },
   aramid: { label: '아라미드', hts: '', scope: '원사·직물 등 형태와 원산지에 맞는 관세·제품 범위를 확인하세요.' },
+  ...Object.fromEntries(INDUSTRIAL_PRODUCTS.map(p=>[p.id,{label:p.label,hts:'',scope:p.scope}])),
   sap: { label: '고흡수성 수지 · SAP', hts: '', scope: '성분·형태·명령의 서술 범위를 확인하세요. 다른 석유화학 제품 전체에 확대하지 않습니다.' },
 };
 const EU = new Set(['DEU', 'FRA', 'AUT', 'NLD', 'POL', 'ITA', 'SWE', 'SVK', 'PRT']);
