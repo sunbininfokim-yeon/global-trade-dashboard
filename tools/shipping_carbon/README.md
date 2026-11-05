@@ -27,6 +27,40 @@ EMSA 공식 앱이 사용하는 공개 `downloadable-files` 목록에서 요청 
 
 실데이터 화면은 IMO·이름 검색을 제공하며 HMM 보고서가 있으면 초기 검색을 HMM으로 둔다. 공개되지 않은 배출권 보유량·선물 포지션·증거금·고객 계약·풀링 견적은 미확보로 표시한다. 가상 시나리오 입력으로 이 값을 실제 관측값처럼 채우지 않는다.
 
+## EUA 시장·FuelEU 독립 검증·통합 경제성
+
+`python3 tools/shipping_carbon/server.py --port 8775` 후 <http://127.0.0.1:8775/climate>에서 연다.
+기존 `/` 해운 계약 화면과 별도이며 실제 시장자료는 아래 수집 결과를 읽는다.
+
+```sh
+tools/shipping_carbon/.venv/bin/python tools/shipping_carbon/collect_prices.py --as-of 2026-11-04
+tools/shipping_carbon/.venv/bin/python tools/shipping_carbon/collect_market.py --as-of 2026-11-04
+tools/shipping_carbon/.venv/bin/python tools/shipping_carbon/audit_fueleu.py --year 2025 --transport curl
+```
+
+- EUA 가격선: 일별 물량 가중 경매가격, 공급 물량, 기간·경매 필터, 최근 응찰배수·입찰자, CSV.
+- OI: EEX FEUA 월물별 공개 gross OI. ICE 또는 synthetic net OI로 표시하지 않는다.
+- 선물 곡선: 실제 이용권한 있는 결제가격 CSV를 브라우저에서 처리. 동일 관측일·거래소·EUA settlement만 수용한다. 자동 피드는 아직 미연결이다.
+- 독립 검증: Claude의 `tools/fueleu/{engine,mrv_supply}.py`를 수정하지 않고 별도 프로세스에서 재사용한다. 필드 커버리지·0·중복·양수/범위 조건과 선박 크기 대리 필터 감도를 비교한다.
+- 통합 경제성: **동등 에너지**의 화석+풀 매입 / 혼합+잔여 매입. ETS 계수·두 제도 범위·연료/풀 가격은 별도 사용자 입력이며, FuelEU WtW 계수를 ETS에 자동 전용하지 않는다. 실제 가스·바이오 인증·기술적 호환은 확인 가정이다.
+- 미계약 잉여 가치는 수익 미인식. 연료·EUA·풀·수수료 지급과 고객 수금을 날짜별로 묶어 actual/365 차입비용·일말 최대 추가자금을 계산한다. 자금 필수값 누락은 held/null이다. IM/VM은 기존 해운 계약 도구에서 별도 검토한다.
+- 가정 예제 버튼은 가상 연료/풀 가격·계수·현금흐름을 입력하며 실제 고객 포지션이 아니다. EUA만 수집된 공개 경매 참조값이다.
+- `fueleu_adapter.py`는 같은 이름의 두 `engine.py`가 섞이지 않도록 프로세스를 분리한다. 결과에는 FuelEU 구현 SHA256이 남는다. Python 실행 환경에 openpyxl이 있어야 MRV 감사를 실행할 수 있다.
+
+감사 수집이 느리면 공식 파일 다운로드를 먼저 완료하고, 저장한 공식 `downloadable-files` 응답과
+`--listing-file path.json --local-file 2024=official2024.xlsx --local-file 2025=official2025.xlsx`를 명시할 수 있다.
+완료 전 `.partial` 다운로드는 거부한다. 로컬 파일의 버전 표기는 목록 기반이며 원문 해시를 별도 보존한다.
+네트워크 오류는 기존 감사 결과를 대체하지 않는다.
+
+2026-11-04 로컬 원본 확인: 경매 189건·환율 215건(최신 11/03), EEX OI 11개 월물(11/02),
+MRV 2024 v254·2025 v80. 2025 Full ER 17,430건에서 검사 필드 결측은 0이며, 원문 0을 결측으로 분류하지 않는다.
+엄격한 유효입력 조건을 적용해도 현재 대리 필터의 수급 합계는 동일했다.
+실제 수급 감도 결과와 원본·시세·캡처는 `source_data/`에만 두고 git에 포함하지 않는다.
+시장 조사·계산 경계·공식 근거는 [MARKET_RESEARCH.md](MARKET_RESEARCH.md)에 있다.
+
+`/api/market`는 선박 보고서 전체를 싣지 않는 시장 요약 API다. `/api/combined`는 로컬 계산 API이며
+운영 Worker·사이트 메뉴·정기 수집을 활성화하지 않는다.
+
 ## 계산과 두 관점
 
 - 해운사: 가상 배출량에 입력 항로비중·단계비율을 적용한다. 이미 범위 조정된 입력에는 항로비중을 다시 적용하지 않는다. 현재 배정 가능량과 기한 내 인도 예정량을 구분하고 조달 부족량·EUR/KRW 참고 예산·헤지 후 비용 변화를 계산한다.
@@ -61,7 +95,17 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-이미 Chrome이 설치되어 있으면 브라우저 설치 대신 `PW_CHANNEL=chrome npm run test:browser`를 사용할 수 있다. `CARBON_BASE_URL`로 테스트 서버 주소를 바꿀 수 있다. 실제 수집 파일로 실행한 서버는 `PW_CHANNEL=chrome node observed_check.cjs`로 별도 검증한다(기본 8771 포트). 캡처는 git 제외 `source_data/`에 저장한다. 단위 테스트는 39개이며 설계 산술 검산은 별도 16개다.
+이미 Chrome이 설치되어 있으면 브라우저 설치 대신 `PW_CHANNEL=chrome npm run test:browser`를 사용할 수 있다. `CARBON_BASE_URL`로 테스트 서버 주소를 바꿀 수 있다. 실제 수집 파일로 실행한 서버는 `PW_CHANNEL=chrome node observed_check.cjs`로 별도 검증한다(기본 8771 포트). 캡처는 git 제외 `source_data/`에 저장한다. Python 단위 테스트는 53개이며 설계 산술 검산은 별도 16개다.
+
+시장·통합 계산 검증:
+
+```sh
+node --test tools/shipping_carbon/test_market.mjs
+PW_CHANNEL=chrome CARBON_BASE_URL=http://127.0.0.1:8775 node tools/shipping_carbon/market_check.cjs
+```
+
+브라우저 검증은 실제 로컬 관측값을 읽고 가격·공급·OI, 필터, 두 관점, CSV 거부, 동등 에너지 통합 계산,
+감사 결과, 입력 변경 후 이전 결과/저장 무효화, 메뉴별 320px 가로 넘침을 확인한다.
 
 ## 법령·자료 근거와 제한
 

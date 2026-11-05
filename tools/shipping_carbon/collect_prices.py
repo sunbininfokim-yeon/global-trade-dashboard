@@ -30,7 +30,7 @@ def parse_eex_rows(rows, as_of):
     for row_no, row in enumerate(rows, 1):
         if header is None:
             if all(v in row for v in required):
-                header = {v: row.index(v) for v in required}
+                header = {v: i for i, v in enumerate(row) if isinstance(v, str)}
             continue
         def cell(name):
             return row[header[name]]
@@ -43,12 +43,25 @@ def parse_eex_rows(rows, as_of):
         if str(cell("Status")).strip().lower() != "successful":
             excluded["unsuccessful"] += 1
             continue
+        optional = {}
+        for name, key in (("Cover Ratio", "cover_ratio"),
+                          ("Total Amount of Bids", "bid_volume_tco2"),
+                          ("Total Number of Bidders", "bidders"),
+                          ("Number of Successful Bidders", "successful_bidders")):
+            value = row[header[name]] if name in header and header[name] < len(row) else None
+            if value is None or value == "":
+                optional[key] = None
+            else:
+                n = Decimal(str(value))
+                if not n.is_finite() or n < 0:
+                    raise ValueError(f"Invalid EEX {name}")
+                optional[key] = str(n)
         records.append({"observation_date": d.date().isoformat(),
                         "price": positive(cell("Auction Price €/tCO2")),
                         "auction_name": str(cell("Auction Name")),
                         "source_contract": str(cell("Contract")),
                         "auction_volume_tco2": positive(cell("Auction Volume tCO2")),
-                        "source_row": row_no})
+                        "source_row": row_no, **optional})
     if header is None or not records:
         raise ValueError("EEX expected headers or successful observations missing")
     records.sort(key=lambda r: (r["observation_date"], r["auction_name"]))
@@ -85,7 +98,7 @@ def parse_ecb(data, as_of):
     return records, {}
 
 
-def fetch(url):
+def fetch(url, max_bytes=10_000_000):
     req = Request(url, headers={"User-Agent": "ShippingCarbonResearch/0.1", "Accept": "*/*"})
     context = ssl.create_default_context()
     # Supplement the OS CA store for bundled Python; TLS verification remains enabled.
@@ -95,8 +108,8 @@ def fetch(url):
     except ImportError:
         pass
     with urlopen(req, timeout=30, context=context) as response:
-        data = response.read(10_000_001)
-        if len(data) > 10_000_000:
+        data = response.read(max_bytes + 1)
+        if len(data) > max_bytes:
             raise ValueError("Response exceeds size limit")
         return data
 
