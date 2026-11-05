@@ -127,7 +127,37 @@ class RunnerTests(unittest.TestCase):
                 code=runner.run(args,now=datetime.fromisoformat('2026-11-05T08:00:00+09:00'))
             self.assertEqual(code,2)
             out=json.loads((args.run_dir/'forecast.json').read_text());self.assertEqual(out['results'],{})
-            self.assertFalse(args.archive_dir.exists())
+            attempts=list(args.archive_dir.glob('*/'+'a'*16+'/attempts/*.json'))
+            self.assertEqual(len(attempts),1)
+            self.assertEqual(json.loads(attempts[0].read_text())['status'],'unavailable')
+            self.assertFalse(list(args.archive_dir.glob('*/'+'a'*16+'/first.json')))
+
+    def test_attempt_receipt_preserves_refresh_time_and_replay_is_excluded(self):
+        with tempfile.TemporaryDirectory() as td:
+            f=self.forecast('unavailable');f['reasons']=['missing source']
+            path=runner.record_attempt(f,td)
+            self.assertEqual(json.loads(path.read_text())['reasons'],['missing source'])
+            self.assertEqual(runner.record_attempt(f,td),path)
+            self.assertIsNone(runner.record_attempt(self.forecast('retrospective_replay'),td))
+            self.assertEqual(len(list(Path(td).rglob('*.json'))),1)
+
+    def test_comparison_change_creates_revision_without_replacing_primary(self):
+        with tempfile.TemporaryDirectory() as td:
+            f=self.forecast();_,first=runner.archive_forecast(f,td)
+            original=first.read_bytes();f['comparisons']={'status':'available','comparison_id':'new'}
+            r,path=runner.archive_forecast(f,td)
+            self.assertNotEqual(path,first);self.assertFalse(r['eligible_for_primary_evaluation'])
+            self.assertEqual(first.read_bytes(),original)
+
+    def test_comparison_failure_does_not_suppress_primary_forecast(self):
+        with tempfile.TemporaryDirectory() as td:
+            args=self.args(Path(td));args.comparison_model=Path(td)/'absent.json'
+            with patch.object(runner,'validate_model'),patch.object(runner,'collect_kr_prices',return_value=({'candidates':[]},{'candidates':[]})),patch.object(runner,'collect_us_prices',return_value={'symbols':{}}),patch.object(runner,'predict',return_value=self.forecast()):
+                code=runner.run(args,now=datetime.fromisoformat('2026-11-05T08:00:00+09:00'))
+            self.assertEqual(code,0)
+            f=json.loads((args.run_dir/'forecast.json').read_text())
+            self.assertEqual(f['comparisons']['status'],'unavailable')
+            self.assertEqual(f['status'],'research_preopen_forecast')
 
 
 if __name__=='__main__':unittest.main()

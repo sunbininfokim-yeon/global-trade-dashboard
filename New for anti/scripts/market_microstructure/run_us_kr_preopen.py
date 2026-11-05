@@ -14,11 +14,12 @@ import pandas as pd
 
 from backfill_detailed_15007_history import merge_date_folder, missing_required_files, REQUIRED_FILES
 from build_kospi200_price_panel import fetch_naver_chart, NAVER_CHART
-from option_direction_model import PUBLIC, calendar, read, unique, window, write
+from option_direction_model import PUBLIC, calendar, digest, read, unique, window, write
 from research_direction_diagnostics import ReviewedCalendar
 from research_short_horizon_flow import components
 from research_us_lag1_direction import SYMBOLS, previous_us_session
 from us_kr_direction_engine import predict, validate_model, write_immutable
+from us_kr_comparison import DEFAULT_MODEL as COMPARISON_MODEL, predict as comparison_predict
 
 LABELS={'005930':'삼성전자','000660':'SK하이닉스','KOSPI':'KOSPI'}
 
@@ -116,7 +117,8 @@ def archive_forecast(forecast,root):
     first=directory/'first.json'
     if first.exists():
         old=read(first)
-        if old['input_hashes']==forecast['input_hashes'] and old['results']==forecast['results']:
+        if (old['input_hashes']==forecast['input_hashes'] and old['results']==forecast['results']
+                and old.get('comparisons')==forecast.get('comparisons')):
             return old,first
         stamp=datetime.fromisoformat(forecast['generated_at']).astimezone(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
         result.update(record_role='revision',eligible_for_primary_evaluation=False)
@@ -126,6 +128,19 @@ def archive_forecast(forecast,root):
         path=first
     write_immutable(path,result)
     return result,path
+
+
+def record_attempt(forecast,root):
+    """Keep failures as well as successes; replay never counts as a live attempt."""
+    if forecast['status']=='retrospective_replay':return None
+    receipt={k:copy.deepcopy(forecast.get(k)) for k in
+             ['target_date','model_id','generated_at','status','reasons','input_errors','input_hashes']}
+    receipt['schema_version']='us-kr-preopen-attempt-v1'
+    receipt['comparison_status']=forecast.get('comparisons',{}).get('status','not_requested')
+    stamp=datetime.fromisoformat(forecast['generated_at']).astimezone(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    path=Path(root)/forecast['target_date']/forecast['model_id'][:16]/'attempts'/(stamp+'-'+digest(receipt)[:12]+'.json')
+    write_immutable(path,receipt)
+    return path
 
 
 def display_payload(forecast,previous=None):
@@ -191,13 +206,22 @@ def run(args,now=None,clock=None):
     if report['errors']:
         forecast.update(status='unavailable',results={},eligible_for_prospective_evaluation=False)
         forecast['reasons']+=['collection failed: '+e for e in report['errors']]
+    comparison_model=getattr(args,'comparison_model',None)
+    if comparison_model and forecast['status'] in ('research_preopen_forecast','retrospective_replay'):
+        try:
+            forecast['comparisons']=comparison_predict(read(comparison_model),artifact,forecast)
+        except (OSError,ValueError,KeyError,TypeError) as e:
+            forecast['comparisons']={'status':'unavailable','reason':type(e).__name__+': '+str(e)}
+            print({'comparison_unavailable':forecast['comparisons']['reason']})
+    attempt=record_attempt(forecast,args.archive_dir) if not args.replay else None
     forecast,archive=archive_forecast(forecast,args.archive_dir)
     write_immutable(root/'forecast.json',forecast)
     previous=read(args.public_output) if args.public_output and Path(args.public_output).exists() else None
     display=display_payload(forecast,previous)
     write(root/'display_payload.json',display)
     if args.public_output:atomic_json(args.public_output,display)
-    report.update(forecast_status=forecast['status'],archive_record=str(archive) if archive else None)
+    report.update(forecast_status=forecast['status'],archive_record=str(archive) if archive else None,
+                  attempt_record=str(attempt) if attempt else None,comparison_status=forecast.get('comparisons',{}).get('status','not_requested'))
     write(root/'run_report.json',report)
     print({'status':forecast['status'],'target':args.target,'run_dir':str(root),'reasons':forecast['reasons']})
     return 2 if forecast['status']=='unavailable' else 0
@@ -206,6 +230,8 @@ def run(args,now=None,clock=None):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--target',required=True);p.add_argument('--model',type=Path,required=True)
+    p.add_argument('--comparison-model',type=Path,default=COMPARISON_MODEL,
+                   help='frozen comparison artifact; primary model is unchanged')
     p.add_argument('--board',type=Path,default=PUBLIC/'derivatives_board_v1.json')
     p.add_argument('--stocks',type=Path);p.add_argument('--kospi',type=Path);p.add_argument('--us',type=Path)
     p.add_argument('--krx-root',type=Path);p.add_argument('--refresh-prices',action='store_true')
