@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-05T00:55:30.450059+00:00",
+  "generated_at": "2026-11-05T12:26:21.567432+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,10 +17,10 @@
   "stats": {
     "sources_ok": 10,
     "sources_failed": 0,
-    "raw_items": 171,
-    "scored": 171,
+    "raw_items": 141,
+    "scored": 141,
     "selected": 40,
-    "indicators": 13
+    "indicators": 16
   },
   "feed_status": [
     {
@@ -75,7 +75,7 @@
     {
       "source_id": "uk_boe_news",
       "ok": true,
-      "count": 30,
+      "count": 0,
       "error": null,
       "mode": "live"
     },
@@ -274,6 +274,48 @@
       "published_at": "2026-09-10T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Collateral Accepted by the Bank of Japan (End of Oct.)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2610.xlsx",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (October 31)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261031.htm",
+      "published_at": "2026-11-04T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -347,40 +389,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "01cfdfb380c8b2b3",
-      "published_at": "2026-09-17T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/letter/2026/cpi-inflation-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026"
-      },
-      "summary": "Exchange of letters between the Governor and the Chancellor",
-      "scores": {
-        "significance": 4.094,
-        "final": 4.094
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "e26f4bb4c3f411e3",
@@ -867,76 +875,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "636abf84bad4f1c6",
-      "published_at": "2026-09-25T06:30:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/market-participants-group-meeting-25-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Market Participants Group meeting – 24 September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Minutes of the Market Participants Group meeting – 24 September 2026"
-      },
-      "summary": "The Market Participants Group (MPG) is a senior-level forum for financial market participants to share their views on relevant themes and narratives in financial markets with members of the Bank of England’s Monetary Policy Committee.",
-      "scores": {
-        "significance": 2.599,
-        "final": 2.599
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "32e5a1657b55368d",
-      "published_at": "2026-09-17T13:30:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/news/2026/september/the-governor-interview-transcript-17-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Transcript of the Governor's pooled broadcast interview given on 17 September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 17 September 2026"
-      },
-      "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
-      "scores": {
-        "significance": 2.599,
-        "final": 2.599
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "72c6c482318ce052",
@@ -1677,9 +1615,125 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "5c6d5ab022db6344",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "91b5f650c3c6c9b5",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2610.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Collateral Accepted by the Bank of Japan (End of Oct.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Oct.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "36c6bdcbe6cc71dc",
+      "published_at": "2026-11-04T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261031.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (October 31)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (October 31)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
+    {
+      "title": "Isabel Schnabel: Navigating stormy waters: reflections on monetary policy",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261105_1~5e97d9d5a0.en.html",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.112,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
       "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is261029~5c5ffe99e5.en.html",
@@ -1692,80 +1746,63 @@
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Regulators explore credit union reforms to support growth, innovation and better outcomes for members",
-      "url": "https://www.bankofengland.co.uk/news/2026/november/regulators-explore-credit-union-reforms-to-support-growth-innovation-and-better-outcomes-for-members",
-      "country": "GBR",
+      "title": "Minutes of the Board's discount rate meetings on July 20 and July 29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm",
+      "country": "USA",
       "domains": [
-        "economy",
         "finance"
       ],
-      "significance": 2.024,
+      "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Remit for the Monetary Policy Committee - October 2026",
-      "url": "https://www.bankofengland.co.uk/letter/2026/mpc-remit-2026",
-      "country": "GBR",
+      "title": "Minutes of the Federal Open Market Committee, July 28–29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260819a.htm",
+      "country": "USA",
       "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Regulators unveil plans to simplify Senior Manager and Certification Regime",
-      "url": "https://www.bankofengland.co.uk/news/2026/october/regulators-unveil-plans-to-simplify-senior-manager-and-certification-regime",
-      "country": "GBR",
-      "domains": [
-        "economy",
         "finance"
       ],
-      "significance": 2.024,
+      "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "David Roberts CV and questionnaire for the Treasury Select Committee",
-      "url": "https://www.bankofengland.co.uk/news/2026/october/david-roberts-tsc-reappointment",
-      "country": "GBR",
+      "title": "Minutes of the Board's discount rate meetings on June 8 and June 17, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260714a.htm",
+      "country": "USA",
       "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Monetary Policy Committee dates for 2027",
-      "url": "https://www.bankofengland.co.uk/news/2026/september/mpc-dates-for-2027",
-      "country": "GBR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Meeting of the Court of Directors held on 17 September 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/court-minutes-17-september-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
         "finance"
       ],
-      "significance": 1.978,
+      "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
-      "title": "Minutes of the Securities Lending Committee meeting – September 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/securities-lending-committee-meeting-september-2026",
-      "country": "GBR",
+      "title": "Minutes of the Federal Open Market Committee, June 16-17, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260708a.htm",
+      "country": "USA",
       "domains": [
-        "economy",
         "finance"
       ],
-      "significance": 1.978,
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Board's discount rate meeting on April 20 and 29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260526a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Federal Open Market Committee, April 28-29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260520a.htm",
+      "country": "USA",
+      "domains": [
+        "finance"
+      ],
+      "significance": 1.904,
       "suggest": "label promote|keep|drop + series_id later"
     }
   ],
@@ -1842,40 +1879,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "01cfdfb380c8b2b3",
-      "published_at": "2026-09-17T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/letter/2026/cpi-inflation-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026"
-      },
-      "summary": "Exchange of letters between the Governor and the Chancellor",
-      "scores": {
-        "significance": 4.094,
-        "final": 4.094
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "e26f4bb4c3f411e3",
       "published_at": "2026-10-27T05:00:00+00:00",
       "source": {
@@ -2360,76 +2363,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "636abf84bad4f1c6",
-      "published_at": "2026-09-25T06:30:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/market-participants-group-meeting-25-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Minutes of the Market Participants Group meeting – 24 September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Minutes of the Market Participants Group meeting – 24 September 2026"
-      },
-      "summary": "The Market Participants Group (MPG) is a senior-level forum for financial market participants to share their views on relevant themes and narratives in financial markets with members of the Bank of England’s Monetary Policy Committee.",
-      "scores": {
-        "significance": 2.599,
-        "final": 2.599
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "32e5a1657b55368d",
-      "published_at": "2026-09-17T13:30:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/news/2026/september/the-governor-interview-transcript-17-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Transcript of the Governor's pooled broadcast interview given on 17 September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·금융] Transcript of the Governor's pooled broadcast interview given on 17 September 2026"
-      },
-      "summary": "Following the publication of the Monetary Policy Summary and minutes of the Monetary Policy Committee meeting",
-      "scores": {
-        "significance": 2.599,
-        "final": 2.599
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "72c6c482318ce052",
@@ -3170,6 +3103,111 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "5c6d5ab022db6344",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "91b5f650c3c6c9b5",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/col/col2610.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Collateral Accepted by the Bank of Japan (End of Oct.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Collateral Accepted by the Bank of Japan (End of Oct.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "36c6bdcbe6cc71dc",
+      "published_at": "2026-11-04T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261031.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (October 31)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (October 31)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ]
 }
