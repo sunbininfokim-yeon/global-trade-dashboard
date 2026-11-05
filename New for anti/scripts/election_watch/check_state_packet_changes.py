@@ -38,7 +38,7 @@ def input_state(file):
     if file.startswith(CONFIG_PREFIX):
         name = file.removeprefix(CONFIG_PREFIX)
         directory = name.split('/')[0]
-        if directory not in {'state_evidence', 'governor_finance', 'governor_candidates', 'governor_ie_filers'}:
+        if directory not in {'state_evidence', 'governor_finance', 'governor_candidates', 'governor_ie_filers', 'official_results_sources'}:
             return None
     elif file.startswith(PUBLIC_PREFIX):
         name = file.removeprefix(PUBLIC_PREFIX)
