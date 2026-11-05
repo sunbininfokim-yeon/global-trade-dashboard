@@ -31,84 +31,96 @@ const MS_FILES = {
     credit: 'deposit_credit_v1.json',
     // KRX 15007 투자자별 선물·콜·풋 거래실적, 2019~ (build_krx_deriv_flow.py).
     flow: 'krx_deriv_flow_v1.json',
-    // Calibrated shadow direction engine output (#797), research only.
-    direction: 'kospi200_direction_shadow_v1.json',
+    // US→KR preopen direction runner output (#868), research only.
+    direction: 'us_kr_direction_v1.json',
 };
 
-// --- KODEX 200 다음 거래일 방향 (참고) ---------------------------------------
-// Shared by the 파생 수급 tab and the home fixed card. The engine's DOWN
-// includes a flat close, so the label is always 하락·보합. A forecast whose
-// target session has already passed is never shown as today's: it collapses
-// to 자료 없음 rather than carrying yesterday's number forward.
+// --- 다음 거래일 방향 (참고) — #868 개장전 실행기 ----------------------------
+// Shared by the 파생 수급 tab and the home fixed card. Each probability is
+// versus the PREVIOUS close (flat days were left out of the binary sample),
+// so 시작/마감 are two separate questions -- never multiplied into a path.
+// A forecast whose target session has already passed is never shown as
+// today's: it collapses to 자료 없음 rather than carrying yesterday forward.
 const msDayLabel = (iso) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) return '—';
     const [y, m, d] = iso.split('-').map(Number);
     const wd = '일월화수목금토'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
     return `${m}/${d}(${wd})`;
 };
-const MS_DIRECTION_REASONS = {
-    'missing fresh option or ETF price features': '옵션 또는 ETF 가격 자료가 아직 안 들어왔어요.',
-    'incomplete ETF price window': 'ETF 가격 이력이 비어 있어요.',
-    'source session has not closed': '기준일 장이 아직 끝나지 않았어요.',
-};
+const msPct0 = (x) => `${Math.round(x * 100)}%`;
+// Card order: index first, then the two names the model was fit on.
+const MS_DIRECTION_ORDER = ['KOSPI', '005930', '000660'];
+// From data/manifests/us_lag1_direction_20261104.md (KOSPI, 1,047 days).
+// The one-line rule is Claude's own check on KODEX 200 over 2022-01..2026-10.
+const MS_DIRECTION_HISTORY = { open: 0.7536, close: 0.6571, ruleOpen: 0.7285, ruleClose: 0.6388 };
+
 const msDirectionView = (doc, today = msKstToday()) => {
-    const f = (doc || {}).forecast;
-    if (!f) return { state: 'missing', reason: '방향 참고 파일이 없어요.' };
-    const p = Number(f.probability_up);
-    const base = { target: f.target_date, asOf: f.as_of, modelId: String(f.model_id || '').slice(0, 7),
-        research: doc.research || {} };
-    if (f.status === 'unavailable' || !Number.isFinite(p)) {
-        return { ...base, state: 'missing', reason: MS_DIRECTION_REASONS[f.reason] || '새 옵션·ETF 자료를 기다리는 중이에요.' };
+    if (!doc) return { state: 'missing', reason: '방향 예측 파일이 아직 없어요. 개장 전 실행이 한 번 돌면 생겨요.' };
+    const cards = (doc.cards || []).filter((c) => c && c.scores)
+        .sort((a, b) => MS_DIRECTION_ORDER.indexOf(a.ticker) - MS_DIRECTION_ORDER.indexOf(b.ticker));
+    const base = { target: doc.target_date, krDay: doc.KR_source_date, usDay: doc.US_source_date,
+        modelId: String(doc.model_id || '').slice(0, 7), trained: doc.trained_through };
+    if (doc.status === 'unavailable' || !cards.length) {
+        const last = (doc.last_available || {}).target_date;
+        return { ...base, state: 'missing', target: null,
+            reason: `${msDayLabel(doc.target_date)} 예측은 08:30 전까지 필요한 국내·미국 자료가 모이지 않아 만들지 못했어요.${last ? ` 마지막 예측은 ${msDayLabel(last)} 대상이에요.` : ''}` };
     }
-    if (!f.target_date || f.target_date < today) {
-        return { ...base, state: 'missing', target: null, lastTarget: f.target_date,
-            reason: `${msDayLabel(f.target_date)} 이후 새 옵션·ETF 자료가 없어요. 지난 값은 보여주지 않아요.` };
+    if (!doc.target_date || doc.target_date < today) {
+        return { ...base, state: 'missing', target: null, lastTarget: doc.target_date,
+            reason: `${msDayLabel(doc.target_date)} 이후 새 예측이 없어요. 지난 값은 보여주지 않아요.` };
     }
-    return { ...base, state: f.status === 'shadow_research' ? 'live' : 'late', up: p, down: 1 - p,
-        baseRateOnly: f.information_state === 'recent_base_rate_only' };
+    return { ...base, state: doc.status === 'research_preopen_forecast' ? 'live' : 'replay', cards };
 };
-const msPct1 = (x) => `${(x * 100).toFixed(1)}%`;
+
+// One 상승 | 하락 row with a 50% marker. p is P(up vs previous close).
+const msDirSplitRow = (label, s, muted) => {
+    const p = Number((s || {}).probability);
+    if (!Number.isFinite(p)) return `<div class="ms-dir-row"><span class="ms-dir-row-label">${label}</span><span class="ms-dir-na">—</span></div>`;
+    return `
+        <div class="ms-dir-row${muted ? ' is-late' : ''}">
+            <div class="ms-dir-row-head"><span class="ms-dir-row-label">${label}</span>
+                <span class="ms-dir-pair"><span class="${p > 0.5 ? 'is-lead' : ''}">상승 ${msPct0(p)}</span><span class="${p < 0.5 ? 'is-lead' : ''}">하락 ${msPct0(1 - p)}</span></span></div>
+            <div class="ms-dir-bar" role="img" aria-label="${label} 상승 ${msPct0(p)}, 하락 ${msPct0(1 - p)}">
+                <i style="width:${(p * 100).toFixed(1)}%"></i><b></b><em></em>
+            </div>
+        </div>`;
+};
+const msDirAside = (label, s) => {
+    const p = Number((s || {}).probability);
+    if (!Number.isFinite(p)) return '';
+    const ref = (s.information_state === 'recent_base_rate_only') ? ' <span class="ms-dir-ref">최근 빈도</span>' : '';
+    return `<div class="ms-dir-aside"><span>${label}</span><span>${msPct0(p)}${ref}</span></div>`;
+};
 
 const msDirectionSection = (D) => {
     const v = msDirectionView(D.direction);
-    const r = v.research || {};
-    const badge = v.state === 'live' ? ['연구용', 'is-research']
-        : v.state === 'late' ? ['장 시작 후 생성', 'is-muted'] : ['자료 없음', 'is-muted'];
-    const head = `
-        <div class="ms-dir-head">
-            <span class="ms-dir-title">KODEX 200 다음 거래일 방향 · 참고</span>
-            <span class="ms-dir-badge ${badge[1]}">${badge[0]}</span>
-        </div>
-        <div class="ms-dir-target">${v.target ? `${msDayLabel(v.target)} 시가 → 종가` : '다음 거래일 시가 → 종가'}</div>`;
+    const h = MS_DIRECTION_HISTORY;
+    const badge = v.state === 'live' ? ['연구용 · 08:30 전 확정', 'is-research']
+        : v.state === 'replay' ? ['과거 재생 · 사전 예측 아님', 'is-muted'] : ['자료 없음', 'is-muted'];
     let body;
     if (v.state === 'missing') {
-        body = `<div class="ms-dir-empty">—</div>
-            <p class="ms-dir-note">${finEsc(v.reason)}</p>`;
+        body = `<div class="ms-dir-card"><div class="ms-dir-empty">—</div><p class="ms-dir-note">${finEsc(v.reason)}</p></div>`;
     } else {
-        body = `
-        <div class="ms-dir-split${v.state === 'late' ? ' is-late' : ''}">
-            <div><span>상승</span><strong>${msPct1(v.up)}</strong></div>
-            <div class="is-down"><span>하락·보합</span><strong>${msPct1(v.down)}</strong></div>
-        </div>
-        <div class="ms-dir-bar" role="img" aria-label="상승 ${msPct1(v.up)}, 하락·보합 ${msPct1(v.down)}">
-            <i style="width:${(v.up * 100).toFixed(1)}%"></i><b></b><em></em>
-        </div>
-        <div class="ms-dir-mid">50%</div>
-        <p class="ms-dir-note">${v.state === 'late'
-            ? '장이 시작된 뒤 만들어진 값이라 사전 예측이 아니에요. 적중 기록에서 빠져요.'
-            : v.baseRateOnly
-                ? '최근 121거래일 비율이에요. 옵션 수급은 이 값을 움직이지 못했어요.'
-                : '옵션 수급·가격으로 계산한 확률이에요. 거래 신호로 검증되지 않았어요.'}</p>`;
+        const muted = v.state === 'replay';
+        body = `<div class="ms-dir-grid">${v.cards.map((c) => `
+            <div class="ms-dir-card">
+                <div class="ms-dir-head"><span class="ms-dir-title">${finEsc(c.label_ko || c.ticker)}</span></div>
+                ${msDirSplitRow('시작 · 시가 vs 전일 종가', c.scores.opening_up, muted)}
+                ${msDirSplitRow('마감 · 종가 vs 전일 종가', c.scores.closing_up, muted)}
+                ${msDirAside('시작 방향대로 마감', c.scores.direction_persists)}
+                ${msDirAside('시가 이후 같은 방향으로 더 감', c.scores.opening_extends)}
+            </div>`).join('')}</div>`;
     }
-    const foot = [v.asOf ? `입력 ${msDayLabel(v.asOf)}` : null, v.modelId ? `모델 ${finEsc(v.modelId)}` : null,
-        Number.isFinite(r.calibrated_accuracy) && Number.isFinite(r.recent_base_rate_accuracy)
-            ? `과거 적중 ${msPct1(r.calibrated_accuracy)} (기준 ${msPct1(r.recent_base_rate_accuracy)}, ${Number(r.n_outcomes || 0).toLocaleString()}일)` : null]
-        .filter(Boolean).join(' · ');
+    const foot = [v.target ? `대상 ${msDayLabel(v.target)}` : null,
+        v.krDay ? `국내 ${msDayLabel(v.krDay)} 마감` : null, v.usDay ? `미국 ${msDayLabel(v.usDay)} 마감` : null,
+        v.modelId ? `모델 ${finEsc(v.modelId)} (학습 ~${finEsc(msDayLabel(v.trained))})` : null].filter(Boolean).join(' · ');
     return `
     <section class="fin-block fin-block-wide">
-        <h2>다음 거래일 방향 (연구용)</h2>
-        <p class="fin-lead">외국인 콜·풋 순매수와 KODEX 200 가격으로 다음 거래일 시가 대비 종가의 상승 확률을 냅니다. 보합은 하락에 포함합니다. 매매 신호가 아닙니다.</p>
-        <div class="ms-dir-card">${head}${body}${foot ? `<div class="ms-dir-foot">${foot}</div>` : ''}</div>
+        <div class="ms-dir-section-head"><h2>다음 거래일 방향 (연구용)</h2><span class="ms-dir-badge ${badge[1]}">${badge[0]}</span></div>
+        <p class="fin-lead">전날 국내 장 마감과 그 뒤 미국 장 마감을 반영해 한국 장 시작 전(08:30)에 확정합니다. 시작·마감 모두 전일 종가 대비이고, 두 확률은 따로 계산한 값이라 곱해서 경로 확률로 쓰면 안 됩니다. 매매 신호가 아닙니다.</p>
+        ${body}
+        ${foot ? `<div class="ms-dir-foot">${foot}</div>` : ''}
+        <p class="fin-note">과거 시간순 평가(KOSPI, 1,047일) 적중은 시작 ${msPct0(h.open)} · 마감 ${msPct0(h.close)}입니다. 대부분은 전날 미국 장에서 나옵니다: "전날 나스닥(QQQ)이 오르면 상승"이라고만 해도 시작 ${msPct0(h.ruleOpen)} · 마감 ${msPct0(h.ruleClose)}였어요(KODEX 200 기준). 시가 이후 장중 방향은 미국 자료를 넣어도 맞히지 못했고, 「최근 빈도」 표시는 모델 대신 최근 비율만 반영한 값입니다.</p>
     </section>`;
 };
 

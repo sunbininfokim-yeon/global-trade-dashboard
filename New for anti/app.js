@@ -226,8 +226,8 @@ const SIGNAL_PAGES = [
             { label: '나스닥 종합', value: 'NASDAQ', fmt: 'idx2', symbol: '^IXIC', ma: true },
             // Yahoo daily quote (data.js) now backs both -- see the 0.52 block
             // there. KOSPI here is the index level itself, distinct from the
-            // K200 다음 거래일 방향 fixed card, which reads the separate
-            // direction shadow file.
+            // KOSPI 다음 거래일 방향 fixed card, which reads the separate
+            // US->KR preopen direction file.
             { label: '필라델피아 반도체', value: 'SOX', fmt: 'idx2', symbol: '^SOX', ma: true },
             { label: 'KOSPI', value: 'KOSPI', fmt: 'idx2', symbol: '^KS11', ma: true }
         ]
@@ -501,8 +501,8 @@ const signalFixedState = {
         value: '불러오는 중', sub: 'IMF PortWatch 7일 vs 28일', target: 'shipping_chokepoints'
     },
     kospi: {
-        id: 'signal-kospi', title: 'K200 다음 거래일 방향 · 참고',
-        value: '불러오는 중', sub: 'KODEX 200 시가 → 종가', target: 'fin_derivatives', tab: 'derivatives'
+        id: 'signal-kospi', title: 'KOSPI 다음 거래일 방향 · 참고',
+        value: '불러오는 중', sub: '전일 종가 대비 시작·마감', target: 'fin_derivatives', tab: 'derivatives'
     }
 };
 
@@ -573,37 +573,45 @@ const signalLoadChokepoints = async () => {
     signalRenderFixed(signalFixedState);
 };
 
-// KODEX 200 next-session direction from the calibrated shadow engine (#797).
+// KOSPI next-session direction from the US->KR preopen runner (#868).
 // Replaced the put/call ratio card, which still lives in the 파생 수급 tab.
 // Both views go through msDirectionView, so a forecast whose target session
 // has passed shows 자료 없음 here too -- never yesterday's number as today's.
-// No up/down colors: the engine has no validated edge, so the card must not
-// read as a signal.
+// No up/down colors: this is research output, and the card must not read as
+// a trading signal. Each half shows the more likely side of its own question.
 const signalLoadDirection = async () => {
+    const side = (s) => {
+        const p = Number((s || {}).probability);
+        if (!Number.isFinite(p)) return '—';
+        return p === 0.5 ? '균형 50%' : `${p > 0.5 ? '상승' : '하락'} ${msPct0(Math.max(p, 1 - p))}`;
+    };
     try {
-        const doc = await loadFirstJson(finDataPaths('kospi200_direction_shadow_v1.json'), { cache: 'no-cache' });
+        const doc = await loadFirstJson(finDataPaths('us_kr_direction_v1.json'), { cache: 'no-cache' });
         const v = msDirectionView(doc);
-        if (v.state === 'missing') {
+        const kospi = v.state === 'missing' ? null : v.cards.find((c) => c.ticker === 'KOSPI');
+        if (!kospi) {
             signalFixedState.kospi = {
                 ...signalFixedState.kospi,
                 value: '자료 없음',
-                sub: v.lastTarget ? `${msDayLabel(v.lastTarget)} 이후 새 옵션·ETF 자료 대기` : '새 옵션·ETF 자료 대기',
+                sub: v.lastTarget ? `${msDayLabel(v.lastTarget)} 이후 새 예측 대기` : '개장 전 예측 대기',
                 foot: '연구용 · 지난 값은 표시하지 않음', tone: 'muted', split: null
             };
         } else {
+            const open = kospi.scores.opening_up, close = kospi.scores.closing_up;
             signalFixedState.kospi = {
                 ...signalFixedState.kospi,
-                value: `상승 ${msPct1(v.up)} · 하락·보합 ${msPct1(v.down)}`,
-                sub: `${msDayLabel(v.target)} KODEX 200 시가 → 종가${v.baseRateOnly ? ' · 최근 121일 비율' : ''}`,
-                foot: v.state === 'late' ? '장 시작 후 생성 · 사전 예측 아님' : `연구용 · 입력 ${msDayLabel(v.asOf)}`,
-                tone: v.state === 'late' ? 'muted' : null, split: v.up
+                value: `시작 ${side(open)} · 마감 ${side(close)}`,
+                sub: `${msDayLabel(v.target)} KOSPI · 전일 종가 대비 · 미국 ${msDayLabel(v.usDay)} 마감 반영`,
+                foot: v.state === 'replay' ? '과거 재생 · 사전 예측 아님' : '연구용 · 08:30 전 확정',
+                tone: v.state === 'replay' ? 'muted' : null,
+                split: Number.isFinite(Number(close && close.probability)) ? Number(close.probability) : null
             };
         }
     } catch (e) {
-        console.error('K200 방향 참고 로드 실패:', e);
+        console.error('KOSPI 방향 참고 로드 실패:', e);
         signalFixedState.kospi = {
             ...signalFixedState.kospi,
-            value: '자료 없음', sub: '방향 참고 파일 없음', tone: 'muted', split: null
+            value: '자료 없음', sub: '방향 예측 파일 없음', tone: 'muted', split: null
         };
     }
     signalRenderFixed(signalFixedState);
