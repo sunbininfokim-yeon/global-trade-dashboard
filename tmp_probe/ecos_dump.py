@@ -25,5 +25,11 @@ for stat in ("901Y009", "901Y010"):
         if len(items) >= blk.get("list_total_count", 0) or not blk.get("row"):
             break
         start += 1000
-    out[stat] = {"rows": rows, "items": items}
+    annual = []
+    for y in range(2019, 2026):
+        url = f"https://ecos.bok.or.kr/api/StatisticSearch/{key}/json/kr/1/2000/{stat}/A/{y}/{y}"
+        with urllib.request.urlopen(url, timeout=120) as r:
+            annual += (json.loads(r.read()).get("StatisticSearch") or {}).get("row") or []
+    print(stat, "annual", len(annual), flush=True)
+    out[stat] = {"rows": rows, "items": items, "annual": annual}
 json.dump(out, open("ecos_cpi_dump.json", "w"), ensure_ascii=False)
