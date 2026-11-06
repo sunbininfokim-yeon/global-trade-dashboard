@@ -244,7 +244,6 @@ function start(root, annual, live, observers, collected, status, context) {
 
   function receipts() {
     const y = data.years[state.fy];
-    $('#bf-basis').innerHTML = renderBasis(bundle,state.fy);
     const items = data.receipts[state.fy];
     if (!items) { $('#bf-content').innerHTML = `<h3>FY${state.fy} 세입</h3><div class="bf-message">세목별 금액이 아직 없습니다.</div>`; return; }
     $('#bf-content').innerHTML = `<h3>세입은 어디에서 들어오나</h3><div class="bf-overview">${donut(items, y.receipts, '세입 구성')}<div class="bf-legend">${items.map((r, i) => `<button type="button" data-tax="${i}" aria-pressed="false"><span class="bf-dot" style="background:${palette[i]}"></span><span>${esc(r.name)}</span><b>${bn(r.value)}<br><span class="bf-muted">${(r.value / y.receipts * 100).toFixed(1)}%</span></b></button>`).join('')}</div></div><div id="bf-tax-detail" class="bf-muted">세목을 선택하면 확인된 연도별 금액이 나옵니다.</div><div class="bf-message">국채 발행은 세입에 포함되지 않습니다.</div>`;
@@ -316,6 +315,8 @@ function start(root, annual, live, observers, collected, status, context) {
     $('#bf-year').value = String(state.fy);
     $('#bf-proposal-note').hidden = !isProposal();
     $('#bf-funding').innerHTML = renderFunding(collected?.funding, state.fy);
+    // What the selected figures are (proposal estimate vs settled actuals), on every view.
+    $('#bf-basis').innerHTML = renderBasis(bundle, state.fy);
     $('#bf-ytd').hidden = !(isProposal() && fytd);
     for (const k of ['outlays', 'receipts', 'deficit']) $(`#bf-${k}`).textContent = (y[k] / 1e12).toFixed(3);
     $('#bf-source').textContent = `FY${state.fy} · ${y.source} · 분류 금액은 원표 단위로 반올림`;
