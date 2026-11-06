@@ -1248,6 +1248,636 @@
    "id": "boi_total_assets",
    "enabled": false,
    "reason_ko": "이스라엘 중앙은행 SDMX(41개 데이터흐름)에 중앙은행 대차대조표 총계가 없습니다. 통화량(MAG)·외환보유액만 있습니다(2026-10-31 확인)."
+  },
+  {
+   "iso3": "USA",
+   "id": "npl_noncurrent",
+   "label_ko": "무수익여신 비율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "FDIC 보험 가입 전체 은행의 무수익여신(90일 이상 연체 + 이자 미수취) / 총대출(%, 분기). FDIC 분기 은행 보고서(QBP), FRED 재게시.",
+   "source": "fred:QBPLNTLNNCUR",
+   "url": "https://fred.stlouisfed.org/series/QBPLNTLNNCUR",
+   "read": {
+    "reader": "fred",
+    "params": {
+     "args": [
+      "QBPLNTLNNCUR"
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "USA",
+   "id": "delinq_all",
+   "label_ko": "대출 연체율(전체)",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "상업은행 전체 대출 연체율(30일 이상, 계절조정, %, 분기). 연준 'Charge-Off and Delinquency Rates'.",
+   "source": "fred:DRALACBS",
+   "url": "https://fred.stlouisfed.org/series/DRALACBS",
+   "read": {
+    "reader": "fred",
+    "params": {
+     "args": [
+      "DRALACBS"
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "USA",
+   "id": "delinq_card",
+   "label_ko": "신용카드 연체율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "상업은행 신용카드 대출 연체율(30일 이상, 계절조정, %, 분기). 연준.",
+   "source": "fred:DRCCLACBS",
+   "url": "https://fred.stlouisfed.org/series/DRCCLACBS",
+   "read": {
+    "reader": "fred",
+    "params": {
+     "args": [
+      "DRCCLACBS"
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "USA",
+   "id": "delinq_mortgage",
+   "label_ko": "주택담보 연체율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "상업은행 1~4가구 주택담보대출 연체율(30일 이상, 계절조정, %, 분기). 연준.",
+   "source": "fred:DRSFRMACBS",
+   "url": "https://fred.stlouisfed.org/series/DRSFRMACBS",
+   "read": {
+    "reader": "fred",
+    "params": {
+     "args": [
+      "DRSFRMACBS"
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "USA",
+   "id": "delinq_business",
+   "label_ko": "기업대출 연체율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "상업은행 기업대출(C&I) 연체율(30일 이상, 계절조정, %, 분기). 연준.",
+   "source": "fred:DRBLACBS",
+   "url": "https://fred.stlouisfed.org/series/DRBLACBS",
+   "read": {
+    "reader": "fred",
+    "params": {
+     "args": [
+      "DRBLACBS"
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "USA",
+   "id": "chargeoff_all",
+   "label_ko": "대손상각률(전체)",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "상업은행 전체 대출의 순대손상각률(연율, 계절조정, %, 분기). 연준.",
+   "source": "fred:CORALACBS",
+   "url": "https://fred.stlouisfed.org/series/CORALACBS",
+   "read": {
+    "reader": "fred",
+    "params": {
+     "args": [
+      "CORALACBS"
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "KOR",
+   "id": "npl_ratio",
+   "label_ko": "부실채권비율(고정이하여신)",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "국내은행 고정이하여신 / 총여신(%, 분기말). 금융감독원 FISIS '부실채권비율' 표의 은행별 값을 모두 더해 계산(금감원 집계 방식과 같음).",
+   "source": "fisis:SA054",
+   "url": "https://fisis.fss.or.kr/",
+   "read": {
+    "reader": "fisis",
+    "params": {
+     "list_no": "SA054",
+     "num": "B",
+     "den": "A"
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "KOR",
+   "id": "npl_amount",
+   "label_ko": "부실채권 잔액(고정이하여신)",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "tn_krw",
+   "format": "krw_tn1",
+   "note_ko": "국내은행 고정이하여신 합계(조원, 분기말). 금융감독원 FISIS, 은행별 합산.",
+   "source": "fisis:SA054",
+   "url": "https://fisis.fss.or.kr/",
+   "read": {
+    "reader": "fisis",
+    "params": {
+     "list_no": "SA054",
+     "num": "B",
+     "scale": 1e-12
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "KOR",
+   "id": "delinq_all",
+   "label_ko": "대출 연체율(전체)",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "국내은행 연체대출잔액 / 대출잔액(%, 분기말, 원화대출+신탁대출, 1개월 이상 원리금 연체). 금융감독원 FISIS, 은행별 합산. 금감원 월별 보도자료 수치는 API에 없어 분기말만 싣습니다.",
+   "source": "fisis:SA040",
+   "url": "https://fisis.fss.or.kr/",
+   "read": {
+    "reader": "fisis",
+    "params": {
+     "list_no": "SA040",
+     "num": "A2",
+     "den": "A1"
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "KOR",
+   "id": "delinq_household",
+   "label_ko": "가계대출 연체율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "국내은행 가계대출 연체율(%, 분기말). 금융감독원 FISIS, 은행별 합산.",
+   "source": "fisis:SA040",
+   "url": "https://fisis.fss.or.kr/",
+   "read": {
+    "reader": "fisis",
+    "params": {
+     "list_no": "SA040",
+     "num": "C2",
+     "den": "C1"
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "KOR",
+   "id": "delinq_corporate",
+   "label_ko": "기업대출 연체율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "국내은행 기업대출 연체율(%, 분기말). 금융감독원 FISIS, 은행별 합산.",
+   "source": "fisis:SA040",
+   "url": "https://fisis.fss.or.kr/",
+   "read": {
+    "reader": "fisis",
+    "params": {
+     "list_no": "SA040",
+     "num": "B2",
+     "den": "B1"
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "KOR",
+   "id": "delinq_sme",
+   "label_ko": "중소기업대출 연체율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "국내은행 중소기업대출 연체율(%, 분기말, 개인사업자 포함). 금융감독원 FISIS, 은행별 합산.",
+   "source": "fisis:SA040",
+   "url": "https://fisis.fss.or.kr/",
+   "read": {
+    "reader": "fisis",
+    "params": {
+     "list_no": "SA040",
+     "num": "BB2",
+     "den": "BB1"
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "KOR",
+   "id": "delinq_soho",
+   "label_ko": "개인사업자대출 연체율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "국내은행 중소기업대출 중 개인사업자대출 연체율(%, 분기말). 금융감독원 FISIS, 은행별 합산.",
+   "source": "fisis:SA040",
+   "url": "https://fisis.fss.or.kr/",
+   "read": {
+    "reader": "fisis",
+    "params": {
+     "list_no": "SA040",
+     "num": "BBA2",
+     "den": "BBA1"
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "KOR",
+   "id": "precaution_ratio",
+   "label_ko": "요주의여신 비율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "국내은행 요주의여신 / 총여신(%, 분기말). 고정이하(부실)로 넘어가기 직전 단계라 부실채권비율의 선행 신호입니다. 금융감독원 FISIS, 은행별 합산.",
+   "source": "fisis:SA015",
+   "url": "https://fisis.fss.or.kr/",
+   "read": {
+    "reader": "fisis",
+    "params": {
+     "list_no": "SA015",
+     "num": "B6",
+     "den": "A"
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "CHN",
+   "id": "npl_ratio",
+   "label_ko": "부실대출 비율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "예금취급기관 부실대출 / 총대출(%, 분기). IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다. 국가금융감독관리총국(NFRA) 분기표는 이미지 PDF라 IMF 재게시본을 씁니다.",
+   "source": "imf:FSIC:AQ12_CFSI_PT",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "CHN",
+      [
+       [
+        "INDICATOR",
+        "AQ12_CFSI_PT"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "CHN",
+   "id": "npl_amount",
+   "label_ko": "부실대출 잔액",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "tn_cny",
+   "format": "cny_tn2",
+   "note_ko": "예금취급기관 부실대출 잔액(조위안, 분기). IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다.",
+   "source": "imf:FSIC:AQ12_NPF4_XDC",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "CHN",
+      [
+       [
+        "INDICATOR",
+        "AQ12_NPF4_XDC"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "ops": [
+    [
+     "scale",
+     1e-12
+    ]
+   ],
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "CHN",
+   "id": "npl_coverage",
+   "label_ko": "대손충당금 적립률",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct1",
+   "note_ko": "대손충당금 / 부실대출(%, 분기). IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다.",
+   "source": "imf:FSIC:AQ14_CFSI_PT",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "CHN",
+      [
+       [
+        "INDICATOR",
+        "AQ14_CFSI_PT"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "JPN",
+   "id": "npl_ratio",
+   "label_ko": "부실대출 비율",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "예금취급기관 부실대출 / 총대출(%, 분기). IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다. 금융청의 금융재생법 개시채권은 반기 공표라 분기 계열인 IMF 값을 씁니다.",
+   "source": "imf:FSIC:AQ12_CFSI_PT",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "JPN",
+      [
+       [
+        "INDICATOR",
+        "AQ12_CFSI_PT"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "JPN",
+   "id": "npl_amount",
+   "label_ko": "부실대출 잔액",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "tn_jpy",
+   "format": "jpy_tn1",
+   "note_ko": "예금취급기관 부실대출 잔액(조엔, 분기). IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다.",
+   "source": "imf:FSIC:AQ12_NPF4_XDC",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "JPN",
+      [
+       [
+        "INDICATOR",
+        "AQ12_NPF4_XDC"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "ops": [
+    [
+     "scale",
+     1e-12
+    ]
+   ],
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "CHN",
+   "id": "bank_roa",
+   "label_ko": "은행 ROA",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "예금취급기관 총자산이익률(%, 분기, 연율). IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다. 부실대출 비율이 평탄한데 ROA가 계속 떨어지면, 손실이 분류 대신 이익에서 흡수되고 있다는 신호일 수 있습니다.",
+   "source": "imf:FSIC:ROA_CFSI_PT",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "CHN",
+      [
+       [
+        "INDICATOR",
+        "ROA_CFSI_PT"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "CHN",
+   "id": "bank_roe",
+   "label_ko": "은행 ROE",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "예금취급기관 자기자본이익률(%, 분기, 연율). IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다.",
+   "source": "imf:FSIC:ROE_CFSI_PT",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "CHN",
+      [
+       [
+        "INDICATOR",
+        "ROE_CFSI_PT"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "CHN",
+   "id": "bank_interest_share",
+   "label_ko": "이자이익 / 총수입",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct2",
+   "note_ko": "예금취급기관 순이자이익이 총영업수입에서 차지하는 비중(%, 분기). 순이자마진(NIM) 압박의 대용 지표. IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다.",
+   "source": "imf:FSIC:FSI99_CFSI_PT",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "CHN",
+      [
+       [
+        "INDICATOR",
+        "FSI99_CFSI_PT"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "chart_type": "bar"
+  },
+  {
+   "iso3": "CHN",
+   "id": "npl_net_to_capital",
+   "label_ko": "순부실대출 / 자본",
+   "category": "liquidity",
+   "cadence": "quarterly",
+   "unit": "%",
+   "format": "pct1",
+   "note_ko": "(부실대출 − 충당금) / 규제자본(%, 분기). 음수면 충당금이 신고된 부실대출보다 많다는 뜻. IMF 금융건전성지표(FSI, 예금취급기관)로, 각국 제출 후 IMF 공표까지 1~3분기 늦습니다.",
+   "source": "imf:FSIC:FSI17_CFSI_PT",
+   "url": "https://data.imf.org/",
+   "read": {
+    "reader": "imf",
+    "params": {
+     "args": [
+      "FSIC",
+      "CHN",
+      [
+       [
+        "INDICATOR",
+        "FSI17_CFSI_PT"
+       ],
+       [
+        "SECTOR",
+        "S12CFSI"
+       ],
+       [
+        "FREQUENCY",
+        "Q"
+       ]
+      ]
+     ]
+    }
+   },
+   "chart_type": "bar"
   }
  ]
 }
