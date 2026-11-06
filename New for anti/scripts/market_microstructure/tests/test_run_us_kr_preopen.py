@@ -57,6 +57,38 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(new['cards'],[]);self.assertEqual(new['target_date'],'2026-11-05')
         self.assertEqual(new['last_available']['target_date'],'2026-11-04')
 
+    def test_up_down_complements_only_for_direction_events(self):
+        f=self.forecast()
+        scores=f['results']['KOSPI']['scores']
+        scores['closing_up']=dict(scores['opening_up'],probability=.43,score_0_100=43,direction='DOWN')
+        scores['direction_persists']=dict(scores['opening_up'],direction='MAINTAIN')
+        original=copy.deepcopy(f)
+        payload=runner.display_payload(f)
+        out=payload['cards'][0]['scores']
+        self.assertEqual(out['opening_up']['up_probability'],.51)
+        self.assertEqual(out['opening_up']['down_probability'],.49)
+        self.assertAlmostEqual(out['closing_up']['down_probability'],.57)
+        self.assertNotIn('down_probability',out['direction_persists'])
+        self.assertIn('not estimated',payload['probability_contract']['flat_probability'])
+        self.assertEqual(f,original)
+
+    def test_reference_only_probabilities_remain_reference_only(self):
+        f=self.forecast()
+        f['results']['KOSPI']['scores']['opening_up'].update(direction='REFERENCE_ONLY',information_state='recent_base_rate_only')
+        score=runner.display_payload(f)['cards'][0]['scores']['opening_up']
+        self.assertEqual(score['direction'],'REFERENCE_ONLY')
+        self.assertEqual(score['information_state'],'recent_base_rate_only')
+
+    def test_neutral_and_invalid_display_probabilities(self):
+        f=self.forecast()
+        f['results']['KOSPI']['scores']['opening_up'].update(probability=.5,score_0_100=50,direction='NEUTRAL')
+        score=runner.display_payload(f)['cards'][0]['scores']['opening_up']
+        self.assertEqual((score['up_probability'],score['down_probability']),(.5,.5))
+        self.assertEqual(score['direction'],'NEUTRAL')
+        for value in [float('nan'),-1,2,True,None]:
+            f['results']['KOSPI']['scores']['opening_up']['probability']=value
+            with self.assertRaises(ValueError):runner.display_payload(f)
+
     def test_raw_merge_only_changes_detailed_leaf(self):
         b={'kr':{'investor_nets':{'detailed_15007':{'old':1},'other':99}},'us_oi_snap':{'keep':2}}
         with tempfile.TemporaryDirectory() as td:

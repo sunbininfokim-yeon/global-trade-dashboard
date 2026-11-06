@@ -15,6 +15,7 @@ from research_stock_open_close_direction import TARGETS, path_labels
 from run_us_kr_preopen import atomic_json, timing
 from us_kr_comparison import DEFAULT_MODEL, validate as validate_comparison
 from us_kr_direction_engine import TICKERS, validate_model
+from us_kr_publication import publication_evidence
 
 BINS = [0, .4, .45, .5, .55, .6, 1]
 
@@ -232,6 +233,7 @@ def evaluate(root, primary, comparison, prices, start, end, now=None):
             days.append(entry)
             continue
         entry.update(issued=True, generated_at=forecast['generated_at'], forecast_sha256=digest(forecast))
+        entry['publication'] = publication_evidence(directory, forecast, now)
         try:
             comparisons = comparison_scores(forecast, comparison)
             entry['comparison_status'] = 'available'
@@ -264,6 +266,8 @@ def evaluate(root, primary, comparison, prices, start, end, now=None):
     issued = sum(d['issued'] for d in days)
     recent = {d['target_date'] for d in days if d['matured']}
     recent = set(sorted(recent)[-20:])
+    published = {d['target_date'] for d in days if d.get('publication', {}).get('status') == 'verified'}
+    published_records = [r for r in records if r['date'] in published]
     return {'schema_version': 'us-kr-forward-evaluation-v1',
             'status': 'forward_records_scored' if records else 'awaiting_forward_outcomes',
             'generated_at': now.isoformat(), 'start': start, 'end': end,
@@ -274,6 +278,13 @@ def evaluate(root, primary, comparison, prices, start, end, now=None):
                          'matured_sessions': sum(d['matured'] for d in days),
                          'unissued_reasons': dict(reasons)},
             'all': summarize(records), 'last_20_matured_sessions': summarize([r for r in records if r['date'] in recent]),
+            'publication_verified': {
+                'verified_sessions': len(published),
+                'verified_publication_rate': len(published)/len(days) if days else None,
+                'generated_without_verified_publication': issued-len(published),
+                'all': summarize(published_records),
+                'last_20_matured_sessions': summarize([r for r in published_records if r['date'] in recent]),
+                'basis': 'remote payload observed before cutoff and matched to immutable first forecast'},
             'days': days,
             'limitations': ['Only original eligible first forecasts; revisions and replay excluded',
                             'Local generation timestamp is not independent proof of public availability',
