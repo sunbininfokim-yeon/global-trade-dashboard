@@ -1,6 +1,9 @@
 """
 Regional yield labels from Eurostat (apro_cpshr: crop production in EU
-standard humidity by NUTS 2 region, 2000 onward).
+standard humidity by NUTS 2 region, 2000 onward), extended back to 1985
+with the historical table apro_cpnhr_h (1975-1999, NUTS 2013 codes, yield
+at the moisture each country reported -- for French wheat and maize within
+a percent or two of the EU standard, so the series is joined as is).
 
 Usage: python3 -m france.eurostat     # refresh data/eurostat_apro.csv
 
@@ -21,6 +24,11 @@ import pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "data", "eurostat_apro.csv")
 API = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/apro_cpshr"
+API_HIST = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/apro_cpnhr_h"
+# Historical strucpro codes -> the ones used here.
+HIST_CODES = {"YLD_T_HA": "YLD_HUMD_EU_T_HA", "AR_THS_HA": "AR_THS_HA",
+              "HPRD_THS_T": "HPRD_HUMD_EU_THS_T"}
+HIST_FROM = 1985  # the weather features start here
 
 # Crop key -> Eurostat crop code.
 CROPS = {"winter_wheat": "C1110", "grain_maize": "C1500"}
@@ -85,7 +93,7 @@ def fetch():
     old = old[[k not in have for k in zip(old.crops, old.strucpro, old.geo, old.year)]]
     if len(old):
         log(f"{len(old)} values from NUTS 2013 codes, {old.year.min()}-{old.year.max()}")
-    df = pd.concat([new, old], ignore_index=True)
+    df = pd.concat([new, old, fetch_hist(df)], ignore_index=True)
     df = df.sort_values(["crops", "strucpro", "geo", "year"])
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     df.to_csv(OUT, index=False)
@@ -93,6 +101,32 @@ def fetch():
     for (c, s), g in df.groupby(["crops", "strucpro"]):
         log(f"  {c} {s}: {len(g)} values, {g.year.min()}-{g.year.max()}, {g.geo.nunique()} regions")
     return df
+
+
+def fetch_hist(current):
+    """1985-1999 from the historical table, only years the main one lacks."""
+    q = "&".join([f"crops={c}" for c in CROPS.values()]
+                 + [f"strucpro={s}" for s in HIST_CODES]
+                 + [f"geo={g}" for g in OLD_CODES])
+    req = urllib.request.Request(f"{API_HIST}?format=JSON&lang=EN&{q}",
+                                 headers={"User-Agent": "yield-model/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=180) as r:
+            rows = _decode(json.loads(r.read()))
+    except Exception as exc:  # the main table still stands on its own
+        log(f"historical table unavailable: {exc}")
+        return pd.DataFrame(columns=current.columns)
+    h = pd.DataFrame(rows).rename(columns={"time": "year"})
+    if h.empty:
+        return pd.DataFrame(columns=current.columns)
+    h["year"] = h.year.astype(int)
+    h = h[h.year >= HIST_FROM].assign(geo=lambda x: x.geo.map(OLD_CODES),
+                                      strucpro=lambda x: x.strucpro.map(HIST_CODES))
+    h = h[["crops", "strucpro", "geo", "year", "value"]]
+    have = set(zip(current.crops, current.geo, current.year))
+    h = h[[k not in have for k in zip(h.crops, h.geo, h.year)]]
+    log(f"{len(h)} historical values, {h.year.min()}-{h.year.max()}")
+    return h
 
 
 def load(path=OUT):
