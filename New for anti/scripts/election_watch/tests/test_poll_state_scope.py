@@ -15,6 +15,20 @@ REVIEW = PUBLIC + 'usa_election_poll_release_reviews/2026/CT-primary.json'
 
 
 class StateResearchScopeTests(unittest.TestCase):
+    def test_official_result_descriptors_use_the_same_state_isolation_rules(self):
+        az = BACKEND + 'config/official_results_sources/2026/AZ.json'
+        own = [az, BACKEND + 'tests/test_poll_az_official_results.py',
+               'docs/ops/handoff/2026-11-05-codex-state-results-AZ.md']
+        for owner in ('codex', 'claude', 'cursor'):
+            branch = f'{owner}/az-official-results'
+            self.assertFalse(violations(own, branch))
+            for shared in (BACKEND + 'collect_official_results.py',
+                           BACKEND + 'config/official_results_2026.json',
+                           PUBLIC + 'usa_election_official_results_v1.json'):
+                self.assertEqual(violations([*own, shared], branch), [shared])
+            other = az.replace('/AZ.json', '/CA.json')
+            self.assertTrue(violations([az, other], branch))
+
     def test_source_only_research_paths_trigger_existing_pr_validation(self):
         repo = Path(__file__).resolve().parents[4]
         workflow = (repo/'.github/workflows/us_election_polls_refresh.yml').read_text()
