@@ -33,6 +33,18 @@ class MediaCallsFileTests(unittest.TestCase):
         self.assertEqual(check({**base, 'calls': [{**ok, 'status': 'runoff', 'winner': None, 'party': None}]},
                                self.ratings, {}, self.now), [])
 
+    def test_reviewed_winner_can_keep_unreported_call_time_without_fabrication(self):
+        c = {'race_id': 'USA:PA:governor', 'status': 'called', 'winner': 'Josh Shapiro', 'party': 'DEM',
+             'called_by': ['AP'], 'called_at': None, 'call_time_status': 'not_reported',
+             'verified_at': '2026-11-04T12:00:00Z', 'source_url': 'https://apnews.com/article/example'}
+        base = {'schema': 'usa_election_media_calls_v1', 'cycle': 2026, 'calls': [c]}
+        self.assertEqual(check(base, self.ratings, {}, self.now), [])
+        for changes in ({'call_time_status': None}, {'verified_at': None},
+                        {'verified_at': '2026-11-06T12:00:00Z'},
+                        {'verified_at': '2026-11-04T12:00:00'},
+                        {'verified_at': '2026-11-03T12:00:00Z'}):
+            self.assertTrue(check(dict(base, calls=[dict(c, **changes)]), self.ratings, {}, self.now))
+
 
 if __name__ == '__main__':
     unittest.main()
