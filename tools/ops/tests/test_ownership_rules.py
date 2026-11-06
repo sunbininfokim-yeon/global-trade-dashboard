@@ -3,6 +3,13 @@ from tools.ops.ownership_rules import scoped_paths
 
 
 class PollingScopeTests(unittest.TestCase):
+    def test_lobbying_automation_scope_is_exact(self):
+        branch = 'codex/lobbying-policy-pipeline-20261105'
+        self.assertEqual(scoped_paths(branch), {'_worker.js', '.github/workflows/lobbying_policy_refresh.yml'})
+        self.assertFalse(scoped_paths(branch+'-extra'))
+        for path in ('New for anti/app.js','New for anti/index.html','.github/workflows/deploy.yml','wrangler.jsonc'):
+            self.assertNotIn(path, scoped_paths(branch))
+
     def test_israel_ci_allows_only_its_independent_validation_workflow(self):
         branch = 'codex/israel-weekly-bars-20261021'
         self.assertEqual(scoped_paths(branch), {'.github/workflows/israel_analysis_validation.yml'})

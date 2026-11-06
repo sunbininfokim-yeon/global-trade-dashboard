@@ -131,6 +131,11 @@
     .then(async (module) => { await module.prepare(); return module; })
     .catch((err) => { budgetPromise = null; throw err; }));
 
+  let lobbyingPromise = null;
+  const loadLobbying = () => (lobbyingPromise ||= import('/policy-lobbying/view.mjs?v=1')
+    .then(async module => { await module.prepare(); return module; })
+    .catch(err => { lobbyingPromise = null; throw err; }));
+
   // Chair/ranking-member/agency-jurisdiction/official-URL for the USA
   // standing committees don't come from the /congress API at all -- they're
   // pre-joined onto the election board by the election_watch pipeline
@@ -441,7 +446,7 @@
   const modeTabs = () => `
     <div class="policy-modes" style="flex-wrap:wrap">
       <span class="policy-country">미국</span>
-      ${[['congress', '의회'], ['executive', '행정부'], ['simulator', '관세 시뮬레이터'], ['budget', '예산']].map(([id, label]) => `
+      ${[['congress', '의회'], ['executive', '행정부'], ['lobbying', '로비·사안'], ['simulator', '관세 시뮬레이터'], ['budget', '예산']].map(([id, label]) => `
         <button type="button" class="policy-mode-btn${trailHas(id) ? ' active' : ''}" data-view="${id}" aria-pressed="${trailHas(id)}">${label}</button>
       `).join('')}
       ${searchBox()}
@@ -1209,6 +1214,7 @@
     executive: null,
     simulator: null,
     budget: null,
+    lobbying: null,
     search: null,
     committee: 'congress',
     area: 'congress',
@@ -1229,6 +1235,7 @@
       case 'executive': return '행정부';
       case 'simulator': return '관세 시뮬레이터';
       case 'budget': return '예산';
+      case 'lobbying': return '로비·사안';
       case 'committee': {
         // usCommitteeDetail resolves an old alias id (e.g. a bookmarked JEC
         // code) to its canonical committee_id -- the overview list only ever
@@ -1262,6 +1269,7 @@
   async function fetchViewData(view, id) {
     if (view === 'simulator') return { simulator: await loadSimulator() };
     if (view === 'budget') return { budget: await loadBudget() };
+    if (view === 'lobbying') return { lobbying: await loadLobbying() };
     if (!overview) {
       [overview] = await Promise.all([loadOverview(), loadFavorites()]);
       rebuildPolicySlugs();
@@ -1296,6 +1304,8 @@
 
   const VIEWS = {
     congress: viewCongress,
+    lobbying: (_id, _overview, data) => shell(data.lobbying
+      ? data.lobbying.markup() : empty('로비·사안 화면을 불러오지 못했습니다.')),
     executive: viewExecutive,
     simulator: (_id, _overview, data) => shell(data.simulator
       ? `<div data-tariff-simulator>${data.simulator.markup()}</div>`
@@ -1328,6 +1338,7 @@
     host.innerHTML = (VIEWS[view] || viewCongress)(id, overview, viewData);
     if (view === 'simulator' && viewData.simulator) viewCleanup = viewData.simulator.mount(host.querySelector('[data-tariff-simulator]'));
     if (view === 'budget' && viewData.budget) viewCleanup = viewData.budget.mount(host.querySelector('[data-us-budget]'));
+    if (view === 'lobbying' && viewData.lobbying) viewCleanup = viewData.lobbying.mount(host.querySelector('[data-lobbying]'), { id, navigate: go });
     if (view === 'bill' && viewData.bill) {
       let active = true, cleanup = null;
       const billId = viewData.bill.bill_id;
@@ -1336,6 +1347,17 @@
         if (active && root) cleanup = module.mountBillFinance(root, billId);
       }).catch(() => { if (active && root) root.querySelector('[data-budget-finance-result]').textContent = '예산 연결 자료를 불러오지 못했습니다.'; });
       viewCleanup = () => { active = false; cleanup?.(); };
+    }
+    if (view === 'bill' || view === 'eo') {
+      const priorCleanup = viewCleanup;
+      let active = true, cleanup = null;
+      const root = document.createElement('section');
+      root.className = 'lobbying';
+      host.querySelector('.policy-surface-inner')?.append(root);
+      loadLobbying().then(module => {
+        if (active) cleanup = module.mountPolicyLinks(root, view === 'bill' ? 'bill' : 'executive_order', String(id), go);
+      }).catch(() => { if (active) root.textContent = '관련 로비 공시 화면을 불러오지 못했습니다.'; });
+      viewCleanup = () => { active = false; cleanup?.(); priorCleanup?.(); };
     }
     host.scrollTop = 0;
   }
@@ -1432,6 +1454,7 @@
     if (view === 'congress') return POLICY_BASE_PATH;
     if (view === 'simulator') return `${POLICY_BASE_PATH}/simulator`;
     if (view === 'budget') return `${POLICY_BASE_PATH}/budget`;
+    if (view === 'lobbying' && !id) return `${POLICY_BASE_PATH}/lobbying`;
     if (view === 'executive' && id === undefined) return `${POLICY_BASE_PATH}/executive`;
     const segment = view === 'committee' ? (committeeSlugById.get(id) || id)
       : view === 'agency' ? (agencySlugById.get(id) || id)
@@ -1458,6 +1481,7 @@
     if (rest === 'executive') return { view: 'executive', id: undefined };
     if (rest === 'simulator' || rest === 'simulator/') return { view: 'simulator', id: undefined };
     if (rest === 'budget' || rest === 'budget/') return { view: 'budget', id: undefined };
+    if (rest === 'lobbying' || rest === 'lobbying/') return { view: 'lobbying', id: undefined };
     const slashIdx = rest.indexOf('/');
     const view = slashIdx < 0 ? rest : rest.slice(0, slashIdx);
     if (!VIEWS[view]) return null;
@@ -1619,7 +1643,7 @@
       // Favorites ride along rather than gating the screen: signed out it is a
       // no-op, and a failure only leaves the stars unset.
       // The simulator and 예산 need no policy API; skip the overview round trip.
-      if (!['simulator', 'budget'].includes(parseLeafFromPath(window.location.pathname)?.view)) {
+      if (!['simulator', 'budget', 'lobbying'].includes(parseLeafFromPath(window.location.pathname)?.view)) {
         [overview] = await Promise.all([loadOverview(), loadFavorites()]);
       }
     } catch (err) {
@@ -1639,7 +1663,7 @@
     // browser back/forward button landing back on this same path).
     state.trail = [];
     const leaf = parseLeafFromPath(window.location.pathname);
-    const restored = leaf && VIEWS[leaf.view] && (['executive', 'simulator', 'budget'].includes(leaf.view) ? true : leaf.id);
+    const restored = leaf && VIEWS[leaf.view] && (['executive', 'simulator', 'budget', 'lobbying'].includes(leaf.view) ? true : leaf.id);
     await go(restored ? leaf.view : (TARGET_VIEWS[target] || 'congress'), restored ? leaf.id : undefined, { replace: true });
   }
 

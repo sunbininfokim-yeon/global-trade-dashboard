@@ -1,4 +1,5 @@
 import PolicySearchTerms from './scripts/lib/policy-search-terms.js';
+import { handleLobbying } from './scripts/lobbying/api.mjs';
 import PolicyEvidence from './New for anti/policy-evidence.js';
 import { selectComtradeTotals } from './New for anti/scripts/commodity_trade/gateway/comtrade-totals.mjs';
 import { handleTradePipeline, boundedText } from './New for anti/scripts/commodity_trade/gateway/handler.mjs';
@@ -3223,6 +3224,9 @@ async function handleUsPolicy(request, env) {
     const q = url.searchParams;
 
     try {
+        if (path === 'lobbying' || path.startsWith('lobbying/')) {
+            return await handleLobbying(request, env, usFetch, usRpc);
+        }
         if (path === 'reports/quality') {
             return await kvCachedJson(env, 'us:reports:quality:v1', 60, async () => {
                 const rows = await usFetch(env, 'data_sync_state', 'select=cursor,last_successful_at&sync_resource=eq.mailing:reports:mac&limit=1');
