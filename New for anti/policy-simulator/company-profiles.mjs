@@ -1,4 +1,5 @@
 import {INDUSTRIAL_PRODUCTS,CHOSUN_SHAPED,FOOSUNG_PRODUCTS} from './refractory-solvents-evidence.mjs';
+import {SOLVENT_MANUFACTURERS,solventManufacturers} from './solvent-manufacturers.mjs';
 import { AD_CATALOG } from './antidumping-catalog.mjs';
 // Public financial context only. Never use consolidated sales as US product sales.
 export const COMPANY_DATA_CHECKED_ON = '2026-10-11';
@@ -41,12 +42,19 @@ Object.assign(COMPANY_PROFILES, Object.fromEntries([
   ['foosung-corporation','후성코퍼레이션','후성코퍼레이션(주) · 공식 제품 페이지 표기','ethyl-acetate',FOOSUNG_PRODUCTS,'제품 취급을 확인한 무역회사 프로필입니다. (주)후성 제조사와 구분합니다. 동일 도메인의 후성HDS 표기와 법인 승계는 추가 확인 대상이며 중국 제조사·수출자·원산지·개별 세율은 미확인입니다. 중국산 초산에틸 한국 조사에는 국내수입자 답변서 제출이 공식 기록되어 있으며, 중국 생산자·수출자나 개별 덤핑률 보유 법인과 구분합니다.'],
 ].map(([id,name,official_name,product,source,note])=>[id,{id,name,official_name,product,products:INDUSTRIAL_PRODUCTS.filter(p=>p.profile===id).map(p=>p.label).join(' · '),financial:null,source:{...source,checked_on:'2026-11-04'},note,ad:null,missing:[...missing],product_origin:null,product_price:null,product_quantity:null,product_variable_cost:null,product_fixed_cost:null}])));
 
+Object.assign(COMPANY_PROFILES,Object.fromEntries(SOLVENT_MANUFACTURERS.map(m=>[m.id,{
+ id:m.id,name:m.name,official_name:m.official_name,headquarters_country:m.headquarters_country,business_role:m.role,
+ product:m.products[0].product,products:m.products.map(p=>INDUSTRIAL_PRODUCTS.find(i=>i.id===p.product).label).join(' · '),
+ source:{...m.products[0].source},note:m.note,financial:null,ad:null,missing:[...missing],
+ product_origin:null,product_price:null,product_quantity:null,product_variable_cost:null,product_fixed_cost:null,
+}])));
+
 export function companyCalibration(id, product = COMPANY_PROFILES[id]?.product) {
   const p = COMPANY_PROFILES[id];
   const industry = COMPANY_INDUSTRIES.find(i => i.product === product && i.profiles.includes(id));
   const productSource = industry?.sources?.[id] || industry?.source;
   return { company_data_basis: 'user_product_inputs', firm_elasticity_basis: 'user_assumption', ...(p ? { public_company_context: structuredClone(p) } : {}),
-    ...(productSource ? { selected_product_source: { product, url: productSource, checked_on: industry.checked_on || p.source?.checked_on || '2026-10-12' } } : {}) };
+    ...(productSource ? { selected_product_source: { product, url: productSource, checked_on: industry.source_checks?.[id] || industry.checked_on || p.source?.checked_on || '2026-10-12' } } : {}) };
 }
 
 // Discovery groups are not AD scope determinations. Only case_id groups have
@@ -58,7 +66,12 @@ export const INDUSTRY_FAMILIES = [
   { id: 'auto', label: '자동차·부품' }, {id:'refractories',label:'내화재·세라믹'},
 ];
 export const COMPANY_INDUSTRIES = [
-  ...INDUSTRIAL_PRODUCTS.map(p=>({id:p.id,family:p.family,label:p.label,product:p.id,description:p.family==='refractories'?'성분·결합·형상별 사건 범위 확인':'취급 용제 · 수입국별 사건 구분',case_id:null,profiles:[p.profile],source:p.source.url,checked_on:p.checked_on})),
+  ...INDUSTRIAL_PRODUCTS.map(p=>{const makers=solventManufacturers(p.id);return {
+    id:p.id,family:p.family,label:p.label,product:p.id,description:p.family==='refractories'?'성분·결합·형상별 사건 범위 확인':'제조·취급 기업 · 수입국별 사건 구분',case_id:null,
+    profiles:[...new Set([p.profile,...makers.map(m=>m.id)])],source:p.source.url,checked_on:p.checked_on,
+    sources:Object.fromEntries(makers.map(m=>[m.id,m.products.find(x=>x.product===p.id).source.url])),
+    source_checks:Object.fromEntries(makers.map(m=>[m.id,m.products.find(x=>x.product===p.id).source.checked_on])),
+  };}),
   { id: 'transformer', family: 'power', label: '변압기', product: 'transformer', description: '한국산 대형 전력용 변압기', case_id: 'A-580-867', profiles: ['ls-electric', 'hyosung'] },
   { id: 'switchgear', family: 'power', label: '차단기·배전기기', product: 'switchgear', description: '차단기·배전반 등 전력기기', case_id: null, profiles: ['ls-electric', 'hyosung'] },
   { id: 'cable', family: 'cables', label: '전력 케이블', product: 'power-cable', description: '초고압 전력 케이블 · 사양별 분류 필요', case_id: null, profiles: ['ls-cable', 'taihan'] },

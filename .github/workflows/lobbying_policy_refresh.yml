@@ -1,0 +1,83 @@
+name: Refresh lobbying policy data
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/lobbying/**'
+      - 'New for anti/policy-lobbying/**'
+      - 'New for anti/policy.js'
+      - '_worker.js'
+      - 'supabase/migrations/*lobbying*'
+      - '.github/workflows/lobbying_policy_refresh.yml'
+  schedule:
+    - cron: '29 */4 * * *'
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Source to resume. No country, client or industry intake filter.'
+        type: choice
+        options: [all, fara, lda, text]
+        default: all
+
+permissions:
+  contents: read
+
+# DB streams have renewable leases too. This collector never commits generated
+# assets: the existing Worker reads the same DB, so no data-commit deploy chain.
+concurrency:
+  group: lobbying-policy-refresh
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python3 -m unittest discover -s scripts/lobbying/tests -v
+      - run: node --test scripts/lobbying/tests/api.test.mjs
+      - run: node --check 'New for anti/policy-lobbying/view.mjs'
+  collect:
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [fara, lda, text]
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      LDA_API_KEY: ${{ secrets.LDA_API_KEY }}
+      LOBBYING_DB_BUDGET_BYTES: '6442450944'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF text extractor
+        if: matrix.source == 'text'
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Resume all-source collection
+        if: inputs.source == '' || inputs.source == 'all' || inputs.source == matrix.source
+        env:
+          LOBBYING_CACHE: ${{ runner.temp }}/lobbying-source
+        run: >-
+          python3 scripts/lobbying/sync.py
+          --source "${{ matrix.source }}"
+          --cache-dir "$LOBBYING_CACHE"
+          --batches 12 --batch-size 250 --pages 200 --pdfs 100
+      - name: Retain raw source receipts and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lobbying-${{ matrix.source }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/lobbying-source/
+          if-no-files-found: ignore
+          retention-days: 30

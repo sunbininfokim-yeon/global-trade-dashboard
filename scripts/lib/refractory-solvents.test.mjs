@@ -9,8 +9,8 @@ import {AD_CATALOG} from '../../New for anti/policy-simulator/antidumping-catalo
 import {mountAntidumping,selectAntidumping,antidumpingMarkup} from '../../New for anti/policy-simulator/antidumping-view.mjs';
 import {REMEDY_MONITOR_CATALOG} from '../../New for anti/policy-simulator/remedy-monitor-catalog.mjs';
 
-test('two source-backed companies expose three refractory and ten separate solvent products, without invented business inputs',()=>{
- assert.equal(INDUSTRIAL_PRODUCTS.length,13);
+test('source-backed companies expose three refractory and twelve separate solvent products, without invented business inputs',()=>{
+ assert.equal(INDUSTRIAL_PRODUCTS.length,15);
  for(const p of INDUSTRIAL_PRODUCTS){const group=COMPANY_INDUSTRIES.find(g=>g.product===p.id),firm=COMPANY_PROFILES[p.profile];assert.equal(group.case_id,null);assert.ok(group.profiles.includes(p.profile));assert.equal(firm.financial,null);assert.equal(firm.ad,null);assert.equal(firm.product_origin,null);assert.equal(firm.product_price,null);assert.equal(companyADLink(p.profile,p.id),null);assert.equal(companyCalibration(p.profile,p.id).selected_product_source.checked_on,p.checked_on||'2026-11-04');assert.equal(PRODUCTS[p.id].hts,'');assert.deepEqual(policyOptions(p.id,'CHN'),[]);assert.deepEqual(policyOptions(p.id,'KOR'),[]);}
  assert.match(COMPANY_PROFILES['foosung-corporation'].note,/제조사와 구분/);
 });

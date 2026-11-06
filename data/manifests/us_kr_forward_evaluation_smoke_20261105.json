@@ -1,0 +1,65 @@
+{
+  "status": "implementation_and_replay_verified_not_live_performance",
+  "base_commit": "99c8960c7",
+  "primary_model_id": "115ddb42c8c8449b63c57c35fe7642d22f9af3f2fe84def467bebd30ed976d07",
+  "comparison_id": "69b110020c932a1e21d82e0824415598a20917115c34994e9dff3589e07815ea",
+  "unchanged_primary_files": {
+    "us_kr_direction_engine.py": true,
+    "models/shadow/us_kr_preopen_20261022_v1.json": true
+  },
+  "replay_primary_results_equal_previous_runner": true,
+  "replay_status": "retrospective_replay",
+  "replay_eligible_for_primary_evaluation": false,
+  "replay_created_no_first_or_live_attempts": true,
+  "comparison_training": {
+    "outcome_cutoff": "2026-10-22",
+    "input_hashes": {
+      "board": "e6553d27059d2f2202c3d7a09e0cb73953febfba1ce59abd5524c156852c1956",
+      "prices": "6dca13fc39ec11f19b36e94e71d70b16988d01cf84ae84b1cd6a5dc0e74d92a0",
+      "chain": "e59077cd0f27f5ec5a252701de196b4433cf8f8ad87c1634448de4e350015a9d",
+      "us": "5ce8dc867fb90821f8182321ed76d9bf8d89e139ee8f3af5f67fd57086d1bcb7"
+    },
+    "board_source_commit": "4187fd41d2c1724f6d3a174a081115ffe53e38ed",
+    "cohort_counts": {
+      "005930": {
+        "n_base": 1372,
+        "n_calibration": 99
+      },
+      "000660": {
+        "n_base": 1384,
+        "n_calibration": 99
+      },
+      "KOSPI": {
+        "n_base": 1561,
+        "n_calibration": 101
+      }
+    }
+  },
+  "actual_outcome_collection": {
+    "range": [
+      "2026-10-29",
+      "2026-10-30"
+    ],
+    "including_prior_close": true,
+    "rows_per_ticker": {
+      "005930": 3,
+      "000660": 3,
+      "KOSPI": 3
+    },
+    "errors": []
+  },
+  "validation": {
+    "market_microstructure_unittest": {
+      "run": 250,
+      "failures": 0,
+      "errors": 0
+    },
+    "UI_contract": "passed"
+  },
+  "activation": {
+    "workflow_changes_in_this_branch": false,
+    "UI_changes_in_this_branch": false,
+    "public_data_changes_in_this_branch": false,
+    "post_close_evaluator_workflow": "Claude Code handoff; not connected by this branch"
+  }
+}
