@@ -1,4 +1,5 @@
-/* World balance for wheat, corn and soybeans on the trade view.
+/* World balance for wheat, corn, soybeans, sugar, palm oil and coffee on the
+ * trade view.
  *
  * The two stat boxes become last season's world production and USDA's
  * outlook for this one (the biggest exporter is already the first bar in the
@@ -8,11 +9,12 @@
  * weather risks taken from the crop monitor's stage calls.
  */
 (() => {
-    const VIEWS = ['wheat', 'corn', 'soybeans'];
+    const VIEWS = ['wheat', 'corn', 'soybeans', 'sugar', 'palm_oil', 'coffee'];
     const MAX_WEATHER = 6;
     const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    // 천 t -> 백만 t
-    const mt = (kt) => (kt / 1000).toLocaleString('ko-KR', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+    // PSD thousands -> millions, in the crop's unit (coffee: 60-kg bags).
+    let unit = '백만 t';
+    const mt = (kt) => `${(kt / 1000).toLocaleString('ko-KR', { maximumFractionDigits: 1, minimumFractionDigits: 1 })}${unit}`;
     const pct = (v) => (v == null ? '' : `<span style="color:${v >= 0 ? '#86efac' : '#fdba74'}">${v >= 0 ? '+' : ''}${v.toFixed(1)}%</span>`);
     let pending;
     let generation = 0;
@@ -26,7 +28,12 @@
             [data-grain] .gb-risk.ref { color:#94a3b8; border-left-color:rgba(148,163,184,0.4); }
             [data-grain] .gb-risk .why { display:block; font-size:12px; color:#94a3b8; margin-top:2px; }
             [data-grain] .gb-tag { font-size:11px; padding:1px 6px; border-radius:8px; margin-right:6px; background:rgba(251,146,60,0.18); color:#fdba74; }
-            [data-grain] .gb-risk.ref .gb-tag { background:rgba(148,163,184,0.15); color:#cbd5e1; }`;
+            [data-grain] .gb-risk.ref .gb-tag { background:rgba(148,163,184,0.15); color:#cbd5e1; }
+            [data-grain] details.gb-risks > summary { list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px; margin-top:10px; border-radius:8px; background:rgba(251,146,60,0.10); border:1px solid rgba(251,146,60,0.25); font-size:13px; color:#e2e8f0; }
+            [data-grain] details.gb-risks > summary::-webkit-details-marker { display:none; }
+            [data-grain] details.gb-risks > summary .chev { color:#fdba74; transition:transform .15s; }
+            [data-grain] details.gb-risks[open] > summary .chev { transform:rotate(90deg); }
+            [data-grain] details.gb-risks > summary .hint { font-size:12px; color:#94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; }`;
         document.head.appendChild(css);
     }
 
@@ -55,8 +62,8 @@
         const vt = document.getElementById('top-exporter');
         if (lv) { lv.textContent = `${c.prev.season} 세계 생산`; lv.title = `USDA PSD · ${c.release}`; }
         if (lt) { lt.textContent = `${c.current.season} 예상 생산 (USDA)`; lt.title = `USDA PSD · ${c.release}`; }
-        if (vv) vv.textContent = `${mt(c.prev.production_kt)}백만 t`;
-        if (vt) vt.innerHTML = `${mt(c.current.production_kt)}백만 t <span style="font-size:13px;">${pct(c.current.change_pct)}</span>`;
+        if (vv) vv.textContent = mt(c.prev.production_kt);
+        if (vt) vt.innerHTML = `${mt(c.current.production_kt)} <span style="font-size:13px;">${pct(c.current.change_pct)}</span>`;
     }
 
     const TAG = { supply: '공급', stocks: '재고', weather: '날씨' };
@@ -104,15 +111,17 @@
         const shown = [...other, ...weather.slice(0, MAX_WEATHER)];
         const t = c.weather_tally || {};
         const more = weather.length > MAX_WEATHER ? `<div class="stock-note">날씨 불리 판정 ${weather.length - MAX_WEATHER}곳 더 (작황 모니터)</div>` : '';
-        const producers = (c.producers || []).slice(0, 6).map((p) => `<div class="gb-line"><span>${esc(p.country_ko)} <span class="stock-note">${p.share_pct}%</span></span><span>${mt(p.production_kt)}백만 t ${pct(p.change_pct)}</span></div>`).join('');
+        const producers = (c.producers || []).slice(0, 6).map((p) => `<div class="gb-line"><span>${esc(p.country_ko)} <span class="stock-note">${p.share_pct}%</span></span><span>${mt(p.production_kt)} ${pct(p.change_pct)}</span></div>`).join('');
         return `<p class="section-title">세계 수급 · ${esc(c.label_ko)} ${esc(cur.season)}</p>
             <div class="gb-line"><span>기말재고율</span><span>${cur.stocks_to_use_pct}% <span class="stock-note">5년 평균 ${cur.stocks_to_use_5y_avg_pct}%</span></span></div>
-            <div class="gb-line"><span>세계 수출</span><span>${mt(cur.exports_kt)}백만 t</span></div>
-            <div class="gb-line"><span>기말재고</span><span>${mt(cur.ending_stocks_kt)}백만 t</span></div>
-            <p class="trade-rank-group-head" style="margin-top:10px;">주요 리스크</p>
-            ${shown.length ? shown.map(riskHtml).join('') : '<div class="stock-note">눈에 띄는 리스크 없음</div>'}
-            ${more}
-            <div class="stock-note">생육 중인 산지 날씨 판정: 불리 ${t.unfavorable ?? 0} · 보통 ${t.neutral ?? 0} · 유리 ${t.favorable ?? 0}</div>
+            <div class="gb-line"><span>세계 수출</span><span>${mt(cur.exports_kt)}</span></div>
+            <div class="gb-line"><span>기말재고</span><span>${mt(cur.ending_stocks_kt)}</span></div>
+            ${shown.length ? `<details class="gb-risks">
+                <summary><span>주요 리스크 <b>${c.risks.length}</b>건</span><span class="hint">${esc(shown.slice(0, 2).map((r) => r.text_ko).join(' · '))}</span><span class="chev">▸</span></summary>
+                ${shown.map(riskHtml).join('')}
+                ${more}
+                <div class="stock-note">생육 중인 산지 날씨 판정: 불리 ${t.unfavorable ?? 0} · 보통 ${t.neutral ?? 0} · 유리 ${t.favorable ?? 0}</div>
+            </details>` : '<div class="stock-note" style="margin-top:10px;">주요 리스크: 눈에 띄는 것 없음</div>'}
             ${priceCheckHtml(c.price_check)}
             ${igcHtml(c.igc)}
             <p class="trade-rank-group-head" style="margin-top:10px;">주요 생산국 (전년 대비)</p>
@@ -133,6 +142,7 @@
         if (token !== generation || currentCommodity !== crop) return;
         const c = doc?.crops?.[crop];
         if (!c) return;
+        unit = c.unit === 'kbag60' ? '백만 포대(60kg)' : '백만 t';
         // A focused country rewrote the boxes for its own routes; leave them.
         if (typeof tradeFocusCountry === 'undefined' || !tradeFocusCountry) setStats(c);
         const card = host?.querySelector('.trade-focus-card');

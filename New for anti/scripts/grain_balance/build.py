@@ -1,5 +1,6 @@
 """
-World balance for wheat, corn and soybeans (USDA PSD), and the main risks.
+World balance for wheat, corn, soybeans, sugar, palm oil and coffee (USDA
+PSD), and the main risks.
 
 Usage: python3 scripts/grain_balance/build.py           # fetch PSD, write
        python3 scripts/grain_balance/build.py apply     # rebuild from the slice
@@ -42,6 +43,8 @@ OUT = os.path.join(DATA, "grain_balance_v1.json")
 ZIPS = [
     "https://apps.fas.usda.gov/psdonline/downloads/psd_grains_pulses_csv.zip",
     "https://apps.fas.usda.gov/psdonline/downloads/psd_oilseeds_csv.zip",
+    "https://apps.fas.usda.gov/psdonline/downloads/psd_sugar_csv.zip",
+    "https://apps.fas.usda.gov/psdonline/downloads/psd_coffee_csv.zip",
 ]
 PSD_URL = "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery"
 IGC_URL = "https://www.igc.int/en/gmr_summary.aspx"
@@ -49,9 +52,14 @@ IGC_WORD = {"wheat": "wheat", "corn": "maize", "soybeans": "soyabean"}
 UP = {"rose", "gained", "increased", "climbed", "advanced", "firmed", "rallied", "jumped"}
 DOWN = {"dropped", "slumped", "eased", "fell", "declined", "decreased", "lost", "retreated", "slipped"}
 ATTRS = ["Production", "Exports", "Ending Stocks", "Domestic Consumption"]
+# PSD names some of these differently per commodity (sugar especially).
+ATTR_ALIASES = {"Total Sugar  Production": "Production", "Total Sugar Production": "Production",
+                "Human Dom. Consumption": "Domestic Consumption"}
 
 # IMF monthly world prices (via FRED) and the month each marketing year starts.
-PRICE_IDS = {"wheat": ("PWHEAMTUSDM", 6), "corn": ("PMAIZMTUSDM", 9), "soybeans": ("PSOYBUSDM", 9)}
+PRICE_IDS = {"wheat": ("PWHEAMTUSDM", 6), "corn": ("PMAIZMTUSDM", 9), "soybeans": ("PSOYBUSDM", 9),
+             "sugar": ("PSUGAISAUSDM", 10), "palm_oil": ("PPOILUSDM", 10),
+             "coffee": ("PCOFFOTMUSDM", 10)}
 FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
 BAND_PCT = 10.0   # stocks-to-use vs its 5-season average, same fixed band as the palm check
 
@@ -60,7 +68,15 @@ CROPS = {
     "wheat": ("Wheat", "밀", {"winter_wheat", "spring_wheat", "wheat"}),
     "corn": ("Corn", "옥수수", {"corn", "corn_safrinha"}),
     "soybeans": ("Oilseed, Soybean", "대두", {"soy", "soybeans"}),
+    "sugar": ("Sugar, Centrifugal", "설탕", {"sugarcane"}),
+    "palm_oil": ("Oil, Palm", "팜유", set()),
+    "coffee": ("Coffee, Green", "커피", {"coffee"}),
 }
+# PSD units: 1000 t, except coffee in 1000 60-kg bags.
+UNITS = {"coffee": "kbag60"}
+# China's stocks are held back from trade for grains; elsewhere the world
+# figure is the headline.
+EX_CHINA = {"wheat", "corn", "soybeans"}
 SUPPLY_DROP_PCT = -5.0
 SUPPLY_MIN_SHARE = 3.0   # % of world output; smaller producers are noise here
 TOP_PRODUCERS = 8
@@ -73,6 +89,9 @@ COUNTRY_KO = {
     "Egypt": "이집트", "Nigeria": "나이지리아", "Bolivia": "볼리비아", "Uruguay": "우루과이",
     "Ethiopia": "에티오피아", "Serbia": "세르비아", "Philippines": "필리핀", "Vietnam": "베트남",
     "Tanzania": "탄자니아", "Uzbekistan": "우즈베키스탄", "Morocco": "모로코",
+    "Thailand": "태국", "Malaysia": "말레이시아", "Colombia": "콜롬비아", "Honduras": "온두라스",
+    "Guatemala": "과테말라", "Peru": "페루", "Uganda": "우간다", "Cote d'Ivoire": "코트디부아르",
+    "Papua New Guinea": "파푸아뉴기니", "Japan": "일본", "Korea, South": "한국",
 }
 
 
@@ -82,6 +101,7 @@ def log(msg):
 
 def fetch():
     parts = []
+    attrs = set(ATTRS) | set(ATTR_ALIASES)
     for url in ZIPS:
         req = urllib.request.Request(url, headers={"User-Agent": "grain-balance/1.0"})
         with urllib.request.urlopen(req, timeout=600) as r:
@@ -89,9 +109,10 @@ def fetch():
         name = next(n for n in z.namelist() if n.endswith(".csv"))
         df = pd.read_csv(z.open(name), encoding="latin-1", low_memory=False)
         commodities = [c[0] for c in CROPS.values()]
-        parts.append(df[df.Commodity_Description.isin(commodities)
-                        & df.Attribute_Description.isin(ATTRS)
-                        & (df.Market_Year >= 1995)])
+        part = df[df.Commodity_Description.isin(commodities) & (df.Market_Year >= 1995)]
+        for c, g in part.groupby("Commodity_Description"):
+            log(f"{c} attributes: {sorted(g.Attribute_Description.unique())}")
+        parts.append(part[part.Attribute_Description.isin(attrs)])
     out = pd.concat(parts, ignore_index=True)[
         ["Commodity_Description", "Country_Name", "Market_Year", "Calendar_Year",
          "Month", "Attribute_Description", "Value"]]
@@ -100,6 +121,46 @@ def fetch():
     out.to_csv(SLICE, index=False)
     log(f"{len(out)} rows -> {SLICE}")
     return out
+
+
+def normalize(df):
+    df = df.copy()
+    df["Attribute_Description"] = df["Attribute_Description"].replace(ATTR_ALIASES)
+    return df
+
+
+def palm_risks():
+    """Palm has no stage calendar; its weather call is the one each palm
+    forecast publishes (weather_conditions)."""
+    import glob
+    label = {}
+    try:
+        with open(os.path.join(DATA, "climate_registry_v1.json"), encoding="utf-8") as f:
+            for c in json.load(f).get("countries", {}).values():
+                label[c.get("data_file", "")] = c.get("label_ko", "")
+    except OSError:
+        pass
+    risks, tally = [], {"unfavorable": 0, "neutral": 0, "favorable": 0}
+    for path in sorted(glob.glob(os.path.join(DATA, "*_yield_forecast.json"))):
+        try:
+            with open(path, encoding="utf-8") as f:
+                regions = json.load(f).get("regions", {})
+        except (OSError, ValueError):
+            continue
+        for key, e in regions.items():
+            wc = e.get("weather_conditions") or {}
+            if not key.endswith("_palm_oil") or wc.get("verdict") not in tally:
+                continue
+            tally[wc["verdict"]] += 1
+            if wc["verdict"] != "unfavorable":
+                continue
+            country = label.get(os.path.basename(path), key.split("_")[0])
+            risks.append({"kind": "weather", "country_ko": country, "region_ko": "",
+                          "crop_ko": "팜유", "season": e.get("season"),
+                          "reason": [wc.get("reason_ko", "")],
+                          "reference_only": wc.get("history_check") == "unmatched",
+                          "text_ko": f"{country} 팜유: 날씨 불리"})
+    return risks, tally
 
 
 def world(g):
@@ -246,11 +307,11 @@ def crop_block(key, g, release):
     if stu.loc[cur] < stu_avg * 0.95:
         risks.append({"kind": "stocks",
                       "text_ko": f"세계 기말재고율 {stu.loc[cur]:.1f}% · 5년 평균 {stu_avg:.1f}%보다 낮음"})
-    wx, tally = weather_risks(stage_crops)
+    wx, tally = palm_risks() if key == "palm_oil" else weather_risks(stage_crops)
 
     return {
         "label_ko": label,
-        "unit": "kt",
+        "unit": UNITS.get(key, "kt"),
         "release": release,
         "url": PSD_URL,
         "prev": {"season": season_label(prev), "production_kt": round(p_prev),
@@ -306,9 +367,15 @@ def fred_series(sid):
 def fetch_prices():
     frames = []
     for key, (sid, _) in PRICE_IDS.items():
-        f = fred_series(sid)
+        try:
+            f = fred_series(sid)
+        except Exception as exc:  # one series down must not drop the rest
+            log(f"price {sid} unavailable ({exc})")
+            continue
         f["crop"] = key
         frames.append(f)
+    if not frames:
+        raise RuntimeError("no price series")
     out = pd.concat(frames, ignore_index=True)
     out["price"] = pd.to_numeric(out["price"], errors="coerce")
     out = out.dropna().sort_values(["crop", "date"])
@@ -360,8 +427,10 @@ def price_check(key, g, prices):
         return w["Ending Stocks"] / w["Domestic Consumption"] * 100
 
     out = {}
-    for basis, frame in (("ex_china", g[~g.Country_Name.isin(["China", "World"])]),
-                         ("world", g[g.Country_Name != "World"])):
+    bases = [("world", g[g.Country_Name != "World"])]
+    if key in EX_CHINA:
+        bases.insert(0, ("ex_china", g[~g.Country_Name.isin(["China", "World"])]))
+    for basis, frame in bases:
         stu = stu_table(frame)
         rows = []
         for y in stu.index:
@@ -406,6 +475,7 @@ def main(argv):
             log(f"PSD fetch failed ({exc}); using {SLICE}")
             df = pd.read_csv(SLICE)
     release = release_of(df)
+    df = normalize(df)
     prices = None
     if argv[:1] != ["apply"]:
         try:
@@ -417,9 +487,16 @@ def main(argv):
     crops = {}
     for key, (commodity, _, _) in CROPS.items():
         g = df[df.Commodity_Description == commodity]
-        crops[key] = crop_block(key, g, release)
+        if g.empty:
+            log(f"{key}: no PSD rows ({commodity})")
+            continue
+        try:
+            crops[key] = crop_block(key, g, release)
+        except (KeyError, ValueError) as exc:
+            log(f"{key}: skipped ({exc!r}); attributes {sorted(g.Attribute_Description.unique())}")
+            continue
         c = crops[key]
-        if prices is not None:
+        if prices is not None and (prices.crop == key).any():
             pc = price_check(key, g, prices)
             if pc:
                 c["price_check"] = pc
@@ -434,6 +511,8 @@ def main(argv):
     igc = igc_summary()
     if igc:
         for key, c in crops.items():
+            if key not in igc["crops"]:
+                continue
             c["igc"] = {"report_date": igc["report_date"], "url": igc["url"],
                         **igc["crops"].get(key, {})}
         log(f"IGC {igc['report_date']}: " + ", ".join(
