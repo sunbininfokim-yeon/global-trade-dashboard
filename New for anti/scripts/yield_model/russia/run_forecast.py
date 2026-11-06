@@ -196,6 +196,13 @@ def main():
         payload["season"] = shown.pop()
 
     payload["skipped"] = {k: w for k, w in skipped}
+    # Corn and soy have no model: their panel entries come from
+    # russia/psd_crops.py (USDA outlook + stage-call points).
+    extra = os.path.join(os.path.dirname(os.path.abspath(__file__)), "training", "psd_regions.json")
+    if os.path.exists(extra):
+        with open(extra, encoding="utf-8") as f:
+            for key, entry in json.load(f).items():
+                payload["regions"].setdefault(key, entry)
     if not payload["regions"]:
         log("nothing to write")
         return 1
