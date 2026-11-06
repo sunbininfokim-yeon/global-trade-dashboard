@@ -42,12 +42,12 @@ export function renderContext(value,now=new Date()) {
   const links=ids=>ids.map(id=>{const s=sources.get(id);return `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a>`;}).join(' · ');
   const issue=r=>`<article class="bf-context-issue"><strong>${esc(r.title)}</strong><p>${esc(r.summary)}</p><p class="bf-muted">근거 기준일 ${esc(r.as_of)} · ${links(r.sources)}</p></article>`;
   return `<h3>FY${d.fiscal_year} 운영 근거 · 임시예산(CR)</h3>
-    <p><strong>${state==='reviewed'?'최근 검토에서 확인한 임시 운영 근거':'현황 재확인 필요 · 아래는 검토 기록'}</strong> · 검토 ${esc(d.reviewed_on)}</p>
+    <p><strong>${state==='reviewed'?'최근 검토에서 확인한 임시 운영 근거':'현황 재확인 필요 · 아래는 검토 기록'}</strong> · 검토 ${esc(d.reviewed_on)} · 재검토 기한 ${esc(d.review_valid_until)}</p>
     <div class="bf-context-grid"><div><span class="bf-muted">일반 적용 기간 · 미국 날짜</span><strong>${esc(f.starts_on)} ~ ${esc(f.general_deadline)}</strong></div><div><span class="bf-muted">법률 · 기한 조항</span><strong>P.L. ${esc(f.public_law_number)}</strong><span>${esc(f.deadline_locator)}</span></div></div>
     <p>${esc(f.scope)}</p><p><strong>왜 임시예산인가?</strong> ${esc(f.why)}</p>
     <p class="bf-muted">${esc(p.as_of)} 집계: 정규 세출법 ${p.total_bills}개 중 하원 통과 ${p.house_passed}개 · 상원 통과 ${p.senate_passed}개. ${esc(p.note)} ${links(p.sources)}</p>
     <p class="bf-muted">정규 세출법은 주로 재량지출의 예산권한을 정합니다. 아래 전체 세출에는 의무지출과 이자도 포함되므로 동일한 총액으로 비교하지 않습니다.</p>
-    <p class="bf-message">이 법률은 현재 운영의 근거입니다. 아래에서 선택하는 연간 정부안·과거 집행 실적과 금액을 합산하지 않습니다. 임시예산 기간 전체 금액은 미집계입니다.</p>
+    <p class="bf-message">${state==='reviewed'?'검토 시 확인한 운영 근거입니다.':'검토 당시의 운영 근거입니다. 현재 효력·후속 법률은 재확인이 필요합니다.'} 아래에서 선택하는 연간 정부안·과거 집행 실적과 금액을 합산하지 않습니다. 임시예산 기간 전체 금액은 미집계입니다.</p>
     <details><summary>본예산 협상 쟁점과 CR 합의 내용</summary>
       <h4>출처에서 미해결로 확인된 쟁점</h4>${d.issues.filter(r=>r.state==='unresolved_at_source').map(issue).join('')}
       <h4>CR에서 일단 조치한 사항</h4>${d.issues.filter(r=>r.state==='addressed_in_cr').map(issue).join('')}
