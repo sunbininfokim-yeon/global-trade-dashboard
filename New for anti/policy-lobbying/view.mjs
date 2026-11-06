@@ -1,6 +1,6 @@
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const TOPICS={supply_chain:'공급망',mining:'광산·핵심광물',agriculture:'농산물',semiconductors:'반도체',data_centers:'데이터센터',steel:'철강'};
-const TEXT={pending:'본문 수집 대기',extracted:'본문 확보',ocr_required:'OCR 필요',source_unavailable:'본문 접근 실패',not_applicable:'등록 정보'};
+const TEXT={pending:'본문 수집 대기',extracted:'본문 확보',ocr_required:'OCR 필요',source_unavailable:'본문 미확보',not_applicable:'등록 정보'};
 const STATUS={pending:'대기',running:'실행 중',partial:'수집 진행 중',complete_pass:'목록 한 차례 순회 완료',source_unavailable:'원천 접근 실패'};
 export async function prepare(){
   if(!document.querySelector('link[data-lobbying-css]')){
@@ -39,10 +39,10 @@ export function mount(root,{id,navigate}={}){
         <select name="country" aria-label="국가"><option value="">모든 국가</option><option value="KR">한국</option><option value="JP">일본</option><option value="CN">중국 본토</option><option value="TW">대만</option><option value="HK">홍콩</option><option value="US">미국</option></select>
         <select name="topic" aria-label="산업"><option value="">모든 산업·주제</option>${Object.entries(TOPICS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select><button>검색</button></form>
         <div data-results role="status">신고 목록을 불러오는 중입니다.</div><div class="lobby-pages"><button type="button" data-page="prev">이전</button><span data-page-label></span><button type="button" data-page="next">다음</button></div>`;
-      const loadAux=async()=>{const results=await Promise.allSettled([get('coverage'),get('cases')]);if(!active)return;
-        root.querySelector('[data-coverage]').innerHTML=results[0].status==='fulfilled'?`<p>저장된 목록 ${(results[0].value.counts||[]).reduce((s,x)=>s+Number(x.count),0).toLocaleString()}건 · 본문·검수 완료와는 별도입니다.</p><ul>${(results[0].value.streams||[]).map(s=>`<li>${esc(s.stream)}: ${esc(STATUS[s.status]||s.status)}${s.expected_count!=null?' · 원천 목록 '+Number(s.expected_count).toLocaleString()+'건':''} · 최근 성공 ${esc(s.last_success_at||'없음')}${s.last_error?' · 접근 오류':''}</li>`).join('')}</ul>`:'수집 상태를 불러오지 못했습니다.';
-        root.querySelector('[data-cases]').innerHTML=results[1].status==='fulfilled'?results[1].value.items.map(c=>`<button type="button" data-case="${esc(c.case_id)}">사안: ${esc(c.title)}</button>`).join(''):'';
-      };
+      const loadAux=()=>Promise.allSettled([
+        get('coverage').then(data=>{if(active)root.querySelector('[data-coverage]').innerHTML=`<p>저장된 목록 ${(data.counts||[]).reduce((s,x)=>s+Number(x.count),0).toLocaleString()}건 · 본문·검수 완료와는 별도입니다.</p><ul>${(data.streams||[]).map(s=>`<li>${esc(s.stream)}: ${esc(STATUS[s.status]||s.status)}${s.expected_count!=null?' · 원천 목록 '+Number(s.expected_count).toLocaleString()+'건':''} · 최근 성공 ${esc(s.last_success_at||'없음')}${s.last_error?' · 접근 오류':''}</li>`).join('')}</ul>`;}).catch(()=>{if(active)root.querySelector('[data-coverage]').textContent='수집 상태를 불러오지 못했습니다.';}),
+        get('cases').then(data=>{if(active)root.querySelector('[data-cases]').innerHTML=data.items.map(c=>`<button type="button" data-case="${esc(c.case_id)}">사안: ${esc(c.title)}</button>`).join('');})
+      ]);
       await Promise.all([loadList(),loadAux()]);
     }catch(error){if(active&&error.name!=='AbortError')root.innerHTML=`<p role="alert">${esc(error.message)}</p><button type="button" data-home>신고 검색으로</button>`;}
   };
