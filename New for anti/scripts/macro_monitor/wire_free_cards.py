@@ -4,6 +4,7 @@
     python3 wire_free_cards.py            # read enabled entries, update the pack and the status file
     python3 wire_free_cards.py --probe    # read every entry that names a reader (disabled ones too), print, write nothing
     python3 wire_free_cards.py --check    # validate the registry only
+    python3 wire_free_cards.py --only USA/srf_usage,USA/sofr_iorb   # just these entries (adding a card by hand)
 
 A card that cannot be read keeps what the pack has and its failure is counted in
 config/free_cards_status_v1.json. Keyless. Exit status 1 when an enabled entry failed.
@@ -70,6 +71,9 @@ def main(argv: list[str]) -> int:
         return 1
     if "--probe" in argv:
         return probe(entries)
+    if "--only" in argv:
+        keep = set(argv[argv.index("--only") + 1].split(","))
+        entries = [e for e in entries if f"{e['iso3']}/{e['id']}" in keep]
 
     text = PACK.read_text(encoding="utf-8")
     pack = json.loads(text)
