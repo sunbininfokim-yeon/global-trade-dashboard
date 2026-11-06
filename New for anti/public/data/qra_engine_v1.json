@@ -1,7 +1,7 @@
 {
   "schema_version": "qra-engine-v1",
   "engine_version": "0.3.0",
-  "generated_at": "2026-11-05T00:27:11Z",
+  "generated_at": "2026-11-06T00:25:46Z",
   "from_year": 2020,
   "source": {
     "kind": "treasury_archives_plus_pdf_tables",
@@ -29,9 +29,14 @@
     "tga": {
       "source": "fiscaldata.dts.operating_cash_balance",
       "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/operating-cash-balance",
-      "asof": "2026-11-03",
-      "latest_bn": 938.208,
+      "asof": "2026-11-04",
+      "latest_bn": 936.248,
       "series": [
+        {
+          "date": "2026-11-04",
+          "tga_mn": 936248.0,
+          "tga_bn": 936.248
+        },
         {
           "date": "2026-11-03",
           "tga_mn": 938208.0,
@@ -326,14 +331,9 @@
           "date": "2026-08-11",
           "tga_mn": 997330.0,
           "tga_bn": 997.33
-        },
-        {
-          "date": "2026-08-10",
-          "tga_mn": 966851.0,
-          "tga_bn": 966.851
         }
       ],
-      "fetched_at": "2026-11-05T00:27:07Z"
+      "fetched_at": "2026-11-06T00:25:43Z"
     },
     "customs": {
       "source": "fiscaldata.mts.mts_table_3.Customs Duties",
@@ -486,33 +486,33 @@
           "fytd_usd": 7297256976.25
         }
       ],
-      "fetched_at": "2026-11-05T00:27:08Z",
+      "fetched_at": "2026-11-06T00:25:43Z",
       "note_ko": "음수 월 = 관세 환급이 수입을 상회(순유출)."
     },
     "debt_transactions": {
       "source": "fiscaldata.dts.public_debt_transactions",
       "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/public-debt-transactions",
-      "asof": "2026-11-03",
-      "latest_bn": 45.404,
+      "asof": "2026-11-04",
+      "latest_bn": -0.011,
       "components": [
         {
           "id": "bills",
           "label_ko": "T-Bills",
           "kind": "bill",
-          "issues_mn": 315296.0,
-          "redemptions_mn": 269876.0,
-          "net_mn": 45420.0,
-          "value": 45.42,
+          "issues_mn": -8.0,
+          "redemptions_mn": 0.0,
+          "net_mn": -8.0,
+          "value": -0.008,
           "unit": "bn_usd"
         },
         {
           "id": "notes",
           "label_ko": "Notes",
           "kind": "coupon",
-          "issues_mn": -16.0,
+          "issues_mn": -3.0,
           "redemptions_mn": 0.0,
-          "net_mn": -16.0,
-          "value": -0.016,
+          "net_mn": -3.0,
+          "value": -0.003,
           "unit": "bn_usd"
         },
         {
@@ -530,16 +530,16 @@
         {
           "kind": "bill",
           "label_ko": "T-Bills",
-          "issues_bn": 315.296,
-          "redemptions_bn": 269.876,
-          "net_bn": 45.42
+          "issues_bn": -0.008,
+          "redemptions_bn": 0.0,
+          "net_bn": -0.008
         },
         {
           "kind": "coupon",
           "label_ko": "Notes",
-          "issues_bn": -0.016,
+          "issues_bn": -0.003,
           "redemptions_bn": 0.0,
-          "net_bn": -0.016
+          "net_bn": -0.003
         },
         {
           "kind": "coupon",
@@ -550,14 +550,14 @@
         }
       ],
       "note_ko": "당일 시중성(Marketable) 발행−상환 순증($B). Bills=무이표, Notes/Bonds=이표.",
-      "fetched_at": "2026-11-05T00:27:09Z"
+      "fetched_at": "2026-11-06T00:25:44Z"
     },
     "debt_outstanding": {
       "source": "fiscaldata.od.debt_to_penny",
-      "asof": "2026-11-03",
-      "latest_tn": 40.547,
+      "asof": "2026-11-04",
+      "latest_tn": 40.55,
       "public_tn": 32.765,
-      "intragov_tn": 7.782,
+      "intragov_tn": 7.785,
       "components": [
         {
           "id": "public",
@@ -568,11 +568,11 @@
         {
           "id": "intragov",
           "label_ko": "정부내 보유",
-          "value": 7.782,
+          "value": 7.785,
           "unit": "tn_usd"
         }
       ],
-      "fetched_at": "2026-11-05T00:27:09Z"
+      "fetched_at": "2026-11-06T00:25:44Z"
     },
     "mts": {
       "source": "fiscaldata.mts.mts_table_2",
@@ -843,14 +843,14 @@
         }
       ],
       "note_ko": "월간 On-Budget. 적자는 음수. Fiscal Data MTS Table 2.",
-      "fetched_at": "2026-11-05T00:27:11Z"
+      "fetched_at": "2026-11-06T00:25:46Z"
     }
   },
   "tga_vs_qra": {
-    "tga_actual_bn": 938.208,
+    "tga_actual_bn": 936.248,
     "qra_end_cash_bn": 950.0,
-    "gap_bn": -11.792,
-    "tga_asof": "2026-11-03"
+    "gap_bn": -13.752,
+    "tga_asof": "2026-11-04"
   },
   "latest": {
     "id": "2026-Q4",
