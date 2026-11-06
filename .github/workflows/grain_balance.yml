@@ -1,0 +1,78 @@
+name: Monthly world grain balance
+
+# USDA PSD world production / stocks for wheat, corn and soybeans plus the
+# risk list the trade view shows (scripts/grain_balance/build.py). Runs after
+# the monthly WASDE (around the 10th-12th) and again after the weekly stage
+# build so the weather risks stay current.
+#
+# On a pull request touching the builder it runs the same refresh and commits
+# the outputs to the PR branch (PSD is only reachable from Actions).
+on:
+  schedule:
+    - cron: '20 19 14 * *'
+    - cron: '20 19 * * 2'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/grain_balance/**'
+      - '.github/workflows/grain_balance.yml'
+
+jobs:
+  refresh:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas
+      - name: Build world grain balance
+        run: python3 "New for anti/scripts/grain_balance/build.py"
+
+      - name: Probe IGC summary (PR only)
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          curl -sL -m 60 -A "Mozilla/5.0" https://www.igc.int/en/gmr_summary.aspx -o igc.html -w "%{http_code}\n" || true
+          python3 - <<'PY'
+          import re, html
+          t = open("igc.html", encoding="utf-8", errors="replace").read()
+          t = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?s)<(script|style).*?</\1>", " ", t)))
+          t = re.sub(r"\s+", " ", t)
+          i = t.lower().find("wheat")
+          print(len(t)); print(t[max(0, i - 300): i + 2500])
+          PY
+          rm -f igc.html
+
+      - name: Commit to the pull request branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/grain_balance/psd_world.csv" \
+                  "New for anti/public/data/grain_balance_v1.json"
+          git commit -m "chore: world grain balance on the PR branch" || exit 0
+          git push origin "HEAD:$GITHUB_HEAD_REF"
+
+      # A separate step with a bare `git push`, so tools/ops/check_deploy_chain.py
+      # sees that this workflow commits to main and deploy.yml must chain it.
+      - name: Commit and Push Changes
+        if: github.event_name != 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/grain_balance/psd_world.csv" \
+                  "New for anti/public/data/grain_balance_v1.json"
+          git commit -m "chore: world grain balance refresh" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing onto latest main and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push

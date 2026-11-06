@@ -1,0 +1,251 @@
+"""
+World balance for wheat, corn and soybeans (USDA PSD), and the main risks.
+
+Usage: python3 scripts/grain_balance/build.py           # fetch PSD, write
+       python3 scripts/grain_balance/build.py apply     # rebuild from the slice
+
+The trade view's stat boxes show last season's world production and USDA's
+outlook for this one; the card under them lists the risks. Each risk is a
+number someone else published or the crop monitor already computed:
+
+  weather   regions whose stage calls are unfavorable for a crop still
+            in the field (harvested seasons are already in USDA's numbers)
+            (stage_conditions_v1.json); calls whose past record did not
+            match the harvest are kept but marked as reference only
+  supply    big producers USDA has down 5% or more on last season
+  stocks    world ending stocks to use below its 5-season average
+
+Writes
+  scripts/grain_balance/psd_world.csv     the PSD slice (committed)
+  public/data/grain_balance_v1.json
+"""
+
+import io
+import json
+import os
+import sys
+import urllib.request
+import zipfile
+from datetime import datetime, timezone
+
+import pandas as pd
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+DATA = os.path.normpath(os.path.join(HERE, "..", "..", "public", "data"))
+SLICE = os.path.join(HERE, "psd_world.csv")
+OUT = os.path.join(DATA, "grain_balance_v1.json")
+ZIPS = [
+    "https://apps.fas.usda.gov/psdonline/downloads/psd_grains_pulses_csv.zip",
+    "https://apps.fas.usda.gov/psdonline/downloads/psd_oilseeds_csv.zip",
+]
+PSD_URL = "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery"
+ATTRS = ["Production", "Exports", "Ending Stocks", "Domestic Consumption"]
+
+# Trade view key -> (PSD commodity, Korean label, stage_conditions crops)
+CROPS = {
+    "wheat": ("Wheat", "밀", {"winter_wheat", "spring_wheat", "wheat"}),
+    "corn": ("Corn", "옥수수", {"corn", "corn_safrinha"}),
+    "soybeans": ("Oilseed, Soybean", "대두", {"soy", "soybeans"}),
+}
+SUPPLY_DROP_PCT = -5.0
+TOP_PRODUCERS = 8
+COUNTRY_KO = {
+    "United States": "미국", "China": "중국", "Brazil": "브라질", "European Union": "EU",
+    "India": "인도", "Russia": "러시아", "Argentina": "아르헨티나", "Ukraine": "우크라이나",
+    "Canada": "캐나다", "Australia": "호주", "Kazakhstan": "카자흐스탄", "Pakistan": "파키스탄",
+    "Turkey": "튀르키예", "Turkiye": "튀르키예", "Paraguay": "파라과이", "Indonesia": "인도네시아",
+    "Mexico": "멕시코", "South Africa": "남아공", "Iran": "이란", "United Kingdom": "영국",
+    "Egypt": "이집트", "Nigeria": "나이지리아", "Bolivia": "볼리비아", "Uruguay": "우루과이",
+    "Ethiopia": "에티오피아", "Serbia": "세르비아", "Philippines": "필리핀", "Vietnam": "베트남",
+    "Tanzania": "탄자니아", "Uzbekistan": "우즈베키스탄", "Morocco": "모로코",
+}
+
+
+def log(msg):
+    print(f"[grain-balance] {msg}", flush=True)
+
+
+def fetch():
+    parts = []
+    for url in ZIPS:
+        req = urllib.request.Request(url, headers={"User-Agent": "grain-balance/1.0"})
+        with urllib.request.urlopen(req, timeout=600) as r:
+            z = zipfile.ZipFile(io.BytesIO(r.read()))
+        name = next(n for n in z.namelist() if n.endswith(".csv"))
+        df = pd.read_csv(z.open(name), encoding="latin-1", low_memory=False)
+        commodities = [c[0] for c in CROPS.values()]
+        parts.append(df[df.Commodity_Description.isin(commodities)
+                        & df.Attribute_Description.isin(ATTRS)
+                        & (df.Market_Year >= 2010)])
+    out = pd.concat(parts, ignore_index=True)[
+        ["Commodity_Description", "Country_Name", "Market_Year", "Calendar_Year",
+         "Month", "Attribute_Description", "Value"]]
+    if out.empty:
+        raise SystemExit("PSD returned no rows")
+    out.to_csv(SLICE, index=False)
+    log(f"{len(out)} rows -> {SLICE}")
+    return out
+
+
+def world(g):
+    """World totals by year: PSD's own World row when present, else the sum."""
+    names = set(g.Country_Name)
+    w = g[g.Country_Name == "World"] if "World" in names else g[g.Country_Name != "World"]
+    return w.pivot_table(index="Market_Year", columns="Attribute_Description",
+                         values="Value", aggfunc="sum").sort_index()
+
+
+def season_label(y):
+    return f"{y}/{str(y + 1)[-2:]}"
+
+
+def region_names():
+    """stage_conditions region key -> (country label, region label)."""
+    out = {}
+    try:
+        with open(os.path.join(DATA, "climate_registry_v1.json"), encoding="utf-8") as f:
+            reg = json.load(f)
+    except OSError:
+        return out
+    for c in reg.get("countries", {}).values():
+        for r in c.get("regions", []):
+            for k in [r.get("key")] + list(r.get("crops_region_keys") or []):
+                if k:
+                    out.setdefault(k, (c.get("label_ko", ""), r.get("label_ko", k)))
+    return out
+
+
+def weather_risks(crops):
+    try:
+        with open(os.path.join(DATA, "stage_conditions_v1.json"), encoding="utf-8") as f:
+            sc = json.load(f)
+    except OSError:
+        return [], {}
+    names = region_names()
+    risks, tally = [], {"unfavorable": 0, "neutral": 0, "favorable": 0}
+    for key, entries in sc.get("regions", {}).items():
+        for e in entries:
+            if e.get("crop") not in crops:
+                continue
+            # A season already harvested is in the numbers, not a risk.
+            if not any(s.get("state") in ("in_progress", "upcoming")
+                       for s in e.get("stages", [])):
+                continue
+            ov = e.get("overall") or {}
+            v = ov.get("verdict")
+            if v in tally:
+                tally[v] += 1
+            if v != "unfavorable":
+                continue
+            bad = [s["name_ko"] for s in e.get("stages", [])
+                   if s.get("status") == "unfavorable"]
+            country, region = names.get(key, ("", key))
+            risks.append({
+                "kind": "weather",
+                "country_ko": country,
+                "region_ko": region,
+                "crop_ko": e.get("label_ko", ""),
+                "season": e.get("season"),
+                "stages_ko": bad,
+                "reason": [s.get("reason_ko", "") for s in e.get("stages", [])
+                           if s.get("status") == "unfavorable"][:2],
+                "reference_only": ov.get("history_check") == "unmatched",
+                "text_ko": f"{country} {region}: {'·'.join(bad)} 불리",
+            })
+    # Calls whose past record matched the harvest come first.
+    risks.sort(key=lambda r: (r["reference_only"], r["country_ko"]))
+    return risks, tally
+
+
+def crop_block(key, g, release):
+    commodity, label, stage_crops = CROPS[key]
+    w = world(g)
+    w = w[w["Production"].notna()]
+    cur = int(w.index.max())
+    prev = cur - 1
+    stu = (w["Ending Stocks"] / w["Domestic Consumption"] * 100).round(1)
+    stu_avg = float(stu.loc[cur - 5:cur - 1].mean())
+    p_cur, p_prev = float(w.loc[cur, "Production"]), float(w.loc[prev, "Production"])
+
+    by = g[(g.Country_Name != "World") & (g.Attribute_Description == "Production")
+           & g.Market_Year.isin([prev, cur])].pivot_table(
+        index="Country_Name", columns="Market_Year", values="Value", aggfunc="sum")
+    by = by.dropna().sort_values(cur, ascending=False)
+    producers = []
+    for name, row in by.head(TOP_PRODUCERS).iterrows():
+        chg = (row[cur] / row[prev] - 1) * 100 if row[prev] else None
+        producers.append({"country": name, "country_ko": COUNTRY_KO.get(name, name),
+                          "production_kt": round(float(row[cur])),
+                          "prev_kt": round(float(row[prev])),
+                          "change_pct": None if chg is None else round(chg, 1),
+                          "share_pct": round(float(row[cur]) / p_cur * 100, 1)})
+
+    risks = []
+    for p in producers:
+        if p["change_pct"] is not None and p["change_pct"] <= SUPPLY_DROP_PCT:
+            risks.append({"kind": "supply", "country_ko": p["country_ko"],
+                          "text_ko": f"{p['country_ko']} 생산 {p['change_pct']:+.0f}% "
+                                     f"(세계의 {p['share_pct']:.0f}%)"})
+    if stu.loc[cur] < stu_avg * 0.95:
+        risks.append({"kind": "stocks",
+                      "text_ko": f"세계 기말재고율 {stu.loc[cur]:.1f}% · 5년 평균 {stu_avg:.1f}%보다 낮음"})
+    wx, tally = weather_risks(stage_crops)
+
+    return {
+        "label_ko": label,
+        "unit": "kt",
+        "release": release,
+        "url": PSD_URL,
+        "prev": {"season": season_label(prev), "production_kt": round(p_prev),
+                 "ending_stocks_kt": round(float(w.loc[prev, "Ending Stocks"])),
+                 "stocks_to_use_pct": float(stu.loc[prev])},
+        "current": {"season": season_label(cur), "production_kt": round(p_cur),
+                    "change_pct": round((p_cur / p_prev - 1) * 100, 1),
+                    "exports_kt": round(float(w.loc[cur, "Exports"])),
+                    "ending_stocks_kt": round(float(w.loc[cur, "Ending Stocks"])),
+                    "stocks_to_use_pct": float(stu.loc[cur]),
+                    "stocks_to_use_5y_avg_pct": round(stu_avg, 1)},
+        "producers": producers,
+        "risks": risks + wx,
+        "weather_tally": tally,
+    }
+
+
+def release_of(df):
+    last = df.sort_values(["Calendar_Year", "Month"]).iloc[-1]
+    return f"{int(last.Calendar_Year)}년 {int(last.Month)}월 USDA WASDE"
+
+
+def main(argv):
+    if argv[:1] == ["apply"]:
+        df = pd.read_csv(SLICE)
+    else:
+        try:
+            df = fetch()
+        except Exception as exc:  # keep the committed slice
+            log(f"PSD fetch failed ({exc}); using {SLICE}")
+            df = pd.read_csv(SLICE)
+    release = release_of(df)
+    crops = {}
+    for key, (commodity, _, _) in CROPS.items():
+        g = df[df.Commodity_Description == commodity]
+        crops[key] = crop_block(key, g, release)
+        c = crops[key]
+        log(f"{key}: {c['prev']['season']} {c['prev']['production_kt']:,} -> "
+            f"{c['current']['season']} {c['current']['production_kt']:,} kt, "
+            f"{len(c['risks'])} risks")
+    payload = {
+        "schema_version": 1,
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "source_ko": f"{release} (PSD) · 날씨 리스크는 작황 모니터 생육 단계 판정",
+        "crops": crops,
+    }
+    with open(OUT, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    log(f"-> {OUT}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
