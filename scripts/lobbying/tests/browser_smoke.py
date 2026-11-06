@@ -15,12 +15,19 @@ with sync_playwright() as p:
     results = []
     for width in (1440, 390):
         page = browser.new_page(viewport={'width':width,'height':1000})
+        # A stalled coverage query must not prevent reviewed cases from loading.
+        held=[]
+        page.route('**/api/us/lobbying/coverage',lambda route: held.append(route))
         errors=[]
         page.on('pageerror', lambda e: errors.append(str(e)))
         page.goto('http://127.0.0.1:8769/policy/us/lobbying')
         page.get_by_role('heading', name='로비·사안', exact=True).wait_for()
         page.locator('[data-results] table').wait_for()
         assert page.locator('tbody tr').count() == 25
+        page.locator('[data-case]').wait_for(timeout=5000)
+        for route in held:
+            route.fulfill(status=503,content_type='application/json',body='{"error":"fixture coverage delayed"}')
+        page.unroute('**/api/us/lobbying/coverage')
         page.locator('[data-page="next"]').click()
         page.wait_for_function("document.querySelector('[data-page-label]').textContent === '2'")
         page.locator('[name="q"]').fill('not_a_real_company_739274')

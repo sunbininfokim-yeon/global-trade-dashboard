@@ -104,7 +104,13 @@ def run_stream(db, name, work):
         if isinstance(size, int) and size > budget:
             raise RuntimeError('Storage budget reached; ingestion held with cursor preserved')
         result = work(owner, state or {})
-        db.rpc('lobby_finish_stream', p_stream=name, p_owner=owner, p_error=None)
+        # A committed batch can contain individual extraction failures. Keep
+        # those visible in coverage as well as in the Actions exit code.
+        error = (f"{result['failed_count']} record(s) failed; committed records and cursor preserved"
+                 if result.get('failed_count') else None)
+        db.rpc('lobby_finish_stream', p_stream=name, p_owner=owner, p_error=error)
+        if error:
+            result = {**result, 'status': 'source_unavailable', 'error': error}
         return {'stream': name, **result}
     except Exception as error:
         message = f'{type(error).__name__}: {str(error)[:200]}'

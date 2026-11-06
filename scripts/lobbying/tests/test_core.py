@@ -8,7 +8,7 @@ import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from core import fara_record, fara_records, lda_record, policy_refs, read_bulk, source_date, tags
-from sync import lda_sync, next_lda_url
+from sync import lda_sync, next_lda_url, run_stream
 
 
 def filing(uid='00000000-0000-0000-0000-000000000001', description='General trade; no specific legislation'):
@@ -86,6 +86,20 @@ class SourceContractTests(unittest.TestCase):
 
 
 class DurableCursorTests(unittest.TestCase):
+    def test_partial_record_failure_remains_visible_after_commits(self):
+        class DB:
+            def __init__(self): self.finish = None
+            def rpc(self, name, **args):
+                if name == 'lobby_claim_stream': return {}
+                if name == 'lobby_database_bytes': return 0
+                if name == 'lobby_finish_stream': self.finish = args
+        db = DB()
+        result = run_stream(db, 'fara:text', lambda owner, state:
+                            {'status': 'partial', 'processed': 100, 'failed_count': 1})
+        self.assertEqual(result['processed'], 100)
+        self.assertEqual(result['status'], 'source_unavailable')
+        self.assertIn('1 record(s) failed', db.finish['p_error'])
+
     def test_schema_failure_preserves_last_committed_next_link(self):
         class DB:
             def __init__(self): self.state={};self.events=[]
