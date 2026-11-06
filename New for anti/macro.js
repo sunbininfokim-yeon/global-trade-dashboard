@@ -646,6 +646,115 @@ const mmBarSeries = (dates, values, opts = {}) => {
     </div>`;
 };
 
+// Detail panels a pipeline attaches to a card (ind.panels): grouped bars, a signed stack with a
+// balance line, lines, or a ranked list (bank by bank). One renderer for all of them, so a new
+// breakdown is data, not code. First used by the Korean bank credit cards (kr_bank_credit.py).
+const MM_PANEL_COLORS = ['#38bdf8', '#f97316', '#a78bfa', '#34d399', '#fb7185', '#facc15'];
+const mmPanelNum = (v, unit) => (Number.isFinite(v)
+    ? `${v.toLocaleString(undefined, { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 })}${unit === '%' ? '%' : unit ? ` ${unit}` : ''}`
+    : '—');
+
+const mmPanelView = (p) => {
+    if (!p) return '<p class="fin-note">패널 데이터가 없습니다.</p>';
+    const note = p.note_ko ? `<p class="fin-note">${finEsc(p.note_ko)}</p>` : '';
+    if (p.type === 'hbar') {
+        const rows = p.rows || [];
+        const hi = Math.max(...rows.map((r) => Math.abs(r.value) || 0), 1e-9);
+        return `
+        <p class="mm-view-title">${finEsc(p.asof || '')} 기준 · 높은 순</p>
+        <div class="mm-panel-hbars">${rows.map((r) => `
+            <div class="mm-panel-hrow">
+                <span class="mm-panel-hlabel">${finEsc(r.label)}</span>
+                <span class="mm-panel-htrack"><span class="mm-panel-hfill" style="width:${(Math.abs(r.value) / hi * 100).toFixed(1)}%"></span></span>
+                <span class="mm-panel-hval">${mmPanelNum(r.value, p.unit)}</span>
+                <span class="mm-panel-hsub">${finEsc(r.sub || '')}</span>
+            </div>`).join('')}</div>${note}`;
+    }
+
+    const dates = p.dates || [];
+    const series = p.series || [];
+    const line = p.line && (p.line.values || []).some(Number.isFinite) ? p.line : null;
+    const n = dates.length;
+    if (!n || !series.length) return `<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>${note}`;
+
+    // y range: stacks add up per sign; bars and lines take every value
+    let vals = [];
+    if (p.type === 'stack') {
+        for (let i = 0; i < n; i += 1) {
+            let pos = 0, neg = 0;
+            series.forEach((s) => { const v = s.values[i]; if (Number.isFinite(v)) { if (v >= 0) pos += v; else neg += v; } });
+            vals.push(pos, neg);
+        }
+    } else {
+        series.forEach((s) => vals.push(...s.values.filter(Number.isFinite)));
+    }
+    if (line) vals.push(...line.values.filter(Number.isFinite));
+    let lo = Math.min(...vals, p.type === 'lines' ? Infinity : 0), hi = Math.max(...vals, p.type === 'lines' ? -Infinity : 0);
+    if (!Number.isFinite(lo) || !Number.isFinite(hi)) return `<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>${note}`;
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.08; lo -= p.type === 'lines' ? pad : (lo < 0 ? pad : 0); hi += pad;
+
+    const plotW = MM_W - MM_L - MM_R;
+    const slot = plotW / n;
+    const cx = (i) => MM_L + slot * (i + 0.5);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const zero = sy(Math.max(lo, Math.min(0, hi)));
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const step = Math.max(1, Math.ceil(n / 8));
+
+    let marks = '';
+    if (p.type === 'bars') {
+        const k = series.length, bw = Math.max(slot * 0.8 / k, 1);
+        series.forEach((s, j) => s.values.forEach((v, i) => {
+            if (!Number.isFinite(v)) return;
+            const x = cx(i) - slot * 0.4 + j * bw, y = sy(v);
+            marks += `<rect x="${x.toFixed(1)}" y="${Math.min(y, zero).toFixed(1)}" width="${(bw * 0.9).toFixed(1)}" height="${Math.max(Math.abs(zero - y), 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % 6]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
+        }));
+    } else if (p.type === 'stack') {
+        const bw = Math.max(slot * 0.62, 1);
+        for (let i = 0; i < n; i += 1) {
+            let pos = 0, neg = 0;
+            series.forEach((s, j) => {
+                const v = s.values[i];
+                if (!Number.isFinite(v) || v === 0) return;
+                const from = v >= 0 ? pos : neg, to = from + v;
+                if (v >= 0) pos = to; else neg = to;
+                const y1 = sy(Math.max(from, to)), y2 = sy(Math.min(from, to));
+                marks += `<rect x="${(cx(i) - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(y2 - y1, 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % 6]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
+            });
+        }
+    } else {
+        series.forEach((s, j) => {
+            const d = s.values.map((v, i) => (Number.isFinite(v) ? `${cx(i).toFixed(1)},${sy(v).toFixed(1)}` : null)).filter(Boolean);
+            if (d.length) marks += `<polyline points="${d.join(' ')}" fill="none" stroke="${MM_PANEL_COLORS[j % 6]}" stroke-width="2"/>`;
+        });
+    }
+    if (line) {
+        const d = line.values.map((v, i) => (Number.isFinite(v) ? `${cx(i).toFixed(1)},${sy(v).toFixed(1)}` : null)).filter(Boolean);
+        marks += `<polyline points="${d.join(' ')}" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="${p.type === 'stack' ? '' : '4 3'}"/>`;
+        line.values.forEach((v, i) => { if (Number.isFinite(v)) marks += `<circle cx="${cx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.6" fill="#e2e8f0"><title>${finEsc(`${dates[i]} ${line.label} ${mmPanelNum(v, p.unit)}`)}</title></circle>`; });
+    }
+
+    const all = [...series.map((s, j) => ({ ...s, color: MM_PANEL_COLORS[j % 6] })), ...(line ? [{ ...line, color: '#e2e8f0' }] : [])];
+    const lastIdx = (s) => { for (let i = s.values.length - 1; i >= 0; i -= 1) if (Number.isFinite(s.values[i])) return i; return -1; };
+    const legend = all.map((s) => {
+        const i = lastIdx(s), prev = i > 0 ? s.values[i - 1] : null;
+        const chg = Number.isFinite(prev) && i >= 0 ? s.values[i] - prev : null;
+        return `<span class="mm-panel-key"><i style="background:${s.color}"></i>${finEsc(s.label)} <b>${i >= 0 ? mmPanelNum(s.values[i], p.unit) : '—'}</b>${Number.isFinite(chg) ? `<em>${chg >= 0 ? '+' : ''}${chg.toFixed(2)}</em>` : ''}</span>`;
+    }).join('');
+
+    return `
+    <p class="mm-view-title">${finEsc(dates[n - 1] || '')} 기준 · 직전 분기 대비</p>
+    <div class="mm-panel-legend">${legend}</div>
+    <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="${finEsc(p.label || '')}">
+        ${ticks.map((t) => `<line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+            <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
+        ${marks}
+        ${p.type !== 'lines' ? `<line x1="${MM_L}" y1="${zero.toFixed(1)}" x2="${MM_W - MM_R}" y2="${zero.toFixed(1)}" class="mm-zero"/>` : ''}
+        ${dates.map((d, i) => (i % step === 0 || i === n - 1 ? `<text x="${cx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick" text-anchor="middle">${finEsc(d)}</text>` : '')).join('')}
+    </svg>${note}`;
+};
+
 // Bars or a line. A price, a yield or an index is a continuous level -- a line is honest. A growth
 // rate, an inflation print or a flow (trade balance, jobs added, exports in won) is one number per
 // release period: a line between two months draws values that were never measured, and the sign
@@ -2045,6 +2154,8 @@ const mmViewsFor = (ind) => {
     if (!daily && !hasBalanceSheet && !hasQeQt && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
         views.push({ id: 'history', label: '추이' });
     }
+    // Pipeline-attached breakdowns (부문별, 연체 흐름, 은행별, ...), one tab each.
+    (ind.panels || []).forEach((p) => views.push({ id: `panel:${p.id}`, label: p.label }));
     // 5/20/60/120/240-day moving averages are a daily-chart convention
     // (Korean HTS terminology) and meaningless on the 5-year monthly bars
     // every other indicator uses -- a 240-period average over monthly data
@@ -2218,6 +2329,7 @@ const mmChartDrawer = () => {
     else if (view === 'contrib') body = mmContribView(ind.contrib);
     else if (view === 'contrib_ind') body = mmContribView(ind.contrib_industry, '산업별');
     else if (view === 'official') body = mmOfficialView(ind);
+    else if (view.startsWith('panel:')) body = mmPanelView((ind.panels || []).find((p) => `panel:${p.id}` === view));
     else if (view === 'components') body = mmComponentsView(ind, ind.components_note_ko || (ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.'));
     else {
         const src = modeSeries || ind;
