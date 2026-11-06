@@ -47,7 +47,8 @@ LETF 품질 게이트/짧은 리밸런싱 데이터 학습 차단/LP 합성계�
 `New for anti/scripts/market_microstructure/FLOW_HORIZONS_POSITION_RESEARCH_20261106.md`에
 실행 명령·모델·정확한 입력 기준·결과와 Cursor/Claude 지시를 정리했다.
 산출은 `data/manifests/flow_horizons_research_20261105.{json,md}`와
-`flow_horizons_predictions_20261105.jsonl.gz`. 날짜는11/5 수집 스냅샷 기준이며 분석 완료 정리는11/6이다.
+`flow_horizons_predictions_20261105.jsonl.gz`. 파일명 날짜는 마지막 원천일11/5 기준이다.
+최초190행은11/5에, 확장520행은11/6 01:48 UTC에 실제 수집했으며 원래 시각을 보존했다.
 
 Cursor는 보유율과 순매수 수량을 같이 유지하고 원천 분모/기업행동 기준을 확인한다.
 원본 API 응답 `/tmp/foreign-ownership-long-raw-20261105.json`과
