@@ -40,7 +40,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "New for anti/scripts/grain_balance/psd_world.csv" "New for anti/scripts/grain_balance/prices.csv" \
+          git add "New for anti/scripts/grain_balance" \
                   "New for anti/public/data/grain_balance_v1.json"
           git commit -m "chore: world grain balance on the PR branch" || exit 0
           git push origin "HEAD:$GITHUB_HEAD_REF"
@@ -52,7 +52,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "New for anti/scripts/grain_balance/psd_world.csv" "New for anti/scripts/grain_balance/prices.csv" \
+          git add "New for anti/scripts/grain_balance" \
                   "New for anti/public/data/grain_balance_v1.json"
           git commit -m "chore: world grain balance refresh" || exit 0
           for i in 1 2 3; do

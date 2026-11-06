@@ -268,19 +268,53 @@ def crop_block(key, g, release):
     }
 
 
+WORKER_FRED = ("https://global-trade-dashboard.sunbin-info-kim.workers.dev/api/macro"
+               "?source=fred&limit=10000&series_id={}")
+
+
+def fred_series(sid):
+    """FRED CSV, retried; GitHub's runners often time out there, so the
+    dashboard Worker's FRED route is the fallback (curl: the Worker answers
+    Python's default client with 403). Same as macro_monitor."""
+    import subprocess
+    import time
+    last = None
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(FRED_CSV.format(sid), headers={"User-Agent": "grain-balance/1.0"})
+            with urllib.request.urlopen(req, timeout=40) as r:
+                f = pd.read_csv(io.BytesIO(r.read()))
+            f.columns = ["date", "price"]
+            return f
+        except Exception as exc:
+            last = exc
+            time.sleep(2 * (attempt + 1))
+    proc = subprocess.run(["curl", "-sS", "-L", "-m", "60", "-A", "grain-balance/1.0",
+                           WORKER_FRED.format(sid)], capture_output=True, check=False)
+    if proc.returncode != 0 or not proc.stdout:
+        raise RuntimeError(f"FRED {sid}: {last}; worker rc={proc.returncode}")
+    doc = json.loads(proc.stdout)
+    if isinstance(doc, dict) and "body" in doc:
+        doc = doc["body"]
+    obs = [(o["date"][:10], o["value"]) for o in (doc or {}).get("observations") or []
+           if o.get("value") not in (None, "", ".")]
+    if not obs:
+        raise RuntimeError(f"FRED {sid}: {last}; worker returned nothing")
+    return pd.DataFrame(obs, columns=["date", "price"])
+
+
 def fetch_prices():
     frames = []
     for key, (sid, _) in PRICE_IDS.items():
-        req = urllib.request.Request(FRED_CSV.format(sid), headers={"User-Agent": "grain-balance/1.0"})
-        with urllib.request.urlopen(req, timeout=120) as r:
-            f = pd.read_csv(io.BytesIO(r.read()))
-        f.columns = ["date", "price"]
+        f = fred_series(sid)
         f["crop"] = key
         frames.append(f)
     out = pd.concat(frames, ignore_index=True)
     out["price"] = pd.to_numeric(out["price"], errors="coerce")
-    out.dropna().to_csv(PRICES, index=False)
-    return out.dropna()
+    out = out.dropna().sort_values(["crop", "date"])
+    out.to_csv(PRICES, index=False)
+    log(f"{len(out)} price rows -> {PRICES}")
+    return out
 
 
 def price_check(key, g, prices):
