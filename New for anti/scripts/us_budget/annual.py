@@ -343,6 +343,12 @@ def build(tables, manifest, sources, completed, monthly):
             for item in disc + detail:
                 tree_check(item)
     budget[f"finance{complete['fy']}"] = complete["finance"]
+    # Keep the completed-year Table 6 detail when the live feed rolls to the
+    # next FY's partial months. Never infer BEA/mandatory categories from it.
+    budget['agency_actuals'] = {str(complete['fy']): dict(
+        fy=complete['fy'], through=completed['publication_date'][:7], complete=True,
+        outlays=complete['outlays'], agencies=complete['agencies'],
+        source='Treasury MTS Table 6', vintage=completed['publication_date'])}
     sums, detail = accounts(tables["accounts"], fy)
     agency_details[str(fy)] = agency_accounts(tables["accounts"], fy, True)
     disc = programs(tables["discretionary"], DISC, fy, True)

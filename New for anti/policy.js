@@ -127,7 +127,7 @@
 
   // 예산 (PR #758 handoff): static public data, loads only on entry.
   let budgetPromise = null;
-  const loadBudget = () => (budgetPromise ||= import('/policy-budget/view.mjs?v=2')
+  const loadBudget = () => (budgetPromise ||= import('/policy-budget/view.mjs?v=4')
     .then(async (module) => { await module.prepare(); return module; })
     .catch((err) => { budgetPromise = null; throw err; }));
 
