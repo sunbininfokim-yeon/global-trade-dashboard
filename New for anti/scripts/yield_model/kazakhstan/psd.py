@@ -38,6 +38,8 @@ CROPS = {  # PSD commodity -> (region key, Korean label)
     "Wheat": ("kazakhstan_spring_wheat", "밀"),
     "Barley": ("kazakhstan_barley", "보리"),
 }
+# Further wheat points across the belt; the national yield is their label too.
+EXTRA_KEYS = {"Wheat": ["kazakhstan_wheat_north", "kazakhstan_wheat_akmola"]}
 ATTRS = ["Production", "Yield", "Area Harvested", "Exports"]
 PSD_URL = "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery"
 FIRST_YEAR = 1992
@@ -73,7 +75,6 @@ def tables(df):
 def write_training(tabs):
     os.makedirs(TRAINING, exist_ok=True)
     for c, t in tabs.items():
-        key = CROPS[c][0]
         t = t[t.index >= FIRST_YEAR]
         frame = pd.DataFrame({
             "year": t.index.astype(int),
@@ -81,8 +82,10 @@ def write_training(tabs):
             "production_kt": t["Production"],
             "area_kha": t["Area Harvested"],
         }).dropna(subset=["yield_kg_ha"])
-        frame.to_csv(os.path.join(TRAINING, f"{key}.csv"), index=False)
-        log(f"{key}: {len(frame)} seasons {frame.year.min()}-{frame.year.max()}")
+        # One national series serves every point of that crop.
+        for key in [CROPS[c][0], *EXTRA_KEYS.get(c, [])]:
+            frame.to_csv(os.path.join(TRAINING, f"{key}.csv"), index=False)
+            log(f"{key}: {len(frame)} seasons {frame.year.min()}-{frame.year.max()}")
 
 
 def outlooks(tabs, release):
