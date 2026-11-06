@@ -7,7 +7,7 @@ import unittest
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from core import fara_record, fara_records, lda_record, policy_refs, read_bulk, source_date
+from core import fara_record, fara_records, lda_record, policy_refs, read_bulk, source_date, tags
 from sync import lda_sync, next_lda_url
 
 
@@ -19,6 +19,9 @@ def filing(uid='00000000-0000-0000-0000-000000000001', description='General trad
 
 
 class SourceContractTests(unittest.TestCase):
+    def test_food_chips_are_not_semiconductors(self):
+        self.assertNotIn('semiconductors',tags('Potato chips trade and agriculture'))
+        self.assertIn('semiconductors',tags('CHIPS and Science Act incentives'))
     def test_roc_name_does_not_override_reported_taiwan(self):
         row={'Registration Number':'3988','Foreign Principal':'Republic of China MOEA',
              'Foreign Principal Registration Date':'09/26/2025','Country/Location Represented':'TAIWAN'}

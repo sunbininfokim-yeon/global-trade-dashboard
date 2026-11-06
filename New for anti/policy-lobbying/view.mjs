@@ -31,7 +31,7 @@ export function mount(root,{id,navigate}={}){
     controller?.abort();controller=new AbortController();
     try{
       if(id){const body=await get(id.startsWith('case:')?'cases/'+encodeURIComponent(id.slice(5)):'records/'+encodeURIComponent(id));if(active)root.innerHTML=id.startsWith('case:')?caseMarkup(body):detailMarkup(body);return;}
-      root.innerHTML=`<h2>로비·사안</h2><p class="lobby-note">전 국가·전 산업을 수집합니다. 아래 조건은 조회 필터입니다. 등록기관 관계 국가가 문서별 활동 국가를 뜻하지는 않습니다.</p>
+      root.innerHTML=`<h2>로비·사안</h2><p class="lobby-note">전 국가·전 산업을 수집합니다. 아래 조건은 조회 필터이며 주제 태그는 자동 분류입니다. 등록기관 관계 국가가 문서별 활동 국가를 뜻하지는 않습니다.</p>
         <details><summary>전체 수집 진행 상황</summary><div data-coverage></div></details>
         <div class="lobby-cases" data-cases></div>
         <form data-filters><input name="q" type="search" placeholder="기업·정책 원문 검색" aria-label="기업·정책 검색">

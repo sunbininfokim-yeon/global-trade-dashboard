@@ -15,7 +15,7 @@ TOPICS = {
     'supply_chain': r'\bsupply chains?\b|\breshoring\b|\bbuy america\b|\bsourcing\b',
     'mining': r'\bmining\b|\bcritical minerals?\b|\brare earths?\b|\blithium\b|\bnickel\b',
     'agriculture': r'\bagricultur\w*\b|\bfarm bill\b|\bcrop insurance\b|\bsoybeans?\b|\bfertilizers?\b',
-    'semiconductors': r'\bsemiconductors?\b|\bCHIPS\b|\bfoundr(?:y|ies)\b',
+    'semiconductors': r'\bsemiconductors?\b|\bCHIPS (?:and Science Act|Act|program|funding|incentives)\b|\bfoundr(?:y|ies)\b',
     'data_centers': r'\bdata\s*cent(?:er|re)s?\b|\bhyperscal\w*\b',
     'steel': r'\bsteel\w*\b',
 }
