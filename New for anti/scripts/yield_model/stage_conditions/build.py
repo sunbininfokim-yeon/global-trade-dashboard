@@ -452,6 +452,28 @@ def history_ko(history):
     return text
 
 
+# A call stands only where the same call matched past harvests: its seasons
+# landed above (favourable) or below (unfavourable) every other class by
+# MATCH_GAP_PCT, over at least MIN_CLASS_N seasons, and the call is not made
+# in most seasons (then it says nothing about this one).
+MIN_CLASS_N = 3
+MAX_CLASS_SHARE = 0.5
+
+
+def verdict_check(history, verdict):
+    """'matched', 'unmatched', or None (neutral call or no history)."""
+    if not history or verdict not in ("favorable", "unfavorable"):
+        return None
+    c = history["classes"]
+    mine = c.get(verdict)
+    rest = [c[v]["mean_residual_pct"] for v in c if v != verdict]
+    if not mine or not rest or mine["n"] < MIN_CLASS_N or mine["n"] > MAX_CLASS_SHARE * history["n"]:
+        return "unmatched"
+    m = mine["mean_residual_pct"]
+    ok = m < min(rest) - MATCH_GAP_PCT if verdict == "unfavorable" else m > max(rest) + MATCH_GAP_PCT
+    return "matched" if ok else "unmatched"
+
+
 # --- assemble ---------------------------------------------------------------
 
 def crop_entry(key, crop, daily, today, folder):
@@ -489,6 +511,9 @@ def crop_entry(key, crop, daily, today, folder):
             history = history_check(daily, stages, heat_c, labels, today)
         except Exception as exc:  # noqa: BLE001 -- the check is optional
             log(f"{key}/{crop['crop']}: history check failed: {exc}")
+    check = verdict_check(history, verdict)
+    if check == "unmatched":
+        reason += " · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만"
     season = (str(placed[0][0].year) if placed[0][0].year == placed[-1][1].year
               else f"{placed[0][0].year}/{str(placed[-1][1].year)[-2:]}")
     return {
@@ -497,7 +522,7 @@ def crop_entry(key, crop, daily, today, folder):
         "heat_threshold_c": heat_c,
         "stages": out_stages,
         "overall": {"verdict": verdict, "verdict_ko": LABEL_KO[verdict],
-                    "score": score, "reason_ko": reason,
+                    "score": score, "reason_ko": reason, "history_check": check,
                     "judged_stages": len(judged), "total_stages": len(out_stages)},
         "history": history, "history_ko": history_ko(history),
     }
