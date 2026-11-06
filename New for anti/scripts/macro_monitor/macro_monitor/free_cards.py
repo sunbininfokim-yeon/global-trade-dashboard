@@ -22,6 +22,7 @@ import csv
 import io
 import json
 import re
+from datetime import date
 from pathlib import Path
 from typing import Any, Callable
 
@@ -37,6 +38,9 @@ CACHE = Path(__file__).resolve().parent.parent / "config" / "free_cards_cache_v1
 CACHE_POINTS = 180                     # 15 years of months: more than any card's 10-year window
 
 CADENCES = {"monthly", "quarterly", "annual", "weekly"}
+
+ups._FORMATS.setdefault("cny_tn2", lambda v: f"{v:,.2f}조위안")
+ups._FORMATS.setdefault("jpy_tn1", lambda v: f"{v:,.1f}조엔")
 CATEGORIES = {"liquidity", "rates", "fx", "equity", "growth", "inflation"}
 
 
@@ -182,7 +186,93 @@ def read_yahoo_close(symbol: str) -> Points:
     return [(d.replace(day=1).isoformat(), v) for d, v in pts]
 
 
+FISIS_URL = "https://fisis.fss.or.kr/openapi/{api}.json?lang=kr&auth={key}&{q}"
+
+
+def _fisis(api: str, q: str) -> dict[str, Any]:
+    """One FISIS (Financial Supervisory Service) call. The server is slow and sometimes answers with
+    an HTML error page, so it is retried."""
+    import os
+    import time
+    import urllib.request
+    key = os.environ.get("FISIS_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError("FISIS_API_KEY is not set")
+    url = FISIS_URL.format(api=api, key=key, q=q)
+    last: Exception | None = None
+    for i in range(4):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=90) as r:
+                res = json.loads(r.read().decode("utf-8"))["result"]
+            if res.get("err_cd") not in ("000", None):
+                raise RuntimeError(f"FISIS {api}: {res.get('err_cd')} {res.get('err_msg')}")
+            return res
+        except RuntimeError:
+            raise
+        except Exception as exc:  # noqa: BLE001 -- retried
+            last = exc
+            time.sleep(3 * (i + 1))
+    raise RuntimeError(f"FISIS {api} failed: {str(last)[:80]}")
+
+
+_FISIS_SUMS: dict[tuple[str, str], dict[str, float]] = {}
+
+
+def _fisis_bank_sum(list_no: str, account: str) -> dict[str, float]:
+    """Sum of one account over every domestic bank FISIS lists, closed ones included (a quarter
+    before a merger counts both banks), by quarter-end month."""
+    from concurrent.futures import ThreadPoolExecutor
+    if (list_no, account) in _FISIS_SUMS:
+        return _FISIS_SUMS[(list_no, account)]
+    banks = [b["finance_cd"] for b in _fisis("companySearch", "partDiv=A").get("list") or []]
+    if len(banks) < 15:
+        raise RuntimeError(f"FISIS bank list has {len(banks)} entries")
+
+    def one(cd: str) -> list[dict[str, Any]]:
+        # FISIS refuses a span over 40 quarters; older quarters stay in the card cache.
+        y = date.today().year
+        q = f"financeCd={cd}&listNo={list_no}&accountCd={account}&term=Q&startBaseMm={y - 9}01&endBaseMm={y}12"
+        return _fisis("statisticsInfoSearch", q).get("list") or []
+
+    tot: dict[str, float] = {}
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        for rows in ex.map(one, banks):
+            for r in rows:
+                v = _num(r.get("a"))
+                if v is not None:
+                    tot[r["base_month"]] = tot.get(r["base_month"], 0.0) + v
+    if not tot:
+        raise RuntimeError(f"FISIS {list_no}/{account}: no rows")
+    _FISIS_SUMS[(list_no, account)] = tot
+    return tot
+
+
+def read_fisis(list_no: str, num: str, den: str | None = None, scale: float = 1.0) -> Points:
+    """Domestic banks in aggregate: the sum of `num` over every bank (x scale), or, with `den`,
+    sum(num) / sum(den) x 100 -- how the FSS computes its own sector ratios. Dated to the first day
+    of the quarter, like FRED's quarterly series."""
+    n = _fisis_bank_sum(list_no, num)
+    d = _fisis_bank_sum(list_no, den) if den else None
+    out = []
+    for ym, v in sorted(n.items()):
+        q = f"{ym[:4]}-{(int(ym[4:6]) - 1) // 3 * 3 + 1:02d}-01"
+        if d is None:
+            out.append((q, v * scale))
+        elif d.get(ym):
+            out.append((q, v / d[ym] * 100.0))
+    return out
+
+
+def _num(v: Any) -> float | None:
+    try:
+        return float(str(v).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return None
+
+
 CUSTOM_READERS: dict[str, Callable[..., Points]] = {
+    "fisis": read_fisis,
     "hkma": read_hkma,
     "yahoo_close": read_yahoo_close,
     "imf_pcps": read_imf_pcps,
