@@ -21,8 +21,8 @@ let MM_COUNTRY = null;          // currently opened country payload
 let MM_TAB = 'liquidity';
 let MM_CHART = null;            // { indicatorId, window }
 let MM_CPI_STRUCTURE = null;    // U.S. CPI relationship map/snapshot, loaded on demand
-let MM_CPI_CONTRIB = null;      // us_cpi_contrib_v1.json: item contributions, loaded when the tab opens
-let MM_CPI_CONTRIB_PROMISE = null;
+const MM_CPI_CONTRIB = {};      // file -> us/kr_cpi_contrib_v1.json: item contributions, loaded when the tab opens
+const MM_CPI_CONTRIB_PROMISE = {};
 let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
@@ -67,19 +67,20 @@ const mmStatementDiffFetch = async () => {
     return MM_STATEMENT_DIFF_PROMISE;
 };
 
-// us_cpi_contrib_v1.json (wire_us_cpi_contrib.py): every weighted CPI item's contribution, 25 months,
-// headline and core, MoM and YoY -- ~600 KB, so it is read only when the 기여도 tab is opened.
-const mmCpiContribFetch = () => {
-    if (!MM_CPI_CONTRIB_PROMISE) {
-        MM_CPI_CONTRIB_PROMISE = fetch('/public/data/us_cpi_contrib_v1.json', { cache: 'no-cache' })
+// us_cpi_contrib_v1.json (wire_us_cpi_contrib.py) / kr_cpi_contrib_v1.json (wire_kr_cpi_contrib.py): every
+// weighted CPI item's contribution, 25 months, headline and core, MoM and YoY -- 0.6-1.3 MB, so a file is read
+// only when its 기여도 tab is opened. The card names its file (ind.cpi_contrib.file).
+const mmCpiContribFetch = (file) => {
+    if (!MM_CPI_CONTRIB_PROMISE[file]) {
+        MM_CPI_CONTRIB_PROMISE[file] = fetch(`/${file}`, { cache: 'no-cache' })
             .then((res) => {
                 if (!res.ok) throw new Error(`기여도 데이터를 못 받았습니다 (${res.status})`);
                 return res.json();
             })
-            .then((doc) => { MM_CPI_CONTRIB = doc; if (MM_CHART) mmPaint(); return doc; })
-            .catch((err) => { MM_CPI_CONTRIB = { error: String(err.message || err) }; if (MM_CHART) mmPaint(); });
+            .then((doc) => { MM_CPI_CONTRIB[file] = doc; if (MM_CHART) mmPaint(); return doc; })
+            .catch((err) => { MM_CPI_CONTRIB[file] = { error: String(err.message || err) }; if (MM_CHART) mmPaint(); });
     }
-    return MM_CPI_CONTRIB_PROMISE;
+    return MM_CPI_CONTRIB_PROMISE[file];
 };
 
 // cb_policy_v1.json: the policy-board panels of the Bank of Korea, Bank of Japan,
@@ -1802,18 +1803,22 @@ const mmMoversView = (ind) => {
 // US CPI contributions: which parts of the basket added how many percentage points, for any of the
 // last 25 months. Three panels on one tab -- the months as stacked bars (click one to read it), the
 // eight groups as one stacked bar, and the whole hierarchy as an expandable table (or every item flat).
-const MM_CPI_GROUP_COLORS = ['#f59e0b', '#60a5fa', '#a78bfa', '#34d399', '#f472b6', '#22d3ee', '#fb7185', '#a3e635'];
+const MM_CPI_GROUP_COLORS = ['#f59e0b', '#60a5fa', '#a78bfa', '#34d399', '#f472b6', '#22d3ee', '#fb7185', '#a3e635',
+    '#fbbf24', '#818cf8', '#2dd4bf', '#e879f9'];
 
 const mmCpiName = (n) => n.name_ko || n.name;
 
 const mmCpiContribView = (ind, mode) => {
     const meta = ind.cpi_contrib || {};
-    if (!MM_CPI_CONTRIB) {
-        mmCpiContribFetch();
+    const file = meta.file || 'public/data/us_cpi_contrib_v1.json';
+    const doc = MM_CPI_CONTRIB[file];
+    if (!doc) {
+        mmCpiContribFetch(file);
         return '<p class="fin-note">기여도 데이터를 불러오는 중입니다…</p>';
     }
-    if (MM_CPI_CONTRIB.error) return `<p class="fin-note">${finEsc(MM_CPI_CONTRIB.error)}</p>`;
-    const doc = MM_CPI_CONTRIB;
+    if (doc.error) return `<p class="fin-note">${finEsc(doc.error)}</p>`;
+    // Node numbers belong to one file: opening the other country's card starts collapsed.
+    if (MM_CHART.cpiFile !== file) { MM_CHART.cpiFile = file; MM_CHART.cpiOpen = new Set(); }
     const basket = (doc.baskets || {})[meta.basket] || {};
     const months = (doc.months || []).filter((m) => basket[m] && basket[m][mode]);
     if (!months.length) return '<p class="fin-note">이 달의 기여도 자료가 없습니다.</p>';
@@ -1828,10 +1833,14 @@ const mmCpiContribView = (ind, mode) => {
     const rowsOf = (m) => ((basket[m] || {})[mode] || {}).rows || {};
     const cur = basket[month][mode];
     const rows = rowsOf(month);
-    const pp = (v, d = 2) => (Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(d)}` : '—');
+    const pp = (v, d = 2) => {
+        if (!Number.isFinite(v)) return '—';
+        const t = (Math.abs(v) < 0.5 * 10 ** -d ? 0 : v).toFixed(d);      // no "-0.00"
+        return `${v > 0 && Number(t) !== 0 ? '+' : ''}${t}`;
+    };
     const modeKo = mode === 'mom' ? '전월비' : '전년비';
 
-    // Months: stacked bars of the eight groups, positives up and negatives down.
+    // Months: stacked bars of the top-level groups (8 US, 12 Korea), positives up and negatives down.
     const W = 640, H = 170, pad = 22;
     let hi = 0, lo = 0;
     months.forEach((m) => {
@@ -1915,7 +1924,7 @@ const mmCpiContribView = (ind, mode) => {
             <button type="button" class="pf-mode-btn" data-mm-cpi-month="${months[Math.min(months.length - 1, i + 1)]}" ${i === months.length - 1 ? 'disabled' : ''}>▶</button>
             <span class="mm-cpi-sum">공표 <b>${pp(cur.published_pct)}%</b> · 항목 합계 ${pp(cur.sum_pp)}%p · 잔차 ${pp(cur.residual_pp)}%p</span>
         </div>
-        <p class="mm-view-title">월별 기여도 (막대 = 8개 대분류, 점 = 공표치 · 막대를 누르면 그 달로)</p>
+        <p class="mm-view-title">월별 기여도 (막대 = ${groups.length}개 대분류, 점 = 공표치 · 막대를 누르면 그 달로)</p>
         ${monthsSvg}
         <p class="mm-view-title">${month} 대분류 기여도 (%p)</p>
         ${strip}
@@ -1928,7 +1937,7 @@ const mmCpiContribView = (ind, mode) => {
         <div class="co-table-wrap mm-table"><table class="co-table mm-cpi-table">
             <thead><tr><th>항목</th><th>가중치</th><th>${modeKo}</th><th>기여도(%p)</th><th></th></tr></thead>
             <tbody>${body}</tbody></table></div>
-        <p class="fin-note">${finEsc(doc.method_ko || '')}${isCore ? ' 근원은 식품·가정용 에너지·자동차 연료를 뺀 품목을 근원 지수 안의 비중으로 다시 나눈 값입니다.' : ''} 가중치는 BLS 상대중요도(${finEsc(String(doc.weights_december || ''))}년 12월 기준까지). 출처: BLS.</p>`;
+        <p class="fin-note">${finEsc(doc.method_ko || '')}${isCore ? ` ${finEsc(doc.core_note_ko || '근원은 식품·가정용 에너지·자동차 연료를 뺀 품목을 근원 지수 안의 비중으로 다시 나눈 값입니다.')}` : ''} ${finEsc(doc.weights_note_ko || `가중치는 BLS 상대중요도(${doc.weights_december || ''}년 12월 기준까지). 출처: BLS.`)}</p>`;
 };
 
 // US Treasury coupon auctions: each tenor's newest result next to the change
@@ -3925,8 +3934,8 @@ const renderMacroMonitor = async () => {
             const ce = t.closest('[data-mm-cpi-expand]');
             if (ce && MM_CHART) {
                 const all = ce.getAttribute('data-mm-cpi-expand') === 'all';
-                MM_CHART.cpiOpen = new Set(all && MM_CPI_CONTRIB && MM_CPI_CONTRIB.nodes
-                    ? MM_CPI_CONTRIB.nodes.map((_, k) => k) : []);
+                const doc = MM_CPI_CONTRIB[MM_CHART.cpiFile] || {};
+                MM_CHART.cpiOpen = new Set(all && doc.nodes ? doc.nodes.map((_, k) => k) : []);
                 mmPaint();
                 return;
             }
