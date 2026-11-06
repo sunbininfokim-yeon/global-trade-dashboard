@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-11-05T10:47:55.090442+00:00",
+  "generated_at": "2026-11-06T00:10:06.178159+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,21 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 32,
-    "sources_failed": 6,
+    "sources_ok": 33,
+    "sources_failed": 5,
     "raw_items": 802,
-    "scored_items": 94,
+    "scored_items": 84,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 6,
-      "india": 2,
+      "commodity_specialist": 7,
+      "mena": 4,
+      "china": 2,
       "russia": 2,
-      "mena": 7,
-      "west": 1,
+      "india": 2,
       "turkey": 2,
+      "west": 1,
       "japan": 2,
-      "china": 1,
-      "taiwan": 1
+      "taiwan": 2
     },
     "min_importance": 0.35
   },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 167,
+      "elapsed_ms": 62,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 583,
+      "elapsed_ms": 523,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 119,
+      "elapsed_ms": 137,
       "error": null,
       "mode": "live"
     },
@@ -120,15 +120,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1385,
+      "elapsed_ms": 1419,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 20,
-      "elapsed_ms": 340,
+      "count": 0,
+      "elapsed_ms": 72,
       "error": null,
       "mode": "live"
     },
@@ -136,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 3302,
+      "elapsed_ms": 3069,
       "error": null,
       "mode": "live"
     },
@@ -144,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 717,
+      "elapsed_ms": 610,
       "error": null,
       "mode": "live"
     },
@@ -152,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 641,
+      "elapsed_ms": 626,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 145,
+      "elapsed_ms": 141,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 86,
+      "elapsed_ms": 85,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 704,
+      "elapsed_ms": 450,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 166,
+      "elapsed_ms": 61,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 375,
+      "elapsed_ms": 297,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 904,
+      "elapsed_ms": 755,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 548,
+      "elapsed_ms": 933,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 409,
+      "elapsed_ms": 388,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 522,
+      "elapsed_ms": 603,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 419,
+      "elapsed_ms": 255,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 200,
+      "elapsed_ms": 273,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 58,
+      "elapsed_ms": 99,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 164,
+      "elapsed_ms": 191,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 667,
+      "elapsed_ms": 347,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 659,
+      "elapsed_ms": 38,
       "error": null,
       "mode": "live"
     },
@@ -288,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 296,
+      "elapsed_ms": 294,
       "error": null,
       "mode": "live"
     },
@@ -296,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1166,
+      "elapsed_ms": 1113,
       "error": null,
       "mode": "live"
     },
@@ -304,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1188,
+      "elapsed_ms": 1064,
       "error": null,
       "mode": "live"
     },
@@ -312,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1054,
+      "elapsed_ms": 2599,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 3615,
+      "elapsed_ms": 3421,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 624,
+      "elapsed_ms": 577,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 462,
+      "elapsed_ms": 595,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 124,
+      "elapsed_ms": 92,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,23 +352,23 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 137,
+      "elapsed_ms": 129,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
     {
       "source_id": "hellenic_shipping",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 148,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 184,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 742,
+      "elapsed_ms": 583,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 231,
+      "elapsed_ms": 47,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 646,
+      "elapsed_ms": 402,
       "error": null,
       "mode": "live"
     },
@@ -392,41 +392,83 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 379,
+      "elapsed_ms": 299,
       "error": null,
       "mode": "live"
     }
   ],
   "items": [
     {
-      "id": "72467104fee2bba2",
-      "published_at": "2026-11-04T20:00:00+00:00",
+      "id": "ec1db0b338160904",
+      "published_at": "2026-11-05T19:30:00+00:00",
       "source": {
         "id": "oilprice",
         "name": "OilPrice.com",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Energy/Crude-Oil/UAE-Weighs-Plans-for-Third-Strait-of-Hormuz-Bypass-Pipeline.html",
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Oil-Prices-Rebound-Sharply-After-Brutal-Midweek-Rout.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Oil Prices Rebound Sharply After Brutal Midweek Rout",
+        "original_lang": "en",
+        "ko": "잔인한 주중 루트 이후 유가가 급격히 반등"
+      },
+      "summary": "Oil prices surged Thursday, recovering some of Wednesday's staggering losses as traders reconsidered whether the U.S. midterm election results would actually bring a swift end to the Iran war. Brent crude had climbed to $98.01 per barrel by early afternoon, gaining $3.39, or 3.58",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "election": 1.0,
+        "region_weight": 1.35,
+        "freshness": 0.879,
+        "importance": 3.954,
+        "final": 4.576
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:3",
+        "election:general:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA",
+      "election_type": "general"
+    },
+    {
+      "id": "5d73ee8e5379b9ee",
+      "published_at": "2026-11-05T17:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Energy-General/Guyanas-Oil-Boom-Could-Ease-the-Global-Supply-Crunch.html",
       "category": "commodity_diplomacy",
       "commodities": [
         "oil",
         "shipping"
       ],
       "title": {
-        "original": "UAE Weighs Plans for Third Strait of Hormuz Bypass Pipeline",
+        "original": "Guyana’s Oil Boom Could Ease the Global Supply Crunch",
         "original_lang": "en",
-        "ko": "UAE, 호르무즈 우회 파이프라인의 제3해협 계획에 무게 측정"
+        "ko": "가이아나의 석유 붐으로 글로벌 공급 위기가 완화될 수 있음"
       },
-      "summary": "The United Arab Emirates currently operates one crude export pipeline that bypasses the Strait of Hormuz and announced earlier this year that it was building a second. A third pipeline is reportedly being planned to further expand crude capacity and reroute energy flows around Ho",
+      "summary": "Tight global oil supplies, compounded by fears of further U.S. strikes against Iran, are stoking concerns over a potential oil price super-spike. Global petroleum inventories are shrinking, while U.S. fuel prices surge to historic highs, fueling inflation and intensifying pressur",
       "scores": {
         "commodity": 4.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.664,
-        "importance": 3.312,
-        "final": 3.834
+        "freshness": 0.82,
+        "importance": 3.86,
+        "final": 4.468
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -435,7 +477,7 @@
         "commodity:oil:2",
         "commodity:shipping:2",
         "diplomacy:1",
-        "bridge:2"
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -443,42 +485,333 @@
       "country_hint": "USA"
     },
     {
-      "id": "b09732a3354cecec",
-      "published_at": "2026-11-04T23:00:00+00:00",
+      "id": "47166ece11a1b328",
+      "published_at": "2026-11-05T19:00:00+00:00",
       "source": {
         "id": "oilprice",
         "name": "OilPrice.com",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Energy/Natural-Gas/Qatar-Becomes-Largest-Buyer-of-US-LNG-Amid-Hormuz-Crisis.html",
+      "url": "https://oilprice.com/Energy/Energy-General/US-and-Turkmenistan-Explore-New-Gas-Routes-Across-the-Caspian.html",
+      "category": "cabinet_reshuffle",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "US and Turkmenistan Explore New Gas Routes Across the Caspian",
+        "original_lang": "en",
+        "ko": "미국과 투르크메니스탄 카스피해 전역의 새로운 가스 경로 탐험"
+      },
+      "summary": "US and Turkmen diplomats focused on expanding trans-Caspian connectivity and promoting energy export diversification during annual consultations in Ashgabat. Turkmen officials are signaling a strong desire to improve trade ties with both South Asia and the West, while maintaining",
+      "scores": {
+        "commodity": 0.8,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.35,
+        "freshness": 0.866,
+        "importance": 3.575,
+        "final": 4.139
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "commodity:oil:0.8",
+        "bridge:1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "71de2cd7d4d62b3a",
+      "published_at": "2026-11-05T22:00:55+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/iran-says-five-tankers-and-tugboat-caught-fire-in-hormuz/",
       "category": "commodity",
       "commodities": [
-        "gas",
+        "oil",
         "shipping"
       ],
       "title": {
-        "original": "Qatar Becomes Largest Buyer of U.S. LNG Amid Hormuz Crisis",
+        "original": "Iran says five tankers and tugboat caught fire in Hormuz",
         "original_lang": "en",
-        "ko": "카타르, 호르무즈 위기 속에서 미국 LNG의 최대 구매자가 됨"
+        "ko": "이란은 호르무즈에서 유조선 5척과 예인선에 불이 났다고 밝혔습니다."
       },
-      "summary": "In an extraordinary turn of events, Qatar, the world’s second-largest LNG exporter before the Iran war, will become the biggest buyer of liquefied natural gas from the United States, the producer that overtook the Gulf nation as top LNG exporter earlier this decade. This extraord",
+      "summary": "Five oil tankers and a tugboat caught fire in the Strait of Hormuz, Iran’s Revolutionary Guards and army said in separate statements, according to local media on Thursday. Since the outbreak of the Iran war in late February, Tehran has severely restricted traffic through the stra",
       "scores": {
-        "commodity": 3.0,
+        "commodity": 2.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.721,
-        "importance": 3.137,
-        "final": 3.632
+        "freshness": 0.942,
+        "importance": 3.015,
+        "final": 3.49
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
         "category:commodity",
         "tier:A*1.00/g1",
-        "commodity:gas:2",
+        "commodity:oil:1",
         "commodity:shipping:1",
         "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "5c70ecc1337549e9",
+      "published_at": "2026-11-05T23:51:06+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/world/rubio-denies-plans-to-leave-post-for-white-house-bid-3010076",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Rubio denies plans to leave post for White House bid",
+        "original_lang": "en",
+        "ko": "루비오, 백악관 입찰을 위해 게시물 탈퇴 계획 거부"
+      },
+      "summary": "WASHINGTON: US Secretary of State Marco Rubio dismissed reports Thursday that he was planning to leave the Trump administration as he weighs his next moves after Republicans’ losses in midterm elections, according to The New York Times. It has “always been my plan” to work for Pr",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.4,
+        "freshness": 0.991,
+        "importance": 2.769,
+        "final": 3.268
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "98afbd550e4809a9",
+      "published_at": "2026-11-05T15:35:51+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/world/middle-east/article/3373454/iran-says-5-tankers-catch-fire-after-striking-naval-mines-strait-hormuz",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Iran says 5 tankers catch fire after striking naval mines in Strait of Hormuz",
+        "original_lang": "en",
+        "ko": "이란은 호르무즈 해협에서 해군 광산을 공격한 후 유조선 5척이 발포했다고 밝혔습니다."
+      },
+      "summary": "Five oil tankers and a tugboat caught fire in the Strait of Hormuz, Iran’s Revolutionary Guards and army said in separate statements, according to local media on Thursday. Since the outbreak of the Iran war in late February, Tehran has severely restricted traffic through the stra",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.788,
+        "importance": 2.523,
+        "final": 2.806
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "2b154d8e503f7488",
+      "published_at": "2026-11-05T20:19:01+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2213563",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "US authorities deny reports that Rubio may soon leave post of secretary of state",
+        "original_lang": "en",
+        "ko": "미국 당국은 루비오가 곧 국무장관직에서 물러날 수 있다는 보고를 부인하고 있다."
+      },
+      "summary": "\"This is completely baseless fake news from made-up anonymous 'sources,'\" US Assistant Secretary of State for Public Affairs and Press Dylan Johnson said",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.25,
+        "freshness": 0.899,
+        "importance": 2.51,
+        "final": 2.793
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "RUS",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "69bd8f20b47057c0",
+      "published_at": "2026-11-05T16:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Energy-General/Iran-Opens-Strait-of-Hormuz-to-China-and-India-as-US-Blockade-Continues.html",
+      "category": "commodity_diplomacy",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Iran Opens Strait of Hormuz to China and India as U.S. Blockade Continues",
+        "original_lang": "en",
+        "ko": "이란, 미국 봉쇄가 계속됨에 따라 중국과 인도에 호르무즈 해협 개방"
+      },
+      "summary": "In a significant, albeit underreported development for global energy, and for the US-Iran standoff in the Persian Gulf, the Iranian parliament has this week announced it is exempting several key trading partners from its oil transit restrictions in the Strait of Hormuz. The move ",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.797,
+        "importance": 2.278,
+        "final": 2.637
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity_diplomacy",
+        "tier:A*1.00/g2",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "CHN"
+    },
+    {
+      "id": "c9ebcc5e3582a509",
+      "published_at": "2026-11-05T17:02:46+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2213505",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Rubio may resign as US secretary of state, newspaper reports",
+        "original_lang": "en",
+        "ko": "루비오는 미국 국무장관직에서 물러날 수도 있다."
+      },
+      "summary": "The newspaper noted that up to five department heads in total could leave the Trump administration in the near future",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.25,
+        "freshness": 0.821,
+        "importance": 2.292,
+        "final": 2.55
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "RUS",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "db0b45d17cf8274e",
+      "published_at": "2026-11-05T20:30:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/ConocoPhillips-Doubles-Profit-to-4-Billion-Raises-Dividend.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "ConocoPhillips Doubles Profit to $4 Billion, Raises Dividend",
+        "original_lang": "en",
+        "ko": "ConocoPhillips는 이익을 $ 40억으로 두 배로 늘리고 배당금을 올립니다"
+      },
+      "summary": "ConocoPhillips more than doubled its third-quarter profit to $4 billion and raised its quarterly dividend by 11% on Thursday, joining a growing list of oil majors reporting enormous earnings gains as higher crude prices offset production disruptions caused by the Iran war. The Ho",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.903,
+        "importance": 2.078,
+        "final": 2.405
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -510,9 +843,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.805,
-        "importance": 3.06,
-        "final": 3.473
+        "freshness": 0.555,
+        "importance": 2.109,
+        "final": 2.394
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -527,331 +860,209 @@
       "country_hint": "IND"
     },
     {
-      "id": "33c26fa939513128",
-      "published_at": "2026-11-05T03:25:00+00:00",
+      "id": "debf6e495eb35a0a",
+      "published_at": "2026-11-05T23:00:00+00:00",
       "source": {
-        "id": "tass_en",
-        "name": "TASS",
-        "region": "russia",
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://tass.com/world/2213051",
+      "url": "https://oilprice.com/Energy/Energy-General/Asia-Hopes-US-Midterm-Results-Will-Ease-Energy-Crisis.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Asia Hopes U.S. Midterm Results Will Ease Energy Crisis",
+        "original_lang": "en",
+        "ko": "아시아는 미국 중간 결과가 에너지 위기를 완화하기를 희망합니다"
+      },
+      "summary": "Asian countries that depend on oil and gas imports for their energy security are hoping that the results of the U.S. midterms will lead to an end to the war in the Middle East and, consequently, an end to the severe fuel crisis Asian countries are experiencing. The hopes may be p",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.968,
+        "importance": 1.985,
+        "final": 2.298
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA"
+    },
+    {
+      "id": "841a24e489de8c5b",
+      "published_at": "2026-11-05T17:04:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/world/americas/rubio-may-quit-as-us-top-diplomat-ahead-of-2028-bid-report",
       "category": "cabinet_reshuffle",
       "commodities": [],
       "title": {
-        "original": "US ambassador to India may take over as Secretary of State — media",
+        "original": "Rubio may quit as US top diplomat ahead of 2028 bid: Report",
         "original_lang": "en",
-        "ko": "미국 주 인도 대사가 국무장관직을 승계할 가능성이 있다 - 언론 보도"
+        "ko": "루비오는 2028년 입찰을 앞두고 미국 최고 외교관직을 그만둘 수 있습니다: 보고서"
       },
-      "summary": "Sergio Gor denied such job aspirations, calling such reports \"complete and total bullshit\"",
+      "summary": "U.S. Secretary of State Marco Rubio could be preparing to leave the Trump administration following Republican setbacks in the midterm elections, with allies anticipating a possible...",
       "scores": {
         "commodity": 0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.815,
-        "importance": 3.048,
-        "final": 3.391
+        "region_weight": 1.3,
+        "freshness": 0.821,
+        "importance": 1.651,
+        "final": 1.874
       },
       "rank_reasons": [
-        "region:russia*1.25",
+        "region:turkey*1.30",
         "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "diplomacy:1",
+        "tier:B*0.72/g1",
         "election:cabinet_reshuffle:1.2",
         "cabinet_reshuffle"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
+      "country_tier": "B",
       "info_grade": "1",
-      "country_hint": "IND",
+      "country_hint": "TUR",
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "1a6313351c980ae6",
-      "published_at": "2026-11-05T06:51:29+00:00",
+      "id": "76899cacd4057d90",
+      "published_at": "2026-11-05T13:12:42+00:00",
       "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
+        "id": "ft_commodities",
+        "name": "FT Commodities",
+        "region": "west",
         "slant": null
       },
-      "url": "https://www.arabnews.com/energy/oil-falls-for-a-4th-day-on-expectations-for-lower-risk-of-iran-war-escalation-3009923",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Oil falls for a 4th day on expectations for lower risk of Iran war escalation",
-        "original_lang": "en",
-        "ko": "이란과의 전쟁 확대 위험 감소 기대감 속에 유가가 4일 연속 하락했습니다."
-      },
-      "summary": "SINGAPORE: Oil prices fell for a fourth day on Thursday on expectations the losses US President Donald Trump’s Republican Party suffered in Congressional elections this week ​may reduce the risk of further escalation of the US-Israeli war on Iran. Brent futures fell 80 cents, or ",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.897,
-        "importance": 2.455,
-        "final": 2.897
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g1",
-        "commodity:oil:3",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "f6d77ded1f71e7b9",
-      "published_at": "2026-11-04T18:30:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Oil-Crashes-9-as-Trump-and-Vance-Blame-Iran-War-for-Midterm-Rout.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Oil Crashes 9% as Trump and Vance Blame Iran War for Midterm Rout",
-        "original_lang": "en",
-        "ko": null
-      },
-      "summary": "Brent fell $8.94, or 8.6%, to $94.66 per barrel at 1:06 p.m. ET on Wednesday, after touching its lowest level since September 4, with traders pricing an end to the Iran war after the White House tied Tuesday’s midterm losses to the conflict. WTI dropped $8.01, or 8.3%, to $88.08.",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.636,
-        "importance": 2.196,
-        "final": 2.542
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:3"
-      ],
-      "translation_status": "failed",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "3833c0f0baa93d50",
-      "published_at": "2026-11-05T07:44:47+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/news/2026/11/5/south-korea-plans-to-expand-anti-piracy-operations-closer-to-hormuz-strait?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "South Korea plans to expand anti-piracy operations closer to Hormuz Strait",
-        "original_lang": "en",
-        "ko": "한국은 호르무즈 해협에 더 가까운 곳에서 불법 복제 방지 작전을 확장할 계획입니다."
-      },
-      "summary": "Seoul proposes extending its Cheonghae unit’s patrols to waters near Oman’s Duqm amid US pressure over Iran war.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.92,
-        "importance": 1.885,
-        "final": 2.225
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "KOR"
-    },
-    {
-      "id": "bef3f3729137b7d9",
-      "published_at": "2026-11-05T02:57:31+00:00",
-      "source": {
-        "id": "seatrade",
-        "name": "Seatrade Maritime",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.seatrade-maritime.com/security/how-will-the-blue-tsunami-impact-trump-administration-policies-",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "How will the ‘blue tsunami’ impact Trump administration policies?",
-        "original_lang": "en",
-        "ko": "&#39;블루 쓰나미&#39;는 트럼프 행정부 정책에 어떤 영향을 미칠까요?"
-      },
-      "summary": "Shipping and energy analysts assess the impact of the US midterm election results going forward on the war in Iran, sanctions, and energy related policies",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 1.0,
-        "region_weight": 1.35,
-        "freshness": 0.805,
-        "importance": 1.648,
-        "final": 1.908
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:election",
-        "tier:A*1.00/g1",
-        "diplomacy:1",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA",
-      "election_type": "general"
-    },
-    {
-      "id": "9d599499903a6be1",
-      "published_at": "2026-11-05T02:06:05+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/world/south-korea-to-expand-anti-piracy-unit-operations-closer-to-strait-of-hormuz-3009881",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "South Korea to expand anti-piracy unit operations closer to Strait of Hormuz",
-        "original_lang": "en",
-        "ko": "한국, 호르무즈 해협에 근접한 해적 부대 작전 확대"
-      },
-      "summary": "SEOUL: South Korea plans to expand the operations of its anti-piracy Cheonghae unit to waters closer to the Strait of Hormuz, the Defense Ministry said, following pressure from US President Donald Trump ‌to provide ‌support for the war in Iran. The government ​will ‌submit ⁠a ​mo",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.786,
-        "importance": 1.612,
-        "final": 1.902
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "KOR"
-    },
-    {
-      "id": "bd21ee97e830dc2b",
-      "published_at": "2026-11-05T06:30:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Oil-Prices-Continue-to-Fall-as-Democratic-Sweep-Shakes-Energy-Markets.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Oil Prices Continue to Fall as Democratic Sweep Shakes Energy Markets",
-        "original_lang": "en",
-        "ko": "민주당의 휩쓸기가 에너지 시장을 뒤흔들면서 유가는 계속 하락하고 있습니다."
-      },
-      "summary": "Crude oil prices moved even lower, and energy company stocks followed after the results of the U.S. midterms, as markets brace for a potentially radical change in U.S. policies. At the time of writing, Brent crude was trading at $94.30 per barrel, after dropping by 9% on Wednesda",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.888,
-        "importance": 1.471,
-        "final": 1.703
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:3"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "e307f08b33e08eb8",
-      "published_at": "2026-11-05T07:48:58+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/morning-update-661",
+      "url": "https://www.ft.com/content/9c6a400c-2207-4b68-8fda-080f1cc30260",
       "category": "commodity",
       "commodities": [
         "oil",
+        "gold",
         "shipping"
       ],
       "title": {
-        "original": "Morning update",
+        "original": "Crude awakening: how oil has fuelled 150 years of conflict",
         "original_lang": "en",
-        "ko": "오전 업데이트"
+        "ko": "조잡한 각성: 석유가 150년의 갈등을 부채질한 방법"
       },
-      "summary": "Morning update Good morning Middle East Eye readers, Here are the latest developments: Iran's Islamic Revolutionary Guard Corps (IRGC) announced that two oil tankers and a tugboat caught fire in the Strait of Hormuz. According to the statement, the separate incidents occurred aft",
+      "summary": "From the earliest commercial wells to the Strait of Hormuz, two new books look at how empires, states and companies have used black gold to shape global politics",
       "scores": {
-        "commodity": 2.0,
+        "commodity": 4.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.921,
-        "importance": 1.415,
-        "final": 1.67
+        "region_weight": 0.55,
+        "freshness": 0.738,
+        "importance": 1.948,
+        "final": 1.553
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:west*0.55",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:1",
+        "commodity:oil:2",
+        "commodity:gold:1",
         "commodity:shipping:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "KOR"
+      "country_hint": "USA"
+    },
+    {
+      "id": "e4cb2d5c0c105c2b",
+      "published_at": "2026-11-05T20:13:47+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/china/diplomacy/article/3373462/us-sanctions-chinese-firms-over-alleged-military-supplies-cuba",
+      "category": "diplomacy",
+      "commodities": [],
+      "title": {
+        "original": "US sanctions Chinese firms over alleged military supplies to Cuba",
+        "original_lang": "en",
+        "ko": "미국, 쿠바에 대한 군사 공급 혐의에 대해 중국 기업 제재"
+      },
+      "summary": "The United States has imposed sanctions on two Chinese companies it accuses of supplying equipment and components to Cuba’s military, as Washington intensifies pressure on Havana’s foreign suppliers and expands its authority to target businesses operating on the island. The US St",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.897,
+        "importance": 1.224,
+        "final": 1.361
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:diplomacy",
+        "tier:A*1.00/g2",
+        "diplomacy:1",
+        "bridge:3"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "2",
+      "country_hint": "USA"
+    },
+    {
+      "id": "0559c2363e214aa0",
+      "published_at": "2026-11-05T20:49:45+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/middle-east/iraq-will-not-be-launch-point-for-attacks-on-neighbors-al-zaidi-tells-trump-3010059",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Iraq will not be ’launch point’ for attacks on neighbors, Al-Zaidi tells Trump",
+        "original_lang": "en",
+        "ko": "알자이디는 이라크가 이웃에 대한 공격의 ’시작점’ 이 되지 않을 것이라고 트럼프에게 말한다."
+      },
+      "summary": "LONDON: Iraq’s prime minister told Donald Trump on Thursday that his country’s territory would not be used to launch attacks on other states in the region. Iraq’s Gulf neighbors have accused militias loyal to Tehran of launching strikes from Iraqi territory against them since the",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.912,
+        "importance": 1.048,
+        "final": 1.237
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:A*1.00/g1",
+        "commodity:oil:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "GBR"
     },
     {
       "id": "739c45d5a9d4dbfc",
@@ -870,7 +1081,7 @@
       "title": {
         "original": "OMCs, IndiGo, paint and tyre stocks rally up to 7% as crude cools below $95",
         "original_lang": "en",
-        "ko": "석유 마케팅 회사(OMC), 인디고 항공, 페인트 및 타이어 관련 주식이 원유 가격이 배럴당 95달러 아래로 떨어지면서 최대 7%까지 급등했습니다."
+        "ko": "OMC, IndiGo, 페인트 및 타이어 재고는 원유가 $ 95 미만으로 냉각됨에 따라 최대 7% 상승합니다."
       },
       "summary": "On Dalal Street, shares of oil marketing companies gained nearly 7 per cent, with Hindustan Petroleum Corporation leading the gains.",
       "scores": {
@@ -878,9 +1089,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.876,
-        "importance": 1.451,
-        "final": 1.647
+        "freshness": 0.604,
+        "importance": 1.0,
+        "final": 1.135
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -894,296 +1105,47 @@
       "country_hint": "IND"
     },
     {
-      "id": "d414ec634c3e3df9",
-      "published_at": "2026-11-05T04:58:18+00:00",
+      "id": "f09028e64a9f93d6",
+      "published_at": "2026-11-05T18:47:10+00:00",
       "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
         "region": "mena",
         "slant": null
       },
-      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/irans-irgc-says-two-tankers-tugboat-were-ablaze-hormuz-strait",
+      "url": "https://www.aljazeera.com/news/2026/11/5/iran-says-tankers-struck-in-hormuz-amid-fears-of-new-us-attack?traffic_source=rss",
       "category": "commodity",
       "commodities": [
-        "shipping",
-        "oil"
-      ],
-      "title": {
-        "original": "Iran’s IRGC says two tankers, tugboat were ablaze in Hormuz Strait",
-        "original_lang": "en",
-        "ko": "이란의 IRGC는 호르무즈 해협에서 예인선이 불타고 있는 두 대의 유조선이 있다고 밝혔습니다."
-      },
-      "summary": "Iran’s IRGC says two tankers, tugboat were ablaze in Hormuz Strait Iran's Islamic Revolutionary Guard Corps (IRGC) announced that two oil tankers and a tugboat caught fire in the Strait of Hormuz. According to the statement, the separate incidents occurred after the vessels were ",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.851,
-        "importance": 1.28,
-        "final": 1.51
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:oil:1",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "0eab08b2efd9fd55",
-      "published_at": "2026-11-05T04:47:40+00:00",
-      "source": {
-        "id": "arab_news",
-        "name": "Arab News",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.arabnews.com/middle-east/irans-irgc-says-two-tankers-and-tugboat-caught-fire-in-strait-of-hormuz-3009888",
-      "category": "commodity",
-      "commodities": [
-        "shipping",
-        "oil"
-      ],
-      "title": {
-        "original": "Iran’s IRGC says two tankers and tugboat caught fire in Strait of Hormuz",
-        "original_lang": "en",
-        "ko": "이란의 IRGC에 따르면 호르무즈 해협에서 유조선과 예인선이 발포했다고 합니다."
-      },
-      "summary": "Two oil tankers and a tugboat caught fire in separate incidents in the Strait of Hormuz, according to Iran’s Islamic Revolutionary Guard Corps. One tanker struck a mine, while another supertanker caught fire.",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.847,
-        "importance": 1.274,
-        "final": 1.503
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:oil:1",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "e3e30c220a39f22d",
-      "published_at": "2026-11-05T01:00:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://oilprice.com/Energy/Natural-Gas/Africas-LNG-Exports-Set-to-Soar-175-as-Buyers-Flee-Hormuz.html",
-      "category": "commodity",
-      "commodities": [
-        "gas",
+        "oil",
         "shipping"
       ],
       "title": {
-        "original": "Africa’s LNG Exports Set to Soar 175% as Buyers Flee Hormuz",
+        "original": "Iran says tankers struck in Hormuz amid fears of new US attack",
         "original_lang": "en",
-        "ko": "아프리카 LNG 수출, 바이어가 호르무즈를 탈출하면서 175% 급증"
+        "ko": "이란은 미국의 새로운 공격에 대한 두려움 속에서 호르무즈에서 유조선이 타격을 입었다고 말한다."
       },
-      "summary": "Energy buyers burned by the Strait of Hormuz are turning to Africa, and the money is following. The African Energy Chamber projects that Africa’s upstream sector will attract ~$40 billion a year through 2030, lifting the continent’s hydrocarbon output to 12.5 MMboe/d. Mozambique,",
+      "summary": "Iranian forces say five oil tankers and a tugboat have caught fire in several incidents in the Strait of Hormuz.",
       "scores": {
         "commodity": 2.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.762,
-        "importance": 1.171,
-        "final": 1.356
+        "region_weight": 1.4,
+        "freshness": 0.861,
+        "importance": 0.953,
+        "final": 1.124
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
+        "region:mena*1.40",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gas:1",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
         "commodity:shipping:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "461e8108c1f6aa6a",
-      "published_at": "2026-11-04T23:08:01+00:00",
-      "source": {
-        "id": "bloomberg_markets",
-        "name": "Bloomberg Markets",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.bloomberg.com/news/articles/2026-11-04/latest-oil-market-news-and-analysis-for-nov-5",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Latest Oil Market News and Analysis for Nov. 5",
-        "original_lang": "en",
-        "ko": "11월 5일 최신 석유 시장 뉴스 및 분석"
-      },
-      "summary": "Brent oil held near a two-month low after tumbling almost 9% in the previous session as investors bet that a Democratic sweep in the US midterm elections could accelerate efforts to end the war in the Middle East.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.724,
-        "importance": 1.665,
-        "final": 1.328
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
-    },
-    {
-      "id": "f0b2963ddfb8898b",
-      "published_at": "2026-11-04T22:08:44+00:00",
-      "source": {
-        "id": "middle_east_eye",
-        "name": "Middle East Eye",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.middleeasteye.net/news/freed-or-congressionally-constrained-trump-more-or-less-likely-resume-war-iran",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "'Freed up or congressionally constrained': Is Trump more or less likely to resume war on Iran?",
-        "original_lang": "en",
-        "ko": "'해방 또는 의회적 제약': 트럼프가 이란과의 전쟁을 재개할 가능성은 어느 정도인가?"
-      },
-      "summary": "'Freed up or congressionally constrained': Is Trump more or less likely to resume war on Iran? Submitted by Sean Mathews on Wed, 11/04/2026 - 21:14 A collapse in oil prices on Wednesday suggests chances of escalation are dwindling, but some analysts say a bitter Trump might lash ",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.4,
-        "freshness": 0.704,
-        "importance": 1.116,
-        "final": 1.316
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g1",
-        "commodity:oil:1",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
       "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU",
-      "election_type": "general"
-    },
-    {
-      "id": "75c24215071cefb2",
-      "published_at": "2026-11-05T10:39:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/business/1127167",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "gas"
-      ],
-      "title": {
-        "original": "MOL получила доплицензию на подготовительные сделки в рамках выкупа доли в NIS",
-        "original_lang": "ru",
-        "ko": "MOL은 NIS의 주식 환매 틀 내에서 준비 거래에 대한 추가 라이센스를 획득했습니다."
-      },
-      "summary": "Венгерская MOL получила дополнительную лицензию OFAC США на осуществление подготовительных сделок в рамках процесса приобретения акций сербской энергокомпании NIS (входит в российскую \"Газпром нефть\"), новая лицензия действительна до 28 февраля 2027 года, сообщила MOL.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.997,
-        "importance": 1.101,
-        "final": 1.224
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:gas:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "a7f7f8025e5f65f6",
-      "published_at": "2026-11-05T09:41:11+00:00",
-      "source": {
-        "id": "aa_world",
-        "name": "Anadolu Agency",
-        "region": "turkey",
-        "slant": null
-      },
-      "url": "https://www.aa.com.tr/en/turkiye/turkiye-to-continue-efforts-to-bring-an-end-to-russia-ukraine-war-president-erdogan/4112697",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Türkiye to continue efforts to bring an end to Russia-Ukraine war: President Erdogan",
-        "original_lang": "en",
-        "ko": "터키는 러시아-우크라이나 전쟁 종식을 위한 노력을 계속할 것이라고 에르도안 대통령이 밝혔습니다."
-      },
-      "summary": "Turkish president says Ankara will maintain 'close dialogue' with US administration and Congress following midterm election results",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.3,
-        "freshness": 0.971,
-        "importance": 1.07,
-        "final": 1.214
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:election",
-        "tier:A*1.00/g1",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS",
-      "election_type": "general"
+      "country_hint": "SAU"
     },
     {
       "id": "e735bd03e3f62001",
@@ -1226,120 +1188,163 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "be3f44730518f2ed",
-      "published_at": "2026-11-05T03:54:00+00:00",
+      "id": "84b9cf1caabda37a",
+      "published_at": "2026-11-05T19:12:32+00:00",
+      "source": {
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/saudi-arabia/saudi-official-denies-wsj-report-that-houthis-demanded-51bn-from-kingdom-3010048",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Saudi official denies WSJ report that Houthis demanded $51bn from Kingdom",
+        "original_lang": "en",
+        "ko": "사우디 공무원은 Houthis가 Kingdom에 $ 51bn을 요구했다는 WSJ 보고서를 부인합니다."
+      },
+      "summary": "RIYADH: A Saudi Foreign Ministry official on Thursday “categorically denied” a Wall Street Journal report published on Wednesday that claimed Yemen’s Houthi militia had demanded from the Kingdom $51 billion and recognition as rulers of the country in return for ending hostilities",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.872,
+        "importance": 0.889,
+        "final": 1.048
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "9c737faf569d66cc",
+      "published_at": "2026-11-05T06:16:44+00:00",
       "source": {
         "id": "aa_world",
         "name": "Anadolu Agency",
         "region": "turkey",
         "slant": null
       },
-      "url": "https://www.aa.com.tr/en/world/south-korea-to-expand-operations-of-its-anti-piracy-unit-closer-to-strait-of-hormuz-report/4112143",
+      "url": "https://www.aa.com.tr/en/world/-iran-reports-5-oil-tankers-1-tugboat-hit-by-mines-catch-fire-in-strait-of-hormuz/4112174",
       "category": "commodity",
       "commodities": [
+        "oil",
         "shipping"
       ],
       "title": {
-        "original": "South Korea to expand operations of its anti-piracy unit closer to Strait of Hormuz: Report",
+        "original": "Iran reports 5 oil tankers, 1 tugboat hit by mines, catch fire in Strait of Hormuz",
         "original_lang": "en",
-        "ko": "한국, 호르무즈 해협 인근 해역으로 해적 소탕 부대 작전 확대 예정: 보도"
+        "ko": "이란은 유조선 5척, 예인선 1척이 광산에 부딪혀 호르무즈 해협에서 불이 났다고 보고했습니다."
       },
-      "summary": "Defense Ministry plans to extend area of unit’s operations to southern tip of Oman’s Duqm Port, says public broadcaster",
+      "summary": "Navy says vessels entered prohibited waters without coordination despite maritime warnings",
       "scores": {
-        "commodity": 1.0,
+        "commodity": 2.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.826,
-        "importance": 0.813,
-        "final": 0.923
+        "freshness": 0.609,
+        "importance": 0.673,
+        "final": 0.764
       },
       "rank_reasons": [
         "region:turkey*1.30",
         "category:commodity",
-        "tier:A*1.00/g3",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
         "commodity:shipping:1",
         "diplomacy:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
+      "country_tier": "B",
       "info_grade": "3",
-      "country_hint": "KOR"
+      "country_hint": "TUR"
     },
     {
-      "id": "a905e4de32b3f6ce",
-      "published_at": "2026-11-05T07:49:13+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/week-asia/politics/article/3373374/philippine-envoy-says-us-immigration-detention-rules-may-change-after-midterms",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Philippine envoy says US immigration detention rules may change after midterms",
-        "original_lang": "en",
-        "ko": "필리핀 특사는 미국 이민 구금 규칙이 중간고사 이후 변경될 수 있다고 말했습니다."
-      },
-      "summary": "The Philippines on Thursday voiced optimism that the Democratic Party’s resounding midterm election win would prompt the United States to adopt “a different approach” to President Donald Trump’s hardening immigration crackdown that has ensnared many Filipinos. Trump’s Republican ",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.921,
-        "importance": 0.711,
-        "final": 0.791
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "USA",
-      "election_type": "general"
-    },
-    {
-      "id": "acf796449629a909",
-      "published_at": "2026-11-05T10:39:15+00:00",
+      "id": "99bbfb2927c054e2",
+      "published_at": "2026-11-05T23:53:34+00:00",
       "source": {
         "id": "ltn",
         "name": "Liberty Times",
         "region": "taiwan",
         "slant": "pan_green"
       },
-      "url": "https://ec.ltn.com.tw/article/breakingnews/5630877",
+      "url": "https://news.ltn.com.tw/news/world/breakingnews/5631129",
       "category": "commodity",
       "commodities": [
         "silver"
       ],
       "title": {
-        "original": "別再等更好價格！央行喊話出口商：有需求就進場結匯",
+        "original": "數位銀行倒閉凍結全民存款 我友邦巴拉圭總統遭彈劾前黯然辭職",
         "original_lang": "zh-TW",
-        "ko": "더 나은 가격을 기다리지 마세요! 중앙은행은 수출업체들에게 다음과 같이 촉구합니다. 수요가 있다면 시장에 나가 외환 거래를 완료하십시오."
+        "ko": "디지털 은행이 문을 닫아 모든 예금이 동결되었고, 제 친구인 파라과이 대통령은 탄핵 전에 사임했습니다."
       },
-      "summary": "新台幣在外資持續匯出下走貶，出口商還要抱著美元等更高價？中央銀行外匯局局長蔡烱民今日提醒，美國期中選舉後，市場應重新評估聯準會政策與美元走勢，不要「期待賣更好價格」，年底...…",
+      "summary": "首次上稿 02:48更新時間 07:53 我南美洲友邦巴拉圭爆發嚴重的金融與政治雙重危機！巴拉圭下議院5日以78票對0票的壓倒性票數，全票通過彈劾總統貝尼亞（Santiag...…",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.997,
-        "importance": 0.517,
-        "final": 0.575
+        "freshness": 0.993,
+        "importance": 0.394,
+        "final": 0.439
       },
       "rank_reasons": [
         "region:taiwan*1.25",
         "category:commodity",
         "tier:B*0.72/g3",
-        "commodity:silver:1",
-        "bridge:1"
+        "commodity:silver:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
+    },
+    {
+      "id": "c72904b5823befbc",
+      "published_at": "2026-11-05T23:52:10+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://sports.ltn.com.tw/news/breakingnews/5631165",
+      "category": "commodity",
+      "commodities": [
+        "silver"
+      ],
+      "title": {
+        "original": "MLB》銀棒獎決選名單出爐！大谷翔平對決史瓦伯 挑戰第5座拚超狂紀錄",
+        "original_lang": "zh-TW",
+        "ko": "MLB 실버 스틱 어워드 결승 진출자가 여기 있습니다! 오타니 쇼헤이 대 스와비안 챌린지 # 5 격투 광기 기록"
+      },
+      "summary": "大聯盟官方今天公布美聯和國聯的銀棒獎決選名單，此獎項由各隊教練票選而出，得獎者預計會在美東時間11月17日公佈。道奇二刀流巨星大谷翔平將挑戰生涯第5座指定打擊銀棒獎。 ...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.992,
+        "importance": 0.394,
+        "final": 0.439
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:silver:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",

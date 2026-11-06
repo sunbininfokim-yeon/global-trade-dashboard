@@ -92,6 +92,10 @@ ISRAEL_CI_PATHS = frozenset({'.github/workflows/israel_analysis_validation.yml'}
 
 
 def scoped_paths(branch):
+    # 2026-11-05: user explicitly requested lobbying implementation and automatic
+    # pipeline connection. Exact new workflow and Worker dispatch only.
+    if branch == 'codex/lobbying-policy-pipeline-20261105':
+        return frozenset({'_worker.js', '.github/workflows/lobbying_policy_refresh.yml'})
     # User requested automatic coverage of additional regions on 2026-10-24.
     if branch == 'codex/idn-region-collector-pin-20261024':
         return frozenset({'.github/workflows/sync-indonesia-policy.yml'})

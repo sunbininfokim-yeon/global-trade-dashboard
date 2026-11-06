@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-11-05T06:41:07.663129+00:00",
+  "generated_at": "2026-11-05T19:54:46.154481+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -154,9 +154,10 @@
         "top_indicators": [
           {
             "id": "qra",
-            "score": 2.4,
+            "score": 6.0,
             "label_ko": "QRA·순발행",
             "evidence": [
+              "2차 QRA가 국채 시장에 대해 말해 주는 것은? [이코노미21 양영빈] 11월 4일(현지 시간)에 발표된 2차 QRA",
               "중됐던 미 재무부의 2026년 4분기 및 2027년 1분기 국채발행계획(QRA, Quarterly Refunding Announcement) 1차 성명서와 재원조달표(Sources an"
             ]
           },
@@ -175,34 +176,43 @@
             "evidence": [
               "년 1분기 무려 8000억달러에 달하는 초대형 차입 계획과 1조달러라는 재무부 일반계정(T"
             ]
-          },
-          {
-            "id": "fomc_liquidity",
-            "score": 0.85,
-            "label_ko": "FOMC·금리 유동성",
-            "evidence": [
-              "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까 [이코노미21 양영빈] 이번 9월 30일 발표된 PCE는 많은 관심을 받았다. 향후 금리 경로"
-            ]
           }
         ],
         "themes_ko": [
-          "QRA·순발행 (점수 2.4)",
+          "QRA·순발행 (점수 6.0)",
           "달러/엔 (점수 1.8)",
-          "TGA 재무부 일반계정 (점수 1.3)",
-          "FOMC·금리 유동성 (점수 0.85)"
+          "TGA 재무부 일반계정 (점수 1.3)"
         ],
         "hint_weights": {
-          "tightening": 2.4,
+          "tightening": 6.0,
           "fx_pair": 1.8,
-          "tga": 1.3,
-          "policy": 0.85
+          "tga": 1.3
         },
         "reporter_signals": [
           "reporter_tightening_theme",
           "reporter_tga_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 3개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마",
         "per_article": [
+          {
+            "title": "2차 QRA가 국채 시장에 대해 말해 주는 것은?",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017371",
+            "published": "2026-11-05 19:24",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "qra",
+                "label_ko": "QRA·순발행",
+                "mentions": 3,
+                "hint": "tightening",
+                "evidence": [
+                  "2차 QRA가 국채 시장에 대해 말해 주는 것은? [이코노미21 양영빈] 11월 4일(현지 시간)에 발표된 2차 QRA",
+                  "것은? [이코노미21 양영빈] 11월 4일(현지 시간)에 발표된 2차 QRA는 장단기 국채의 발행 구성과 향후 계획을 보다 자세히 말해준다. 다음은 장단기 국채에 대한 향후 전망이다.",
+                  "장기국채를 이전에 비해 더 많이 발행할 계획이 없음을 의미한다. 8월 QRA에서는 적어도 향후 몇"
+                ]
+              }
+            ]
+          },
           {
             "title": "내년 1분기 8천억달러 차입 쓰나미와 41.1조달러 부채한도라는 시한폭탄",
             "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017353",
@@ -247,39 +257,21 @@
                 ]
               }
             ]
-          },
-          {
-            "title": "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017236",
-            "published": "2026-10-02 16:43",
-            "author": "양영빈",
-            "indicators": [
-              {
-                "id": "fomc_liquidity",
-                "label_ko": "FOMC·금리 유동성",
-                "mentions": 1,
-                "hint": "policy",
-                "evidence": [
-                  "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까 [이코노미21 양영빈] 이번 9월 30일 발표된 PCE는 많은 관심을 받았다. 향후 금리 경로"
-                ]
-              }
-            ]
           }
         ],
         "finance_panel_fields": {
           "reporter_liquidity_primary": "qra",
           "reporter_liquidity_primary_ko": "QRA·순발행",
           "reporter_liquidity_themes": [
-            "QRA·순발행 (점수 2.4)",
+            "QRA·순발행 (점수 6.0)",
             "달러/엔 (점수 1.8)",
-            "TGA 재무부 일반계정 (점수 1.3)",
-            "FOMC·금리 유동성 (점수 0.85)"
+            "TGA 재무부 일반계정 (점수 1.3)"
           ],
           "reporter_liquidity_signals": [
             "reporter_tightening_theme",
             "reporter_tga_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 3개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마"
         }
       }
     ],
@@ -293,21 +285,20 @@
       "reporter_liquidity_primary": "qra",
       "reporter_liquidity_primary_ko": "QRA·순발행",
       "reporter_liquidity_themes": [
-        "QRA·순발행 (점수 2.4)",
+        "QRA·순발행 (점수 6.0)",
         "달러/엔 (점수 1.8)",
-        "TGA 재무부 일반계정 (점수 1.3)",
-        "FOMC·금리 유동성 (점수 0.85)"
+        "TGA 재무부 일반계정 (점수 1.3)"
       ],
       "reporter_liquidity_signals": [
         "reporter_tightening_theme",
         "reporter_tga_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 3개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-589161694675",
+      "id": "qra-649650713850",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -340,7 +331,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-64226672724",
+      "id": "fed-407247968773",
       "published_at": "Wed, 28 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -371,7 +362,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-399471797255",
+      "id": "fed-431075866060",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -402,7 +393,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-933072673295",
+      "id": "fed-474494152268",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -433,7 +424,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-34836413680",
+      "id": "fed-72277142575",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -464,7 +455,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-872699163886",
+      "id": "fed-932466231224",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -495,7 +486,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-901687238390",
+      "id": "fed-115475166536",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -526,7 +517,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-149199032820",
+      "id": "fed-754735830495",
       "published_at": "Tue, 13 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -557,7 +548,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-515393355174",
+      "id": "fed-460069254396",
       "published_at": "Thu, 8 Oct 2026 20:30:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -588,7 +579,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-856036407624",
+      "id": "fed-733358382144",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -619,7 +610,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-110375125123",
+      "id": "fed-517250900614",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -650,7 +641,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-287139069042",
+      "id": "fed-895730461199",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -681,7 +672,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-336672716061",
+      "id": "liq-ind-720730964437",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -689,7 +680,7 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017353",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017371",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
@@ -697,7 +688,7 @@
         "original_lang": "ko",
         "ko": "[유동성지표·양영빈] QRA·순발행 · 달러/엔 · TGA 재무부 일반계정"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 3개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -715,9 +706,10 @@
       "indicators": [
         {
           "id": "qra",
-          "score": 2.4,
+          "score": 6.0,
           "label_ko": "QRA·순발행",
           "evidence": [
+            "2차 QRA가 국채 시장에 대해 말해 주는 것은? [이코노미21 양영빈] 11월 4일(현지 시간)에 발표된 2차 QRA",
             "중됐던 미 재무부의 2026년 4분기 및 2027년 1분기 국채발행계획(QRA, Quarterly Refunding Announcement) 1차 성명서와 재원조달표(Sources an"
           ]
         },
@@ -735,14 +727,6 @@
           "label_ko": "TGA 재무부 일반계정",
           "evidence": [
             "년 1분기 무려 8000억달러에 달하는 초대형 차입 계획과 1조달러라는 재무부 일반계정(T"
-          ]
-        },
-        {
-          "id": "fomc_liquidity",
-          "score": 0.85,
-          "label_ko": "FOMC·금리 유동성",
-          "evidence": [
-            "[연준와처] PCE 산정방식 변경의 효과…기준금리 어떻게 될까 [이코노미21 양영빈] 이번 9월 30일 발표된 PCE는 많은 관심을 받았다. 향후 금리 경로"
           ]
         }
       ]
@@ -784,7 +768,7 @@
     "ticker_items": 13,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 4,
+    "reporter_indicator_hits": 3,
     "sources_ok": 5,
     "sources_failed": 0
   }
