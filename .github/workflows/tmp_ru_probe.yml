@@ -1,0 +1,27 @@
+name: tmp ru probe
+on:
+  push:
+    branches: [claude/russia-corn-soy]
+    paths: ['.github/workflows/tmp_ru_probe.yml']
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: pip install pandas
+      - run: |
+          python3 - <<'PY'
+          import io, zipfile, urllib.request, pandas as pd
+          U = "https://storage.yandexcloud.net/tochno-st-catalog/Rosstat/data_regions_collection_102_v20260313/data_13_socio_economic_102_v20260313.zip"
+          z = zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(U, timeout=600).read()))
+          name = next(n for n in z.namelist() if n.endswith(".csv"))
+          df = pd.read_csv(z.open(name), sep=None, engine="python")
+          print(df.columns.tolist())
+          ind = df.drop_duplicates("indicator_code")
+          namecol = [c for c in df.columns if "indicator" in c and "name" in c]
+          print(namecol)
+          for c in namecol[:1]:
+              m = ind[ind[c].str.contains("кукуруз|сои|соя|соев|пшениц|ячмен|урожайн", case=False, na=False)]
+              for _, r in m.iterrows():
+                  sub = df[df.indicator_code == r.indicator_code]
+                  print(r.indicator_code, "|", r[c][:150], "|", sub.year.min(), sub.year.max(), sub.object_name.nunique())
+          PY
