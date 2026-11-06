@@ -22,6 +22,15 @@ from us_kr_direction_engine import predict, validate_model, write_immutable
 from us_kr_comparison import DEFAULT_MODEL as COMPARISON_MODEL, predict as comparison_predict
 
 LABELS={'005930':'삼성전자','000660':'SK하이닉스','KOSPI':'KOSPI'}
+PROBABILITY_CONTRACT={
+    'basis':'conditional on nonflat opening and closing directions, matching the frozen training cohort',
+    'opening_up':{'positive':'next open > previous KR close','negative':'next open < previous KR close'},
+    'closing_up':{'positive':'next close > previous KR close','negative':'next close < previous KR close'},
+    'direction_persists':{'positive':'opening and closing directions agree','negative':'opening and closing directions differ'},
+    'opening_extends':{'positive':'open-to-close direction extends the opening direction',
+                       'negative':'opening direction does not extend'},
+    'flat_probability':'not estimated; do not interpret binary complements as a three-class forecast',
+    'reference_only':'recent base rate only; probabilities are not a model direction signal'}
 
 
 def timing(target,now,replay=False):
@@ -154,11 +163,18 @@ def display_payload(forecast,previous=None):
         for ticker,result in forecast['results'].items():
             scores={k:{f:r[f] for f in ['probability','score_0_100','direction','information_state']}
                     for k,r in result['scores'].items()}
+            for name in ['opening_up','closing_up']:
+                if name in scores:
+                    p=scores[name]['probability']
+                    if isinstance(p,bool) or not isinstance(p,(int,float)) or not math.isfinite(p) or not 0<=p<=1:
+                        raise ValueError('invalid display probability')
+                    scores[name].update(up_probability=p,down_probability=1-p)
             cards.append({'ticker':ticker,'label_ko':LABELS[ticker],'scores':scores})
     out={'schema_version':'us-kr-direction-display-v1','status':status,'target_date':target,
          'generated_at':forecast['generated_at'],'KR_source_date':forecast['KR_source_date'],
          'US_source_date':forecast['required_US_session'],'forecast_cutoff_KST':forecast['forecast_cutoff_KST'],
          'model_id':forecast['model_id'],'trained_through':forecast['trained_through'],'research_only':True,
+         'probability_contract':copy.deepcopy(PROBABILITY_CONTRACT),
          'cards':cards,'refresh':{'status':status,'checked_at':forecast['generated_at'],'reasons':forecast['reasons']}}
     if status=='unavailable' and previous:
         out['last_available']={k:previous.get(k) for k in ['target_date','generated_at','status']}
