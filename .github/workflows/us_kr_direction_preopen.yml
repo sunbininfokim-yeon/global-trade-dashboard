@@ -144,8 +144,11 @@ jobs:
 
       # 0 = pre-open forecast, 2 = unavailable. Both publish: the card must
       # say 자료 없음 for today rather than keep yesterday's numbers.
+      # Gate on the step having run: a skipped step's output is null, and
+      # null == '0' is true in Actions expressions (both coerce to 0), so the
+      # bare comparison ran this step on a skipped day and failed (2026-11-06).
       - name: Commit forecast data
-        if: steps.forecast.outputs.code == '0' || steps.forecast.outputs.code == '2'
+        if: steps.forecast.outcome == 'success' && (steps.forecast.outputs.code == '0' || steps.forecast.outputs.code == '2')
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
