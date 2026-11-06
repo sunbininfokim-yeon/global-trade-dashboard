@@ -75,9 +75,10 @@
         const cell = (v, label) => (k[v] ? `${label} ${k[v].n}년 ${k[v].mean_change_pct >= 0 ? '+' : ''}${k[v].mean_change_pct}%` : '');
         const parts = [cell('tight', '빠듯'), cell('neutral', '평년'), cell('ample', '여유')].filter(Boolean).join(' · ');
         const basis = pc.headline === 'ex_china' ? '중국 제외 재고율' : '세계 재고율';
-        const verdict = h.supported
-            ? '<span style="color:#86efac;">재고가 빠듯한 해에 가격이 더 올랐습니다</span>'
-            : '<span style="color:#94a3b8;">재고와 가격이 뚜렷이 맞지 않아 참고만</span>';
+        const verdict = {
+            supported: '<span style="color:#86efac;">재고가 빠듯할수록 가격이 올랐습니다 · 재고 신호 유효</span>',
+            tight_only: '<span style="color:#86efac;">재고가 빠듯한 해에만 가격이 뚜렷이 올랐습니다 · 여유·평년은 차이 없음</span>',
+        }[h.verdict] || '<span style="color:#94a3b8;">재고와 가격이 뚜렷이 맞지 않아 참고만</span>';
         return `<p class="trade-rank-group-head" style="margin-top:10px;">재고-가격 검증 (${esc(h.seasons[0])}~${esc(h.seasons[1])})</p>
             <div class="stock-note">${basis} 5년 평균 대비 ±${pc.band_pct}%로 나눈 해별 국제가격(IMF) 변화: ${parts} · 상관 ${h.corr_gap_vs_change}</div>
             <div class="stock-note" style="margin-top:2px;">${verdict}</div>`;

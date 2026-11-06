@@ -317,6 +317,22 @@ def fetch_prices():
     return out
 
 
+def _check_verdict(ample, neutral, tight, corr):
+    """supported: tight > neutral > ample and the gap moves against price
+    (corr <= -0.2). tight_only: tight years rose clearly more than both
+    others (10+ points) with the same corr, while ample and neutral did not
+    separate. Anything else: none. The palm check's bare `a < n < t` passed
+    gaps of a few tenths of a point, so the size and corr floors are added."""
+    if None in (neutral, tight) or corr > -0.2:
+        return "none"
+    others = [v for v in (ample, neutral) if v is not None]
+    if ample is not None and ample < neutral < tight and tight - ample >= 10:
+        return "supported"
+    if all(tight - v >= 10 for v in others):
+        return "tight_only"
+    return "none"
+
+
 def price_check(key, g, prices):
     """Did tight stocks line up with rising prices?
 
@@ -367,7 +383,7 @@ def price_check(key, g, prices):
         a, n, ti = (classes.get(k, {}).get("mean_change_pct") for k in ("ample", "neutral", "tight"))
         out[basis] = {"seasons": [rows[0]["season"], rows[-1]["season"]], "n": len(rows),
                       "classes": classes, "corr_gap_vs_change": round(corr, 2),
-                      "supported": bool(None not in (a, n, ti) and a < n < ti and corr < 0),
+                      "verdict": _check_verdict(a, n, ti, corr),
                       "rows": rows}
     if not out:
         return None
@@ -411,7 +427,7 @@ def main(argv):
                     if b in pc:
                         log(f"{key} price check {b}: " + ", ".join(
                             f"{v} n={x['n']} {x['mean_change_pct']:+.1f}%" for v, x in pc[b]["classes"].items())
-                            + f", corr {pc[b]['corr_gap_vs_change']}, supported {pc[b]['supported']}")
+                            + f", corr {pc[b]['corr_gap_vs_change']}, {pc[b]['verdict']}")
         log(f"{key}: {c['prev']['season']} {c['prev']['production_kt']:,} -> "
             f"{c['current']['season']} {c['current']['production_kt']:,} kt, "
             f"{len(c['risks'])} risks")
