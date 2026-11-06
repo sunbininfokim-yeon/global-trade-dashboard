@@ -18,6 +18,7 @@ number someone else published or the crop monitor already computed:
 
 Writes
   scripts/grain_balance/psd_world.csv     the PSD slice (committed)
+  scripts/grain_balance/prices.csv        IMF monthly prices (committed)
   public/data/grain_balance_v1.json
 """
 
@@ -36,6 +37,7 @@ import pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.normpath(os.path.join(HERE, "..", "..", "public", "data"))
 SLICE = os.path.join(HERE, "psd_world.csv")
+PRICES = os.path.join(HERE, "prices.csv")
 OUT = os.path.join(DATA, "grain_balance_v1.json")
 ZIPS = [
     "https://apps.fas.usda.gov/psdonline/downloads/psd_grains_pulses_csv.zip",
@@ -47,6 +49,11 @@ IGC_WORD = {"wheat": "wheat", "corn": "maize", "soybeans": "soyabean"}
 UP = {"rose", "gained", "increased", "climbed", "advanced", "firmed", "rallied", "jumped"}
 DOWN = {"dropped", "slumped", "eased", "fell", "declined", "decreased", "lost", "retreated", "slipped"}
 ATTRS = ["Production", "Exports", "Ending Stocks", "Domestic Consumption"]
+
+# IMF monthly world prices (via FRED) and the month each marketing year starts.
+PRICE_IDS = {"wheat": ("PWHEAMTUSDM", 6), "corn": ("PMAIZMTUSDM", 9), "soybeans": ("PSOYBUSDM", 9)}
+FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
+BAND_PCT = 10.0   # stocks-to-use vs its 5-season average, same fixed band as the palm check
 
 # Trade view key -> (PSD commodity, Korean label, stage_conditions crops)
 CROPS = {
@@ -84,7 +91,7 @@ def fetch():
         commodities = [c[0] for c in CROPS.values()]
         parts.append(df[df.Commodity_Description.isin(commodities)
                         & df.Attribute_Description.isin(ATTRS)
-                        & (df.Market_Year >= 2010)])
+                        & (df.Market_Year >= 1995)])
     out = pd.concat(parts, ignore_index=True)[
         ["Commodity_Description", "Country_Name", "Market_Year", "Calendar_Year",
          "Month", "Attribute_Description", "Value"]]
@@ -261,6 +268,79 @@ def crop_block(key, g, release):
     }
 
 
+def fetch_prices():
+    frames = []
+    for key, (sid, _) in PRICE_IDS.items():
+        req = urllib.request.Request(FRED_CSV.format(sid), headers={"User-Agent": "grain-balance/1.0"})
+        with urllib.request.urlopen(req, timeout=120) as r:
+            f = pd.read_csv(io.BytesIO(r.read()))
+        f.columns = ["date", "price"]
+        f["crop"] = key
+        frames.append(f)
+    out = pd.concat(frames, ignore_index=True)
+    out["price"] = pd.to_numeric(out["price"], errors="coerce")
+    out.dropna().to_csv(PRICES, index=False)
+    return out.dropna()
+
+
+def price_check(key, g, prices):
+    """Did tight stocks line up with rising prices?
+
+    For each marketing year, stocks-to-use against its own 5-season average
+    is classed ample (> +10%), tight (< -10%) or neutral, and the IMF world
+    price averaged over that marketing year is compared with the year
+    before. Ex-China is the headline: China holds about half the world's
+    wheat and corn stocks and does not export them. Final USDA estimates are
+    used, so this checks whether the signal and the price agree, not
+    whether an early-season estimate called the price.
+    """
+    import numpy as np
+
+    sid, start = PRICE_IDS[key]
+    pr = prices[prices.crop == key].copy()
+    pr["date"] = pd.to_datetime(pr["date"])
+    pr["my"] = pr.date.dt.year - (pr.date.dt.month < start)
+    full = pr.groupby("my").price.agg(["mean", "count"])
+    full = full[full["count"] == 12]["mean"]
+    chg = (full / full.shift(1) - 1) * 100
+
+    def stu_table(frame):
+        w = frame.pivot_table(index="Market_Year", columns="Attribute_Description",
+                              values="Value", aggfunc="sum").sort_index()
+        return w["Ending Stocks"] / w["Domestic Consumption"] * 100
+
+    out = {}
+    for basis, frame in (("ex_china", g[~g.Country_Name.isin(["China", "World"])]),
+                         ("world", g[g.Country_Name != "World"])):
+        stu = stu_table(frame)
+        rows = []
+        for y in stu.index:
+            past = stu.loc[y - 5:y - 1]
+            if len(past) < 5 or y not in chg.index or pd.isna(chg.get(y)):
+                continue
+            gap = (stu.loc[y] / past.mean() - 1) * 100
+            v = "ample" if gap > BAND_PCT else "tight" if gap < -BAND_PCT else "neutral"
+            rows.append({"season": season_label(int(y)), "stu_pct": round(float(stu.loc[y]), 1),
+                         "stu_vs_5y_pct": round(float(gap), 1), "verdict": v,
+                         "price_change_pct": round(float(chg[y]), 1)})
+        if len(rows) < 10:
+            continue
+        t = pd.DataFrame(rows)
+        classes = {v: {"n": int(len(x)), "mean_change_pct": round(float(x.price_change_pct.mean()), 1),
+                       "rose_share": round(float((x.price_change_pct > 0).mean()), 2)}
+                   for v, x in t.groupby("verdict")}
+        corr = float(np.corrcoef(t.stu_vs_5y_pct, t.price_change_pct)[0, 1])
+        a, n, ti = (classes.get(k, {}).get("mean_change_pct") for k in ("ample", "neutral", "tight"))
+        out[basis] = {"seasons": [rows[0]["season"], rows[-1]["season"]], "n": len(rows),
+                      "classes": classes, "corr_gap_vs_change": round(corr, 2),
+                      "supported": bool(None not in (a, n, ti) and a < n < ti and corr < 0),
+                      "rows": rows}
+    if not out:
+        return None
+    return {"price": f"IMF {sid} (FRED), marketing-year average from month {start}",
+            "band_pct": BAND_PCT, "headline": "ex_china" if "ex_china" in out else "world", **out}
+
+
 def release_of(df):
     last = df.sort_values(["Calendar_Year", "Month"]).iloc[-1]
     return f"{int(last.Calendar_Year)}년 {int(last.Month)}월 USDA WASDE"
@@ -276,11 +356,28 @@ def main(argv):
             log(f"PSD fetch failed ({exc}); using {SLICE}")
             df = pd.read_csv(SLICE)
     release = release_of(df)
+    prices = None
+    if argv[:1] != ["apply"]:
+        try:
+            prices = fetch_prices()
+        except Exception as exc:
+            log(f"FRED prices unavailable ({exc}); using {PRICES}")
+    if prices is None and os.path.exists(PRICES):
+        prices = pd.read_csv(PRICES)
     crops = {}
     for key, (commodity, _, _) in CROPS.items():
         g = df[df.Commodity_Description == commodity]
         crops[key] = crop_block(key, g, release)
         c = crops[key]
+        if prices is not None:
+            pc = price_check(key, g, prices)
+            if pc:
+                c["price_check"] = pc
+                for b in ("ex_china", "world"):
+                    if b in pc:
+                        log(f"{key} price check {b}: " + ", ".join(
+                            f"{v} n={x['n']} {x['mean_change_pct']:+.1f}%" for v, x in pc[b]["classes"].items())
+                            + f", corr {pc[b]['corr_gap_vs_change']}, supported {pc[b]['supported']}")
         log(f"{key}: {c['prev']['season']} {c['prev']['production_kt']:,} -> "
             f"{c['current']['season']} {c['current']['production_kt']:,} kt, "
             f"{len(c['risks'])} risks")
