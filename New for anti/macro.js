@@ -21,8 +21,8 @@ let MM_COUNTRY = null;          // currently opened country payload
 let MM_TAB = 'liquidity';
 let MM_CHART = null;            // { indicatorId, window }
 let MM_CPI_STRUCTURE = null;    // U.S. CPI relationship map/snapshot, loaded on demand
-let MM_CPI_CONTRIB = null;      // us_cpi_contrib_v1.json: item contributions, loaded when the tab opens
-let MM_CPI_CONTRIB_PROMISE = null;
+const MM_CPI_CONTRIB = {};      // file -> us/kr_cpi_contrib_v1.json: item contributions, loaded when the tab opens
+const MM_CPI_CONTRIB_PROMISE = {};
 let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
@@ -67,19 +67,20 @@ const mmStatementDiffFetch = async () => {
     return MM_STATEMENT_DIFF_PROMISE;
 };
 
-// us_cpi_contrib_v1.json (wire_us_cpi_contrib.py): every weighted CPI item's contribution, 25 months,
-// headline and core, MoM and YoY -- ~600 KB, so it is read only when the 기여도 tab is opened.
-const mmCpiContribFetch = () => {
-    if (!MM_CPI_CONTRIB_PROMISE) {
-        MM_CPI_CONTRIB_PROMISE = fetch('/public/data/us_cpi_contrib_v1.json', { cache: 'no-cache' })
+// us_cpi_contrib_v1.json (wire_us_cpi_contrib.py) / kr_cpi_contrib_v1.json (wire_kr_cpi_contrib.py): every
+// weighted CPI item's contribution, 25 months, headline and core, MoM and YoY -- 0.6-1.3 MB, so a file is read
+// only when its 기여도 tab is opened. The card names its file (ind.cpi_contrib.file).
+const mmCpiContribFetch = (file) => {
+    if (!MM_CPI_CONTRIB_PROMISE[file]) {
+        MM_CPI_CONTRIB_PROMISE[file] = fetch(`/${file}`, { cache: 'no-cache' })
             .then((res) => {
                 if (!res.ok) throw new Error(`기여도 데이터를 못 받았습니다 (${res.status})`);
                 return res.json();
             })
-            .then((doc) => { MM_CPI_CONTRIB = doc; if (MM_CHART) mmPaint(); return doc; })
-            .catch((err) => { MM_CPI_CONTRIB = { error: String(err.message || err) }; if (MM_CHART) mmPaint(); });
+            .then((doc) => { MM_CPI_CONTRIB[file] = doc; if (MM_CHART) mmPaint(); return doc; })
+            .catch((err) => { MM_CPI_CONTRIB[file] = { error: String(err.message || err) }; if (MM_CHART) mmPaint(); });
     }
-    return MM_CPI_CONTRIB_PROMISE;
+    return MM_CPI_CONTRIB_PROMISE[file];
 };
 
 // cb_policy_v1.json: the policy-board panels of the Bank of Korea, Bank of Japan,
@@ -644,6 +645,115 @@ const mmBarSeries = (dates, values, opts = {}) => {
         </svg>
         <div class="mm-tip-box" style="display:none"></div>
     </div>`;
+};
+
+// Detail panels a pipeline attaches to a card (ind.panels): grouped bars, a signed stack with a
+// balance line, lines, or a ranked list (bank by bank). One renderer for all of them, so a new
+// breakdown is data, not code. First used by the Korean bank credit cards (kr_bank_credit.py).
+const MM_PANEL_COLORS = ['#38bdf8', '#f97316', '#a78bfa', '#34d399', '#fb7185', '#facc15'];
+const mmPanelNum = (v, unit) => (Number.isFinite(v)
+    ? `${v.toLocaleString(undefined, { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 })}${unit === '%' ? '%' : unit ? ` ${unit}` : ''}`
+    : '—');
+
+const mmPanelView = (p) => {
+    if (!p) return '<p class="fin-note">패널 데이터가 없습니다.</p>';
+    const note = p.note_ko ? `<p class="fin-note">${finEsc(p.note_ko)}</p>` : '';
+    if (p.type === 'hbar') {
+        const rows = p.rows || [];
+        const hi = Math.max(...rows.map((r) => Math.abs(r.value) || 0), 1e-9);
+        return `
+        <p class="mm-view-title">${finEsc(p.asof || '')} 기준 · 높은 순</p>
+        <div class="mm-panel-hbars">${rows.map((r) => `
+            <div class="mm-panel-hrow">
+                <span class="mm-panel-hlabel">${finEsc(r.label)}</span>
+                <span class="mm-panel-htrack"><span class="mm-panel-hfill" style="width:${(Math.abs(r.value) / hi * 100).toFixed(1)}%"></span></span>
+                <span class="mm-panel-hval">${mmPanelNum(r.value, p.unit)}</span>
+                <span class="mm-panel-hsub">${finEsc(r.sub || '')}</span>
+            </div>`).join('')}</div>${note}`;
+    }
+
+    const dates = p.dates || [];
+    const series = p.series || [];
+    const line = p.line && (p.line.values || []).some(Number.isFinite) ? p.line : null;
+    const n = dates.length;
+    if (!n || !series.length) return `<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>${note}`;
+
+    // y range: stacks add up per sign; bars and lines take every value
+    let vals = [];
+    if (p.type === 'stack') {
+        for (let i = 0; i < n; i += 1) {
+            let pos = 0, neg = 0;
+            series.forEach((s) => { const v = s.values[i]; if (Number.isFinite(v)) { if (v >= 0) pos += v; else neg += v; } });
+            vals.push(pos, neg);
+        }
+    } else {
+        series.forEach((s) => vals.push(...s.values.filter(Number.isFinite)));
+    }
+    if (line) vals.push(...line.values.filter(Number.isFinite));
+    let lo = Math.min(...vals, p.type === 'lines' ? Infinity : 0), hi = Math.max(...vals, p.type === 'lines' ? -Infinity : 0);
+    if (!Number.isFinite(lo) || !Number.isFinite(hi)) return `<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>${note}`;
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.08; lo -= p.type === 'lines' ? pad : (lo < 0 ? pad : 0); hi += pad;
+
+    const plotW = MM_W - MM_L - MM_R;
+    const slot = plotW / n;
+    const cx = (i) => MM_L + slot * (i + 0.5);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const zero = sy(Math.max(lo, Math.min(0, hi)));
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const step = Math.max(1, Math.ceil(n / 8));
+
+    let marks = '';
+    if (p.type === 'bars') {
+        const k = series.length, bw = Math.max(slot * 0.8 / k, 1);
+        series.forEach((s, j) => s.values.forEach((v, i) => {
+            if (!Number.isFinite(v)) return;
+            const x = cx(i) - slot * 0.4 + j * bw, y = sy(v);
+            marks += `<rect x="${x.toFixed(1)}" y="${Math.min(y, zero).toFixed(1)}" width="${(bw * 0.9).toFixed(1)}" height="${Math.max(Math.abs(zero - y), 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % 6]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
+        }));
+    } else if (p.type === 'stack') {
+        const bw = Math.max(slot * 0.62, 1);
+        for (let i = 0; i < n; i += 1) {
+            let pos = 0, neg = 0;
+            series.forEach((s, j) => {
+                const v = s.values[i];
+                if (!Number.isFinite(v) || v === 0) return;
+                const from = v >= 0 ? pos : neg, to = from + v;
+                if (v >= 0) pos = to; else neg = to;
+                const y1 = sy(Math.max(from, to)), y2 = sy(Math.min(from, to));
+                marks += `<rect x="${(cx(i) - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(y2 - y1, 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % 6]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
+            });
+        }
+    } else {
+        series.forEach((s, j) => {
+            const d = s.values.map((v, i) => (Number.isFinite(v) ? `${cx(i).toFixed(1)},${sy(v).toFixed(1)}` : null)).filter(Boolean);
+            if (d.length) marks += `<polyline points="${d.join(' ')}" fill="none" stroke="${MM_PANEL_COLORS[j % 6]}" stroke-width="2"/>`;
+        });
+    }
+    if (line) {
+        const d = line.values.map((v, i) => (Number.isFinite(v) ? `${cx(i).toFixed(1)},${sy(v).toFixed(1)}` : null)).filter(Boolean);
+        marks += `<polyline points="${d.join(' ')}" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="${p.type === 'stack' ? '' : '4 3'}"/>`;
+        line.values.forEach((v, i) => { if (Number.isFinite(v)) marks += `<circle cx="${cx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.6" fill="#e2e8f0"><title>${finEsc(`${dates[i]} ${line.label} ${mmPanelNum(v, p.unit)}`)}</title></circle>`; });
+    }
+
+    const all = [...series.map((s, j) => ({ ...s, color: MM_PANEL_COLORS[j % 6] })), ...(line ? [{ ...line, color: '#e2e8f0' }] : [])];
+    const lastIdx = (s) => { for (let i = s.values.length - 1; i >= 0; i -= 1) if (Number.isFinite(s.values[i])) return i; return -1; };
+    const legend = all.map((s) => {
+        const i = lastIdx(s), prev = i > 0 ? s.values[i - 1] : null;
+        const chg = Number.isFinite(prev) && i >= 0 ? s.values[i] - prev : null;
+        return `<span class="mm-panel-key"><i style="background:${s.color}"></i>${finEsc(s.label)} <b>${i >= 0 ? mmPanelNum(s.values[i], p.unit) : '—'}</b>${Number.isFinite(chg) ? `<em>${chg >= 0 ? '+' : ''}${chg.toFixed(2)}</em>` : ''}</span>`;
+    }).join('');
+
+    return `
+    <p class="mm-view-title">${finEsc(dates[n - 1] || '')} 기준 · 직전 분기 대비</p>
+    <div class="mm-panel-legend">${legend}</div>
+    <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="${finEsc(p.label || '')}">
+        ${ticks.map((t) => `<line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+            <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t)}</text>`).join('')}
+        ${marks}
+        ${p.type !== 'lines' ? `<line x1="${MM_L}" y1="${zero.toFixed(1)}" x2="${MM_W - MM_R}" y2="${zero.toFixed(1)}" class="mm-zero"/>` : ''}
+        ${dates.map((d, i) => (i % step === 0 || i === n - 1 ? `<text x="${cx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick" text-anchor="middle">${finEsc(d)}</text>` : '')).join('')}
+    </svg>${note}`;
 };
 
 // Bars or a line. A price, a yield or an index is a continuous level -- a line is honest. A growth
@@ -1802,18 +1912,22 @@ const mmMoversView = (ind) => {
 // US CPI contributions: which parts of the basket added how many percentage points, for any of the
 // last 25 months. Three panels on one tab -- the months as stacked bars (click one to read it), the
 // eight groups as one stacked bar, and the whole hierarchy as an expandable table (or every item flat).
-const MM_CPI_GROUP_COLORS = ['#f59e0b', '#60a5fa', '#a78bfa', '#34d399', '#f472b6', '#22d3ee', '#fb7185', '#a3e635'];
+const MM_CPI_GROUP_COLORS = ['#f59e0b', '#60a5fa', '#a78bfa', '#34d399', '#f472b6', '#22d3ee', '#fb7185', '#a3e635',
+    '#fbbf24', '#818cf8', '#2dd4bf', '#e879f9'];
 
 const mmCpiName = (n) => n.name_ko || n.name;
 
 const mmCpiContribView = (ind, mode) => {
     const meta = ind.cpi_contrib || {};
-    if (!MM_CPI_CONTRIB) {
-        mmCpiContribFetch();
+    const file = meta.file || 'public/data/us_cpi_contrib_v1.json';
+    const doc = MM_CPI_CONTRIB[file];
+    if (!doc) {
+        mmCpiContribFetch(file);
         return '<p class="fin-note">기여도 데이터를 불러오는 중입니다…</p>';
     }
-    if (MM_CPI_CONTRIB.error) return `<p class="fin-note">${finEsc(MM_CPI_CONTRIB.error)}</p>`;
-    const doc = MM_CPI_CONTRIB;
+    if (doc.error) return `<p class="fin-note">${finEsc(doc.error)}</p>`;
+    // Node numbers belong to one file: opening the other country's card starts collapsed.
+    if (MM_CHART.cpiFile !== file) { MM_CHART.cpiFile = file; MM_CHART.cpiOpen = new Set(); }
     const basket = (doc.baskets || {})[meta.basket] || {};
     const months = (doc.months || []).filter((m) => basket[m] && basket[m][mode]);
     if (!months.length) return '<p class="fin-note">이 달의 기여도 자료가 없습니다.</p>';
@@ -1828,10 +1942,14 @@ const mmCpiContribView = (ind, mode) => {
     const rowsOf = (m) => ((basket[m] || {})[mode] || {}).rows || {};
     const cur = basket[month][mode];
     const rows = rowsOf(month);
-    const pp = (v, d = 2) => (Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(d)}` : '—');
+    const pp = (v, d = 2) => {
+        if (!Number.isFinite(v)) return '—';
+        const t = (Math.abs(v) < 0.5 * 10 ** -d ? 0 : v).toFixed(d);      // no "-0.00"
+        return `${v > 0 && Number(t) !== 0 ? '+' : ''}${t}`;
+    };
     const modeKo = mode === 'mom' ? '전월비' : '전년비';
 
-    // Months: stacked bars of the eight groups, positives up and negatives down.
+    // Months: stacked bars of the top-level groups (8 US, 12 Korea), positives up and negatives down.
     const W = 640, H = 170, pad = 22;
     let hi = 0, lo = 0;
     months.forEach((m) => {
@@ -1915,7 +2033,7 @@ const mmCpiContribView = (ind, mode) => {
             <button type="button" class="pf-mode-btn" data-mm-cpi-month="${months[Math.min(months.length - 1, i + 1)]}" ${i === months.length - 1 ? 'disabled' : ''}>▶</button>
             <span class="mm-cpi-sum">공표 <b>${pp(cur.published_pct)}%</b> · 항목 합계 ${pp(cur.sum_pp)}%p · 잔차 ${pp(cur.residual_pp)}%p</span>
         </div>
-        <p class="mm-view-title">월별 기여도 (막대 = 8개 대분류, 점 = 공표치 · 막대를 누르면 그 달로)</p>
+        <p class="mm-view-title">월별 기여도 (막대 = ${groups.length}개 대분류, 점 = 공표치 · 막대를 누르면 그 달로)</p>
         ${monthsSvg}
         <p class="mm-view-title">${month} 대분류 기여도 (%p)</p>
         ${strip}
@@ -1928,7 +2046,7 @@ const mmCpiContribView = (ind, mode) => {
         <div class="co-table-wrap mm-table"><table class="co-table mm-cpi-table">
             <thead><tr><th>항목</th><th>가중치</th><th>${modeKo}</th><th>기여도(%p)</th><th></th></tr></thead>
             <tbody>${body}</tbody></table></div>
-        <p class="fin-note">${finEsc(doc.method_ko || '')}${isCore ? ' 근원은 식품·가정용 에너지·자동차 연료를 뺀 품목을 근원 지수 안의 비중으로 다시 나눈 값입니다.' : ''} 가중치는 BLS 상대중요도(${finEsc(String(doc.weights_december || ''))}년 12월 기준까지). 출처: BLS.</p>`;
+        <p class="fin-note">${finEsc(doc.method_ko || '')}${isCore ? ` ${finEsc(doc.core_note_ko || '근원은 식품·가정용 에너지·자동차 연료를 뺀 품목을 근원 지수 안의 비중으로 다시 나눈 값입니다.')}` : ''} ${finEsc(doc.weights_note_ko || `가중치는 BLS 상대중요도(${doc.weights_december || ''}년 12월 기준까지). 출처: BLS.`)}</p>`;
 };
 
 // US Treasury coupon auctions: each tenor's newest result next to the change
@@ -2045,6 +2163,8 @@ const mmViewsFor = (ind) => {
     if (!daily && !hasBalanceSheet && !hasQeQt && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
         views.push({ id: 'history', label: '추이' });
     }
+    // Pipeline-attached breakdowns (부문별, 연체 흐름, 은행별, ...), one tab each.
+    (ind.panels || []).forEach((p) => views.push({ id: `panel:${p.id}`, label: p.label }));
     // 5/20/60/120/240-day moving averages are a daily-chart convention
     // (Korean HTS terminology) and meaningless on the 5-year monthly bars
     // every other indicator uses -- a 240-period average over monthly data
@@ -2218,6 +2338,7 @@ const mmChartDrawer = () => {
     else if (view === 'contrib') body = mmContribView(ind.contrib);
     else if (view === 'contrib_ind') body = mmContribView(ind.contrib_industry, '산업별');
     else if (view === 'official') body = mmOfficialView(ind);
+    else if (view.startsWith('panel:')) body = mmPanelView((ind.panels || []).find((p) => `panel:${p.id}` === view));
     else if (view === 'components') body = mmComponentsView(ind, ind.components_note_ko || (ind.chart_type === 'line+components' ? '' : '만기별 발행 구성입니다.'));
     else {
         const src = modeSeries || ind;
@@ -3925,8 +4046,8 @@ const renderMacroMonitor = async () => {
             const ce = t.closest('[data-mm-cpi-expand]');
             if (ce && MM_CHART) {
                 const all = ce.getAttribute('data-mm-cpi-expand') === 'all';
-                MM_CHART.cpiOpen = new Set(all && MM_CPI_CONTRIB && MM_CPI_CONTRIB.nodes
-                    ? MM_CPI_CONTRIB.nodes.map((_, k) => k) : []);
+                const doc = MM_CPI_CONTRIB[MM_CHART.cpiFile] || {};
+                MM_CHART.cpiOpen = new Set(all && doc.nodes ? doc.nodes.map((_, k) => k) : []);
                 mmPaint();
                 return;
             }

@@ -1,0 +1,136 @@
+{
+  "schema_version": "us-kr-daily-cycle-validation-v1",
+  "generated_at": "2026-11-06T08:24:41.633041+00:00",
+  "base_main_sha": "166b8a04fe4156b0e0f56a5b1de9bec13226cde0",
+  "model_id": "115ddb42c8c8449b63c57c35fe7642d22f9af3f2fe84def467bebd30ed976d07",
+  "frozen_model_validated": true,
+  "implementation_sha256": {
+    "us_kr_direction_engine.py": "5188750fa0564410ece69bd67b9eab7d7aeea7f365307f1edd3a7e731bd97dd7",
+    "option_direction_model.py": "2f82c96f208509b77089290bf0f30a2b29b392a52db9325423ac5de49cb9ace4",
+    "research_direction_diagnostics.py": "330b636990f5589c8163b4494b6f6e58e0a9ac6f01a5dff306a8c39f0333d4a3",
+    "research_option_dynamics.py": "df75e3d995204e8c5f5722f9ae168a2b22049a2a82e18577c55a28a8a5938848",
+    "research_pr791_evaluation.py": "f357cfbd7b76e2d92c7c20b279997bae5b3a920c84c80a2582106f3cbfc9762a",
+    "research_short_horizon_flow.py": "c179a5462c189edb7f3215450162bdc371f921ff798f06e1c8de65950390dcfa",
+    "research_short_horizon_prediction.py": "16b2b2c79a9ba92959c0f098c408f16c17b32d796e490297951102175a03e9bb",
+    "research_mixed_option_activity.py": "95d5ce819a60460d30d905e42c763719984d25044d7e2e9377e2a71b08c310d7",
+    "research_stock_open_close_direction.py": "3da874f493fd21e0c4a41444c2b8f79f0bb5ea8986d96d80f783bfb3ae30b522",
+    "research_us_lag1_direction.py": "9c75b775b1c4a9e2181189b641780782f2b518aa0e973d99d0e898985d162f31"
+  },
+  "retrospective_input_refresh": {
+    "status": "retrospective_replay",
+    "target_date": "2026-11-03",
+    "KR_source_date": "2026-11-02",
+    "US_source_date": "2026-11-02",
+    "input_hashes": {
+      "board": "75d1224fa92cca35b12e4efe251830348c4673a3257056106d0ed5c236bd6ec4",
+      "prices": "9aaa4658982369ed0ae2c99837f9911947568b08bdb354d9b9e1771e766c6d65",
+      "us": "956730c93331e205887f5a0b6d4c5c9509e0998ffe8b546e958bf05b7a2aa56e"
+    },
+    "previous_target_date": "2026-11-02",
+    "previous_KR_source_date": "2026-10-30",
+    "previous_input_hashes": {
+      "board": "b8093fecddd5ee44c2b961f0cda67a922f8f7ae2e840672e400743bb8c20f6e0",
+      "prices": "d8349f9538c621bc2936be5ac7cdb08dbb8953446f25b6dca99e34337ce69f48",
+      "us": "c81f6cec71d1211b14eabf653a6c83fde8f64107a0ec2764da9b4971431914b7"
+    },
+    "same_model_id": true,
+    "changed_probabilities": [
+      {
+        "ticker": "005930",
+        "event": "opening_up",
+        "previous_probability": 0.10320319372824271,
+        "updated_probability": 0.14157381800017446
+      },
+      {
+        "ticker": "005930",
+        "event": "closing_up",
+        "previous_probability": 0.2505620014870923,
+        "updated_probability": 0.2476883563109208
+      },
+      {
+        "ticker": "000660",
+        "event": "opening_up",
+        "previous_probability": 0.1673432404921132,
+        "updated_probability": 0.1334947228931331
+      },
+      {
+        "ticker": "000660",
+        "event": "closing_up",
+        "previous_probability": 0.40191088259561203,
+        "updated_probability": 0.2561000091292437
+      },
+      {
+        "ticker": "KOSPI",
+        "event": "opening_up",
+        "previous_probability": 0.26684825389833583,
+        "updated_probability": 0.16928729188551883
+      },
+      {
+        "ticker": "KOSPI",
+        "event": "closing_up",
+        "previous_probability": 0.1683123558550391,
+        "updated_probability": 0.19515350582836866
+      },
+      {
+        "ticker": "KOSPI",
+        "event": "opening_extends",
+        "previous_probability": 0.5493609401333365,
+        "updated_probability": 0.544318335290027
+      }
+    ],
+    "first_records_created": 0,
+    "eligible_for_prospective_evaluation": false,
+    "note": "Different historical input sessions through 2026-11-02 vs 2026-10-30; checks input sensitivity, not accuracy or a live forecast"
+  },
+  "late_live_invocation": {
+    "target_date": "2026-11-06",
+    "generated_at": "2026-11-06T08:21:09.252453+00:00",
+    "status": "unavailable",
+    "reasons": [
+      "forecast cutoff passed; explicit retrospective replay required"
+    ],
+    "cards": 0,
+    "first_records_created": 0
+  },
+  "fresh_outcome_collection": {
+    "collected_at": "2026-11-06T08:19:32.652198+00:00",
+    "errors": [],
+    "price_sha256": "628997606c614148c01023bb42fc46c1e6b6c848e2d696cd6dff964cd128a421",
+    "sessions": {
+      "005930": [
+        "2026-11-05",
+        "2026-11-06"
+      ],
+      "000660": [
+        "2026-11-05",
+        "2026-11-06"
+      ],
+      "KOSPI": [
+        "2026-11-05",
+        "2026-11-06"
+      ]
+    },
+    "note": "Real observed prices, no first forecast existed in this local validation archive; not an accuracy result"
+  },
+  "next_target": {
+    "target_date": "2026-11-09",
+    "source": "2026-11-06",
+    "us_source": "2026-11-06",
+    "cutoff": "2026-11-09T08:30:00+09:00"
+  },
+  "verification": {
+    "market_microstructure_tests": {
+      "passed": 309
+    },
+    "ui_contract": "passed",
+    "integration_proposal_yaml_shell_python_syntax": "passed"
+  },
+  "deployment": "not changed or verified by this validation",
+  "private_krx_raw": "API returned 404; presence vs access could not be distinguished",
+  "operational_endpoint_read": {
+    "url": "https://global-trade-dashboard.sunbin-info-kim.workers.dev/public/data/us_kr_direction_v1.json",
+    "http_status": 200,
+    "content_type": "text/html",
+    "forecast_json_verified": false
+  }
+}
