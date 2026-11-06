@@ -12,7 +12,8 @@ number someone else published or the crop monitor already computed:
             in the field (harvested seasons are already in USDA's numbers)
             (stage_conditions_v1.json); calls whose past record did not
             match the harvest are kept but marked as reference only
-  supply    big producers USDA has down 5% or more on last season
+  supply    producers with 3%+ of world output that USDA has down 5% or
+            more on last season
   stocks    world ending stocks to use below its 5-season average
 
 Writes
@@ -48,6 +49,7 @@ CROPS = {
     "soybeans": ("Oilseed, Soybean", "대두", {"soy", "soybeans"}),
 }
 SUPPLY_DROP_PCT = -5.0
+SUPPLY_MIN_SHARE = 3.0   # % of world output; smaller producers are noise here
 TOP_PRODUCERS = 8
 COUNTRY_KO = {
     "United States": "미국", "China": "중국", "Brazil": "브라질", "European Union": "EU",
@@ -152,9 +154,16 @@ def weather_risks(crops):
                 "reference_only": ov.get("history_check") == "unmatched",
                 "text_ko": f"{country} {region}: {'·'.join(bad)} 불리",
             })
+    # Several monitor keys can share one area (Australia's winter crops are
+    # one calendar for wheat, barley and canola): keep one line per area.
+    seen, unique = set(), []
+    for r in sorted(risks, key=lambda r: r["reference_only"]):
+        if r["text_ko"] not in seen:
+            seen.add(r["text_ko"])
+            unique.append(r)
     # Calls whose past record matched the harvest come first.
-    risks.sort(key=lambda r: (r["reference_only"], r["country_ko"]))
-    return risks, tally
+    unique.sort(key=lambda r: (r["reference_only"], r["country_ko"]))
+    return unique, tally
 
 
 def crop_block(key, g, release):
@@ -182,7 +191,8 @@ def crop_block(key, g, release):
 
     risks = []
     for p in producers:
-        if p["change_pct"] is not None and p["change_pct"] <= SUPPLY_DROP_PCT:
+        if (p["change_pct"] is not None and p["change_pct"] <= SUPPLY_DROP_PCT
+                and p["share_pct"] >= SUPPLY_MIN_SHARE):
             risks.append({"kind": "supply", "country_ko": p["country_ko"],
                           "text_ko": f"{p['country_ko']} 생산 {p['change_pct']:+.0f}% "
                                      f"(세계의 {p['share_pct']:.0f}%)"})

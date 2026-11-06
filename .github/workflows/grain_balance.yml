@@ -46,7 +46,7 @@ jobs:
           t = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?s)<(script|style).*?</\1>", " ", t)))
           t = re.sub(r"\s+", " ", t)
           i = t.lower().find("wheat")
-          print(len(t)); print(t[max(0, i - 300): i + 2500])
+          print(len(t)); print(t[2400:])
           PY
           rm -f igc.html
 
