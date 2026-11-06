@@ -67,6 +67,19 @@
         return `<div class="gb-risk${r.reference_only ? ' ref' : ''}"><span class="gb-tag">${TAG[r.kind] || ''}</span>${esc(r.text_ko)}${why ? `<span class="why">${why}</span>` : ''}</div>`;
     }
 
+    // International Grains Council: its public summary is prose, so the move
+    // in its price sub-index is the one number; the sentences stay English.
+    function igcHtml(g) {
+        if (!g || (!g.sentences_en?.length && g.goi_change_pct == null)) return '';
+        const sub = g.goi_change_pct == null ? '' : `<div class="gb-line"><span>IGC 가격지수 (전월 대비)</span><span>${pct(g.goi_change_pct)}</span></div>`;
+        const text = g.sentences_en?.length
+            ? `<details style="margin-top:4px;"><summary class="stock-note" style="cursor:pointer;">IGC 시황 원문 보기${g.report_date ? ` · ${esc(g.report_date)}` : ''}</summary>
+                ${g.sentences_en.map((x) => `<div class="stock-note" style="margin:4px 0;">${esc(x)}</div>`).join('')}
+                <a href="${esc(g.url)}" target="_blank" rel="noopener" class="stock-note" style="color:#7dd3fc;">국제곡물이사회(IGC) 시장 보고서 요약</a></details>`
+            : '';
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">국제곡물이사회(IGC)</p>${sub}${text}`;
+    }
+
     function cardHtml(c) {
         const cur = c.current;
         const weather = c.risks.filter((r) => r.kind === 'weather');
@@ -83,6 +96,7 @@
             ${shown.length ? shown.map(riskHtml).join('') : '<div class="stock-note">눈에 띄는 리스크 없음</div>'}
             ${more}
             <div class="stock-note">생육 중인 산지 날씨 판정: 불리 ${t.unfavorable ?? 0} · 보통 ${t.neutral ?? 0} · 유리 ${t.favorable ?? 0}</div>
+            ${igcHtml(c.igc)}
             <p class="trade-rank-group-head" style="margin-top:10px;">주요 생산국 (전년 대비)</p>
             ${producers}
             <div class="stock-note" style="margin-top:6px;">출처: <a href="${esc(c.url)}" target="_blank" rel="noopener" style="color:#7dd3fc;">${esc(c.release)}</a></div>`;

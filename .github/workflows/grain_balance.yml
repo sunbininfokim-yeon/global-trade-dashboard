@@ -1,7 +1,7 @@
 name: Monthly world grain balance
 
-# USDA PSD world production / stocks for wheat, corn and soybeans plus the
-# risk list the trade view shows (scripts/grain_balance/build.py). Runs after
+# USDA PSD world production / stocks for wheat, corn and soybeans, the IGC
+# market summary, and the risk list the trade view shows (scripts/grain_balance/build.py). Runs after
 # the monthly WASDE (around the 10th-12th) and again after the weekly stage
 # build so the weather risks stay current.
 #
@@ -34,21 +34,6 @@ jobs:
       - run: pip install pandas
       - name: Build world grain balance
         run: python3 "New for anti/scripts/grain_balance/build.py"
-
-      - name: Probe IGC summary (PR only)
-        if: github.event_name == 'pull_request'
-        continue-on-error: true
-        run: |
-          curl -sL -m 60 -A "Mozilla/5.0" https://www.igc.int/en/gmr_summary.aspx -o igc.html -w "%{http_code}\n" || true
-          python3 - <<'PY'
-          import re, html
-          t = open("igc.html", encoding="utf-8", errors="replace").read()
-          t = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?s)<(script|style).*?</\1>", " ", t)))
-          t = re.sub(r"\s+", " ", t)
-          i = t.lower().find("wheat")
-          print(len(t)); print(t[2400:])
-          PY
-          rm -f igc.html
 
       - name: Commit to the pull request branch
         if: github.event_name == 'pull_request'

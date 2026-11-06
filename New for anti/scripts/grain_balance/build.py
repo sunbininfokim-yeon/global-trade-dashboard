@@ -23,7 +23,9 @@ Writes
 
 import io
 import json
+import html
 import os
+import re
 import sys
 import urllib.request
 import zipfile
@@ -40,6 +42,10 @@ ZIPS = [
     "https://apps.fas.usda.gov/psdonline/downloads/psd_oilseeds_csv.zip",
 ]
 PSD_URL = "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery"
+IGC_URL = "https://www.igc.int/en/gmr_summary.aspx"
+IGC_WORD = {"wheat": "wheat", "corn": "maize", "soybeans": "soyabean"}
+UP = {"rose", "gained", "increased", "climbed", "advanced", "firmed", "rallied", "jumped"}
+DOWN = {"dropped", "slumped", "eased", "fell", "declined", "decreased", "lost", "retreated", "slipped"}
 ATTRS = ["Production", "Exports", "Ending Stocks", "Domestic Consumption"]
 
 # Trade view key -> (PSD commodity, Korean label, stage_conditions crops)
@@ -124,7 +130,7 @@ def weather_risks(crops):
     except OSError:
         return [], {}
     names = region_names()
-    risks, tally = [], {"unfavorable": 0, "neutral": 0, "favorable": 0}
+    risks, tally = [], {"unfavorable": set(), "neutral": set(), "favorable": set()}
     for key, entries in sc.get("regions", {}).items():
         for e in entries:
             if e.get("crop") not in crops:
@@ -135,13 +141,13 @@ def weather_risks(crops):
                 continue
             ov = e.get("overall") or {}
             v = ov.get("verdict")
+            country, region = names.get(key, ("", key))
             if v in tally:
-                tally[v] += 1
+                tally[v].add((country, region))
             if v != "unfavorable":
                 continue
             bad = [s["name_ko"] for s in e.get("stages", [])
                    if s.get("status") == "unfavorable"]
-            country, region = names.get(key, ("", key))
             risks.append({
                 "kind": "weather",
                 "country_ko": country,
@@ -163,7 +169,41 @@ def weather_risks(crops):
             unique.append(r)
     # Calls whose past record matched the harvest come first.
     unique.sort(key=lambda r: (r["reference_only"], r["country_ko"]))
-    return unique, tally
+    return unique, {k: len(v) for k, v in tally.items()}
+
+
+def igc_summary():
+    """The IGC Grain Market Report summary page: report date, and per crop
+    the GOI sub-index move and the sentences that mention the crop. Prose
+    only -- the tables are in the members' report -- so this is what IGC
+    says, kept in English, beside USDA's numbers."""
+    try:
+        req = urllib.request.Request(IGC_URL, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            raw = r.read().decode("utf-8", "replace")
+    except Exception as exc:
+        log(f"IGC summary unavailable ({exc})")
+        return None
+    t = re.sub(r"(?s)<(script|style).*?</\1>", " ", raw)
+    t = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", t)))
+    m = re.search(r"IGC Grain Market Report - (\d{1,2} \w+ \d{4})", t)
+    body = t.split("HIGHLIGHTS", 1)[-1].split("This page is currently", 1)[0]
+    body = body.replace("(see chart)", " ")
+    sentences = [x.strip() for x in re.split(r"(?<=[.])\s+(?=[A-Z])", body) if x.strip()]
+    out = {"report_date": m.group(1) if m else None, "url": IGC_URL, "crops": {}}
+    for key, word in IGC_WORD.items():
+        hits = [x for x in sentences if word in x.lower()]
+        sub = None
+        for x in hits:
+            mm = re.search(rf"GOI {word}s? sub-Index (\w+) by (?:a net )?(\d+(?:\.\d+)?)%", x, re.I)
+            if mm and mm.group(1).lower() in UP | DOWN:
+                v = float(mm.group(2))
+                sub = v if mm.group(1).lower() in UP else -v
+        out["crops"][key] = {"goi_change_pct": sub, "sentences_en": hits[:4]}
+    if not any(c["sentences_en"] for c in out["crops"].values()):
+        log("IGC summary had no crop sentences")
+        return None
+    return out
 
 
 def crop_block(key, g, release):
@@ -244,10 +284,17 @@ def main(argv):
         log(f"{key}: {c['prev']['season']} {c['prev']['production_kt']:,} -> "
             f"{c['current']['season']} {c['current']['production_kt']:,} kt, "
             f"{len(c['risks'])} risks")
+    igc = igc_summary()
+    if igc:
+        for key, c in crops.items():
+            c["igc"] = {"report_date": igc["report_date"], "url": igc["url"],
+                        **igc["crops"].get(key, {})}
+        log(f"IGC {igc['report_date']}: " + ", ".join(
+            f"{k} {v['goi_change_pct']}" for k, v in igc["crops"].items()))
     payload = {
         "schema_version": 1,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "source_ko": f"{release} (PSD) · 날씨 리스크는 작황 모니터 생육 단계 판정",
+        "source_ko": f"{release} (PSD) · 국제곡물이사회(IGC) 시황 요약 · 날씨 리스크는 작황 모니터 생육 단계 판정",
         "crops": crops,
     }
     with open(OUT, "w", encoding="utf-8") as f:
