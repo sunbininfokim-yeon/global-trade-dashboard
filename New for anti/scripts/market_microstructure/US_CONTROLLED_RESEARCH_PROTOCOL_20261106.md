@@ -56,3 +56,15 @@ HAC는 정렬된 공통 관측5개 기준이며 결측/동가 제외가 있으�
 유망한 기간을 골라 검증된 결과로 승격하지 않는다. 검정 자체가 전향 성적이나 인과효과를 증명하지 않는다.
 
 비용·손익·매수/매도 비중 추천·자동 재학습·실제 사전 예측 발행은 범위 밖이다.
+
+## 실행 중 발견한 달력 감사 사항
+
+고정 라이브러리가2025-01-09를 미국 거래일로 기대했지만 실제로는 특별 휴장이었다.
+[NYSE/ICE 공식 공지](https://ir.theice.com/press/news-details/2024/The-New-York-Stock-Exchange-Will-Close-Markets-on-January-9-to-Honor-the-Passing-of-Former-President-Jimmy-Carter-on-National-Day-of-Mourning/default.aspx)로
+확인하고 이 연구의 달력 어댑터에만 해당 날짜를 제외했다. 원래 frozen helper/아티팩트는 수정하지 않았다.
+초기에는 미국 자료 누락으로 제외했던 한국 source2일을 모두 같은 기준으로 다시 정렬해 재실행했다.
+이것은 결과에 맞춘 시차 선택이 아니라 공식 달력 수정이며, 위36개 가설·모델·검증 프로토콜은 유지했다.
+기존 운영 모델의 과거 재생 달력 수정은 별도 검토·새 고정 버전이 필요하다.
+
+각 연구 예측에는 실제 사전예측 평가 대상이 아니라는 플래그, 가상의 판단 cutoff와
+사용한 미국 세션·마감UTC를 남긴다. 연구 출력은 운영 forecast archive에 저장하지 않는다.
