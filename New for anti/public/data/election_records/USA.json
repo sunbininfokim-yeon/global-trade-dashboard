@@ -15,17 +15,56 @@
    "method_ko": "주별 선거인단",
    "runoff_rule_ko": "선거인단이 과반을 못 내면 하원이 주당 1표로 대통령을 뽑는다.",
    "head_selection_ko": "직선에 가까운 선거인단 선거. 의회가 총리를 지명하는 방식이 아님.",
-   "records": [],
-   "next": null,
+   "records": [
+    {
+     "election_id": "usa-2024-president",
+     "date": "2024-11-05",
+     "label_ko": "2024년 대통령 선거",
+     "status": "completed",
+     "electorate": null,
+     "turnout_pct": null,
+     "winner_ko": "Donald J. Trump",
+     "candidates": [
+      {
+       "name": "Donald J. Trump",
+       "party": "(R)",
+       "votes": 77302580,
+       "vote_pct": 49.8,
+       "elected": true
+      },
+      {
+       "name": "Kamala D. Harris",
+       "party": "(D)",
+       "votes": 75017613,
+       "vote_pct": 48.32,
+       "elected": false
+      }
+     ],
+     "summary_ko": "일반선거일은 11/05/2024이고 출처는 주 선거 당국이다. 선거인단 합계는 538, 트럼프 312, 해리스 226이고 당선에 필요한 수는 270이라고 적혀 있다. 일반투표 합계 줄은 트럼프 77,302,580표 49.80%, 해리스 75,017,613표 48.32%다. 두 득표율을 더하면 98.12다. 나머지 후보 열은 같은 PDF에 있고 이번 표에는 넣지 않았다. 주소 쪽은 해리스의 부통령 후보를 Tim Walz, 정당 표기를 (D, DFL, DNL, WF)라고 적는다. 유권자 수와 투표율은 이 PDF에서 찾지 못했다.",
+     "sources": [
+      "https://www.fec.gov/resources/cms-content/documents/2024presgeresults.pdf"
+     ],
+     "verification": "official",
+     "origin": "researched"
+    }
+   ],
+   "next": {
+    "date": null,
+    "date_status": null,
+    "label_ko": "공고된 다음 대선일 없음",
+    "source": "https://www.fec.gov/resources/cms-content/documents/2024presgeresults.pdf"
+   },
    "incumbent": {
     "name": "Donald J. Trump",
-    "party_id": "gop",
+    "party": "(R)",
     "since": null,
+    "term_end": null,
     "sources": [
-     "https://www.mofa.go.jp/na/na1/us/pageite_000001_00007.html",
-     "https://japan.kantei.go.jp/105/diplomatic/202603/20usa.html"
-    ]
-   }
+     "https://www.fec.gov/resources/cms-content/documents/2024presgeresults.pdf"
+    ],
+    "note_ko": "선거인단 표의 당선 쪽이다. 이 PDF는 선서일을 적지 않는다. 같은 문서의 주소 쪽은 후보를 (R, C), 부통령 후보를 JD Vance라고 적는다."
+   },
+   "note_ko": "2020년 대통령 선거 결과표는 열지 않았다."
   },
   {
    "key": "legislature",
@@ -206,7 +245,8 @@
     "date_status": "scheduled",
     "label_ko": "중간선거(상·하원)",
     "note_ko": "House all 435 + Senate Class 1 regulars. No presidential race. 상원 제도는 system_id usa-senate. previous.by_party 는 2024 하원 본선 의석만 (전국 득표율은 Clerk 통계 원문 합산을 하지 않아 생략)."
-   }
+   },
+   "note_ko": "2026-11-03 하원 개표는 열지 않았다. 이미 있는 2024-11-05 의석 220과 215는 하원 사무처와 하원 역사 페이지를 출처로 적혀 있고, 그 페이지는 이번 조회에서 다시 열지 않았다."
   },
   {
    "key": "legislature",
@@ -220,7 +260,8 @@
    "runoff_rule_ko": "연방 일반규칙은 결선 없음. 조지아 등은 과반 미달 시 결선.",
    "head_selection_ko": "없음. 부통령이 상원의장을 겸하지만 이 선거로 뽑지 않는다.",
    "records": [],
-   "next": null
+   "next": null,
+   "note_ko": "2026-11-03 상원 개표와 2024년 상원 의석표는 열지 않았다."
   },
   {
    "key": "local",
@@ -240,10 +281,13 @@
     "date_status": "scheduled",
     "label_ko": "주지사 선거(36개주+자치령)",
     "note_ko": "NGA: general election 2026-11-03 for 36 states and listed territories."
-   }
+   },
+   "note_ko": "주지사 선거 전국 집계는 열지 않았다."
   }
  ],
  "issues": [],
+ "input_as_of": "2026-11-07",
+ "input_note_ko": "연방선거위원회 2024 대통령 선거 공식 결과 PDF를 열었다. 2020년 대선, 2026-11-03 상하원 개표, 취임 선서일은 열지 않았다. 2026-08-20 하원 사무처 명부는 그 선거 이전이므로 결과로 쓰지 않았다. 쟁점은 넣지 않았다.",
  "latest_election": "2026-08-04",
- "records_total": 8
+ "records_total": 9
 }
