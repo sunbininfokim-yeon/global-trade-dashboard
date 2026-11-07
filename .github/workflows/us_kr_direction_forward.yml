@@ -1,0 +1,91 @@
+name: US KR direction forward evaluation
+# Scores each target's immutable first pre-open forecast against the actual
+# KR open/close after the session closes (#884/#899). Never trains, never
+# rewrites a forecast; replays and revisions are excluded from the score.
+# Exit 0 with no forecasts yet ("awaiting_forward_outcomes") is normal.
+# Its own concurrency group: sharing the pre-open group would let a waiting
+# evaluation replace (cancel) a waiting morning forecast.
+on:
+  schedule:
+    - cron: '0 10 * * 1-5'  # 19:00 KST; only closed sessions are collected.
+  workflow_dispatch:
+    inputs:
+      end:
+        description: Last evaluation date YYYY-MM-DD; blank means today in KST
+        required: false
+        type: string
+concurrency:
+  group: us-kr-direction-forward
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      MM: New for anti/scripts/market_microstructure
+      RUN_DIR: data/observations/us_kr_direction/${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: New for anti/scripts/market_microstructure/requirements-us-kr-preopen.txt
+      - name: Install frozen runtime
+        run: pip install -r "$MM/requirements-us-kr-preopen.txt"
+      - name: Check recording, publication and scoring contracts
+        run: |
+          python -m unittest discover -s "$MM/tests" -p test_us_kr_forward.py
+          python -m unittest discover -s "$MM/tests" -p test_us_kr_publication.py
+      - name: Collect outcomes and evaluate the fixed window
+        id: evaluate
+        env:
+          REQUESTED_END: ${{ inputs.end }}
+        shell: bash
+        run: |
+          END=$(python -c 'import os; from datetime import datetime; from zoneinfo import ZoneInfo; print(os.environ.get("REQUESTED_END") or datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d"))')
+          set +e
+          python "$MM/evaluate_us_kr_forward.py" \
+            --archive-dir data/forecasts/us_kr_direction \
+            --model "$MM/models/shadow/us_kr_preopen_20261022_v1.json" \
+            --start 2026-11-06 --end "$END" \
+            --refresh-prices --run-dir "$RUN_DIR" \
+            --output "$RUN_DIR/evaluation.json"
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Save outcome snapshots and evaluation receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-kr-forward-${{ github.run_id }}-${{ github.run_attempt }}
+          path: data/observations/us_kr_direction/${{ github.run_id }}-${{ github.run_attempt }}/
+          retention-days: 30
+      - name: Commit immutable snapshot and latest report
+        if: steps.evaluate.outcome == 'success' && (steps.evaluate.outputs.code == '0' || steps.evaluate.outputs.code == '2')
+        run: |
+          python - <<'PY'
+          import os, sys
+          sys.path.insert(0, os.environ['MM'])
+          from option_direction_model import read
+          from run_us_kr_preopen import atomic_json
+          atomic_json('data/manifests/us_kr_forward_evaluation_v1.json', read(os.environ['RUN_DIR'] + '/evaluation.json'))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$RUN_DIR" data/manifests/us_kr_forward_evaluation_v1.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: score US KR first forecasts and preserve outcomes'
+          bash tools/ops/git_push_retry.sh
+      - name: Report incomplete outcomes or failure
+        if: always()
+        env:
+          CODE: ${{ steps.evaluate.outputs.code }}
+        run: |
+          case "$CODE" in
+            0) echo '### First forecasts evaluated; see issuance and publication separately' >> "$GITHUB_STEP_SUMMARY" ;;
+            2) echo '::error::Outcome collection incomplete; preserved partial report and source diagnostics.'; exit 1 ;;
+            *) echo '::error::Forward evaluation did not complete; inspect the artifact.'; exit 1 ;;
+          esac
