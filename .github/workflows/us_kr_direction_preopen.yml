@@ -100,6 +100,8 @@ jobs:
         run: |
           python -m unittest discover -s "$MM/tests" -p test_us_kr_direction_engine.py
           python -m unittest discover -s "$MM/tests" -p test_run_us_kr_preopen.py
+          python -m unittest discover -s "$MM/tests" -p test_us_kr_forward.py
+          python -m unittest discover -s "$MM/tests" -p test_us_kr_publication.py
 
       # Same private hive and token as market_microstructure_daily. A failed
       # checkout (expired token) leaves the runner with the committed board
