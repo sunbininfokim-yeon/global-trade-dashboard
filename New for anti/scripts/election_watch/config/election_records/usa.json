@@ -1,0 +1,64 @@
+{
+  "schema": "election_records_input_v1",
+  "country": "USA",
+  "as_of": "2026-11-07",
+  "note_ko": "연방선거위원회 2024 대통령 선거 공식 결과 PDF를 열었다. 2020년 대선, 2026-11-03 상하원 개표, 취임 선서일은 열지 않았다. 2026-08-20 하원 사무처 명부는 그 선거 이전이므로 결과로 쓰지 않았다. 쟁점은 넣지 않았다.",
+  "offices": [
+    {
+      "key": "executive",
+      "system_id": "usa-president",
+      "incumbent": {
+        "name": "Donald J. Trump",
+        "party": "(R)",
+        "since": null,
+        "term_end": null,
+        "sources": [
+          "https://www.fec.gov/resources/cms-content/documents/2024presgeresults.pdf"
+        ],
+        "note_ko": "선거인단 표의 당선 쪽이다. 이 PDF는 선서일을 적지 않는다. 같은 문서의 주소 쪽은 후보를 (R, C), 부통령 후보를 JD Vance라고 적는다."
+      },
+      "records": [
+        {
+          "election_id": "usa-2024-president",
+          "date": "2024-11-05",
+          "label_ko": "2024년 대통령 선거",
+          "status": "completed",
+          "electorate": null,
+          "turnout_pct": null,
+          "winner_ko": "Donald J. Trump",
+          "candidates": [
+            {"name": "Donald J. Trump", "party": "(R)", "votes": 77302580, "vote_pct": 49.80, "elected": true},
+            {"name": "Kamala D. Harris", "party": "(D)", "votes": 75017613, "vote_pct": 48.32, "elected": false}
+          ],
+          "summary_ko": "일반선거일은 11/05/2024이고 출처는 주 선거 당국이다. 선거인단 합계는 538, 트럼프 312, 해리스 226이고 당선에 필요한 수는 270이라고 적혀 있다. 일반투표 합계 줄은 트럼프 77,302,580표 49.80%, 해리스 75,017,613표 48.32%다. 두 득표율을 더하면 98.12다. 나머지 후보 열은 같은 PDF에 있고 이번 표에는 넣지 않았다. 주소 쪽은 해리스의 부통령 후보를 Tim Walz, 정당 표기를 (D, DFL, DNL, WF)라고 적는다. 유권자 수와 투표율은 이 PDF에서 찾지 못했다.",
+          "sources": [
+            "https://www.fec.gov/resources/cms-content/documents/2024presgeresults.pdf"
+          ],
+          "verification": "official"
+        }
+      ],
+      "next": {
+        "date": null,
+        "date_status": null,
+        "label_ko": "공고된 다음 대선일 없음",
+        "source": "https://www.fec.gov/resources/cms-content/documents/2024presgeresults.pdf"
+      },
+      "note_ko": "2020년 대통령 선거 결과표는 열지 않았다."
+    },
+    {
+      "key": "legislature",
+      "system_id": "usa-house",
+      "note_ko": "2026-11-03 하원 개표는 열지 않았다. 이미 있는 2024-11-05 의석 220과 215는 하원 사무처와 하원 역사 페이지를 출처로 적혀 있고, 그 페이지는 이번 조회에서 다시 열지 않았다."
+    },
+    {
+      "key": "legislature",
+      "system_id": "usa-senate",
+      "note_ko": "2026-11-03 상원 개표와 2024년 상원 의석표는 열지 않았다."
+    },
+    {
+      "key": "local",
+      "system_id": "usa-governor",
+      "note_ko": "주지사 선거 전국 집계는 열지 않았다."
+    }
+  ]
+}
