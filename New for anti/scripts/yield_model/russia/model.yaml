@@ -11,7 +11,7 @@ label_en: Russia
 panel_mode: forecast
 data_file: russia_yield_forecast.json
 model_status: training
-status_note_ko: "라벨은 2024년까지 채웠지만(tochno.st) 11개 모델 모두 추세를 이기지 못한다. 숫자는 참고용."
+status_note_ko: "흑토대 겨울밀(+30%)과 러시아 전체 해바라기(+21%)만 추세를 확실히 이긴다. 나머지 밀·보리·해바라기는 참고용. 옥수수·대두는 지역 단수 자료가 없어 모델 없이 USDA 국가 전망과 생육 단계 판정만 보인다."
 
 view:                # 국가 클릭 시 카메라
   longitude: 42.0
@@ -59,6 +59,29 @@ regions:
     ui_name: russia_sunflower
     coordinates: [44.06, 47.36]   # [경도, 위도]
     crops_region_keys: [russia_sunflower]
+
+  # 옥수수·대두: 지역 단수 자료가 없어 모델 없음. USDA 국가 전망 + 생육 판정
+  # 지점(russia/psd_crops.py).
+  - key: russia_corn_south
+    label_ko: "남부 옥수수 (크라스노다르)"
+    ui_name: russia_corn_south
+    coordinates: [39.8, 45.3]
+    crops_region_keys: [russia_corn_south]
+  - key: russia_corn_cbe
+    label_ko: "흑토대 옥수수 (쿠르스크)"
+    ui_name: russia_corn_cbe
+    coordinates: [36.6, 51.6]
+    crops_region_keys: [russia_corn_cbe]
+  - key: russia_soy_amur
+    label_ko: "극동 대두 (아무르)"
+    ui_name: russia_soy_amur
+    coordinates: [128.3, 50.2]
+    crops_region_keys: [russia_soy_amur]
+  - key: russia_soy_cbe
+    label_ko: "흑토대 대두 (벨고로드)"
+    ui_name: russia_soy_cbe
+    coordinates: [37.2, 50.7]
+    crops_region_keys: [russia_soy_cbe]
 
 sources:
   labels:

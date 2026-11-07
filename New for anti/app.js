@@ -5934,6 +5934,8 @@ const setView = (target) => {
         currentViewTitle.textContent = data.title;
         totalVolumeEl.textContent = data.totalVolume;
         topExporterEl.textContent = data.topExporter;
+        // Wheat/corn/soy: world production in the boxes instead (grain-balance.js).
+        window.GrainBalance?.render();
         updateCommodityFavStar(target, data.title);
 
         // Ranking first (it explains the map), news below it.

@@ -1391,6 +1391,7 @@ const renderTradeWorldPanel = (arcs) => {
     window.GasStorage?.render();
     window.CoalPrices?.render();
     window.BiomassPks?.render();
+    window.GrainBalance?.render();
 };
 
 const futuresCache = new Map();
