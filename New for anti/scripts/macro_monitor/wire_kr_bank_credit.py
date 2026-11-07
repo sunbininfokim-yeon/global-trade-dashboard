@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from macro_monitor import kr_bank_credit as kbc  # noqa: E402
+from macro_monitor import kr_npl_release as rel  # noqa: E402
 from macro_monitor import us_public_series as ups  # noqa: E402
 from macro_monitor import world_public_series as wps  # noqa: E402
 from macro_monitor import free_cards  # noqa: E402,F401 -- registers display formats
@@ -33,7 +34,7 @@ CARDS = {   # id -> label, unit, format, note (for cards whose label/note the fr
     "delinq_all": ("대출 연체율", "%", "pct2",
                    "국내은행 연체대출잔액 / 대출잔액(%, 분기말, 1개월 이상 원리금 연체). 눌러서 부문별·연체 흐름(신규·상각·정상화)·은행별을 볼 수 있습니다. 금융감독원 FISIS, 은행별 합산."),
     "npl_ratio": ("부실채권비율(고정이하여신)", "%", "pct2",
-                  "국내은행 고정이하여신 / 총여신(%, 분기말). 눌러서 건전성 단계(요주의~추정손실)와 은행별을 볼 수 있습니다. 금융감독원 FISIS, 은행별 합산."),
+                  "국내은행 고정이하여신 / 총여신(%, 분기말). 눌러서 건전성 단계(요주의~추정손실), 분기 중 신규 부실과 정리(상각·매각·정상화), 부문별 부실비율(주담대·신용대출 포함), 은행별을 볼 수 있습니다. 금융감독원 FISIS(은행별 합산)와 분기 보도자료."),
 }
 
 
@@ -64,6 +65,19 @@ def main() -> int:
         doc = json.loads(kbc.CACHE.read_text(encoding="utf-8"))
 
     built = kbc.build(doc)
+
+    # NPL flows from the FSS press-release PDFs (new NPLs, write-offs, sales, segment ratios)
+    rdoc = rel.load()
+    try:
+        added = rel.update(rdoc, pages=1)
+        if rel.save(rdoc) and added:
+            print(f"FSS NPL release: added {', '.join(added)}")
+    except Exception as exc:  # noqa: BLE001 -- the cached releases still serve
+        print(f"FSS NPL release: fetch failed ({str(exc)[:160]}), cache used")
+    extra = rel.panels(rdoc)
+    if extra:
+        npl = built["npl_ratio"]["panels"]
+        npl[1:1] = extra                      # after 건전성 단계, before 은행별
     text = PACK.read_text(encoding="utf-8")
     pack = json.loads(text)
     kor = next(c for c in pack["countries"] if c["iso3"] == "KOR")
