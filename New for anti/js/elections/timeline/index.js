@@ -2,14 +2,10 @@ import { allDatedEvents, splitByToday, groupByMonth, EVENT_KINDS, kindOf } from 
 import { escapeHtml, formatMonth } from '../ui.js';
 import { renderDateGroups } from './group-by-date.js?v=2';
 
-// 좌측 패널. 정치는 두 갈래다 (사용자 지시 2026-11-07):
-//   선거  세계 선거 일정. '예정 선거'(기본)와 '끝난 선거'를 토글로 나눈다. 끝난 선거는
-//         최근 것부터, 줄마다 결과 한 줄을 붙인다.
-//   국가  나라 목록. 누르면 그 나라 화면(우측 대시보드: 지도·선거·행정부·의회 …)으로 간다.
-//
-// 종류 칩(대선·총선·지방·재보궐·당권)은 선거 갈래 안에서 그대로 쓴다.
+// 좌측 `세계 선거 일정`. '예정 선거'(기본)와 '끝난 선거'를 토글로 나눈다 (2026-11-07).
+// 끝난 선거는 최근 것부터, 줄마다 결과 한 줄을 붙인다. 나라 화면은 세계 지도에서 연다.
+// 종류 칩(대선·총선·지방·재보궐·당권)은 두 목록 모두에 쓴다.
 
-let activePart = 'elections';
 let activeWhen = 'upcoming';
 let activeKind = 'all';
 
@@ -60,35 +56,7 @@ const resultIndex = (countries) => {
     return (event) => map.get(event.id) || null;
 };
 
-const REGION_KO = {
-    east_asia: '동아시아', southeast_asia: '동남아시아', south_asia_se: '남아시아', oceania: '오세아니아', pacific: '오세아니아',
-    north_america: '북미', americas: '중남미', europe: '유럽', middle_east: '중동', africa: '아프리카',
-};
-// 보드에 지역이 비어 있는 나라.
-const REGION_FALLBACK = { USA: 'north_america', JPN: 'east_asia', RUS: 'europe' };
-const SYSTEM_KO = { presidential: '대통령제', parliamentary: '의원내각제', semi_presidential: '이원집정부제', direct_democracy: '합의제(직접민주)', other: '기타 체제' };
-const REGION_ORDER = ['동아시아', '북미', '유럽', '동남아시아', '남아시아', '중동', '중남미', '아프리카', '오세아니아', '기타'];
-
-const countryList = (countries) => {
-    const groups = new Map();
-    countries.forEach((country) => {
-        const region = REGION_KO[country.region || REGION_FALLBACK[country.iso3]] || '기타';
-        if (!groups.has(region)) groups.set(region, []);
-        groups.get(region).push(country);
-    });
-    return REGION_ORDER.filter((region) => groups.has(region)).map((region) => `
-        <section class="elections-month-block">
-            <h3 class="elections-month-head">${escapeHtml(region)}<span>${groups.get(region).length}개국</span></h3>
-            <div class="elections-country-list">${groups.get(region)
-                .sort((a, b) => (a.priority_tier ?? 9) - (b.priority_tier ?? 9) || String(a.name_ko).localeCompare(String(b.name_ko), 'ko'))
-                .map((country) => `<button class="elections-country-row" type="button" data-election-country="${escapeHtml(country.iso3)}">
-                    <span class="elections-country-name">${escapeHtml(country.name_ko || country.iso3)}</span>
-                    <span class="elections-country-meta">${escapeHtml([country.head?.name_ko || country.head?.name_en, SYSTEM_KO[country.system] || country.system].filter(Boolean).join(' · '))}</span>
-                </button>`).join('')}</div>
-        </section>`).join('');
-};
-
-export const renderTimeline = (root, { calendar, countries, briefFor, onBriefOpen, shortcuts = [], onShortcut, onCountryOpen, today = new Date().toISOString().slice(0, 10) }) => {
+export const renderTimeline = (root, { calendar, countries, briefFor, onBriefOpen, shortcuts = [], onShortcut, today = new Date().toISOString().slice(0, 10) }) => {
     const { upcoming, past } = splitByToday(allDatedEvents(calendar), today);
     const pastNewest = [...past].reverse();
     const resultFor = resultIndex(countries);
@@ -106,27 +74,19 @@ export const renderTimeline = (root, { calendar, countries, briefFor, onBriefOpe
             </div>`;
     };
 
-    const countriesPart = () => `
-        <p class="elections-panel-note">나라를 누르거나 지도에서 나라를 누르면 우측에 그 나라의 선거·행정부·의회·지방 블록이 열립니다.</p>
-        <div class="elections-date-list">${countryList([...countries.values()])}</div>`;
-
     const paint = () => {
         root.innerHTML = `
             <div class="panel-header">
-                <h2>정치</h2>
+                <h2>세계 선거 일정</h2>
             </div>
-            ${toggle('election-part', [['elections', '선거'], ['countries', '국가', countries.size]], activePart)}
-            ${activePart === 'countries' ? countriesPart() : electionsPart()}
+            ${electionsPart()}
+            <p class="elections-panel-note">세계 지도에서 국가를 누르면 그 나라의 선거·행정부·의회 블록이 열립니다.</p>
         `;
         bind();
     };
 
     // 목록은 수십 줄이라 줄마다 리스너를 달지 않고 한 번만 위임한다.
     const bind = () => {
-        root.querySelectorAll('[data-election-part]').forEach((button) => button.addEventListener('click', () => {
-            activePart = button.dataset.electionPart;
-            paint();
-        }));
         root.querySelectorAll('[data-election-when]').forEach((button) => button.addEventListener('click', () => {
             activeWhen = button.dataset.electionWhen;
             activeKind = 'all';
@@ -138,9 +98,6 @@ export const renderTimeline = (root, { calendar, countries, briefFor, onBriefOpe
         }));
         root.querySelectorAll('[data-election-jump]').forEach((button) => button.addEventListener('click', () => {
             onShortcut?.(button.dataset.electionJump);
-        }));
-        root.querySelectorAll('[data-election-country]').forEach((button) => button.addEventListener('click', () => {
-            onCountryOpen?.(button.dataset.electionCountry);
         }));
         // 브리핑은 일정 행 자체를 읽는다(날짜·개선 규모 등). 키만 넘기면 창이 그 맥락을
         // 잃으므로 눌린 행의 일정도 같이 넘긴다.

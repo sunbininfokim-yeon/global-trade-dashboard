@@ -2,7 +2,7 @@ import { createElectionState } from './state.js';
 import { loadElectionBundle } from './data/core-service.js?v=2';
 import { initialMonth } from './data/selectors.js';
 import { createCountryExplorer } from './country-explorer/index.js?v=29';
-import { renderTimeline } from './timeline/index.js?v=3';
+import { renderTimeline } from './timeline/index.js?v=4';
 import { briefKeyFor, openBrief } from './briefs/index.js?v=2';
 
 const state = createElectionState();
@@ -39,7 +39,6 @@ const render = async () => {
         onBriefOpen: (key, event) => openBrief(key, { bundle, modal: explorer.modal, event }),
         shortcuts: SHORTCUTS.filter(({ key }) => bundle.countries.get(key)),
         onShortcut: openShortcut,
-        onCountryOpen: (iso3) => { if (bundle.countries.get(iso3)) state.set({ mode: 'country', iso3 }); },
     });
     await explorer.showWorld();
 };
