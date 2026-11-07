@@ -18,8 +18,9 @@ What it produces (config/kr_bank_credit_v1.json, then cards on the KOR macro pan
   (NPLs - reserves) / CET1 capital -- the IMF FSI measure the China panel also shows.
 * The latest quarter bank by bank.
 
-Not in the API (FSS press releases only): NPLs newly classified in a quarter and how they were
-cleared (write-off, sale, collateral recovery). The classification stack is the closest the API gets.
+Not in the API: NPLs newly classified in a quarter and how they were cleared (write-off, sale,
+collateral recovery), and mortgage NPL ratios. kr_npl_release.py reads those from the FSS press-release
+PDFs and wire_kr_bank_credit.py adds them as panels on the 부실채권비율 card.
 """
 
 from __future__ import annotations
@@ -241,8 +242,7 @@ def build(doc: dict[str, Any]) -> dict[str, Any]:
             "panels": [
                 {"id": "stages", "label": "건전성 단계", "type": "stack", "unit": "조원", "dates": [_label(k) for k in k16],
                  "series": panel_series(k16, stages, 2),
-                 "note_ko": "국내은행 여신을 건전성 분류별로 쌓은 잔액(조원). 고정·회수의문·추정손실이 부실채권(고정이하여신)이고, 요주의는 그 직전 단계입니다. 요주의가 두꺼워지면 몇 분기 뒤 부실채권이 늘기 쉽습니다. "
-                            "부실채권의 신규 발생·매각·상각 내역은 금감원 보도자료에만 있고 API에는 없습니다. 금융감독원 FISIS SA015."},
+                 "note_ko": "국내은행 여신을 건전성 분류별로 쌓은 잔액(조원). 고정·회수의문·추정손실이 부실채권(고정이하여신)이고, 요주의는 그 직전 단계입니다. 요주의가 두꺼워지면 몇 분기 뒤 부실채권이 늘기 쉽습니다. 금융감독원 FISIS SA015."},
                 bank_panel("npl", "부실채권비율"),
             ],
         },
