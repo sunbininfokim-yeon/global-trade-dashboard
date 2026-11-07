@@ -2127,7 +2127,10 @@ const mmViewsFor = (ind) => {
     if (ind.chart_type === 'stack' && has(ind.components)) {
         views.push({ id: 'stack', label: '구성' });
     }
-    if (ind.chart_type === 'bar' && has(ind.outcomes)) {
+    if (has((ind.rate_path || {}).meetings)) {
+        views.push({ id: 'rate_path', label: '회의별 경로' });
+    }
+    if ((ind.chart_type === 'bar' || ind.rate_path) && has(ind.outcomes)) {
         views.push({ id: 'outcomes', label: '확률' });
     }
     // US CPI carries real item contributions; the unweighted top/bottom-3 list would only repeat a
@@ -2291,6 +2294,37 @@ const mmOutcomesView = (ind) => {
         <p class="fin-note">선물 가격에서 역산한 확률입니다. 예측이 아니라 시장이 지금 무엇에 값을 매기고 있는지입니다.</p>`;
 };
 
+// Fed policy path from fed funds futures (wire_us_monetary.py): every meeting the contracts reach, the rate
+// going in and coming out, the odds of that meeting's move and the likeliest target range after it.
+const mmRatePathView = (ind) => {
+    const rp = ind.rate_path || {};
+    const rows = rp.meetings || [];
+    const bp = (v) => (Number.isFinite(v) ? `${v > 0 ? '+' : ''}${Math.round(v)}bp` : '—');
+    const moveKo = { '+0': '동결', '+25': '인상', '-25': '인하', '+50': '50bp 인상', '-50': '50bp 인하' };
+    const odds = (o) => Object.entries(o || {}).sort((a, b) => b[1] - a[1])
+        .map(([k, v]) => `${finEsc(moveKo[k] || `${k}bp`)} ${Math.round(v * 100)}%`).join(' · ');
+    const maxCum = Math.max(...rows.map((r) => Math.abs(r.cum_bp || 0)), 1);
+    const body = rows.map((r) => {
+        const top = (r.range_odds || [])[0] || {};
+        const w = Math.abs(r.cum_bp || 0) / maxCum * 100;
+        return `<tr>
+            <td class="co-label">${finEsc(r.date)}</td>
+            <td>${mmFmt(r.pre, 2)}% → <b>${mmFmt(r.post, 2)}%</b></td>
+            <td>${bp(r.change_bp)}</td>
+            <td>${odds(r.move_odds)}</td>
+            <td>${bp(r.cum_bp)}</td>
+            <td>${finEsc(top.range || '')} <small>${Number.isFinite(top.p) ? `${Math.round(top.p * 100)}%` : ''}</small></td>
+            <td class="mm-cpi-barcell"><span class="mm-cpi-bar ${r.cum_bp < 0 ? 'neg' : ''}" style="width:${w.toFixed(1)}%"></span></td>
+        </tr>`;
+    }).join('');
+    return `
+        <p class="mm-view-title">회의별 내재 금리 (실효금리 ${mmFmt(rp.effr, 2)}% · 목표범위 ${mmFmt(rp.target_lower, 2)}–${mmFmt((rp.target_lower || 0) + 0.25, 2)}% · ${finEsc(rp.as_of || '')} 종가)</p>
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>결정일</th><th>회의 전 → 후</th><th>이번 회의</th><th>이번 회의 확률</th><th>지금 대비</th><th>가장 유력한 범위</th><th></th></tr></thead>
+            <tbody>${body}</tbody></table></div>
+        <p class="fin-note">${finEsc(rp.method_ko || '')} 여러 회의에 걸친 범위 확률은 누적 변화폭을 인접한 두 칸에 나눈 단순화이고, CME FedWatch의 확률 나무와는 조금 다를 수 있습니다. 출처: CBOT 30일 연방기금 선물(Yahoo Finance 종가).</p>`;
+};
+
 const mmChartDrawer = () => {
     if (!MM_CHART || !MM_COUNTRY) return '';
     const ind = (MM_COUNTRY.country.indicators || []).find((x) => x.id === MM_CHART.indicatorId);
@@ -2334,6 +2368,7 @@ const mmChartDrawer = () => {
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
     else if (view === 'outcomes') body = mmOutcomesView(ind);
+    else if (view === 'rate_path') body = mmRatePathView(ind);
     else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
     else if (view === 'contrib') body = mmContribView(ind.contrib);
     else if (view === 'contrib_ind') body = mmContribView(ind.contrib_industry, '산업별');
@@ -3275,7 +3310,7 @@ const mmFomcPreviewHtml = (policy) => {
             <li><span class="mm-fomc-cal-date">${md(r.date)}${r.time ? ` ${finEsc(r.time)}` : ''}</span>
                 <span class="mm-fomc-cal-rel ${r.rel}">${relKo[r.rel] || ''}</span>
                 <span>${finEsc(r.title)}</span><span class="mm-quality-muted">${finEsc(r.src || '')}</span></li>`).join('')}</ul>` : ''}
-        <p class="mm-quality-muted">${finEsc(bo.note_ko || '')} ${finEsc(pv.releases_note_ko || '')} 금리 전망·확률은 표시하지 않습니다(FedWatch는 라이선스 데이터).
+        <p class="mm-quality-muted">${finEsc(bo.note_ko || '')} ${finEsc(pv.releases_note_ko || '')} 회의별 금리 확률은 금리 탭의 '금리 경로 (선물 내재)' 카드에 있습니다(연방기금 선물로 직접 계산, CME FedWatch 수치 아님).
             <a class="mm-quality-link" href="${finEsc(nm.source_url || 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm')}" target="_blank" rel="noopener noreferrer">연준 캘린더 ↗</a></p>
     </div>`;
 };
