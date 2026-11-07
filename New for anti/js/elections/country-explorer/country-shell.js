@@ -16,6 +16,7 @@ import { jpnFactions } from './special/jpn-factions.js';
 import { jpnSubnational } from './special/jpn-subnational.js';
 import { iranSections } from './special/iran.js';
 import { raceProgressContent } from './special/race-progress.js?v=2';
+import { electionRecordsHtml } from './special/election-records.js';
 import { israelAnalysisPlaceholder, mountIsraelAnalysis } from './special/israel-analysis.js?v=3';
 
 const RACE_PROGRESS_TAB = ['선거 진행 상황', 'race_progress'];
@@ -62,7 +63,20 @@ const personnelPart = (country, section) => {
 
 // 권력이 갈린 나라: 중국처럼 '권력 구조'를 맨 앞에 두고 대통령실·총리실 블록은 만들지 않는다.
 // 쪽마다 별도 대시보드(정부 측 / 반군·경쟁 세력)를 두고, 지도 블록은 통제 지역 요약이다.
-const sectionsFor = (country) => {
+// '선거' 블록: 예전 '일정' 블록 자리를 대신한다 (일정은 이 블록 맨 아래로 들어간다).
+// 지도 바로 뒤에 둔다. 중국은 경쟁 선거가 없어 붙이지 않는다 (당 회의는 race_progress).
+const ELECTIONS_TAB = ['선거', 'elections'];
+const withElections = (country, tabs) => {
+    const rest = tabs.filter(([, key]) => key !== 'calendar');
+    if (country.iso3 === 'CHN') return rest;
+    const at = rest.findIndex(([, key]) => key === 'subnational_map');
+    rest.splice(at >= 0 ? at + 1 : 0, 0, ELECTIONS_TAB);
+    return rest;
+};
+
+const sectionsFor = (country) => withElections(country, baseTabsFor(country));
+
+const baseTabsFor = (country) => {
     if (isDivided(country)) {
         return [['지도', 'subnational_map'], ['권력 구조', 'power_structure'], ...campTabs(country), ['의회', 'legislature'], ['일정', 'calendar']];
     }
@@ -171,6 +185,15 @@ const calendar = (country) => {
     return events.length ? `<div class="elections-screen-list">${events.map((event) => `<article class="elections-event"><div class="elections-event-title">${escapeHtml(event.label_ko || event.label_en)}</div><div class="elections-event-meta">${escapeHtml(formatDate(event.date))} · ${escapeHtml(stateLabel(event.status))}</div></article>`).join('')}</div>` : '<p class="elections-muted">공개된 일정 행이 없습니다.</p>';
 };
 
+// 선거 블록 = 직위별 선거 기록 + 이 나라의 일정 목록.
+const electionsContent = (country) => {
+    const records = electionRecordsHtml(country);
+    const events = countryEvents(country);
+    if (!records && !events.length) return null;
+    return `${records || '<p class="elections-muted">이 나라의 선거 기록은 아직 수집되지 않았습니다.</p>'}
+        ${events.length ? `<details class="elections-disclosure"${records ? '' : ' open'}><summary>선거 일정 ${events.length}건</summary>${calendar(country)}</details>` : ''}`;
+};
+
 const sourceObject = (country, section) => {
     if (section === 'executive') return country.executive_live || country.leadership?.party_state?.state_council || country.head || null;
     if (section === 'legislature') return country.legislature_live || country.legislature || null;
@@ -190,6 +213,7 @@ const specialContent = (country, section) => {
     if (section.startsWith('camp_')) return campHtml(country, section);
     if (section === 'subnational_map' && isDivided(country)) return controlMapSummaryHtml(country);
     if (section === 'race_progress') return raceProgressContent(country);
+    if (section === 'elections') return electionsContent(country);
     if (section.startsWith('office_') || section === 'local_gov') return personnelPart(country, section) || null;
     if (country.iso3 === 'CHN' && section === 'party') return chnParty(country);
     if (country.iso3 === 'CHN' && section === 'military') return chnMilitary(country);
