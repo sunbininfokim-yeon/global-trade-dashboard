@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-11-07T13:57:07.167411+00:00",
+  "generated_at": "2026-11-07T18:44:06.515762+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -75,19 +75,19 @@
   "stats": {
     "sources_ok": 33,
     "sources_failed": 5,
-    "raw_items": 802,
-    "scored_items": 92,
+    "raw_items": 822,
+    "scored_items": 79,
     "selected_items": 24,
     "region_histogram": {
       "commodity_specialist": 3,
-      "russia": 7,
+      "mena": 7,
+      "russia": 3,
       "india": 2,
-      "mena": 4,
       "japan": 2,
       "china": 2,
       "west": 1,
-      "turkey": 2,
-      "taiwan": 1
+      "taiwan": 2,
+      "turkey": 2
     },
     "min_importance": 0.35
   },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 79,
+      "elapsed_ms": 327,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 470,
+      "elapsed_ms": 287,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +112,7 @@
       "source_id": "arab_news",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 131,
+      "elapsed_ms": 106,
       "error": null,
       "mode": "live"
     },
@@ -120,15 +120,15 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1363,
+      "elapsed_ms": 1193,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "middle_east_eye",
       "ok": true,
-      "count": 0,
-      "elapsed_ms": 230,
+      "count": 20,
+      "elapsed_ms": 514,
       "error": null,
       "mode": "live"
     },
@@ -136,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 3033,
+      "elapsed_ms": 2943,
       "error": null,
       "mode": "live"
     },
@@ -144,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 756,
+      "elapsed_ms": 839,
       "error": null,
       "mode": "live"
     },
@@ -152,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 647,
+      "elapsed_ms": 468,
       "error": null,
       "mode": "live"
     },
@@ -160,7 +160,7 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 138,
+      "elapsed_ms": 117,
       "error": null,
       "mode": "live"
     },
@@ -168,7 +168,7 @@
       "source_id": "indian_express_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 101,
+      "elapsed_ms": 144,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 481,
+      "elapsed_ms": 672,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 245,
+      "elapsed_ms": 198,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 431,
+      "elapsed_ms": 269,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1131,
+      "elapsed_ms": 1443,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 595,
+      "elapsed_ms": 649,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 495,
+      "elapsed_ms": 407,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 624,
+      "elapsed_ms": 608,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 260,
+      "elapsed_ms": 575,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 76,
+      "elapsed_ms": 102,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 209,
+      "elapsed_ms": 664,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 145,
+      "elapsed_ms": 167,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 335,
+      "elapsed_ms": 190,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 120,
+      "elapsed_ms": 871,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 402,
+      "elapsed_ms": 818,
       "error": null,
       "mode": "live"
     },
@@ -288,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 302,
+      "elapsed_ms": 113,
       "error": null,
       "mode": "live"
     },
@@ -296,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1314,
+      "elapsed_ms": 955,
       "error": null,
       "mode": "live"
     },
@@ -304,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1200,
+      "elapsed_ms": 907,
       "error": null,
       "mode": "live"
     },
@@ -312,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1943,
+      "elapsed_ms": 2693,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 2735,
+      "elapsed_ms": 3876,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 559,
+      "elapsed_ms": 415,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 588,
+      "elapsed_ms": 367,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 281,
+      "elapsed_ms": 154,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 105,
+      "elapsed_ms": 107,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 364,
+      "elapsed_ms": 126,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 564,
+      "elapsed_ms": 617,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 125,
+      "elapsed_ms": 165,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 589,
+      "elapsed_ms": 425,
       "error": null,
       "mode": "live"
     },
@@ -392,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 333,
+      "elapsed_ms": 363,
       "error": null,
       "mode": "live"
     }
@@ -424,9 +424,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.536,
-        "importance": 3.449,
-        "final": 3.993
+        "freshness": 0.469,
+        "importance": 3.02,
+        "final": 3.496
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -443,33 +443,73 @@
       "country_hint": "USA"
     },
     {
-      "id": "5657fe2cc6b0ce8d",
-      "published_at": "2026-11-07T12:18:42+00:00",
+      "id": "6bfddf3743afe27f",
+      "published_at": "2026-11-07T16:46:24+00:00",
       "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.arabnews.com/world/rubio-seeks-to-impose-order-at-state-dept-as-republicans-look-ahead-to-2028-3010341",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Rubio seeks to impose order at State Dept. as Republicans look ahead to 2028",
+        "original_lang": "en",
+        "ko": "루비오는 공화당이 2028년을 내다보면서 주정부 부서에 명령을 내리려 한다."
+      },
+      "summary": "WASHINGTON: US Secretary of State Marco Rubio has moved to tighten control over the State Department, telling senior officials in a recent meeting that staff must stay in their lanes and avoid efforts that present conflicts of interest, four people familiar with the matter said. ",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.4,
+        "freshness": 0.947,
+        "importance": 2.645,
+        "final": 3.122
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "USA",
+      "election_type": "cabinet_reshuffle"
+    },
+    {
+      "id": "c1d365b2cee4aaef",
+      "published_at": "2026-11-07T18:29:28+00:00",
+      "source": {
+        "id": "tass_ru",
+        "name": "ТАСС",
         "region": "russia",
         "slant": null
       },
-      "url": "https://russian.rt.com/world/news/1705557-florida-vybory-ssha?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "url": "https://tass.ru/obschestvo/28295253",
       "category": "commodity",
       "commodities": [
         "gas"
       ],
       "title": {
-        "original": "WP: губернатор Флориды готовится баллотироваться на пост президента США",
+        "original": "Telegraph: Макрону могли подготовить бункер на случай захвата Елисейского дворца",
         "original_lang": "ru",
-        "ko": "WP: 플로리다 주지사가 미국 대통령 선거에 출마할 준비를 하고 있습니다."
+        "ko": "전보: 엘리제 궁전이 함락될 경우를 대비해 마크롱이 벙커를 준비했을 수도 있습니다."
       },
-      "summary": "Губернатор Флориды Рон Десантис планирует баллотироваться на президентских выборах в США в 2028 году. Об этом сообщает газета The Washington Post со ссылкой на источники. Читать далее",
+      "summary": "По данным газеты, французские чиновники опасаются роста протестного движения, в том числе из-за возможных манифестаций после результатов президентских выборов",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.956,
-        "importance": 2.102,
-        "final": 2.339
+        "freshness": 0.993,
+        "importance": 2.186,
+        "final": 2.431
       },
       "rank_reasons": [
         "region:russia*1.25",
@@ -481,90 +521,94 @@
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
-      "country_hint": "USA",
+      "country_hint": "RUS",
       "election_type": "presidential"
     },
     {
-      "id": "8ba84df3cc92c794",
-      "published_at": "2026-11-06T12:30:00+00:00",
+      "id": "1f4069e681bf6646",
+      "published_at": "2026-11-07T17:33:45+00:00",
       "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
-        "region": "commodity_specialist",
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://oilprice.com/Energy/Energy-General/Oil-Prices-Plunge-as-US-Elections-Shake-Up-the-Iran-War.html",
+      "url": "https://www.tehrantimes.com/news/531917/Iranian-navy-says-tanker-catches-fire-after-striking-sea-mine",
       "category": "commodity",
       "commodities": [
+        "shipping",
         "oil"
       ],
       "title": {
-        "original": "Oil Prices Plunge as U.S. Elections Shake Up the Iran War",
+        "original": "Iranian navy says tanker catches fire after striking sea mine in Strait of Hormuz",
         "original_lang": "en",
-        "ko": "미국 대선이 이란 전쟁을 뒤흔들면서 유가 급락"
+        "ko": "이란 해군은 호르무즈 해협에서 해저 광산을 공격한 후 유조선이 불길에 휩싸인다고 말했습니다."
       },
-      "summary": "December WTI crude oil is headed for one of its roughest weekly losses in months after the market shed $11.37, or 11.10%, from its opening price of $102.39. Prices posted a weekly high at $102.75 before breaking sharply to $86.65. Early Friday, the contract was trading near $91.5",
+      "summary": "TEHRAN– An oil tanker caught fire and was left immobilized after striking a sea mine in the eastern Strait of Hormuz on Saturday morning, the Iranian Army’s Navy said, adding that the vessel had entered a restricted maritime zone despite repeated warnings.",
       "scores": {
         "commodity": 3.0,
-        "diplomacy": 0.0,
+        "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.493,
-        "importance": 1.702,
-        "final": 1.97
+        "region_weight": 1.4,
+        "freshness": 0.968,
+        "importance": 1.455,
+        "final": 1.717
       },
       "rank_reasons": [
-        "region:commodity_specialist*1.35",
+        "region:mena*1.40",
         "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:oil:3"
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "commodity:shipping:2",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "USA"
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
     },
     {
-      "id": "526d7ed68a2c4f05",
-      "published_at": "2026-11-07T13:01:44+00:00",
+      "id": "41e16556d66d6c67",
+      "published_at": "2026-11-07T13:20:19+00:00",
       "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
-        "region": "russia",
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://russian.rt.com/world/news/1705574-novaya-zelandiya-parlamentskie-vybory?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/oil-tanker-fire-strait-hormuz-after-mine-collision",
       "category": "commodity",
       "commodities": [
-        "rice"
+        "shipping",
+        "oil"
       ],
       "title": {
-        "original": "Премьер Новой Зеландии заявил, что победителя выборов определять пока рано",
-        "original_lang": "ru",
-        "ko": "뉴질랜드 총리는 선거의 승자를 결정하기에는 너무 이르다고 말했습니다."
+        "original": "Oil tanker on fire in Strait of Hormuz after mine collision",
+        "original_lang": "en",
+        "ko": "광산 충돌 후 호르무즈 해협에서 불타는 유조선"
       },
-      "summary": "Премьер-министр Новой Зеландии Кристофер Лаксон заявил, что предварительные результаты парламентских выборов пока не позволяют определить победителя голосования. Окончательные итоги станут известны 27 ноября. Читать далее",
+      "summary": "Oil tanker on fire in Strait of Hormuz after mine collision Iran's navy reports that an oil tanker caught fire after colliding with a naval mine while travelling through a \"prohibited\" area in the eastern Strait of Hormuz. According to the reports, the vessel turned off its navig",
       "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.975,
-        "importance": 1.501,
-        "final": 1.67
+        "commodity": 3.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.861,
+        "importance": 1.294,
+        "final": 1.527
       },
       "rank_reasons": [
-        "region:russia*1.25",
+        "region:mena*1.40",
         "category:commodity",
-        "tier:A*1.00/g2",
-        "commodity:rice:1",
-        "election:general:1"
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "commodity:shipping:2",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
     },
     {
       "id": "625198dfda720dfd",
@@ -593,9 +637,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.576,
-        "importance": 1.271,
-        "final": 1.443
+        "freshness": 0.504,
+        "importance": 1.113,
+        "final": 1.264
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -611,82 +655,80 @@
       "country_hint": "IND"
     },
     {
-      "id": "a7a24457702bc9e3",
-      "published_at": "2026-11-06T22:00:54+00:00",
-      "source": {
-        "id": "hellenic_shipping",
-        "name": "Hellenic Shipping News",
-        "region": "commodity_specialist",
-        "slant": null
-      },
-      "url": "https://www.hellenicshippingnews.com/gms-week-45-bids-hold-fast-against-the-tide/",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "GMS Week 45 – Bids Hold Fast Against the Tide",
-        "original_lang": "en",
-        "ko": "GMS 45주차 - 입찰은 조류를 견제합니다"
-      },
-      "summary": "Last week’s improving recycling sentiment has encountered a changing international backdrop. Crude oil has retreated sharply, domestic steel prices have weakened across several destinations, and freight continues to fluctuate. Yet recycling indications remain unchanged across all",
-      "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.35,
-        "freshness": 0.642,
-        "importance": 1.064,
-        "final": 1.231
-      },
-      "rank_reasons": [
-        "region:commodity_specialist*1.35",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
-    },
-    {
-      "id": "bf8bba55f485f1f0",
-      "published_at": "2026-11-06T23:40:15+00:00",
+      "id": "dc22cc885565c94e",
+      "published_at": "2026-11-07T14:09:00+00:00",
       "source": {
         "id": "arab_news",
         "name": "Arab News",
         "region": "mena",
         "slant": null
       },
-      "url": "https://www.arabnews.com/middle-east/us-military-carries-out-new-targeted-strike-on-iran-as-tehrans-leaders-weigh-mediators-proposals-3010264",
+      "url": "https://www.arabnews.com/energy/offshore-wells-stronger-grids-egypts-plan-to-tame-lng-costs-3010174",
       "category": "commodity",
       "commodities": [
         "oil",
+        "gas"
+      ],
+      "title": {
+        "original": "Offshore wells, stronger grids: Egypt’s plan to tame LNG costs",
+        "original_lang": "en",
+        "ko": "해양 우물, 더 강력한 전력망: LNG 비용을 줄이기 위한 이집트의 계획"
+      },
+      "summary": "ABU DHABI: Egypt’s falling gas output is not the crisis markets make it out to be, according to Tarek El Molla, the country’s former minister of petroleum and mineral resources. Every field declines, he argues. What matters is how fast Egypt can replace what it loses. “The behavi",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.881,
+        "importance": 1.05,
+        "final": 1.239
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:2",
+        "commodity:gas:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "cce9aef548703b27",
+      "published_at": "2026-11-07T17:16:04+00:00",
+      "source": {
+        "id": "tehran_times",
+        "name": "Tehran Times",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.tehrantimes.com/news/531914/Strait-of-Hormuz-will-stay-closed-until-US-accepts-its-terms",
+      "category": "commodity",
+      "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "US military carries out new targeted strike on Iran as Tehran’s leaders weigh mediator’s proposals",
+        "original": "Strait of Hormuz will stay closed until US accepts its terms: Iran",
         "original_lang": "en",
-        "ko": "테헤란의 지도자들이 중재자의 제안에 무게를 두면서 미군이 이란에 대한 새로운 표적 공격을 실시합니다."
+        "ko": "호르무즈 해협은 미국이 다음 조건을 수락할 때까지 폐쇄됩니다: 이란"
       },
-      "summary": "WASHINGTON/CAIRO: President Donald Trump said the US military carried out new limited strikes on Iran early on Saturday, targeting its air defense systems. Iranian state media reported the sound of two explosions in the Suza area of Qeshm Island, which is in the Strait of Hormuz,",
+      "summary": "TEHRAN- Iran’s Armed Forces have control over the Strait of Hormuz, which will remain closed until the United States accepts Tehran’s conditions, Army spokesperson Brigadier General Mohammad Akraminia has said.",
       "scores": {
-        "commodity": 2.0,
+        "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.673,
-        "importance": 1.033,
-        "final": 1.219
+        "freshness": 0.96,
+        "importance": 0.945,
+        "final": 1.115
       },
       "rank_reasons": [
         "region:mena*1.40",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:1",
         "commodity:shipping:1",
         "diplomacy:1"
       ],
@@ -696,211 +738,45 @@
       "country_hint": "USA"
     },
     {
-      "id": "32776c93f1ee789d",
-      "published_at": "2026-11-07T13:36:11+00:00",
+      "id": "acdfb621ef55ac3b",
+      "published_at": "2026-11-07T16:41:11+00:00",
       "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
-        "region": "russia",
+        "id": "arab_news",
+        "name": "Arab News",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://russian.rt.com/sport/news/1705586-gallyamov-gran-pri-ronaldu-vozglas?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "url": "https://www.arabnews.com/opinion/africas-diplomatic-stake-in-a-divided-washington-3010116",
       "category": "commodity",
       "commodities": [
-        "rice",
         "gold"
       ],
       "title": {
-        "original": "Галлямов отметил золото Гран-при Китая фирменным возгласом Роналду",
-        "original_lang": "ru",
-        "ko": "Gallyamov는 호날두의 독자적인 감탄사와 함께 중국 그랑프리의 금메달을 차지했습니다."
+        "original": "Africa’s diplomatic stake in a divided Washington",
+        "original_lang": "en",
+        "ko": "분열된 워싱턴에 대한 아프리카의 외교적 지분"
       },
-      "summary": "Российский фигурист Александр Галлямов после победы на этапе Гран-при ISU в Шэньчжэне опубликовал фирменный возглас португальского футболиста Криштиану Роналду. Читать далее",
+      "summary": "The early months of 2026 witnessed a quiet gold rush in Washington’s lobbying corridors, where African governments opened their checkbooks with unusual urgency. Nigeria signed a $9 million contract with the Republican-linked DCI Group to soften congressional criticism over religi",
       "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.991,
-        "importance": 1.094,
-        "final": 1.217
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:rice:1",
-        "commodity:gold:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "11055eb24574ce0d",
-      "published_at": "2026-11-07T12:30:48+00:00",
-      "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://russian.rt.com/business/news/1705558-irak-neft-dobycha-kvoty?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
-      "category": "diplomacy",
-      "commodities": [],
-      "title": {
-        "original": "Добыча нефти в Ираке превысила 5 млн баррелей в сутки",
-        "original_lang": "ru",
-        "ko": "이라크의 석유 생산량이 하루 500만 배럴을 초과했습니다."
-      },
-      "summary": "Ирак увеличил суточную добычу нефти более чем до 5 млн баррелей, продолжая соблюдать установленный Организацией стран — экспортёров нефти (ОПЕК) лимит на экспорт топлива. Читать далее",
-      "scores": {
-        "commodity": 0,
+        "commodity": 1.0,
         "diplomacy": 1.0,
         "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.961,
-        "importance": 1.076,
-        "final": 1.197
+        "region_weight": 1.4,
+        "freshness": 0.945,
+        "importance": 0.93,
+        "final": 1.097
       },
       "rank_reasons": [
-        "region:russia*1.25",
-        "category:diplomacy",
-        "tier:A*1.00/g2",
-        "diplomacy:1",
-        "bridge:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "86e6cadd6e69e6fb",
-      "published_at": "2026-11-07T12:59:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1127578",
-      "category": "commodity",
-      "commodities": [
-        "gas",
-        "rice"
-      ],
-      "title": {
-        "original": "Фицо считает, что референдум о присоединении Словакии к ЕС был сфальсифицирован",
-        "original_lang": "ru",
-        "ko": "FICO는 슬로바키아의 EU 가입에 대한 국민 투표가 위조되었다고 생각합니다."
-      },
-      "summary": "Глава правительства Словакии Роберт Фицо поставил под сомнение результаты референдума о вступлении страны в ЕС, заявив, что они были сфальсифицированы.\"Если бы он не был сфальсифицирован, то не был бы успешным\", - приводит в субботу слова Фицо словацкая газета \"Деник\".",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.974,
-        "importance": 1.075,
-        "final": 1.196
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
+        "region:mena*1.40",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:gas:1",
-        "commodity:rice:1"
+        "commodity:gold:1",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "a604d54fb6fdcbd4",
-      "published_at": "2026-11-07T12:44:00+00:00",
-      "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.sport-interfax.ru/1127576",
-      "category": "commodity",
-      "commodities": [
-        "rice",
-        "gold"
-      ],
-      "title": {
-        "original": "Фигуристы Мишина и Галлямов первыми из россиян после допуска выиграли этап Гран-при ISU",
-        "original_lang": "ru",
-        "ko": "피겨 스케이팅 선수 미시나와 갈리아모프는 입학 후 ISU 그랑프리 스테이지에서 우승한 최초의 러시아인입니다."
-      },
-      "summary": "Российские фигуристы Анастасия Мишина и Александр Галлямов завоевали золото в соревнованиях спортивных пар на третьем этапе серии Гран-при ISU в китайском Шэньчжэне.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.967,
-        "importance": 1.067,
-        "final": 1.188
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:rice:1",
-        "commodity:gold:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "74046539e5c84286",
-      "published_at": "2026-11-07T12:37:47+00:00",
-      "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://russian.rt.com/world/news/1705569-germaniya-kiberataka-holodilniki?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
-      "category": "commodity",
-      "commodities": [
-        "gas",
-        "rice"
-      ],
-      "title": {
-        "original": "Handelsblatt: спецслужбы ФРГ расследуют кибератаки на холодильные установки",
-        "original_lang": "ru",
-        "ko": "Handelsblatt: 독일 정보 기관, 냉장 장치에 대한 사이버 공격 조사"
-      },
-      "summary": "Немецкие спецслужбы приступили к расследованию кибератак на холодильные установки в супермаркетах Германии. Об этом сообщает газета Handelsblatt со ссылкой на Федеральное ведомство по охране Конституции ФРГ (BfV). Читать далее",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.964,
-        "importance": 1.064,
-        "final": 1.184
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gas:1",
-        "commodity:rice:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
+      "country_hint": "USA"
     },
     {
       "id": "e735bd03e3f62001",
@@ -943,6 +819,214 @@
       "election_type": "cabinet_reshuffle"
     },
     {
+      "id": "a7a24457702bc9e3",
+      "published_at": "2026-11-06T22:00:54+00:00",
+      "source": {
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://www.hellenicshippingnews.com/gms-week-45-bids-hold-fast-against-the-tide/",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "GMS Week 45 – Bids Hold Fast Against the Tide",
+        "original_lang": "en",
+        "ko": "GMS 45주차 - 입찰은 조류를 견제합니다"
+      },
+      "summary": "Last week’s improving recycling sentiment has encountered a changing international backdrop. Crude oil has retreated sharply, domestic steel prices have weakened across several destinations, and freight continues to fluctuate. Yet recycling indications remain unchanged across all",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.563,
+        "importance": 0.932,
+        "final": 1.078
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "USA"
+    },
+    {
+      "id": "a383e3ecd48f38a6",
+      "published_at": "2026-11-07T17:40:19+00:00",
+      "source": {
+        "id": "tass_ru",
+        "name": "ТАСС",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.ru/ekonomika/28295195",
+      "category": "commodity",
+      "commodities": [
+        "gas"
+      ],
+      "title": {
+        "original": "Посол в Москве рассказал о планах Ирана построить газопровод с Россией",
+        "original_lang": "ru",
+        "ko": "모스크바 대사는 러시아와 가스 파이프라인을 건설하려는 이란의 계획에 대해 이야기했습니다."
+      },
+      "summary": "Его целевая мощность составит до 110 млрд куб. м, сообщил Казем Джалали",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.971,
+        "importance": 0.956,
+        "final": 1.063
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:gas:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
+    },
+    {
+      "id": "36ba96f29e42dd6e",
+      "published_at": "2026-11-06T20:30:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Latest-Energy-News/World-News/Oil-Traders-Want-US-to-Release-Sanctioned-Tankers-as-Freight-Costs-Soar.html",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Oil Traders Want U.S. to Release Sanctioned Tankers as Freight Costs Soar",
+        "original_lang": "en",
+        "ko": "석유 거래자들은 미국이 제재된 유조선을 화물 비용으로 방출하기를 원합니다."
+      },
+      "summary": "Some of the world's biggest oil traders are asking Washington for permission to put sanctioned tankers back to work, as a global vessel shortage pushes oil transportation costs to extraordinary levels. Trafigura, Vitol, Mercuria and Abu Dhabi National Oil Co. are negotiating with",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.539,
+        "importance": 0.828,
+        "final": 0.959
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "USA"
+    },
+    {
+      "id": "ba18648845e85c28",
+      "published_at": "2026-11-07T13:58:00+00:00",
+      "source": {
+        "id": "interfax_ru",
+        "name": "Interfax",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://www.interfax.ru/russia/1127590",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "У РФ и США остаются \"точечные\" возможности для сотрудничества на экономическом направлении",
+        "original_lang": "ru",
+        "ko": "러시아 연방과 미국은 여전히 경제 분야에서 협력의 \"포인트\" 기회를 가지고 있습니다."
+      },
+      "summary": "У Москвы и Вашингтона остаются отдельные \"точечные\" возможности для сотрудничества на экономическом направлении, Россия к ним открыта, когда ей это нужно и выгодно, заявил \"Интерфаксу\" директор департамента Северной Атлантики МИД РФ Александр Гусаров.\"Сохраняем прагматичную откры",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 1.0,
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.876,
+        "importance": 0.861,
+        "final": 0.958
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:election",
+        "tier:A*1.00/g3",
+        "diplomacy:1",
+        "election:local:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS",
+      "election_type": "local"
+    },
+    {
+      "id": "840629c151ac4a6d",
+      "published_at": "2026-11-07T18:32:34+00:00",
+      "source": {
+        "id": "middle_east_eye",
+        "name": "Middle East Eye",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.middleeasteye.net/live-blog/live-blog-update/houthis-claim-attacks-saudi-aramco-sites-riyadh-airport-and-troops",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "Houthis claim attacks on Saudi Aramco sites, Riyadh airport and troops",
+        "original_lang": "en",
+        "ko": "Houthis는 사우디 아람코 사이트, 리야드 공항 및 군대에 대한 공격을 주장합니다."
+      },
+      "summary": "Houthis claim attacks on Saudi Aramco sites, Riyadh airport and troops Yemen's Houthis said on Saturday they had launched multiple missile and drone attacks against Saudi troops and infrastructure both in the kingdom and Yemen. The group launched six operations that targeted Aram",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.995,
+        "importance": 0.791,
+        "final": 0.933
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
       "id": "e38408041da232c5",
       "published_at": "2026-11-07T04:25:50+00:00",
       "source": {
@@ -967,9 +1051,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.768,
-        "importance": 0.883,
-        "final": 0.982
+        "freshness": 0.672,
+        "importance": 0.773,
+        "final": 0.86
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -983,84 +1067,43 @@
       "country_hint": "CHN"
     },
     {
-      "id": "2641cafeb986533c",
-      "published_at": "2026-11-07T11:59:26+00:00",
+      "id": "70ea3fddb220f546",
+      "published_at": "2026-11-07T15:04:03+00:00",
       "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
         "slant": null
       },
-      "url": "https://www.aljazeera.com/news/2026/11/7/dozens-killed-as-humanitarian-crisis-mounts-in-yemen-what-next-for-war?traffic_source=rss",
+      "url": "https://www.bloomberg.com/news/videos/2026-11-07/inside-alaska-s-oil-paradox-video",
       "category": "commodity",
       "commodities": [
-        "shipping"
+        "oil"
       ],
       "title": {
-        "original": "Dozens killed as humanitarian crisis mounts in Yemen: What next for war?",
+        "original": "How the Iran War Is Making Alaskans Both Richer and Poorer",
         "original_lang": "en",
-        "ko": "예멘에서 인도주의적 위기로 수십 명이 사망: 전쟁의 다음 단계는 무엇입니까?"
+        "ko": "이란 전쟁이 알래스카인들을 더 부유하고 가난하게 만드는 방법"
       },
-      "summary": "Government forces reclaim key territories in Taiz and Lahij but face setbacks under Houthi resistance in certain areas.",
+      "summary": "Oil prices have surged across the United States as a result of the ongoing war in Iran. This means higher costs for households in most states, but in Alaska, the state government is bringing in new revenue from its high oil production to offset those higher costs. Some of the rev",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.947,
-        "importance": 0.784,
-        "final": 0.925
+        "region_weight": 0.55,
+        "freshness": 0.903,
+        "importance": 1.039,
+        "final": 0.828
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:west*0.55",
         "category:commodity",
-        "tier:B*0.72/g1",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "1",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "4e99ace6ea1df209",
-      "published_at": "2026-11-06T16:32:44+00:00",
-      "source": {
-        "id": "tehran_times",
-        "name": "Tehran Times",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.tehrantimes.com/news/531880/Iran-inflicted-a-strategic-defeat-on-Trump-on-the-battlefield",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Iran inflicted a strategic defeat on Trump on the battlefield and at the ballot box, SNSC chief says",
-        "original_lang": "en",
-        "ko": "이란은 전장에서 그리고 투표함에서 트럼프에게 전략적 패배를 가했다고 SNSC 수석은 말합니다."
-      },
-      "summary": "TEHRAN – Iran’s Supreme National Security Council (SNSC) Secretary Major General Mohsen Rezaei has described the outcome of the US midterm elections as a major strategic setback for President Donald Trump, saying the Iranian nation had already dealt Washington significant defeats",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 2.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.552,
-        "importance": 0.781,
-        "final": 0.922
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:shipping:1",
-        "diplomacy:2"
+        "tier:A*1.00/g1",
+        "commodity:oil:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "3",
+      "info_grade": "1",
       "country_hint": "USA"
     },
     {
@@ -1086,9 +1129,9 @@
         "diplomacy": 0.0,
         "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.98,
-        "importance": 0.756,
-        "final": 0.841
+        "freshness": 0.858,
+        "importance": 0.662,
+        "final": 0.737
       },
       "rank_reasons": [
         "region:china*1.25",
@@ -1101,92 +1144,6 @@
       "info_grade": "2",
       "country_hint": "CHN",
       "election_type": "general"
-    },
-    {
-      "id": "941eed9394d30f18",
-      "published_at": "2026-11-07T12:22:18+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/news/2026/11/7/qeshm-island-and-hormuz-hit-as-mediators-try-to-prevent-us-iran-escalation?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Qeshm island and Hormuz hit, as mediators try to prevent US-Iran escalation",
-        "original_lang": "en",
-        "ko": "중재자가 미국-이란 에스컬레이션을 방지하려고 할 때 Qeshm 섬과 Hormuz가 타격을 입었습니다."
-      },
-      "summary": "US strikes have continued on Iran after more ships in the Strait of Hormuz were attacked.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.957,
-        "importance": 0.678,
-        "final": 0.8
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "76899cacd4057d90",
-      "published_at": "2026-11-05T13:12:42+00:00",
-      "source": {
-        "id": "ft_commodities",
-        "name": "FT Commodities",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.ft.com/content/9c6a400c-2207-4b68-8fda-080f1cc30260",
-      "category": "commodity",
-      "commodities": [
-        "oil",
-        "gold",
-        "shipping"
-      ],
-      "title": {
-        "original": "Crude awakening: how oil has fuelled 150 years of conflict",
-        "original_lang": "en",
-        "ko": "조잡한 각성: 석유가 150년의 갈등을 부채질한 방법"
-      },
-      "summary": "From the earliest commercial wells to the Strait of Hormuz, two new books look at how empires, states and companies have used black gold to shape global politics",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 0.55,
-        "freshness": 0.35,
-        "importance": 0.924,
-        "final": 0.737
-      },
-      "rank_reasons": [
-        "region:west*0.55",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "commodity:gold:1",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "USA"
     },
     {
       "id": "e8d39f05749293bb",
@@ -1213,9 +1170,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.495,
-        "importance": 0.547,
-        "final": 0.62
+        "freshness": 0.433,
+        "importance": 0.479,
+        "final": 0.543
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -1227,6 +1184,47 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "IND"
+    },
+    {
+      "id": "837aa540dbc376d6",
+      "published_at": "2026-11-07T15:21:31+00:00",
+      "source": {
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
+      },
+      "url": "https://news.ltn.com.tw/news/world/breakingnews/5633178",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "海上封油奏效後再出招 美成立特遣隊阻伊朗陸路軍火運輸",
+        "original_lang": "zh-TW",
+        "ko": "해상에서 석유 봉인이 성공하면 이란의 육상 무기 수송을 막기 위한 태스크포스를 구성할 것입니다."
+      },
+      "summary": "美國軍方對伊朗實施海上封鎖數月來，成功大幅減少伊朗原油出口量，美軍7日宣佈成立新的特遣隊，對伊朗進行陸路封鎖，阻斷透過陸路取得先進武器、軍民兩用技術和物資。 彭博7日報導...…",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.911,
+        "importance": 0.472,
+        "final": 0.525
+      },
+      "rank_reasons": [
+        "region:taiwan*1.25",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:oil:1",
+        "bridge:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TWN"
     },
     {
       "id": "b1c2cce24c3444a9",
@@ -1251,9 +1249,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.789,
-        "importance": 0.497,
-        "final": 0.564
+        "freshness": 0.69,
+        "importance": 0.435,
+        "final": 0.494
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -1265,46 +1263,6 @@
       "translation_status": "ok",
       "country_tier": "B",
       "info_grade": "2",
-      "country_hint": "TUR"
-    },
-    {
-      "id": "18240f6e55e7f7b0",
-      "published_at": "2026-11-07T12:49:00+00:00",
-      "source": {
-        "id": "daily_sabah",
-        "name": "Daily Sabah",
-        "region": "turkey",
-        "slant": null
-      },
-      "url": "https://www.dailysabah.com/world/mid-east/yemen-airstrikes-kill-22-wound-30-near-houthi-controlled-capital",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Yemen airstrikes kill 22, wound 30 near Houthi-controlled capital",
-        "original_lang": "en",
-        "ko": "예멘 공습으로 후티 통제 수도 근처에서 22명 사망, 30명 부상"
-      },
-      "summary": "Airstrikes struck homes in a village near Yemen’s capital, Sanaa, on Saturday, killing at least 22 people and wounding 30 others, most of them women and children, a spokesman for t...",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.969,
-        "importance": 0.385,
-        "final": 0.437
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
       "country_hint": "TUR"
     },
     {
@@ -1348,6 +1306,46 @@
       "country_hint": "JPN"
     },
     {
+      "id": "18240f6e55e7f7b0",
+      "published_at": "2026-11-07T12:49:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/world/mid-east/yemen-airstrikes-kill-22-wound-30-near-houthi-controlled-capital",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Yemen airstrikes kill 22, wound 30 near Houthi-controlled capital",
+        "original_lang": "en",
+        "ko": "예멘 공습으로 후티 통제 수도 근처에서 22명 사망, 30명 부상"
+      },
+      "summary": "Airstrikes struck homes in a village near Yemen’s capital, Sanaa, on Saturday, killing at least 22 people and wounding 30 others, most of them women and children, a spokesman for t...",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.849,
+        "importance": 0.337,
+        "final": 0.383
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "TUR"
+    },
+    {
       "id": "48d3249bdb6b02b9",
       "published_at": "2026-11-07T12:28:34+00:00",
       "source": {
@@ -1370,9 +1368,9 @@
         "diplomacy": 0.0,
         "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.96,
-        "importance": 0.366,
-        "final": 0.407
+        "freshness": 0.841,
+        "importance": 0.32,
+        "final": 0.356
       },
       "rank_reasons": [
         "region:taiwan*1.25",
