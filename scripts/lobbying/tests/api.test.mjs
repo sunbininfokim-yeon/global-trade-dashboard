@@ -33,3 +33,20 @@ test('Coupang case preserves investor petition and contextual lobbying',async()=
   const c=await res.json();assert.match(c.events[0].actor,/Greenoaks/);assert.equal(c.events[0].type,'petition');
   assert.equal(c.contextual_records[0].link_strength,'contextual');
 });
+
+test('structured search validates filters before embedding and passes the same Gemini vector to SQL', async () => {
+  let embedded = false;
+  const embed = async () => { embedded = true; return [1, 2]; };
+  const invalid = await handleLobbying(request('explore?branch=secret&mode=semantic&q=test'), {}, null, null, embed);
+  assert.equal(invalid.status, 400);
+  assert.equal(embedded, false);
+  const result = await handleLobbying(request('explore?source=fara&country=KR&mode=semantic&q=관세'), {}, null,
+    async (_env, name, args) => {
+      assert.equal(name, 'lobby_explore');
+      assert.equal(args.p_filters.country, 'KR');
+      assert.deepEqual(args.p_embedding, [1, 2]);
+      return {items: []};
+    }, embed);
+  assert.equal(result.status, 200);
+  assert.equal(embedded, true);
+});
