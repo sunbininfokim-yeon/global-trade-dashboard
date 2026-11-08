@@ -1,0 +1,142 @@
+{
+  "schema_version": "us-kr-direction-display-v1",
+  "status": "research_preopen_forecast",
+  "target_date": "2026-11-09",
+  "generated_at": "2026-11-08T03:47:47.645705+00:00",
+  "KR_source_date": "2026-11-06",
+  "US_source_date": "2026-11-06",
+  "forecast_cutoff_KST": "2026-11-09T08:30:00+09:00",
+  "model_id": "115ddb42c8c8449b63c57c35fe7642d22f9af3f2fe84def467bebd30ed976d07",
+  "trained_through": "2026-10-22",
+  "research_only": true,
+  "probability_contract": {
+    "basis": "conditional on nonflat opening and closing directions, matching the frozen training cohort",
+    "opening_up": {
+      "positive": "next open > previous KR close",
+      "negative": "next open < previous KR close"
+    },
+    "closing_up": {
+      "positive": "next close > previous KR close",
+      "negative": "next close < previous KR close"
+    },
+    "direction_persists": {
+      "positive": "opening and closing directions agree",
+      "negative": "opening and closing directions differ"
+    },
+    "opening_extends": {
+      "positive": "open-to-close direction extends the opening direction",
+      "negative": "opening direction does not extend"
+    },
+    "flat_probability": "not estimated; do not interpret binary complements as a three-class forecast",
+    "reference_only": "recent base rate only; probabilities are not a model direction signal"
+  },
+  "cards": [
+    {
+      "ticker": "005930",
+      "label_ko": "삼성전자",
+      "scores": {
+        "opening_up": {
+          "probability": 0.7199614882826898,
+          "score_0_100": 71.99614882826899,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.7199614882826898,
+          "down_probability": 0.2800385117173102
+        },
+        "closing_up": {
+          "probability": 0.6593861282711801,
+          "score_0_100": 65.93861282711802,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.6593861282711801,
+          "down_probability": 0.34061387172881985
+        },
+        "direction_persists": {
+          "probability": 0.7575757558441847,
+          "score_0_100": 75.75757558441848,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        },
+        "opening_extends": {
+          "probability": 0.49494951009868016,
+          "score_0_100": 49.49495100986802,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        }
+      }
+    },
+    {
+      "ticker": "000660",
+      "label_ko": "SK하이닉스",
+      "scores": {
+        "opening_up": {
+          "probability": 0.898743291590937,
+          "score_0_100": 89.8743291590937,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.898743291590937,
+          "down_probability": 0.10125670840906298
+        },
+        "closing_up": {
+          "probability": 0.6169491564116999,
+          "score_0_100": 61.69491564116999,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.6169491564116999,
+          "down_probability": 0.3830508435883001
+        },
+        "direction_persists": {
+          "probability": 0.676767676965397,
+          "score_0_100": 67.6767676965397,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        },
+        "opening_extends": {
+          "probability": 0.4848484818619135,
+          "score_0_100": 48.48484818619135,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        }
+      }
+    },
+    {
+      "ticker": "KOSPI",
+      "label_ko": "KOSPI",
+      "scores": {
+        "opening_up": {
+          "probability": 0.9412688829205533,
+          "score_0_100": 94.12688829205533,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.9412688829205533,
+          "down_probability": 0.05873111707944667
+        },
+        "closing_up": {
+          "probability": 0.7802081755317585,
+          "score_0_100": 78.02081755317585,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.7802081755317585,
+          "down_probability": 0.21979182446824153
+        },
+        "direction_persists": {
+          "probability": 0.7227723562163977,
+          "score_0_100": 72.27723562163976,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        },
+        "opening_extends": {
+          "probability": 0.5363475518085871,
+          "score_0_100": 53.634755180858704,
+          "direction": "EXTEND",
+          "information_state": "model_score_with_calibration"
+        }
+      }
+    }
+  ],
+  "refresh": {
+    "status": "research_preopen_forecast",
+    "checked_at": "2026-11-08T03:47:47.645705+00:00",
+    "reasons": []
+  }
+}
