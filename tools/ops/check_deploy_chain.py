@@ -60,12 +60,23 @@ def chained_names(text):
             for l in m.group(1).splitlines() if l.strip()}
 
 
+# A workflow that commits only files the site never serves (archive receipts
+# outside `New for anti/`) may opt out with this exact line. Listing such a
+# workflow in deploy.yml is not just a wasted deploy: if it is itself started by
+# deploy.yml's completion, the two retrigger each other until GitHub's
+# three-level workflow_run limit stops them (seen 2026-11-07 with the US KR
+# publication observer: two extra observer + no-op deploy rounds per deploy).
+NOT_SERVED = re.compile(r"^#\s*deploy-chain:\s*not-served\b", re.M)
+
+
 def main():
     need = {}
     for f in sorted(WF.glob("*.yml")):
         if f == DEPLOY:
             continue
         text = f.read_text(encoding="utf-8")
+        if NOT_SERVED.search(text):
+            continue
         if pushes_to_main(text):
             need[workflow_name(text)] = f.name
 
