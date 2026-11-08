@@ -3872,17 +3872,18 @@ const setClimateMapLegend = (mode) => {
 
 // Bars on a fixed scale with reference lines, because "+2.5°C" alone says
 // nothing to a reader who doesn't know the NOAA bands or past peaks.
-const renderEnsoBars = (series, history) => {
+const renderEnsoBars = (series, history, opts = {}) => {
     if (!series?.length) return '';
     const vals = series.map(s => s.oni);
+    const { floorTop = 2.8, digits = 1, legend = '점선 = 과거 최강 엘니뇨 정점, 파선 = NOAA 강도 구간' } = opts;
     const peaks = (history?.top_peaks || []).slice(0, 2);
     const lines = (history?.thresholds || []).filter(t => t.value > 0 || Math.min(...vals) < 0);
-    const top = Math.max(2.8, ...vals, ...peaks.map(p => p.peak)) + 0.15;
+    const top = Math.max(floorTop, ...vals, ...peaks.map(p => p.peak)) + 0.15;
     const bottom = Math.min(0, ...vals, ...lines.map(t => t.value)) - (Math.min(...vals) < 0 ? 0.1 : 0);
     const H = 150;
     const y = (v) => ((top - v) / (top - bottom)) * H;
     const zero = y(0);
-    const fmt = (v) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+    const fmt = (v) => `${v > 0 ? '+' : ''}${v.toFixed(digits)}`;
     const bars = series.map((s, i) => {
         const w = 100 / series.length;
         const y0 = Math.min(zero, y(s.oni));
@@ -3904,7 +3905,7 @@ const renderEnsoBars = (series, history) => {
             ${bars}
         </div>
         <div class="climate-sub" style="display:flex;justify-content:space-between;margin-top:2px;"><span>${series[0].label}</span><span>${series[series.length - 1].label}</span></div>
-        ${history?.rank_ko ? `<div class="climate-sub" style="margin-top:4px;">${history.rank_ko} · 점선 = 과거 최강 엘니뇨 정점, 파선 = NOAA 강도 구간</div>` : ''}`;
+        ${history?.rank_ko ? `<div class="climate-sub" style="margin-top:4px;">${history.rank_ko} · ${legend}</div>` : ''}`;
 };
 
 const renderClimateWorldLeft = async () => {
@@ -3945,7 +3946,9 @@ const renderClimateWorldLeft = async () => {
                     </div>
                     <span class="climate-status-pill ${ (iod.latest||0) >= 0 ? 'red' : 'blue' }">${iod.state_ko || '—'}</span>
                 </div>
-                <div class="climate-sub">${iod.note_ko || ''}</div>
+                ${iod.series?.length ? renderEnsoBars(iod.series.map(x => ({ label: x.label, oni: x.dmi })), iod.history,
+                    { floorTop: 1.0, digits: 2, legend: '점선 = 과거 최강 양의 IOD, 파선 = ±0.4 IOD 기준' }) : ''}
+                <div class="climate-sub">${iod.note_ko || ''}${iod.as_of ? ` · ${iod.as_of} 기준` : ''}</div>
             </div>
             <div class="climate-card">
                 <h3>해수면 수온(SST) 편차 · 지도 워시</h3>
