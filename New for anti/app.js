@@ -3879,7 +3879,7 @@ const renderEnsoBars = (series, history) => {
     const lines = (history?.thresholds || []).filter(t => t.value > 0 || Math.min(...vals) < 0);
     const top = Math.max(2.8, ...vals, ...peaks.map(p => p.peak)) + 0.15;
     const bottom = Math.min(0, ...vals, ...lines.map(t => t.value)) - (Math.min(...vals) < 0 ? 0.1 : 0);
-    const H = 110;
+    const H = 150;
     const y = (v) => ((top - v) / (top - bottom)) * H;
     const zero = y(0);
     const fmt = (v) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
@@ -3890,11 +3890,13 @@ const renderEnsoBars = (series, history) => {
         const col = s.oni < 0 ? 'rgba(56,189,248,0.75)' : 'rgba(248,113,113,0.75)';
         return `<span title="${s.label}: ${fmt(s.oni)}°C" style="position:absolute;left:calc(${(i * w).toFixed(3)}% + 1px);width:calc(${w.toFixed(3)}% - 2px);top:${y0.toFixed(1)}px;height:${h.toFixed(1)}px;background:${col};border-radius:2px;"></span>`;
     }).join('');
-    const rule = (v, label, style) => `<div style="position:absolute;left:0;right:0;top:${y(v).toFixed(1)}px;border-top:1px ${style};">
-            <span style="position:absolute;right:0;top:-13px;font-size:10px;color:#94a3b8;background:rgba(15,23,42,0.75);padding:0 3px;border-radius:3px;white-space:nowrap;">${label}</span></div>`;
+    // Labels sit on the side the bars leave empty (the series climbs to the
+    // right, so positive lines are labelled on the left), above the bars.
+    const rule = (v, label, style, color, side) => `<div style="position:absolute;left:0;right:0;top:${y(v).toFixed(1)}px;border-top:1px ${style};z-index:1;">
+            <span style="position:absolute;${side};top:-13px;font-size:10px;color:${color};background:rgba(15,23,42,0.8);padding:0 3px;border-radius:3px;white-space:nowrap;z-index:2;">${label}</span></div>`;
     const ruleHtml = [
-        ...lines.map(t => rule(t.value, `${fmt(t.value)} ${t.label_ko}`, 'dashed rgba(148,163,184,0.45)')),
-        ...peaks.map((p, i) => rule(p.peak, `${p.label} 최고 ${fmt(p.peak)}`, 'dotted rgba(251,191,36,0.8)').replace('right:0;', `right:${i ? 92 : 0}px;`).replace('color:#94a3b8', 'color:#fcd34d')),
+        ...lines.map(t => rule(t.value, `${fmt(t.value)} ${t.label_ko}`, 'dashed rgba(148,163,184,0.45)', '#94a3b8', t.value > 0 ? 'left:0' : 'right:0')),
+        ...peaks.map((p, i) => rule(p.peak, `${p.label} 최고 ${fmt(p.peak)}`, 'dotted rgba(251,191,36,0.8)', '#fcd34d', `left:${i ? 118 : 0}px`)),
     ].join('');
     return `<div class="climate-enso-chart" title="ONI 최근 ${series.length}개 계절" style="position:relative;height:${H}px;margin-top:12px;">
             <div style="position:absolute;left:0;right:0;top:${zero.toFixed(1)}px;border-top:1px solid rgba(148,163,184,0.35);"></div>
