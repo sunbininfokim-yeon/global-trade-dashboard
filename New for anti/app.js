@@ -1815,6 +1815,28 @@ const sstSparkline = (series, w = 300, h = 64) => {
     </svg>`;
 };
 
+/**
+ * Where this month sits among the same calendar month of every year on
+ * record ("10월 기준 45년 중 2번째로 높음"). Same month only, so the seasonal
+ * cycle cannot inflate the rank; warm anomalies rank from the top, cold from
+ * the bottom.
+ */
+const sstSameMonthRank = (region) => {
+    const s = region.series || [];
+    const last = region.latest_month;
+    if (!last || s.length < 24) return '';
+    const mm = last.slice(5);
+    const same = s.filter((x) => x[0].slice(5) === mm);
+    const v = region.latest;
+    const warm = v >= 0;
+    const rank = 1 + same.filter((x) => x[0] !== last && (warm ? x[1] > v : x[1] < v)).length;
+    const word = warm ? '높음' : '낮음';
+    const head = `${Number(mm)}월 기준 ${same[0][0].slice(0, 4)}년 이후 ${same.length}년 중`;
+    const text = rank === 1 ? `${head} 가장 ${word}` : `${head} ${rank}번째로 ${word}`;
+    const hot = rank <= 3;
+    return `<div class="climate-sub" style="margin-top:4px;${hot ? `color:${warm ? '#fca5a5' : '#7dd3fc'};font-weight:600;` : ''}">${text}</div>`;
+};
+
 const renderOceanRegionPanel = (region) => {
     if (!climateRightContentEl || !region) return;
     const s = region.series || [];
@@ -1835,6 +1857,7 @@ const renderOceanRegionPanel = (region) => {
                 ${sign(region.latest)}${region.latest.toFixed(2)}°C
             </div>
             <div class="climate-sub">${region.latest_month} · 최근 12개월 평균 ${sign(region.mean_12m)}${region.mean_12m.toFixed(2)}°C</div>
+            ${sstSameMonthRank(region)}
             ${sstSparkline(s)}
             <div class="sst-axis"><span>${s[0]?.[0] ?? ''}</span><span>${region.latest_month}</span></div>
         </div>
