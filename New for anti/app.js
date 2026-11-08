@@ -1815,6 +1815,28 @@ const sstSparkline = (series, w = 300, h = 64) => {
     </svg>`;
 };
 
+/**
+ * Where this month sits among the same calendar month of every year on
+ * record ("10월 기준 45년 중 2번째로 높음"). Same month only, so the seasonal
+ * cycle cannot inflate the rank; warm anomalies rank from the top, cold from
+ * the bottom.
+ */
+const sstSameMonthRank = (region) => {
+    const s = region.series || [];
+    const last = region.latest_month;
+    if (!last || s.length < 24) return '';
+    const mm = last.slice(5);
+    const same = s.filter((x) => x[0].slice(5) === mm);
+    const v = region.latest;
+    const warm = v >= 0;
+    const rank = 1 + same.filter((x) => x[0] !== last && (warm ? x[1] > v : x[1] < v)).length;
+    const word = warm ? '높음' : '낮음';
+    const head = `${Number(mm)}월 기준 ${same[0][0].slice(0, 4)}년 이후 ${same.length}년 중`;
+    const text = rank === 1 ? `${head} 가장 ${word}` : `${head} ${rank}번째로 ${word}`;
+    const hot = rank <= 3;
+    return `<div class="climate-sub" style="margin-top:4px;${hot ? `color:${warm ? '#fca5a5' : '#7dd3fc'};font-weight:600;` : ''}">${text}</div>`;
+};
+
 const renderOceanRegionPanel = (region) => {
     if (!climateRightContentEl || !region) return;
     const s = region.series || [];
@@ -1835,6 +1857,7 @@ const renderOceanRegionPanel = (region) => {
                 ${sign(region.latest)}${region.latest.toFixed(2)}°C
             </div>
             <div class="climate-sub">${region.latest_month} · 최근 12개월 평균 ${sign(region.mean_12m)}${region.mean_12m.toFixed(2)}°C</div>
+            ${sstSameMonthRank(region)}
             ${sstSparkline(s)}
             <div class="sst-axis"><span>${s[0]?.[0] ?? ''}</span><span>${region.latest_month}</span></div>
         </div>
@@ -3946,9 +3969,13 @@ const renderClimateWorldLeft = async () => {
                     </div>
                     <span class="climate-status-pill ${ (iod.latest||0) >= 0 ? 'red' : 'blue' }">${iod.state_ko || '—'}</span>
                 </div>
-                ${iod.series?.length ? renderEnsoBars(iod.series.map(x => ({ label: x.label, oni: x.dmi })), iod.history,
-                    { floorTop: 1.0, digits: 2, legend: '점선 = 과거 최강 양의 IOD, 파선 = ±0.4 IOD 기준' }) : ''}
                 <div class="climate-sub">${iod.note_ko || ''}${iod.as_of ? ` · ${iod.as_of} 기준` : ''}</div>
+                ${iod.series?.length ? `<details class="climate-fold" style="margin-top:6px;">
+                    <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">
+                        최근 12개월 추이·과거 정점 보기 ▾</summary>
+                    ${renderEnsoBars(iod.series.map(x => ({ label: x.label, oni: x.dmi })), iod.history,
+                        { floorTop: 1.0, digits: 2, legend: '점선 = 과거 최강 양의 IOD, 파선 = ±0.4 IOD 기준' })}
+                </details>` : ''}
             </div>
             <div class="climate-card">
                 <h3>해수면 수온(SST) 편차 · 지도 워시</h3>
