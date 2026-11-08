@@ -138,5 +138,524 @@
     "status": "research_preopen_forecast",
     "checked_at": "2026-11-08T03:47:47.645705+00:00",
     "reasons": []
+  },
+  "factors": {
+    "options": {
+      "label_ko": "KOSPI200 외국인 옵션 수급",
+      "model_id": "07a113d500eccc250f8e4a027c83ad3fe8ec7c37cd0679b50474acd09100e34b",
+      "inputs": [
+        "call_rank60",
+        "put_rank60",
+        "call_mean5",
+        "put_mean5"
+      ],
+      "status": "available",
+      "as_of": "2026-11-06",
+      "expected_source_date": "2026-11-06",
+      "generated_at": "2026-11-08T09:13:41.008428+00:00",
+      "cards": [
+        {
+          "ticker": "KOSPI",
+          "status": "available",
+          "reason": null,
+          "scores": {
+            "opening_up": {
+              "probability": 0.5121951219525275,
+              "up_probability": 0.5121951219525275,
+              "down_probability": 0.4878048780474725,
+              "score_0_100": 51.21951219525275,
+              "information_state": "recent_base_rate_only",
+              "direction": "REFERENCE_ONLY"
+            },
+            "closing_up": {
+              "probability": 0.5365853656019107,
+              "up_probability": 0.5365853656019107,
+              "down_probability": 0.4634146343980893,
+              "score_0_100": 53.658536560191074,
+              "information_state": "recent_base_rate_only",
+              "direction": "REFERENCE_ONLY"
+            }
+          }
+        },
+        {
+          "ticker": "005930",
+          "status": "available",
+          "reason": null,
+          "scores": {
+            "opening_up": {
+              "probability": 0.4852771878102425,
+              "up_probability": 0.4852771878102425,
+              "down_probability": 0.5147228121897576,
+              "score_0_100": 48.52771878102425,
+              "information_state": "model_score_with_calibration",
+              "direction": "DOWN"
+            },
+            "closing_up": {
+              "probability": 0.5531045900968393,
+              "up_probability": 0.5531045900968393,
+              "down_probability": 0.4468954099031607,
+              "score_0_100": 55.31045900968393,
+              "information_state": "model_score_with_calibration",
+              "direction": "UP"
+            }
+          }
+        },
+        {
+          "ticker": "000660",
+          "status": "available",
+          "reason": null,
+          "scores": {
+            "opening_up": {
+              "probability": 0.5081967213166815,
+              "up_probability": 0.5081967213166815,
+              "down_probability": 0.4918032786833185,
+              "score_0_100": 50.81967213166815,
+              "information_state": "recent_base_rate_only",
+              "direction": "REFERENCE_ONLY"
+            },
+            "closing_up": {
+              "probability": 0.5576417855973328,
+              "up_probability": 0.5576417855973328,
+              "down_probability": 0.4423582144026672,
+              "score_0_100": 55.76417855973328,
+              "information_state": "model_score_with_calibration",
+              "direction": "UP"
+            }
+          }
+        }
+      ],
+      "validation": {
+        "period": {
+          "start": "2021-01-04",
+          "end": "2026-11-06"
+        },
+        "n": 8265,
+        "hit": 0.5306715063520872,
+        "balanced_hit": 0.5140870648744664,
+        "base_rate": 0.5390199637023594,
+        "brier": 0.25003482660638354,
+        "brier_base": 0.2500012430442551,
+        "by_ticker": {
+          "KOSPI": {
+            "opening_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1430,
+              "hit": 0.5804195804195804,
+              "balanced_hit": 0.4972102173772818,
+              "base_rate": 0.586013986013986,
+              "brier": 0.24450928655925921,
+              "brier_base": 0.2442171862592399
+            },
+            "closing_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1432,
+              "hit": 0.5174581005586593,
+              "balanced_hit": 0.5066037569173568,
+              "base_rate": 0.539804469273743,
+              "brier": 0.2505856583254255,
+              "brier_base": 0.2504511862674968
+            }
+          },
+          "005930": {
+            "opening_up": {
+              "period": {
+                "start": "2021-01-05",
+                "end": "2026-11-06"
+              },
+              "n": 1327,
+              "hit": 0.5312735493594575,
+              "balanced_hit": 0.49568115193864193,
+              "base_rate": 0.5599095704596835,
+              "brier": 0.25211668597670533,
+              "brier_base": 0.2524062595469666
+            },
+            "closing_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1374,
+              "hit": 0.5269286754002911,
+              "balanced_hit": 0.5269286754002911,
+              "base_rate": 0.5,
+              "brier": 0.25198706595046094,
+              "brier_base": 0.2521470145409145
+            }
+          },
+          "000660": {
+            "opening_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1325,
+              "hit": 0.5086792452830189,
+              "balanced_hit": 0.49054251460809994,
+              "base_rate": 0.5350943396226415,
+              "brier": 0.25171295725155224,
+              "brier_base": 0.251565049392421
+            },
+            "closing_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1377,
+              "hit": 0.5170660856935366,
+              "balanced_hit": 0.5138456180344478,
+              "base_rate": 0.5119825708061002,
+              "brier": 0.24963119835488903,
+              "brier_base": 0.249576473371097
+            }
+          }
+        },
+        "method": "quarterly expanding fit; preceding six months calibration; next three months test; nonflat",
+        "skill": "none",
+        "paired_daily_brier": {
+          "brier_delta": 3.0516376774265945e-05,
+          "block95": [
+            -0.0002755145661995569,
+            0.00033642468384806806
+          ],
+          "two_sided_centered_block_p": 0.8375812093953023,
+          "holm_adjusted_p": 0.8375812093953023
+        }
+      }
+    },
+    "foreign_stock_flow": {
+      "label_ko": "개별 주식 외국인 현물 수급",
+      "model_id": "4f88fc9601bd108a8967f8179e47450aa67b1b1b233b7b4a7793e55c36e9d979",
+      "inputs": [
+        "foreign_net_share1",
+        "foreign_net_share_mean5"
+      ],
+      "status": "unavailable",
+      "as_of": null,
+      "expected_source_date": "2026-11-06",
+      "generated_at": "2026-11-08T09:13:41.008428+00:00",
+      "cards": [
+        {
+          "ticker": "005930",
+          "status": "unavailable",
+          "reason": "missing exact-session KRX 12009",
+          "scores": {
+            "opening_up": {
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
+            },
+            "closing_up": {
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
+            }
+          }
+        },
+        {
+          "ticker": "000660",
+          "status": "unavailable",
+          "reason": "missing exact-session KRX 12009",
+          "scores": {
+            "opening_up": {
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
+            },
+            "closing_up": {
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
+            }
+          }
+        }
+      ],
+      "validation": {
+        "period": {
+          "start": "2021-01-04",
+          "end": "2026-10-23"
+        },
+        "n": 5241,
+        "hit": 0.5268078610952108,
+        "balanced_hit": 0.5170720429180662,
+        "base_rate": 0.5285250906315588,
+        "brier": 0.25103241308259616,
+        "brier_base": 0.2513195647870791,
+        "by_ticker": {
+          "005930": {
+            "opening_up": {
+              "period": {
+                "start": "2021-01-05",
+                "end": "2026-10-23"
+              },
+              "n": 1286,
+              "hit": 0.5466562986003111,
+              "balanced_hit": 0.5090663124754033,
+              "base_rate": 0.5645412130637636,
+              "brier": 0.25124912153929857,
+              "brier_base": 0.2522596582490469
+            },
+            "closing_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-10-23"
+              },
+              "n": 1334,
+              "hit": 0.5217391304347826,
+              "balanced_hit": 0.521847808250894,
+              "base_rate": 0.5029985007496252,
+              "brier": 0.2521206482931804,
+              "brier_base": 0.2520971848458952
+            }
+          },
+          "000660": {
+            "opening_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-10-23"
+              },
+              "n": 1285,
+              "hit": 0.5190661478599222,
+              "balanced_hit": 0.49872122762148335,
+              "base_rate": 0.5369649805447471,
+              "brier": 0.25157632306796296,
+              "brier_base": 0.2517364311190939
+            },
+            "closing_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-10-23"
+              },
+              "n": 1336,
+              "hit": 0.5202095808383234,
+              "balanced_hit": 0.5169574371242985,
+              "base_rate": 0.5112275449101796,
+              "brier": 0.2492140619018813,
+              "brier_base": 0.2492372454852902
+            }
+          }
+        },
+        "method": "quarterly expanding fit; preceding six months calibration; next three months test; nonflat",
+        "skill": "none",
+        "paired_daily_brier": {
+          "brier_delta": -0.000300993118118308,
+          "block95": [
+            -0.000672621507621098,
+            5.10249142282096e-05
+          ],
+          "two_sided_centered_block_p": 0.10494752623688156,
+          "holm_adjusted_p": 0.2098950524737631
+        }
+      }
+    },
+    "us_price": {
+      "label_ko": "미국 주가와 VIX 포함 전망",
+      "model_id": "60cab8d3153ef34c097830c93726f8a0de8125b2faf34922e9fc50e00e137706",
+      "inputs": [
+        "QQQ_return1",
+        "SPY_return1",
+        "VIX_return1",
+        "log_VIX",
+        "SMH_return1",
+        "MU_return1",
+        "NVDA_return1",
+        "AMD_return1"
+      ],
+      "status": "available",
+      "as_of": "2026-11-06",
+      "expected_source_date": "2026-11-06",
+      "generated_at": "2026-11-08T09:13:41.008428+00:00",
+      "cards": [
+        {
+          "ticker": "KOSPI",
+          "status": "available",
+          "reason": null,
+          "scores": {
+            "opening_up": {
+              "probability": 0.8133565933775546,
+              "up_probability": 0.8133565933775546,
+              "down_probability": 0.18664340662244538,
+              "score_0_100": 81.33565933775546,
+              "information_state": "model_score_with_calibration",
+              "direction": "UP"
+            },
+            "closing_up": {
+              "probability": 0.6863721992784767,
+              "up_probability": 0.6863721992784767,
+              "down_probability": 0.3136278007215233,
+              "score_0_100": 68.63721992784767,
+              "information_state": "model_score_with_calibration",
+              "direction": "UP"
+            }
+          }
+        },
+        {
+          "ticker": "005930",
+          "status": "available",
+          "reason": null,
+          "scores": {
+            "opening_up": {
+              "probability": 0.7412263337365608,
+              "up_probability": 0.7412263337365608,
+              "down_probability": 0.25877366626343923,
+              "score_0_100": 74.12263337365607,
+              "information_state": "model_score_with_calibration",
+              "direction": "UP"
+            },
+            "closing_up": {
+              "probability": 0.6232361185929807,
+              "up_probability": 0.6232361185929807,
+              "down_probability": 0.37676388140701933,
+              "score_0_100": 62.32361185929807,
+              "information_state": "model_score_with_calibration",
+              "direction": "UP"
+            }
+          }
+        },
+        {
+          "ticker": "000660",
+          "status": "available",
+          "reason": null,
+          "scores": {
+            "opening_up": {
+              "probability": 0.7900081167779862,
+              "up_probability": 0.7900081167779862,
+              "down_probability": 0.2099918832220138,
+              "score_0_100": 79.00081167779862,
+              "information_state": "model_score_with_calibration",
+              "direction": "UP"
+            },
+            "closing_up": {
+              "probability": 0.6633186302688666,
+              "up_probability": 0.6633186302688666,
+              "down_probability": 0.3366813697311334,
+              "score_0_100": 66.33186302688667,
+              "information_state": "model_score_with_calibration",
+              "direction": "UP"
+            }
+          }
+        }
+      ],
+      "validation": {
+        "period": {
+          "start": "2021-01-04",
+          "end": "2026-11-06"
+        },
+        "n": 8265,
+        "hit": 0.6894131881427707,
+        "balanced_hit": 0.683282518978057,
+        "base_rate": 0.5390199637023594,
+        "brier": 0.19771959093437308,
+        "brier_base": 0.2500012430442551,
+        "by_ticker": {
+          "KOSPI": {
+            "opening_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1430,
+              "hit": 0.7643356643356644,
+              "balanced_hit": 0.7436363123266465,
+              "base_rate": 0.586013986013986,
+              "brier": 0.1647514075265239,
+              "brier_base": 0.2442171862592399
+            },
+            "closing_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1432,
+              "hit": 0.6368715083798883,
+              "balanced_hit": 0.6254919936318111,
+              "base_rate": 0.539804469273743,
+              "brier": 0.2218584315105172,
+              "brier_base": 0.2504511862674968
+            }
+          },
+          "005930": {
+            "opening_up": {
+              "period": {
+                "start": "2021-01-05",
+                "end": "2026-11-06"
+              },
+              "n": 1327,
+              "hit": 0.7339864355689525,
+              "balanced_hit": 0.7234243348881801,
+              "base_rate": 0.5599095704596835,
+              "brier": 0.17827336099749083,
+              "brier_base": 0.2524062595469666
+            },
+            "closing_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1374,
+              "hit": 0.6048034934497817,
+              "balanced_hit": 0.6048034934497817,
+              "base_rate": 0.5,
+              "brier": 0.23156246621685617,
+              "brier_base": 0.2521470145409145
+            }
+          },
+          "000660": {
+            "opening_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1325,
+              "hit": 0.7637735849056604,
+              "balanced_hit": 0.7604214368142436,
+              "base_rate": 0.5350943396226415,
+              "brier": 0.1619628389647772,
+              "brier_base": 0.251565049392421
+            },
+            "closing_up": {
+              "period": {
+                "start": "2021-01-04",
+                "end": "2026-11-06"
+              },
+              "n": 1377,
+              "hit": 0.6361655773420479,
+              "balanced_hit": 0.6355908054711246,
+              "base_rate": 0.5119825708061002,
+              "brier": 0.22623114897069227,
+              "brier_base": 0.249576473371097
+            }
+          }
+        },
+        "method": "quarterly expanding fit; preceding six months calibration; next three months test; nonflat",
+        "skill": "yes",
+        "paired_daily_brier": {
+          "brier_delta": -0.05085283307947247,
+          "block95": [
+            -0.05719258895504522,
+            -0.04393745786820194
+          ],
+          "two_sided_centered_block_p": 0.0004997501249375312,
+          "holm_adjusted_p": 0.0014992503748125937
+        }
+      }
+    }
   }
 }

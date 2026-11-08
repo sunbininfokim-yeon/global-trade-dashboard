@@ -20,6 +20,7 @@ from research_short_horizon_flow import components
 from research_us_lag1_direction import SYMBOLS, previous_us_session
 from us_kr_direction_engine import predict, validate_model, write_immutable
 from us_kr_comparison import DEFAULT_MODEL as COMPARISON_MODEL, predict as comparison_predict
+from us_kr_factors import DEFAULT_MODEL as FACTOR_MODEL, factor_payload
 
 LABELS={'005930':'삼성전자','000660':'SK하이닉스','KOSPI':'KOSPI'}
 PROBABILITY_CONTRACT={
@@ -152,11 +153,12 @@ def record_attempt(forecast,root):
     return path
 
 
-def display_payload(forecast,previous=None):
+def display_payload(forecast,previous=None,factors=None):
     status=forecast['status'];target=forecast['target_date']
     if status=='unavailable' and previous and previous.get('target_date')==target and previous.get('status')=='research_preopen_forecast':
         out=copy.deepcopy(previous)
         out['refresh']={'status':'unavailable','checked_at':forecast['generated_at'],'reasons':forecast['reasons']}
+        if factors is not None:out['factors']=factors
         return out
     cards=[]
     if status!='unavailable':
@@ -178,6 +180,7 @@ def display_payload(forecast,previous=None):
          'cards':cards,'refresh':{'status':status,'checked_at':forecast['generated_at'],'reasons':forecast['reasons']}}
     if status=='unavailable' and previous:
         out['last_available']={k:previous.get(k) for k in ['target_date','generated_at','status']}
+    if factors is not None:out['factors']=factors
     return out
 
 
@@ -233,7 +236,18 @@ def run(args,now=None,clock=None):
     forecast,archive=archive_forecast(forecast,args.archive_dir)
     write_immutable(root/'forecast.json',forecast)
     previous=read(args.public_output) if args.public_output and Path(args.public_output).exists() else None
-    display=display_payload(forecast,previous)
+    factors=None
+    if factor_model:=getattr(args,'factor_model',None):
+        try:
+            factors=factor_payload(
+                read(factor_model),board,us,target=args.target,now=now or clock(),replay=args.replay,
+                krx_root=args.krx_root,flow_root=getattr(args,'stock_flow_root',None),
+                clock=clock if now is None else None,
+            )
+        except (OSError,ValueError,KeyError,TypeError) as exc:
+            report['factor_error']=type(exc).__name__+': '+str(exc)
+            print({'factor_unavailable':report['factor_error']})
+    display=display_payload(forecast,previous,factors)
     write(root/'display_payload.json',display)
     if args.public_output:atomic_json(args.public_output,display)
     report.update(forecast_status=forecast['status'],archive_record=str(archive) if archive else None,
@@ -248,6 +262,8 @@ if __name__=='__main__':
     p.add_argument('--target',required=True);p.add_argument('--model',type=Path,required=True)
     p.add_argument('--comparison-model',type=Path,default=COMPARISON_MODEL,
                    help='frozen comparison artifact; primary model is unchanged')
+    p.add_argument('--factor-model',type=Path,default=FACTOR_MODEL)
+    p.add_argument('--stock-flow-root',type=Path,help='optional normalized KRX 12009 directory')
     p.add_argument('--board',type=Path,default=PUBLIC/'derivatives_board_v1.json')
     p.add_argument('--stocks',type=Path);p.add_argument('--kospi',type=Path);p.add_argument('--us',type=Path)
     p.add_argument('--krx-root',type=Path);p.add_argument('--refresh-prices',action='store_true')
@@ -257,6 +273,6 @@ if __name__=='__main__':
     if not args.refresh_prices and not all([args.stocks,args.kospi,args.us]):p.error('offline mode requires --stocks --kospi --us')
     if args.public_output and args.public_output.name!='us_kr_direction_v1.json':p.error('public output must be named us_kr_direction_v1.json')
     if args.replay and args.public_output:p.error('replay must not publish a live display payload')
-    if args.public_output and args.public_output.resolve() in {x.resolve() for x in [args.board,args.model,args.stocks,args.kospi,args.us] if x}:
+    if args.public_output and args.public_output.resolve() in {x.resolve() for x in [args.board,args.model,args.factor_model,args.stocks,args.kospi,args.us] if x}:
         p.error('public output would overwrite an input')
     raise SystemExit(run(args))
