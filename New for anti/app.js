@@ -3969,9 +3969,13 @@ const renderClimateWorldLeft = async () => {
                     </div>
                     <span class="climate-status-pill ${ (iod.latest||0) >= 0 ? 'red' : 'blue' }">${iod.state_ko || '—'}</span>
                 </div>
-                ${iod.series?.length ? renderEnsoBars(iod.series.map(x => ({ label: x.label, oni: x.dmi })), iod.history,
-                    { floorTop: 1.0, digits: 2, legend: '점선 = 과거 최강 양의 IOD, 파선 = ±0.4 IOD 기준' }) : ''}
                 <div class="climate-sub">${iod.note_ko || ''}${iod.as_of ? ` · ${iod.as_of} 기준` : ''}</div>
+                ${iod.series?.length ? `<details class="climate-fold" style="margin-top:6px;">
+                    <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">
+                        최근 12개월 추이·과거 정점 보기 ▾</summary>
+                    ${renderEnsoBars(iod.series.map(x => ({ label: x.label, oni: x.dmi })), iod.history,
+                        { floorTop: 1.0, digits: 2, legend: '점선 = 과거 최강 양의 IOD, 파선 = ±0.4 IOD 기준' })}
+                </details>` : ''}
             </div>
             <div class="climate-card">
                 <h3>해수면 수온(SST) 편차 · 지도 워시</h3>
