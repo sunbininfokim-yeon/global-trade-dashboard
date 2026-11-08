@@ -4,7 +4,7 @@ const TEXT={pending:'본문 수집 대기',extracted:'본문 확보',ocr_require
 const STATUS={pending:'대기',running:'실행 중',partial:'수집 진행 중',complete_pass:'목록 한 차례 순회 완료',source_unavailable:'원천 접근 실패'};
 export async function prepare(){
   if(!document.querySelector('link[data-lobbying-css]')){
-    const link=document.createElement('link'); link.rel='stylesheet';link.href='/policy-lobbying/style.css?v=1';link.dataset.lobbyingCss='';document.head.append(link);
+    const link=document.createElement('link'); link.rel='stylesheet';link.href='/policy-lobbying/style.css?v=2';link.dataset.lobbyingCss='';document.head.append(link);
   }
 }
 export function markup(){return '<section class="lobbying" data-lobbying><p role="status">로비·사안 자료를 불러오는 중입니다.</p></section>';}
@@ -25,13 +25,19 @@ function detailMarkup(data){
 function caseMarkup(c){return `<button type="button" data-home>← 신고 검색</button><h2>${esc(c.title)}</h2><p class="lobby-note">${esc(c.note)} 검토일 ${esc(c.reviewed_at)}</p><h3>사안 연표</h3>${c.events.map(e=>`<article><small>${esc(e.date)} · ${esc(e.actor)}</small><h3>${esc(e.title)}</h3><p>${esc(e.description)}</p>${sourceLink(e.url)} · ${esc(e.evidence)}</article>`).join('')}<h3>문맥상 관련 신고</h3>${c.contextual_records.map(r=>`<article>${sourceLink(r.url,r.title)}<p>${esc(r.note)}</p></article>`).join('')}`;}
 
 export function mount(root,{id,navigate}={}){
-  let active=true,controller=null,offset=0;
+  let active=true,controller=null,offset=0,childCleanup=null;
   const get=async path=>{const res=await fetch('/api/us/lobbying/'+path,{signal:controller.signal});const body=await res.json();if(!res.ok)throw new Error(body.error||'조회 실패');return body;};
   const show=async()=>{
     controller?.abort();controller=new AbortController();
     try{
+      if(id==='explore'){
+        const {mountExplorer}=await import('./explore.mjs');
+        if(active)childCleanup=mountExplorer(root,navigate);
+        return;
+      }
       if(id){const body=await get(id.startsWith('case:')?'cases/'+encodeURIComponent(id.slice(5)):'records/'+encodeURIComponent(id));if(active)root.innerHTML=id.startsWith('case:')?caseMarkup(body):detailMarkup(body);return;}
       root.innerHTML=`<h2>로비·사안</h2><p class="lobby-note">전 국가·전 산업을 수집합니다. 아래 조건은 조회 필터이며 주제 태그는 자동 분류입니다. 등록기관 관계 국가가 문서별 활동 국가를 뜻하지는 않습니다.</p>
+        <button type="button" data-explore>국가·의뢰인·접촉 대상별 관계 탐색</button>
         <details><summary>전체 수집 진행 상황</summary><div data-coverage></div></details>
         <div class="lobby-cases" data-cases></div>
         <form data-filters><input name="q" type="search" placeholder="기업·정책 원문 검색" aria-label="기업·정책 검색">
@@ -57,6 +63,7 @@ export function mount(root,{id,navigate}={}){
     }catch(error){if(active&&error.name!=='AbortError')target.textContent=error.message;}
   };
   const click=e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.hasAttribute('data-explore'))navigate('lobbying','explore');
     if(b.hasAttribute('data-home'))navigate('lobbying');
     if(b.dataset.record)navigate('lobbying',b.dataset.record);
     if(b.dataset.case)navigate('lobbying','case:'+b.dataset.case);
@@ -65,7 +72,7 @@ export function mount(root,{id,navigate}={}){
   };
   const submit=e=>{if(e.target.matches('[data-filters]')){e.preventDefault();offset=0;void loadList();}};
   root.addEventListener('click',click);root.addEventListener('submit',submit);void show();
-  return()=>{active=false;controller?.abort();listController?.abort();root.removeEventListener('click',click);root.removeEventListener('submit',submit);};
+  return()=>{active=false;childCleanup?.();controller?.abort();listController?.abort();root.removeEventListener('click',click);root.removeEventListener('submit',submit);};
 }
 
 export function mountPolicyLinks(root,type,id,navigate){

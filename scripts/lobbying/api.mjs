@@ -9,11 +9,44 @@ const json = (body, status=200) => new Response(JSON.stringify(body), {
 const identity = value => /^[a-zA-Z0-9:_-]{1,200}$/.test(value || '');
 const bounded = (value, fallback, max) => Math.min(max, Math.max(0, Number.isSafeInteger(Number(value)) && value !== null ? Number(value) : fallback));
 
-export async function handleLobbying(request, env, read, rpc) {
+export async function handleLobbying(request, env, read, rpc, embedQuery) {
   if (request.method !== 'GET') return json({error:'Method not allowed'},405);
   const url = new URL(request.url), q = url.searchParams;
   const path = url.pathname.replace(/^\/api\/us\/lobbying\/?/, '').replace(/\/$/,'');
   try {
+    if (path === 'explore') {
+      const filters = {};
+      const choices = {
+        source: ['fara', 'lda'],
+        principal_kind: ['government', 'political_party', 'public_body', 'state_owned_company', 'private_company', 'nonprofit', 'individual', 'unknown'],
+        branch: ['legislative', 'executive', 'judicial', 'state_local', 'media', 'other', 'unknown'],
+      };
+      for (const [name, values] of Object.entries(choices)) {
+        if (!q.has(name)) continue;
+        if (!values.includes(q.get(name))) return json({error: 'Invalid ' + name}, 400);
+        filters[name] = q.get(name);
+      }
+      if (q.has('country')) {
+        if (!/^[A-Z]{2}$/.test(q.get('country'))) return json({error: 'Invalid country'}, 400);
+        filters.country = q.get('country');
+      }
+      if (q.has('record_id')) {
+        if (!identity(q.get('record_id'))) return json({error: 'Invalid record'}, 400);
+        filters.record_id = q.get('record_id');
+      }
+      filters.q = (q.get('q') || '').trim();
+      if (filters.q.length > 300) return json({error: '검색어는 300자 이내로 입력해 주세요.'}, 400);
+      filters.limit = Math.max(1, bounded(q.get('limit'), 25, 50));
+      filters.offset = bounded(q.get('offset'), 0, 1000000);
+      if (q.has('recipient')) {
+        if (!q.get('recipient').trim() || q.get('recipient').length > 300) return json({error: 'Invalid recipient'}, 400);
+        filters.recipient = q.get('recipient');
+      }
+      const semantic = q.get('mode') === 'semantic' && Boolean(filters.q);
+      if (semantic && !embedQuery) return json({error: '의미 검색 연결을 확인해 주세요.'}, 503);
+      const embedding = semantic ? await embedQuery(env, filters.q) : null;
+      return json(await rpc(env, 'lobby_explore', {p_filters: filters, p_embedding: embedding}));
+    }
     if (path === 'cases') return json({items:cases});
     if (path.startsWith('cases/')) {
       const item = cases.find(c=>c.case_id===path.slice(6));

@@ -9,8 +9,8 @@ rainfall and the monsoon that West African cocoa and Indian wheat depend on.
 
 So each region gets a monthly series back to 1982, plus a trend fitted over it.
 
-Only region means are stored, not grids. Ten regions x ~530 months is about
-100KB; the equivalent gridded history would be tens of megabytes and says
+Only region means are stored, not grids. Seventeen regions x ~530 months is about
+170KB; the equivalent gridded history would be tens of megabytes and says
 nothing extra at this zoom.
 
 Source: NOAA OISST v2.1 via NOAA PSL THREDDS (open access; see psl_oisst.py).
@@ -104,6 +104,57 @@ REGIONS = [
         "lat": [30, 50], "lon": [-180 % 360, -140 % 360],
         "why_ko": "북미 서해안 기압계와 미 중서부 겨울 기후에 영향합니다.",
         "affects": ["미국 겨울밀", "캐나다 캐놀라"],
+    },
+    # 2026-11-08 추가: 작물뿐 아니라 광산·에너지·항만에 닿는 해역.
+    {
+        "id": "nino12", "label_ko": "페루·칠레 연안 (Niño 1+2)",
+        "lat": [-10, 0], "lon": [-90 % 360, -80 % 360],
+        "why_ko": "남미 서해안의 '연안 엘니뇨' 해역. 따뜻해지면 페루·에콰도르 해안에 "
+                  "폭우와 산사태가 나서 광산 도로·항만이 끊기고, 멸치(어분) 어획이 줄어듭니다. "
+                  "Niño 3.4 와 따로 움직이기도 합니다 (2017 연안 엘니뇨).",
+        "affects": ["페루 구리·아연", "페루 어분", "에콰도르 바나나"],
+    },
+    {
+        "id": "coral_sea", "label_ko": "코럴해 (호주 퀸즐랜드 앞바다)",
+        "lat": [-25, -10], "lon": [145, 160],
+        "why_ko": "퀸즐랜드 여름 강수의 수분 공급원. 따뜻하면 우기 폭우와 사이클론이 강해져 "
+                  "보웬 분지 탄광이 침수되고 철도·항만 선적이 끊깁니다 (2010-11 라니냐 홍수).",
+        "affects": ["호주 원료탄·발전용 석탄", "호주 사탕수수", "호주 동부 밀·면화"],
+    },
+    {
+        "id": "atlantic_mdr", "label_ko": "대서양 허리케인 발달역 (MDR)",
+        "lat": [10, 20], "lon": [-80 % 360, -20 % 360],
+        "why_ko": "대서양 허리케인이 생겨 자라는 해역. 수온이 높을수록 허리케인 시즌이 "
+                  "활발해져 멕시코만 원유·가스 생산과 정유, 미시시피 곡물 수출항이 멈출 위험이 커집니다.",
+        "affects": ["미 멕시코만 원유·LNG", "미 곡물 수출항", "카리브 설탕"],
+    },
+    {
+        "id": "gulf_of_mexico", "label_ko": "멕시코만",
+        "lat": [18, 30], "lon": [-98 % 360, -82 % 360],
+        "why_ko": "상륙 직전 허리케인이 마지막으로 힘을 얻는 곳. 미국 정유 설비의 절반가량과 "
+                  "루이지애나 곡물 항만이 이 연안에 있습니다. 미 남부·중서부 강수의 수분원이기도 합니다.",
+        "affects": ["미 정유·석유화학", "미 곡물 수출항", "미 남부 면화"],
+    },
+    {
+        "id": "south_china_sea", "label_ko": "남중국해·필리핀해",
+        "lat": [5, 20], "lon": [110, 135],
+        "why_ko": "북서태평양 태풍의 발달역. 따뜻하면 태풍이 강해져 필리핀 니켈 광산 선적과 "
+                  "필리핀·베트남 쌀, 남중국 항만에 차질이 생깁니다.",
+        "affects": ["필리핀 니켈", "필리핀·베트남 쌀", "남중국 항만"],
+    },
+    {
+        "id": "atlantic_nino", "label_ko": "적도 대서양 (기니만, 대서양 니뇨)",
+        "lat": [-3, 3], "lon": [-20 % 360, 359.875],   # 0° wraps to index 0
+        "why_ko": "'대서양 니뇨' 해역(ATL3). 여기가 따뜻하면 서아프리카 몬순이 남쪽에 머물러 "
+                  "기니만 연안은 다우, 사헬은 건조해지는 경향이 있습니다.",
+        "affects": ["코트디부아르·가나 코코아", "사헬 곡물", "브라질 북동부 강수"],
+    },
+    {
+        "id": "arabian_sea", "label_ko": "아라비아해",
+        "lat": [5, 20], "lon": [55, 75],
+        "why_ko": "인도 남서 몬순이 처음 수분을 얻는 해역. 몬순 시작 시기와 인도 서해안 "
+                  "강수, 파키스탄 쪽 사이클론에 관여합니다.",
+        "affects": ["인도 쌀·대두·면화", "파키스탄 밀·면화"],
     },
 ]
 

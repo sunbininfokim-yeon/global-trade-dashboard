@@ -150,6 +150,21 @@ jobs:
           fi
           python build_derivatives_board.py --live --print-stats "${ARGS[@]}"
 
+      # The step above merges only the newest complete raw folder. Cursor
+      # uploads 15007 in batches, often after this job has run (2026-11-07:
+      # job at 09:54 KST, 11/3-11/6 raw at 12:28-12:50), so a late batch left
+      # its earlier days out of the public series for good. Re-merge every
+      # complete folder of the last 30 days; already-published days are
+      # rewritten with the same observation, incomplete folders are skipped.
+      - name: Backfill recent KRX 15007 call/put days
+        if: steps.krx15007_checkout.outcome == 'success'
+        run: |
+          START=$(python -c 'from datetime import datetime, timedelta; from zoneinfo import ZoneInfo; print((datetime.now(ZoneInfo("Asia/Seoul")) - timedelta(days=30)).strftime("%Y-%m-%d"))')
+          END=$(python -c 'from datetime import datetime; from zoneinfo import ZoneInfo; print(datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d"))')
+          python backfill_detailed_15007_history.py \
+            "${{ github.workspace }}/krx-month-paste/data/raw/krx_15007" \
+            --start "$START" --end "$END"
+
       - name: Append derivatives and LETF history
         run: python append_derivatives_history.py --print-stats
 

@@ -578,12 +578,20 @@ const signalLoadChokepoints = async () => {
 // Both views go through msDirectionView, so a forecast whose target session
 // has passed shows 자료 없음 here too -- never yesterday's number as today's.
 // No up/down colors: this is research output, and the card must not read as
-// a trading signal. Each half shows the more likely side of its own question.
+// a trading signal. Each half shows the more likely side of its own question,
+// with its own probability (40% up reads 하락 60%, never "하락 10%"); 48-52% is
+// 중립 (msDirLean) and keeps the up probability in brackets.
 const signalLoadDirection = async () => {
     const side = (s) => {
         const p = Number((s || {}).probability);
         if (!Number.isFinite(p)) return '—';
-        return p === 0.5 ? '균형 50%' : `${p > 0.5 ? '상승' : '하락'} ${msPct0(Math.max(p, 1 - p))}`;
+        const lean = msDirLean(p);
+        const ref = s.information_state === 'recent_base_rate_only' ? '(최근 빈도)' : '';
+        // Non-breaking spaces: each half wraps as one unit, never "중립(상승 / 51%)".
+        // "가능성" (user decision 2026-11-07): a bare "하락 60%" reads as a 60% price drop.
+        const text = lean === 'neutral' ? `중립(상승 가능성 ${msPct0(p)})${ref}`
+            : `${lean === 'up' ? '상승' : '하락'} 가능성 ${msPct0(lean === 'up' ? p : 1 - p)}${ref}`;
+        return text.replace(/ /g, ' ');
     };
     try {
         const doc = await loadFirstJson(finDataPaths('us_kr_direction_v1.json'), { cache: 'no-cache' });
@@ -600,7 +608,7 @@ const signalLoadDirection = async () => {
             const open = kospi.scores.opening_up, close = kospi.scores.closing_up;
             signalFixedState.kospi = {
                 ...signalFixedState.kospi,
-                value: `시작 ${side(open)} · 마감 ${side(close)}`,
+                value: `시작 ${side(open)} · 마감 ${side(close)}`,
                 sub: `${msDayLabel(v.target)} KOSPI · 전일 종가 대비 · 미국 ${msDayLabel(v.usDay)} 마감 반영`,
                 foot: v.state === 'replay' ? '과거 재생 · 사전 예측 아님' : '연구용 · 08:30 전 확정',
                 tone: v.state === 'replay' ? 'muted' : null,
@@ -1788,23 +1796,92 @@ const oceanHitLayer = () => new ScatterplotLayer({
     updateTriggers: { getFillColor: [selectedOceanRegion], getLineColor: [selectedOceanRegion] },
 });
 
-/** Sparkline of the monthly series, drawn as an inline SVG path. */
-const sstSparkline = (series, w = 300, h = 64) => {
+/**
+ * Reference levels for one region, from its own 1991-2020 months (the same
+ * window the anomalies are measured against). There is no agency scale for
+ * an arbitrary ocean box the way NOAA has one for ENSO, so the levels are
+ * percentiles: the 90th is the marine-heatwave threshold of Hobday et al.
+ * (2016), the 99th marks an extreme month, the 10th the cold side.
+ */
+const sstLevels = (series) => {
+    const base = series.filter((x) => x[0] >= '1991-01' && x[0] <= '2020-12').map((x) => x[1]).sort((a, b) => a - b);
+    if (base.length < 120) return null;
+    const q = (p) => base[Math.min(base.length - 1, Math.floor(p * base.length))];
+    let rec = series[0];
+    for (const x of series) if (x[1] > rec[1]) rec = x;
+    return { p10: q(0.10), p90: q(0.90), p99: q(0.99), record: rec };
+};
+
+/** Monthly series as an SVG path, with the reference levels drawn across it. */
+const sstSparkline = (series, w = 300, h = 120) => {
     if (!series?.length) return '';
+    const lv = sstLevels(series);
     const vals = series.map((s) => s[1]);
-    const lo = Math.min(...vals);
-    const hi = Math.max(...vals);
+    const lo = Math.min(...vals, lv ? lv.p10 : Infinity) - 0.1;
+    const hi = Math.max(...vals, lv ? lv.p99 : -Infinity) + 0.1;
     const span = hi - lo || 1;
     const x = (i) => (i / (series.length - 1)) * w;
     const y = (v) => h - ((v - lo) / span) * h;
+    const pct = (v) => ((y(v) / h) * 100).toFixed(1);
     const d = series.map((s, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(s[1]).toFixed(1)}`).join('');
-    // Zero line, so "above or below normal" is readable without axis labels.
+    const line = (v, color, dash) => `<line x1="0" y1="${y(v).toFixed(1)}" x2="${w}" y2="${y(v).toFixed(1)}"
+        stroke="${color}" stroke-dasharray="${dash}" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+    const tag = (v, color, text, below = false) => `<span style="position:absolute;left:2px;top:${pct(v)}%;
+        transform:translateY(${below ? '2px' : 'calc(-100% - 1px)'});font-size:10px;line-height:1;color:${color};
+        background:rgba(11,18,32,.8);padding:1px 3px;border-radius:2px;pointer-events:none;">${text}</span>`;
+    const f = (v) => `${v >= 0 ? '+' : ''}${v.toFixed(1)}`;
     const zeroY = lo <= 0 && hi >= 0 ? y(0) : null;
-    return `<svg class="sst-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    const levels = lv ? [
+        line(lv.p99, '#f87171', '4 3'), line(lv.p90, '#fbbf24', '4 3'), line(lv.p10, '#7dd3fc', '4 3'),
+    ].join('') : '';
+    const tags = lv ? [
+        tag(lv.p99, '#f87171', `${f(lv.p99)} 극단 (상위 1%)`),
+        tag(lv.p90, '#fbbf24', `${f(lv.p90)} 해양열파 (상위 10%)`),
+        tag(lv.p10, '#7dd3fc', `${f(lv.p10)} 한랭 (하위 10%)`, true),
+    ].join('') : '';
+    return `<div style="position:relative;margin:10px 0 2px;">
+        <svg class="sst-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="height:${h}px;margin:0;">
         ${zeroY != null ? `<line x1="0" y1="${zeroY.toFixed(1)}" x2="${w}" y2="${zeroY.toFixed(1)}"
-             stroke="rgba(148,163,184,.35)" stroke-dasharray="3 3" stroke-width="1"/>` : ''}
-        <path d="${d}" fill="none" stroke="#7dd3fc" stroke-width="1.2"/>
-    </svg>`;
+             stroke="rgba(148,163,184,.35)" stroke-width="1" vector-effect="non-scaling-stroke"/>` : ''}
+        ${levels}
+        <path d="${d}" fill="none" stroke="#7dd3fc" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+        </svg>${tags}</div>`;
+};
+
+/** One line under the chart: which band the latest month is in, and the record. */
+const sstLevelNote = (region) => {
+    const lv = sstLevels(region.series || []);
+    if (!lv) return '';
+    const v = region.latest;
+    const [band, color] = v >= lv.p99 ? ['극단 수준 (1991-2020년 상위 1% 이상)', '#f87171']
+        : v >= lv.p90 ? ['해양열파 수준 (상위 10% 이상)', '#fbbf24']
+        : v <= lv.p10 ? ['한랭 (하위 10% 이하)', '#7dd3fc']
+        : ['평년 범위', '#94a3b8'];
+    const [rm, rv] = lv.record;
+    return `<div class="climate-sub" style="margin-top:4px;"><b style="color:${color};">지금: ${band}</b>
+        · 관측 최고 ${rv >= 0 ? '+' : ''}${rv.toFixed(2)}°C (${rm})</div>`;
+};
+
+/**
+ * Where this month sits among the same calendar month of every year on
+ * record ("10월 기준 45년 중 2번째로 높음"). Same month only, so the seasonal
+ * cycle cannot inflate the rank; warm anomalies rank from the top, cold from
+ * the bottom.
+ */
+const sstSameMonthRank = (region) => {
+    const s = region.series || [];
+    const last = region.latest_month;
+    if (!last || s.length < 24) return '';
+    const mm = last.slice(5);
+    const same = s.filter((x) => x[0].slice(5) === mm);
+    const v = region.latest;
+    const warm = v >= 0;
+    const rank = 1 + same.filter((x) => x[0] !== last && (warm ? x[1] > v : x[1] < v)).length;
+    const word = warm ? '높음' : '낮음';
+    const head = `${Number(mm)}월 기준 ${same[0][0].slice(0, 4)}년 이후 ${same.length}년 중`;
+    const text = rank === 1 ? `${head} 가장 ${word}` : `${head} ${rank}번째로 ${word}`;
+    const hot = rank <= 3;
+    return `<div class="climate-sub" style="margin-top:4px;${hot ? `color:${warm ? '#fca5a5' : '#7dd3fc'};font-weight:600;` : ''}">${text}</div>`;
 };
 
 const renderOceanRegionPanel = (region) => {
@@ -1827,8 +1904,10 @@ const renderOceanRegionPanel = (region) => {
                 ${sign(region.latest)}${region.latest.toFixed(2)}°C
             </div>
             <div class="climate-sub">${region.latest_month} · 최근 12개월 평균 ${sign(region.mean_12m)}${region.mean_12m.toFixed(2)}°C</div>
+            ${sstSameMonthRank(region)}
             ${sstSparkline(s)}
             <div class="sst-axis"><span>${s[0]?.[0] ?? ''}</span><span>${region.latest_month}</span></div>
+            ${sstLevelNote(region)}
         </div>
         <div class="climate-card">
             <h3>장기 변화</h3>
@@ -3862,17 +3941,42 @@ const setClimateMapLegend = (mode) => {
     }
 };
 
-const renderEnsoBars = (series) => {
+// Bars on a fixed scale with reference lines, because "+2.5°C" alone says
+// nothing to a reader who doesn't know the NOAA bands or past peaks.
+const renderEnsoBars = (series, history, opts = {}) => {
     if (!series?.length) return '';
     const vals = series.map(s => s.oni);
-    const maxAbs = Math.max(0.5, ...vals.map(v => Math.abs(v)));
-    return `<div class="climate-bars" title="ONI 최근 궤적">
-        ${series.map(s => {
-            const h = Math.max(4, Math.round((Math.abs(s.oni) / maxAbs) * 46));
-            const col = s.oni < 0 ? 'rgba(56,189,248,0.75)' : 'rgba(248,113,113,0.75)';
-            return `<span style="height:${h}px;background:${col}" title="${s.label}: ${s.oni}"></span>`;
-        }).join('')}
-    </div>`;
+    const { floorTop = 2.8, digits = 1, legend = '점선 = 과거 최강 엘니뇨 정점, 파선 = NOAA 강도 구간' } = opts;
+    const peaks = (history?.top_peaks || []).slice(0, 2);
+    const lines = (history?.thresholds || []).filter(t => t.value > 0 || Math.min(...vals) < 0);
+    const top = Math.max(floorTop, ...vals, ...peaks.map(p => p.peak)) + 0.15;
+    const bottom = Math.min(0, ...vals, ...lines.map(t => t.value)) - (Math.min(...vals) < 0 ? 0.1 : 0);
+    const H = 150;
+    const y = (v) => ((top - v) / (top - bottom)) * H;
+    const zero = y(0);
+    const fmt = (v) => `${v > 0 ? '+' : ''}${v.toFixed(digits)}`;
+    const bars = series.map((s, i) => {
+        const w = 100 / series.length;
+        const y0 = Math.min(zero, y(s.oni));
+        const h = Math.max(2, Math.abs(y(s.oni) - zero));
+        const col = s.oni < 0 ? 'rgba(56,189,248,0.75)' : 'rgba(248,113,113,0.75)';
+        return `<span title="${s.label}: ${fmt(s.oni)}°C" style="position:absolute;left:calc(${(i * w).toFixed(3)}% + 1px);width:calc(${w.toFixed(3)}% - 2px);top:${y0.toFixed(1)}px;height:${h.toFixed(1)}px;background:${col};border-radius:2px;"></span>`;
+    }).join('');
+    // Labels sit on the side the bars leave empty (the series climbs to the
+    // right, so positive lines are labelled on the left), above the bars.
+    const rule = (v, label, style, color, side) => `<div style="position:absolute;left:0;right:0;top:${y(v).toFixed(1)}px;border-top:1px ${style};z-index:1;">
+            <span style="position:absolute;${side};top:-13px;font-size:10px;color:${color};background:rgba(15,23,42,0.8);padding:0 3px;border-radius:3px;white-space:nowrap;z-index:2;">${label}</span></div>`;
+    const ruleHtml = [
+        ...lines.map(t => rule(t.value, `${fmt(t.value)} ${t.label_ko}`, 'dashed rgba(148,163,184,0.45)', '#94a3b8', t.value > 0 ? 'left:0' : 'right:0')),
+        ...peaks.map((p, i) => rule(p.peak, `${p.label} 최고 ${fmt(p.peak)}`, 'dotted rgba(251,191,36,0.8)', '#fcd34d', `left:${i ? 118 : 0}px`)),
+    ].join('');
+    return `<div class="climate-enso-chart" title="ONI 최근 ${series.length}개 계절" style="position:relative;height:${H}px;margin-top:12px;">
+            <div style="position:absolute;left:0;right:0;top:${zero.toFixed(1)}px;border-top:1px solid rgba(148,163,184,0.35);"></div>
+            ${ruleHtml}
+            ${bars}
+        </div>
+        <div class="climate-sub" style="display:flex;justify-content:space-between;margin-top:2px;"><span>${series[0].label}</span><span>${series[series.length - 1].label}</span></div>
+        ${history?.rank_ko ? `<div class="climate-sub" style="margin-top:4px;">${history.rank_ko} · ${legend}</div>` : ''}`;
 };
 
 const renderClimateWorldLeft = async () => {
@@ -3902,7 +4006,7 @@ const renderClimateWorldLeft = async () => {
                 </div>
                 <div class="climate-sub">${enso.state_ko || '상태 미정'}
                     ${enso.prob_continue_pct != null ? ` · 지속 확률 ${enso.prob_continue_pct}%` : ''}</div>
-                ${renderEnsoBars(enso.series)}
+                ${renderEnsoBars(enso.series, enso.history)}
                 <div class="climate-sub" style="margin-top:4px;">기준: ${climateAsOf || '—'}</div>
             </div>
             <div class="climate-card">
@@ -3913,7 +4017,13 @@ const renderClimateWorldLeft = async () => {
                     </div>
                     <span class="climate-status-pill ${ (iod.latest||0) >= 0 ? 'red' : 'blue' }">${iod.state_ko || '—'}</span>
                 </div>
-                <div class="climate-sub">${iod.note_ko || ''}</div>
+                <div class="climate-sub">${iod.note_ko || ''}${iod.as_of ? ` · ${iod.as_of} 기준` : ''}</div>
+                ${iod.series?.length ? `<details class="climate-fold" style="margin-top:6px;">
+                    <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">
+                        최근 12개월 추이·과거 정점 보기 ▾</summary>
+                    ${renderEnsoBars(iod.series.map(x => ({ label: x.label, oni: x.dmi })), iod.history,
+                        { floorTop: 1.0, digits: 2, legend: '점선 = 과거 최강 양의 IOD, 파선 = ±0.4 IOD 기준' })}
+                </details>` : ''}
             </div>
             <div class="climate-card">
                 <h3>해수면 수온(SST) 편차 · 지도 워시</h3>

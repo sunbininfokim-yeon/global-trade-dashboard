@@ -1,0 +1,72 @@
+# Add this mapping under jobs: in us_kr_direction_preopen.yml.
+# It inherits the existing Worker dispatch and workflow concurrency.
+hypothesis_shadow:
+  if: github.ref == 'refs/heads/main'
+  runs-on: ubuntu-latest
+  timeout-minutes: 15
+  permissions:
+    contents: write
+  env:
+    MM: New for anti/scripts/market_microstructure
+    SHADOW_ARCHIVE: data/forecasts/us_kr_hypothesis_shadow
+  steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: pip
+        cache-dependency-path: New for anti/scripts/market_microstructure/requirements-us-kr-preopen.txt
+    - name: Install frozen runtime
+      run: pip install -r "$MM/requirements-us-kr-preopen.txt"
+    - name: Resolve independent shadow target
+      id: shadow_plan
+      env:
+        REQUESTED_TARGET: ${{ inputs.target }}
+      run: |
+        python "$MM/us_kr_hypothesis_actions.py" plan \
+          --model "$MM/models/shadow/us_kr_hypotheses_20261108_v1.json" \
+          --archive "$SHADOW_ARCHIVE" --target "${REQUESTED_TARGET:-}"
+    - name: Checkout Samsung KRX 12009
+      if: steps.shadow_plan.outputs.run == 'true'
+      continue-on-error: true
+      uses: actions/checkout@v4
+      with:
+        repository: sunbininfokim-yeon/krx-month-paste
+        token: ${{ secrets.GH_DISPATCH_TOKEN }}
+        path: krx-month-paste
+        sparse-checkout: data/normalized/krx_12009_stock_investor
+        persist-credentials: false
+    - name: Record shadow forecasts
+      if: steps.shadow_plan.outputs.run == 'true'
+      env:
+        TARGET: ${{ steps.shadow_plan.outputs.target }}
+      run: |
+        mkdir -p runner-state/hypothesis-shadow
+        code=0
+        python "$MM/us_kr_hypothesis_shadow.py" predict --target "$TARGET" \
+          --model "$MM/models/shadow/us_kr_hypotheses_20261108_v1.json" \
+          --live --flow-root krx-month-paste/data/normalized/krx_12009_stock_investor \
+          --archive "$SHADOW_ARCHIVE" \
+          > runner-state/hypothesis-shadow/receipt.json || code=$?
+        if [ "$code" -eq 2 ]; then
+          echo "::warning::$TARGET shadow inputs unavailable; see the receipt."
+        elif [ "$code" -ne 0 ]; then
+          exit "$code"
+        fi
+    - name: Save shadow receipt
+      if: ${{ !cancelled() && steps.shadow_plan.outputs.run == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: us-kr-hypothesis-preopen-${{ github.run_id }}-${{ github.run_attempt }}
+        path: runner-state/hypothesis-shadow/receipt.json
+        retention-days: 30
+    - name: Commit new shadow records
+      if: steps.shadow_plan.outputs.run == 'true'
+      run: |
+        if [ ! -d "$SHADOW_ARCHIVE" ]; then exit 0; fi
+        git config user.name 'github-actions[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git add -- "$SHADOW_ARCHIVE"
+        if git diff --cached --quiet; then exit 0; fi
+        git commit -m 'chore: record US KR hypothesis shadow forecasts'
+        bash tools/ops/git_push_retry.sh

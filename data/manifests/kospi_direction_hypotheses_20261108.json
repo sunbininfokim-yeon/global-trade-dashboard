@@ -1,0 +1,2749 @@
+{
+  "status": "retrospective_only",
+  "trials": 10000,
+  "block_sessions": 5,
+  "seed": 42,
+  "data_sha256": {
+    "kr.json": "77992615bba24e1bb86a88de396cc3d8e143edc665cff9af0bff5bc639c22dfd",
+    "us.json": "671e2332da9ec073ba53bfa8df796e891e10b5aa9df90f925effd2f0ab1bd184",
+    "board.json": "3ef54166634cb5dbcc1e9c988e2f93f190bd86bd296d35480e1381ea535435f4",
+    "NASDAQ100.csv": "2755bd85ee84dfaa57bda3bdaa61c1cedc69091e8fe90d839bc81e8364aad464",
+    "NASDAQCOM.csv": "55f0d33dc67187ca9d5cf3a00e7780e7521057c15f765866a2059c93120245c1",
+    "NASDAQSOX.csv": "4248c6cdc09ad20dfdf44e84179399530713a69afd03547b1400fc1f74a4d07f",
+    "SP500.csv": "e3e204316b4e176f1d313ce777f423c95eda2cecbb7bfc93a496928577280819"
+  },
+  "foreign_snapshot_hashes": {
+    "2019_01.jsonl.gz": "e49488804b43a9d5039c0e07a7a5b12adaae94ed33ccc10df36fc822e3cc6efd",
+    "2019_02.jsonl.gz": "ad0e08dd2d159d4320f747ab730cbc491e5ec3f9d618c08598f6293f015c1004",
+    "2019_03.jsonl.gz": "523a297ea4168df3bba188be67907443e2486a550167adabc5e617312f541f37",
+    "2019_04.jsonl.gz": "96415850daae0b5c7bcdb950d912d781123975a6258e6a9b739e616bf09905b7",
+    "2019_05.jsonl.gz": "5d6db52403519a34594785e7e28809e72bd7d9d6b9cc69935d2042bfe3643865",
+    "2019_06.jsonl.gz": "a27bfc148ca0156674588f59943493dd70f0f78ba7d0bc88fa72785761231f64",
+    "2019_07.jsonl.gz": "36389fa4ce77333d75657e74f4abcfa7c5c0bc44f64d3bfaee784528d4f80d53",
+    "2019_08.jsonl.gz": "22162aa5293f05a8825bd4eb954990a1724e915ba1871dc91173d27e72abc11e",
+    "2019_09.jsonl.gz": "3247bd2157039a95b22b61e9abb7b4d5120f61ada57a1dbeb8dd5ce1555fe452",
+    "2019_10.jsonl.gz": "da21c581e22909f11f2165e75808991f842a0ac5dfe4df0438ee9bea729341f5",
+    "2019_11.jsonl.gz": "ea6e8e91065079b64ff3bd63f5d30c3177ebb7022ef347ae3b2543e7a8965208",
+    "2019_12.jsonl.gz": "36300fac209e12a0197c8953cb4fbcbaa55aed3a185c5ddc53e8152e516912d7",
+    "2020_01.jsonl.gz": "3369f8e571396891634f5889db9babebf470b319810728a505947cf786a91c9b",
+    "2020_02.jsonl.gz": "ada94d734322d5d5cf6f810034ad180f675708232d9bf5e1808941655b95b8cf",
+    "2020_03.jsonl.gz": "9aa4c325433953fc729b595df5c275498fe1ae815fbcdcf72fecf634d4e8b7da",
+    "2020_04.jsonl.gz": "46a6b65c5ce11831247a1ade8e122d93da27bc4905af53e65572f704f7acb428",
+    "2020_05.jsonl.gz": "18bf3c09a656b7ed9d871e5e1df404fea3fa9684b1b2977e3ae28ce433abdccc",
+    "2020_06.jsonl.gz": "c473d2736011759e654352c21272fe86c80e6deb04bde767fb5aaf407fbfaa55",
+    "2020_07.jsonl.gz": "756ac499fdb5b1bf77aff8a4575ca32f3d480ba51af74924d891dc99fb7ad139",
+    "2020_08.jsonl.gz": "8e6e329c059e03b1af2c2885bc98f3a959ede580550e7aead4eb85a3ee918f4b",
+    "2020_09.jsonl.gz": "49776b06bf78e64afb8c26335205413a92a4e68a2cf9438517bbcbadbe33d5fe",
+    "2020_10.jsonl.gz": "9349e1ef1e391a23028d07355551b71227a26eb86eebb7229a0d1c0aa86eddf8",
+    "2020_11.jsonl.gz": "73c9299c32b42ee5c4209094703aca5337b1064712d8d7ff45f1cb5eb04e2a25",
+    "2020_12.jsonl.gz": "ca2870da33d258b95b85f0c6ad351c07d9e766f3980854d9a347d36b4dcd7627",
+    "2021_01.jsonl.gz": "6164a802f5131e77c33bf60468bfc8e3768d7e8f2e22653c18bfaa4039013d8a",
+    "2021_02.jsonl.gz": "d2af45ecd016c290ccd4dd9d5facf8e299545cf328ec2e0b13abd738e4e87e20",
+    "2021_03.jsonl.gz": "c4da9960f7157484826a9da83029dd54a5cdd9908b0c7e62ddf17934d5688469",
+    "2021_04.jsonl.gz": "2fe0c9111b593fe42a922857a11cb9d8876f5017e8ec526061ddc04544b6ea70",
+    "2021_05.jsonl.gz": "ab05082b1933a403ffbefcbc2bb3444fe519868b352d8e86735befeb18fdcf39",
+    "2021_06.jsonl.gz": "34492aae5ca7533ea62bd7afac5d5ce56769acdb2b4f430caad7d8a665fd7b2d",
+    "2021_07.jsonl.gz": "ff86dd5cd1737fd628300b01f647028080162bfacfffef72bc05778563ce70a3",
+    "2021_08.jsonl.gz": "12ce0b7841f0be9e84fe3804e3a03e1b9ededc351b4a7968376b7f94748b41c5",
+    "2021_09.jsonl.gz": "9b1a574a83e456691f723b1215dfa4944c6f3876380dd315bbe722170117d595",
+    "2021_10.jsonl.gz": "7bf4f5ac7f841b44ee6f7591d2d2449711b4d1d3106c7317c3967aa884e6750f",
+    "2021_11.jsonl.gz": "05b6dfa7f30dad0a71470e87fd7665378e43b323a51e794fbba53548691b4771",
+    "2021_12.jsonl.gz": "1a6f275b6e83bf7aeaa9deebf6ed2480492d7f0924da8ab0b5edd8323b93b10f",
+    "2022_01.jsonl.gz": "1c54bfda10b48ed2e871ccd41db73b09edd4de14e23c41546e97085e656e6cc1",
+    "2022_03.jsonl.gz": "edbe8e2e8fe8bc360f14f1d75f052555149952871d3b03d92838dc0d0805ad97",
+    "2022_04.jsonl.gz": "49be4f8c06e61a24555423f2ce017e037ce19dd829651b0abc9a150af1ccbc4d",
+    "2022_05.jsonl.gz": "ed96c721b99b5cab0937096532315a5c06034b5ab98cf12b95a5dfb07aeaad90",
+    "2022_06.jsonl.gz": "38d1f1653fd81b5fd2c52c67fc9814ef7bc530def65f678db10519eb2ba71918",
+    "2022_07.jsonl.gz": "e05bb94ee6c8b8a96e50ae5bbc29f6791e292a03bbdc945555c9cf220f564a20",
+    "2022_08.jsonl.gz": "5674c9d7df2c49b11d7fe7b7435b64a2f15ea183ccc3b1d7cbedf102b632422f",
+    "2022_09.jsonl.gz": "790bd0dea430a7e92c8ec7ff5e67d46f8a218d1f23bb5e143d323d42f9b3f889",
+    "2022_10.jsonl.gz": "c712f1b909ec566a9d4fdd4b5f28be262793d4dc153a653012394c6a01aebc02",
+    "2022_11.jsonl.gz": "326e4844cf1aa3f1f7e886269c4cab09c50f3a86a606634754edbe554a7d8d84",
+    "2022_12.jsonl.gz": "71fe9e31472fc66aa3db6034b4360efbb6cf9e57c19b2ebcf9af28303c055f39",
+    "2023_01.jsonl.gz": "e62e3f8758d6b779e596c98a1238b4b3c2b0c3a9de4ef8403c5dcee79bd034b1",
+    "2023_02.jsonl.gz": "652d2e63e0a24553659de6bae4ae0da3fd97c1519d43f6c7d53d3d3c0615e20f",
+    "2023_03.jsonl.gz": "482ae041946b1e0167e3845fea5e0cb5acf85fc3d7799b5618c7a018d2555168",
+    "2023_04.jsonl.gz": "cdbf9f913acc6ee7631f807ff028b1f5b1da5bebceb4d1f6432a6c2036f6f264",
+    "2023_05.jsonl.gz": "04aa5ec128d49aa01f3e277f69aa9cf99487345cb1c96585f699d1c474c61bfe",
+    "2023_06.jsonl.gz": "0f8d4b33a006600dd65801530aa7e90d0d31f0ac4acd0deb3a49c7ebaf6cd296",
+    "2023_07.jsonl.gz": "37d64710627626a1835acdb9d93a4a4576448a3f74749bad040d7465bdf2b2c7",
+    "2023_08.jsonl.gz": "9eb53cac7542956fd70c4f5f789eea4c4ecf6f99aa063a47613acaff5185e8cb",
+    "2023_09.jsonl.gz": "1cb2dfc109014af1604a8738f0f0366a44e941615865fd2a1dbc4deb0780e309",
+    "2023_10.jsonl.gz": "8738b4d4274da39afa39239d16d3e42b1b99392ab6c32c103317d77e8e88552e",
+    "2023_11.jsonl.gz": "e5754bcca923c74385b2ec6e03c4f1af2993533cd2672badea599dbbd8e3e420",
+    "2023_12.jsonl.gz": "867ba689d4a96f9b2b1c203283e42ef2faaefeb0634acf772cae7fd9fc61a13c",
+    "2024_01.jsonl.gz": "11959bb25bdabfcd7751e444a0f59c880e2f14e24030943f38d3b14f4cf6af6e",
+    "2024_02.jsonl.gz": "cd1f91c143147902a329c392c18d25949033e0f1e804e97211341b8fd83e29f1",
+    "2024_03.jsonl.gz": "6eb7b7c63552a5aa183d9f31ffb57c09409590508ffc29cc13649228506781b7",
+    "2024_04.jsonl.gz": "dc4d68abd736a174745c2e3efafada254fcf1fe50b7039ac2d53c4a32dcd7253",
+    "2024_05.jsonl.gz": "df18e647b99dc1691a92a4cecc0872ffe4b1227fd83b965e573d23901ca3ad07",
+    "2024_06.jsonl.gz": "935cd44eaaf4032a81bae6c17f359dcab62220bb248830995b83c7fbd617ae99",
+    "2024_07.jsonl.gz": "6aa87a9cd9f0897c3532662fdbe6147626ba38061a15822dce7c1c1acf93c296",
+    "2024_08.jsonl.gz": "82b6123a5fd60326ae89e4b0646aac135047251e149ac1ad5596ba618fd72084",
+    "2024_09.jsonl.gz": "1714d318060f9a475146606ea7c26e8ba19a592977a391ea0aed8f6a6035a96d",
+    "2024_10.jsonl.gz": "e6b08613e6f0779d0bdd1e0faf78b4d302a9537565adb354db545212aa433385",
+    "2024_11.jsonl.gz": "da1af90308fd1e5cfdd518af78197235a58b05339497a0500a88732e688763a7",
+    "2024_12.jsonl.gz": "2aeacaccf040f29e303cc1901b253e9f08f89db13648a884ee2c0b3472b51053",
+    "2025_01.jsonl.gz": "a278e1d84154fa5bd5c51028e09debfeaa0ab0174c2a17ef31aa48586dd5189b",
+    "2025_02.jsonl.gz": "8dd4b7ccab5029a08c45cea389468d0717c03575fb2a01b16d3074e9bdd3442b",
+    "2025_03.jsonl.gz": "78dfd0ac652005be57416d64f71a1e07d29ebaaa9a7a54444c324cdf82bef4cc",
+    "2025_04.jsonl.gz": "129aaa6a108b1bdd126f73ea81b11a72ee233cec2b317a9a051b8f32aa14c42c",
+    "2025_05.jsonl.gz": "7968b3a14c8696ba3149651207a70a7073c49852d9e87c180f5554880a7de25b",
+    "2025_06.jsonl.gz": "7a362f315942e4dd41f56e740c2f1d2fcea9d6a54318ea040b7bc19527bdb039",
+    "2025_07.jsonl.gz": "d4a2a52a336843b44d71cb81e4d000e47a6a72426b78ffd2e072769669cb60a7",
+    "2025_08.jsonl.gz": "ac26aa03127c14ae0ccd3cc662a4826728b3cfe0fd83aab66fa3b515ef5e3aa2",
+    "2025_09.jsonl.gz": "04ce5b028bafb817b94439f81c6f40e6a30d4cf9bdcca2382cb9b905481a10ca",
+    "2025_10.jsonl.gz": "589aff9c331fac7dce0887c73e1a38580e694efefddd5a929a18dc6d4988d6d3",
+    "2025_11.jsonl.gz": "c9a7b9155e8d5acae8d3d5a7c4a8078e8c594f0a8c9fe71347b7e798806dc8b2",
+    "2025_12.jsonl.gz": "ca9d8aaf7125a128675f0c0f4cf27479427a47c5b9ee1e522500a92f012bec8e",
+    "2026_01.jsonl.gz": "8ecc2399c845812ce9445bef5277b4649a9a9b28e8a860f9618327e72d1651ee",
+    "2026_02.jsonl.gz": "2c2a1fad1a9f26a44bc9a664fa75b53be59e64abbfb5ebe3ab0d6f0eeecc6e4e",
+    "2026_03.jsonl.gz": "95c3262d97d5c5413a8b3dedc7d33d211119fa261e4ba9733e6374ddd6c31b7c",
+    "2026_04.jsonl.gz": "c4b780fd84e7be972cce071cab4b02253abde738835a8c9f5f63d3d1e8a5fdf6",
+    "2026_05.jsonl.gz": "673528c7dd0782d3df4cf8578e2b69bdbbaa1916718d6fa843385b1f4e4caad6",
+    "2026_06.jsonl.gz": "204bcf8b464e55da34283441632091d96031f5cce74ff0c70f16f47acf4df55c",
+    "2026_07.jsonl.gz": "aa519befd2a0ed3f13aa91d71f5623858e7b078df65eeff271985fc6bed30077",
+    "2026_08.jsonl.gz": "d8b6a59986fc67e1e5d661b704a3120b7b742ccadc4f70e0fda2c3543a4efd6d",
+    "2026_09.jsonl.gz": "ec01b4025f1b765abb8d3222871d2a2c4c9bba6bb9fbfc8672eb1332baa8dce8",
+    "2026_10.jsonl.gz": "fe476338b6e1a3e77530731fc61c4732cbdecc220c61b14cb4e9cd5b44c0a658"
+  },
+  "expiry_calendar_policy": "rule-derived second Thursday, advanced to previous reviewed KRX session on closure; not independently reconciled to historical contract master",
+  "target_policy": "nonflat, strict exact KRX and US sessions; no filling; same dates per target and asset",
+  "probability_policy": "true observed class frequencies; 0.5 is neutral",
+  "kospi": {
+    "gap": {
+      "start": "2021-01-04",
+      "end": "2026-11-06",
+      "scores": {
+        "base": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 838,
+          "hit_down": 0,
+          "forecast_up": 1430,
+          "forecast_down": 0,
+          "neutral": 0,
+          "up_recall": 1.0,
+          "down_recall": 0.0,
+          "balanced_recall": 0.5,
+          "up_precision": 0.586013986013986,
+          "down_precision": null,
+          "brier": 0.24428065277876151
+        },
+        "SP500": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 723,
+          "hit_down": 349,
+          "forecast_up": 966,
+          "forecast_down": 464,
+          "neutral": 0,
+          "up_recall": 0.8627684964200477,
+          "down_recall": 0.589527027027027,
+          "balanced_recall": 0.7261477617235373,
+          "up_precision": 0.7484472049689441,
+          "down_precision": 0.7521551724137931,
+          "brier": 0.1714322214161839
+        },
+        "NASDAQCOM": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 736,
+          "hit_down": 348,
+          "forecast_up": 980,
+          "forecast_down": 450,
+          "neutral": 0,
+          "up_recall": 0.8782816229116945,
+          "down_recall": 0.5878378378378378,
+          "balanced_recall": 0.7330597303747661,
+          "up_precision": 0.7510204081632653,
+          "down_precision": 0.7733333333333333,
+          "brier": 0.17320161497596925
+        },
+        "NASDAQ100": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 733,
+          "hit_down": 341,
+          "forecast_up": 984,
+          "forecast_down": 446,
+          "neutral": 0,
+          "up_recall": 0.8747016706443914,
+          "down_recall": 0.5760135135135135,
+          "balanced_recall": 0.7253575920789525,
+          "up_precision": 0.7449186991869918,
+          "down_precision": 0.7645739910313901,
+          "brier": 0.17444525847837666
+        },
+        "NASDAQSOX": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 719,
+          "hit_down": 345,
+          "forecast_up": 966,
+          "forecast_down": 464,
+          "neutral": 0,
+          "up_recall": 0.8579952267303103,
+          "down_recall": 0.5827702702702703,
+          "balanced_recall": 0.7203827485002903,
+          "up_precision": 0.7443064182194618,
+          "down_precision": 0.7435344827586207,
+          "brier": 0.17867389622069194
+        },
+        "broad": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 730,
+          "hit_down": 348,
+          "forecast_up": 974,
+          "forecast_down": 456,
+          "neutral": 0,
+          "up_recall": 0.8711217183770883,
+          "down_recall": 0.5878378378378378,
+          "balanced_recall": 0.7294797781074631,
+          "up_precision": 0.7494866529774127,
+          "down_precision": 0.7631578947368421,
+          "brier": 0.17082425742818774
+        },
+        "broad_sox": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 732,
+          "hit_down": 353,
+          "forecast_up": 971,
+          "forecast_down": 459,
+          "neutral": 0,
+          "up_recall": 0.8735083532219571,
+          "down_recall": 0.5962837837837838,
+          "balanced_recall": 0.7348960685028705,
+          "up_precision": 0.7538619979402678,
+          "down_precision": 0.7690631808278867,
+          "brier": 0.16745796222781828
+        },
+        "US8": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 730,
+          "hit_down": 368,
+          "forecast_up": 954,
+          "forecast_down": 476,
+          "neutral": 0,
+          "up_recall": 0.8711217183770883,
+          "down_recall": 0.6216216216216216,
+          "balanced_recall": 0.746371669999355,
+          "up_precision": 0.7651991614255765,
+          "down_precision": 0.773109243697479,
+          "brier": 0.16492962958039087
+        },
+        "O": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 834,
+          "hit_down": 2,
+          "forecast_up": 1424,
+          "forecast_down": 6,
+          "neutral": 0,
+          "up_recall": 0.9952267303102625,
+          "down_recall": 0.0033783783783783786,
+          "balanced_recall": 0.49930255434432047,
+          "up_precision": 0.5856741573033708,
+          "down_precision": 0.3333333333333333,
+          "brier": 0.24453972080189526
+        },
+        "PU": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 728,
+          "hit_down": 369,
+          "forecast_up": 951,
+          "forecast_down": 479,
+          "neutral": 0,
+          "up_recall": 0.8687350835322196,
+          "down_recall": 0.6233108108108109,
+          "balanced_recall": 0.7460229471715152,
+          "up_precision": 0.7655099894847529,
+          "down_precision": 0.7703549060542797,
+          "brier": 0.16320965328543038
+        },
+        "POU": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 726,
+          "hit_down": 363,
+          "forecast_up": 955,
+          "forecast_down": 475,
+          "neutral": 0,
+          "up_recall": 0.8663484486873508,
+          "down_recall": 0.6131756756756757,
+          "balanced_recall": 0.7397620621815133,
+          "up_precision": 0.7602094240837697,
+          "down_precision": 0.7642105263157895,
+          "brier": 0.165269940724628
+        },
+        "PU_clip": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 732,
+          "hit_down": 373,
+          "forecast_up": 951,
+          "forecast_down": 479,
+          "neutral": 0,
+          "up_recall": 0.8735083532219571,
+          "down_recall": 0.6300675675675675,
+          "balanced_recall": 0.7517879603947624,
+          "up_precision": 0.7697160883280757,
+          "down_precision": 0.778705636743215,
+          "brier": 0.16081061098177157
+        },
+        "PU_activity": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 728,
+          "hit_down": 365,
+          "forecast_up": 955,
+          "forecast_down": 475,
+          "neutral": 0,
+          "up_recall": 0.8687350835322196,
+          "down_recall": 0.6165540540540541,
+          "balanced_recall": 0.7426445687931369,
+          "up_precision": 0.762303664921466,
+          "down_precision": 0.7684210526315789,
+          "brier": 0.1636979611496643
+        },
+        "US_expiry": {
+          "n": 1430,
+          "actual_up": 838,
+          "actual_down": 592,
+          "hit_up": 728,
+          "hit_down": 368,
+          "forecast_up": 952,
+          "forecast_down": 478,
+          "neutral": 0,
+          "up_recall": 0.8687350835322196,
+          "down_recall": 0.6216216216216216,
+          "balanced_recall": 0.7451783525769207,
+          "up_precision": 0.7647058823529411,
+          "down_precision": 0.7698744769874477,
+          "brier": 0.1650189548115457
+        }
+      },
+      "pairs": {
+        "US8_vs_base": {
+          "delta_brier": -0.07935102319837067,
+          "brier_ci": [
+            -0.09019257549417342,
+            -0.06802527681453788
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": -0.1288782816229117,
+          "delta_down_recall": 0.6216216216216216,
+          "delta_balanced_recall": 0.246371669999355,
+          "up_ci": [
+            -0.15411764705882353,
+            -0.10451306413301663
+          ],
+          "down_ci": [
+            0.5793915463130889,
+            0.6624597668652951
+          ],
+          "balanced_ci": [
+            0.22197492321834805,
+            0.2689937548122249
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "SP500_vs_base": {
+          "delta_brier": -0.07284843136257764,
+          "brier_ci": [
+            -0.08280432268129836,
+            -0.06274378104346326
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": -0.13723150357995229,
+          "delta_down_recall": 0.589527027027027,
+          "delta_balanced_recall": 0.22614776172353734,
+          "up_ci": [
+            -0.16248773124413946,
+            -0.11300121506682867
+          ],
+          "down_ci": [
+            0.5454545454545454,
+            0.6319220978293597
+          ],
+          "balanced_ci": [
+            0.2024260060998459,
+            0.24926057846867408
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "NASDAQCOM_vs_base": {
+          "delta_brier": -0.07107903780279227,
+          "brier_ci": [
+            -0.08168933926330582,
+            -0.06008959175037768
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": -0.12171837708830546,
+          "delta_down_recall": 0.5878378378378378,
+          "delta_balanced_recall": 0.23305973037476613,
+          "up_ci": [
+            -0.14508440406079004,
+            -0.09905660377358491
+          ],
+          "down_ci": [
+            0.5451324174122786,
+            0.6292696990396592
+          ],
+          "balanced_ci": [
+            0.20934730646989813,
+            0.25583130980190033
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "NASDAQ100_vs_base": {
+          "delta_brier": -0.06983539430038484,
+          "brier_ci": [
+            -0.08047268554158837,
+            -0.05868248220441039
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": -0.12529832935560858,
+          "delta_down_recall": 0.5760135135135135,
+          "delta_balanced_recall": 0.22535759207895245,
+          "up_ci": [
+            -0.1497584541062802,
+            -0.1016949152542373
+          ],
+          "down_ci": [
+            0.5308219178082192,
+            0.6193656093489148
+          ],
+          "balanced_ci": [
+            0.20085685619605237,
+            0.2487948945383456
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "NASDAQSOX_vs_base": {
+          "delta_brier": -0.06560675655806958,
+          "brier_ci": [
+            -0.07666067318253264,
+            -0.053854605296595325
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": -0.14200477326968974,
+          "delta_down_recall": 0.5827702702702703,
+          "delta_balanced_recall": 0.22038274850029027,
+          "up_ci": [
+            -0.1697198394369295,
+            -0.1154299175500589
+          ],
+          "down_ci": [
+            0.5383275261324042,
+            0.6262458471760798
+          ],
+          "balanced_ci": [
+            0.19435213560263542,
+            0.24571370623017957
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "NASDAQCOM_vs_SP500": {
+          "delta_brier": 0.0017693935597853701,
+          "brier_ci": [
+            -0.002625525218339263,
+            0.006344884833122854
+          ],
+          "p_brier": 0.44075592440755923,
+          "delta_up_recall": 0.015513126491646823,
+          "delta_down_recall": -0.0016891891891891442,
+          "delta_balanced_recall": 0.006911968651228784,
+          "up_ci": [
+            0.0,
+            0.031746031746031744
+          ],
+          "down_ci": [
+            -0.029173419773095625,
+            0.02559836352498467
+          ],
+          "balanced_ci": [
+            -0.00828717864398387,
+            0.02182519233450745
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQ100_vs_SP500": {
+          "delta_brier": 0.0030130370621928,
+          "brier_ci": [
+            -0.002073309974310563,
+            0.008196166378229817
+          ],
+          "p_brier": 0.24747525247475252,
+          "delta_up_recall": 0.011933174224343701,
+          "delta_down_recall": -0.013513513513513487,
+          "delta_balanced_recall": -0.0007901696445848927,
+          "up_ci": [
+            -0.006235195219970124,
+            0.030732860520094562
+          ],
+          "down_ci": [
+            -0.042834808876430215,
+            0.01565217391304348
+          ],
+          "balanced_ci": [
+            -0.017148106906165632,
+            0.015760853231967336
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQSOX_vs_SP500": {
+          "delta_brier": 0.007241674804508062,
+          "brier_ci": [
+            -0.0006348863565905805,
+            0.015010903620244789
+          ],
+          "p_brier": 0.0685931406859314,
+          "delta_up_recall": -0.004773269689737458,
+          "delta_down_recall": -0.006756756756756688,
+          "delta_balanced_recall": -0.005765013223247073,
+          "up_ci": [
+            -0.029726516052318668,
+            0.02040816326530612
+          ],
+          "down_ci": [
+            -0.04448489981962658,
+            0.029900332225913623
+          ],
+          "balanced_ci": [
+            -0.027935784525238067,
+            0.016064884205844687
+          ],
+          "p_brier_holm": 1.0
+        },
+        "broad_sox_vs_broad": {
+          "delta_brier": -0.003366295200369463,
+          "brier_ci": [
+            -0.006131595725343239,
+            -0.0006263856064917619
+          ],
+          "p_brier": 0.0165983401659834,
+          "delta_up_recall": 0.0023866348448687846,
+          "delta_down_recall": 0.008445945945945943,
+          "delta_balanced_recall": 0.005416290395407364,
+          "up_ci": [
+            -0.010935934049365416,
+            0.01605596857534534
+          ],
+          "down_ci": [
+            -0.012903225806451613,
+            0.030151701905755175
+          ],
+          "balanced_ci": [
+            -0.007669141672114828,
+            0.018432642417837063
+          ],
+          "p_brier_holm": 0.6307369263073692
+        },
+        "O_vs_base": {
+          "delta_brier": 0.00025906802313374914,
+          "brier_ci": [
+            -5.9341148436179506e-05,
+            0.0006071728882437697
+          ],
+          "p_brier": 0.1232876712328767,
+          "delta_up_recall": -0.004773269689737458,
+          "delta_down_recall": 0.0033783783783783786,
+          "delta_balanced_recall": -0.0006974456556795294,
+          "up_ci": [
+            -0.01098901098901099,
+            0.0
+          ],
+          "down_ci": [
+            0.0,
+            0.008605851979345954
+          ],
+          "balanced_ci": [
+            -0.004533173765616784,
+            0.0028600405679513182
+          ],
+          "p_brier_holm": 1.0
+        },
+        "POU_vs_PU": {
+          "delta_brier": 0.0020602874391976353,
+          "brier_ci": [
+            9.294167956055337e-05,
+            0.004081739679461158
+          ],
+          "p_brier": 0.043795620437956206,
+          "delta_up_recall": -0.0023866348448687846,
+          "delta_down_recall": -0.010135135135135198,
+          "delta_balanced_recall": -0.00626088499000188,
+          "up_ci": [
+            -0.014286139962540438,
+            0.009569377990430622
+          ],
+          "down_ci": [
+            -0.03082247375911759,
+            0.008696410956825242
+          ],
+          "balanced_ci": [
+            -0.01822081369261198,
+            0.0050019062105366285
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_vs_US8": {
+          "delta_brier": -0.0017199762949604755,
+          "brier_ci": [
+            -0.009411254090190519,
+            0.005897621287079408
+          ],
+          "p_brier": 0.6499350064993501,
+          "delta_up_recall": -0.0023866348448686736,
+          "delta_down_recall": 0.0016891891891892552,
+          "delta_balanced_recall": -0.0003487228278398202,
+          "up_ci": [
+            -0.024277456647398842,
+            0.019300361881785282
+          ],
+          "down_ci": [
+            -0.03130148270181219,
+            0.03583617747440273
+          ],
+          "balanced_ci": [
+            -0.020072177646818776,
+            0.019913223072774704
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_clip_vs_PU": {
+          "delta_brier": -0.0023990423036587987,
+          "brier_ci": [
+            -0.004799558792886205,
+            -0.00011699716289612188
+          ],
+          "p_brier": 0.044495550444955505,
+          "delta_up_recall": 0.004773269689737458,
+          "delta_down_recall": 0.006756756756756688,
+          "delta_balanced_recall": 0.005765013223247184,
+          "up_ci": [
+            -0.003496605494855203,
+            0.013126883716421012
+          ],
+          "down_ci": [
+            -0.0017574692442882249,
+            0.016556977804136043
+          ],
+          "balanced_ci": [
+            -0.00018536674827645213,
+            0.011938295333511918
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_clip_vs_US8": {
+          "delta_brier": -0.004119018598619274,
+          "brier_ci": [
+            -0.010910993007782,
+            0.002636527859239497
+          ],
+          "p_brier": 0.2308769123087691,
+          "delta_up_recall": 0.0023866348448687846,
+          "delta_down_recall": 0.008445945945945943,
+          "delta_balanced_recall": 0.005416290395407364,
+          "up_ci": [
+            -0.018050541516245487,
+            0.022646750396622683
+          ],
+          "down_ci": [
+            -0.024015788712310648,
+            0.04230118443316413
+          ],
+          "balanced_ci": [
+            -0.013738210252124121,
+            0.025070239392162845
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_activity_vs_PU": {
+          "delta_brier": 0.0004883078642339272,
+          "brier_ci": [
+            -0.00031700101459262916,
+            0.001294607856249805
+          ],
+          "p_brier": 0.24537546245375463,
+          "delta_up_recall": 0.0,
+          "delta_down_recall": -0.006756756756756799,
+          "delta_balanced_recall": -0.0033783783783782884,
+          "up_ci": [
+            -0.006826718673817649,
+            0.007067137809187279
+          ],
+          "down_ci": [
+            -0.02023608768971332,
+            0.005119453924914676
+          ],
+          "balanced_ci": [
+            -0.010827521029415667,
+            0.0034669313705666402
+          ],
+          "p_brier_holm": 1.0
+        },
+        "US_expiry_vs_US8": {
+          "delta_brier": 8.932523115484069e-05,
+          "brier_ci": [
+            -0.0004669341364194783,
+            0.0006526381209550109
+          ],
+          "p_brier": 0.7558244175582441,
+          "delta_up_recall": -0.0023866348448686736,
+          "delta_down_recall": 0.0,
+          "delta_balanced_recall": -0.0011933174224343368,
+          "up_ci": [
+            -0.007255139056831923,
+            0.0023446658851113715
+          ],
+          "down_ci": [
+            -0.006734006734006734,
+            0.006791460217363682
+          ],
+          "balanced_ci": [
+            -0.005287896592244419,
+            0.002873373420543746
+          ],
+          "p_brier_holm": 1.0
+        }
+      }
+    },
+    "close": {
+      "start": "2021-01-04",
+      "end": "2026-11-06",
+      "scores": {
+        "base": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 551,
+          "hit_down": 202,
+          "forecast_up": 1008,
+          "forecast_down": 424,
+          "neutral": 0,
+          "up_recall": 0.7128072445019404,
+          "down_recall": 0.30652503793626706,
+          "balanced_recall": 0.5096661412191037,
+          "up_precision": 0.5466269841269841,
+          "down_precision": 0.47641509433962265,
+          "brier": 0.2505037612485751
+        },
+        "SP500": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 594,
+          "hit_down": 298,
+          "forecast_up": 955,
+          "forecast_down": 477,
+          "neutral": 0,
+          "up_recall": 0.7684346701164295,
+          "down_recall": 0.45220030349013657,
+          "balanced_recall": 0.610317486803283,
+          "up_precision": 0.6219895287958115,
+          "down_precision": 0.6247379454926625,
+          "brier": 0.22316960662753035
+        },
+        "NASDAQCOM": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 593,
+          "hit_down": 296,
+          "forecast_up": 956,
+          "forecast_down": 476,
+          "neutral": 0,
+          "up_recall": 0.7671410090556274,
+          "down_recall": 0.44916540212443096,
+          "balanced_recall": 0.6081532055900292,
+          "up_precision": 0.6202928870292888,
+          "down_precision": 0.6218487394957983,
+          "brier": 0.22490911679369077
+        },
+        "NASDAQ100": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 596,
+          "hit_down": 292,
+          "forecast_up": 963,
+          "forecast_down": 469,
+          "neutral": 0,
+          "up_recall": 0.7710219922380336,
+          "down_recall": 0.44309559939301973,
+          "balanced_recall": 0.6070587958155267,
+          "up_precision": 0.6188992731048806,
+          "down_precision": 0.6226012793176973,
+          "brier": 0.22585240053892755
+        },
+        "NASDAQSOX": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 584,
+          "hit_down": 316,
+          "forecast_up": 927,
+          "forecast_down": 505,
+          "neutral": 0,
+          "up_recall": 0.7554980595084088,
+          "down_recall": 0.4795144157814871,
+          "balanced_recall": 0.6175062376449479,
+          "up_precision": 0.6299892125134844,
+          "down_precision": 0.6257425742574257,
+          "brier": 0.22736153148241114
+        },
+        "broad": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 587,
+          "hit_down": 302,
+          "forecast_up": 944,
+          "forecast_down": 488,
+          "neutral": 0,
+          "up_recall": 0.759379042690815,
+          "down_recall": 0.4582701062215478,
+          "balanced_recall": 0.6088245744561814,
+          "up_precision": 0.621822033898305,
+          "down_precision": 0.6188524590163934,
+          "brier": 0.22385422144541753
+        },
+        "broad_sox": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 593,
+          "hit_down": 315,
+          "forecast_up": 937,
+          "forecast_down": 495,
+          "neutral": 0,
+          "up_recall": 0.7671410090556274,
+          "down_recall": 0.4779969650986343,
+          "balanced_recall": 0.6225689870771309,
+          "up_precision": 0.6328708644610459,
+          "down_precision": 0.6363636363636364,
+          "brier": 0.2224858982128961
+        },
+        "US8": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 597,
+          "hit_down": 319,
+          "forecast_up": 937,
+          "forecast_down": 495,
+          "neutral": 0,
+          "up_recall": 0.7723156532988357,
+          "down_recall": 0.48406676783004554,
+          "balanced_recall": 0.6281912105644406,
+          "up_precision": 0.6371398078975453,
+          "down_precision": 0.6444444444444445,
+          "brier": 0.2214732164608784
+        },
+        "O": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 534,
+          "hit_down": 208,
+          "forecast_up": 985,
+          "forecast_down": 447,
+          "neutral": 0,
+          "up_recall": 0.6908150064683053,
+          "down_recall": 0.3156297420333839,
+          "balanced_recall": 0.5032223742508446,
+          "up_precision": 0.5421319796954315,
+          "down_precision": 0.465324384787472,
+          "brier": 0.2506195678632131
+        },
+        "PU": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 597,
+          "hit_down": 322,
+          "forecast_up": 934,
+          "forecast_down": 498,
+          "neutral": 0,
+          "up_recall": 0.7723156532988357,
+          "down_recall": 0.48861911987860396,
+          "balanced_recall": 0.6304673865887198,
+          "up_precision": 0.639186295503212,
+          "down_precision": 0.6465863453815262,
+          "brier": 0.22028936605165514
+        },
+        "POU": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 602,
+          "hit_down": 318,
+          "forecast_up": 943,
+          "forecast_down": 489,
+          "neutral": 0,
+          "up_recall": 0.7787839586028461,
+          "down_recall": 0.48254931714719274,
+          "balanced_recall": 0.6306666378750194,
+          "up_precision": 0.6383881230116649,
+          "down_precision": 0.6503067484662577,
+          "brier": 0.22158223145598263
+        },
+        "PU_clip": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 596,
+          "hit_down": 324,
+          "forecast_up": 931,
+          "forecast_down": 501,
+          "neutral": 0,
+          "up_recall": 0.7710219922380336,
+          "down_recall": 0.49165402124430957,
+          "balanced_recall": 0.6313380067411716,
+          "up_precision": 0.640171858216971,
+          "down_precision": 0.6467065868263473,
+          "brier": 0.21927190064177882
+        },
+        "PU_activity": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 606,
+          "hit_down": 318,
+          "forecast_up": 947,
+          "forecast_down": 485,
+          "neutral": 0,
+          "up_recall": 0.7839586028460543,
+          "down_recall": 0.48254931714719274,
+          "balanced_recall": 0.6332539599966236,
+          "up_precision": 0.6399155227032735,
+          "down_precision": 0.6556701030927835,
+          "brier": 0.22068312907366996
+        },
+        "US_expiry": {
+          "n": 1432,
+          "actual_up": 773,
+          "actual_down": 659,
+          "hit_up": 598,
+          "hit_down": 317,
+          "forecast_up": 940,
+          "forecast_down": 492,
+          "neutral": 0,
+          "up_recall": 0.7736093143596378,
+          "down_recall": 0.48103186646433993,
+          "balanced_recall": 0.6273205904119888,
+          "up_precision": 0.6361702127659574,
+          "down_precision": 0.6443089430894309,
+          "brier": 0.22189068560676228
+        }
+      },
+      "pairs": {
+        "US8_vs_base": {
+          "delta_brier": -0.02903054478769671,
+          "brier_ci": [
+            -0.03600215695008684,
+            -0.02209557917787435
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": 0.05950840879689523,
+          "delta_down_recall": 0.17754172989377848,
+          "delta_balanced_recall": 0.11852506934533691,
+          "up_ci": [
+            0.004135018951650183,
+            0.11454514932775799
+          ],
+          "down_ci": [
+            0.12066232599910193,
+            0.23445084654973977
+          ],
+          "balanced_ci": [
+            0.08872043611248871,
+            0.14813323868482348
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "SP500_vs_base": {
+          "delta_brier": -0.027334154621044753,
+          "brier_ci": [
+            -0.03358516979601703,
+            -0.021110628607680256
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": 0.05562742561448908,
+          "delta_down_recall": 0.1456752655538695,
+          "delta_balanced_recall": 0.10065134558417932,
+          "up_ci": [
+            0.005121475189196092,
+            0.10695422662782773
+          ],
+          "down_ci": [
+            0.09275317518983939,
+            0.20030126195220943
+          ],
+          "balanced_ci": [
+            0.07259097215944743,
+            0.12890414406818054
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "NASDAQCOM_vs_base": {
+          "delta_brier": -0.025594644454884317,
+          "brier_ci": [
+            -0.03190954492611461,
+            -0.019240366440515154
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": 0.05433376455368699,
+          "delta_down_recall": 0.1426403641881639,
+          "delta_balanced_recall": 0.09848706437092547,
+          "up_ci": [
+            0.003865730925184852,
+            0.10695187165775401
+          ],
+          "down_ci": [
+            0.08810434156207575,
+            0.1972065594397685
+          ],
+          "balanced_ci": [
+            0.0693878077851272,
+            0.12743177751801407
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "NASDAQ100_vs_base": {
+          "delta_brier": -0.024651360709647543,
+          "brier_ci": [
+            -0.031022287811757365,
+            -0.018200470267223632
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": 0.05821474773609314,
+          "delta_down_recall": 0.13657056145675267,
+          "delta_balanced_recall": 0.09739265459642299,
+          "up_ci": [
+            0.0066398860790260715,
+            0.1096273736767434
+          ],
+          "down_ci": [
+            0.08283978291647004,
+            0.19040658242307415
+          ],
+          "balanced_ci": [
+            0.06845385176221815,
+            0.1262473785645196
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "NASDAQSOX_vs_base": {
+          "delta_brier": -0.023142229766163955,
+          "brier_ci": [
+            -0.03011669025588265,
+            -0.016096137189272105
+          ],
+          "p_brier": 9.999000099990002e-05,
+          "delta_up_recall": 0.04269081500646832,
+          "delta_down_recall": 0.17298937784522006,
+          "delta_balanced_recall": 0.10784009642584425,
+          "up_ci": [
+            -0.011798668553027867,
+            0.09819121447028424
+          ],
+          "down_ci": [
+            0.11746976313290255,
+            0.22652757078986588
+          ],
+          "balanced_ci": [
+            0.07963897057286776,
+            0.1365811043774521
+          ],
+          "p_brier_holm": 0.0047995200479952005
+        },
+        "NASDAQCOM_vs_SP500": {
+          "delta_brier": 0.0017395101661604414,
+          "brier_ci": [
+            -0.00043734656757804486,
+            0.003908103433023928
+          ],
+          "p_brier": 0.11538846115388461,
+          "delta_up_recall": -0.001293661060802087,
+          "delta_down_recall": -0.003034901365705611,
+          "delta_balanced_recall": -0.002164281213253849,
+          "up_ci": [
+            -0.018893940399548684,
+            0.016209476309226933
+          ],
+          "down_ci": [
+            -0.028025036930680765,
+            0.022027821398296232
+          ],
+          "balanced_ci": [
+            -0.017781682535757796,
+            0.013060533684831207
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQ100_vs_SP500": {
+          "delta_brier": 0.002682793911397212,
+          "brier_ci": [
+            0.0001920826475129276,
+            0.005246899252142685
+          ],
+          "p_brier": 0.03569643035696431,
+          "delta_up_recall": 0.002587322121604063,
+          "delta_down_recall": -0.009104704097116834,
+          "delta_balanced_recall": -0.0032586909877563297,
+          "up_ci": [
+            -0.016173052369676005,
+            0.02149314451713588
+          ],
+          "down_ci": [
+            -0.0351687562215825,
+            0.01639405431857107
+          ],
+          "balanced_ci": [
+            -0.01923297534531305,
+            0.012387923843621461
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQSOX_vs_SP500": {
+          "delta_brier": 0.004191924854880804,
+          "brier_ci": [
+            -0.0003419386178649257,
+            0.008826362498919643
+          ],
+          "p_brier": 0.07269273072692731,
+          "delta_up_recall": -0.01293661060802076,
+          "delta_down_recall": 0.027314112291350556,
+          "delta_balanced_recall": 0.007188750841664926,
+          "up_ci": [
+            -0.04005172271038387,
+            0.014285714285714285
+          ],
+          "down_ci": [
+            -0.007419226806175291,
+            0.06153846153846154
+          ],
+          "balanced_ci": [
+            -0.014857691360974009,
+            0.02918831490817726
+          ],
+          "p_brier_holm": 1.0
+        },
+        "broad_sox_vs_broad": {
+          "delta_brier": -0.0013683232325214306,
+          "brier_ci": [
+            -0.0036329823203646713,
+            0.0008932285370008831
+          ],
+          "p_brier": 0.23307669233076692,
+          "delta_up_recall": 0.0077619663648124115,
+          "delta_down_recall": 0.01972685887708653,
+          "delta_balanced_recall": 0.013744412620949498,
+          "up_ci": [
+            -0.012659031035147464,
+            0.02860858257477243
+          ],
+          "down_ci": [
+            -0.0030211480362537764,
+            0.042232808616404306
+          ],
+          "balanced_ci": [
+            -0.0017698778954987006,
+            0.029391572975571854
+          ],
+          "p_brier_holm": 1.0
+        },
+        "O_vs_base": {
+          "delta_brier": 0.00011580661463798775,
+          "brier_ci": [
+            -0.00021245309193267394,
+            0.00046599985706653155
+          ],
+          "p_brier": 0.5031496850314968,
+          "delta_up_recall": -0.021992238033635148,
+          "delta_down_recall": 0.009104704097116834,
+          "delta_balanced_recall": -0.0064437669682591014,
+          "up_ci": [
+            -0.03795811518324607,
+            -0.008264462809917356
+          ],
+          "down_ci": [
+            0.0015266593744181717,
+            0.01906158357771261
+          ],
+          "balanced_ci": [
+            -0.014370454568672175,
+            0.0005496387637201642
+          ],
+          "p_brier_holm": 1.0
+        },
+        "POU_vs_PU": {
+          "delta_brier": 0.001292865404327531,
+          "brier_ci": [
+            -0.000811214141741305,
+            0.003419055422925592
+          ],
+          "p_brier": 0.23667633236676333,
+          "delta_up_recall": 0.0064683053040104355,
+          "delta_down_recall": -0.006069802731411222,
+          "delta_balanced_recall": 0.00019925128629960653,
+          "up_ci": [
+            -0.01283738297401916,
+            0.025401366795996437
+          ],
+          "down_ci": [
+            -0.026772709207878984,
+            0.015220700152207
+          ],
+          "balanced_ci": [
+            -0.014064098310437501,
+            0.014013087185844566
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_vs_US8": {
+          "delta_brier": -0.0011838504092232666,
+          "brier_ci": [
+            -0.0049551845888773155,
+            0.0026105538739763685
+          ],
+          "p_brier": 0.5420457954204579,
+          "delta_up_recall": 0.0,
+          "delta_down_recall": 0.004552352048558417,
+          "delta_balanced_recall": 0.0022761760242792084,
+          "up_ci": [
+            -0.02357364816302372,
+            0.023106546854942234
+          ],
+          "down_ci": [
+            -0.023475559237779615,
+            0.03265991725876457
+          ],
+          "balanced_ci": [
+            -0.015010989312975067,
+            0.019331258945851183
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_clip_vs_PU": {
+          "delta_brier": -0.00101746540987635,
+          "brier_ci": [
+            -0.0024584225545041523,
+            0.00038071725939096615
+          ],
+          "p_brier": 0.15908409159084091,
+          "delta_up_recall": -0.001293661060802087,
+          "delta_down_recall": 0.003034901365705611,
+          "delta_balanced_recall": 0.000870620152451762,
+          "up_ci": [
+            -0.01288659793814433,
+            0.010403459579540524
+          ],
+          "down_ci": [
+            -0.010736196319018405,
+            0.017628676470588227
+          ],
+          "balanced_ci": [
+            -0.008054610733182161,
+            0.009926563240343413
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_clip_vs_US8": {
+          "delta_brier": -0.002201315819099616,
+          "brier_ci": [
+            -0.005900664647970255,
+            0.001438707456384982
+          ],
+          "p_brier": 0.23887611238876114,
+          "delta_up_recall": -0.001293661060802087,
+          "delta_down_recall": 0.007587253414264028,
+          "delta_balanced_recall": 0.0031467961767309705,
+          "up_ci": [
+            -0.02349909844117571,
+            0.02122086367174977
+          ],
+          "down_ci": [
+            -0.020376232586366602,
+            0.03566121842496285
+          ],
+          "balanced_ci": [
+            -0.014101779541609433,
+            0.019952916020177347
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_activity_vs_PU": {
+          "delta_brier": 0.00039376302201485087,
+          "brier_ci": [
+            -0.0011017076567695857,
+            0.0018796290336969101
+          ],
+          "p_brier": 0.607039296070393,
+          "delta_up_recall": 0.011642949547218673,
+          "delta_down_recall": -0.006069802731411222,
+          "delta_balanced_recall": 0.0027865734079037807,
+          "up_ci": [
+            -0.001303780964797914,
+            0.02554278416347382
+          ],
+          "down_ci": [
+            -0.024280133388066102,
+            0.012102874432677761
+          ],
+          "balanced_ci": [
+            -0.008161871470286226,
+            0.01405013418913181
+          ],
+          "p_brier_holm": 1.0
+        },
+        "US_expiry_vs_US8": {
+          "delta_brier": 0.0004174691458839047,
+          "brier_ci": [
+            -9.237731171882755e-05,
+            0.0009424664586511074
+          ],
+          "p_brier": 0.11758824117588242,
+          "delta_up_recall": 0.001293661060802087,
+          "delta_down_recall": -0.003034901365705611,
+          "delta_balanced_recall": -0.000870620152451762,
+          "up_ci": [
+            -0.003963011889035667,
+            0.0073989604570814565
+          ],
+          "down_ci": [
+            -0.010638297872340425,
+            0.0045385779122541605
+          ],
+          "balanced_ci": [
+            -0.005610455818189341,
+            0.0037134580128136293
+          ],
+          "p_brier_holm": 1.0
+        }
+      }
+    },
+    "intraday": {
+      "start": "2021-01-04",
+      "end": "2026-11-06",
+      "scores": {
+        "base": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 354,
+          "hit_down": 372,
+          "forecast_up": 676,
+          "forecast_down": 694,
+          "neutral": 61,
+          "up_recall": 0.5028409090909091,
+          "down_recall": 0.5116918844566712,
+          "balanced_recall": 0.5072663967737902,
+          "up_precision": 0.5236686390532544,
+          "down_precision": 0.5360230547550432,
+          "brier": 0.2504857557815198
+        },
+        "SP500": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 372,
+          "hit_down": 372,
+          "forecast_up": 727,
+          "forecast_down": 704,
+          "neutral": 0,
+          "up_recall": 0.5284090909090909,
+          "down_recall": 0.5116918844566712,
+          "balanced_recall": 0.5200504876828811,
+          "up_precision": 0.5116918844566712,
+          "down_precision": 0.5284090909090909,
+          "brier": 0.25137873260751264
+        },
+        "NASDAQCOM": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 352,
+          "hit_down": 394,
+          "forecast_up": 685,
+          "forecast_down": 746,
+          "neutral": 0,
+          "up_recall": 0.5,
+          "down_recall": 0.5419532324621733,
+          "balanced_recall": 0.5209766162310867,
+          "up_precision": 0.5138686131386861,
+          "down_precision": 0.5281501340482574,
+          "brier": 0.2516122617523093
+        },
+        "NASDAQ100": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 354,
+          "hit_down": 389,
+          "forecast_up": 692,
+          "forecast_down": 739,
+          "neutral": 0,
+          "up_recall": 0.5028409090909091,
+          "down_recall": 0.5350756533700137,
+          "balanced_recall": 0.5189582812304614,
+          "up_precision": 0.5115606936416185,
+          "down_precision": 0.5263870094722598,
+          "brier": 0.2515450733329811
+        },
+        "NASDAQSOX": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 385,
+          "hit_down": 376,
+          "forecast_up": 736,
+          "forecast_down": 695,
+          "neutral": 0,
+          "up_recall": 0.546875,
+          "down_recall": 0.517193947730399,
+          "balanced_recall": 0.5320344738651994,
+          "up_precision": 0.5230978260869565,
+          "down_precision": 0.5410071942446043,
+          "brier": 0.2509027653787212
+        },
+        "broad": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 379,
+          "hit_down": 359,
+          "forecast_up": 747,
+          "forecast_down": 684,
+          "neutral": 0,
+          "up_recall": 0.5383522727272727,
+          "down_recall": 0.4938101788170564,
+          "balanced_recall": 0.5160812257721645,
+          "up_precision": 0.5073627844712182,
+          "down_precision": 0.5248538011695907,
+          "brier": 0.25142863620913924
+        },
+        "broad_sox": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 342,
+          "hit_down": 396,
+          "forecast_up": 673,
+          "forecast_down": 758,
+          "neutral": 0,
+          "up_recall": 0.48579545454545453,
+          "down_recall": 0.5447042640990372,
+          "balanced_recall": 0.5152498593222459,
+          "up_precision": 0.5081723625557206,
+          "down_precision": 0.5224274406332454,
+          "brier": 0.25188440950822727
+        },
+        "US8": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 354,
+          "hit_down": 389,
+          "forecast_up": 692,
+          "forecast_down": 739,
+          "neutral": 0,
+          "up_recall": 0.5028409090909091,
+          "down_recall": 0.5350756533700137,
+          "balanced_recall": 0.5189582812304614,
+          "up_precision": 0.5115606936416185,
+          "down_precision": 0.5263870094722598,
+          "brier": 0.2517215991166473
+        },
+        "O": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 368,
+          "hit_down": 390,
+          "forecast_up": 705,
+          "forecast_down": 726,
+          "neutral": 0,
+          "up_recall": 0.5227272727272727,
+          "down_recall": 0.5364511691884457,
+          "balanced_recall": 0.5295892209578592,
+          "up_precision": 0.5219858156028369,
+          "down_precision": 0.5371900826446281,
+          "brier": 0.25054338392158515
+        },
+        "PU": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 384,
+          "hit_down": 358,
+          "forecast_up": 753,
+          "forecast_down": 678,
+          "neutral": 0,
+          "up_recall": 0.5454545454545454,
+          "down_recall": 0.4924346629986245,
+          "balanced_recall": 0.518944604226585,
+          "up_precision": 0.5099601593625498,
+          "down_precision": 0.528023598820059,
+          "brier": 0.2522368436238813
+        },
+        "POU": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 405,
+          "hit_down": 344,
+          "forecast_up": 788,
+          "forecast_down": 643,
+          "neutral": 0,
+          "up_recall": 0.5752840909090909,
+          "down_recall": 0.4731774415405777,
+          "balanced_recall": 0.5242307662248343,
+          "up_precision": 0.5139593908629442,
+          "down_precision": 0.5349922239502333,
+          "brier": 0.2519032952174428
+        },
+        "PU_clip": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 391,
+          "hit_down": 358,
+          "forecast_up": 760,
+          "forecast_down": 671,
+          "neutral": 0,
+          "up_recall": 0.5553977272727273,
+          "down_recall": 0.4924346629986245,
+          "balanced_recall": 0.5239161951356759,
+          "up_precision": 0.5144736842105263,
+          "down_precision": 0.533532041728763,
+          "brier": 0.2523703514863194
+        },
+        "PU_activity": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 381,
+          "hit_down": 365,
+          "forecast_up": 743,
+          "forecast_down": 688,
+          "neutral": 0,
+          "up_recall": 0.5411931818181818,
+          "down_recall": 0.5020632737276479,
+          "balanced_recall": 0.5216282277729148,
+          "up_precision": 0.5127860026917901,
+          "down_precision": 0.5305232558139535,
+          "brier": 0.25225869129363404
+        },
+        "US_expiry": {
+          "n": 1431,
+          "actual_up": 704,
+          "actual_down": 727,
+          "hit_up": 346,
+          "hit_down": 395,
+          "forecast_up": 678,
+          "forecast_down": 753,
+          "neutral": 0,
+          "up_recall": 0.4914772727272727,
+          "down_recall": 0.5433287482806052,
+          "balanced_recall": 0.5174030105039389,
+          "up_precision": 0.5103244837758112,
+          "down_precision": 0.5245683930942895,
+          "brier": 0.25196132676315114
+        }
+      },
+      "pairs": {
+        "US8_vs_base": {
+          "delta_brier": 0.0012358433351275571,
+          "brier_ci": [
+            3.296865026772134e-05,
+            0.002555058367875733
+          ],
+          "p_brier": 0.0537946205379462,
+          "delta_up_recall": 0.0,
+          "delta_down_recall": 0.023383768913342484,
+          "delta_balanced_recall": 0.011691884456671242,
+          "up_ci": [
+            -0.01854559812512737,
+            0.018258426966292134
+          ],
+          "down_ci": [
+            -0.012311901504787962,
+            0.0599468664850136
+          ],
+          "balanced_ci": [
+            -0.005910675635310528,
+            0.03025318137937887
+          ],
+          "p_brier_holm": 1.0
+        },
+        "SP500_vs_base": {
+          "delta_brier": 0.0008929768259928325,
+          "brier_ci": [
+            1.1989643605780363e-05,
+            0.0019024333113488224
+          ],
+          "p_brier": 0.06259374062593741,
+          "delta_up_recall": 0.02556818181818188,
+          "delta_down_recall": 0.0,
+          "delta_balanced_recall": 0.01278409090909094,
+          "up_ci": [
+            -0.0056657223796034,
+            0.05874125874125874
+          ],
+          "down_ci": [
+            -0.015537272552921151,
+            0.015299026425591099
+          ],
+          "balanced_ci": [
+            -0.00258799036236145,
+            0.029160585545982054
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQCOM_vs_base": {
+          "delta_brier": 0.0011265059707894832,
+          "brier_ci": [
+            -0.00023743003876964405,
+            0.00259992989545524
+          ],
+          "p_brier": 0.11758824117588242,
+          "delta_up_recall": -0.0028409090909090606,
+          "delta_down_recall": 0.030261348005502064,
+          "delta_balanced_recall": 0.013710219457296557,
+          "up_ci": [
+            -0.026432484998711547,
+            0.019581792681371904
+          ],
+          "down_ci": [
+            -0.00416710251046025,
+            0.0676415029537024
+          ],
+          "balanced_ci": [
+            -0.004190310798590725,
+            0.03274238470589084
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQ100_vs_base": {
+          "delta_brier": 0.0010593175514612505,
+          "brier_ci": [
+            -0.0003030032766951162,
+            0.002526438130753009
+          ],
+          "p_brier": 0.14108589141085892,
+          "delta_up_recall": 0.0,
+          "delta_down_recall": 0.023383768913342484,
+          "delta_balanced_recall": 0.011691884456671242,
+          "up_ci": [
+            -0.023291214789577235,
+            0.02237788331071913
+          ],
+          "down_ci": [
+            -0.012466239612188365,
+            0.06114130434782609
+          ],
+          "balanced_ci": [
+            -0.007039181211021463,
+            0.031241998317308485
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQSOX_vs_base": {
+          "delta_brier": 0.0004170095972013815,
+          "brier_ci": [
+            -0.0006443015758913024,
+            0.0014896449542080267
+          ],
+          "p_brier": 0.44735526447355267,
+          "delta_up_recall": 0.04403409090909094,
+          "delta_down_recall": 0.005502063273727709,
+          "delta_balanced_recall": 0.02476807709140927,
+          "up_ci": [
+            0.013908205841446454,
+            0.07671829646986326
+          ],
+          "down_ci": [
+            -0.011126564673157162,
+            0.02269503546099291
+          ],
+          "balanced_ci": [
+            0.009769516305309358,
+            0.04116350579250192
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQCOM_vs_SP500": {
+          "delta_brier": 0.00023352914479665045,
+          "brier_ci": [
+            -0.00038122827643045183,
+            0.0008654116084783408
+          ],
+          "p_brier": 0.47105289471052897,
+          "delta_up_recall": -0.02840909090909094,
+          "delta_down_recall": 0.030261348005502064,
+          "delta_balanced_recall": 0.0009261285482056181,
+          "up_ci": [
+            -0.05689988682497327,
+            -0.004132089306217107
+          ],
+          "down_ci": [
+            0.0,
+            0.06412133128086903
+          ],
+          "balanced_ci": [
+            -0.012722209250052194,
+            0.015216379688251404
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQ100_vs_SP500": {
+          "delta_brier": 0.00016634072546841777,
+          "brier_ci": [
+            -0.00045284083666027365,
+            0.0008016573300057435
+          ],
+          "p_brier": 0.5992400759924008,
+          "delta_up_recall": -0.02556818181818188,
+          "delta_down_recall": 0.023383768913342484,
+          "delta_balanced_recall": -0.0010922064524196973,
+          "up_ci": [
+            -0.05409554725026328,
+            0.0
+          ],
+          "down_ci": [
+            -0.008241758241758242,
+            0.0575876159414825
+          ],
+          "balanced_ci": [
+            -0.015541511518070856,
+            0.013845376230661035
+          ],
+          "p_brier_holm": 1.0
+        },
+        "NASDAQSOX_vs_SP500": {
+          "delta_brier": -0.000475967228791451,
+          "brier_ci": [
+            -0.0011770983889310266,
+            0.00017089452587239733
+          ],
+          "p_brier": 0.16618338166183383,
+          "delta_up_recall": 0.01846590909090906,
+          "delta_down_recall": 0.005502063273727709,
+          "delta_balanced_recall": 0.011983986182318329,
+          "up_ci": [
+            0.004231311706629055,
+            0.033082977227240754
+          ],
+          "down_ci": [
+            -0.008130081300813009,
+            0.019257884585507437
+          ],
+          "balanced_ci": [
+            0.002803953369385677,
+            0.021620629659405043
+          ],
+          "p_brier_holm": 1.0
+        },
+        "broad_sox_vs_broad": {
+          "delta_brier": 0.0004557732990880052,
+          "brier_ci": [
+            -0.00034790914491665315,
+            0.0013006002818210306
+          ],
+          "p_brier": 0.27847215278472154,
+          "delta_up_recall": -0.05255681818181818,
+          "delta_down_recall": 0.05089408528198075,
+          "delta_balanced_recall": -0.0008313664499186579,
+          "up_ci": [
+            -0.08157741225683991,
+            -0.02702702702702703
+          ],
+          "down_ci": [
+            0.021304218488823416,
+            0.08345204526835212
+          ],
+          "balanced_ci": [
+            -0.016157331909877545,
+            0.015326161268898693
+          ],
+          "p_brier_holm": 1.0
+        },
+        "O_vs_base": {
+          "delta_brier": 5.7628140065351113e-05,
+          "brier_ci": [
+            -0.0007480348627518723,
+            0.0008487566402009153
+          ],
+          "p_brier": 0.8797120287971203,
+          "delta_up_recall": 0.019886363636363646,
+          "delta_down_recall": 0.024759284731774467,
+          "delta_balanced_recall": 0.022322824184069057,
+          "up_ci": [
+            -0.005641748942172073,
+            0.045454545454545456
+          ],
+          "down_ci": [
+            -0.008322064262598242,
+            0.06056347103237985
+          ],
+          "balanced_ci": [
+            0.005011215945199772,
+            0.041124995490940404
+          ],
+          "p_brier_holm": 1.0
+        },
+        "POU_vs_PU": {
+          "delta_brier": -0.0003335484064385004,
+          "brier_ci": [
+            -0.001633937913127109,
+            0.0009287546990033624
+          ],
+          "p_brier": 0.6021397860213978,
+          "delta_up_recall": 0.029829545454545525,
+          "delta_down_recall": -0.019257221458046758,
+          "delta_balanced_recall": 0.0052861619982493835,
+          "up_ci": [
+            0.002890069147294581,
+            0.05745593345598062
+          ],
+          "down_ci": [
+            -0.044944202920736,
+            0.0056657223796034
+          ],
+          "balanced_ci": [
+            -0.01123997429356128,
+            0.022044010394581617
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_vs_US8": {
+          "delta_brier": 0.0005152445072339233,
+          "brier_ci": [
+            -0.0012136826896956001,
+            0.002259375114966434
+          ],
+          "p_brier": 0.5627437256274372,
+          "delta_up_recall": 0.042613636363636354,
+          "delta_down_recall": -0.04264099037138924,
+          "delta_balanced_recall": -1.3677003876444438e-05,
+          "up_ci": [
+            0.009628610729023384,
+            0.07761408783421021
+          ],
+          "down_ci": [
+            -0.07773495827843654,
+            -0.009523486024844726
+          ],
+          "balanced_ci": [
+            -0.01978514730087057,
+            0.02001444385767201
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_clip_vs_PU": {
+          "delta_brier": 0.00013350786243812137,
+          "brier_ci": [
+            -0.0005215610243674439,
+            0.0007807267695632325
+          ],
+          "p_brier": 0.6862313768623137,
+          "delta_up_recall": 0.009943181818181879,
+          "delta_down_recall": 0.0,
+          "delta_balanced_recall": 0.004971590909090939,
+          "up_ci": [
+            -3.311258278142684e-05,
+            0.02127659574468085
+          ],
+          "down_ci": [
+            -0.009408918725307167,
+            0.009536784741144414
+          ],
+          "balanced_ci": [
+            -0.001397624858150387,
+            0.011812186366540365
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_clip_vs_US8": {
+          "delta_brier": 0.0006487523696720443,
+          "brier_ci": [
+            -0.0013635129585518701,
+            0.0027174721092166334
+          ],
+          "p_brier": 0.5301469853014699,
+          "delta_up_recall": 0.05255681818181823,
+          "delta_down_recall": -0.04264099037138924,
+          "delta_balanced_recall": 0.004957913905214495,
+          "up_ci": [
+            0.019858156028368795,
+            0.08659217877094973
+          ],
+          "down_ci": [
+            -0.07846190813579991,
+            -0.00819644175072127
+          ],
+          "balanced_ci": [
+            -0.014688375308202538,
+            0.02505943040372274
+          ],
+          "p_brier_holm": 1.0
+        },
+        "PU_activity_vs_PU": {
+          "delta_brier": 2.1847669752766426e-05,
+          "brier_ci": [
+            -0.000388935943615251,
+            0.00045070619553288214
+          ],
+          "p_brier": 0.9113088691130887,
+          "delta_up_recall": -0.0042613636363636465,
+          "delta_down_recall": 0.009628610729023435,
+          "delta_balanced_recall": 0.002683623546329894,
+          "up_ci": [
+            -0.01741654571843251,
+            0.008620999751922594
+          ],
+          "down_ci": [
+            -0.0027434842249657062,
+            0.022695082805442718
+          ],
+          "balanced_ci": [
+            -0.00534352465425158,
+            0.011133451517926888
+          ],
+          "p_brier_holm": 1.0
+        },
+        "US_expiry_vs_US8": {
+          "delta_brier": 0.0002397276465037477,
+          "brier_ci": [
+            -0.00030801973990678453,
+            0.000841045554598471
+          ],
+          "p_brier": 0.412958704129587,
+          "delta_up_recall": -0.011363636363636354,
+          "delta_down_recall": 0.008253094910591452,
+          "delta_balanced_recall": -0.0015552707265225063,
+          "up_ci": [
+            -0.02390998593530239,
+            0.0
+          ],
+          "down_ci": [
+            -0.002751031636863824,
+            0.021080785844132015
+          ],
+          "balanced_ci": [
+            -0.009346726579626367,
+            0.006656489793891027
+          ],
+          "p_brier_holm": 1.0
+        }
+      }
+    }
+  },
+  "call_rule": {
+    "target_start": "2019-03-06",
+    "target_end": "2026-11-06",
+    "metrics": {
+      "n": 1884,
+      "actual_up": 933,
+      "actual_down": 951,
+      "hit_up": 485,
+      "hit_down": 498,
+      "forecast_up": 938,
+      "forecast_down": 946,
+      "neutral": 0,
+      "up_recall": 0.5198285101822079,
+      "down_recall": 0.5236593059936908,
+      "balanced_recall": 0.5217439080879493,
+      "up_precision": 0.5170575692963753,
+      "down_precision": 0.5264270613107822,
+      "brier": null
+    },
+    "balanced_ci": [
+      0.49978707421390856,
+      0.5442021298547244
+    ],
+    "interpretation": "Retrospective selected median rule. Its binary direction is not a calibrated probability."
+  },
+  "weekday": {
+    "opening_up": {
+      "unchanged": {
+        "n": 132,
+        "actual_up": 84,
+        "actual_down": 48,
+        "hit_up": 73,
+        "hit_down": 28,
+        "forecast_up": 93,
+        "forecast_down": 39,
+        "neutral": 0,
+        "up_recall": 0.8690476190476191,
+        "down_recall": 0.5833333333333334,
+        "balanced_recall": 0.7261904761904763,
+        "up_precision": 0.7849462365591398,
+        "down_precision": 0.717948717948718,
+        "brier": 0.1808730464570993
+      },
+      "shared": {
+        "n": 132,
+        "actual_up": 84,
+        "actual_down": 48,
+        "hit_up": 71,
+        "hit_down": 25,
+        "forecast_up": 94,
+        "forecast_down": 38,
+        "neutral": 0,
+        "up_recall": 0.8452380952380952,
+        "down_recall": 0.5208333333333334,
+        "balanced_recall": 0.6830357142857143,
+        "up_precision": 0.7553191489361702,
+        "down_precision": 0.6578947368421053,
+        "brier": 0.17808993335118622
+      },
+      "split": {
+        "n": 132,
+        "actual_up": 84,
+        "actual_down": 48,
+        "hit_up": 73,
+        "hit_down": 21,
+        "forecast_up": 100,
+        "forecast_down": 32,
+        "neutral": 0,
+        "up_recall": 0.8690476190476191,
+        "down_recall": 0.4375,
+        "balanced_recall": 0.6532738095238095,
+        "up_precision": 0.73,
+        "down_precision": 0.65625,
+        "brier": 0.19089451137485117
+      }
+    },
+    "closing_up": {
+      "unchanged": {
+        "n": 132,
+        "actual_up": 77,
+        "actual_down": 55,
+        "hit_up": 68,
+        "hit_down": 24,
+        "forecast_up": 99,
+        "forecast_down": 33,
+        "neutral": 0,
+        "up_recall": 0.8831168831168831,
+        "down_recall": 0.43636363636363634,
+        "balanced_recall": 0.6597402597402597,
+        "up_precision": 0.6868686868686869,
+        "down_precision": 0.7272727272727273,
+        "brier": 0.20403965674094124
+      },
+      "shared": {
+        "n": 132,
+        "actual_up": 77,
+        "actual_down": 55,
+        "hit_up": 66,
+        "hit_down": 26,
+        "forecast_up": 95,
+        "forecast_down": 37,
+        "neutral": 0,
+        "up_recall": 0.8571428571428571,
+        "down_recall": 0.4727272727272727,
+        "balanced_recall": 0.6649350649350649,
+        "up_precision": 0.6947368421052632,
+        "down_precision": 0.7027027027027027,
+        "brier": 0.2098681521338763
+      },
+      "split": {
+        "n": 132,
+        "actual_up": 77,
+        "actual_down": 55,
+        "hit_up": 64,
+        "hit_down": 24,
+        "forecast_up": 95,
+        "forecast_down": 37,
+        "neutral": 0,
+        "up_recall": 0.8311688311688312,
+        "down_recall": 0.43636363636363634,
+        "balanced_recall": 0.6337662337662338,
+        "up_precision": 0.6736842105263158,
+        "down_precision": 0.6486486486486487,
+        "brier": 0.22085567840154352
+      }
+    }
+  },
+  "expiry_activity": {
+    "quarter": {
+      "n": 23,
+      "up": 14,
+      "down": 9,
+      "flat": 0,
+      "mean_abs_intraday_pct": 0.7605295540224383
+    },
+    "other_monthly": {
+      "n": 47,
+      "up": 26,
+      "down": 21,
+      "flat": 0,
+      "mean_abs_intraday_pct": 0.7130938187025381
+    },
+    "regular": {
+      "n": 1362,
+      "up": 664,
+      "down": 697,
+      "flat": 1,
+      "mean_abs_intraday_pct": 0.8393839721712789
+    }
+  },
+  "individual_foreign_flow": {
+    "005930": {
+      "gap": {
+        "start": "2021-01-05",
+        "end": "2026-10-23",
+        "scores": {
+          "PU": {
+            "n": 1286,
+            "actual_up": 726,
+            "actual_down": 560,
+            "hit_up": 574,
+            "hit_down": 366,
+            "forecast_up": 768,
+            "forecast_down": 518,
+            "neutral": 0,
+            "up_recall": 0.790633608815427,
+            "down_recall": 0.6535714285714286,
+            "balanced_recall": 0.7221025186934278,
+            "up_precision": 0.7473958333333334,
+            "down_precision": 0.7065637065637066,
+            "brier": 0.17785007499918093
+          },
+          "PU_flow1": {
+            "n": 1286,
+            "actual_up": 726,
+            "actual_down": 560,
+            "hit_up": 583,
+            "hit_down": 372,
+            "forecast_up": 771,
+            "forecast_down": 515,
+            "neutral": 0,
+            "up_recall": 0.803030303030303,
+            "down_recall": 0.6642857142857143,
+            "balanced_recall": 0.7336580086580087,
+            "up_precision": 0.7561608300907912,
+            "down_precision": 0.7223300970873786,
+            "brier": 0.17217287544129167
+          },
+          "PU_flow5": {
+            "n": 1286,
+            "actual_up": 726,
+            "actual_down": 560,
+            "hit_up": 577,
+            "hit_down": 370,
+            "forecast_up": 767,
+            "forecast_down": 519,
+            "neutral": 0,
+            "up_recall": 0.7947658402203857,
+            "down_recall": 0.6607142857142857,
+            "balanced_recall": 0.7277400629673356,
+            "up_precision": 0.7522816166883963,
+            "down_precision": 0.7129094412331407,
+            "brier": 0.17429980003794276
+          }
+        },
+        "pairs": {
+          "PU_flow1_vs_PU": {
+            "delta_brier": -0.005677199557889283,
+            "brier_ci": [
+              -0.009066830302091239,
+              -0.0024856778352630553
+            ],
+            "p_brier": 0.0005999400059994001,
+            "delta_up_recall": 0.012396694214875992,
+            "delta_down_recall": 0.010714285714285676,
+            "delta_balanced_recall": 0.01155548996458089,
+            "up_ci": [
+              -0.004166811543810848,
+              0.029248096070645407
+            ],
+            "down_ci": [
+              -0.00929368029739777,
+              0.03185840707964602
+            ],
+            "balanced_ci": [
+              -0.0010321305859788679,
+              0.02447142260810663
+            ],
+            "p_brier_holm_both_stocks": 0.0065993400659934
+          },
+          "PU_flow5_vs_PU": {
+            "delta_brier": -0.003550274961238167,
+            "brier_ci": [
+              -0.005406988753416852,
+              -0.0018003459273265793
+            ],
+            "p_brier": 0.00019998000199980003,
+            "delta_up_recall": 0.004132231404958664,
+            "delta_down_recall": 0.0071428571428571175,
+            "delta_balanced_recall": 0.005637544273907835,
+            "up_ci": [
+              -0.006821515368386525,
+              0.015645417942474142
+            ],
+            "down_ci": [
+              -0.006757905865048722,
+              0.02154398563734291
+            ],
+            "balanced_ci": [
+              -0.00317261017620348,
+              0.014806571199044834
+            ],
+            "p_brier_holm_both_stocks": 0.0023997600239976003
+          }
+        }
+      },
+      "close": {
+        "start": "2021-01-04",
+        "end": "2026-10-23",
+        "scores": {
+          "PU": {
+            "n": 1334,
+            "actual_up": 671,
+            "actual_down": 663,
+            "hit_up": 452,
+            "hit_down": 356,
+            "forecast_up": 759,
+            "forecast_down": 575,
+            "neutral": 0,
+            "up_recall": 0.6736214605067065,
+            "down_recall": 0.5369532428355958,
+            "balanced_recall": 0.6052873516711511,
+            "up_precision": 0.5955204216073782,
+            "down_precision": 0.6191304347826087,
+            "brier": 0.23319524031691838
+          },
+          "PU_flow1": {
+            "n": 1334,
+            "actual_up": 671,
+            "actual_down": 663,
+            "hit_up": 456,
+            "hit_down": 355,
+            "forecast_up": 764,
+            "forecast_down": 570,
+            "neutral": 0,
+            "up_recall": 0.6795827123695977,
+            "down_recall": 0.5354449472096531,
+            "balanced_recall": 0.6075138297896254,
+            "up_precision": 0.5968586387434555,
+            "down_precision": 0.6228070175438597,
+            "brier": 0.23280342208598898
+          },
+          "PU_flow5": {
+            "n": 1334,
+            "actual_up": 671,
+            "actual_down": 663,
+            "hit_up": 451,
+            "hit_down": 360,
+            "forecast_up": 754,
+            "forecast_down": 580,
+            "neutral": 0,
+            "up_recall": 0.6721311475409836,
+            "down_recall": 0.5429864253393665,
+            "balanced_recall": 0.607558786440175,
+            "up_precision": 0.5981432360742706,
+            "down_precision": 0.6206896551724138,
+            "brier": 0.2333861258531596
+          }
+        },
+        "pairs": {
+          "PU_flow1_vs_PU": {
+            "delta_brier": -0.0003918182309294353,
+            "brier_ci": [
+              -0.0016569047481522165,
+              0.0009125250454482833
+            ],
+            "p_brier": 0.5441455854414559,
+            "delta_up_recall": 0.005961251862891204,
+            "delta_down_recall": -0.0015082956259426794,
+            "delta_balanced_recall": 0.0022264781184743176,
+            "up_ci": [
+              -0.01132778022947926,
+              0.023494860499265784
+            ],
+            "down_ci": [
+              -0.019449979224326248,
+              0.016467477133644794
+            ],
+            "balanced_ci": [
+              -0.009866429376098138,
+              0.01446107710483879
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          },
+          "PU_flow5_vs_PU": {
+            "delta_brier": 0.00019088553624119393,
+            "brier_ci": [
+              -0.00033064219528289855,
+              0.0007593411562237354
+            ],
+            "p_brier": 0.4861513848615138,
+            "delta_up_recall": -0.0014903129657228842,
+            "delta_down_recall": 0.006033182503770718,
+            "delta_balanced_recall": 0.0022714347690239167,
+            "up_ci": [
+              -0.012012012012012012,
+              0.008955894181785672
+            ],
+            "down_ci": [
+              -0.0030535518360296004,
+              0.016224188790560472
+            ],
+            "balanced_ci": [
+              -0.00452491943499679,
+              0.009273898629427842
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          }
+        }
+      },
+      "intraday": {
+        "start": "2021-01-04",
+        "end": "2026-10-23",
+        "scores": {
+          "PU": {
+            "n": 1328,
+            "actual_up": 606,
+            "actual_down": 722,
+            "hit_up": 163,
+            "hit_down": 544,
+            "forecast_up": 341,
+            "forecast_down": 987,
+            "neutral": 0,
+            "up_recall": 0.26897689768976896,
+            "down_recall": 0.7534626038781164,
+            "balanced_recall": 0.5112197507839427,
+            "up_precision": 0.4780058651026393,
+            "down_precision": 0.5511651469098278,
+            "brier": 0.25008395101680175
+          },
+          "PU_flow1": {
+            "n": 1328,
+            "actual_up": 606,
+            "actual_down": 722,
+            "hit_up": 157,
+            "hit_down": 560,
+            "forecast_up": 319,
+            "forecast_down": 1009,
+            "neutral": 0,
+            "up_recall": 0.2590759075907591,
+            "down_recall": 0.775623268698061,
+            "balanced_recall": 0.51734958814441,
+            "up_precision": 0.49216300940438873,
+            "down_precision": 0.5550049554013875,
+            "brier": 0.25051939896191167
+          },
+          "PU_flow5": {
+            "n": 1328,
+            "actual_up": 606,
+            "actual_down": 722,
+            "hit_up": 158,
+            "hit_down": 555,
+            "forecast_up": 325,
+            "forecast_down": 1003,
+            "neutral": 0,
+            "up_recall": 0.2607260726072607,
+            "down_recall": 0.7686980609418282,
+            "balanced_recall": 0.5147120667745445,
+            "up_precision": 0.48615384615384616,
+            "down_precision": 0.5533399800598205,
+            "brier": 0.24968970381488595
+          }
+        },
+        "pairs": {
+          "PU_flow1_vs_PU": {
+            "delta_brier": 0.00043544794510990813,
+            "brier_ci": [
+              -0.00011218534481718599,
+              0.0009806365670662898
+            ],
+            "p_brier": 0.11788821117888211,
+            "delta_up_recall": -0.009900990099009854,
+            "delta_down_recall": 0.02216066481994461,
+            "delta_balanced_recall": 0.0061298373604673495,
+            "up_ci": [
+              -0.026059694671902483,
+              0.006462035541195477
+            ],
+            "down_ci": [
+              0.00714260240472794,
+              0.03862779503473785
+            ],
+            "balanced_ci": [
+              -0.003923175906150205,
+              0.016823750556495293
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          },
+          "PU_flow5_vs_PU": {
+            "delta_brier": -0.00039424720191587234,
+            "brier_ci": [
+              -0.0008823110213226367,
+              8.554078064348311e-05
+            ],
+            "p_brier": 0.11048895110488952,
+            "delta_up_recall": -0.00825082508250824,
+            "delta_down_recall": 0.015235457063711877,
+            "delta_balanced_recall": 0.0034923159906018464,
+            "up_ci": [
+              -0.02,
+              0.0032520325203252032
+            ],
+            "down_ci": [
+              0.0026737075458900636,
+              0.030386840274723954
+            ],
+            "balanced_ci": [
+              -0.004554348767009985,
+              0.012023534862585599
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          }
+        }
+      }
+    },
+    "000660": {
+      "gap": {
+        "start": "2021-01-04",
+        "end": "2026-10-23",
+        "scores": {
+          "PU": {
+            "n": 1285,
+            "actual_up": 690,
+            "actual_down": 595,
+            "hit_up": 565,
+            "hit_down": 427,
+            "forecast_up": 733,
+            "forecast_down": 552,
+            "neutral": 0,
+            "up_recall": 0.8188405797101449,
+            "down_recall": 0.7176470588235294,
+            "balanced_recall": 0.7682438192668372,
+            "up_precision": 0.7708049113233287,
+            "down_precision": 0.7735507246376812,
+            "brier": 0.15990080026000902
+          },
+          "PU_flow1": {
+            "n": 1285,
+            "actual_up": 690,
+            "actual_down": 595,
+            "hit_up": 567,
+            "hit_down": 434,
+            "forecast_up": 728,
+            "forecast_down": 557,
+            "neutral": 0,
+            "up_recall": 0.8217391304347826,
+            "down_recall": 0.7294117647058823,
+            "balanced_recall": 0.7755754475703325,
+            "up_precision": 0.7788461538461539,
+            "down_precision": 0.7791741472172352,
+            "brier": 0.1591894725449847
+          },
+          "PU_flow5": {
+            "n": 1285,
+            "actual_up": 690,
+            "actual_down": 595,
+            "hit_up": 563,
+            "hit_down": 432,
+            "forecast_up": 726,
+            "forecast_down": 559,
+            "neutral": 0,
+            "up_recall": 0.8159420289855073,
+            "down_recall": 0.7260504201680672,
+            "balanced_recall": 0.7709962245767872,
+            "up_precision": 0.7754820936639119,
+            "down_precision": 0.7728085867620751,
+            "brier": 0.15957378964175217
+          }
+        },
+        "pairs": {
+          "PU_flow1_vs_PU": {
+            "delta_brier": -0.0007113277150243245,
+            "brier_ci": [
+              -0.0016817996812123822,
+              0.00024307873858279568
+            ],
+            "p_brier": 0.1464853514648535,
+            "delta_up_recall": 0.0028985507246377384,
+            "delta_down_recall": 0.0117647058823529,
+            "delta_balanced_recall": 0.007331628303495319,
+            "up_ci": [
+              -0.0058997050147492625,
+              0.011869436201780416
+            ],
+            "down_ci": [
+              0.0016610606987212334,
+              0.023141453669749863
+            ],
+            "balanced_ci": [
+              0.0007060174225925577,
+              0.014410865797913395
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          },
+          "PU_flow5_vs_PU": {
+            "delta_brier": -0.00032701061825685216,
+            "brier_ci": [
+              -0.0010935055237869709,
+              0.00041650698234154326
+            ],
+            "p_brier": 0.40735926407359263,
+            "delta_up_recall": -0.0028985507246376274,
+            "delta_down_recall": 0.008403361344537785,
+            "delta_balanced_recall": 0.0027524053099500234,
+            "up_ci": [
+              -0.011283896312941757,
+              0.004470938897168405
+            ],
+            "down_ci": [
+              -0.001595023923444976,
+              0.018739352640545145
+            ],
+            "balanced_ci": [
+              -0.0032412331058304543,
+              0.008926467493012688
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          }
+        }
+      },
+      "close": {
+        "start": "2021-01-04",
+        "end": "2026-10-23",
+        "scores": {
+          "PU": {
+            "n": 1336,
+            "actual_up": 683,
+            "actual_down": 653,
+            "hit_up": 461,
+            "hit_down": 403,
+            "forecast_up": 711,
+            "forecast_down": 625,
+            "neutral": 0,
+            "up_recall": 0.6749633967789166,
+            "down_recall": 0.6171516079632465,
+            "balanced_recall": 0.6460575023710815,
+            "up_precision": 0.6483825597749648,
+            "down_precision": 0.6448,
+            "brier": 0.22252525279346216
+          },
+          "PU_flow1": {
+            "n": 1336,
+            "actual_up": 683,
+            "actual_down": 653,
+            "hit_up": 453,
+            "hit_down": 407,
+            "forecast_up": 699,
+            "forecast_down": 637,
+            "neutral": 0,
+            "up_recall": 0.6632503660322109,
+            "down_recall": 0.6232771822358346,
+            "balanced_recall": 0.6432637741340228,
+            "up_precision": 0.648068669527897,
+            "down_precision": 0.6389324960753532,
+            "brier": 0.22229059393185083
+          },
+          "PU_flow5": {
+            "n": 1336,
+            "actual_up": 683,
+            "actual_down": 653,
+            "hit_up": 450,
+            "hit_down": 410,
+            "forecast_up": 693,
+            "forecast_down": 643,
+            "neutral": 0,
+            "up_recall": 0.6588579795021962,
+            "down_recall": 0.6278713629402757,
+            "balanced_recall": 0.643364671221236,
+            "up_precision": 0.6493506493506493,
+            "down_precision": 0.6376360808709176,
+            "brier": 0.22262981969585197
+          }
+        },
+        "pairs": {
+          "PU_flow1_vs_PU": {
+            "delta_brier": -0.0002346588616112934,
+            "brier_ci": [
+              -0.0012199981993747573,
+              0.0007568386742370369
+            ],
+            "p_brier": 0.6434356564343565,
+            "delta_up_recall": -0.01171303074670571,
+            "delta_down_recall": 0.006125574272588086,
+            "delta_balanced_recall": -0.0027937282370587013,
+            "up_ci": [
+              -0.02731471272147684,
+              0.0030304179886880933
+            ],
+            "down_ci": [
+              -0.007668711656441718,
+              0.020155038759689922
+            ],
+            "balanced_ci": [
+              -0.013215965747742777,
+              0.007494012101694875
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          },
+          "PU_flow5_vs_PU": {
+            "delta_brier": 0.00010456690238982426,
+            "brier_ci": [
+              -0.0012706885069763355,
+              0.0015300642280464231
+            ],
+            "p_brier": 0.884011598840116,
+            "delta_up_recall": -0.016105417276720435,
+            "delta_down_recall": 0.01071975497702915,
+            "delta_balanced_recall": -0.0026928311498455315,
+            "up_ci": [
+              -0.033946251768033946,
+              0.0014706423806636049
+            ],
+            "down_ci": [
+              -0.0061068702290076335,
+              0.027190332326283987
+            ],
+            "balanced_ci": [
+              -0.014300787982266873,
+              0.008782398290750669
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          }
+        }
+      },
+      "intraday": {
+        "start": "2021-01-04",
+        "end": "2026-10-23",
+        "scores": {
+          "PU": {
+            "n": 1332,
+            "actual_up": 650,
+            "actual_down": 682,
+            "hit_up": 328,
+            "hit_down": 398,
+            "forecast_up": 612,
+            "forecast_down": 720,
+            "neutral": 0,
+            "up_recall": 0.5046153846153846,
+            "down_recall": 0.5835777126099707,
+            "balanced_recall": 0.5440965486126776,
+            "up_precision": 0.5359477124183006,
+            "down_precision": 0.5527777777777778,
+            "brier": 0.24683843793791474
+          },
+          "PU_flow1": {
+            "n": 1332,
+            "actual_up": 650,
+            "actual_down": 682,
+            "hit_up": 330,
+            "hit_down": 403,
+            "forecast_up": 609,
+            "forecast_down": 723,
+            "neutral": 0,
+            "up_recall": 0.5076923076923077,
+            "down_recall": 0.5909090909090909,
+            "balanced_recall": 0.5493006993006992,
+            "up_precision": 0.541871921182266,
+            "down_precision": 0.5573997233748271,
+            "brier": 0.24656269177821225
+          },
+          "PU_flow5": {
+            "n": 1332,
+            "actual_up": 650,
+            "actual_down": 682,
+            "hit_up": 333,
+            "hit_down": 396,
+            "forecast_up": 619,
+            "forecast_down": 713,
+            "neutral": 0,
+            "up_recall": 0.5123076923076924,
+            "down_recall": 0.5806451612903226,
+            "balanced_recall": 0.5464764267990074,
+            "up_precision": 0.5379644588045234,
+            "down_precision": 0.5553997194950911,
+            "brier": 0.24749288368838043
+          }
+        },
+        "pairs": {
+          "PU_flow1_vs_PU": {
+            "delta_brier": -0.0002757461597024591,
+            "brier_ci": [
+              -0.0008560194149518738,
+              0.0002881033499410863
+            ],
+            "p_brier": 0.33766623337666235,
+            "delta_up_recall": 0.003076923076923088,
+            "delta_down_recall": 0.007331378299120228,
+            "delta_balanced_recall": 0.005204150688021603,
+            "up_ci": [
+              -0.006144393241167435,
+              0.012698412698412698
+            ],
+            "down_ci": [
+              -0.002967359050445104,
+              0.01884057971014493
+            ],
+            "balanced_ci": [
+              -0.0016053032986064683,
+              0.012612948955759963
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          },
+          "PU_flow5_vs_PU": {
+            "delta_brier": 0.0006544457504657135,
+            "brier_ci": [
+              -0.00037141385124020974,
+              0.0017217987296070504
+            ],
+            "p_brier": 0.2186781321867813,
+            "delta_up_recall": 0.007692307692307776,
+            "delta_down_recall": -0.0029325513196480912,
+            "delta_balanced_recall": 0.002379878186329787,
+            "up_ci": [
+              -0.008000320512820513,
+              0.024193853399053236
+            ],
+            "down_ci": [
+              -0.022189349112426034,
+              0.01636904761904762
+            ],
+            "balanced_ci": [
+              -0.009753251082227167,
+              0.01433795677619255
+            ],
+            "p_brier_holm_both_stocks": 1.0
+          }
+        }
+      }
+    }
+  },
+  "adjustment_policy": {
+    "kospi_brier_tests": 48,
+    "stock_brier_tests_joint": 12,
+    "directional_intervals": "descriptive, unadjusted"
+  },
+  "implementation_sha256": "072fb298f13f0ef82a34a4e7bec4c361ff13122ab259b481b6d221e299f37bcd"
+}

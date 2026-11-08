@@ -135,7 +135,7 @@ export default {
     // fills the commodities that have gone cold, up to a budget; see
     // warmComtradeCache for why it does not refill all of them at once.
     //
-    // The SUN-THU crons instead start the pre-open direction workflow on time
+    // The two daily 21:25 / 22:05 UTC crons instead start the pre-open direction workflow on time
     // (see dispatchPreopenDirection below).
     async scheduled(event, env, ctx) {
         if (PREOPEN_CRONS.includes(event.cron)) {
@@ -153,11 +153,13 @@ export default {
 // 08:30 KST 전에 끝나야 한다. GitHub 자체 cron 은 06:13 KST 예약이 09:24~11:53
 // 에 도는 식으로 몇 시간씩 늦어(2026-10-27~11-04) 매번 마감을 넘겼다. 그래서
 // 제때 도는 Cloudflare cron 이 workflow_dispatch 를 대신 부른다. 두 번째 시각은
-// 재시도용이고, 이미 그날 예측이 있으면 workflow 가 스스로 건너뛴다.
+// 재시도용이고, 이미 그 대상일 예측이 있으면 workflow 가 스스로 건너뛴다.
+// 2026-11-08 부터 매일 돈다: 주말·휴일에는 다음 거래일을 예측해 토요일 06:25
+// (미국 금요일 마감 직후)에 월요일 값이 뜬다.
 // GH_DISPATCH_TOKEN: 이 저장소 Actions write 권한의 fine-grained PAT. GitHub
 // Actions secret 에 두면 deploy.yml 이 배포 때마다 Worker secret 으로 복사한다.
 // 없으면 GitHub cron 만 남는다.
-const PREOPEN_CRONS = ['25 21 * * SUN-THU', '5 22 * * SUN-THU'];
+const PREOPEN_CRONS = ['25 21 * * *', '5 22 * * *'];
 const PREOPEN_WORKFLOW_URL =
     'https://api.github.com/repos/sunbininfokim-yeon/global-trade-dashboard/actions/workflows/us_kr_direction_preopen.yml/dispatches';
 
@@ -2142,9 +2144,13 @@ async function handleFinancials(request, env) {
 // (00126380) and SK Hynix (00164779), FY2025 CFS.
 const DART_XBRL_TAGS = {
     revenue: ['ifrs-full_Revenue'],
-    operating_income: ['dart_OperatingIncomeLoss', 'ifrs-full_OperatingIncomeLoss'],
+    // Financial filers (banks, insurers, brokers, 연합자산관리) tag 영업이익 as
+    // ifrs-full_ProfitLossFromOperatingActivities and carry neither of the
+    // first two -- without it 하나증권's FY2025 card fell through to its
+    // FY2023 value (see the latest-year guard in dartBasicCardsFromFacts).
+    operating_income: ['dart_OperatingIncomeLoss', 'ifrs-full_OperatingIncomeLoss', 'ifrs-full_ProfitLossFromOperatingActivities'],
     net_income: ['ifrs-full_ProfitLoss'],
-    interest_expense: ['ifrs-full_FinanceCosts'],
+    interest_expense: ['ifrs-full_FinanceCosts', 'ifrs-full_InterestExpense'],
     // Present in dart_facts.py's XBRL_TAGS but never ported to this Worker --
     // the live path has been shipping one fewer field than the Python source
     // it mirrors. No new endpoint needed: already inside the same
@@ -2205,32 +2211,44 @@ const DART_FLOW_KEYS = new Set([
 // filer this override set misses. Unrecognised filers default to false
 // (industrial), matching the classifier's own "명확한 신호가 없으면 산업기업" stance --
 // this list is reviewed by name/ticker only, not by live OpenDART account IDs.
-const DART_FINANCIAL_ENTITY_OVERRIDES = new Set([
-    '105560', // KB금융
-    '055550', // 신한지주
-    '086790', // 하나금융지주
-    '316140', // 우리금융지주
-    '032830', // 삼성생명
-    '000810', // 삼성화재
-    '138930', // BNK금융지주
-    '139130', // DGB금융지주
-    '175330', // JB금융지주
-    '138040', // 메리츠금융지주
-    '024110', // 기업은행
-    '323410', // 카카오뱅크
-    '005830', // DB손해보험
+// Value = sector subtype, which picks the card set in dartFinancialCards.
+const DART_FINANCIAL_ENTITY_OVERRIDES = new Map([
+    ['105560', 'bank'], // KB금융
+    ['055550', 'bank'], // 신한지주
+    ['086790', 'bank'], // 하나금융지주
+    ['316140', 'bank'], // 우리금융지주
+    ['032830', 'insurance'], // 삼성생명
+    ['000810', 'insurance'], // 삼성화재
+    ['138930', 'bank'], // BNK금융지주
+    ['139130', 'bank'], // DGB금융지주
+    ['175330', 'bank'], // JB금융지주
+    ['138040', 'insurance'], // 메리츠금융지주 -- earnings are mostly 메리츠화재
+    ['071050', 'securities'], // 한국금융지주 -- 한국투자증권's holding company, not a bank
+    ['024110', 'bank'], // 기업은행
+    ['323410', 'bank'], // 카카오뱅크
+    ['005830', 'insurance'], // DB손해보험
+    // Unlisted filers have no stock code; these are keyed by the 8-digit
+    // OpenDART corp_code instead (lengths differ, so the two can't collide).
+    ['00819268', 'npl_amc'], // 연합자산관리 (UAMCO) -- NPL investor; 영업수익 is not industrial revenue
 ]);
+// First match wins, so the more specific hint goes first (우리금융에프앤아이
+// is an NPL investor, not a holding company; 저축은행 before 은행 only
+// matters for the basis label).
 const DART_FINANCIAL_NAME_HINTS = [
-    '금융지주', '저축은행', '은행', '생명', '화재', '손해보험', '해상보험',
-    '캐피탈', '카드', '증권', '보험',
+    ['에프앤아이', 'npl_amc'], ['F&I', 'npl_amc'],
+    ['금융지주', 'bank'], ['저축은행', 'bank'], ['은행', 'bank'],
+    ['생명', 'insurance'], ['화재', 'insurance'], ['손해보험', 'insurance'], ['해상보험', 'insurance'], ['보험', 'insurance'],
+    ['증권', 'securities'],
+    ['캐피탈', 'card_capital'], ['카드', 'card_capital'],
+    ['자산운용', 'asset_manager'],
 ];
 function classifyDartFinancialEntity(nameKo, stockCode) {
     if (DART_FINANCIAL_ENTITY_OVERRIDES.has(stockCode)) {
-        return { is_financial_entity: true, basis: 'corp_code_override' };
+        return { is_financial_entity: true, basis: 'corp_code_override', subtype: DART_FINANCIAL_ENTITY_OVERRIDES.get(stockCode) };
     }
-    const hint = DART_FINANCIAL_NAME_HINTS.find((h) => (nameKo || '').includes(h));
-    if (hint) return { is_financial_entity: true, basis: `name_hint:${hint}` };
-    return { is_financial_entity: false, basis: 'default_industrial' };
+    const hit = DART_FINANCIAL_NAME_HINTS.find(([h]) => (nameKo || '').includes(h));
+    if (hit) return { is_financial_entity: true, basis: `name_hint:${hit[0]}`, subtype: hit[1] };
+    return { is_financial_entity: false, basis: 'default_industrial', subtype: null };
 }
 
 // public/data/dart_corp_codes_v1.json is a one-time offline export of
@@ -2239,14 +2257,26 @@ function classifyDartFinancialEntity(nameKo, stockCode) {
 // listed filer. Refreshed rarely (new listings/delistings only), so a day of
 // KV staleness is invisible -- same reasoning as secIndex() below.
 async function dartCorpIndex(env, origin) {
-    const KEY = 'dart:corp_codes:v1';
+    return dartAssetIndex(env, origin, 'dart:corp_codes:v1', 'dart_corp_codes_v1.json');
+}
+
+// public/data/dart_unlisted_filers_v1.json (tools/ops/build_dart_unlisted_filers.py):
+// OpenDART corp_code -> [entity name, fs_div, fiscal year] for unlisted
+// filers (bond issuers, large private companies, delisted ones) that file a
+// 사업보고서 with XBRL statements. The Worker only uses the name; it still
+// resolves CFS/OFS itself on every request.
+async function dartUnlistedIndex(env, origin) {
+    return dartAssetIndex(env, origin, 'dart:unlisted_filers:v1', 'dart_unlisted_filers_v1.json');
+}
+
+async function dartAssetIndex(env, origin, KEY, file) {
     if (env.API_CACHE) {
         try {
             const hit = await env.API_CACHE.get(KEY, 'json');
             if (hit) return hit;
         } catch (_) { /* fall through to asset fetch */ }
     }
-    for (const path of ['/public/data/dart_corp_codes_v1.json', '/data/dart_corp_codes_v1.json']) {
+    for (const path of [`/public/data/${file}`, `/data/${file}`]) {
         try {
             const res = await env.ASSETS.fetch(new Request(new URL(path, origin).toString()));
             if (!res.ok) continue;
@@ -2351,6 +2381,14 @@ async function fetchDartXbrlFacts(env, corpCode, year, fsDiv, { retriedOn020 = f
                 : item.thstrm_amount;
             if (!accountId || accountId.startsWith('-') || amount === undefined || amount === null) continue;
             if (!(accountId in facts)) facts[accountId] = amount;
+            // Same id, statement-qualified. Financial filers reuse one id in
+            // two statements with different meanings (KB금융 files
+            // ifrs-full_InsuranceServiceResult in the income statement at
+            // 1.3조 and in the cash-flow statement at 10.8조), so the
+            // financial-sector cards read `CIS:<id>` / `CF:<id>` instead of the
+            // first-wins flat key above.
+            const sjKey = `${item.sj_div}:${accountId}`;
+            if (!(sjKey in facts)) facts[sjKey] = amount;
         }
         return { facts, reason: Object.keys(facts).length ? 'ok' : 'no_usable_account_ids' };
     } catch (err) {
@@ -2503,7 +2541,7 @@ function dartQuarterlySeries(factsByPeriod, years) {
 // has no key in factsByYear; series are built by filtering, not by assuming
 // every year in `years` produced a point, so a gap (recent listing, a filing
 // OpenDART hasn't ingested yet) leaves a shorter series rather than a null.
-function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {}, isFinancialEntity = false } = {}) {
+function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {}, isFinancialEntity = false, priceReason = null } = {}) {
     const latestYear = years[0];
     const factsOf = (y) => factsByYear[y] || {};
     const latestFacts = factsOf(latestYear);
@@ -2522,7 +2560,14 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     const point = (key) => {
         const series = seriesFor(key);
         if (!series.length) return { value: null, series: [], reason: 'missing:not_in_opendart' };
-        return { value: series[series.length - 1].value, series };
+        // The headline value is the as-of year's, never an older year's
+        // standing in for it. A tag present in FY2023 but absent in FY2025
+        // used to surface the FY2023 number on a card dated 2025-12-31
+        // (하나증권 영업이익 -3,668억 = its 2023 PF-loss year). The older
+        // points stay in the series for the chart.
+        const last = series[series.length - 1];
+        if (last.year !== latestYear) return { value: null, series, reason: `missing:fy${latestYear}` };
+        return { value: last.value, series };
     };
 
     const revenue = point('revenue');
@@ -2634,17 +2679,18 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     // otherwise fetch (see handleDartFinancials); shares_outstanding comes
     // from a separate stockTotqySttus call. Either being unavailable nulls
     // just these three cards, never the filing-only ones above.
+    const priceMissing = priceReason || 'missing:price';
     const marketCap = (price !== null && sharesOutstanding !== null)
         ? { value: price * sharesOutstanding, series: [], definition: 'price × shares_outstanding' }
         : {
             value: null, series: [],
-            reason: price === null ? 'missing:price' : 'missing:shares_outstanding',
+            reason: price === null ? priceMissing : 'missing:shares_outstanding',
         };
 
     const epsV = eps.value;
     const peRatio = (price !== null && epsV)
         ? { value: price / epsV, series: [], definition: 'price / eps (trailing FY, basic EPS)' }
-        : { value: null, series: [], reason: price === null ? 'missing:price' : 'missing:eps' };
+        : { value: null, series: [], reason: price === null ? priceMissing : 'missing:eps' };
 
     const equityV = dartPick(latestFacts, DART_XBRL_TAGS.equity);
     const bps = (equityV !== null && sharesOutstanding) ? equityV / sharesOutstanding : null;
@@ -2652,7 +2698,7 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
         ? { value: price / bps, series: [], definition: 'price / (equity / shares_outstanding)' }
         : {
             value: null, series: [],
-            reason: price === null ? 'missing:price' : (equityV === null ? 'missing:equity' : 'missing:shares_outstanding'),
+            reason: price === null ? priceMissing : (equityV === null ? 'missing:equity' : 'missing:shares_outstanding'),
         };
 
     // ROE/ROA are the metrics the entity policy asks to keep for financial
@@ -2704,6 +2750,319 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     return cards;
 }
 
+// --- Financial-sector cards --------------------------------------------------
+//
+// A bank, insurer, broker or NPL investor does not earn "revenue" from selling
+// goods, so the industrial frame (매출, FCF, 순부채, EBITDA) misreads it --
+// dartBasicCardsFromFacts already nulls those for financial entities. This is
+// the other half: the metrics each sector is actually read by, computed only
+// from the same fnlttSinglAcntAll facts. Statement-qualified keys (`CIS:id`,
+// `BS:id`, `CF:id`, see fetchDartXbrlFacts) because financial filers reuse one
+// id across statements with different meanings.
+//
+// What XBRL does not carry is named, not estimated: NIM, BIS ratio, 연체율,
+// CSM, K-ICS, and an NPL investor's purchase price / recovery rate are all
+// note- or business-report items outside the structured statements.
+
+// 'PL:<id>' tries both income-statement codes (CIS for a single statement of
+// comprehensive income, IS when the filer splits it out).
+function finPick(facts, specs) {
+    for (const spec of specs) {
+        const cut = spec.indexOf(':');
+        const sj = spec.slice(0, cut), id = spec.slice(cut + 1);
+        for (const s of (sj === 'PL' ? ['CIS', 'IS'] : [sj])) {
+            const raw = facts[`${s}:${id}`];
+            if (raw === undefined || raw === null || String(raw).trim() === '') continue;
+            const n = Number(raw);
+            if (Number.isFinite(n)) return n;
+        }
+    }
+    return null;
+}
+// For ids OpenDART truncates or a filer extends (the FVOCI cash-flow line).
+function finPickPrefix(facts, sj, prefix) {
+    for (const [k, raw] of Object.entries(facts)) {
+        if (!k.startsWith(`${sj}:${prefix}`)) continue;
+        const n = Number(raw);
+        if (Number.isFinite(n)) return n;
+    }
+    return null;
+}
+const finDiff = (a, b) => (a !== null && b !== null ? a - b : null);
+// Expense and loss lines are filed with either sign -- 키움증권's FY2024
+// report has 이자비용 at -1.09조 while FY2025 has it positive -- so
+// "income - expense" turned into a sum (FY2024 NII 2.80조 on 1.71조 of
+// interest income). Read every expense/loss line as a magnitude.
+function finPickAbs(facts, specs) {
+    const v = finPick(facts, specs);
+    return v === null ? null : Math.abs(v);
+}
+// gain - loss for one instrument class, both required.
+const finGainLoss = (f, gainSpecs, lossSpecs) => finDiff(finPickAbs(f, gainSpecs), finPickAbs(f, lossSpecs));
+const finDiv = (a, b) => (a !== null && b ? a / b : null);
+// Average of opening and closing balance when the prior year was fetched,
+// closing balance otherwise -- the card definition says which.
+const finAvg = (cur, prev) => (cur === null ? null : (prev === null ? cur : (cur + prev) / 2));
+
+const FIN_TAGS = {
+    fvGain: ['PL:dart_GainFromFinancialInstrumentsAtFairValueThroughProfitOrLoss', 'PL:dart_GainsOnChangeInFairValueAndOnDisposalOfFinancialInstruments'],
+    fvLoss: ['PL:dart_LossFromFinancialInstrumentsAtFairValueThroughProfitOrLoss', 'PL:dart_LossesOnChangeInFairValueAndOnDisposalOfFinancialInstruments'],
+};
+
+const FIN_M = {
+    ni: (f) => finPick(f, ['PL:ifrs-full_ProfitLoss']),
+    niOwner: (f) => finPick(f, ['PL:ifrs-full_ProfitLossAttributableToOwnersOfParent', 'PL:ifrs-full_ProfitLoss']),
+    pretax: (f) => finPick(f, ['PL:ifrs-full_ProfitLossBeforeTax']),
+    op: (f) => finPick(f, ['PL:ifrs-full_ProfitLossFromOperatingActivities', 'PL:dart_OperatingIncomeLoss', 'PL:ifrs-full_OperatingIncomeLoss']),
+    eq: (f) => finPick(f, ['BS:ifrs-full_Equity']),
+    eqOwner: (f) => finPick(f, ['BS:ifrs-full_EquityAttributableToOwnersOfParent', 'BS:ifrs-full_Equity']),
+    assets: (f) => finPick(f, ['BS:ifrs-full_Assets']),
+    liab: (f) => finPick(f, ['BS:ifrs-full_Liabilities']),
+    intInc: (f) => finPick(f, ['PL:ifrs-full_RevenueFromInterest']),
+    intExp: (f) => finPickAbs(f, ['PL:ifrs-full_InterestExpense']),
+    nii: (f) => {
+        const net = finPick(f, ['PL:ifrs-full_InterestRevenueExpense']);
+        return net !== null ? net : finDiff(FIN_M.intInc(f), FIN_M.intExp(f));
+    },
+    feeInc: (f) => finPick(f, ['PL:ifrs-full_FeeAndCommissionIncome']),
+    netFee: (f) => {
+        const net = finPick(f, ['PL:ifrs-full_FeeAndCommissionIncomeExpense']);
+        return net !== null ? net : finDiff(FIN_M.feeInc(f), finPickAbs(f, ['PL:ifrs-full_FeeAndCommissionExpense']));
+    },
+    divInc: (f) => finPick(f, ['PL:ifrs-full_RevenueFromDividends']),
+    // Positive = expense. Filers use either one net element or a 전입/환입 pair.
+    creditCost: (f) => {
+        const net = finPick(f, ['PL:ifrs-full_ImpairmentLossImpairmentGainAndReversalOfImpairmentLossDeterminedInAccordanceWithIFRS9']);
+        if (net !== null) return net;
+        const add = finPickAbs(f, ['PL:ifrs-full_AdditionalAllowanceRecognisedInProfitOrLossAllowanceAccountForCreditLossesOfFinancialAssets',
+            'PL:ifrs-full_ImpairmentLossRecognisedInProfitOrLoss', 'PL:dart_AdditionalImpairmentLossesOfFinancialAssets']);
+        if (add === null) return null;
+        const rev = finPickAbs(f, ['PL:ifrs-full_ReversalAllowanceAccountForCreditLossesOfFinancialAssets',
+            'PL:ifrs-full_ReversalOfImpairmentLossRecognisedInProfitOrLoss', 'PL:dart_ReversalsOfImpairmentLossesOfFinancialAssets']);
+        return add - (rev || 0);
+    },
+    sga: (f) => finPickAbs(f, ['PL:ifrs-full_SellingGeneralAndAdministrativeExpense', 'PL:ifrs-full_GeneralAndAdministrativeExpense']),
+    loans: (f) => finPick(f, ['BS:dart_LoansAtAmortisedCost', 'BS:ifrs-full_LoansAndAdvancesToCustomers']),
+    deposits: (f) => finPick(f, ['BS:ifrs-full_DepositsFromCustomers']),
+    // Net gain on FVTPL instruments: one net element, or gain - loss (both
+    // required -- a gain alone would overstate it).
+    fvNet: (f) => {
+        const net = finPick(f, ['PL:dart_GainLossFromFinancialInstrumentsAtFairValueThroughProfitOrLoss']);
+        if (net !== null) return net;
+        return finGainLoss(f, FIN_TAGS.fvGain, FIN_TAGS.fvLoss);
+    },
+    fvGain: (f) => finPickAbs(f, FIN_TAGS.fvGain),
+    fvLoss: (f) => finPickAbs(f, FIN_TAGS.fvLoss),
+    // A broker hedges its FVTPL book with derivatives and FX, so each line
+    // alone swings by trillions in opposite directions; only the sum means
+    // anything. Each class is included only when both its gain and loss
+    // lines are tagged; which ones made it is shown on the card.
+    derivNet: (f) => finGainLoss(f, ['PL:dart_GainFromDerivatives', 'PL:dart_GainsOnDerivatives'], ['PL:dart_LossesFromDerivatives', 'PL:dart_LossesOnDerivatives']),
+    fxNet: (f) => finGainLoss(f, ['PL:ifrs-full_ForeignExchangeGain', 'PL:ifrs-full_NetForeignExchangeGain'],
+        ['PL:ifrs-full_ForeignExchangeLoss', 'PL:ifrs-full_NetForeignExchangeLoss']),
+    tradingTotal: (f) => {
+        const fv = FIN_M.fvNet(f);
+        if (fv === null) return null;
+        return fv + (FIN_M.derivNet(f) || 0) + (FIN_M.fxNet(f) || 0);
+    },
+    // Unrealised part of that: the cash-flow statement's non-cash add-back
+    // for FVTPL asset revaluation, gain minus loss.
+    fvUnrealized: (f) => finGainLoss(f, ['CF:dart_GainsOnValuationOfFairValueFinancialAsset'],
+        ['CF:dart_LossesOnValuationOfFairValueFinancialAsset']),
+    insResult: (f) => finPick(f, ['PL:ifrs-full_InsuranceServiceResult', 'PL:dart_InsuranceRevenueExpense']),
+    invResult: (f) => finPick(f, ['PL:dart_InvestmentIncomeExpenses']),
+    insLiab: (f) => finPick(f, ['BS:ifrs-full_InsuranceContractsIssuedThatAreLiabilities']),
+    cfo: (f) => finPick(f, ['CF:ifrs-full_CashFlowsFromUsedInOperatingActivities']),
+    // An NPL investor's book: XBRL has no "NPL" element, and where it sits
+    // depends on the accounting choice -- 연합자산관리 holds almost all of it
+    // at FVTPL, 대신에프앤아이 mostly at amortised cost. Sum the three
+    // financial-asset classes rather than guess one.
+    invBookParts: (f) => ({
+        fvtpl: finPick(f, ['BS:ifrs-full_FinancialAssetsAtFairValueThroughProfitOrLoss']),
+        amortised: finPick(f, ['BS:ifrs-full_FinancialAssetsAtAmortisedCost']),
+        fvoci: finPick(f, ['BS:ifrs-full_FinancialAssetsAtFairValueThroughOtherComprehensiveIncome']),
+    }),
+    invBook: (f) => {
+        const p = FIN_M.invBookParts(f);
+        const vals = [p.fvtpl, p.amortised, p.fvoci].filter((v) => v !== null);
+        return vals.length ? vals.reduce((a, b) => a + b, 0) : null;
+    },
+    // Net purchase of that book during the year, from the operating cash-flow
+    // working-capital lines ("금융자산의 감소(증가)": negative = bought more).
+    invNetPurchase: (f) => {
+        const lines = [
+            finPick(f, ['CF:dart_AdjustmentsForDecreaseIncreaseInFinancialAssetsAtFairValueThroughProfitOrLossClassifiedAsOperatingActivities']),
+            finPick(f, ['CF:dart_AdjustmentsForDecreaseIncreaseInFinancialAssetsAtAmortisedCostClassifiedAsOperatingActivities']),
+            finPickPrefix(f, 'CF', 'dart_AdjustmentsForDecreaseIncreaseInFinancialAssetsMeasuredAtFairValueThroughOtherComprehensiveIncome'),
+        ].filter((v) => v !== null);
+        return lines.length ? -lines.reduce((a, b) => a + b, 0) : null;
+    },
+};
+
+const DART_FIN_PROFILES = {
+    bank: {
+        label_ko: '은행·금융지주',
+        notes: [
+            '예금을 받아 대출하는 회사라 매출·FCF·순부채 같은 제조업 지표가 맞지 않습니다. 순이자이익, 대손비용, 비용효율(CIR), ROE로 봅니다.',
+            'NIM(순이자마진)·BIS 자기자본비율·연체율은 XBRL 재무제표에 없어 표시하지 않습니다. 사업보고서 본문에서 확인해야 합니다.',
+        ],
+        cards: ['net_income', 'fin_roe', 'fin_roa', 'fin_nii', 'fin_net_fee', 'fin_credit_cost', 'fin_credit_cost_ratio',
+            'fin_cir', 'fin_loans', 'fin_deposits', 'fin_ldr', 'fin_equity_ratio', 'eps', 'market_cap', 'pe_ratio', 'pb_ratio'],
+    },
+    insurance: {
+        label_ko: '보험',
+        notes: [
+            'IFRS17 이후 보험사 이익은 보험서비스결과(보험 본업)와 투자손익(자산운용)으로 나눠 봅니다.',
+            '미래 이익의 핵심인 CSM(보험계약마진)과 지급여력비율(K-ICS)은 XBRL 재무제표에 없어 표시하지 않습니다.',
+        ],
+        cards: ['net_income', 'fin_roe', 'fin_roa', 'fin_ins_result', 'fin_inv_result', 'fin_ins_liab', 'fin_csm',
+            'fin_equity_ratio', 'fin_leverage', 'eps', 'market_cap', 'pe_ratio', 'pb_ratio'],
+    },
+    securities: {
+        label_ko: '증권',
+        notes: [
+            '증권사 영업수익에는 트레이딩 거래 금액이 총액으로 잡혀 실제 벌이보다 훨씬 크게 보입니다. 순수수료·순이자·순트레이딩 손익으로 나눠 봅니다.',
+            '트레이딩은 금융상품·파생·외환이 서로 헤지돼 있어 각각은 조 단위로 반대로 움직입니다. 셋을 합친 순트레이딩손익만 봅니다(카드에 어떤 항목이 들어갔는지 표시).',
+            '수수료를 브로커리지·IB·자산관리로 나눈 내역과 순자본비율(NCR)은 XBRL 재무제표에 없어 표시하지 않습니다.',
+        ],
+        cards: ['operating_income', 'net_income', 'fin_roe', 'fin_net_fee', 'fin_nii', 'fin_trading', 'fin_credit_cost',
+            'fin_leverage', 'fin_equity_ratio', 'eps', 'market_cap', 'pe_ratio', 'pb_ratio'],
+    },
+    card_capital: {
+        label_ko: '카드·캐피탈',
+        notes: [
+            '돈을 빌려(회사채·차입) 다시 빌려주는 회사입니다. 대손비용, 레버리지(총자산/자본), 이자보상배율이 핵심입니다.',
+            '연체율·조달금리는 XBRL 재무제표에 없어 표시하지 않습니다.',
+        ],
+        cards: ['operating_income', 'net_income', 'fin_roe', 'fin_roa', 'fin_nii', 'fin_net_fee', 'fin_credit_cost',
+            'fin_credit_cost_ratio', 'fin_cir', 'fin_int_cov', 'fin_leverage', 'eps', 'market_cap', 'pe_ratio', 'pb_ratio'],
+    },
+    npl_amc: {
+        label_ko: 'NPL(부실채권) 투자회사',
+        notes: [
+            '은행 등에서 부실채권을 할인 매입해 회수·매각·구조조정으로 수익을 내는 회사입니다. 매출 대신 평가·처분이익, 이자, 배당으로 이루어진 영업수익을 봅니다.',
+            '영업활동현금흐름이 음수인 것은 대부분 채권 매입 때문입니다(채권 매입이 영업활동으로 분류됨). 매입을 빼고 본 "매입 전 영업현금흐름"을 같이 보세요.',
+            '보유 채권 상당 부분이 공정가치로 평가돼, 이익 일부는 아직 현금으로 회수되지 않은 평가이익입니다. "미실현 평가이익 비중"이 높을수록 회수 결과에 따라 이익이 흔들릴 수 있습니다.',
+            'XBRL에는 NPL 잔액·매입 단가·회수율이 따로 없습니다. 투자자산은 금융자산(공정가치·상각후원가·기타포괄) 합계로 근사합니다.',
+        ],
+        cards: ['operating_income', 'net_income', 'fin_roe', 'fin_inv_book', 'fin_inv_net_purchase', 'cfo', 'fin_cfo_pre_inv',
+            'fin_inv_yield', 'fin_income_mix', 'fin_unrealized_share', 'fin_credit_cost', 'fin_int_cov', 'fin_debt_to_equity',
+            'eps', 'market_cap', 'pe_ratio', 'pb_ratio'],
+    },
+    asset_manager: {
+        label_ko: '자산운용',
+        notes: ['운용보수(수수료)가 수익의 중심인 회사입니다. 운용자산(AUM)은 XBRL 재무제표에 없어 표시하지 않습니다.'],
+        cards: ['operating_income', 'net_income', 'fin_roe', 'fin_net_fee', 'fin_equity_ratio', 'eps', 'market_cap', 'pe_ratio', 'pb_ratio'],
+    },
+};
+
+function dartFinancialCards(factsByYear, years, subtype) {
+    const profile = DART_FIN_PROFILES[subtype];
+    if (!profile) return null;
+    const latestYear = years[0];
+    const F = (y) => factsByYear[y] || null;
+
+    // fn(facts, priorFacts|null) -> number|null, per fetched year.
+    const seriesOf = (fn) => years
+        .map((y) => {
+            const f = F(y);
+            if (!f) return null;
+            const v = fn(f, F(y - 1));
+            return v === null || !Number.isFinite(v) ? null : { year: y, end: `${y}-12-31`, value: v };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.year - b.year);
+    const card = (fn, definition, extra = {}) => {
+        const series = seriesOf(fn);
+        const last = series[series.length - 1];
+        if (!last) return { value: null, series: [], reason: 'missing:not_in_opendart', definition };
+        if (last.year !== latestYear) return { value: null, series, reason: `missing:fy${latestYear}`, definition };
+        return { value: last.value, series, definition, ...extra };
+    };
+    const avgOf = (m) => (f, pf) => finAvg(m(f), pf ? m(pf) : null);
+    const lf = F(latestYear) || {};
+    const money = (label, value) => ({ label, value, unit: 'money' });
+    const pct = (label, value) => ({ label, value, unit: 'percent' });
+
+    const c = {};
+    c.fin_roe = card((f, pf) => finDiv(FIN_M.niOwner(f), avgOf(FIN_M.eqOwner)(f, pf)),
+        '지배주주 순이익 / 평균 지배주주지분 (전년 없으면 기말)');
+    c.fin_roa = card((f, pf) => finDiv(FIN_M.ni(f), avgOf(FIN_M.assets)(f, pf)), '순이익 / 평균 총자산 (전년 없으면 기말)');
+    c.fin_equity_ratio = card((f) => finDiv(FIN_M.eq(f), FIN_M.assets(f)), '자본총계 / 자산총계');
+    c.fin_leverage = card((f) => finDiv(FIN_M.assets(f), FIN_M.eq(f)), '자산총계 / 자본총계');
+    c.fin_debt_to_equity = card((f) => finDiv(FIN_M.liab(f), FIN_M.eq(f)), '부채총계 / 자본총계');
+    c.fin_nii = card(FIN_M.nii, '순이자손익, 없으면 이자수익 - 이자비용',
+        { components: [money('이자수익', FIN_M.intInc(lf)), money('이자비용', FIN_M.intExp(lf))] });
+    c.fin_net_fee = card(FIN_M.netFee, '순수수료손익, 없으면 수수료수익 - 수수료비용');
+    c.fin_credit_cost = card(FIN_M.creditCost, '신용손실충당금 전입 - 환입 (양수 = 비용)');
+    c.fin_credit_cost_ratio = card((f, pf) => finDiv(FIN_M.creditCost(f), avgOf(FIN_M.loans)(f, pf)),
+        '대손비용 / 평균 대출채권 (전년 없으면 기말)');
+    // Pre-provision operating profit + G&A approximates total operating
+    // income net of interest/fee expense, which is what CIR divides by.
+    c.fin_cir = card((f) => {
+        const op = FIN_M.op(f), cc = FIN_M.creditCost(f), sga = FIN_M.sga(f);
+        return (op !== null && sga !== null) ? finDiv(sga, op + (cc || 0) + sga) : null;
+    }, '판관비 / (영업이익 + 대손비용 + 판관비)');
+    c.fin_loans = card(FIN_M.loans, '상각후원가 측정 대출채권');
+    c.fin_deposits = card(FIN_M.deposits, '예수부채');
+    c.fin_ldr = card((f) => finDiv(FIN_M.loans(f), FIN_M.deposits(f)), '대출채권 / 예수부채');
+    c.fin_fv_net = card(FIN_M.fvNet, '당기손익-공정가치 금융상품 관련 이익 - 손실',
+        { components: [money('이익', FIN_M.fvGain(lf)), money('손실', FIN_M.fvLoss(lf))] });
+    c.fin_trading = card(FIN_M.tradingTotal, '공정가치 금융상품 순손익 + 파생상품 순손익 + 외환 순손익 (태그된 것만)', {
+        components: [money('금융상품', FIN_M.fvNet(lf)), money('파생', FIN_M.derivNet(lf)), money('외환', FIN_M.fxNet(lf))],
+    });
+    c.fin_ins_result = card(FIN_M.insResult, '보험서비스결과 (IFRS17)');
+    c.fin_inv_result = card(FIN_M.invResult, '투자손익');
+    c.fin_ins_liab = card(FIN_M.insLiab, '보험계약부채');
+    c.fin_csm = { value: null, series: [], reason: 'missing:csm_not_in_xbrl' };
+    // Coverage before interest: these filers book interest inside 영업비용,
+    // so operating income is already after interest.
+    c.fin_int_cov = card((f) => {
+        const op = FIN_M.op(f), ie = FIN_M.intExp(f);
+        return (op !== null && ie) ? (op + ie) / Math.abs(ie) : null;
+    }, '(영업이익 + 이자비용) / 이자비용');
+
+    const book = FIN_M.invBookParts(lf);
+    const bookTotal = FIN_M.invBook(lf);
+    c.fin_inv_book = card(FIN_M.invBook, '금융자산 합계 (공정가치 + 상각후원가 + 기타포괄)', {
+        components: [
+            pct('총자산 대비', finDiv(bookTotal, FIN_M.assets(lf))),
+            money('공정가치', book.fvtpl), money('상각후원가', book.amortised), money('기타포괄', book.fvoci),
+        ].filter((x) => x.value !== null),
+    });
+    c.fin_inv_net_purchase = card(FIN_M.invNetPurchase, '영업활동 현금흐름의 금융자산 증가분 (양수 = 순매입)');
+    c.fin_cfo_pre_inv = card((f) => {
+        const cfo = FIN_M.cfo(f), np = FIN_M.invNetPurchase(f);
+        return cfo !== null && np !== null ? cfo + np : null;
+    }, '영업활동현금흐름 + 금융자산 순매입',
+    { components: [money('영업활동현금흐름', FIN_M.cfo(lf)), money('순매입', FIN_M.invNetPurchase(lf))] });
+    // Return on the book from what it earned: FV result + interest + dividends.
+    c.fin_inv_yield = card((f, pf) => {
+        const parts = [FIN_M.fvNet(f), FIN_M.intInc(f), FIN_M.divInc(f)];
+        if (parts.every((v) => v === null)) return null;
+        const earned = parts.reduce((a, v) => a + (v || 0), 0);
+        return finDiv(earned, avgOf(FIN_M.invBook)(f, pf));
+    }, '(공정가치 순손익 + 이자수익 + 배당수익) / 평균 금융자산 (전년 없으면 기말)');
+    const mix = [
+        ['평가·처분', FIN_M.fvNet(lf)], ['이자', FIN_M.intInc(lf)], ['배당', FIN_M.divInc(lf)], ['수수료', FIN_M.feeInc(lf)],
+    ].filter(([, v]) => v !== null && v > 0);
+    const mixTotal = mix.reduce((a, [, v]) => a + v, 0);
+    c.fin_income_mix = mixTotal
+        ? {
+            value: mix.map(([k, v]) => `${k} ${Math.round((v / mixTotal) * 100)}%`).join(' · '),
+            series: [], definition: '양수인 수익 항목의 비중 (공정가치 항목은 손실 차감 후)',
+            components: mix.map(([k, v]) => money(k, v)),
+        }
+        : { value: null, series: [], reason: 'missing:not_in_opendart' };
+    c.fin_unrealized_share = card((f) => finDiv(FIN_M.fvUnrealized(f), FIN_M.pretax(f)),
+        '공정가치 금융자산 순평가이익 / 법인세차감전순이익',
+        { components: [money('순평가이익', FIN_M.fvUnrealized(lf)), money('세전이익', FIN_M.pretax(lf))] });
+
+    const cards = {};
+    for (const k of profile.cards) if (c[k]) cards[k] = c[k];
+    return { cards, profile: { subtype, label_ko: profile.label_ko, notes: profile.notes }, cardKeys: profile.cards };
+}
+
 // Mirrors dart_kfa/view_presets.py's get_view_presets() -- Investor/PE/Deal
 // list their real card/model keys so the UI's tabs and "준비 중" fallback
 // look identical to a full snapshot, even though this endpoint only ever
@@ -2742,18 +3101,36 @@ const DART_VIEW_PRESETS = {
 
 async function handleDartFinancials(request, env) {
     const url = new URL(request.url);
-    const symbol = (url.searchParams.get('symbol') || '').trim();
-    if (!/^\d{6}$/.test(symbol)) {
-        return new Response(JSON.stringify({ error: 'symbol must be a 6-digit KRX stock code' }), { status: 400, headers: JSON_HEADERS });
+    // Either a 6-digit KRX stock code (listed) or an 8-digit OpenDART
+    // corp_code (unlisted filer). corp_code is accepted only when it is in
+    // the unlisted index -- an arbitrary corp_code would cost six OpenDART
+    // calls to discover that it has no filing, and listed companies keep
+    // their one canonical route through `symbol`.
+    const symbolParam = (url.searchParams.get('symbol') || '').trim();
+    const corpParam = (url.searchParams.get('corp_code') || '').trim();
+    const listed = !corpParam;
+    if (listed ? !/^\d{6}$/.test(symbolParam) : !/^\d{8}$/.test(corpParam)) {
+        return new Response(JSON.stringify({ error: 'symbol must be a 6-digit KRX stock code, or corp_code an 8-digit OpenDART code' }), { status: 400, headers: JSON_HEADERS });
     }
+    const symbol = listed ? symbolParam : null;
+    const label = listed ? symbolParam : corpParam;
 
     try {
-        return await kvCachedJson(env, `fin:dart:${symbol}`, 86400, async () => {
-            const index = await dartCorpIndex(env, url.origin);
-            const hit = index[symbol];
-            if (!hit) return { ok: false, status: 404, statusText: 'not a KRX-listed filer' };
-            const [corpCode, nameKo] = hit;
-            const entityPolicy = classifyDartFinancialEntity(nameKo, symbol);
+        return await kvCachedJson(env, // v2: financial-sector cards + latest-year guard (2026-11-08); bumped so
+        // day-old cached bodies without them aren't served after deploy.
+        listed ? `fin:dart:v2:${symbol}` : `fin:dart:v2:corp:${corpParam}`, 86400, async () => {
+            let corpCode, nameKo;
+            if (listed) {
+                const hit = (await dartCorpIndex(env, url.origin))[symbol];
+                if (!hit) return { ok: false, status: 404, statusText: 'not a KRX-listed filer' };
+                [corpCode, nameKo] = hit;
+            } else {
+                const hit = (await dartUnlistedIndex(env, url.origin))[corpParam];
+                if (!hit) return { ok: false, status: 404, statusText: 'not in the unlisted DART filer index' };
+                corpCode = corpParam;
+                nameKo = hit[0];
+            }
+            const entityPolicy = classifyDartFinancialEntity(nameKo, listed ? symbol : corpCode);
 
             // Annual reports for FY(Y) file the following spring; before that
             // OpenDART has nothing for FY(currentYear-1) yet, so start one
@@ -2768,21 +3145,43 @@ async function handleDartFinancials(request, env) {
             // itself retry once on a 020 (rate-limited) response, so racing
             // three of these against the same key risks tripping the limit
             // rather than backing off from it.
-            const factsByYear = {};
-            const failReasons = [];
-            for (const y of candidateYears) {
-                const { facts, reason } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS');
-                if (Object.keys(facts).length > 0) {
-                    factsByYear[y] = facts;
+            //
+            // Consolidated (CFS) first; a filer with no subsidiaries files no
+            // consolidated statements at all, and OpenDART answers 013 (no
+            // data) for every CFS query -- that company used to 404 here even
+            // though its separate (OFS) statements were sitting right there.
+            // Fall back to OFS only when *every* CFS miss was a 013: a missing
+            // key, a throttle or a network error is not "no consolidated
+            // statements", and retrying under OFS would just hide the real
+            // reason. One basis per response -- never CFS for one year and OFS
+            // for another, which would compare a group to a single entity.
+            const fetchAnnual = async (fsDiv) => {
+                const byYear = {};
+                const reasons = [];
+                for (const y of candidateYears) {
+                    const { facts, reason } = await fetchDartXbrlFacts(env, corpCode, y, fsDiv);
+                    if (Object.keys(facts).length > 0) byYear[y] = facts;
+                    else reasons.push({ y, reason });
+                }
+                return { byYear, reasons };
+            };
+            let fsDiv = 'CFS';
+            let { byYear: factsByYear, reasons: missReasons } = await fetchAnnual('CFS');
+            const failReasons = missReasons.map(({ y, reason }) => `CFS FY${y}:${reason}`);
+            if (!Object.keys(factsByYear).length && missReasons.every(({ reason }) => reason === 'dart_status_013')) {
+                const ofs = await fetchAnnual('OFS');
+                if (Object.keys(ofs.byYear).length) {
+                    fsDiv = 'OFS';
+                    factsByYear = ofs.byYear;
                 } else {
-                    failReasons.push(`FY${y}:${reason}`);
+                    failReasons.push(...ofs.reasons.map(({ y, reason }) => `OFS FY${y}:${reason}`));
                 }
             }
             const years = candidateYears.filter((y) => y in factsByYear);
             if (!years.length) {
                 return {
                     ok: false, status: 404,
-                    statusText: `no OpenDART CFS facts for FY${candidateYears.join('/FY')} (${failReasons.join(', ')})`,
+                    statusText: `no OpenDART facts for FY${candidateYears.join('/FY')} (${failReasons.join(', ')})`,
                 };
             }
             const latestYear = years[0];
@@ -2810,7 +3209,7 @@ async function handleDartFinancials(request, env) {
             for (const y of quarterlyYears) {
                 factsByPeriod[y] = factsByYear[y] ? { FY: factsByYear[y] } : {};
                 for (const code of ['Q1', 'H1', 'Q3']) {
-                    const { facts } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS', { reprtCode: DART_REPRT[code] });
+                    const { facts } = await fetchDartXbrlFacts(env, corpCode, y, fsDiv, { reprtCode: DART_REPRT[code] });
                     if (Object.keys(facts).length > 0) factsByPeriod[y][code] = facts;
                 }
             }
@@ -2820,20 +3219,39 @@ async function handleDartFinancials(request, env) {
             // and either failing still leaves the filing-derived cards intact.
             const [sharesResult, priceResult] = await Promise.all([
                 fetchDartSharesOutstanding(env, corpCode, latestYear),
-                fetchDartKrPrice(symbol),
+                // No market, no price: say so instead of letting the Yahoo
+                // miss read as a transient lookup failure.
+                listed ? fetchDartKrPrice(symbol) : Promise.resolve({ price: null, reason: 'not_applicable:unlisted' }),
             ]);
+
+            const basicCards = dartBasicCardsFromFacts(factsByYear, years, {
+                sharesOutstanding: sharesResult.sharesOutstanding,
+                price: priceResult.price,
+                quarterly,
+                isFinancialEntity: entityPolicy.is_financial_entity,
+                priceReason: listed ? null : 'not_applicable:unlisted',
+            });
+            // A financial entity gets its sector's card set in place of the
+            // industrial one, and only the Basic view: Investor/PE/Deal are
+            // built on EBITDA, FCF and net debt, none of which apply.
+            const finResult = entityPolicy.is_financial_entity
+                ? dartFinancialCards(factsByYear, years, entityPolicy.subtype) : null;
+            if (finResult) Object.assign(basicCards, finResult.cards);
+            const viewPresets = finResult
+                ? { ...DART_VIEW_PRESETS, views: { basic: { cards: finResult.cardKeys, models: [] } } }
+                : DART_VIEW_PRESETS;
 
             return {
                 ok: true,
                 body: {
                     schema: 'kfa_engine_v1',
-                    label: symbol,
-                    view_presets: DART_VIEW_PRESETS,
+                    label,
+                    view_presets: viewPresets,
                     as_of: `${latestYear}-12-31`,
                     currency: 'KRW',
                     meta: {
-                        ticker: symbol, corp_code: corpCode, entity: nameKo, entity_eng: null,
-                        stock_code: symbol, source: 'opendart', fs_div: 'CFS', acc_mt: '12',
+                        ticker: label, corp_code: corpCode, entity: nameKo, entity_eng: null,
+                        stock_code: symbol, listed, source: 'opendart', fs_div: fsDiv, acc_mt: '12',
                         shares_outstanding: sharesResult.sharesOutstanding,
                         shares_outstanding_reason: sharesResult.sharesOutstanding === null ? sharesResult.reason : undefined,
                         price: priceResult.price,
@@ -2843,12 +3261,8 @@ async function handleDartFinancials(request, env) {
                     // (see scripts/dart/docs/P0_WORKER_HANDOFF_FINANCIALS.md) so the
                     // static-snapshot and live-fetch paths carry the same field.
                     entity_policy: entityPolicy,
-                    basic_cards: dartBasicCardsFromFacts(factsByYear, years, {
-                        sharesOutstanding: sharesResult.sharesOutstanding,
-                        price: priceResult.price,
-                        quarterly,
-                        isFinancialEntity: entityPolicy.is_financial_entity,
-                    }),
+                    basic_cards: basicCards,
+                    financial_profile: finResult ? finResult.profile : undefined,
                     data_quality: {
                         input_kind: years.length > 1 ? 'live_fetch_multi_fiscal_year' : 'live_fetch_single_fiscal_year',
                         source_claim: 'opendart',
@@ -2856,7 +3270,7 @@ async function handleDartFinancials(request, env) {
                         period_alignment: years.length > 1 ? 'multi_fiscal_year' : 'single_fiscal_year_no_history',
                         fiscal_years_fetched: years,
                         fiscal_years_missing: candidateYears.filter((y) => !years.includes(y)),
-                        facts_fetched: years.reduce((sum, y) => sum + Object.keys(factsByYear[y]).length, 0),
+                        facts_fetched: years.reduce((sum, y) => sum + Object.keys(factsByYear[y]).filter((k) => !k.includes(':')).length, 0),
                         // Which interim reports actually came back, per year --
                         // a quarterly gap in the UI is explained here rather
                         // than looking like a rendering bug. Covers
@@ -3225,7 +3639,7 @@ async function handleUsPolicy(request, env) {
 
     try {
         if (path === 'lobbying' || path.startsWith('lobbying/')) {
-            return await handleLobbying(request, env, usFetch, usRpc);
+            return await handleLobbying(request, env, usFetch, usRpc, geminiEmbedQuery);
         }
         if (path === 'reports/quality') {
             return await kvCachedJson(env, 'us:reports:quality:v1', 60, async () => {

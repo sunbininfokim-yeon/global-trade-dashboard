@@ -32,13 +32,28 @@ const krxLoadFilers = async () => {
     // The filer index is a large, rarely-changing build artefact, so this one
     // keeps the browser's default cache instead of the no-store the snapshot
     // views use.
-    const doc = await loadFirstJson(finDataPaths('dart_corp_codes_v1.json'), { cache: 'default' });
-    KRX_FILERS = Object.entries((doc && doc.index) || {})
-        .map(([code, row]) => ({
-            id: `krx:${code}`, name_ko: (row || [])[1] || code,
-            yahoo: code, asset_class: 'equity',
-            aliases: KRX_NAME_ALIASES[code] || [],
-        }));
+    const [doc, unlisted] = await Promise.all([
+        loadFirstJson(finDataPaths('dart_corp_codes_v1.json'), { cache: 'default' }),
+        // Unlisted companies that still file a 사업보고서 (bond issuers such
+        // as 연합자산관리, large private companies, delisted ones). No stock
+        // code, so they route by OpenDART corp_code instead; a missing file
+        // just means listed-only search, never a broken page.
+        loadFirstJson(finDataPaths('dart_unlisted_filers_v1.json'), { cache: 'default' }).catch(() => null),
+    ]);
+    KRX_FILERS = [
+        ...Object.entries((doc && doc.index) || {})
+            .map(([code, row]) => ({
+                id: `krx:${code}`, name_ko: (row || [])[1] || code,
+                yahoo: code, asset_class: 'equity',
+                aliases: KRX_NAME_ALIASES[code] || [],
+            })),
+        ...Object.entries((unlisted && unlisted.index) || {})
+            .map(([corp, row]) => ({
+                id: `dart:${corp}`, name_ko: (row || [])[0] || corp,
+                yahoo: '', dart_corp: corp, unlisted: true, asset_class: 'equity',
+                aliases: [],
+            })),
+    ];
     return KRX_FILERS;
 };
 
@@ -52,11 +67,14 @@ const krxSearchLocal = (q) => {
     for (const it of KRX_FILERS) {
         const name = it.name_ko.toLowerCase();
         const aliasHit = (it.aliases || []).some((a) => a.toLowerCase().includes(s));
-        if (name === s || it.yahoo === s) exact.push(it);
-        else if (name.startsWith(s) || it.yahoo.startsWith(s)) starts.push(it);
+        if (name === s || it.yahoo === s || it.dart_corp === s) exact.push(it);
+        else if (name.startsWith(s) || (it.yahoo && it.yahoo.startsWith(s))) starts.push(it);
         else if (name.includes(s) || aliasHit) contains.push(it);
     }
-    return [...exact, ...starts, ...contains].slice(0, 6);
+    // Listed before unlisted within each tier: 삼성 should surface 삼성전자
+    // ahead of an unlisted 삼성 affiliate with the same prefix.
+    const listedFirst = (arr) => [...arr.filter((x) => !x.unlisted), ...arr.filter((x) => x.unlisted)];
+    return [...listedFirst(exact), ...listedFirst(starts), ...listedFirst(contains)].slice(0, 6);
 };
 
 // A KRX listing arrives either bare (from the filer index) or suffixed (from
@@ -151,7 +169,7 @@ const renderCompanyCalc = async (host) => {
             <div class="pf-add">
                 <div class="pf-search-wrap">
                     <input type="text" id="co-q" class="pf-field" autocomplete="off"
-                           placeholder="기업명·티커로 검색 (예: 삼성전자, 009150, AAPL)">
+                           placeholder="기업명·티커로 검색 (예: 삼성전자, 009150, 연합자산관리, AAPL)">
                     <div id="co-sug" class="pf-sug hidden"></div>
                 </div>
             </div>
@@ -159,6 +177,8 @@ const renderCompanyCalc = async (host) => {
             <p class="fin-note">
                 미국 상장사는 SEC 공시로, <strong>한국 상장사는 DART 공시로</strong> 같은 화면에서 열립니다.
                 한글 이름으로 찾지 못하면 6자리 종목코드를 그대로 넣으면 됩니다.
+                사업보고서를 내는 <strong>비상장사</strong>(예: 연합자산관리)도 이름으로 찾을 수 있습니다.
+                시장 가격이 없어 시가총액·PER·PBR은 비어 있습니다.
             </p>
         </section>
         <div id="co-out"></div>
@@ -181,7 +201,7 @@ const renderCompanyCalc = async (host) => {
         shown = local;
         sugEl.innerHTML = local.map((h, i) =>
             `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
-             <span class="pf-sug-meta">${finEsc(h.yahoo || '')}</span></button>`).join('') || '<p class="pf-sug-note">찾는 중…</p>';
+             <span class="pf-sug-meta">${finEsc(h.unlisted ? '비상장' : (h.yahoo || ''))}</span></button>`).join('') || '<p class="pf-sug-note">찾는 중…</p>';
         sugEl.classList.remove('hidden');
 
         const my = ++seq;
@@ -196,7 +216,7 @@ const renderCompanyCalc = async (host) => {
             shown = [...local, ...remote];
             sugEl.innerHTML = shown.map((h, i) =>
                 `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
-                 <span class="pf-sug-meta">${finEsc(h.yahoo || '')}${h._exchange ? ' · ' + finEsc(h._exchange) : ''}</span></button>`
+                 <span class="pf-sug-meta">${finEsc(h.unlisted ? '비상장' : (h.yahoo || ''))}${h._exchange ? ' · ' + finEsc(h._exchange) : ''}</span></button>`
             ).join('') || '<p class="pf-sug-note">결과가 없습니다. 티커를 직접 넣어 보세요.</p>';
         }, 250);
     });
@@ -208,7 +228,7 @@ const renderCompanyCalc = async (host) => {
         if (!it) return;
         qEl.value = it.name_ko;
         sugEl.classList.add('hidden');
-        pickedEl.textContent = `선택: ${it.name_ko} (${it.yahoo})`;
+        pickedEl.textContent = `선택: ${it.name_ko} (${it.unlisted ? '비상장' : it.yahoo})`;
         await loadCompany(out, it);
     });
 };
@@ -216,6 +236,8 @@ const renderCompanyCalc = async (host) => {
 const loadCompany = async (out, inst) => {
     const sym = String(inst.yahoo || '').toUpperCase();
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">공시 자료를 받는 중…</p></div>`;
+
+    if (inst.dart_corp) return loadKfaCompany(out, inst, null, inst.dart_corp);
 
     // A Korean listing carries a market suffix Yahoo uses and SEC does not;
     // the 6-digit code before it is what the DART-side engine names its files
@@ -376,11 +398,58 @@ const KFA_CARD_META = {
     qoe_flags: { label: '이익품질 플래그', unit: 'text', plain: '일회성 항목 등 이익의 질을 흔드는 신호입니다.' },
     segment: { label: '세그먼트', unit: 'text', plain: '사업부문별 실적 분해입니다.' },
     nwc_to_sales: { label: '운전자본/매출', unit: 'ratio', plain: '매출 대비 운전자본이 차지하는 비중입니다.' },
+
+    // 금융업 카드 (_worker.js dartFinancialCards). 업권별로 어떤 카드가 뜨는지는
+    // 응답의 view_presets 가 정한다.
+    fin_roe: { label: 'ROE(지배주주)', unit: 'percent', plain: '지배주주 순이익 ÷ 평균 지배주주지분. 금융회사 수익성의 기본 잣대입니다.' },
+    fin_roa: { label: 'ROA', unit: 'percent', plain: '순이익 ÷ 평균 총자산. 금융회사는 자산이 커서 1% 안팎이 보통입니다.' },
+    fin_equity_ratio: { label: '자기자본비율(장부)', unit: 'percent', plain: '자본총계 ÷ 자산총계. 규제 자본비율(BIS·K-ICS)과는 다른 단순 장부 비율입니다.' },
+    fin_leverage: { label: '레버리지', unit: 'ratio', plain: '총자산 ÷ 자본. 자기 돈 1원으로 몇 원의 자산을 굴리는지입니다.' },
+    fin_debt_to_equity: { label: '부채비율', unit: 'ratio', plain: '부채 ÷ 자본. 채권 매입 자금을 얼마나 빌려서 대는지 보여 줍니다.' },
+    fin_nii: { label: '순이자이익', unit: 'money', plain: '이자수익 - 이자비용. 빌려준 돈과 빌린 돈의 금리 차로 번 돈입니다.' },
+    fin_net_fee: { label: '순수수료이익', unit: 'money', plain: '수수료수익 - 수수료비용. 대출 없이 서비스로 번 돈입니다.' },
+    fin_credit_cost: { label: '대손비용', unit: 'money', plain: '떼일 것으로 보고 새로 쌓은 충당금(전입 - 환입)입니다. 경기가 나빠지면 커집니다.' },
+    fin_credit_cost_ratio: { label: '대손비용률', unit: 'percent', plain: '대손비용 ÷ 평균 대출. 대출 100원당 얼마를 떼일 것으로 보는지입니다.' },
+    fin_cir: { label: '비용효율(CIR)', unit: 'percent', plain: '판관비 ÷ 충당금 전 영업수익. 낮을수록 같은 수익을 적은 비용으로 냅니다.' },
+    fin_loans: { label: '대출채권', unit: 'money', plain: '상각후원가로 잡힌 대출 잔액입니다.' },
+    fin_deposits: { label: '예수부채(예금)', unit: 'money', plain: '고객에게서 받은 예금 잔액입니다.' },
+    fin_ldr: { label: '예대율', unit: 'ratio', plain: '대출 ÷ 예금. 1을 넘으면 예금보다 대출이 많아 다른 조달에 기대는 몫이 있습니다.' },
+    fin_fv_net: { label: '순트레이딩손익', unit: 'money', plain: '공정가치로 평가하는 금융상품에서 낸 이익 - 손실입니다.' },
+    fin_trading: { label: '순트레이딩손익', unit: 'money', plain: '금융상품·파생상품·외환 거래에서 낸 이익 - 손실의 합입니다. 서로 헤지돼 있어 합계로 봐야 합니다.' },
+    fin_ins_result: { label: '보험서비스결과', unit: 'money', plain: 'IFRS17 기준 보험 본업에서 낸 이익입니다.' },
+    fin_inv_result: { label: '투자손익', unit: 'money', plain: '보험료로 받은 돈을 굴려서 낸 이익(보험금융비용 차감 후)입니다.' },
+    fin_ins_liab: { label: '보험계약부채', unit: 'money', plain: '앞으로 보험금으로 내줘야 할 돈의 현재가치입니다.' },
+    fin_csm: { label: 'CSM(보험계약마진)', unit: 'money', plain: '앞으로 인식될 보험 이익의 저장고입니다.' },
+    fin_int_cov: { label: '이자보상배율', unit: 'ratio', plain: '이자 내기 전 영업이익 ÷ 이자비용. 1에 가까울수록 조달비용 부담이 큽니다.' },
+    fin_inv_book: { label: '투자자산(채권 등)', unit: 'money', plain: '보유한 금융자산 합계입니다. NPL 회사는 대부분 매입한 부실채권과 그 유동화 증권입니다.' },
+    fin_inv_net_purchase: { label: '채권 순매입', unit: 'money', plain: '한 해 동안 새로 사들인 금융자산 - 회수·매각분입니다. 양수면 투자를 늘린 해입니다.' },
+    fin_cfo_pre_inv: { label: '매입 전 영업현금흐름', unit: 'money', plain: '채권 매입을 빼고 본 영업현금흐름입니다. 회수·이자·배당으로 실제 들어온 현금에 가깝습니다.' },
+    fin_inv_yield: { label: '투자자산 수익률', unit: 'percent', plain: '(평가·처분 순손익 + 이자 + 배당) ÷ 평균 투자자산. 채권 1원이 한 해에 번 돈입니다.' },
+    fin_income_mix: { label: '수익 구성', unit: 'text', plain: '영업수익이 평가·처분이익, 이자, 배당, 수수료 중 어디서 나왔는지입니다.' },
+    fin_unrealized_share: { label: '미실현 평가이익 비중', unit: 'percent', plain: '세전이익 중 아직 현금으로 회수되지 않은 평가이익의 비중입니다. 높을수록 회수 결과에 따라 이익이 흔들릴 수 있습니다.' },
+};
+
+// 엔진의 사유 코드를 화면 문장으로. 모르는 코드는 그대로 보여 준다.
+const KFA_REASON_KO = {
+    'not_applicable:financial_entity': '금융회사에는 맞지 않는 지표',
+    'not_applicable:financial_entity_industrial_revenue': '금융회사의 영업수익은 일반 매출과 성격이 달라 표시하지 않음',
+    'not_applicable:unlisted': '비상장 — 시장 가격 없음',
+    'missing:not_in_opendart': 'OpenDART 재무제표에 해당 계정 없음',
+    'missing:csm_not_in_xbrl': 'XBRL 재무제표에 없음 — 사업보고서 본문에서 확인',
+    'missing:price': '주가를 받지 못함',
+};
+const kfaReason = (r) => {
+    if (!r) return '';
+    const fy = /^missing:fy(\d{4})$/.exec(r);
+    if (fy) return `${fy[1]}년 값 없음 — 이전 연도는 차트에서 확인`;
+    return KFA_REASON_KO[r] || r;
 };
 
 const kfaFmt = (key, v, currency) => {
     if (v === null || v === undefined || Number.isNaN(v)) return '—';
     const unit = (KFA_CARD_META[key] || {}).unit;
+    // 주당 금액은 원 단위 그대로: coNum 은 큰 금액용이라 15,410원을 "2만원"으로 뭉갠다.
+    if (key === 'eps' && (currency || 'KRW') === 'KRW') return `${Math.round(v).toLocaleString('ko-KR')}원`;
     if (unit === 'money') return coNum(v, currency || 'KRW');
     if (unit === 'days') return `${Math.round(v)}일`;
     if (unit === 'ratio') return `${v.toFixed(2)}배`;
@@ -543,12 +612,18 @@ const renderKfaResult = (out, data) => {
     out.innerHTML = `
         <div class="fin-head fin-head-sub">
             <p class="fin-headline">${finEsc(data.meta?.entity || data.label)}
-               <span class="fin-chip">${finEsc(data.meta?.ticker || data.label)}</span></p>
+               <span class="fin-chip">${finEsc(data.meta?.listed === false ? '비상장' : (data.meta?.ticker || data.label))}</span></p>
             <div class="fin-meta">
-                <span>DART 공시 (${finEsc(data.meta?.fs_div || '')}) 기준 ${finEsc(data.as_of || '')}</span>
+                <span>DART 공시 (${finEsc(({ CFS: '연결', OFS: '별도' })[data.meta?.fs_div] || data.meta?.fs_div || '')}) 기준 ${finEsc(data.as_of || '')}</span>
                 ${data.reasons?.length ? `<span class="fin-meta-sep">·</span><span>${finEsc(data.reasons.join(' · '))}</span>` : ''}
             </div>
         </div>
+
+        ${data.financial_profile ? `
+        <div class="fin-block fin-block-wide fin-sector-note">
+            <h2>금융업 기준으로 봅니다 · ${finEsc(data.financial_profile.label_ko || '')}</h2>
+            <ul>${(data.financial_profile.notes || []).map((n) => `<li>${finEsc(n)}</li>`).join('')}</ul>
+        </div>` : ''}
 
         <div class="pf-mode" role="tablist" aria-label="분석 단계">
             ${viewIds.map((v) => `<button type="button" class="pf-mode-btn ${v === KFA_VIEW ? 'on' : ''}"
@@ -571,8 +646,12 @@ const renderKfaResult = (out, data) => {
                     <div class="fin-card co-kfa-card ${open ? 'open' : ''} ${hasSeries ? 'co-clickable' : ''}"
                         data-kfa-card="${finEsc(key)}">
                         <span class="fin-card-title">${finEsc(meta.label)}</span>
-                        <span class="fin-card-value">${kfaFmt(key, card.value, currency)}</span>
-                        <p class="fin-card-plain">${finEsc(meta.plain)}${card.reason ? ` (${finEsc(card.reason)})` : ''}</p>
+                        <span class="fin-card-value${meta.unit === 'text' ? ' fin-card-value-text' : ''}">${kfaFmt(key, card.value, currency)}</span>
+                        ${Array.isArray(card.components) && card.components.length ? `<p class="fin-card-parts">${card.components
+                            .filter((p) => Number.isFinite(p.value))
+                            .map((p) => `${finEsc(p.label)} ${p.unit === 'percent' ? `${(p.value * 100).toFixed(1)}%` : finEsc(coNum(p.value, currency))}`)
+                            .join(' · ')}</p>` : ''}
+                        <p class="fin-card-plain">${finEsc(meta.plain)}${card.reason ? ` (${finEsc(kfaReason(card.reason))})` : ''}</p>
                         ${hasSeries && open ? `<div class="co-kfa-chart">${finSeriesBlock(card.series, card.quarterly,
                             (v) => kfaFmt(key, v, currency))}</div>` : ''}
                     </div>`;
@@ -613,10 +692,11 @@ const renderKfaResult = (out, data) => {
     }));
 };
 
-const loadKfaCompany = async (out, inst, code) => {
+const loadKfaCompany = async (out, inst, code, corpCode = null) => {
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">DART 공시 자료를 받는 중…</p></div>`;
 
-    const staticSnap = await loadFirstJson(finDataPaths(`kfa_${code}_v1.json`));
+    // Static snapshots are keyed by stock code; an unlisted filer has none.
+    const staticSnap = corpCode ? null : await loadFirstJson(finDataPaths(`kfa_${code}_v1.json`));
 
     // A static snapshot only stands in for a live response when it carries
     // the P0 contract and doesn't flag itself stale. No `service_readiness`
@@ -635,7 +715,8 @@ const loadKfaCompany = async (out, inst, code) => {
     let liveOnly = false;
     if (!data) {
         try {
-            const res = await fetch(`/api/dart-financials?symbol=${encodeURIComponent(code)}`, { cache: 'no-store' });
+            const q = corpCode ? `corp_code=${encodeURIComponent(corpCode)}` : `symbol=${encodeURIComponent(code)}`;
+            const res = await fetch(`/api/dart-financials?${q}`, { cache: 'no-store' });
             if (res.ok) { data = await res.json(); liveOnly = true; }
         } catch (_) { /* fall through to the stale static snapshot, if any */ }
     }
@@ -652,7 +733,7 @@ const loadKfaCompany = async (out, inst, code) => {
         out.innerHTML = `
             <div class="fin-empty">
                 <p class="fin-empty-title">${finEsc(inst.name_ko)}는 아직 DART 데이터가 없습니다</p>
-                <p>OpenDART에 이 종목의 연결재무제표 공시가 없거나(최근 2개 회계연도 기준), 상장 종목이 아닙니다.</p>
+                <p>OpenDART에 최근 3개 회계연도의 재무제표 공시(연결·별도 모두)가 없습니다.</p>
             </div>`;
         return;
     }

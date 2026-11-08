@@ -89,3 +89,37 @@ runs. Text/OCR and reviewed activity coverage are reported independently. No
 complete-history, full-text, policy-effect or case-specific spend claim follows
 from a successful bounded run. The case register is reviewed and static; its
 review date is displayed, and source changes need a fresh case review.
+
+## Evidence structure and Gemini retrieval
+
+`20261107033023_lobbying_structured_evidence.sql` adds source-scoped principals,
+versioned page/JSON passages, activity units and resumable processing jobs.
+`process.mjs` uses Gemini structured output for FARA and official LDA JSON fields
+for LDA issue blocks. Exact source quotes and affiliations must survive validation;
+FARA results remain `machine_extracted`, never reviewed facts. Principal country
+is taken only from the activity evidence, not the registrant's unrelated clients.
+LDA government entity names retain their issue-block membership, without inferring
+individual meetings, spending allocation or bill-by-institution relationships.
+
+Every passage stores its source hash, page/JSON path and character offsets.
+The lease, passage, units and next cursor commit atomically. Long documents resume;
+changed source versions immediately disappear from current search but remain
+available for audit. OCR is still a separate pending capability.
+
+The existing `AI_STUDIO_API_KEY` supplies `GEMINI_API_KEY` in Actions. Extraction
+uses `gemini-3.8-flash`; embeddings use `gemini-embedding-001`, normalized 1536
+values and RETRIEVAL_DOCUMENT/RETRIEVAL_QUERY. Embeddings rank retrieval; they do
+not establish policy links or confirm lobbying influence. The scheduled structure
+job processes up to 30 passages per run. Manual dispatch: `source=structure`.
+Missing keys/provider failures retain the cursor and report errors.
+
+The `/policy/us/lobbying/explore` view and `/api/us/lobbying/explore` read route
+support source, country, principal kind, recipient branch and exact recipient
+facets, Korean semantic queries, lexical queries and bounded pagination. Counts
+refer to source activity groups, not unique meetings. For semantic queries, facet
+counts describe the selected filters while individual results are similarity-ranked.
+Existing record detail retains the separate explicit policy-ID links.
+
+Principals remain source-scoped. Name-only global person/entity merging and
+inferred beneficial ownership are deliberately not performed. Unknown fields
+remain unknown; a government-looking principal name is only a `name_hint`.
