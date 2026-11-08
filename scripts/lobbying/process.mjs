@@ -40,6 +40,8 @@ async function extract(passage) {
 export async function main() {
   if (process.env.GITHUB_ACTIONS === 'true' && process.env.GITHUB_REF !== 'refs/heads/main') throw Error('Production processing is main-only');
   if (!key) throw Error('Missing Gemini credentials');
+  const source = process.env.LOBBYING_STRUCTURE_SOURCE || null;
+  if (source !== null && !['fara', 'lda'].includes(source)) throw Error('Invalid structure source');
   const budget = Number(process.env.LOBBYING_PASSAGES_PER_RUN || 30);
   if (!Number.isInteger(budget) || budget < 1 || budget > 200) throw Error('Invalid passage budget');
   const owner = randomUUID();
@@ -48,7 +50,7 @@ export async function main() {
   while (processed < budget && documents < 30) {
     const bytes = await rpc('lobby_database_bytes');
     if (bytes > Number(process.env.LOBBYING_DB_BUDGET_BYTES || 6 * 1024 ** 3)) throw Error('Database storage budget reached');
-    const job = await rpc('lobby_claim_structure', { p_owner: owner, p_profile: PROFILE });
+    const job = await rpc('lobby_claim_structure', { p_owner: owner, p_profile: PROFILE, p_source: source });
     if (!job) break;
     documents++;
     const identity = { p_owner: owner, p_record_id: job.record_id, p_version: job.source_version, p_profile: PROFILE };

@@ -110,7 +110,7 @@ The existing `AI_STUDIO_API_KEY` supplies `GEMINI_API_KEY` in Actions. Extractio
 uses `gemini-3.8-flash`; embeddings use `gemini-embedding-001`, normalized 1536
 values and RETRIEVAL_DOCUMENT/RETRIEVAL_QUERY. Embeddings rank retrieval; they do
 not establish policy links or confirm lobbying influence. The scheduled structure
-job processes up to 30 passages per run. Manual dispatch: `source=structure`.
+job has independent FARA/LDA lanes, each processing up to 30 passages per run. Manual dispatch: `source=structure`.
 Missing keys/provider failures retain the cursor and report errors.
 
 The `/policy/us/lobbying/explore` view and `/api/us/lobbying/explore` read route
@@ -123,3 +123,8 @@ Existing record detail retains the separate explicit policy-ID links.
 Principals remain source-scoped. Name-only global person/entity merging and
 inferred beneficial ownership are deliberately not performed. Unknown fields
 remain unknown; a government-looking principal name is only a `name_hint`.
+
+The source-lane RPC migration keeps the original two-argument signature compatible
+with in-flight runners. Each source has its own passage budget, so long FARA PDFs
+do not delay LDA issue blocks. Short exact actor names remain valid evidence;
+empty names and unsupported affiliations are still rejected.
