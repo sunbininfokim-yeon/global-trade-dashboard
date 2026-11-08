@@ -1,0 +1,57 @@
+name: Edge tracking call intraday
+# deploy-chain: not-served
+# Prospective record of one frozen rule (track_call_intraday_edge.py, rule
+# call_intraday_v1, registered 2026-11-08): foreign KOSPI200 call net flow on
+# day d -> long/short KOSPI open-to-close on the next session. It never refits.
+# The ledger lives in data/manifests/, which the site does not serve, so this
+# workflow is deliberately not chained into deploy.yml.
+#
+# Two triggers: right after Market microstructure daily refreshes the board
+# (new 15007 day -> new position), and 19:20 KST on weekdays (score the day
+# that just closed). Both are idempotent; a row is written once and completed once.
+
+on:
+  workflow_run:
+    workflows: ['Market microstructure daily']
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: '20 10 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: edge-tracking-call-intraday
+  cancel-in-progress: false
+
+jobs:
+  track:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      MM: New for anti/scripts/market_microstructure
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: New for anti/scripts/market_microstructure/requirements-us-kr-preopen.txt
+      - name: Install runtime
+        run: pip install -r "$MM/requirements-us-kr-preopen.txt"
+      - name: Check tracker contract
+        run: python -m unittest discover -s "$MM/tests" -p test_call_intraday_edge.py
+      - name: Record positions and score closed sessions
+        run: python "$MM/track_call_intraday_edge.py"
+      - name: Commit ledger
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/manifests/edge_tracking/call_intraday_v1.json
+          if git diff --cached --quiet; then echo 'nothing changed'; exit 0; fi
+          git commit -m 'chore: track call-flow intraday edge (call_intraday_v1)'
+          bash tools/ops/git_push_retry.sh
