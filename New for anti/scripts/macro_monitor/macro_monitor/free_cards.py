@@ -317,6 +317,8 @@ def apply_ops(points: Points, ops: list[list[Any]], fetch: wps.Fetch) -> Any:
             points = wps.monthly_mean(points)
         elif name == "monthly_last":
             points, last_day = wps.monthly_last(points)
+        elif name in ("weekly_max", "weekly_mean"):
+            points = weekly(points, max if name == "weekly_max" else (lambda v: sum(v) / len(v)))
         elif name in ("minus", "spread_bp"):
             other = read(fetch, args[0])
             points = wps.spread_bp(points, other) if name == "spread_bp" else \
@@ -327,6 +329,17 @@ def apply_ops(points: Points, ops: list[list[Any]], fetch: wps.Fetch) -> Any:
         else:
             raise KeyError(f"unknown transform {name!r}")
     return (points, last_day) if last_day else points
+
+
+def weekly(points: Points, how: Callable[[list[float]], float]) -> Points:
+    """A daily series as one value per ISO week, dated by the week's last observation -- the cache keeps
+    CACHE_POINTS points, which is under a year of days but over three years of weeks."""
+    from datetime import date as _date
+    groups: dict[tuple[int, int], list[tuple[str, float]]] = {}
+    for d, v in sorted(points):
+        y, w, _ = _date.fromisoformat(d[:10]).isocalendar()
+        groups.setdefault((y, w), []).append((d, v))
+    return [(g[-1][0], how([v for _, v in g])) for _, g in sorted(groups.items())]
 
 
 # --------------------------------------------------------------------------

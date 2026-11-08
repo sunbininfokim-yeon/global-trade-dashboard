@@ -37,11 +37,107 @@ def enso_state(oni):
     a = abs(oni)
     if a < 0.5:
         return "중립", "Neutral"
-    strength_ko = "약" if a < 1.0 else ("중" if a < 1.5 else "강")
-    strength_en = "weak" if a < 1.0 else ("moderate" if a < 1.5 else "strong")
+    strength_ko = "약" if a < 1.0 else ("중" if a < 1.5 else ("강" if a < 2.0 else "매우 강"))
+    strength_en = "weak" if a < 1.0 else ("moderate" if a < 1.5 else ("strong" if a < 2.0 else "very strong"))
     if oni <= -0.5:
         return f"라니냐 · {strength_ko}", f"La Niña {strength_en}"
     return f"엘니뇨 · {strength_ko}", f"El Niño {strength_en}"
+
+
+def enso_history(rows, top=4):
+    """Context for the latest value: past El Nino peaks and where it ranks.
+
+    An episode is NOAA's definition: ONI >= +0.5 for at least five
+    overlapping seasons in a row. The episode still running at the end of
+    the record is left out of the peaks so the current one is compared with
+    history, not with itself.
+    """
+    episodes, run = [], []
+    for row in rows:
+        if row[2] >= 0.5:
+            run.append(row)
+            continue
+        if len(run) >= 5:
+            episodes.append(run)
+        run = []
+    peaks = []
+    for ep in episodes:
+        s, y, v = max(ep, key=lambda r: r[2])
+        # An NDJ/DJF peak belongs to the winter that started the year before.
+        start = y - 1 if s in ("DJF", "JFM", "FMA") else y
+        peaks.append({"label": f"{start}–{str(start + 1)[2:]}", "peak": round(v, 2), "season": f"{s} {y}"})
+    peaks.sort(key=lambda p: -p["peak"])
+    latest = rows[-1][2]
+    higher = sum(1 for r in rows[:-1] if r[2] > latest)
+    return {
+        "since": rows[0][1],
+        "seasons": len(rows),
+        "rank_ko": (f"{rows[0][1]}년 관측 이래 가장 높음" if higher == 0
+                    else f"{rows[0][1]}년 이후 {len(rows)}개 계절 중 {higher + 1}번째로 높음"),
+        "rank": higher + 1,
+        "top_peaks": peaks[:top],
+        # NOAA strength bands, drawn as reference lines on the bars.
+        "thresholds": [
+            {"value": 0.5, "label_ko": "엘니뇨 기준"},
+            {"value": 1.5, "label_ko": "강"},
+            {"value": 2.0, "label_ko": "매우 강"},
+            {"value": -0.5, "label_ko": "라니냐 기준"},
+        ],
+    }
+
+
+SST_REGIONS = os.path.abspath(os.path.join(HERE, "..", "public", "data", "sst_regions_v1.json"))
+
+
+def oisst_dmi():
+    """DMI from the OISST boxes the SST refresh already keeps (west - east).
+
+    Same boxes as the standard DMI (50-70E/10S-10N minus 90-110E/10S-0), but
+    OISST is current to last month, where PSL's HadISST file runs months
+    behind -- in Nov 2026 it still ended in May and read "neutral" while the
+    dipole was already positive.
+    """
+    try:
+        with open(SST_REGIONS, encoding="utf-8") as fh:
+            regions = {r["id"]: dict(r["series"]) for r in json.load(fh)["regions"]}
+        west, east = regions["iod_west"], regions["iod_east"]
+    except (OSError, KeyError, ValueError):
+        return []
+    return [(m, round(west[m] - east[m], 2)) for m in sorted(west) if m in east]
+
+
+def iod_history(rows, top=4):
+    """Past positive-IOD peaks (>= +0.4 for 3+ months running) and the rank."""
+    episodes, run = [], []
+    for row in rows + [("end", -9)]:
+        if row[1] >= 0.4:
+            run.append(row)
+            continue
+        if len(run) >= 3:
+            episodes.append(run)
+        run = []
+    ongoing = rows and rows[-1][1] >= 0.4
+    if ongoing and episodes and episodes[-1][-1] == rows[-1]:
+        episodes = episodes[:-1]
+    peaks = []
+    for ep in episodes:
+        m, v = max(ep, key=lambda r: r[1])
+        peaks.append({"label": m[:4], "peak": v, "season": m})
+    peaks.sort(key=lambda p: -p["peak"])
+    latest = rows[-1][1]
+    higher = sum(1 for r in rows[:-1] if r[1] > latest)
+    since = rows[0][0][:4]
+    return {
+        "since": int(since),
+        "rank": higher + 1,
+        "rank_ko": (f"{since}년 관측 이래 가장 높음" if higher == 0
+                    else f"{since}년 이후 {len(rows)}개월 중 {higher + 1}번째로 높음"),
+        "top_peaks": peaks[:top],
+        "thresholds": [
+            {"value": 0.4, "label_ko": "양의 IOD 기준"},
+            {"value": -0.4, "label_ko": "음의 IOD 기준"},
+        ],
+    }
 
 
 def fetch(url):
@@ -113,11 +209,27 @@ def main():
         "series": [
             {"label": f"{str(y)[2:]}-{s}", "oni": round(v, 2)} for s, y, v in recent
         ],
+        "history": enso_history(oni_rows),
     }
 
     # --- IOD --------------------------------------------------------------
+    oisst = oisst_dmi()
     dmi_rows = parse_dmi(fetch(DMI_URL))
-    if dmi_rows:
+    if oisst and (not dmi_rows or oisst[-1][0] > f"{dmi_rows[-1][0]}-{dmi_rows[-1][1]:02d}"):
+        m, v = oisst[-1]
+        doc["iod"] = {
+            "index": "Indian Ocean Dipole DMI (OISST)",
+            "source": "NOAA OISST v2.1",
+            "source_url": "https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.highres.html",
+            "latest": v,
+            "as_of": m,
+            "state_ko": "양성 (Positive)" if v >= 0.4 else (
+                "음성 (Negative)" if v <= -0.4 else "중립"),
+            "note_ko": "양의 IOD는 호주 밀·인니 팜유 쪽 가뭄, 동아프리카 다우와 연동되는 경우가 많음",
+            "series": [{"label": f"{mm[2:4]}-{mm[5:]}", "dmi": vv} for mm, vv in oisst[-12:]],
+            "history": iod_history(oisst),
+        }
+    elif dmi_rows:
         y, m, v = dmi_rows[-1]
         doc["iod"] = {
             "index": "Indian Ocean Dipole DMI",

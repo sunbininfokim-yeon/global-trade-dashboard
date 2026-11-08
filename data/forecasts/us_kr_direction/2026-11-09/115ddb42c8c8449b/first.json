@@ -1,0 +1,415 @@
+{
+  "schema_version": "us-kr-preopen-direction-research-v1",
+  "model_id": "115ddb42c8c8449b63c57c35fe7642d22f9af3f2fe84def467bebd30ed976d07",
+  "trained_through": "2026-10-22",
+  "generated_at": "2026-11-08T03:47:47.645705+00:00",
+  "target_date": "2026-11-09",
+  "KR_source_date": "2026-11-06",
+  "forecast_cutoff_KST": "2026-11-09T08:30:00+09:00",
+  "target_open_UTC": "2026-11-09T00:00:00+00:00",
+  "required_US_session": "2026-11-06",
+  "required_US_close_UTC": "2026-11-06T21:00:00+00:00",
+  "status": "research_preopen_forecast",
+  "input_hashes": {
+    "board": "b194ebbe469cfd5542f6badf9515129b3955b32b30f0ce58e185099db2e857ec",
+    "prices": "ef0b86fbe0852dab041d44738747fdd8a7dac0e46feca10ced1f8f29498aaf6f",
+    "us": "79772e623d361f3934e2b1dde5346be9d6802512192b91245bac265b7e86c4ae"
+  },
+  "results": {
+    "005930": {
+      "scores": {
+        "opening_up": {
+          "probability": 0.7199614882826898,
+          "score_0_100": 71.99614882826899,
+          "raw_probability": 0.8126757257622136,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "calibration_slope": 0.461979749099409
+        },
+        "closing_up": {
+          "probability": 0.6593861282711801,
+          "score_0_100": 65.93861282711802,
+          "raw_probability": 0.6574093801349301,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "calibration_slope": 0.5459288652001052
+        },
+        "direction_persists": {
+          "probability": 0.7575757558441847,
+          "score_0_100": 75.75757558441848,
+          "raw_probability": 0.9266528031110437,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only",
+          "calibration_slope": 0.0
+        },
+        "opening_extends": {
+          "probability": 0.49494951009868016,
+          "score_0_100": 49.49495100986802,
+          "raw_probability": 0.36374515705540555,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only",
+          "calibration_slope": 0.0
+        }
+      },
+      "feature_values": {
+        "momentum5": -0.12244897959183676,
+        "volatility20": 0.05422230472529393,
+        "today_return": -0.03970223325062039,
+        "today_gap": -0.10669975186104219,
+        "today_intraday": 0.07499999999999996,
+        "momentum20": -0.26425855513307983,
+        "call_rank60": -0.06666666666666665,
+        "put_rank60": -0.15000000000000002,
+        "call_mean5": -0.01708248867920819,
+        "put_mean5": 0.0108235443995915,
+        "QQQ_return1": 0.013986535760301066,
+        "SPY_return1": 0.0031241173633611563,
+        "VIX_return1": -0.09013487892194327,
+        "log_VIX": 3.2441536082478057,
+        "SMH_return1": 0.03624948087128699,
+        "MU_return1": 0.051204291048766226,
+        "NVDA_return1": 0.027753266061345316,
+        "AMD_return1": 0.11038579456522979
+      },
+      "alignment": {
+        "US_session": "2026-11-06",
+        "US_close_UTC": "2026-11-06T21:00:00+00:00",
+        "forecast_cutoff_KST": "2026-11-09T08:30:00+09:00"
+      }
+    },
+    "000660": {
+      "scores": {
+        "opening_up": {
+          "probability": 0.898743291590937,
+          "score_0_100": 89.8743291590937,
+          "raw_probability": 0.9895581551181031,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "calibration_slope": 0.44868980981832235
+        },
+        "closing_up": {
+          "probability": 0.6169491564116999,
+          "score_0_100": 61.69491564116999,
+          "raw_probability": 0.6959874930485702,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "calibration_slope": 0.4285386963737586
+        },
+        "direction_persists": {
+          "probability": 0.676767676965397,
+          "score_0_100": 67.6767676965397,
+          "raw_probability": 0.7897167264198125,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only",
+          "calibration_slope": 0.0
+        },
+        "opening_extends": {
+          "probability": 0.4848484818619135,
+          "score_0_100": 48.48484818619135,
+          "raw_probability": 0.6646556321173555,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only",
+          "calibration_slope": 0.0
+        }
+      },
+      "feature_values": {
+        "momentum5": -0.1545650611071172,
+        "volatility20": 0.06558121349954664,
+        "today_return": -0.06814580031695716,
+        "today_gap": -0.13708399366085577,
+        "today_intraday": 0.07988980716253447,
+        "momentum20": -0.302491103202847,
+        "call_rank60": -0.06666666666666665,
+        "put_rank60": -0.15000000000000002,
+        "call_mean5": -0.01708248867920819,
+        "put_mean5": 0.0108235443995915,
+        "QQQ_return1": 0.013986535760301066,
+        "SPY_return1": 0.0031241173633611563,
+        "VIX_return1": -0.09013487892194327,
+        "log_VIX": 3.2441536082478057,
+        "SMH_return1": 0.03624948087128699,
+        "MU_return1": 0.051204291048766226,
+        "NVDA_return1": 0.027753266061345316,
+        "AMD_return1": 0.11038579456522979
+      },
+      "alignment": {
+        "US_session": "2026-11-06",
+        "US_close_UTC": "2026-11-06T21:00:00+00:00",
+        "forecast_cutoff_KST": "2026-11-09T08:30:00+09:00"
+      }
+    },
+    "KOSPI": {
+      "scores": {
+        "opening_up": {
+          "probability": 0.9412688829205533,
+          "score_0_100": 94.12688829205533,
+          "raw_probability": 0.9997600330548722,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "calibration_slope": 0.33310676237943526
+        },
+        "closing_up": {
+          "probability": 0.7802081755317585,
+          "score_0_100": 78.02081755317585,
+          "raw_probability": 0.895197124004442,
+          "direction": "UP",
+          "information_state": "model_score_with_calibration",
+          "calibration_slope": 0.6142705508519046
+        },
+        "direction_persists": {
+          "probability": 0.7227723562163977,
+          "score_0_100": 72.27723562163976,
+          "raw_probability": 0.8142374018878399,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only",
+          "calibration_slope": 0.0
+        },
+        "opening_extends": {
+          "probability": 0.5363475518085871,
+          "score_0_100": 53.634755180858704,
+          "raw_probability": 0.34222739434102456,
+          "direction": "EXTEND",
+          "information_state": "model_score_with_calibration",
+          "calibration_slope": 0.07600097126322379
+        }
+      },
+      "feature_values": {
+        "momentum5": -0.11709657042545996,
+        "volatility20": 0.036367666876654006,
+        "today_return": -0.06020097329024121,
+        "today_gap": -0.022389390393402375,
+        "today_intraday": -0.038677549655536825,
+        "momentum20": -0.2363804024491657,
+        "call_rank60": -0.06666666666666665,
+        "put_rank60": -0.15000000000000002,
+        "call_mean5": -0.01708248867920819,
+        "put_mean5": 0.0108235443995915,
+        "QQQ_return1": 0.013986535760301066,
+        "SPY_return1": 0.0031241173633611563,
+        "VIX_return1": -0.09013487892194327,
+        "log_VIX": 3.2441536082478057,
+        "SMH_return1": 0.03624948087128699,
+        "MU_return1": 0.051204291048766226,
+        "NVDA_return1": 0.027753266061345316,
+        "AMD_return1": 0.11038579456522979
+      },
+      "alignment": {
+        "US_session": "2026-11-06",
+        "US_close_UTC": "2026-11-06T21:00:00+00:00",
+        "forecast_cutoff_KST": "2026-11-09T08:30:00+09:00"
+      }
+    }
+  },
+  "reasons": [],
+  "validation": "retrospective research only; nonflat training cohort; prospective validation pending",
+  "timing_evidence": "local generation time; provider first publication time unverified",
+  "eligible_for_prospective_evaluation": true,
+  "comparisons": {
+    "status": "research_preopen_forecast",
+    "comparison_id": "69b110020c932a1e21d82e0824415598a20917115c34994e9dff3589e07815ea",
+    "created_at": "2026-11-05T05:22:58.649911+00:00",
+    "trained_through": "2026-10-22",
+    "results": {
+      "005930": {
+        "opening_up": {
+          "domestic_price_options": {
+            "probability": 0.5454545454523273,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "price_us": {
+            "probability": 0.7288366131978772,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.5454545454545454,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "closing_up": {
+          "domestic_price_options": {
+            "probability": 0.5583625193442305,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "price_us": {
+            "probability": 0.6098773863862171,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.5656565656565656,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "direction_persists": {
+          "domestic_price_options": {
+            "probability": 0.757575763782824,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "price_us": {
+            "probability": 0.7676580298757837,
+            "direction": "MAINTAIN",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.7575757575757576,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "opening_extends": {
+          "domestic_price_options": {
+            "probability": 0.49500754129608954,
+            "direction": "NO_EXTENSION",
+            "information_state": "model_score_with_calibration"
+          },
+          "price_us": {
+            "probability": 0.4626225497741209,
+            "direction": "NO_EXTENSION",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.494949494949495,
+            "information_state": "frozen_calibration_frequency"
+          }
+        }
+      },
+      "000660": {
+        "opening_up": {
+          "domestic_price_options": {
+            "probability": 0.5757575757921894,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "price_us": {
+            "probability": 0.8953302153699595,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.5757575757575758,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "closing_up": {
+          "domestic_price_options": {
+            "probability": 0.5757576151543933,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "price_us": {
+            "probability": 0.5877748239816859,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.5757575757575758,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "direction_persists": {
+          "domestic_price_options": {
+            "probability": 0.6767676767758891,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "price_us": {
+            "probability": 0.6767676760697733,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "frozen_recent": {
+            "probability": 0.6767676767676768,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "opening_extends": {
+          "domestic_price_options": {
+            "probability": 0.48484841406534884,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "price_us": {
+            "probability": 0.4848484850001884,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "frozen_recent": {
+            "probability": 0.48484848484848486,
+            "information_state": "frozen_calibration_frequency"
+          }
+        }
+      },
+      "KOSPI": {
+        "opening_up": {
+          "domestic_price_options": {
+            "probability": 0.6165373929550148,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "price_us": {
+            "probability": 0.9347350720778251,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.5841584158415841,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "closing_up": {
+          "domestic_price_options": {
+            "probability": 0.5604568133191308,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "price_us": {
+            "probability": 0.7944822998304133,
+            "direction": "UP",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.5841584158415841,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "direction_persists": {
+          "domestic_price_options": {
+            "probability": 0.726995053527309,
+            "direction": "MAINTAIN",
+            "information_state": "model_score_with_calibration"
+          },
+          "price_us": {
+            "probability": 0.7227722792375154,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "frozen_recent": {
+            "probability": 0.7227722772277227,
+            "information_state": "frozen_calibration_frequency"
+          }
+        },
+        "opening_extends": {
+          "domestic_price_options": {
+            "probability": 0.5445544453844239,
+            "direction": "REFERENCE_ONLY",
+            "information_state": "recent_base_rate_only"
+          },
+          "price_us": {
+            "probability": 0.5427223362005291,
+            "direction": "EXTEND",
+            "information_state": "model_score_with_calibration"
+          },
+          "frozen_recent": {
+            "probability": 0.5445544554455446,
+            "information_state": "frozen_calibration_frequency"
+          }
+        }
+      }
+    }
+  },
+  "record_role": "first_preopen_forecast",
+  "eligible_for_primary_evaluation": true
+}

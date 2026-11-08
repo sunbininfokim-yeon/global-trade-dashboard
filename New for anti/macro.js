@@ -235,7 +235,7 @@ const mmStackSide = (side, dates, hi, sideIdx) => {
 // once they are no longer side by side for a visual "same total" check, a
 // shared scale only wastes vertical room in whichever block has the smaller
 // swing across the window.
-const mmBalanceSideBlock = (side, dates) => {
+const mmBalanceSideBlock = (side, dates, suffix = '조') => {
     let hi = 0;
     dates.forEach((_, i) => {
         const tot = (side.layers || []).reduce(
@@ -249,11 +249,24 @@ const mmBalanceSideBlock = (side, dates) => {
          data-dates='${finEsc(JSON.stringify(dates))}'
          data-side='${finEsc(JSON.stringify({
              label_ko: side.label_ko,
+             suffix,
              layers: (side.layers || []).map((l) => ({ label_ko: l.label_ko, color: l.color, values: l.values })),
          }))}'>
         ${mmStackSide(side, dates, hi, 0)}
         <div class="mm-bs-tip" style="display:none"></div>
     </div>`;
+};
+
+// One tab per side of any stacked block: the Fed and the other central banks (부채 / 자산), and
+// Korea's money aggregates (one side, M1 -> L). The unit suffix and the source come from the block.
+const mmBalanceSideView = (ind, sideId) => {
+    const bs = ind.balance_sheet || {};
+    const side = (bs.sides || []).find((s) => s.id === sideId);
+    if (!side) return '<p class="fin-note">구성 자료가 없습니다.</p>';
+    const src = bs.source ? ` 출처: ${finEsc(bs.source)}${bs.asof ? ` · ${finEsc(bs.asof)} 기준` : ''}.` : '';
+    return `
+    ${mmBalanceSideBlock(side, bs.dates || [], bs.unit_suffix || '조')}
+    <p class="fin-note">${finEsc(bs.stack_note_ko || '')} ${finEsc(bs.sampling_note_ko || '')}${src}</p>`;
 };
 
 const mmBalanceAssetsView = (ind) => {
@@ -314,12 +327,12 @@ const mmWireBalanceHover = (root) => {
         tip.innerHTML = `
             <div class="mm-bs-tip-date">${finEsc(dates[i] || '')}</div>
             <div class="mm-bs-tip-side">
-                <div class="mm-bs-tip-head">${finEsc(side.label_ko)}<b>${mmFmt(tot, 2)}조</b></div>
+                <div class="mm-bs-tip-head">${finEsc(side.label_ko)}<b>${mmFmt(tot, 2)}${finEsc(side.suffix || '조')}</b></div>
                 ${rowsOut.slice().reverse().map(([l, v]) => `
                     <div class="mm-bs-tip-row">
                         <i style="background:${finEsc(l.color)}"></i>
                         <span>${finEsc(l.label_ko)}</span>
-                        <b>${mmFmt(v, 2)}조</b>
+                        <b>${mmFmt(v, 2)}${finEsc(side.suffix || '조')}</b>
                         <em>${tot ? (v / tot * 100).toFixed(1) : '—'}%</em>
                     </div>`).join('')}
             </div>`;
@@ -766,6 +779,7 @@ const mmPanelView = (p) => {
 // that is revised daily) stay lines: they are states, not changes.
 const MM_LEVEL_IDS = new Set(['bei_10y', 'bei_5y', 'gdpnow', 'sahm', 'unemployment', 'youth_unemployment', 'inactivity_rate',
     'capex_gdp_ratio', 'gdp_gap', 'net_funding_demand', 'electricity_generation']);
+const MM_DISCRETE_TIERS = new Set(['quarterly', 'annual', 'yearly', 'semiannual']);
 const MM_FLOW_IDS = new Set(['current_account', 'trade_balance', 'au_trade_balance', 'ca_trade_balance', 'vn_trade_balance',
     'employment_change', 'nfp', 'building_approvals', 'tractor_sales', 'two_wheeler_sales', 'fx_intervention', 'export_krw',
     'semi_export_krw', 'nodx_sgd', 'export_il', 'export_hk', 'export_tw', 'foreign_equity_flow_za',
@@ -807,6 +821,9 @@ const mmUseBars = (ind) => {
     // (line+components is GDP: its history is a growth rate, its breakdown has a separate view)
     if (MM_LEVEL_IDS.has(ind.id)) return false;
     if (MM_FLOW_IDS.has(ind.id)) return true;
+    // A quarterly or yearly release (debt, GDP levels, ...) is a handful of separate prints; a line
+    // between them draws months that were never measured (2026-11 사용자 지시: 분기 자료는 막대).
+    if (MM_DISCRETE_TIERS.has(ind.refresh_tier)) return true;
     const pct = ind.unit === '%' || ind.unit === 'pct';
     if (!pct) return false;
     // a growth rate of anything (M2 YoY, household credit YoY) is a per-period change too
@@ -1352,13 +1369,14 @@ const mmFiscalDualLineChart = (dates, primary, secondary, opts = {}) => {
     const finite = (xs) => xs.filter(Number.isFinite);
     const left = finite(primary), right = finite(secondary);
     if (left.length < 2 || right.length < 2) return '<p class="fin-note">그릴 수 있는 공식 연간 시계열이 충분하지 않습니다.</p>';
-    const bounds = (xs) => {
-        let lo = Math.min(...xs), hi = Math.max(...xs);
+    const bounds = (xs, zero) => {
+        let lo = Math.min(...xs, ...(zero ? [0] : [])), hi = Math.max(...xs);
         if (lo === hi) { lo -= 1; hi += 1; }
         const pad = (hi - lo) * 0.08;
-        return [lo - pad, hi + pad];
+        return [zero && lo >= 0 ? 0 : lo - pad, hi + pad];
     };
-    const [lLo, lHi] = bounds(left), [rLo, rHi] = bounds(right);
+    // Bars start at zero: a bar cut off above zero exaggerates every change.
+    const [lLo, lHi] = bounds(left, !!opts.bars), [rLo, rHi] = bounds(right);
     const n = Math.max(dates.length, primary.length, secondary.length);
     const sx = (i) => MM_L + (i / Math.max(n - 1, 1)) * (MM_W - MM_L - MM_R - 32);
     const syL = (v) => MM_T + (1 - (v - lLo) / (lHi - lLo)) * (MM_H - MM_T - MM_B);
@@ -1388,7 +1406,13 @@ const mmFiscalDualLineChart = (dates, primary, secondary, opts = {}) => {
                     <text x="${MM_L - 7}" y="${(y + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(leftTick)}</text>
                     <text x="${rightX + 7}" y="${(y + 3.5).toFixed(1)}" class="mm-tick mm-fiscal-right-tick">${mmFmt(rightTick)}%</text>`;
             }).join('')}
-            <path d="${path(primary, syL)}" class="mm-line mm-fiscal-primary"/>
+            ${opts.bars ? primary.map((v, i) => {
+                if (!Number.isFinite(v)) return '';
+                const w = Math.max((MM_W - MM_L - MM_R - 32) / Math.max(n, 1) * 0.6, 2);
+                const base = syL(Math.max(lLo, 0));
+                return `<rect class="mm-fiscal-bar" x="${(sx(i) - w / 2).toFixed(1)}" y="${Math.min(syL(v), base).toFixed(1)}"
+                    width="${w.toFixed(1)}" height="${Math.max(Math.abs(base - syL(v)), 0.6).toFixed(1)}"><title>${finEsc(dates[i] || '')} ${mmFmt(v)}</title></rect>`;
+            }).join('') : `<path d="${path(primary, syL)}" class="mm-line mm-fiscal-primary"/>`}
             <path d="${path(secondary, syR)}" class="mm-line mm-fiscal-secondary"/>
             ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
                 text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc(dates[i] || '')}</text>`).join('')}
@@ -1540,6 +1564,91 @@ const mmOfficialView = (ind) => {
             ${ind.sign_convention_ko ? `<p class="fin-note"><b>부호</b> ${finEsc(ind.sign_convention_ko)}</p>` : ''}
             <p class="fin-note">출처: ${finEsc(ind.source || '')}${ind.esri_vintage ? ` · 내각부 GDP 회차 ${finEsc(ind.esri_vintage)}` : ''}${ind.retrieved_at ? ` · 수집 ${finEsc(String(ind.retrieved_at).slice(0, 10))}` : ''}. ${links}</p>
         </div>`;
+};
+
+// Two growth lines on one axis: the country (solid) against the benchmark (dashed), once as YoY and
+// once as cumulative growth since a base month, with the gap at the last month.
+const mmTwoLineChart = (m, names) => {
+    const n = m.dates.length;
+    const all = m.kr.concat(m.us).filter(Number.isFinite);
+    if (n < 2 || !all.length) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
+    let lo = Math.min(0, ...all), hi = Math.max(0, ...all);
+    const pad = (hi - lo || 1) * 0.08; lo -= pad; hi += pad;
+    const sx = (i) => MM_L + (i / (n - 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const path = (arr) => arr.map((v, i) => Number.isFinite(v) ? `${sx(i).toFixed(1)},${sy(v).toFixed(1)}` : null)
+        .filter(Boolean).map((p, k) => (k ? 'L' : 'M') + p).join('');
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+    const k = n - 1;
+    return `
+    <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="${finEsc(m.label_ko)}">
+        ${ticks.map((t) => `<line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+            <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 1)}</text>`).join('')}
+        <line x1="${MM_L}" y1="${sy(0).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(0).toFixed(1)}" class="mm-zero"/>
+        <path d="${path(m.us)}" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="5 4"/>
+        <path d="${path(m.kr)}" fill="none" stroke="#38bdf8" stroke-width="2.2"/>
+        <circle cx="${sx(k).toFixed(1)}" cy="${sy(m.kr[k]).toFixed(1)}" r="3.2" fill="#38bdf8"><title>${finEsc(names.kr)} ${finEsc(m.dates[k])} ${mmFmt(m.kr[k], 1)}%</title></circle>
+        <circle cx="${sx(k).toFixed(1)}" cy="${sy(m.us[k]).toFixed(1)}" r="3.2" fill="#94a3b8"><title>${finEsc(names.us)} ${finEsc(m.dates[k])} ${mmFmt(m.us[k], 1)}%</title></circle>
+        ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick"
+            text-anchor="${i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle')}">${finEsc((m.dates[i] || '').slice(0, 7))}</text>`).join('')}
+    </svg>`;
+};
+
+const mmBenchmarkView = (b) => {
+    if (!b || !b.modes) return '<p class="fin-note">비교 자료가 없습니다.</p>';
+    const names = b.series_ko || { kr: '한국', us: '미국' };
+    const block = (m) => {
+        const k = m.dates.length - 1;
+        return `
+        <p class="mm-view-title">${finEsc(m.label_ko)} · ${finEsc((m.dates[k] || '').slice(0, 7))}
+            <b style="color:#38bdf8">${finEsc(names.kr)} ${mmFmt(m.kr[k], 1)}%</b> ·
+            <b style="color:#94a3b8">${finEsc(names.us)} ${mmFmt(m.us[k], 1)}%</b> ·
+            차이 <b>${m.gap[k] >= 0 ? '+' : ''}${mmFmt(m.gap[k], 1)}%p</b></p>
+        <div class="mm-chart-box">${mmTwoLineChart(m, names)}</div>`;
+    };
+    return `
+    <p class="mm-legend-note"><i class="mm-swatch" style="background:#38bdf8"></i>${finEsc(names.kr)} (실선)
+        <i class="mm-swatch" style="background:#94a3b8"></i>${finEsc(names.us)} (점선)</p>
+    ${b.modes.cum ? block(b.modes.cum) : ''}
+    ${b.modes.yoy ? block(b.modes.yoy) : ''}
+    <p class="fin-note">${finEsc(b.note_ko || '')} 출처: ${finEsc(b.source || '')}.</p>`;
+};
+
+// Government debt and public institutions' debt side by side, one pair of bars per year -- side by side,
+// not stacked, because their sum double-counts what the two owe each other.
+const mmDebtGroupsView = (g) => {
+    const years = g.years || [], series = g.series || [];
+    const all = series.flatMap((s) => s.values).filter(Number.isFinite);
+    if (!years.length || !all.length) return '<p class="fin-note">자료가 없습니다.</p>';
+    const hi = Math.max(...all) * 1.08;
+    const n = years.length, m = series.length;
+    const slot = (MM_W - MM_L - MM_R) / n;
+    const bw = Math.min(slot * 0.8 / m, 46);
+    const sy = (v) => MM_T + (1 - v / hi) * (MM_H - MM_T - MM_B);
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => hi * t);
+    const bars = years.map((y, i) => series.map((s, j) => {
+        const v = s.values[i];
+        if (!Number.isFinite(v)) return '';
+        const x = MM_L + slot * i + (slot - bw * m) / 2 + bw * j;
+        return `<rect x="${x.toFixed(1)}" y="${sy(v).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${(sy(0) - sy(v)).toFixed(1)}"
+            fill="${finEsc(s.color)}" fill-opacity="0.9"><title>${finEsc(y)} ${finEsc(s.label_ko)} ${mmFmt(v, 1)}${finEsc(g.unit_suffix || '')}</title></rect>
+            <text x="${(x + bw / 2 - 1).toFixed(1)}" y="${(sy(v) - 4).toFixed(1)}" class="mm-tick" text-anchor="middle">${mmFmt(v, 0)}</text>`;
+    }).join('') + `<text x="${(MM_L + slot * i + slot / 2).toFixed(1)}" y="${MM_H - 8}" class="mm-tick" text-anchor="middle">${finEsc(y)}</text>`).join('');
+    const legend = series.map((s) => `<i class="mm-swatch" style="background:${finEsc(s.color)}"></i>${finEsc(s.label_ko)}`).join(' ');
+    const bd = g.breakdown;
+    const bdHtml = bd && (bd.rows || []).length ? `<p class="mm-view-title">${finEsc(bd.label_ko)}</p>${mmBars(bd.rows.map((r) => ({
+        label: r.label_ko, value: r.value, display: `${mmFmt(r.value, 1)}${g.unit_suffix || ''}` })), { compact: true })}` : '';
+    return `
+    <p class="mm-view-title">${finEsc(g.label_ko || '')} (${finEsc(g.unit_suffix || '')})</p>
+    <p class="mm-legend-note">${legend}</p>
+    <div class="mm-chart-box"><svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="${finEsc(g.label_ko || '')}">
+        ${ticks.map((t) => `<line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+            <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 0)}</text>`).join('')}
+        ${bars}
+    </svg></div>
+    ${bdHtml}
+    <p class="fin-note">${finEsc(g.note_ko || '')} 출처: ${finEsc(g.source || '')}.</p>`;
 };
 
 const mmBars = (rows, opts = {}) => {
@@ -2127,7 +2236,10 @@ const mmViewsFor = (ind) => {
     if (ind.chart_type === 'stack' && has(ind.components)) {
         views.push({ id: 'stack', label: '구성' });
     }
-    if (ind.chart_type === 'bar' && has(ind.outcomes)) {
+    if (has((ind.rate_path || {}).meetings)) {
+        views.push({ id: 'rate_path', label: '회의별 경로' });
+    }
+    if ((ind.chart_type === 'bar' || ind.rate_path) && has(ind.outcomes)) {
         views.push({ id: 'outcomes', label: '확률' });
     }
     // US CPI carries real item contributions; the unweighted top/bottom-3 list would only repeat a
@@ -2142,10 +2254,14 @@ const mmViewsFor = (ind) => {
     // Assets and liabilities are two separate blocks -- two tabs -- not one
     // panel with both stacks in it. 부채 first: the reserves-against-the-axis
     // question is what this card exists to answer.
-    const hasBalanceSheet = has((ind.balance_sheet || {}).sides);
+    // A central bank's stack replaces its '추이' tab (the total is the top of the stack); a stack of
+    // something else (Korea's M1 -> L) is an extra tab after the card's own chart.
+    const bsSides = ((ind.balance_sheet || {}).sides || []);
+    const hasBalanceSheet = bsSides.some((s) => s.id === 'assets' || s.id === 'liabilities');
     if (hasBalanceSheet) {
-        views.push({ id: 'balance_liabilities', label: '부채' });
-        views.push({ id: 'balance_assets', label: '자산' });
+        ['liabilities', 'assets'].forEach((sid) => {
+            if (bsSides.some((s) => s.id === sid)) views.push({ id: `balance_${sid}`, label: sid === 'assets' ? '자산' : '부채' });
+        });
     }
     // fed_ust_ops carries a monthly, signed purchases/runoff series in place
     // of the generic '추이' -- that generic tab was drawing a fixture history
@@ -2163,6 +2279,10 @@ const mmViewsFor = (ind) => {
     if (!daily && !hasBalanceSheet && !hasQeQt && (has(((ind.history || {})['5y'] || {}).values) || ind.modes)) {
         views.push({ id: 'history', label: '추이' });
     }
+    bsSides.filter((s) => s.id !== 'assets' && s.id !== 'liabilities')
+        .forEach((s) => views.push({ id: `balance_${s.id}`, label: s.tab_ko || s.label_ko }));
+    if (ind.benchmark && ind.benchmark.modes) views.push({ id: 'benchmark', label: '미국 대비' });
+    if (ind.debt_groups && has(ind.debt_groups.years)) views.push({ id: 'debt_groups', label: '정부·공공기관' });
     // Pipeline-attached breakdowns (부문별, 연체 흐름, 은행별, ...), one tab each.
     (ind.panels || []).forEach((p) => views.push({ id: `panel:${p.id}`, label: p.label }));
     // 5/20/60/120/240-day moving averages are a daily-chart convention
@@ -2291,6 +2411,37 @@ const mmOutcomesView = (ind) => {
         <p class="fin-note">선물 가격에서 역산한 확률입니다. 예측이 아니라 시장이 지금 무엇에 값을 매기고 있는지입니다.</p>`;
 };
 
+// Fed policy path from fed funds futures (wire_us_monetary.py): every meeting the contracts reach, the rate
+// going in and coming out, the odds of that meeting's move and the likeliest target range after it.
+const mmRatePathView = (ind) => {
+    const rp = ind.rate_path || {};
+    const rows = rp.meetings || [];
+    const bp = (v) => (Number.isFinite(v) ? `${v > 0 ? '+' : ''}${Math.round(v)}bp` : '—');
+    const moveKo = { '+0': '동결', '+25': '인상', '-25': '인하', '+50': '50bp 인상', '-50': '50bp 인하' };
+    const odds = (o) => Object.entries(o || {}).sort((a, b) => b[1] - a[1])
+        .map(([k, v]) => `${finEsc(moveKo[k] || `${k}bp`)} ${Math.round(v * 100)}%`).join(' · ');
+    const maxCum = Math.max(...rows.map((r) => Math.abs(r.cum_bp || 0)), 1);
+    const body = rows.map((r) => {
+        const top = (r.range_odds || [])[0] || {};
+        const w = Math.abs(r.cum_bp || 0) / maxCum * 100;
+        return `<tr>
+            <td class="co-label">${finEsc(r.date)}</td>
+            <td>${mmFmt(r.pre, 2)}% → <b>${mmFmt(r.post, 2)}%</b></td>
+            <td>${bp(r.change_bp)}</td>
+            <td>${odds(r.move_odds)}</td>
+            <td>${bp(r.cum_bp)}</td>
+            <td>${finEsc(top.range || '')} <small>${Number.isFinite(top.p) ? `${Math.round(top.p * 100)}%` : ''}</small></td>
+            <td class="mm-cpi-barcell"><span class="mm-cpi-bar ${r.cum_bp < 0 ? 'neg' : ''}" style="width:${w.toFixed(1)}%"></span></td>
+        </tr>`;
+    }).join('');
+    return `
+        <p class="mm-view-title">회의별 내재 금리 (실효금리 ${mmFmt(rp.effr, 2)}% · 목표범위 ${mmFmt(rp.target_lower, 2)}–${mmFmt((rp.target_lower || 0) + 0.25, 2)}% · ${finEsc(rp.as_of || '')} 종가)</p>
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>결정일</th><th>회의 전 → 후</th><th>이번 회의</th><th>이번 회의 확률</th><th>지금 대비</th><th>가장 유력한 범위</th><th></th></tr></thead>
+            <tbody>${body}</tbody></table></div>
+        <p class="fin-note">${finEsc(rp.method_ko || '')} 여러 회의에 걸친 범위 확률은 누적 변화폭을 인접한 두 칸에 나눈 단순화이고, CME FedWatch의 확률 나무와는 조금 다를 수 있습니다. 출처: CBOT 30일 연방기금 선물(Yahoo Finance 종가).</p>`;
+};
+
 const mmChartDrawer = () => {
     if (!MM_CHART || !MM_COUNTRY) return '';
     const ind = (MM_COUNTRY.country.indicators || []).find((x) => x.id === MM_CHART.indicatorId);
@@ -2323,8 +2474,9 @@ const mmChartDrawer = () => {
     let body = '';
     if (view === 'ma') body = mmEquityMaView(ind, windowOpts.includes(MM_CHART.window) ? MM_CHART.window : '1y');
     else if (view === 'heatmap') body = mmEquityTreemap(ind) + mmEquityHeatmapView(ind);
-    else if (view === 'balance_assets') body = mmBalanceAssetsView(ind);
-    else if (view === 'balance_liabilities') body = mmBalanceLiabilitiesView(ind);
+    else if (view.startsWith('balance_')) body = mmBalanceSideView(ind, view.slice('balance_'.length));
+    else if (view === 'benchmark') body = mmBenchmarkView(ind.benchmark);
+    else if (view === 'debt_groups') body = mmDebtGroupsView(ind.debt_groups);
     else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
     else if (view === 'movers') body = mmMoversView(ind);
     else if (view === 'cpi_contrib') body = mmCpiContribView(ind, mode || 'yoy');
@@ -2334,6 +2486,7 @@ const mmChartDrawer = () => {
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
     else if (view === 'outcomes') body = mmOutcomesView(ind);
+    else if (view === 'rate_path') body = mmRatePathView(ind);
     else if (view === 'stack') body = mmComponentsView(ind, '연준이 보유한 국채를 잔존만기로 나눈 잔액입니다. 시장금리가 아니라 대차대조표입니다.');
     else if (view === 'contrib') body = mmContribView(ind.contrib);
     else if (view === 'contrib_ind') body = mmContribView(ind.contrib_industry, '산업별');
@@ -2351,6 +2504,7 @@ const mmChartDrawer = () => {
                 primaryUnit: fiscal.primary_unit || src.unit || '',
                 secondaryLabel: fiscal.secondary_label_ko || '비율',
                 secondaryUnit: fiscal.secondary_unit || '%',
+                bars: MM_DISCRETE_TIERS.has(ind.refresh_tier),
             });
         } else if (mmUseBars(ind)) {
             body = mmBarSeries(hist.dates || [], hist.values || [], {
@@ -2450,11 +2604,40 @@ const mmChartDrawer = () => {
                 : view === 'qeqt' ? mmQeQtRail(null)
                 : view === 'balance_liabilities' && (ind.balance_sheet || {}).ratio
                 ? mmReservesRatioRail(ind.balance_sheet.ratio, ind.balance_sheet.dates || [])
-                : view === 'balance_assets'
+                : view === 'balance_assets' && ind.id === 'fed_total_assets'
                 ? mmSomaMaturityRail(ind)
+                : view.startsWith('balance_')
+                ? mmBsLatestRail(ind.balance_sheet, view.slice('balance_'.length))
                 : mmNewsRail(ind)}
         </div>
     </div>`;
+};
+
+// Every other stack's rail: the last date's layers, largest first, with each one's share.
+const mmBsLatestRail = (bs, sideId) => {
+    const side = ((bs || {}).sides || []).find((s) => s.id === sideId);
+    if (!side) return mmNewsRail({});
+    const last = (l) => {
+        for (let i = l.values.length - 1; i >= 0; i--) if (Number.isFinite(l.values[i])) return l.values[i];
+        return null;
+    };
+    const rows = side.layers.map((l) => [l, last(l)]).filter(([, v]) => v !== null);
+    const total = rows.reduce((a, [, v]) => a + v, 0);
+    const suf = bs.unit_suffix || '조';
+    const dg = total >= 10 ? 1 : 2;              // one precision for the whole list: 0.77조 파운드 needs two
+    return `
+    <aside class="mm-news mm-soma-rail">
+        <p class="mm-news-head">${finEsc(/구성$/.test(side.label_ko) ? side.label_ko : `${side.label_ko} 구성`)}</p>
+        <div class="mm-ratio-rail-now">${mmFmt(total, dg)}${finEsc(suf)}</div>
+        ${rows.slice().sort((a, b) => b[1] - a[1]).map(([l, v]) => `
+            <div class="mm-bs-tip-row" title="${finEsc(l.note_ko || '')}">
+                <i style="background:${finEsc(l.color)}"></i>
+                <span>${finEsc(l.label_ko)}</span>
+                <b>${mmFmt(v, dg)}</b>
+                <em>${total ? (v / total * 100).toFixed(1) : '—'}%</em>
+            </div>`).join('')}
+        <p class="mm-news-foot">${finEsc(bs.asof || '')} 기준 · 항목에 마우스를 올리면 설명</p>
+    </aside>`;
 };
 
 // 자산's rail carries the SOMA maturity split instead of news -- read from
@@ -3275,7 +3458,7 @@ const mmFomcPreviewHtml = (policy) => {
             <li><span class="mm-fomc-cal-date">${md(r.date)}${r.time ? ` ${finEsc(r.time)}` : ''}</span>
                 <span class="mm-fomc-cal-rel ${r.rel}">${relKo[r.rel] || ''}</span>
                 <span>${finEsc(r.title)}</span><span class="mm-quality-muted">${finEsc(r.src || '')}</span></li>`).join('')}</ul>` : ''}
-        <p class="mm-quality-muted">${finEsc(bo.note_ko || '')} ${finEsc(pv.releases_note_ko || '')} 금리 전망·확률은 표시하지 않습니다(FedWatch는 라이선스 데이터).
+        <p class="mm-quality-muted">${finEsc(bo.note_ko || '')} ${finEsc(pv.releases_note_ko || '')} 회의별 금리 확률은 금리 탭의 '금리 경로 (선물 내재)' 카드에 있습니다(연방기금 선물로 직접 계산, CME FedWatch 수치 아님).
             <a class="mm-quality-link" href="${finEsc(nm.source_url || 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm')}" target="_blank" rel="noopener noreferrer">연준 캘린더 ↗</a></p>
     </div>`;
 };
