@@ -27,6 +27,9 @@ name: Refresh macro public series
 # Fiscal Data(바이백)로 미국 유동성 카드 2장(ust_auction_demand, ust_buybacks)을 만든다. 행은 public/data/ust_auctions_v1.json.
 # 미국 통화정책(wire_us_monetary.py): 연방기금 선물(Yahoo, 워커 경유)로 FOMC 회의별 금리 경로·확률(fedwatch 카드),
 # 실효금리−근원 PCE(실질 정책금리), 재무부 Debt to the Penny(국가부채, 일간). 키 없음.
+# 중앙은행 대차대조표(wire_cb_balance_sheets.py): 한은 ECOS 103Y002·BOJ BS01·ECB ILM·영란은행 IADB 주간·인민은행
+#   货币当局资产负债表 -- 부채/자산 누적 그래프. 한국 통화량 M1~L·미국 M2 대비, 국가채무·공공기관 부채
+#   (wire_kr_money_debt.py: ECOS + e-나라지표 1106·1100).
 # 한국 CPI 기여도(wire_kr_cpi_contrib.py): ECOS(ECOS_API_KEY) 901Y009 품목 458개와 가중치로 헤드라인·근원(농산물·석유류
 # 제외) CPI의 품목별 기여도(전월비·전년비, 25개월)를 public/data/kr_cpi_contrib_v1.json 에 쓴다. 새 달이 나왔을 때만 다시 계산.
 # 미국 CPI 기여도(wire_us_cpi_contrib.py): BLS 상대중요도(12월 가중치)와 품목 지수로 헤드라인·근원 CPI의 품목별
@@ -85,7 +88,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_free_cards.py; python wire_kr_bank_credit.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python wire_us_cpi_contrib.py; python wire_kr_cpi_contrib.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_auctions.py; python wire_us_monetary.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_free_cards.py; python wire_kr_bank_credit.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python wire_us_cpi_contrib.py; python wire_kr_cpi_contrib.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_auctions.py; python wire_us_monetary.py; python wire_cb_balance_sheets.py; python wire_kr_money_debt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
           }
           for attempt in 1 2 3; do
             refresh
