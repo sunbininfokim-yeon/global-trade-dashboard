@@ -16,7 +16,7 @@ on:
       source:
         description: 'Source to resume. No country, client or industry intake filter.'
         type: choice
-        options: [all, fara, lda, text]
+        options: [all, fara, lda, text, structure]
         default: all
 
 permissions:
@@ -41,6 +41,7 @@ jobs:
           node-version: '22'
       - run: python3 -m unittest discover -s scripts/lobbying/tests -v
       - run: node --test scripts/lobbying/tests/api.test.mjs
+      - run: node --test scripts/lobbying/tests/structure.test.mjs
       - run: node --check 'New for anti/policy-lobbying/view.mjs'
   collect:
     needs: validate
@@ -81,3 +82,20 @@ jobs:
           path: ${{ runner.temp }}/lobbying-source/
           if-no-files-found: ignore
           retention-days: 30
+  structure:
+    needs: validate
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'structure')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      GEMINI_API_KEY: ${{ secrets.AI_STUDIO_API_KEY }}
+      LOBBYING_PASSAGES_PER_RUN: '30'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Structure evidence and embed with Gemini
+        run: node scripts/lobbying/process.mjs

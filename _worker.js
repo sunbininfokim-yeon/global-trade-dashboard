@@ -3639,7 +3639,7 @@ async function handleUsPolicy(request, env) {
 
     try {
         if (path === 'lobbying' || path.startsWith('lobbying/')) {
-            return await handleLobbying(request, env, usFetch, usRpc);
+            return await handleLobbying(request, env, usFetch, usRpc, geminiEmbedQuery);
         }
         if (path === 'reports/quality') {
             return await kvCachedJson(env, 'us:reports:quality:v1', 60, async () => {
