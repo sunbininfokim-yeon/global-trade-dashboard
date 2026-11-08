@@ -135,7 +135,7 @@ export default {
     // fills the commodities that have gone cold, up to a budget; see
     // warmComtradeCache for why it does not refill all of them at once.
     //
-    // The SUN-THU crons instead start the pre-open direction workflow on time
+    // The two daily 21:25 / 22:05 UTC crons instead start the pre-open direction workflow on time
     // (see dispatchPreopenDirection below).
     async scheduled(event, env, ctx) {
         if (PREOPEN_CRONS.includes(event.cron)) {
@@ -153,11 +153,13 @@ export default {
 // 08:30 KST 전에 끝나야 한다. GitHub 자체 cron 은 06:13 KST 예약이 09:24~11:53
 // 에 도는 식으로 몇 시간씩 늦어(2026-10-27~11-04) 매번 마감을 넘겼다. 그래서
 // 제때 도는 Cloudflare cron 이 workflow_dispatch 를 대신 부른다. 두 번째 시각은
-// 재시도용이고, 이미 그날 예측이 있으면 workflow 가 스스로 건너뛴다.
+// 재시도용이고, 이미 그 대상일 예측이 있으면 workflow 가 스스로 건너뛴다.
+// 2026-11-08 부터 매일 돈다: 주말·휴일에는 다음 거래일을 예측해 토요일 06:25
+// (미국 금요일 마감 직후)에 월요일 값이 뜬다.
 // GH_DISPATCH_TOKEN: 이 저장소 Actions write 권한의 fine-grained PAT. GitHub
 // Actions secret 에 두면 deploy.yml 이 배포 때마다 Worker secret 으로 복사한다.
 // 없으면 GitHub cron 만 남는다.
-const PREOPEN_CRONS = ['25 21 * * SUN-THU', '5 22 * * SUN-THU'];
+const PREOPEN_CRONS = ['25 21 * * *', '5 22 * * *'];
 const PREOPEN_WORKFLOW_URL =
     'https://api.github.com/repos/sunbininfokim-yeon/global-trade-dashboard/actions/workflows/us_kr_direction_preopen.yml/dispatches';
 
