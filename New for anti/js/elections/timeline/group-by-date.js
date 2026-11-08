@@ -12,7 +12,14 @@ const ddayBadge = (date, today) => {
 
 // 브리핑을 띄울 수 있는 행만 버튼이 된다. 누를 수 있게 생겼는데 아무 일도 일어나지
 // 않는 줄이 제일 나쁘므로, 화면이 못 그리는 일정은 <article> 그대로 둔다.
-export const renderDateGroups = (events, countries, briefFor = () => null, { today } = {}) => eventsByDate(events).map(([date, rows]) => `
+// 끝난 선거 목록은 최근 것부터(newestFirst), 줄마다 결과 한 줄(resultFor)을 붙인다.
+const resultLine = (result) => {
+    if (!result) return '';
+    const text = result.winner ? `당선 · ${result.winner}` : result.result;
+    return text ? `<div class="elections-event-result">${escapeHtml(text.length > 140 ? `${text.slice(0, 140)}…` : text)}</div>` : '';
+};
+
+export const renderDateGroups = (events, countries, briefFor = () => null, { today, resultFor = () => null, newestFirst = false } = {}) => (newestFirst ? [...eventsByDate(events)].reverse() : eventsByDate(events)).map(([date, rows]) => `
     <section class="elections-day-group">
         <div class="elections-day-label">${escapeHtml(formatDate(date))}${ddayBadge(date, today)}</div>
         ${rows.map((event) => {
@@ -23,7 +30,9 @@ export const renderDateGroups = (events, countries, briefFor = () => null, { tod
                     <span class="elections-event-kind">${escapeHtml(kindKo(kindOf(event)))}</span></div>
                 <div class="elections-event-title">${escapeHtml(event.label_ko || event.label_en || '선거 일정')}</div>
                 ${event.contested_ko ? `<div class="elections-event-contested">${escapeHtml(event.contested_ko)}</div>` : ''}
-                ${event.status ? `<div class="elections-event-meta">${escapeHtml(stateLabel(event.status))}</div>` : ''}`;
+                ${resultLine(resultFor(event))}
+                ${newestFirst ? (resultFor(event) ? '' : '<div class="elections-event-meta">결과 수집 전</div>')
+                    : event.status ? `<div class="elections-event-meta">${escapeHtml(stateLabel(event.status))}</div>` : ''}`;
             return briefKey
                 ? `<button class="elections-event is-openable" type="button" data-election-brief="${escapeHtml(briefKey)}" data-election-event="${escapeHtml(`${event.iso3}:${event.date}`)}">${inner}</button>`
                 : `<article class="elections-event">${inner}</article>`;
