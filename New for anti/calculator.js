@@ -32,13 +32,28 @@ const krxLoadFilers = async () => {
     // The filer index is a large, rarely-changing build artefact, so this one
     // keeps the browser's default cache instead of the no-store the snapshot
     // views use.
-    const doc = await loadFirstJson(finDataPaths('dart_corp_codes_v1.json'), { cache: 'default' });
-    KRX_FILERS = Object.entries((doc && doc.index) || {})
-        .map(([code, row]) => ({
-            id: `krx:${code}`, name_ko: (row || [])[1] || code,
-            yahoo: code, asset_class: 'equity',
-            aliases: KRX_NAME_ALIASES[code] || [],
-        }));
+    const [doc, unlisted] = await Promise.all([
+        loadFirstJson(finDataPaths('dart_corp_codes_v1.json'), { cache: 'default' }),
+        // Unlisted companies that still file a 사업보고서 (bond issuers such
+        // as 연합자산관리, large private companies, delisted ones). No stock
+        // code, so they route by OpenDART corp_code instead; a missing file
+        // just means listed-only search, never a broken page.
+        loadFirstJson(finDataPaths('dart_unlisted_filers_v1.json'), { cache: 'default' }).catch(() => null),
+    ]);
+    KRX_FILERS = [
+        ...Object.entries((doc && doc.index) || {})
+            .map(([code, row]) => ({
+                id: `krx:${code}`, name_ko: (row || [])[1] || code,
+                yahoo: code, asset_class: 'equity',
+                aliases: KRX_NAME_ALIASES[code] || [],
+            })),
+        ...Object.entries((unlisted && unlisted.index) || {})
+            .map(([corp, row]) => ({
+                id: `dart:${corp}`, name_ko: (row || [])[0] || corp,
+                yahoo: '', dart_corp: corp, unlisted: true, asset_class: 'equity',
+                aliases: [],
+            })),
+    ];
     return KRX_FILERS;
 };
 
@@ -52,11 +67,14 @@ const krxSearchLocal = (q) => {
     for (const it of KRX_FILERS) {
         const name = it.name_ko.toLowerCase();
         const aliasHit = (it.aliases || []).some((a) => a.toLowerCase().includes(s));
-        if (name === s || it.yahoo === s) exact.push(it);
-        else if (name.startsWith(s) || it.yahoo.startsWith(s)) starts.push(it);
+        if (name === s || it.yahoo === s || it.dart_corp === s) exact.push(it);
+        else if (name.startsWith(s) || (it.yahoo && it.yahoo.startsWith(s))) starts.push(it);
         else if (name.includes(s) || aliasHit) contains.push(it);
     }
-    return [...exact, ...starts, ...contains].slice(0, 6);
+    // Listed before unlisted within each tier: 삼성 should surface 삼성전자
+    // ahead of an unlisted 삼성 affiliate with the same prefix.
+    const listedFirst = (arr) => [...arr.filter((x) => !x.unlisted), ...arr.filter((x) => x.unlisted)];
+    return [...listedFirst(exact), ...listedFirst(starts), ...listedFirst(contains)].slice(0, 6);
 };
 
 // A KRX listing arrives either bare (from the filer index) or suffixed (from
@@ -151,7 +169,7 @@ const renderCompanyCalc = async (host) => {
             <div class="pf-add">
                 <div class="pf-search-wrap">
                     <input type="text" id="co-q" class="pf-field" autocomplete="off"
-                           placeholder="기업명·티커로 검색 (예: 삼성전자, 009150, AAPL)">
+                           placeholder="기업명·티커로 검색 (예: 삼성전자, 009150, 연합자산관리, AAPL)">
                     <div id="co-sug" class="pf-sug hidden"></div>
                 </div>
             </div>
@@ -159,6 +177,8 @@ const renderCompanyCalc = async (host) => {
             <p class="fin-note">
                 미국 상장사는 SEC 공시로, <strong>한국 상장사는 DART 공시로</strong> 같은 화면에서 열립니다.
                 한글 이름으로 찾지 못하면 6자리 종목코드를 그대로 넣으면 됩니다.
+                사업보고서를 내는 <strong>비상장사</strong>(예: 연합자산관리)도 이름으로 찾을 수 있습니다.
+                시장 가격이 없어 시가총액·PER·PBR은 비어 있습니다.
             </p>
         </section>
         <div id="co-out"></div>
@@ -181,7 +201,7 @@ const renderCompanyCalc = async (host) => {
         shown = local;
         sugEl.innerHTML = local.map((h, i) =>
             `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
-             <span class="pf-sug-meta">${finEsc(h.yahoo || '')}</span></button>`).join('') || '<p class="pf-sug-note">찾는 중…</p>';
+             <span class="pf-sug-meta">${finEsc(h.unlisted ? '비상장' : (h.yahoo || ''))}</span></button>`).join('') || '<p class="pf-sug-note">찾는 중…</p>';
         sugEl.classList.remove('hidden');
 
         const my = ++seq;
@@ -196,7 +216,7 @@ const renderCompanyCalc = async (host) => {
             shown = [...local, ...remote];
             sugEl.innerHTML = shown.map((h, i) =>
                 `<button class="pf-sug-item" data-i="${i}"><span>${finEsc(h.name_ko)}</span>
-                 <span class="pf-sug-meta">${finEsc(h.yahoo || '')}${h._exchange ? ' · ' + finEsc(h._exchange) : ''}</span></button>`
+                 <span class="pf-sug-meta">${finEsc(h.unlisted ? '비상장' : (h.yahoo || ''))}${h._exchange ? ' · ' + finEsc(h._exchange) : ''}</span></button>`
             ).join('') || '<p class="pf-sug-note">결과가 없습니다. 티커를 직접 넣어 보세요.</p>';
         }, 250);
     });
@@ -208,7 +228,7 @@ const renderCompanyCalc = async (host) => {
         if (!it) return;
         qEl.value = it.name_ko;
         sugEl.classList.add('hidden');
-        pickedEl.textContent = `선택: ${it.name_ko} (${it.yahoo})`;
+        pickedEl.textContent = `선택: ${it.name_ko} (${it.unlisted ? '비상장' : it.yahoo})`;
         await loadCompany(out, it);
     });
 };
@@ -216,6 +236,8 @@ const renderCompanyCalc = async (host) => {
 const loadCompany = async (out, inst) => {
     const sym = String(inst.yahoo || '').toUpperCase();
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">공시 자료를 받는 중…</p></div>`;
+
+    if (inst.dart_corp) return loadKfaCompany(out, inst, null, inst.dart_corp);
 
     // A Korean listing carries a market suffix Yahoo uses and SEC does not;
     // the 6-digit code before it is what the DART-side engine names its files
@@ -543,7 +565,7 @@ const renderKfaResult = (out, data) => {
     out.innerHTML = `
         <div class="fin-head fin-head-sub">
             <p class="fin-headline">${finEsc(data.meta?.entity || data.label)}
-               <span class="fin-chip">${finEsc(data.meta?.ticker || data.label)}</span></p>
+               <span class="fin-chip">${finEsc(data.meta?.listed === false ? '비상장' : (data.meta?.ticker || data.label))}</span></p>
             <div class="fin-meta">
                 <span>DART 공시 (${finEsc(({ CFS: '연결', OFS: '별도' })[data.meta?.fs_div] || data.meta?.fs_div || '')}) 기준 ${finEsc(data.as_of || '')}</span>
                 ${data.reasons?.length ? `<span class="fin-meta-sep">·</span><span>${finEsc(data.reasons.join(' · '))}</span>` : ''}
@@ -613,10 +635,11 @@ const renderKfaResult = (out, data) => {
     }));
 };
 
-const loadKfaCompany = async (out, inst, code) => {
+const loadKfaCompany = async (out, inst, code, corpCode = null) => {
     out.innerHTML = `<div class="fin-block fin-block-wide"><p class="fin-loading">DART 공시 자료를 받는 중…</p></div>`;
 
-    const staticSnap = await loadFirstJson(finDataPaths(`kfa_${code}_v1.json`));
+    // Static snapshots are keyed by stock code; an unlisted filer has none.
+    const staticSnap = corpCode ? null : await loadFirstJson(finDataPaths(`kfa_${code}_v1.json`));
 
     // A static snapshot only stands in for a live response when it carries
     // the P0 contract and doesn't flag itself stale. No `service_readiness`
@@ -635,7 +658,8 @@ const loadKfaCompany = async (out, inst, code) => {
     let liveOnly = false;
     if (!data) {
         try {
-            const res = await fetch(`/api/dart-financials?symbol=${encodeURIComponent(code)}`, { cache: 'no-store' });
+            const q = corpCode ? `corp_code=${encodeURIComponent(corpCode)}` : `symbol=${encodeURIComponent(code)}`;
+            const res = await fetch(`/api/dart-financials?${q}`, { cache: 'no-store' });
             if (res.ok) { data = await res.json(); liveOnly = true; }
         } catch (_) { /* fall through to the stale static snapshot, if any */ }
     }
@@ -652,7 +676,7 @@ const loadKfaCompany = async (out, inst, code) => {
         out.innerHTML = `
             <div class="fin-empty">
                 <p class="fin-empty-title">${finEsc(inst.name_ko)}는 아직 DART 데이터가 없습니다</p>
-                <p>OpenDART에 최근 3개 회계연도의 재무제표 공시(연결·별도 모두)가 없거나, 상장 종목이 아닙니다.</p>
+                <p>OpenDART에 최근 3개 회계연도의 재무제표 공시(연결·별도 모두)가 없습니다.</p>
             </div>`;
         return;
     }

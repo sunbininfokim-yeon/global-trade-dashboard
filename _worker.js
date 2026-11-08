@@ -2219,6 +2219,9 @@ const DART_FINANCIAL_ENTITY_OVERRIDES = new Set([
     '024110', // 기업은행
     '323410', // 카카오뱅크
     '005830', // DB손해보험
+    // Unlisted filers have no stock code; these are keyed by the 8-digit
+    // OpenDART corp_code instead (lengths differ, so the two can't collide).
+    '00819268', // 연합자산관리 (UAMCO) -- NPL investor; 영업수익 is not industrial revenue
 ]);
 const DART_FINANCIAL_NAME_HINTS = [
     '금융지주', '저축은행', '은행', '생명', '화재', '손해보험', '해상보험',
@@ -2239,14 +2242,26 @@ function classifyDartFinancialEntity(nameKo, stockCode) {
 // listed filer. Refreshed rarely (new listings/delistings only), so a day of
 // KV staleness is invisible -- same reasoning as secIndex() below.
 async function dartCorpIndex(env, origin) {
-    const KEY = 'dart:corp_codes:v1';
+    return dartAssetIndex(env, origin, 'dart:corp_codes:v1', 'dart_corp_codes_v1.json');
+}
+
+// public/data/dart_unlisted_filers_v1.json (tools/ops/build_dart_unlisted_filers.py):
+// OpenDART corp_code -> [entity name, fs_div, fiscal year] for unlisted
+// filers (bond issuers, large private companies, delisted ones) that file a
+// 사업보고서 with XBRL statements. The Worker only uses the name; it still
+// resolves CFS/OFS itself on every request.
+async function dartUnlistedIndex(env, origin) {
+    return dartAssetIndex(env, origin, 'dart:unlisted_filers:v1', 'dart_unlisted_filers_v1.json');
+}
+
+async function dartAssetIndex(env, origin, KEY, file) {
     if (env.API_CACHE) {
         try {
             const hit = await env.API_CACHE.get(KEY, 'json');
             if (hit) return hit;
         } catch (_) { /* fall through to asset fetch */ }
     }
-    for (const path of ['/public/data/dart_corp_codes_v1.json', '/data/dart_corp_codes_v1.json']) {
+    for (const path of [`/public/data/${file}`, `/data/${file}`]) {
         try {
             const res = await env.ASSETS.fetch(new Request(new URL(path, origin).toString()));
             if (!res.ok) continue;
@@ -2503,7 +2518,7 @@ function dartQuarterlySeries(factsByPeriod, years) {
 // has no key in factsByYear; series are built by filtering, not by assuming
 // every year in `years` produced a point, so a gap (recent listing, a filing
 // OpenDART hasn't ingested yet) leaves a shorter series rather than a null.
-function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {}, isFinancialEntity = false } = {}) {
+function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null, price = null, quarterly = {}, isFinancialEntity = false, priceReason = null } = {}) {
     const latestYear = years[0];
     const factsOf = (y) => factsByYear[y] || {};
     const latestFacts = factsOf(latestYear);
@@ -2634,17 +2649,18 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
     // otherwise fetch (see handleDartFinancials); shares_outstanding comes
     // from a separate stockTotqySttus call. Either being unavailable nulls
     // just these three cards, never the filing-only ones above.
+    const priceMissing = priceReason || 'missing:price';
     const marketCap = (price !== null && sharesOutstanding !== null)
         ? { value: price * sharesOutstanding, series: [], definition: 'price × shares_outstanding' }
         : {
             value: null, series: [],
-            reason: price === null ? 'missing:price' : 'missing:shares_outstanding',
+            reason: price === null ? priceMissing : 'missing:shares_outstanding',
         };
 
     const epsV = eps.value;
     const peRatio = (price !== null && epsV)
         ? { value: price / epsV, series: [], definition: 'price / eps (trailing FY, basic EPS)' }
-        : { value: null, series: [], reason: price === null ? 'missing:price' : 'missing:eps' };
+        : { value: null, series: [], reason: price === null ? priceMissing : 'missing:eps' };
 
     const equityV = dartPick(latestFacts, DART_XBRL_TAGS.equity);
     const bps = (equityV !== null && sharesOutstanding) ? equityV / sharesOutstanding : null;
@@ -2652,7 +2668,7 @@ function dartBasicCardsFromFacts(factsByYear, years, { sharesOutstanding = null,
         ? { value: price / bps, series: [], definition: 'price / (equity / shares_outstanding)' }
         : {
             value: null, series: [],
-            reason: price === null ? 'missing:price' : (equityV === null ? 'missing:equity' : 'missing:shares_outstanding'),
+            reason: price === null ? priceMissing : (equityV === null ? 'missing:equity' : 'missing:shares_outstanding'),
         };
 
     // ROE/ROA are the metrics the entity policy asks to keep for financial
@@ -2742,18 +2758,34 @@ const DART_VIEW_PRESETS = {
 
 async function handleDartFinancials(request, env) {
     const url = new URL(request.url);
-    const symbol = (url.searchParams.get('symbol') || '').trim();
-    if (!/^\d{6}$/.test(symbol)) {
-        return new Response(JSON.stringify({ error: 'symbol must be a 6-digit KRX stock code' }), { status: 400, headers: JSON_HEADERS });
+    // Either a 6-digit KRX stock code (listed) or an 8-digit OpenDART
+    // corp_code (unlisted filer). corp_code is accepted only when it is in
+    // the unlisted index -- an arbitrary corp_code would cost six OpenDART
+    // calls to discover that it has no filing, and listed companies keep
+    // their one canonical route through `symbol`.
+    const symbolParam = (url.searchParams.get('symbol') || '').trim();
+    const corpParam = (url.searchParams.get('corp_code') || '').trim();
+    const listed = !corpParam;
+    if (listed ? !/^\d{6}$/.test(symbolParam) : !/^\d{8}$/.test(corpParam)) {
+        return new Response(JSON.stringify({ error: 'symbol must be a 6-digit KRX stock code, or corp_code an 8-digit OpenDART code' }), { status: 400, headers: JSON_HEADERS });
     }
+    const symbol = listed ? symbolParam : null;
+    const label = listed ? symbolParam : corpParam;
 
     try {
-        return await kvCachedJson(env, `fin:dart:${symbol}`, 86400, async () => {
-            const index = await dartCorpIndex(env, url.origin);
-            const hit = index[symbol];
-            if (!hit) return { ok: false, status: 404, statusText: 'not a KRX-listed filer' };
-            const [corpCode, nameKo] = hit;
-            const entityPolicy = classifyDartFinancialEntity(nameKo, symbol);
+        return await kvCachedJson(env, listed ? `fin:dart:${symbol}` : `fin:dart:corp:${corpParam}`, 86400, async () => {
+            let corpCode, nameKo;
+            if (listed) {
+                const hit = (await dartCorpIndex(env, url.origin))[symbol];
+                if (!hit) return { ok: false, status: 404, statusText: 'not a KRX-listed filer' };
+                [corpCode, nameKo] = hit;
+            } else {
+                const hit = (await dartUnlistedIndex(env, url.origin))[corpParam];
+                if (!hit) return { ok: false, status: 404, statusText: 'not in the unlisted DART filer index' };
+                corpCode = corpParam;
+                nameKo = hit[0];
+            }
+            const entityPolicy = classifyDartFinancialEntity(nameKo, listed ? symbol : corpCode);
 
             // Annual reports for FY(Y) file the following spring; before that
             // OpenDART has nothing for FY(currentYear-1) yet, so start one
@@ -2842,20 +2874,22 @@ async function handleDartFinancials(request, env) {
             // and either failing still leaves the filing-derived cards intact.
             const [sharesResult, priceResult] = await Promise.all([
                 fetchDartSharesOutstanding(env, corpCode, latestYear),
-                fetchDartKrPrice(symbol),
+                // No market, no price: say so instead of letting the Yahoo
+                // miss read as a transient lookup failure.
+                listed ? fetchDartKrPrice(symbol) : Promise.resolve({ price: null, reason: 'not_applicable:unlisted' }),
             ]);
 
             return {
                 ok: true,
                 body: {
                     schema: 'kfa_engine_v1',
-                    label: symbol,
+                    label,
                     view_presets: DART_VIEW_PRESETS,
                     as_of: `${latestYear}-12-31`,
                     currency: 'KRW',
                     meta: {
-                        ticker: symbol, corp_code: corpCode, entity: nameKo, entity_eng: null,
-                        stock_code: symbol, source: 'opendart', fs_div: fsDiv, acc_mt: '12',
+                        ticker: label, corp_code: corpCode, entity: nameKo, entity_eng: null,
+                        stock_code: symbol, listed, source: 'opendart', fs_div: fsDiv, acc_mt: '12',
                         shares_outstanding: sharesResult.sharesOutstanding,
                         shares_outstanding_reason: sharesResult.sharesOutstanding === null ? sharesResult.reason : undefined,
                         price: priceResult.price,
@@ -2870,6 +2904,7 @@ async function handleDartFinancials(request, env) {
                         price: priceResult.price,
                         quarterly,
                         isFinancialEntity: entityPolicy.is_financial_entity,
+                        priceReason: listed ? null : 'not_applicable:unlisted',
                     }),
                     data_quality: {
                         input_kind: years.length > 1 ? 'live_fetch_multi_fiscal_year' : 'live_fetch_single_fiscal_year',
