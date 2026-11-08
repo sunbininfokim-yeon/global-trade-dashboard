@@ -109,13 +109,100 @@
     }
   },
   "iod": {
-    "index": "Indian Ocean Dipole DMI",
-    "source": "NOAA PSL / HadISST (live)",
-    "source_url": "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data",
-    "latest": 0.15,
-    "as_of": "2026-05",
-    "state_ko": "중립",
-    "note_ko": "양의 IOD는 인도·호주 강수 패턴과 연동되는 경우가 많음"
+    "index": "Indian Ocean Dipole DMI (OISST)",
+    "source": "NOAA OISST v2.1",
+    "source_url": "https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.highres.html",
+    "latest": 0.83,
+    "as_of": "2026-10",
+    "state_ko": "양성 (Positive)",
+    "note_ko": "양의 IOD는 호주 밀·인니 팜유 쪽 가뭄, 동아프리카 다우와 연동되는 경우가 많음",
+    "series": [
+      {
+        "label": "25-11",
+        "dmi": -0.58
+      },
+      {
+        "label": "25-12",
+        "dmi": -0.27
+      },
+      {
+        "label": "26-01",
+        "dmi": 0.17
+      },
+      {
+        "label": "26-02",
+        "dmi": 0.59
+      },
+      {
+        "label": "26-03",
+        "dmi": 0.14
+      },
+      {
+        "label": "26-04",
+        "dmi": 0.19
+      },
+      {
+        "label": "26-05",
+        "dmi": -0.34
+      },
+      {
+        "label": "26-06",
+        "dmi": -0.3
+      },
+      {
+        "label": "26-07",
+        "dmi": 0.14
+      },
+      {
+        "label": "26-08",
+        "dmi": 0.22
+      },
+      {
+        "label": "26-09",
+        "dmi": 0.64
+      },
+      {
+        "label": "26-10",
+        "dmi": 0.83
+      }
+    ],
+    "history": {
+      "since": 1982,
+      "rank": 22,
+      "rank_ko": "1982년 이후 538개월 중 22번째로 높음",
+      "top_peaks": [
+        {
+          "label": "2019",
+          "peak": 1.74,
+          "season": "2019-10"
+        },
+        {
+          "label": "1997",
+          "peak": 1.49,
+          "season": "1997-11"
+        },
+        {
+          "label": "1994",
+          "peak": 1.48,
+          "season": "1994-10"
+        },
+        {
+          "label": "2023",
+          "peak": 1.32,
+          "season": "2023-10"
+        }
+      ],
+      "thresholds": [
+        {
+          "value": 0.4,
+          "label_ko": "양의 IOD 기준"
+        },
+        {
+          "value": -0.4,
+          "label_ko": "음의 IOD 기준"
+        }
+      ]
+    }
   },
   "north_atlantic": {
     "index": "AMO / 북대서양 SST (요약)",
