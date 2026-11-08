@@ -545,7 +545,7 @@ const renderKfaResult = (out, data) => {
             <p class="fin-headline">${finEsc(data.meta?.entity || data.label)}
                <span class="fin-chip">${finEsc(data.meta?.ticker || data.label)}</span></p>
             <div class="fin-meta">
-                <span>DART 공시 (${finEsc(data.meta?.fs_div || '')}) 기준 ${finEsc(data.as_of || '')}</span>
+                <span>DART 공시 (${finEsc(({ CFS: '연결', OFS: '별도' })[data.meta?.fs_div] || data.meta?.fs_div || '')}) 기준 ${finEsc(data.as_of || '')}</span>
                 ${data.reasons?.length ? `<span class="fin-meta-sep">·</span><span>${finEsc(data.reasons.join(' · '))}</span>` : ''}
             </div>
         </div>
@@ -652,7 +652,7 @@ const loadKfaCompany = async (out, inst, code) => {
         out.innerHTML = `
             <div class="fin-empty">
                 <p class="fin-empty-title">${finEsc(inst.name_ko)}는 아직 DART 데이터가 없습니다</p>
-                <p>OpenDART에 이 종목의 연결재무제표 공시가 없거나(최근 2개 회계연도 기준), 상장 종목이 아닙니다.</p>
+                <p>OpenDART에 최근 3개 회계연도의 재무제표 공시(연결·별도 모두)가 없거나, 상장 종목이 아닙니다.</p>
             </div>`;
         return;
     }

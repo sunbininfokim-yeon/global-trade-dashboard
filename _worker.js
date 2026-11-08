@@ -2768,21 +2768,43 @@ async function handleDartFinancials(request, env) {
             // itself retry once on a 020 (rate-limited) response, so racing
             // three of these against the same key risks tripping the limit
             // rather than backing off from it.
-            const factsByYear = {};
-            const failReasons = [];
-            for (const y of candidateYears) {
-                const { facts, reason } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS');
-                if (Object.keys(facts).length > 0) {
-                    factsByYear[y] = facts;
+            //
+            // Consolidated (CFS) first; a filer with no subsidiaries files no
+            // consolidated statements at all, and OpenDART answers 013 (no
+            // data) for every CFS query -- that company used to 404 here even
+            // though its separate (OFS) statements were sitting right there.
+            // Fall back to OFS only when *every* CFS miss was a 013: a missing
+            // key, a throttle or a network error is not "no consolidated
+            // statements", and retrying under OFS would just hide the real
+            // reason. One basis per response -- never CFS for one year and OFS
+            // for another, which would compare a group to a single entity.
+            const fetchAnnual = async (fsDiv) => {
+                const byYear = {};
+                const reasons = [];
+                for (const y of candidateYears) {
+                    const { facts, reason } = await fetchDartXbrlFacts(env, corpCode, y, fsDiv);
+                    if (Object.keys(facts).length > 0) byYear[y] = facts;
+                    else reasons.push({ y, reason });
+                }
+                return { byYear, reasons };
+            };
+            let fsDiv = 'CFS';
+            let { byYear: factsByYear, reasons: missReasons } = await fetchAnnual('CFS');
+            const failReasons = missReasons.map(({ y, reason }) => `CFS FY${y}:${reason}`);
+            if (!Object.keys(factsByYear).length && missReasons.every(({ reason }) => reason === 'dart_status_013')) {
+                const ofs = await fetchAnnual('OFS');
+                if (Object.keys(ofs.byYear).length) {
+                    fsDiv = 'OFS';
+                    factsByYear = ofs.byYear;
                 } else {
-                    failReasons.push(`FY${y}:${reason}`);
+                    failReasons.push(...ofs.reasons.map(({ y, reason }) => `OFS FY${y}:${reason}`));
                 }
             }
             const years = candidateYears.filter((y) => y in factsByYear);
             if (!years.length) {
                 return {
                     ok: false, status: 404,
-                    statusText: `no OpenDART CFS facts for FY${candidateYears.join('/FY')} (${failReasons.join(', ')})`,
+                    statusText: `no OpenDART facts for FY${candidateYears.join('/FY')} (${failReasons.join(', ')})`,
                 };
             }
             const latestYear = years[0];
@@ -2810,7 +2832,7 @@ async function handleDartFinancials(request, env) {
             for (const y of quarterlyYears) {
                 factsByPeriod[y] = factsByYear[y] ? { FY: factsByYear[y] } : {};
                 for (const code of ['Q1', 'H1', 'Q3']) {
-                    const { facts } = await fetchDartXbrlFacts(env, corpCode, y, 'CFS', { reprtCode: DART_REPRT[code] });
+                    const { facts } = await fetchDartXbrlFacts(env, corpCode, y, fsDiv, { reprtCode: DART_REPRT[code] });
                     if (Object.keys(facts).length > 0) factsByPeriod[y][code] = facts;
                 }
             }
@@ -2833,7 +2855,7 @@ async function handleDartFinancials(request, env) {
                     currency: 'KRW',
                     meta: {
                         ticker: symbol, corp_code: corpCode, entity: nameKo, entity_eng: null,
-                        stock_code: symbol, source: 'opendart', fs_div: 'CFS', acc_mt: '12',
+                        stock_code: symbol, source: 'opendart', fs_div: fsDiv, acc_mt: '12',
                         shares_outstanding: sharesResult.sharesOutstanding,
                         shares_outstanding_reason: sharesResult.sharesOutstanding === null ? sharesResult.reason : undefined,
                         price: priceResult.price,
