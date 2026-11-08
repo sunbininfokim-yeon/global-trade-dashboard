@@ -3870,17 +3870,41 @@ const setClimateMapLegend = (mode) => {
     }
 };
 
-const renderEnsoBars = (series) => {
+// Bars on a fixed scale with reference lines, because "+2.5°C" alone says
+// nothing to a reader who doesn't know the NOAA bands or past peaks.
+const renderEnsoBars = (series, history) => {
     if (!series?.length) return '';
     const vals = series.map(s => s.oni);
-    const maxAbs = Math.max(0.5, ...vals.map(v => Math.abs(v)));
-    return `<div class="climate-bars" title="ONI 최근 궤적">
-        ${series.map(s => {
-            const h = Math.max(4, Math.round((Math.abs(s.oni) / maxAbs) * 46));
-            const col = s.oni < 0 ? 'rgba(56,189,248,0.75)' : 'rgba(248,113,113,0.75)';
-            return `<span style="height:${h}px;background:${col}" title="${s.label}: ${s.oni}"></span>`;
-        }).join('')}
-    </div>`;
+    const peaks = (history?.top_peaks || []).slice(0, 2);
+    const lines = (history?.thresholds || []).filter(t => t.value > 0 || Math.min(...vals) < 0);
+    const top = Math.max(2.8, ...vals, ...peaks.map(p => p.peak)) + 0.15;
+    const bottom = Math.min(0, ...vals, ...lines.map(t => t.value)) - (Math.min(...vals) < 0 ? 0.1 : 0);
+    const H = 150;
+    const y = (v) => ((top - v) / (top - bottom)) * H;
+    const zero = y(0);
+    const fmt = (v) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+    const bars = series.map((s, i) => {
+        const w = 100 / series.length;
+        const y0 = Math.min(zero, y(s.oni));
+        const h = Math.max(2, Math.abs(y(s.oni) - zero));
+        const col = s.oni < 0 ? 'rgba(56,189,248,0.75)' : 'rgba(248,113,113,0.75)';
+        return `<span title="${s.label}: ${fmt(s.oni)}°C" style="position:absolute;left:calc(${(i * w).toFixed(3)}% + 1px);width:calc(${w.toFixed(3)}% - 2px);top:${y0.toFixed(1)}px;height:${h.toFixed(1)}px;background:${col};border-radius:2px;"></span>`;
+    }).join('');
+    // Labels sit on the side the bars leave empty (the series climbs to the
+    // right, so positive lines are labelled on the left), above the bars.
+    const rule = (v, label, style, color, side) => `<div style="position:absolute;left:0;right:0;top:${y(v).toFixed(1)}px;border-top:1px ${style};z-index:1;">
+            <span style="position:absolute;${side};top:-13px;font-size:10px;color:${color};background:rgba(15,23,42,0.8);padding:0 3px;border-radius:3px;white-space:nowrap;z-index:2;">${label}</span></div>`;
+    const ruleHtml = [
+        ...lines.map(t => rule(t.value, `${fmt(t.value)} ${t.label_ko}`, 'dashed rgba(148,163,184,0.45)', '#94a3b8', t.value > 0 ? 'left:0' : 'right:0')),
+        ...peaks.map((p, i) => rule(p.peak, `${p.label} 최고 ${fmt(p.peak)}`, 'dotted rgba(251,191,36,0.8)', '#fcd34d', `left:${i ? 118 : 0}px`)),
+    ].join('');
+    return `<div class="climate-enso-chart" title="ONI 최근 ${series.length}개 계절" style="position:relative;height:${H}px;margin-top:12px;">
+            <div style="position:absolute;left:0;right:0;top:${zero.toFixed(1)}px;border-top:1px solid rgba(148,163,184,0.35);"></div>
+            ${ruleHtml}
+            ${bars}
+        </div>
+        <div class="climate-sub" style="display:flex;justify-content:space-between;margin-top:2px;"><span>${series[0].label}</span><span>${series[series.length - 1].label}</span></div>
+        ${history?.rank_ko ? `<div class="climate-sub" style="margin-top:4px;">${history.rank_ko} · 점선 = 과거 최강 엘니뇨 정점, 파선 = NOAA 강도 구간</div>` : ''}`;
 };
 
 const renderClimateWorldLeft = async () => {
@@ -3910,7 +3934,7 @@ const renderClimateWorldLeft = async () => {
                 </div>
                 <div class="climate-sub">${enso.state_ko || '상태 미정'}
                     ${enso.prob_continue_pct != null ? ` · 지속 확률 ${enso.prob_continue_pct}%` : ''}</div>
-                ${renderEnsoBars(enso.series)}
+                ${renderEnsoBars(enso.series, enso.history)}
                 <div class="climate-sub" style="margin-top:4px;">기준: ${climateAsOf || '—'}</div>
             </div>
             <div class="climate-card">

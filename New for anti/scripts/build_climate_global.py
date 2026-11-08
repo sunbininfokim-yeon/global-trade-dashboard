@@ -37,11 +37,53 @@ def enso_state(oni):
     a = abs(oni)
     if a < 0.5:
         return "중립", "Neutral"
-    strength_ko = "약" if a < 1.0 else ("중" if a < 1.5 else "강")
-    strength_en = "weak" if a < 1.0 else ("moderate" if a < 1.5 else "strong")
+    strength_ko = "약" if a < 1.0 else ("중" if a < 1.5 else ("강" if a < 2.0 else "매우 강"))
+    strength_en = "weak" if a < 1.0 else ("moderate" if a < 1.5 else ("strong" if a < 2.0 else "very strong"))
     if oni <= -0.5:
         return f"라니냐 · {strength_ko}", f"La Niña {strength_en}"
     return f"엘니뇨 · {strength_ko}", f"El Niño {strength_en}"
+
+
+def enso_history(rows, top=4):
+    """Context for the latest value: past El Nino peaks and where it ranks.
+
+    An episode is NOAA's definition: ONI >= +0.5 for at least five
+    overlapping seasons in a row. The episode still running at the end of
+    the record is left out of the peaks so the current one is compared with
+    history, not with itself.
+    """
+    episodes, run = [], []
+    for row in rows:
+        if row[2] >= 0.5:
+            run.append(row)
+            continue
+        if len(run) >= 5:
+            episodes.append(run)
+        run = []
+    peaks = []
+    for ep in episodes:
+        s, y, v = max(ep, key=lambda r: r[2])
+        # An NDJ/DJF peak belongs to the winter that started the year before.
+        start = y - 1 if s in ("DJF", "JFM", "FMA") else y
+        peaks.append({"label": f"{start}–{str(start + 1)[2:]}", "peak": round(v, 2), "season": f"{s} {y}"})
+    peaks.sort(key=lambda p: -p["peak"])
+    latest = rows[-1][2]
+    higher = sum(1 for r in rows[:-1] if r[2] > latest)
+    return {
+        "since": rows[0][1],
+        "seasons": len(rows),
+        "rank_ko": (f"{rows[0][1]}년 관측 이래 가장 높음" if higher == 0
+                    else f"{rows[0][1]}년 이후 {len(rows)}개 계절 중 {higher + 1}번째로 높음"),
+        "rank": higher + 1,
+        "top_peaks": peaks[:top],
+        # NOAA strength bands, drawn as reference lines on the bars.
+        "thresholds": [
+            {"value": 0.5, "label_ko": "엘니뇨 기준"},
+            {"value": 1.5, "label_ko": "강"},
+            {"value": 2.0, "label_ko": "매우 강"},
+            {"value": -0.5, "label_ko": "라니냐 기준"},
+        ],
+    }
 
 
 def fetch(url):
@@ -113,6 +155,7 @@ def main():
         "series": [
             {"label": f"{str(y)[2:]}-{s}", "oni": round(v, 2)} for s, y, v in recent
         ],
+        "history": enso_history(oni_rows),
     }
 
     # --- IOD --------------------------------------------------------------
