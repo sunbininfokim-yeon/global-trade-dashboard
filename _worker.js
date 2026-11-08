@@ -2223,6 +2223,7 @@ const DART_FINANCIAL_ENTITY_OVERRIDES = new Map([
     ['139130', 'bank'], // DGB금융지주
     ['175330', 'bank'], // JB금융지주
     ['138040', 'insurance'], // 메리츠금융지주 -- earnings are mostly 메리츠화재
+    ['071050', 'securities'], // 한국금융지주 -- 한국투자증권's holding company, not a bank
     ['024110', 'bank'], // 기업은행
     ['323410', 'bank'], // 카카오뱅크
     ['005830', 'insurance'], // DB손해보험
@@ -2788,10 +2789,25 @@ function finPickPrefix(facts, sj, prefix) {
     return null;
 }
 const finDiff = (a, b) => (a !== null && b !== null ? a - b : null);
+// Expense and loss lines are filed with either sign -- 키움증권's FY2024
+// report has 이자비용 at -1.09조 while FY2025 has it positive -- so
+// "income - expense" turned into a sum (FY2024 NII 2.80조 on 1.71조 of
+// interest income). Read every expense/loss line as a magnitude.
+function finPickAbs(facts, specs) {
+    const v = finPick(facts, specs);
+    return v === null ? null : Math.abs(v);
+}
+// gain - loss for one instrument class, both required.
+const finGainLoss = (f, gainSpecs, lossSpecs) => finDiff(finPickAbs(f, gainSpecs), finPickAbs(f, lossSpecs));
 const finDiv = (a, b) => (a !== null && b ? a / b : null);
 // Average of opening and closing balance when the prior year was fetched,
 // closing balance otherwise -- the card definition says which.
 const finAvg = (cur, prev) => (cur === null ? null : (prev === null ? cur : (cur + prev) / 2));
+
+const FIN_TAGS = {
+    fvGain: ['PL:dart_GainFromFinancialInstrumentsAtFairValueThroughProfitOrLoss', 'PL:dart_GainsOnChangeInFairValueAndOnDisposalOfFinancialInstruments'],
+    fvLoss: ['PL:dart_LossFromFinancialInstrumentsAtFairValueThroughProfitOrLoss', 'PL:dart_LossesOnChangeInFairValueAndOnDisposalOfFinancialInstruments'],
+};
 
 const FIN_M = {
     ni: (f) => finPick(f, ['PL:ifrs-full_ProfitLoss']),
@@ -2803,7 +2819,7 @@ const FIN_M = {
     assets: (f) => finPick(f, ['BS:ifrs-full_Assets']),
     liab: (f) => finPick(f, ['BS:ifrs-full_Liabilities']),
     intInc: (f) => finPick(f, ['PL:ifrs-full_RevenueFromInterest']),
-    intExp: (f) => finPick(f, ['PL:ifrs-full_InterestExpense']),
+    intExp: (f) => finPickAbs(f, ['PL:ifrs-full_InterestExpense']),
     nii: (f) => {
         const net = finPick(f, ['PL:ifrs-full_InterestRevenueExpense']);
         return net !== null ? net : finDiff(FIN_M.intInc(f), FIN_M.intExp(f));
@@ -2811,21 +2827,21 @@ const FIN_M = {
     feeInc: (f) => finPick(f, ['PL:ifrs-full_FeeAndCommissionIncome']),
     netFee: (f) => {
         const net = finPick(f, ['PL:ifrs-full_FeeAndCommissionIncomeExpense']);
-        return net !== null ? net : finDiff(FIN_M.feeInc(f), finPick(f, ['PL:ifrs-full_FeeAndCommissionExpense']));
+        return net !== null ? net : finDiff(FIN_M.feeInc(f), finPickAbs(f, ['PL:ifrs-full_FeeAndCommissionExpense']));
     },
     divInc: (f) => finPick(f, ['PL:ifrs-full_RevenueFromDividends']),
     // Positive = expense. Filers use either one net element or a 전입/환입 pair.
     creditCost: (f) => {
         const net = finPick(f, ['PL:ifrs-full_ImpairmentLossImpairmentGainAndReversalOfImpairmentLossDeterminedInAccordanceWithIFRS9']);
         if (net !== null) return net;
-        const add = finPick(f, ['PL:ifrs-full_AdditionalAllowanceRecognisedInProfitOrLossAllowanceAccountForCreditLossesOfFinancialAssets',
-            'PL:ifrs-full_ImpairmentLossRecognisedInProfitOrLoss']);
+        const add = finPickAbs(f, ['PL:ifrs-full_AdditionalAllowanceRecognisedInProfitOrLossAllowanceAccountForCreditLossesOfFinancialAssets',
+            'PL:ifrs-full_ImpairmentLossRecognisedInProfitOrLoss', 'PL:dart_AdditionalImpairmentLossesOfFinancialAssets']);
         if (add === null) return null;
-        const rev = finPick(f, ['PL:ifrs-full_ReversalAllowanceAccountForCreditLossesOfFinancialAssets',
-            'PL:ifrs-full_ReversalOfImpairmentLossRecognisedInProfitOrLoss']);
+        const rev = finPickAbs(f, ['PL:ifrs-full_ReversalAllowanceAccountForCreditLossesOfFinancialAssets',
+            'PL:ifrs-full_ReversalOfImpairmentLossRecognisedInProfitOrLoss', 'PL:dart_ReversalsOfImpairmentLossesOfFinancialAssets']);
         return add - (rev || 0);
     },
-    sga: (f) => finPick(f, ['PL:ifrs-full_SellingGeneralAndAdministrativeExpense', 'PL:ifrs-full_GeneralAndAdministrativeExpense']),
+    sga: (f) => finPickAbs(f, ['PL:ifrs-full_SellingGeneralAndAdministrativeExpense', 'PL:ifrs-full_GeneralAndAdministrativeExpense']),
     loans: (f) => finPick(f, ['BS:dart_LoansAtAmortisedCost', 'BS:ifrs-full_LoansAndAdvancesToCustomers']),
     deposits: (f) => finPick(f, ['BS:ifrs-full_DepositsFromCustomers']),
     // Net gain on FVTPL instruments: one net element, or gain - loss (both
@@ -2833,16 +2849,26 @@ const FIN_M = {
     fvNet: (f) => {
         const net = finPick(f, ['PL:dart_GainLossFromFinancialInstrumentsAtFairValueThroughProfitOrLoss']);
         if (net !== null) return net;
-        const g = finPick(f, ['PL:dart_GainFromFinancialInstrumentsAtFairValueThroughProfitOrLoss', 'PL:dart_GainsOnChangeInFairValueAndOnDisposalOfFinancialInstruments']);
-        const l = finPick(f, ['PL:dart_LossFromFinancialInstrumentsAtFairValueThroughProfitOrLoss', 'PL:dart_LossesOnChangeInFairValueAndOnDisposalOfFinancialInstruments']);
-        return finDiff(g, l);
+        return finGainLoss(f, FIN_TAGS.fvGain, FIN_TAGS.fvLoss);
     },
-    fvGain: (f) => finPick(f, ['PL:dart_GainFromFinancialInstrumentsAtFairValueThroughProfitOrLoss', 'PL:dart_GainsOnChangeInFairValueAndOnDisposalOfFinancialInstruments']),
-    fvLoss: (f) => finPick(f, ['PL:dart_LossFromFinancialInstrumentsAtFairValueThroughProfitOrLoss', 'PL:dart_LossesOnChangeInFairValueAndOnDisposalOfFinancialInstruments']),
+    fvGain: (f) => finPickAbs(f, FIN_TAGS.fvGain),
+    fvLoss: (f) => finPickAbs(f, FIN_TAGS.fvLoss),
+    // A broker hedges its FVTPL book with derivatives and FX, so each line
+    // alone swings by trillions in opposite directions; only the sum means
+    // anything. Each class is included only when both its gain and loss
+    // lines are tagged; which ones made it is shown on the card.
+    derivNet: (f) => finGainLoss(f, ['PL:dart_GainFromDerivatives', 'PL:dart_GainsOnDerivatives'], ['PL:dart_LossesFromDerivatives', 'PL:dart_LossesOnDerivatives']),
+    fxNet: (f) => finGainLoss(f, ['PL:ifrs-full_ForeignExchangeGain', 'PL:ifrs-full_NetForeignExchangeGain'],
+        ['PL:ifrs-full_ForeignExchangeLoss', 'PL:ifrs-full_NetForeignExchangeLoss']),
+    tradingTotal: (f) => {
+        const fv = FIN_M.fvNet(f);
+        if (fv === null) return null;
+        return fv + (FIN_M.derivNet(f) || 0) + (FIN_M.fxNet(f) || 0);
+    },
     // Unrealised part of that: the cash-flow statement's non-cash add-back
     // for FVTPL asset revaluation, gain minus loss.
-    fvUnrealized: (f) => finDiff(finPick(f, ['CF:dart_GainsOnValuationOfFairValueFinancialAsset']),
-        finPick(f, ['CF:dart_LossesOnValuationOfFairValueFinancialAsset'])),
+    fvUnrealized: (f) => finGainLoss(f, ['CF:dart_GainsOnValuationOfFairValueFinancialAsset'],
+        ['CF:dart_LossesOnValuationOfFairValueFinancialAsset']),
     insResult: (f) => finPick(f, ['PL:ifrs-full_InsuranceServiceResult', 'PL:dart_InsuranceRevenueExpense']),
     invResult: (f) => finPick(f, ['PL:dart_InvestmentIncomeExpenses']),
     insLiab: (f) => finPick(f, ['BS:ifrs-full_InsuranceContractsIssuedThatAreLiabilities']),
@@ -2896,9 +2922,10 @@ const DART_FIN_PROFILES = {
         label_ko: '증권',
         notes: [
             '증권사 영업수익에는 트레이딩 거래 금액이 총액으로 잡혀 실제 벌이보다 훨씬 크게 보입니다. 순수수료·순이자·순트레이딩 손익으로 나눠 봅니다.',
-            '순트레이딩 손익은 당기손익-공정가치 금융상품 손익만이며, 외환·파생 손익은 따로 잡히는 회사가 많아 포함하지 않았습니다.',
+            '트레이딩은 금융상품·파생·외환이 서로 헤지돼 있어 각각은 조 단위로 반대로 움직입니다. 셋을 합친 순트레이딩손익만 봅니다(카드에 어떤 항목이 들어갔는지 표시).',
+            '수수료를 브로커리지·IB·자산관리로 나눈 내역과 순자본비율(NCR)은 XBRL 재무제표에 없어 표시하지 않습니다.',
         ],
-        cards: ['operating_income', 'net_income', 'fin_roe', 'fin_net_fee', 'fin_nii', 'fin_fv_net', 'fin_credit_cost',
+        cards: ['operating_income', 'net_income', 'fin_roe', 'fin_net_fee', 'fin_nii', 'fin_trading', 'fin_credit_cost',
             'fin_leverage', 'fin_equity_ratio', 'eps', 'market_cap', 'pe_ratio', 'pb_ratio'],
     },
     card_capital: {
@@ -2981,6 +3008,9 @@ function dartFinancialCards(factsByYear, years, subtype) {
     c.fin_ldr = card((f) => finDiv(FIN_M.loans(f), FIN_M.deposits(f)), '대출채권 / 예수부채');
     c.fin_fv_net = card(FIN_M.fvNet, '당기손익-공정가치 금융상품 관련 이익 - 손실',
         { components: [money('이익', FIN_M.fvGain(lf)), money('손실', FIN_M.fvLoss(lf))] });
+    c.fin_trading = card(FIN_M.tradingTotal, '공정가치 금융상품 순손익 + 파생상품 순손익 + 외환 순손익 (태그된 것만)', {
+        components: [money('금융상품', FIN_M.fvNet(lf)), money('파생', FIN_M.derivNet(lf)), money('외환', FIN_M.fxNet(lf))],
+    });
     c.fin_ins_result = card(FIN_M.insResult, '보험서비스결과 (IFRS17)');
     c.fin_inv_result = card(FIN_M.invResult, '투자손익');
     c.fin_ins_liab = card(FIN_M.insLiab, '보험계약부채');

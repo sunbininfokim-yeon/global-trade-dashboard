@@ -415,6 +415,7 @@ const KFA_CARD_META = {
     fin_deposits: { label: '예수부채(예금)', unit: 'money', plain: '고객에게서 받은 예금 잔액입니다.' },
     fin_ldr: { label: '예대율', unit: 'ratio', plain: '대출 ÷ 예금. 1을 넘으면 예금보다 대출이 많아 다른 조달에 기대는 몫이 있습니다.' },
     fin_fv_net: { label: '순트레이딩손익', unit: 'money', plain: '공정가치로 평가하는 금융상품에서 낸 이익 - 손실입니다.' },
+    fin_trading: { label: '순트레이딩손익', unit: 'money', plain: '금융상품·파생상품·외환 거래에서 낸 이익 - 손실의 합입니다. 서로 헤지돼 있어 합계로 봐야 합니다.' },
     fin_ins_result: { label: '보험서비스결과', unit: 'money', plain: 'IFRS17 기준 보험 본업에서 낸 이익입니다.' },
     fin_inv_result: { label: '투자손익', unit: 'money', plain: '보험료로 받은 돈을 굴려서 낸 이익(보험금융비용 차감 후)입니다.' },
     fin_ins_liab: { label: '보험계약부채', unit: 'money', plain: '앞으로 보험금으로 내줘야 할 돈의 현재가치입니다.' },
