@@ -33,12 +33,36 @@ const candidateTable = (candidates, basis) => {
         ${basis === 'listed_candidates' ? '<p class="elections-panel-note">득표율은 표에 있는 후보 득표의 합을 분모로 계산했습니다 (공식 득표율과 소수점이 다를 수 있음).</p>' : ''}`;
 };
 
+// 혼합형(지역구+비례)이면 지역·비례 의석 칸을 따로 둔다. 의석 0인 정당(득표만)도 줄로 남는다.
 const seatTable = (seats, total) => {
     if (!seats?.length) return '';
+    const tiers = seats.some((s) => s.seats_district != null || s.seats_list != null);
+    const change = seats.some((s) => typeof s.seats_change === 'number');
+    const signed = (v) => (typeof v === 'number' ? (v > 0 ? `+${v}` : String(v)) : '');
     const body = seats.map((s) => `<tr><td>${escapeHtml(s.party_ko || s.party || '불명')}</td>
-        <td class="num">${escapeHtml(num(s.seats) || '')}</td><td class="num">${escapeHtml(pct(s.vote_pct) || '')}</td></tr>`).join('');
-    return `<table class="elections-er-table"><thead><tr><th>정당</th><th class="num">의석${total ? ` / ${escapeHtml(num(total))}` : ''}</th><th class="num">득표율</th></tr></thead><tbody>${body}</tbody></table>`;
+        <td class="num">${escapeHtml(num(s.seats) ?? '')}</td>
+        ${tiers ? `<td class="num">${escapeHtml(num(s.seats_district) ?? '')}</td><td class="num">${escapeHtml(num(s.seats_list) ?? '')}</td>` : ''}
+        ${change ? `<td class="num">${escapeHtml(signed(s.seats_change))}</td>` : ''}
+        <td class="num">${escapeHtml(pct(s.vote_pct) || '')}</td></tr>`).join('');
+    return `<table class="elections-er-table"><thead><tr><th>정당</th><th class="num">의석${total ? ` / ${escapeHtml(num(total))}` : ''}</th>
+        ${tiers ? '<th class="num">지역</th><th class="num">비례</th>' : ''}${change ? '<th class="num">증감</th>' : ''}
+        <th class="num">득표율</th></tr></thead><tbody>${body}</tbody></table>`;
 };
+
+// 선거 뒤 바뀐 지금 구성(교섭단체·회파 이동, 결원)은 선거 결과와 섞지 않고 따로 보인다.
+const compositionBlock = (comp) => {
+    if (!comp?.by_party?.length) return '';
+    const rows = comp.by_party.map((p) => row(p.party_ko || p.party || '불명', [num(p.seats), p.note_ko].filter(Boolean).join(' · ')));
+    return `<details class="elections-disclosure"><summary>현재 의석 구성${comp.as_of ? ` · ${escapeHtml(day(comp.as_of))} 기준` : ''}</summary>
+        <div class="elections-er-rows">${rows.join('')}${row('결원', num(comp.vacancies))}</div>${sources(comp.sources || [comp.source])}</details>`;
+};
+
+const governmentLine = (gov) => (gov?.parties?.length
+    ? [gov.parties.join(' · '), gov.seats != null ? `${num(gov.seats)}석` : null, gov.majority_line ? `과반 ${num(gov.majority_line)}` : null,
+        gov.formed ? `${day(gov.formed)} 출범` : null].filter(Boolean).join(' · ')
+    : null);
+
+const COVERAGE_KO = { complete: '수집 완료', partial: '일부 수집', not_collected: '수집 전' };
 
 const roundBlock = (round, basis) => `
     <div class="elections-er-round">
@@ -66,6 +90,7 @@ const recordBody = (rec) => {
             ${row('투표율', pct(rec.turnout_pct))}
             ${row('선거인 수', num(rec.electorate))}
             ${row('당선', rec.winner_ko)}
+            ${(rec.tiers || []).map((t) => row(`${t.label_ko || t.tier} 투표율`, pct(t.turnout_pct))).join('')}
         </div>
         ${rounds ? rounds.map((round) => roundBlock(round, rec.vote_pct_basis)).join('') : `
             ${candidateTable(rec.candidates, rec.vote_pct_basis)}
@@ -95,7 +120,7 @@ const officeBlock = (office, country) => {
         office.runoff_rule_ko ? '결선 있음' : null,
     ].filter(Boolean).join(' · ');
     const incumbent = office.incumbent
-        ? `${office.incumbent.name}${office.incumbent.since ? ` · ${day(office.incumbent.since)} 취임` : ''}${office.incumbent.term_end ? ` · 임기 만료 ${day(office.incumbent.term_end)}` : ''}`
+        ? `${[office.incumbent.name_ko, office.incumbent.name].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(' ')}${office.incumbent.party ? ` (${office.incumbent.party})` : ''}${office.incumbent.since ? ` · ${day(office.incumbent.since)} 취임` : ''}${office.incumbent.term_end ? ` · 임기 만료 ${day(office.incumbent.term_end)}` : ''}`
         : null;
     const selectedBy = office.selected_by_system_id
         ? country.election_records.offices.find((o) => o.system_id === office.selected_by_system_id) : null;
@@ -107,11 +132,17 @@ const officeBlock = (office, country) => {
                 ${row('선출 방식', office.method_ko)}
                 ${row('결선 규칙', office.runoff_rule_ko)}
                 ${selectedBy ? row('근거 선거', `${officeTitle(selectedBy)} 결과로 결정`) : ''}
-                ${row('다음 선거', nextLine(office))}
+                ${row('집권 구성', governmentLine(office.government))}
+                ${row('다음 선거', office.elected_how === 'by_legislature' && !office.next?.date && selectedBy
+                    ? `${nextLine(selectedBy) || '미정'} (${officeTitle(selectedBy)})` : nextLine(office))}
+                ${row('수집 상태', office.coverage ? COVERAGE_KO[office.coverage] || office.coverage : null)}
             </div>
+            ${office.coverage_note_ko ? `<p class="elections-panel-note">${escapeHtml(office.coverage_note_ko)}</p>` : ''}
+            ${office.note_ko ? `<details class="elections-disclosure"><summary>조사 메모</summary><p class="elections-panel-note">${escapeHtml(office.note_ko)}</p></details>` : ''}
             ${last ? `<p class="elections-er-sub">직전 선거${last.label_ko ? ` · ${escapeHtml(last.label_ko)}` : ''}</p>${recordBody(last)}`
                 : office.elected_how === 'by_legislature' ? ''
                 : '<p class="elections-muted">직전 선거 기록이 아직 수집되지 않았습니다.</p>'}
+            ${compositionBlock(office.current_composition)}
             ${older.length ? `<details class="elections-disclosure"><summary>이전·보궐 선거 ${older.length}건</summary>
                 ${older.map((rec) => `<div class="elections-er-older"><p class="elections-er-sub">${escapeHtml(day(rec.date))}${rec.by_election ? ' · 보궐' : ''}${rec.label_ko ? ` · ${escapeHtml(rec.label_ko)}` : ''}</p>${recordBody(rec)}</div>`).join('')}
             </details>` : ''}

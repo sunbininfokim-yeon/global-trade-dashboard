@@ -100,13 +100,33 @@ New for anti/public/data/election_records/<ISO3>.json                      ← �
 | `turnout_pct` | 공식 발표값을 씁니다. 결선 투표율은 `rounds[].turnout_pct`에 따로 둡니다 |
 | `candidates` | 득표 순서로 적습니다. 1% 미만 군소 후보는 생략할 수 있지만, 그때는 `summary_ko`에 '기타 N명 합 X표'를 적습니다 |
 | `rounds` | 1차는 **전원**(1% 미만 생략 규칙 동일), 결선은 결선 후보 2명입니다. 1차에서 끝났으면 `rounds`를 쓰지 않고 `candidates`만 씁니다 |
-| `seats` | 의석 1석 이상인 정당 전부를 적습니다. 비례 득표율은 공식 값이 있을 때만 적습니다. 혼합형은 `summary_ko`에 '지역구 X · 비례 Y'로 적습니다 |
+| `seats` | 의석 1석 이상인 정당 전부와, 의석은 없지만 득표율 1% 이상인 정당(`seats: 0`)을 적습니다. 혼합형은 `seats_district`·`seats_list` 칸에 나눠 적습니다(2-3절) |
 | 양원제 | 상원과 하원을 각각 별도의 `office`로 둡니다(`system_id`가 다름). 일부만 바꾸는 상원 선거는 `seats`에 改選분만 적고, `summary_ko`에 전체 의석 구성을 따로 적습니다 |
 | 의원내각제 행정수반 | `key: executive`, `elected_how: by_legislature`로 두고 `records`는 비웁니다. 대신 `incumbent`(총리 이름, 취임일)과, 어느 의회 선거 결과로 정해졌는지(`selected_by_system_id`)를 적습니다 |
 | 보궐선거 | `by_election: true`를 붙여 같은 직위의 `records`에 넣습니다. 화면은 이를 '이전·보궐'로 접습니다 |
 | 다음 선거 | 법정 날짜나 공고 날짜가 있을 때만 `date`를 씁니다. 없으면 `date: null`, `label_ko: "법정 기한 YYYY-MM"`으로 둡니다. 추정 날짜를 만들지 않습니다 |
 | 날짜 | `YYYY-MM-DD` 형식만 씁니다. 모르면 `null`로 두고 `note_ko`에 이유를 적습니다 |
 | 출처 | 모든 `records[]`·`incumbent`·`next`에 `sources`를 붙입니다. http(s) URL만 씁니다 |
+
+### 2-3. 보강 규칙 (2026-11-08, 일본 #922·한국 1차분 검토 반영)
+1·2차 제출분을 보니 모든 나라에 공통으로 생길 문제가 아래 12가지였습니다. 이 규칙은 이후 모든 나라에 적용합니다. 빌더와 화면은 이미 이 칸들을 읽습니다.
+
+| # | 문제 (실제 사례) | 규칙 |
+|---|---|---|
+| 1 | 현직 이름이 원문 표기만 있음 (高市 早苗) | 사람 이름은 `name_ko`와 `name`(현지 원문)을 **둘 다** 적습니다. 현직·후보·당선자 모두 해당합니다 |
+| 2 | 혼합형의 지역구·비례 의석이 `summary_ko` 문장에만 있음 | `seats[]`에 `seats_district`와 `seats_list`를 나눠 적습니다. `vote_pct`는 정당(비례) 득표율이고, 지역구 득표율이 있으면 `vote_pct_district`에 따로 적습니다 |
+| 3 | 소선거구·비례 투표율이 다른데 하나만 칸에 들어감 (56.26 / 56.25) | `turnout_pct`에는 대표값(지역구 또는 대통령 1차)을 적고, 나머지는 `tiers: [{"tier": "district", "label_ko": "소선거구", "turnout_pct": …}, {"tier": "list", "label_ko": "비례", …}]`에 둡니다 |
+| 4 | 의석 0인 정당의 득표가 문장에 묻힘 | 득표율 1% 이상이면 `seats: 0` 행으로 표에 넣습니다 |
+| 5 | 선거 뒤 회파 이동·결원이 `note_ko`에 섞임 | 선거 결과(`records`)와 **지금 구성**을 나눕니다. 지금 구성은 `office.current_composition = {"as_of", "by_party": [{"party", "party_ko", "seats"}], "vacancies", "sources"}`에 적습니다 |
+| 6 | 의원내각제 총리의 '다음 선거'를 '다음 지명일 없음'으로 적음 | 총리 직위의 `next`는 비웁니다. 화면이 근거 의회의 다음 선거를 대신 보여 줍니다. 대신 연정 구성 `government = {"parties": [...], "seats", "majority_line", "formed", "sources"}`를 적습니다. 지명 투표 수는 선택 칸 `investiture`입니다 |
+| 7 | 현직 정당이 '원문에 없어서' null | 같은 기관의 다른 공식 페이지(의원 명부, 정당 공식 당직 페이지)로 채우고 `party_source`에 출처를 적습니다 |
+| 8 | 같은 선거가 일정판 id와 조사 id로 두 줄 생김 (한국 2024 총선) | 빌더가 같은 날짜의 정기 선거는 하나로 합칩니다. 그래도 가능하면 일정판의 `election_id`를 그대로 씁니다 (`elections_board_v1.json`의 events[].id) |
+| 9 | 직전 2회 중 한 회만 표가 있음 (한국 2022 대선: 투표율만) | 직전 2회는 **같은 형식**으로 받습니다. 2회 모두 후보별 득표 또는 정당별 의석이 있어야 비교됩니다 |
+| 10 | '열지 않았다'(시도하지 않음)와 '열리지 않았다'(차단)가 구분되지 않음 | 직위마다 `coverage`(`complete` / `partial` / `not_collected`)와 한 줄 사유 `coverage_note_ko`를 적습니다. 차단된 URL은 `unreachable_sources: [{"url", "reason": "blocked|timeout|not_found|format"}]`로 남깁니다. **Claude가 GitHub 수집 워크플로(source_fetch)로 대신 받아 줍니다**. 시도하지 않은 칸을 '못 열었다'로 적지 않습니다 |
+| 11 | 조사 과정 설명이 화면 요약 자리를 차지함 | `summary_ko`는 화면에 그대로 나가므로 두 문장 이내로 씁니다. 조사 과정·원문 대조 메모는 `note_ko`에 적으며, 화면에서는 '조사 메모'로 접혀 보입니다 |
+| 12 | 현 단위 보궐(후쿠시마현의회)이 별도 지방 직위로 뜸 | 지방 직위는 전국 단위로만 만듭니다(2-2절). 개별 지역의 보궐은 해당 지방 직위 아래 `by_election: true` 기록으로 넣습니다 |
+
+추가로 의회 직위에는 법정 임기 만료일 `term_end`와 `dissolution_possible`(해산 가능 여부)을 적습니다. 해산이 가능한 의회의 '다음 선거'는 날짜가 아니라 법정 기한입니다.
 
 ### 2-2. 지방선거의 범위
 지방선거는 **전국 단위 집계만** 받습니다. 지역별 수장은 지역 수장 명단(`region_leaders`, `POLITICS_DATA_GAPS_20261104.md`)으로 따로 받습니다.
@@ -243,6 +263,10 @@ New for anti/public/data/election_records/<ISO3>.json                      ← �
 - [ ] `vote_pct`와 `turnout_pct`는 발표값 그대로입니다(반올림하지 않음)
 - [ ] 후보 득표 합이 유효표와 맞는지 확인했고, 다르면 `summary_ko`에 차이를 적었습니다
 - [ ] `next.date`는 법정·공고 날짜이고, 없으면 `null`입니다
+- [ ] 사람 이름이 `name_ko`와 원문 `name` 둘 다 있습니다
+- [ ] 혼합형은 지역·비례 의석과 투표율이 칸으로 나뉘어 있습니다(문장에만 있지 않음)
+- [ ] 직위마다 `coverage`가 있고, 막힌 URL은 `unreachable_sources`에 있습니다
+- [ ] 직전 2회가 같은 형식(후보 득표 또는 정당 의석)입니다
 - [ ] `python3 build_election_records.py --check`를 통과합니다
 - [ ] 다른 나라 파일·화면 코드는 바꾸지 않았습니다
 

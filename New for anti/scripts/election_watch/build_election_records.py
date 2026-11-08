@@ -255,6 +255,8 @@ def validate_input(iso3: str, extra: dict) -> list[str]:
     if not extra.get("as_of"):
         errors.append(f"{iso3}: as_of missing")
     for office in extra.get("offices") or []:
+        if office.get("coverage") not in (None, "complete", "partial", "not_collected"):
+            errors.append(f"{iso3}: coverage {office.get('coverage')!r}")
         if office.get("key") not in OFFICE_ORDER:
             errors.append(f"{iso3}: office key {office.get('key')!r}")
         for rec in office.get("records") or []:
@@ -263,6 +265,9 @@ def validate_input(iso3: str, extra: dict) -> list[str]:
                 errors.append(f"{where}: election_id/date")
             if not urls(rec.get("sources")):
                 errors.append(f"{where}: sources missing")
+            seats = [row.get("seats") for row in rec.get("seats") or [] if isinstance(row.get("seats"), int)]
+            if rec.get("seats_total") and sum(seats) > rec["seats_total"]:
+                errors.append(f"{where}: seats sum {sum(seats)} > seats_total {rec['seats_total']}")
             for value in (rec.get("turnout_pct"), *[r.get("turnout_pct") for r in rec.get("rounds") or []]):
                 if value is not None and not (isinstance(value, (int, float)) and 0 <= value <= 100):
                     errors.append(f"{where}: turnout_pct {value!r}")
@@ -308,11 +313,22 @@ def apply_input(doc: dict, extra: dict) -> None:
             for rnd in rec.get("rounds") or []:
                 if fill_vote_pct(rnd.get("candidates")):
                     rnd["vote_pct_basis"] = "listed_candidates"
+            # 같은 선거가 일정판에서 다른 id로 이미 들어와 있으면(예: 'kor-2026-...:previous'),
+            # 같은 날짜의 정기 선거 기록과 합친다 -- 조사값이 이기고, 조사가 못 채운 칸
+            # (의석 표 등)은 일정판 값이 남는다. 같은 선거가 두 줄로 뜨지 않게 한다.
+            same_day = next((i for i, r in enumerate(target["records"])
+                             if r.get("origin") != "researched" and r.get("date") == rec.get("date")
+                             and not r.get("by_election") and not rec.get("by_election")), None)
             if rec.get("election_id") in known:
                 i = known[rec["election_id"]]
                 target["records"][i] = deep_merge(target["records"][i], rec)
+            elif same_day is not None:
+                merged = deep_merge(target["records"][same_day], rec)
+                merged["merged_from"] = target["records"][same_day]["election_id"]
+                target["records"][same_day] = merged
             else:
                 target["records"].append(rec)
+        target["records"].sort(key=lambda r: r.get("date") or "", reverse=True)
     if extra.get("issues"):
         doc["issues"] = extra["issues"]
     for field in ("as_of", "note_ko"):
