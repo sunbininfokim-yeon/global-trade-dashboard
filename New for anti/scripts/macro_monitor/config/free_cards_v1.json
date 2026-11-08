@@ -929,7 +929,7 @@
    "iso3": "GBR",
    "id": "boe_total_assets",
    "enabled": false,
-   "reason_ko": "영란은행 데이터베이스(IADB)에서 주간 Bank Return의 항목별 코드(RPWZ4TJ~TN, RPWB54A~59A)는 확인했지만 총자산 합계 코드는 찾지 못했습니다(2026-10-31, 후보)."
+   "reason_ko": "이 레지스트리가 아니라 wire_cb_balance_sheets.py 가 채웁니다: 주간 총자산 코드가 없어(2014년 이후 미공표) 주간 부채 3개 항목(RPWB55A·56A·59A)의 합을 대차대조표 규모로 씁니다(2026-11-07)."
   },
   {
    "iso3": "GBR",
@@ -1926,7 +1926,7 @@
    "category": "liquidity",
    "cadence": "weekly",
    "unit": "bn_usd",
-   "format": "bn1usds",
+   "format": "bn1usd",
    "note_ko": "은행·딜러가 국채를 담보로 연준 상설레포기구(SRF)에서 하룻밤 빌린 금액(주간 최대, 10억 달러)입니다. 평소엔 0이고, 월말·분기말이나 지준이 모자랄 때 튀어 오릅니다 -- 단기자금 경색의 가장 직접적인 신호입니다. 뉴욕연준 공개시장조작, FRED 재게시.",
    "source": "fred:RPONTSYD",
    "url": "https://fred.stlouisfed.org/series/RPONTSYD",
