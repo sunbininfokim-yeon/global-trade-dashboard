@@ -48,6 +48,15 @@ const msDayLabel = (iso) => {
     return `${m}/${d}(${wd})`;
 };
 const msPct0 = (x) => `${Math.round(x * 100)}%`;
+// 48-52% reads as 중립 (user decision 2026-11-07; 45-55 was tried first and
+// narrowed). In replays of 10/23-11/6 only a handful of the 66 open/close
+// probabilities landed near 50, so the band marks genuinely split days only.
+// Judged on the rounded percent so the label always agrees with the number
+// shown next to it (52.6% shows "53%" and is 상승).
+const msDirLean = (p) => {
+    const pct = Math.round(p * 100);
+    return pct >= 53 ? 'up' : pct <= 47 ? 'down' : 'neutral';
+};
 // Card order: index first, then the two names the model was fit on.
 const MS_DIRECTION_ORDER = ['KOSPI', '005930', '000660'];
 // From data/manifests/us_lag1_direction_20261104.md (KOSPI, 1,047 days).
@@ -76,11 +85,13 @@ const msDirectionView = (doc, today = msKstToday()) => {
 const msDirSplitRow = (label, s, muted) => {
     const p = Number((s || {}).probability);
     if (!Number.isFinite(p)) return `<div class="ms-dir-row"><span class="ms-dir-row-label">${label}</span><span class="ms-dir-na">—</span></div>`;
+    const lean = msDirLean(p);
+    const ref = (s.information_state === 'recent_base_rate_only') ? '<span class="ms-dir-ref">최근 빈도</span>' : '';
     return `
         <div class="ms-dir-row${muted ? ' is-late' : ''}">
             <div class="ms-dir-row-head"><span class="ms-dir-row-label">${label}</span>
-                <span class="ms-dir-pair"><span class="${p > 0.5 ? 'is-lead' : ''}">상승 ${msPct0(p)}</span><span class="${p < 0.5 ? 'is-lead' : ''}">하락 ${msPct0(1 - p)}</span></span></div>
-            <div class="ms-dir-bar" role="img" aria-label="${label} 상승 ${msPct0(p)}, 하락 ${msPct0(1 - p)}">
+                <span class="ms-dir-pair">${lean === 'neutral' ? '<span class="ms-dir-neutral">중립</span>' : ''}${ref}<span class="${lean === 'up' ? 'is-lead' : ''}">상승 가능성 ${msPct0(p)}</span><span class="${lean === 'down' ? 'is-lead' : ''}">하락 가능성 ${msPct0(1 - p)}</span></span></div>
+            <div class="ms-dir-bar" role="img" aria-label="${label} 상승 가능성 ${msPct0(p)}, 하락 가능성 ${msPct0(1 - p)}">
                 <i style="width:${(p * 100).toFixed(1)}%"></i><b></b><em></em>
             </div>
         </div>`;
