@@ -1,6 +1,6 @@
 {
   "schema_version": "climate-global-v1",
-  "generated_at": "2026-11-06T22:19:34.170159+00:00",
+  "generated_at": "2026-11-08T03:53:28.722163+00:00",
   "note": "ENSO·IOD 는 NOAA 원본에서 실시간 갱신됩니다 (build_climate_global.py). 도시 기온·대륙 편차 등 나머지 항목은 아직 seed 이며 갱신 예정입니다.",
   "enso": {
     "index": "Niño 3.4 ONI",
@@ -8,8 +8,8 @@
     "source_url": "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt",
     "season": "ASO",
     "latest_c": 2.46,
-    "state_ko": "엘니뇨 · 강",
-    "state_en": "El Niño strong",
+    "state_ko": "엘니뇨 · 매우 강",
+    "state_en": "El Niño very strong",
     "prob_continue_pct": null,
     "series": [
       {
@@ -60,7 +60,53 @@
         "label": "26-ASO",
         "oni": 2.46
       }
-    ]
+    ],
+    "history": {
+      "since": 1950,
+      "seasons": 921,
+      "rank_ko": "1950년 이후 921개 계절 중 3번째로 높음",
+      "rank": 3,
+      "top_peaks": [
+        {
+          "label": "2015–16",
+          "peak": 2.59,
+          "season": "NDJ 2015"
+        },
+        {
+          "label": "1997–98",
+          "peak": 2.37,
+          "season": "NDJ 1997"
+        },
+        {
+          "label": "1982–83",
+          "peak": 2.14,
+          "season": "DJF 1983"
+        },
+        {
+          "label": "2023–24",
+          "peak": 1.99,
+          "season": "NDJ 2023"
+        }
+      ],
+      "thresholds": [
+        {
+          "value": 0.5,
+          "label_ko": "엘니뇨 기준"
+        },
+        {
+          "value": 1.5,
+          "label_ko": "강"
+        },
+        {
+          "value": 2.0,
+          "label_ko": "매우 강"
+        },
+        {
+          "value": -0.5,
+          "label_ko": "라니냐 기준"
+        }
+      ]
+    }
   },
   "iod": {
     "index": "Indian Ocean Dipole DMI",
