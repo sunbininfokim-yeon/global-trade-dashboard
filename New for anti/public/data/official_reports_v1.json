@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-08T15:18:09.730385+00:00",
+  "generated_at": "2026-11-08T20:31:07.341399+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 173,
     "scored": 173,
     "selected": 40,
-    "indicators": 13
+    "indicators": 14
   },
   "feed_status": [
     {
@@ -273,6 +273,20 @@
       "published_at": "2026-09-10T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -1219,42 +1233,6 @@
       "site_slot": "ticker"
     },
     {
-      "id": "2699e668d5d66403",
-      "published_at": "2026-10-28T12:29:46+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-announces-arrival-of-first-one-million-barrels-of-oil-in-texas-thanks-to-historic-oil-deal/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "President Trump Announces Arrival of First One Million Barrels of Oil in Texas Thanks to Historic Oil Deal",
-        "original_lang": "en",
-        "ko": "[USA·경제] President Trump Announces Arrival of First One Million Barrels of Oil in Texas Thanks to Historic Oil Deal"
-      },
-      "summary": "“This historic win gives us control over a massive part of the world’s oil supply.” – President Donald J. Trump Yesterday in Corpus Christi, Texas, President Donald J. Trump announced the arrival of the first million barrels of oil secured by the Trump Administration as part of t",
-      "scores": {
-        "significance": 2.392,
-        "final": 2.392
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "478dcf6a142684c2",
       "published_at": "2026-11-05T16:00:00+00:00",
       "source": {
@@ -1673,6 +1651,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "5c6d5ab022db6344",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1778,6 +1791,17 @@
     {
       "title": "Minutes of the Securities Lending Committee meeting – September 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/september/securities-lending-committee-meeting-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Banknote imagery advisory group minutes – 15 July 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2731,42 +2755,6 @@
       "site_slot": "ticker"
     },
     {
-      "id": "2699e668d5d66403",
-      "published_at": "2026-10-28T12:29:46+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-announces-arrival-of-first-one-million-barrels-of-oil-in-texas-thanks-to-historic-oil-deal/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "President Trump Announces Arrival of First One Million Barrels of Oil in Texas Thanks to Historic Oil Deal",
-        "original_lang": "en",
-        "ko": "[USA·경제] President Trump Announces Arrival of First One Million Barrels of Oil in Texas Thanks to Historic Oil Deal"
-      },
-      "summary": "“This historic win gives us control over a massive part of the world’s oil supply.” – President Donald J. Trump Yesterday in Corpus Christi, Texas, President Donald J. Trump announced the arrival of the first million barrels of oil secured by the Trump Administration as part of t",
-      "scores": {
-        "significance": 2.392,
-        "final": 2.392
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "478dcf6a142684c2",
       "published_at": "2026-11-05T16:00:00+00:00",
       "source": {
@@ -3185,6 +3173,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "5c6d5ab022db6344",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ]
 }
