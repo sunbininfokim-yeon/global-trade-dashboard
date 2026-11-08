@@ -578,12 +578,20 @@ const signalLoadChokepoints = async () => {
 // Both views go through msDirectionView, so a forecast whose target session
 // has passed shows 자료 없음 here too -- never yesterday's number as today's.
 // No up/down colors: this is research output, and the card must not read as
-// a trading signal. Each half shows the more likely side of its own question.
+// a trading signal. Each half shows the more likely side of its own question,
+// with its own probability (40% up reads 하락 60%, never "하락 10%"); 48-52% is
+// 중립 (msDirLean) and keeps the up probability in brackets.
 const signalLoadDirection = async () => {
     const side = (s) => {
         const p = Number((s || {}).probability);
         if (!Number.isFinite(p)) return '—';
-        return p === 0.5 ? '균형 50%' : `${p > 0.5 ? '상승' : '하락'} ${msPct0(Math.max(p, 1 - p))}`;
+        const lean = msDirLean(p);
+        const ref = s.information_state === 'recent_base_rate_only' ? '(최근 빈도)' : '';
+        // Non-breaking spaces: each half wraps as one unit, never "중립(상승 / 51%)".
+        // "가능성" (user decision 2026-11-07): a bare "하락 60%" reads as a 60% price drop.
+        const text = lean === 'neutral' ? `중립(상승 가능성 ${msPct0(p)})${ref}`
+            : `${lean === 'up' ? '상승' : '하락'} 가능성 ${msPct0(lean === 'up' ? p : 1 - p)}${ref}`;
+        return text.replace(/ /g, ' ');
     };
     try {
         const doc = await loadFirstJson(finDataPaths('us_kr_direction_v1.json'), { cache: 'no-cache' });
@@ -600,7 +608,7 @@ const signalLoadDirection = async () => {
             const open = kospi.scores.opening_up, close = kospi.scores.closing_up;
             signalFixedState.kospi = {
                 ...signalFixedState.kospi,
-                value: `시작 ${side(open)} · 마감 ${side(close)}`,
+                value: `시작 ${side(open)} · 마감 ${side(close)}`,
                 sub: `${msDayLabel(v.target)} KOSPI · 전일 종가 대비 · 미국 ${msDayLabel(v.usDay)} 마감 반영`,
                 foot: v.state === 'replay' ? '과거 재생 · 사전 예측 아님' : '연구용 · 08:30 전 확정',
                 tone: v.state === 'replay' ? 'muted' : null,

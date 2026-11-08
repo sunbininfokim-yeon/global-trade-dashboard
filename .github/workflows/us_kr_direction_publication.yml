@@ -3,11 +3,14 @@ name: US KR direction publication observation
 # matches today's immutable first forecast before the 08:30 KST cutoff
 # (#899, us_kr_publication.py). Commits only archive receipts.
 #
-# Loop guard: this workflow is chained into deploy.yml (it commits to main),
-# and deploy.yml's completion triggers this one. A deploy whose gate skipped
-# the deploy job still "succeeds", so without the check below every observer
-# run would start a no-op deploy, which would start another observer, ...
-# The observer therefore runs only when the triggering deploy actually shipped.
+# deploy-chain: not-served
+# Its receipts live under data/forecasts/, which the site never serves, so it
+# is deliberately NOT chained into deploy.yml (tools/ops/check_deploy_chain.py
+# honours the line above). When it was chained (#914), every observer run
+# started a no-op deploy that started another observer, two extra rounds per
+# deploy until GitHub's three-level workflow_run limit stopped it.
+# It also runs only when the triggering deploy actually shipped, so the
+# collectors' many no-op deploys a day cost one short job each.
 on:
   workflow_run:
     workflows: ['Deploy to Cloudflare Workers']

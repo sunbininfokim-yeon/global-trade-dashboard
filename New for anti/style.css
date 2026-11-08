@@ -5280,6 +5280,8 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.25;
+    /* Korean breaks between any syllables by default ("중립(상 / 승 51%)"). */
+    word-break: keep-all;
 }
 
 .signal-fixed-card.tone-muted .signal-fixed-value {
@@ -7361,6 +7363,9 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .ms-dir-pair { display: flex; gap: 10px; font-size: 13px; color: var(--text-secondary); }
 .ms-dir-pair .is-lead { font-size: 15px; font-weight: 600; color: var(--text-primary); }
 .ms-dir-row.is-late .ms-dir-pair .is-lead { color: var(--text-secondary); }
+.ms-dir-pair { align-items: center; }
+.ms-dir-neutral { font-size: 12px; font-weight: 600; padding: 1px 7px; border-radius: 4px;
+    color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.22); }
 .ms-dir-na { color: rgba(148, 163, 184, 0.6); }
 .ms-dir-bar { position: relative; display: flex; gap: 2px; height: 7px; border-radius: 4px; overflow: hidden; }
 .ms-dir-bar i { display: block; background: rgba(255, 255, 255, 0.18); }
