@@ -41,7 +41,10 @@ STOCK = {
     "SA015": ["A", "B6", "B1", "B2", "B3", "B4"],
     "SA042": ["A"],
     "SA014": ["B0", "B", "C"],
+    # 여신종별 고정이하여신: column a = loans, b = NPLs, per sector (기업 / 대기업 / 중소기업 / 개인사업자 / 가계)
+    "SA041": ["A", "A1", "A2", "A20", "B"],
 }
+TWO_COL = {"SA041"}
 # SA061: five columns per account -- a 신규연체, b 상각, c 대환, d 정상화 등 (year to date), e 연체잔액.
 FLOW_1M = {"E": "기업", "E2": "중소기업", "E21": "개인사업자", "F": "가계", "G": "공공·기타", "H": "신용카드"}
 FLOW_1D = {"A": "기업", "A2": "중소기업", "A21": "개인사업자", "B": "가계", "C": "공공·기타", "D": "신용카드"}
@@ -75,6 +78,14 @@ def fetch() -> dict[str, Any]:
     for (cd, l, acc), rows in zip(jobs, results):
         for r in rows:
             ym = r["base_month"]
+            if l in TWO_COL:
+                for col in "ab":
+                    v = _num(r.get(col))
+                    if v is not None:
+                        k = f"{l}.{acc}.{col}"
+                        stock.setdefault(k, {})[ym] = stock.get(k, {}).get(ym, 0.0) + v
+                        per_bank.setdefault(cd, {}).setdefault(k, {})[ym] = v
+                continue
             if l == "SA061":
                 for col in "abcde":
                     v = _num(r.get(col))
@@ -105,6 +116,7 @@ def fetch() -> dict[str, Any]:
             "npl": round(npl / tot * 100, 3) if npl is not None else None,
             "coverage": round(res / npl * 100, 1) if res and npl else None,
             "loans_tn": round(tot / 1e12, 1),
+            "npl_tn": round(npl / 1e12, 3) if npl is not None else None,
         })
     return {"stock": stock, "flow": flow, "banks": banks_latest, "banks_asof": latest}
 
@@ -198,6 +210,16 @@ def build(doc: dict[str, Any]) -> dict[str, Any]:
     net_npl = {k: (v - S("SA042.A")[k]) / S("SA014.B0")[k] * 100 for k, v in S("SA015.B4").items()
                if k in S("SA042.A") and S("SA014.B0").get(k)}
 
+    # NPL balance by borrower sector (SA041 column b = 고정이하여신, a = 여신)
+    sa = lambda acc, col: S(f"SA041.{acc}.{col}")  # noqa: E731
+    corp, hh = sa("A", "b"), sa("B", "b")
+    sme_corp = {k: v - sa("A20", "b").get(k, 0.0) for k, v in sa("A2", "b").items() if k in sa("A20", "b")}
+    other = {k: v - corp.get(k, 0.0) - hh.get(k, 0.0) for k, v in S("SA015.B4").items() if k in corp and k in hh}
+    sector_npl = [("대기업", tn(sa("A1", "b"))), ("중소법인", tn(sme_corp)), ("개인사업자", tn(sa("A20", "b"))),
+                  ("가계", tn(hh)), ("기타(카드·공공 등)", tn({k: max(v, 0.0) for k, v in other.items()}))]
+    sector_ratio = [(lab, ratio(sa(acc, "b"), sa(acc, "a"))) for lab, acc in
+                    (("대기업", "A1"), ("중소기업", "A2"), ("개인사업자", "A20"), ("가계", "B"))]
+
     banks = doc.get("banks") or []
     bank_asof = _label(doc.get("banks_asof") or months[-1])
     bank_panel = lambda key, lab: {  # noqa: E731
@@ -244,6 +266,27 @@ def build(doc: dict[str, Any]) -> dict[str, Any]:
                  "series": panel_series(k16, stages, 2),
                  "note_ko": "국내은행 여신을 건전성 분류별로 쌓은 잔액(조원). 고정·회수의문·추정손실이 부실채권(고정이하여신)이고, 요주의는 그 직전 단계입니다. 요주의가 두꺼워지면 몇 분기 뒤 부실채권이 늘기 쉽습니다. 금융감독원 FISIS SA015."},
                 bank_panel("npl", "부실채권비율"),
+            ],
+        },
+        "npl_amount": {
+            "label": "부실채권 잔액(고정이하여신)", "unit": "tn_krw", "format": "krw_tn1",
+            "note_ko": "국내은행 고정이하여신 합계(조원, 분기말). 눌러서 부문별 잔액(대기업·중소법인·개인사업자·가계), 건전성 단계, 신규·정리, 은행별 잔액을 볼 수 있습니다. 금융감독원 FISIS(은행별 합산)와 분기 보도자료.",
+            "points": pts(tn(S("SA015.B4"))),
+            "panels": [
+                {"id": "npl_by_sector", "label": "부문별 잔액", "type": "stack", "unit": "조원", "dates": [_label(k) for k in k16],
+                 "series": panel_series(k16, sector_npl, 2), "line": panel_series(k16, [("부실채권 합계", tn(S("SA015.B4")))], 2)[0],
+                 "note_ko": "고정이하여신을 차주 부문별로 나눈 잔액(조원). 중소법인 = 중소기업 − 개인사업자. 기타는 합계에서 기업·가계를 뺀 나머지(신용카드채권, 공공 등). "
+                            "금융감독원 FISIS 'SA041 여신종별 고정이하여신', 은행별 합산."},
+                {"id": "npl_sector_ratio", "label": "부문별 비율", "type": "bars", "unit": "%", "dates": [_label(k) for k in k12],
+                 "series": panel_series(k12, sector_ratio, 2),
+                 "note_ko": "부문별 고정이하여신 / 해당 부문 여신(%). 금융감독원 FISIS SA041, 은행별 합산."},
+                {"id": "npl_stages", "label": "건전성 단계", "type": "stack", "unit": "조원", "dates": [_label(k) for k in k16],
+                 "series": panel_series(k16, stages[1:], 2),
+                 "note_ko": "부실채권을 단계별로 나눈 잔액(조원): 고정(담보로 회수 가능) · 회수의문 · 추정손실(사실상 회수 불가). 금융감독원 FISIS SA015."},
+                {"id": "banks_npl_amount", "label": "은행별 잔액", "type": "hbar", "unit": "조원", "asof": bank_asof,
+                 "rows": [{"label": b["name"], "value": b["npl_tn"], "sub": f"비율 {b['npl']:.2f}%" if b.get("npl") is not None else ""}
+                          for b in sorted(banks, key=lambda b: -(b.get("npl_tn") or 0)) if b.get("npl_tn")],
+                 "note_ko": f"{bank_asof} 말 은행별 고정이하여신 잔액(조원). 금융감독원 FISIS."},
             ],
         },
         "loss_absorption": {

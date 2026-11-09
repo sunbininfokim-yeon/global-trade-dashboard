@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT))
 
 from macro_monitor import kr_bank_credit as kbc  # noqa: E402
 from macro_monitor import kr_npl_release as rel  # noqa: E402
+from macro_monitor import kr_delinq_monthly as mon  # noqa: E402
 from macro_monitor import us_public_series as ups  # noqa: E402
 from macro_monitor import world_public_series as wps  # noqa: E402
 from macro_monitor import free_cards  # noqa: E402,F401 -- registers display formats
@@ -78,6 +79,19 @@ def main() -> int:
     if extra:
         npl = built["npl_ratio"]["panels"]
         npl[1:1] = extra                      # after 건전성 단계, before 은행별
+        flow = next((p for p in extra if p["id"] == "npl_flow"), None)
+        if flow and "npl_amount" in built:
+            built["npl_amount"]["panels"].insert(3, flow)   # after 건전성 단계, before 은행별 잔액
+    # Monthly delinquency from the FSS monthly press-release PDFs
+    mdoc = mon.load()
+    try:
+        added = mon.update(mdoc, pages=1)
+        if mon.save(mdoc) and added:
+            print(f"FSS monthly delinquency: added {', '.join(added)}")
+    except Exception as exc:  # noqa: BLE001 -- the cached releases still serve
+        print(f"FSS monthly delinquency: fetch failed ({str(exc)[:160]}), cache used")
+    monthly = mon.build(mdoc)
+
     text = PACK.read_text(encoding="utf-8")
     pack = json.loads(text)
     kor = next(c for c in pack["countries"] if c["iso3"] == "KOR")
@@ -95,6 +109,13 @@ def main() -> int:
                      category="liquidity", chart="bar")
         cards.append(c)
         patches[cid] = wps.build_patch(c, pts, retrieved_at=now)
+    if monthly:
+        built["delinq_monthly"] = monthly
+        pts = monthly["points"]
+        c = wps.card("delinq_monthly", "monthly", "%", "pct2", monthly["label"], monthly["note_ko"], SOURCE, URL,
+                     lambda f, p=pts: p, category="liquidity", chart="bar")
+        cards.append(c)
+        patches["delinq_monthly"] = wps.build_patch(c, pts, retrieved_at=now)
     result = wps.apply_country(kor, cards, patches, retrieved_at=now)
     by_id = {i["id"]: i for i in kor["indicators"]}
     for cid, b in built.items():
