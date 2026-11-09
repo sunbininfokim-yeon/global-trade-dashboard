@@ -70,6 +70,8 @@ def analyze_canonical_facts(
     p1_structured_disclosures: Iterable[Mapping[str, Any]] | None = None,
     p1_annual_history: Iterable[Mapping[str, Any]] | None = None,
     p1_model_inputs: Mapping[str, Any] | None = None,
+    pe_cr_history: Iterable[Mapping[str, Any]] = (),
+    pe_cr_industry: str = "manufacturing",
 ) -> dict[str, Any]:
     """Run the common metric/view engine without mixing annual and interim data."""
     if canonical.get("schema_version") != "canonical-financial-facts/1":
@@ -270,6 +272,11 @@ def analyze_canonical_facts(
     # can use only its structured segment/backlog status, while P1 models use
     # the same strict disclosure boundary.
     output["p1_disclosures"] = p1_output
+    from .pe_cr import build_pe_cr
+    output["pe_cr"] = build_pe_cr(
+        canonical, selected_period=selected_period, history=list(pe_cr_history),
+        entity_policy=entity_policy, industry=pe_cr_industry,
+    )
     output["p1_models"] = build_p1_models(
         canonical,
         p1_disclosures=p1_output,

@@ -795,7 +795,7 @@ def default_sec_account_specs() -> dict[str, dict[str, Any]]:
     """Return the existing SEC concept catalogue in canonical-spec form."""
     from .sec_xbrl import SJ, US_GAAP_TAGS
 
-    return {
+    result = {
         account_id: {
             "nature": "balance" if SJ.get(account_id) == "BS" else "flow",
             "statement": SJ.get(account_id, "IS"),
@@ -804,6 +804,9 @@ def default_sec_account_specs() -> dict[str, dict[str, Any]]:
         }
         for account_id, concepts in US_GAAP_TAGS.items()
     }
+    from .pe_cr import account_specs
+    result.update({key: spec for key, spec in account_specs().items() if spec["sec_concepts"]})
+    return result
 
 
 def default_dart_account_specs(
@@ -826,6 +829,8 @@ def default_dart_account_specs(
             "unit_kind": "currency",
             "aggregation": deepcopy(raw.get("aggregation") or {}),
         }
+    from .pe_cr import account_specs
+    out.update(account_specs())
     return out
 
 

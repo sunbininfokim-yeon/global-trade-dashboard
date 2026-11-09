@@ -17,7 +17,7 @@ from typing import Any, Iterable, Mapping
 
 SCHEMA_VERSION = "kfa-p1-disclosures/1"
 LATEST_ENDPOINT_PRIORITY = ("Q3", "Q2", "Q1", "annual")
-_QUARTER_BY_ENDPOINT = {"Q1": "Q1", "Q2": "Q2", "Q3": "Q3", "annual": None}
+_QUARTER_BY_ENDPOINT = {"Q1": "Q1", "Q2": "Q2", "Q3": "Q3", "Q4": "Q4", "annual": None}
 _ENDPOINT_ALIASES = {"H1": "Q2", "FY": "annual"}
 _EBITDA_INPUTS = ("OPERATING_INCOME", "PPE_DEPRECIATION", "INTANGIBLE_AMORTIZATION")
 
