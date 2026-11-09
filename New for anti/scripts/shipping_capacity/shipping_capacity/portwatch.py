@@ -5,12 +5,14 @@ from __future__ import annotations
 import copy
 import json
 import math
+import re
 import statistics
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Any
 
 from shipping_capacity.ml_validation import analyze_capacity_series
@@ -333,12 +335,48 @@ def validate_7d_28d_signal(
     }
 
 
+PORTWATCH_RATE_LIMIT_WAIT_BUDGET_SECONDS = 180
+
+
+def _rate_limit_delay_seconds(retry_after: str | None, detail: dict[str, Any] | None) -> int:
+    """Respect both Retry-After and ArcGIS's HTTP-200 quota error message."""
+    delays: list[int] = []
+    if retry_after:
+        if re.fullmatch(r"[0-9]+", retry_after.strip()):
+            delays.append(int(retry_after))
+        else:
+            try:
+                deadline = parsedate_to_datetime(retry_after)
+                if deadline.tzinfo is None:
+                    deadline = deadline.replace(tzinfo=timezone.utc)
+                delays.append(math.ceil((deadline - datetime.now(timezone.utc)).total_seconds()))
+            except (TypeError, ValueError, OverflowError):
+                pass
+    if detail:
+        messages = detail.get("details")
+        if not isinstance(messages, list):
+            messages = [messages]
+        for message in [detail.get("message"), *messages]:
+            if isinstance(message, str):
+                delays.extend(
+                    int(seconds)
+                    for seconds in re.findall(
+                        r"\bretry\s+after\s+(\d+)\s*(?:seconds?|secs?|s)\b",
+                        message,
+                        flags=re.IGNORECASE,
+                    )
+                )
+    return max(1, *delays) if delays else 60
+
+
 class PortWatchClient:
     def __init__(self, timeout_seconds: int = 30, retry_attempts: int = 3) -> None:
         self.timeout_seconds = timeout_seconds
         if retry_attempts < 1:
             raise ValueError("retry_attempts must be positive")
         self.retry_attempts = retry_attempts
+        self._rate_limit_wait_remaining = PORTWATCH_RATE_LIMIT_WAIT_BUDGET_SECONDS
+        self._rate_limit_stop: str | None = None
 
     def _fetch_page(self, params: dict[str, str]) -> dict[str, Any]:
         """Retry transient ArcGIS failures, including errors inside HTTP 200.
@@ -348,7 +386,10 @@ class PortWatchClient:
         so a cached error for one representation need not poison the whole run.
         Authentication failures and malformed successful payloads fail closed.
         """
+        if self._rate_limit_stop is not None:
+            raise RuntimeError(self._rate_limit_stop)
         for attempt in range(self.retry_attempts):
+            rate_limit_delay = None
             request_params = {**params, "f": "pjson" if attempt % 2 else "json"}
             request = urllib.request.Request(
                 PORTWATCH_QUERY_URL + "?" + urllib.parse.urlencode(request_params),
@@ -360,10 +401,15 @@ class PortWatchClient:
             try:
                 with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
                     payload = json.load(response)
+                    retry_after = getattr(response, "headers", {}).get("Retry-After")
             except urllib.error.HTTPError as exc:
                 if exc.code not in (400, 408, 429, 500, 502, 503, 504):
                     raise
                 error: Exception = exc
+                if exc.code == 429:
+                    rate_limit_delay = _rate_limit_delay_seconds(
+                        (exc.headers or {}).get("Retry-After"), None
+                    )
             except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
                 error = exc
             else:
@@ -379,6 +425,19 @@ class PortWatchClient:
                     400, 408, 429, 500, 502, 503, 504,
                 ):
                     raise error
+                if detail["code"] == 429:
+                    rate_limit_delay = _rate_limit_delay_seconds(retry_after, detail)
+            if rate_limit_delay is not None:
+                if attempt + 1 == self.retry_attempts or rate_limit_delay > self._rate_limit_wait_remaining:
+                    self._rate_limit_stop = (
+                        f"PortWatch 429: requested {rate_limit_delay}s cooldown; "
+                        "stopping remaining requests in this collection after reaching the retry limit "
+                        f"or wait budget ({self._rate_limit_wait_remaining}s remaining): {error}"
+                    )
+                    raise RuntimeError(self._rate_limit_stop) from error
+                self._rate_limit_wait_remaining -= rate_limit_delay
+                time.sleep(rate_limit_delay)
+                continue
             if attempt + 1 == self.retry_attempts:
                 raise RuntimeError(
                     f"PortWatch query failed after {self.retry_attempts} attempts: {error}"

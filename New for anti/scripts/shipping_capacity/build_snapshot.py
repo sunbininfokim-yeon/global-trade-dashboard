@@ -882,7 +882,7 @@ def build_snapshot(
     official_cargo = collect_official_cargo(
         fetch=fetch_official_cargo, previous=fallback_official_cargo, now=build_time,
     )
-    fleet = load_json(config_dir / "fleet_2025.json")
+    fleet = load_json(config_dir / "fleet_baseline.json")
     chokepoints = load_json(config_dir / "chokepoints.json")
     routes = load_json(config_dir / "routes.json")
     reroute_receivers_path = config_dir / "reroute_receivers.json"
@@ -1289,8 +1289,8 @@ def build_snapshot(
             },
             "sources": [
                 {
-                    "name": "UNCTAD Review of Maritime Transport 2025, table II.5",
-                    "url": "https://unctad.org/system/files/official-document/rmt2025ch2_en.pdf",
+                    "name": fleet["source"]["name"],
+                    "url": fleet["source"]["url"],
                 },
                 {
                     "name": "IMF PortWatch Daily Chokepoints Data (ArcGIS REST)",
