@@ -99,6 +99,14 @@ class PECRTests(unittest.TestCase):
         self.assertIsNone(b["series"]["PECR_interest"]["annual"]["value"])
         self.assertIsNone(b["series"]["PECR_receivables"]["annual"]["value"])
 
+    def test_cis_allowed_but_conflicting_duplicates_blocked(self):
+        row = dict(sj_div="CIS", account_id="ifrs-full_InterestExpense", thstrm_amount="20", fs_div="CFS", rcept_no="synthetic")
+        def adapt(rows):
+            return adapt_dart_filings({"FY": rows}, account_specs=account_specs(), fiscal_year_end="2025-12-31")["series"]["PECR_interest"]["annual"]
+        self.assertEqual(adapt([row])["value"], 20)
+        self.assertEqual(adapt([row])["provenance"]["source_statement"], "CIS")
+        self.assertIsNone(adapt([row, {**row, "sj_div": "IS", "thstrm_amount": "30"}])["value"])
+
     def test_additive_integration(self):
         self.assertIn("pe_cr", analyze_canonical_facts(bundle()))
 

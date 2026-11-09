@@ -521,7 +521,7 @@ def _pick_dart_rows(
         dict(row)
         for row in rows
         if str(row.get("fs_div") or "").upper() == fs_div
-        and str(row.get("sj_div") or "").upper() == spec["statement"]
+        and str(row.get("sj_div") or "").upper() in (spec.get("source_statements") or [spec["statement"]])
     ]
     aggregation = spec.get("aggregation") or {}
     if aggregation:
@@ -544,6 +544,11 @@ def _pick_dart_rows(
         matched = [row for row in candidates if str(row.get("account_id") or "") == source_id]
         if matched:
             matched.sort(key=lambda row: str(row.get("rcept_no") or ""))
+            if spec.get("source_statements"):
+                latest = [row for row in matched if row.get("rcept_no") == matched[-1].get("rcept_no")]
+                values = {tuple(_amount(row.get(field)) for field in ("thstrm_amount", "thstrm_add_amount")) for row in latest}
+                if len(values) > 1:
+                    return [], "conflict:duplicate_source_concept"
             return [matched[-1]], None
     for source_name in source_names:
         matched = [row for row in candidates if str(row.get("account_nm") or "").strip() == source_name.strip()]
@@ -677,6 +682,7 @@ def _dart_source_point(
             "business_year": first.get("bsns_year"),
             "source_account_id": first.get("account_id"),
             "source_account_name": first.get("account_nm"),
+            "source_statement": first.get("sj_div"),
             "source_table_id": first.get("source_table_id") or first.get("table_id"),
             "source_row_id": first.get("source_row_id") or first.get("row_id"),
             "source_field": field,

@@ -18,6 +18,7 @@ def config():
 def account_specs():
     return {"PECR_" + key: {
         "nature": "balance" if sj == "BS" else "flow", "statement": sj,
+        "source_statements": ["IS", "CIS"] if sj == "IS" else [sj],
         "source_ids": dart, "source_names": [], "sec_concepts": sec,
         "unit_kind": "currency",
     } for key, (sj, dart, sec) in config()["inputs"].items()}
