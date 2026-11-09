@@ -758,7 +758,7 @@ const mmPanelView = (p) => {
     }).join('');
 
     return `
-    <p class="mm-view-title">${finEsc(dates[n - 1] || '')} 기준 · 직전 분기 대비</p>
+    <p class="mm-view-title">${finEsc(dates[n - 1] || '')} 기준 · ${finEsc(p.compare_ko || '직전 분기')} 대비</p>
     <div class="mm-panel-legend">${legend}</div>
     <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="${finEsc(p.label || '')}">
         ${ticks.map((t) => `<line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
