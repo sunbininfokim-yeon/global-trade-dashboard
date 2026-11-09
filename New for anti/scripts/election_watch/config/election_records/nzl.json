@@ -1,0 +1,248 @@
+{
+  "schema": "election_records_input_v1",
+  "country": "NZL",
+  "as_of": "2026-11-10",
+  "note_ko": "2026년 11월 7일 총선은 속보만 공개돼 의석을 넣지 않았다. 공식 결과는 선거위가 11월 27일에 낸다고 적는다.",
+  "offices": [
+    {
+      "key": "executive",
+      "system_id": null,
+      "title_ko": "총리",
+      "elected_how": "by_legislature",
+      "selected_by_system_id": "nzl-parliament",
+      "coverage": "partial",
+      "coverage_note_ko": "2026년 8월 13일 장관 명부의 총리 이름과 내각 소속 정당만 채웠다. 취임일은 그 명부에 없다.",
+      "note_ko": "명부는 2026년 11월 7일 투표보다 앞선 날짜다. 11월 7일 총선의 공식 결과가 나오기 전의 내각이다. 출처 https://www.dpmc.govt.nz/our-business-units/cabinet-office/ministers-and-their-portfolios/ministerial-list",
+      "incumbent": {
+        "name": "Christopher Luxon",
+        "name_ko": "크리스토퍼 럭슨",
+        "party": "National Party",
+        "party_source": "https://www.dpmc.govt.nz/our-business-units/cabinet-office/ministers-and-their-portfolios/ministerial-list",
+        "sources": [
+          "https://www.dpmc.govt.nz/our-business-units/cabinet-office/ministers-and-their-portfolios/ministerial-list"
+        ]
+      },
+      "government": {
+        "parties": [
+          "National Party",
+          "ACT",
+          "New Zealand First"
+        ],
+        "sources": [
+          "https://www.dpmc.govt.nz/our-business-units/cabinet-office/ministers-and-their-portfolios/ministerial-list"
+        ]
+      },
+      "records": []
+    },
+    {
+      "key": "legislature",
+      "system_id": "nzl-parliament",
+      "coverage": "partial",
+      "coverage_note_ko": "2023년과 2020년 공식 결과표의 정당표와 의석을 채웠다. 2026년 공식 결과와 보궐 득표, 지방선거 전국 합산은 넣지 않았다.",
+      "note_ko": "결과 사이트는 2026년 11월 7일 총선의 속보가 올라 있고 공식 결과는 2026년 11월 27일에 공개한다고 적는다. 속보 의석은 기록하지 않았다. 같은 페이지는 포트와이카토 보궐을 2023년 11월 25일로 적지만 그 득표 페이지는 열지 않아 122석에 더하지 않았다.",
+      "next": {
+        "date": null,
+        "label_ko": "2026-11-07 투표는 끝났다",
+        "note_ko": "electionresults.govt.nz는 2026년 11월 7일 총선의 속보만 올라 있고, 공식 결과는 2026년 11월 27일에 낸다고 적는다. 속보 의석은 넣지 않았다."
+      },
+      "unreachable_sources": [
+        {
+          "url": "https://elections.nz/media-and-news/2023/official-results-for-the-2023-general-election",
+          "reason": "blocked"
+        }
+      ],
+      "records": [
+        {
+          "election_id": "nzl-2026-general:previous",
+          "date": "2023-10-14",
+          "label_ko": "총선",
+          "status": "completed",
+          "seats_total": 122,
+          "summary_ko": "2023년 10월 14일 공식 결과표는 정당표 2,851,211표, 의석 122석(지역 71, 명부 51)이다. 1% 미만 9개 정당의 합은 61,221표라 표에서 뺐다.",
+          "detail_ko": "숫자는 archive.electionresults.govt.nz의 2023 공식 결과표다. 득표율은 그 표에 찍힌 값이다. 11.60과 1.20은 파일에 그렇게 찍혀 있고 JSON 숫자는 11.6과 1.2로 남는다. 1% 이상인 기회당 2.22%와 뉴질랜드 로열 1.20%는 의석 0으로 두었다. 뺀 9개 정당의 표는 61,221로, 전체 2,851,211과 맞다. Freedoms NZ 아래 득표가 비어 있는 구성 행은 따로 더하지 않았다. 투표율 78.2는 일정판이 11월 3일 보도자료에서 옮겨 둔 값이다. 그 보도자료는 이번에 Incapsula에 막혀 다시 열지 못했다. 보도자료의 득표표와 이 공식 결과표의 표 수가 다르다는 점은 보도자료 자신이 나중에 고쳤다고 적었던 부분이다. 의석 합은 122이고 지역 71, 명부 51이다.",
+          "seats": [
+            {
+              "party": "National Party",
+              "party_ko": "국민당",
+              "seats": 48,
+              "seats_district": 43,
+              "seats_list": 5,
+              "votes": 1085851,
+              "vote_pct": 38.08
+            },
+            {
+              "party": "Labour Party",
+              "party_ko": "노동당",
+              "seats": 34,
+              "seats_district": 17,
+              "seats_list": 17,
+              "votes": 767540,
+              "vote_pct": 26.91
+            },
+            {
+              "party": "Green Party",
+              "party_ko": "녹색당",
+              "seats": 15,
+              "seats_district": 3,
+              "seats_list": 12,
+              "votes": 330907,
+              "vote_pct": 11.6
+            },
+            {
+              "party": "ACT New Zealand",
+              "party_ko": "ACT",
+              "seats": 11,
+              "seats_district": 2,
+              "seats_list": 9,
+              "votes": 246473,
+              "vote_pct": 8.64
+            },
+            {
+              "party": "New Zealand First Party",
+              "party_ko": "뉴질랜드 퍼스트",
+              "seats": 8,
+              "seats_district": 0,
+              "seats_list": 8,
+              "votes": 173553,
+              "vote_pct": 6.08
+            },
+            {
+              "party": "Te Pāti Māori",
+              "party_ko": "테 파티 마오리",
+              "seats": 6,
+              "seats_district": 6,
+              "seats_list": 0,
+              "votes": 87844,
+              "vote_pct": 3.08
+            },
+            {
+              "party": "The Opportunities Party (TOP)",
+              "party_ko": "기회당",
+              "seats": 0,
+              "seats_district": 0,
+              "seats_list": 0,
+              "votes": 63344,
+              "vote_pct": 2.22
+            },
+            {
+              "party": "New Zealand Loyal",
+              "party_ko": "뉴질랜드 로열",
+              "seats": 0,
+              "seats_district": 0,
+              "seats_list": 0,
+              "votes": 34478,
+              "vote_pct": 1.2
+            }
+          ],
+          "sources": [
+            "https://archive.electionresults.govt.nz/electionresults_2023/index.html",
+            "https://www.electionresults.govt.nz/"
+          ]
+        },
+        {
+          "election_id": "nzl-2020-general",
+          "date": "2020-10-17",
+          "label_ko": "총선",
+          "status": "completed",
+          "seats_total": 120,
+          "summary_ko": "2020년 10월 17일 공식 결과표는 정당표 2,886,420표, 의석 120석(지역 72, 명부 48)이다. 1% 미만 정당의 합은 35,671표라 표에서 뺐다.",
+          "detail_ko": "숫자는 archive.electionresults.govt.nz의 2020 공식 결과표다. 득표율은 그 표의 소수 한 자리 인쇄값이다. 50.0과 1.0은 JSON에서 50과 1로 남는다. 표에 넣은 정당의 인쇄 득표율을 더하면 98.9다. 뺀 표 35,671은 전체 2,886,420과 맞다. 이 페이지에는 투표율이 없다. 결과표의 OTHER 7.9%는 정당 행이 아니라 앞머리의 잔여 표시라 의석 행으로 만들지 않았다.",
+          "seats": [
+            {
+              "party": "Labour Party",
+              "party_ko": "노동당",
+              "seats": 65,
+              "seats_district": 46,
+              "seats_list": 19,
+              "votes": 1443545,
+              "vote_pct": 50.0
+            },
+            {
+              "party": "National Party",
+              "party_ko": "국민당",
+              "seats": 33,
+              "seats_district": 23,
+              "seats_list": 10,
+              "votes": 738275,
+              "vote_pct": 25.6
+            },
+            {
+              "party": "Green Party",
+              "party_ko": "녹색당",
+              "seats": 10,
+              "seats_district": 1,
+              "seats_list": 9,
+              "votes": 226757,
+              "vote_pct": 7.9
+            },
+            {
+              "party": "ACT New Zealand",
+              "party_ko": "ACT",
+              "seats": 10,
+              "seats_district": 1,
+              "seats_list": 9,
+              "votes": 219031,
+              "vote_pct": 7.6
+            },
+            {
+              "party": "New Zealand First Party",
+              "party_ko": "뉴질랜드 퍼스트",
+              "seats": 0,
+              "seats_district": 0,
+              "seats_list": 0,
+              "votes": 75020,
+              "vote_pct": 2.6
+            },
+            {
+              "party": "The Opportunities Party (TOP)",
+              "party_ko": "기회당",
+              "seats": 0,
+              "seats_district": 0,
+              "seats_list": 0,
+              "votes": 43449,
+              "vote_pct": 1.5
+            },
+            {
+              "party": "New Conservative",
+              "party_ko": "신보수당",
+              "seats": 0,
+              "seats_district": 0,
+              "seats_list": 0,
+              "votes": 42613,
+              "vote_pct": 1.5
+            },
+            {
+              "party": "Māori Party",
+              "party_ko": "마오리당",
+              "seats": 2,
+              "seats_district": 1,
+              "seats_list": 1,
+              "votes": 33630,
+              "vote_pct": 1.2
+            },
+            {
+              "party": "Advance NZ",
+              "party_ko": "어드밴스 NZ",
+              "seats": 0,
+              "seats_district": 0,
+              "seats_list": 0,
+              "votes": 28429,
+              "vote_pct": 1.0
+            }
+          ],
+          "sources": [
+            "https://archive.electionresults.govt.nz/electionresults_2020/index.html"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "local",
+      "system_id": "nzl-local",
+      "title_ko": "지방선거",
+      "coverage": "not_collected",
+      "coverage_note_ko": "전국 지방선거 합산은 이번엔 열지 않았다.",
+      "records": []
+    }
+  ]
+}
