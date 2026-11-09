@@ -1,0 +1,36 @@
+{
+  "as_of": "2026-01-01",
+  "unit": "dwt",
+  "status": "observed_annual_baseline",
+  "scope": "Propelled seagoing merchant vessels of 100 GT and above, world aggregate by flag of registration",
+  "source": {
+    "name": "UNCTADstat US.MerchantFleet, 2026 world aggregate by ship type",
+    "url": "https://unctadstat.unctad.org/datacentre/dataviewer/US.MerchantFleet",
+    "access_via": "Piri Reis University GOMD public UNCTADstat archive",
+    "archive_source_key": "unctad_merchant_fleet_v2026",
+    "archive_provenance_key": "b4cb4e788352eac27ddf279ca4c4d3e8b64465dd7c7c045635bce2d086a827b4",
+    "archive_import_date": "2026-09-05",
+    "retrieved_on": "2026-11-09",
+    "archive_url": "https://gomd.pirireis.edu.tr/sources.php?category=maritime_economy",
+    "series_url_template": "https://gomd.pirireis.edu.tr/dataset_api.php?action=series&entity=WLD&indicator={indicator}",
+    "entity_code": "WLD",
+    "source_unit": "thousand DWT",
+    "dwt_multiplier": 1000,
+    "indicator_by_ship_type": {
+      "total": "unctad_fleet_dwt_total",
+      "dry_bulk": "unctad_fleet_dwt_bulk_carriers",
+      "tanker": "unctad_fleet_dwt_oil_tankers",
+      "container": "unctad_fleet_dwt_container",
+      "general_cargo": "unctad_fleet_dwt_general_cargo"
+    }
+  },
+  "world_total_dwt": 2528787569,
+  "fleet_by_type": [
+    {"ship_type": "dry_bulk", "dwt": 1067305758, "share_pct": 42.2},
+    {"ship_type": "tanker", "dwt": 683403818, "share_pct": 27.0},
+    {"ship_type": "container", "dwt": 388530831, "share_pct": 15.4},
+    {"ship_type": "general_cargo", "dwt": 91806967, "share_pct": 3.6},
+    {"ship_type": "other", "dwt": 297740195, "share_pct": 11.8, "value_basis": "world_total_minus_four_published_ship_types"}
+  ],
+  "rounding_note": "기타 선종은 세계 합계에서 벌크선·유조선·컨테이너선·일반화물선 DWT를 뺀 값입니다. 선종 비중은 소수점 한 자리로 반올림합니다."
+}

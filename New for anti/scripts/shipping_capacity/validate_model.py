@@ -156,7 +156,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    fleet = load_json(ROOT / "config" / "fleet_2025.json")
+    fleet = load_json(ROOT / "config" / "fleet_baseline.json")
     routes = load_json(ROOT / "config" / "routes.json")
     comtrade_path = ROOT / "config" / "comtrade_route_flows.json"
     routes = apply_route_flows(
