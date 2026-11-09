@@ -86,7 +86,10 @@ jobs:
           repository: sunbininfokim-yeon/krx-month-paste
           token: ${{ secrets.GH_DISPATCH_TOKEN }}  # same GitHub PAT that starts the pre-open run; reads krx-month-paste
           path: krx-month-paste
-          sparse-checkout: data/raw/krx_15007
+          # 12009 = per-stock investor flow, read by the foreign_stock_flow factor (#961).
+          sparse-checkout: |
+            data/raw/krx_15007
+            data/normalized/krx_12009_stock_investor
           sparse-checkout-cone-mode: false
 
       - name: Collect and infer; never train
@@ -100,6 +103,7 @@ jobs:
             --target "$TARGET" \
             --model "$MM/models/shadow/us_kr_preopen_20261022_v1.json" \
             --krx-root krx-month-paste/data/raw/krx_15007 \
+            --stock-flow-root krx-month-paste/data/normalized/krx_12009_stock_investor \
             --refresh-prices \
             --run-dir "runner-state/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
             --archive-dir data/forecasts/us_kr_direction \
