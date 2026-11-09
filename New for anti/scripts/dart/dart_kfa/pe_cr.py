@@ -10,6 +10,9 @@ import math
 from datetime import date, timedelta
 from pathlib import Path
 
+from .entity_policy import is_financial, classify_entity
+from .pe_cr_evidence import BALANCES, reviewed_facts
+
 
 def config():
     return json.loads((Path(__file__).resolve().parents[1] / "config/pe_cr_inputs.json").read_text())
@@ -29,7 +32,7 @@ class Unavailable(ValueError):
 
 
 def build_pe_cr(canonical, *, selected_period="annual", history=(),
-                entity_policy=None, industry="manufacturing"):
+                entity_policy=None, industry="manufacturing", reviewed_disclosures=None):
     """History contains canonical bundles, including opening BS for averages.
 
     EBITDA reuses the existing P1 strict disclosure calculator.
@@ -39,10 +42,22 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     if selected_period not in {"annual", "Q1", "Q2", "Q3", "Q4"}:
         raise ValueError("invalid_period")
     cfg = config()
-    financial = bool((entity_policy or {}).get("is_financial_entity")) or industry == "financial"
+    dart_policy = classify_entity({"corp_code": canonical.get("entity_id")}) if canonical.get("source") == "DART" else {}
+    financial = is_financial(entity_policy or {}) or is_financial(dart_policy) or industry == "financial"
     kit = cfg["kits"]["financial" if financial else industry]
     cards = {}
     used = []
+    evidence = reviewed_facts(reviewed_disclosures, canonical) if not financial else {}
+
+    def reviewed(key):
+        return evidence.get((key, None if key in BALANCES else start, end))
+
+    def read_reviewed(key):
+        fact = reviewed(key)
+        if not fact:
+            raise Unavailable("missing:reviewed_" + key)
+        used.append({"input": key, **fact})
+        return fact["value"]
 
     def cell(bundle, key, period):
         s = bundle.get("series", {}).get("PECR_" + key, {})
@@ -96,6 +111,13 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     def avg(key):
         return (read(key, opening=True) + read(key)) / 2
 
+    def recognized_interest():
+        f = cell(canonical, "interest", selected_period)
+        reason = f.get("reason") or ""
+        if (not f or reason.startswith(("missing:dart_fact_", "missing:sec_fact"))) and reviewed("interest"):
+            return read_reviewed("interest")
+        return abs(read("interest"))
+
     def emit(key, formula, fn, unit="ratio", note=None):
         used.clear()
         value, reason = None, None
@@ -108,7 +130,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
             if not math.isfinite(value):
                 raise Unavailable("nonfinite:result")
         except Unavailable as exc:
-            reason = str(exc)
+            value, reason = None, str(exc)
         cards[key] = {"value": value, "reason": reason, "unit": unit,
                       "definition": formula, "note": note,
                       "period_start": start, "period_end": end,
@@ -121,7 +143,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     emit("fcf_ppe_only", "CFO - abs(PPE cash purchases)",
          lambda: read("cfo") - abs(read("capex_ppe")), "money", "유형자산 투자만 차감; 전체 FCF 대체 금지")
     emit("interest_coverage", "operating_income / abs(P&L interest_expense)",
-         lambda: ratio(read("op"), abs(read("interest"))))
+         lambda: ratio(read("op"), recognized_interest()))
     emit("finance_cost_coverage", "operating_income / abs(finance_costs)",
          lambda: ratio(read("op"), abs(read("finance_costs"))), note="금융원가 커버리지; 이자보상배율·한계기업 판정에 사용 금지")
     emit("current_ratio", "current_assets / current_liabilities", lambda: ratio(read("current_assets"), read("current_liabilities")))
@@ -145,7 +167,29 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
         return read("receivables", opening=opening) + read("inventory", opening=opening) - read("payables", opening=opening)
     emit("nwc_change_to_sales", "change in (trade receivables + inventory - trade payables) / revenue", lambda: ratio(nwc() - nwc(True), read("revenue")), note="좁은 영업운전자본 정의; 계약자산·선수금 별도, CFO에서 재차감 금지")
     from .p1_disclosures import compute_strict_ebitda
-    ebitda = compute_strict_ebitda(canonical, endpoint=selected_period)
+    ebitda_canonical = canonical
+    op_fact = cell(canonical, "op", selected_period)
+    if op_fact.get("availability") == "available" and not financial:
+        series = dict(canonical.get("series") or {})
+        for key in ("OPERATING_INCOME", "PPE_DEPRECIATION", "INTANGIBLE_AMORTIZATION"):
+            old = series.get(key) or {}
+            target = old.get("annual") if selected_period == "annual" else (old.get("quarters") or {}).get(selected_period)
+            if target and target.get("availability") == "available":
+                continue
+            if target and any(x in (target.get("reason") or "") for x in ("conflict", "incompatible", "mismatch")):
+                continue
+            source = op_fact if key == "OPERATING_INCOME" else reviewed(key)
+            if source:
+                if key == "OPERATING_INCOME":
+                    fact = {**source, "account_id": key}
+                else:
+                    fact = {**source, **{k: op_fact.get(k) for k in ("fiscal_year", "fiscal_quarter", "period_kind")}}
+                if selected_period == "annual":
+                    series[key] = {**old, "annual": fact}
+                else:
+                    series[key] = {**old, "quarters": {**(old.get("quarters") or {}), selected_period: fact}}
+        ebitda_canonical = {**canonical, "series": series}
+    ebitda = compute_strict_ebitda(ebitda_canonical, endpoint=selected_period)
     if ebitda.get("value") is not None:
         p, u = ebitda.get("period") or {}, ebitda.get("unit") or {}
         inputs = ebitda["provenance"]["input_facts"]
@@ -156,6 +200,8 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
             problem = "incompatible:ebitda_period_scope_unit"
         elif any(not f.get("provenance") for f in inputs.values()):
             problem = "missing:ebitda_input_provenance"
+        elif op_fact.get("availability") == "available" and inputs["OPERATING_INCOME"]["value"] != op_fact["value"]:
+            problem = "conflict:ebitda_operating_income"
         elif any(inputs[k]["value"] < 0 for k in ("PPE_DEPRECIATION", "INTANGIBLE_AMORTIZATION")):
             problem = "requires:normalized_positive_da_charges"
         if problem:
@@ -182,13 +228,26 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
         used.append({"input": "ebitda", **ebitda})
         return ratio(cards["fcf"]["value"], ebitda["value"])
     emit("fcf_to_ebitda", "CFO-based FCF / strict EBITDA", fcf_conversion)
-    # Explicitly surface blocked decisions instead of silently estimating.
-    for key, reason in {"net_debt_to_ebitda": "requires:complete_debt_and_annual_or_ttm_ebitda",
-                        "debt_due_within_1y": "requires:complete_current_debt_and_lease_policy",
-                        "liquidity_coverage_1y": "requires:debt_due_within_1y_and_unrestricted_cash",
-                        "dscr": "requires:cfads_and_contractual_debt_service",
-                        "maintenance_capex": "requires:reported_or_explicit_scenario_assumption"}.items():
-        cards[key] = {"value": None, "status": "unavailable", "reason": "not_applicable:financial_entity" if financial else reason}
+
+    def annual_leverage():
+        if selected_period != "annual":
+            raise Unavailable("requires:annual_ebitda_no_quarter_annualization")
+        if ebitda.get("value") is None:
+            raise Unavailable("missing:strict_annual_ebitda")
+        debt = read_reviewed("financing_debt") - read_reviewed("unrestricted_cash")
+        used.append({"input": "ebitda", **ebitda})
+        return ratio(debt, ebitda["value"])
+
+    emit("net_debt_to_ebitda", "(financing debt including leases - unrestricted cash) / annual EBITDA", annual_leverage)
+    emit("debt_due_within_1y", "complete financing and lease principal due within 12 months", lambda: read_reviewed("principal_due_1y"), "money",
+         "약정 원금만 포함; 유동부채·리스장부잔액·원리금 만기표 합계와 다름")
+    emit("liquidity_coverage_1y", "unrestricted cash / complete principal due within 12 months",
+         lambda: ratio(read_reviewed("unrestricted_cash"), read_reviewed("principal_due_1y")), note="원금 기준, 이자·신용한도 제외; 규제 LCR 아님")
+    emit("dscr", "historical CFADS / (financing principal paid + cash interest paid)",
+         lambda: ratio(read_reviewed("cfads"), read_reviewed("principal_paid") + read_reviewed("interest_paid")),
+         note="동일 기간 실적 DSCR; 계약상 정의·미래 시나리오와 다름")
+    emit("maintenance_capex", "explicitly disclosed cash maintenance capex", lambda: read_reviewed("maintenance_capex"), "money",
+         "공시에서 별도로 확인된 유지보수 현금투자; 전체 CapEx나 D&A로 대체하지 않음")
     return {"schema_version": "kfa-pe-cr/1", "industry": "financial" if financial else industry,
             "cards": cards, "focus": kit["focus"], "notes": kit["notes"],
             "visible_cards": [] if financial else [k for k, v in cards.items() if v["value"] is not None],

@@ -609,6 +609,7 @@ def _dart_direct_quarter_point(
                 "source_field": field,
                 "source_value": row.get(field),
                 "period_value_kind": row.get("period_value_kind"),
+                **({"scope_source": row["scope_source"]} if row.get("scope_source") else {}),
             }
             for row, field, _ in selected
         ],
@@ -683,6 +684,7 @@ def _dart_source_point(
             "source_account_id": first.get("account_id"),
             "source_account_name": first.get("account_nm"),
             "source_statement": first.get("sj_div"),
+            **({"scope_source": first["scope_source"]} if first.get("scope_source") else {}),
             "source_table_id": first.get("source_table_id") or first.get("table_id"),
             "source_row_id": first.get("source_row_id") or first.get("row_id"),
             "source_field": field,

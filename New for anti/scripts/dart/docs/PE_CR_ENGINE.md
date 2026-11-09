@@ -8,7 +8,7 @@ CR은 기업구조조정 관점이다. 신규 모듈은 공시 수치의 재현 
 - 기존 `analyze_canonical_facts()` 결과에 `pe_cr`를 추가했다. 기존 `basic_cards`, 모델, 금융업 매핑을 덮어쓰지 않는다.
 - 원본→canonical 어댑터의 기본 계정 목록에 `PECR_` 접두어 계정을 추가했다. 과거 canonical JSON은 원본에서 재생성해야 이 입력들이 생긴다.
 - Worker/UI/라이브 fetch/배포는 변경하지 않았다. 이 구현만으로 서비스 화면이 바뀌지 않는다.
-- 테스트 자료는 합성 fixture다. 개별 기업 태그의 실측 검증 또는 전 기업 커버리지 보장이 아니다.
+- 합성 회귀 테스트와 삼성전자 FY2025 공식 감사보고서 금액 대조를 별도로 수행했다. 공시 수치를 API 응답 모양으로 옮긴 테스트는 실시간 DART 태그 검증이 아니다.
 
 ## 데이터 흐름
 
@@ -40,7 +40,7 @@ CR은 기업구조조정 관점이다. 신규 모듈은 공시 수치의 재현 
 | 유동차입 커버리지 | 현금 ÷ 공시 유동차입금 총계 | 리스포함 총 만기커버리지·규제 LCR이라고 부르면 안 됨 |
 | 매출채권/매출·CapEx/매출 | 기말 매출채권 또는 현금투자 ÷ 동기간 매출 | 비율은 0.15=15%, 배율·백분율 표시는 지표별로 구분 |
 
-D&A는 현금흐름표 조정행 또는 주석에서 별도 항목을 확보해야 한다. 전체 상각 합계와 하위 상각액을 중복 가산하거나 충당금·손상차손을 상각비에 포함하면 안 된다. CF 상각액의 범위가 영업이익에 포함된 비용과 일치하는지도 매핑 승인 시 확인해야 한다. 이번 CLI는 검증된 주석 D&A를 자동 추출하지 않으므로 원본 기본 응답에 별도 입력이 없으면 EBITDA는 여전히 null이다.
+D&A는 현금흐름표 조정행 또는 주석에서 별도 항목을 확보해야 한다. 전체 상각 합계와 하위 상각액을 중복 가산하거나 충당금·손상차손을 상각비에 포함하면 안 된다. CF 상각액의 범위가 영업이익에 포함된 비용과 일치하는지도 매핑 승인 시 확인해야 한다. CLI는 검토한 주석 묶음을 받을 수 있지만 문서에서 자동 추출하지는 않는다.
 
 ## 산업 설정
 
@@ -66,25 +66,36 @@ D&A는 현금흐름표 조정행 또는 주석에서 별도 항목을 확보해�
 
 신규 확장태그 승인 자료: 회사/공시접수번호, 재무제표 범위, 원문 표·계정 ID, 기간, 단위, 정의, 상·하위 항목의 중복 관계, 기대값 fixture. 금액만 제공해서는 승인 불가.
 
-## 의도적으로 미계산하는 항목
+## 공시·약정 근거가 있을 때 계산하는 항목
 
-- 순부채/EBITDA: 완전한 이자부채·리스정책·현금제한 정보 및 연간/TTM EBITDA 필요.
-- 1년 내 만기부채: 단기차입+유동성장기부채+사채·리스 등의 중복 없는 집계 필요. 비유동부채를 그대로 넣지 않는다.
-- 1년 유동성 커버리지: 위 만기부채와 사용가능현금 정의 필요.
-- DSCR: 약정 원금상환+현금이자 및 CFADS 정의 필요.
-- 유지보수 CapEx: 공시 또는 명시적 사용자 가정 필요. CapEx/D&A를 유지보수투자 자체로 간주하지 않는다.
-- 조정 EBITDA, 청산가치, 담보회수율, 수주잔고: 검증된 추가자료/시나리오 필요.
+| 지표 | 계산 조건 및 정의 |
+|---|---|
+| 순부채/EBITDA | (리스 포함 총 금융차입 장부액 − 사용제한 없는 현금 및 현금성자산) ÷ 양수 FY EBITDA. 단일 분기 EBITDA 연환산 금지 |
+| 1년 내 만기부채 | 차입·사채·리스의 12개월 약정 **원금** 완전 집계. 유동부채·할인된 리스 장부액·원리금 합계로 대체 금지 |
+| 1년 유동성 커버리지 | 사용제한 없는 현금 및 현금성자산 ÷ 위 원금. 이자·미사용한도 제외; 규제 LCR 아님 |
+| 실적 DSCR | 동일 기간 원리금 지급 전 CFADS ÷ (원금 실지급 + 현금이자 실지급). 약정 DSCR이나 미래 상환 예측이 아님 |
+| 유지보수 CapEx | 유지보수 목적 현금투자가 별도 공시된 경우만. CapEx/D&A로 추정하지 않음 |
 
-이 키들은 이유 있는 null이며 `visible_cards`에서 제외한다. 미구현·자료부족·업종 비적용은 UI에서 구분해야 한다.
+`kfa-pe-cr-reviewed/1` 입력은 회사·회계연도·연결/별도·통화와 정확한 기간, 단위, 항목의 정의(`basis`), 공식 문서 URL·표·행을 요구한다. 검토된 입력만 전달하는 계약이지 임의 파일의 출처나 완전성을 자동 인증하는 기능은 아니다. 값이 없으면 이유 있는 null로 `visible_cards`에서 제외한다. 금융은 계속 비적용이다.
+
+IFRS 만기표의 미할인 현금흐름에는 원금 외 금액이 포함될 수 있다. 예를 들어 삼성전자 FY2025 주석 28(C) 표는 매입채무 등이 포함된 금융부채 합계이므로 이 엔진의 12개월 차입·리스 원금으로 승인하지 않았다. 조정 EBITDA, 청산가치, 담보회수율, 수주잔고 자동추출은 이 변경에서 계산하지 않는다.
+
+### 승인된 첫 사례: 삼성전자 FY2025 연결
+
+`config/pe_cr_reviewed/samsung_00126380_2025_cfs.json`에 감사보고서 주석 10·11·24·30에서 대조한 별도 D&A와 손익 이자비용을 기록했다. 공시 단위는 백만원이며 원으로 변환한다. 회사 IR 보고서와 DART 숫자를 함께 사용하려면 FY 영업이익이 공시 정밀도(백만원) 안에서 맞아야 한다. FY 주석을 Q4로 승계하지 않는다.
+
+공식 문서 금액을 넣은 오프라인 대조: EBITDA 90조 5,276억 원, 이자보상배율 약 71.97배, FCF 33조 1,620억 원. 라이브 계정 ID 커버리지 검증과는 구분한다.
 
 ## 사용과 Claude 인수인계
 
 오프라인 명령: `python3 build_pe_cr.py saved_reports.json --period annual`.
 입력은 `build_pe_cr.py` docstring 형식이며 결과는 stdout으로 출력한다. 외부 조회·API 키·자동 파일 저장은 없다.
 
-기존 통합 함수에서는 `pe_cr_history=[전기 canonical ...]`, `pe_cr_industry="shipbuilding"` 등을 전달한다. 분기 CCC에는 해당 분기의 시작 직전 BS가 필요하다.
+OpenDART 원본 응답은 `filings.FY = {"request": {"corp_code": "00126380", "bsns_year": "2025", "reprt_code": "11011", "fs_div": "CFS"}, "response": {...}}`처럼 요청 메타데이터와 함께 저장한다(인증키 제외). 응답의 회사·연도·보고서 코드와 일치하면 요청 범위를 행에 보존한다. 중간 IS/CIS의 당기금액만 직접 분기로 표시하고, 현금흐름은 기존 누적 차분 로직을 유지한다. 요청 정보가 없는 레거시 입력은 기존처럼 행의 `fs_div`가 필요하다.
 
-Claude는 계산식을 Worker에 재작성하지 말고 이 결과를 서빙하는 어댑터를 연결한다. 기존 서비스 `basic_cards`에 바로 붙이는 형식이 아니므로 카드별 단위/기간/series를 변환하는 경계가 필요하다. 계산 카드들은 `unit` 문자열(`money`, `ratio`, `days`), `inputs`, 평탄 기간 필드를 사용한다. EBITDA도 이 형식으로 감싸고 P1 근거는 `inputs`에 보존한다. 미계산 예약 키는 value/status/reason만 가지므로 필드 부재를 허용해야 한다. 무검증 object spread 금지. 새 계약 버전과 캐시 키를 함께 검토한다.
+CLI 입력의 `reviewed_disclosures`에 위 묶음 JSON 객체를 선택적으로 넣는다. 기존 통합 함수에서는 `pe_cr_reviewed_disclosures=...`, `pe_cr_history=[전기 canonical ...]`, `pe_cr_industry="shipbuilding"`을 전달한다. 분기 CCC에는 해당 분기의 시작 직전 BS가 필요하다. 주석 묶음을 모든 기업에 자동 적용하지 않는다.
+
+Claude는 계산식을 Worker에 재작성하지 말고 이 결과를 서빙하는 어댑터를 연결한다. 기존 서비스 `basic_cards`에 바로 붙이는 형식이 아니므로 카드별 단위/기간/series를 변환하는 경계가 필요하다. 계산 카드는 `unit` 문자열(`money`, `ratio`, `days`), `inputs`, 평탄 기간 필드를 사용한다. EBITDA도 이 형식으로 감싸고 P1 근거는 `inputs`에 보존한다. 무검증 object spread 금지. 새 계약 버전과 캐시 키를 함께 검토한다.
 
 배포 전 필수: 제조·반도체·조선/건설·해운·금융의 저장된 실제 공시 fixture 검증, 각 후보 account_id의 의미 검증, 기존 금융 카드 유지 검증, 결과↔API↔UI 숫자 비교. 현재 합성 테스트 통과는 이 라이브 검증을 대신하지 않는다.
 
@@ -93,3 +104,5 @@ Claude는 계산식을 Worker에 재작성하지 말고 이 결과를 서빙하�
 - OpenDART 전체 재무제표 API: https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS003&apiId=2019020 — 재무제표 구분·계정 ID·기간 금액 필드.
 - SEC Non-GAAP C&DIs 102.07: https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/non-gaap-financial-measures — FCF 정의 설명 필요, 가용현금과 동일시 금지.
 - IAS 7: https://www.ifrs.org/issued-standards/list-of-standards/ias-7-statement-of-cash-flows/ — 현금흐름 분류. 적용연도·기준에 따른 이자분류 차이는 별도 검토.
+- IFRS 7 B11D: https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ifrs-7-financial-instruments-disclosures.pdf — 계약 만기 공시의 미할인 현금흐름과 원금 구분.
+- 삼성전자 2025 연결 감사보고서: https://www.samsung.com/global/ir/reports-disclosures/public-disclosure-view.84565/ — 별도 D&A·손익 이자·FY 영업이익 및 실제 검증용 재무제표.
