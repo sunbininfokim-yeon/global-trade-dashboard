@@ -695,6 +695,15 @@ class ScenarioGridTests(unittest.TestCase):
             for row in bundle["screen"]["scenario_summary"]
             if row["id"] == "hormuz_effective_80pct_28d"
         )
+        fleet = bundle["screen"]["fleet"]
+        self.assertEqual(fleet["as_of"], "2026-01-01")
+        self.assertEqual(sum(row["dwt"] for row in fleet["fleet_by_type"]), fleet["world_total_dwt"])
+        self.assertEqual(hormuz["relevant_global_type_fleet_dwt"], 683_403_818)
+        self.assertAlmostEqual(
+            hormuz["operational_capacity_absorbed_pct_of_relevant_global_type_fleet"],
+            100 * hormuz["operational_capacity_absorbed_dwt"] / 683_403_818,
+            places=5,
+        )
         sensitivity = hormuz["behavior_sensitivity"]
         self.assertEqual(sensitivity["path_count"], 3)
         self.assertEqual(
@@ -770,7 +779,7 @@ class ScenarioGridTests(unittest.TestCase):
 
     def test_temporary_grid_preserves_accounting_and_monotonicity(self) -> None:
         routes = json.loads((ROOT / "config" / "routes.json").read_text(encoding="utf-8"))
-        fleet = json.loads((ROOT / "config" / "fleet_2025.json").read_text(encoding="utf-8"))
+        fleet = json.loads((ROOT / "config" / "fleet_baseline.json").read_text(encoding="utf-8"))
         fleet_by_type = {row["ship_type"]: row["dwt"] for row in fleet["fleet_by_type"]}
         result = run_temporary_scenario_grid(routes, fleet_by_type)
         self.assertEqual(result["status"], "passed")
@@ -781,7 +790,7 @@ class ScenarioGridTests(unittest.TestCase):
 
     def test_temporary_environment_grid_preserves_physical_dwt(self) -> None:
         routes = json.loads((ROOT / "config" / "routes.json").read_text(encoding="utf-8"))
-        fleet = json.loads((ROOT / "config" / "fleet_2025.json").read_text(encoding="utf-8"))
+        fleet = json.loads((ROOT / "config" / "fleet_baseline.json").read_text(encoding="utf-8"))
         fleet_by_type = {row["ship_type"]: row["dwt"] for row in fleet["fleet_by_type"]}
         result = run_temporary_environment_grid(routes, fleet_by_type)
         self.assertEqual(result["status"], "passed")

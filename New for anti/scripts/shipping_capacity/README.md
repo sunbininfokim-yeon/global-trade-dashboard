@@ -43,13 +43,19 @@
 ## 무료 데이터 파이프라인
 
 PortWatch 실수집은 일시적인 HTTP/ArcGIS 오류에 최대 3회 시도합니다.
+429는 `Retry-After` 또는 ArcGIS 응답의 안내 시간만큼 기다립니다(안내가 없으면 60초).
+한 수집기에서 429 대기는 총 180초까지 허용합니다. 안내 시간이 남은 예산보다
+길거나 시도 횟수가 소진되면 다음 해협을 즉시 재요청하지 않고 수집 실패로 기록합니다.
 `build_snapshot.py --fetch-portwatch`는 최종 수집 오류가 하나라도 남으면
 공개 산출물 4종을 쓰기 전에 실패하므로 기존 게시값이 보존됩니다.
 실패 해협은 Actions 오류와 실행 요약에 표시됩니다. 진단용으로 부분 bundle이
 필요할 때만 `--allow-partial-portwatch`를 추가하세요. 같은 관측일이 다시
 조회되는 것은 허용하지만 캐시보다 오래된 관측으로의 후퇴는 거부합니다.
 
-- 세계 선대 기준: UNCTAD Review of Maritime Transport 2025, Table II.5.
+- 세계 선대 기준: `config/fleet_baseline.json`의 2026-01-01 UNCTADstat US.MerchantFleet 세계 DWT.
+  Piri Reis 대학교 GOMD 공개 사본의 원 단위(천 DWT)를 DWT로 환산합니다.
+  기타는 세계 총량에서 공개 사본의 네 선종을 뺀 값입니다. 2025년 보고서 기준은
+  비교용 `config/fleet_2025.json`으로 보존하며 LNG·LPG 합계는 별도 기준일을 유지합니다.
 - 항로 화물톤: 공식 UN Comtrade API의 연간 양자 `netWgt`. reporter-partner-flow-HS 셀마다 Water 운송수단을 우선하고, 없을 때만 전체 운송수단 합계를 사용해 중복을 막습니다.
 - 현재 초크포인트 이상: IMF PortWatch ArcGIS REST API의 `capacity_container`, `capacity_dry_bulk`, `capacity_tanker`. 이 필드는 선박 DWT와 추정 적재율로 산출한 일일 **추정 교역량(metric tonnes)**이며 관측 DWT가 아닙니다. 최근 7일 평균을 직전 28일 평균과 비교합니다.
 - 인접 항만 컨텍스트: IMF PortWatch `Daily_Ports_Data`의 선종별 입항수·추정 수출입량을 국가군별로 합산합니다. 이 공개 레이어에는 정박 대수·대기 시간·대기 선박 DWT가 없으므로 입항량을 backlog로 환산하지 않으며, `portwatch_port_context`는 진단 전용입니다.

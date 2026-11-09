@@ -5,6 +5,8 @@ import json
 import tempfile
 import unittest
 import urllib.error
+from datetime import datetime, timedelta, timezone
+from email.utils import format_datetime
 from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
@@ -22,6 +24,66 @@ def feature(day, portid="chokepoint2", capacity=10):
 
 
 class PortWatchFetchTests(unittest.TestCase):
+    @patch("shipping_capacity.portwatch.time.sleep")
+    @patch("shipping_capacity.portwatch.urllib.request.urlopen")
+    def test_arcgis_quota_error_waits_for_announced_cooldown(self, urlopen, sleep):
+        urlopen.side_effect = [
+            response({"error": {
+                "code": 429,
+                "message": "Unable to perform query. Too many requests.",
+                "details": ["API calls quota exceeded! Retry after 60 sec."],
+            }}),
+            response({"features": [feature(25)]}),
+        ]
+        self.assertEqual(PortWatchClient().fetch_series("chokepoint2")[0]["capacity"], 10)
+        sleep.assert_called_once_with(60)
+
+    @patch("shipping_capacity.portwatch.time.sleep")
+    @patch("shipping_capacity.portwatch.urllib.request.urlopen")
+    def test_http_429_obeys_retry_after_seconds_or_http_date(self, urlopen, sleep):
+        now = datetime(2026, 11, 9, tzinfo=timezone.utc)
+        for header in ("75", format_datetime(now + timedelta(seconds=75), usegmt=True)):
+            with self.subTest(header=header), patch("shipping_capacity.portwatch.datetime") as clock:
+                clock.now.return_value = now
+                clock.fromisoformat.side_effect = datetime.fromisoformat
+                urlopen.side_effect = [
+                    urllib.error.HTTPError("https://example.test", 429, "quota", {"Retry-After": header}, None),
+                    response({"features": [feature(25)]}),
+                ]
+                sleep.reset_mock()
+                self.assertEqual(len(PortWatchClient().fetch_series("chokepoint2")), 1)
+                sleep.assert_called_once_with(75)
+
+    @patch("shipping_capacity.portwatch.time.sleep")
+    @patch("shipping_capacity.portwatch.urllib.request.urlopen")
+    def test_quota_budget_is_shared_across_chokepoints(self, urlopen, sleep):
+        quota = {"error": {"code": 429, "details": ["Retry after 100 seconds."]}}
+        urlopen.side_effect = [
+            response(quota),
+            response({"features": [feature(25)]}),
+            response(quota),
+        ]
+        client = PortWatchClient()
+        self.assertTrue(client.fetch_series("chokepoint2"))
+        with self.assertRaisesRegex(RuntimeError, "80s remaining"):
+            client.fetch_series("chokepoint1")
+        with self.assertRaisesRegex(RuntimeError, "429"):
+            client.fetch_series("chokepoint6")
+        self.assertEqual(urlopen.call_count, 3)
+        sleep.assert_called_once_with(100)
+
+    @patch("shipping_capacity.portwatch.time.sleep")
+    @patch("shipping_capacity.portwatch.urllib.request.urlopen")
+    def test_quota_retry_exhaustion_stops_remaining_queries(self, urlopen, sleep):
+        urlopen.side_effect = [response({"error": {"code": 429}}) for _ in range(3)]
+        client = PortWatchClient()
+        with self.assertRaisesRegex(RuntimeError, "429"):
+            client.fetch_series("chokepoint2")
+        with self.assertRaisesRegex(RuntimeError, "429"):
+            client.fetch_series("chokepoint6")
+        self.assertEqual(urlopen.call_count, 3)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [60, 60])
+
     @patch("shipping_capacity.portwatch.time.sleep")
     @patch("shipping_capacity.portwatch.urllib.request.urlopen")
     def test_http_400_can_recover_without_changing_the_requested_chokepoint(self, urlopen, sleep):
