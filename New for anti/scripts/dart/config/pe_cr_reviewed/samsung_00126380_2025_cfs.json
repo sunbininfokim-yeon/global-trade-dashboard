@@ -1,0 +1,41 @@
+{
+  "schema_version": "kfa-pe-cr-reviewed/1",
+  "source": "DART",
+  "entity_id": "00126380",
+  "fs_div": "CFS",
+  "currency": "KRW",
+  "fiscal_year_end": "2025-12-31",
+  "annual_operating_income_control": {"value": 43601051000000, "source_scale": 1000000},
+  "rows": [
+    {
+      "key": "PPE_DEPRECIATION", "basis": "operating_ppe_depreciation_without_double_counting_rou",
+      "period_start": "2025-01-01", "period_end": "2025-12-31", "amount": 43605740, "scale": 1000000,
+      "evidence": {
+        "url": "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2025_con_quarter04_all.pdf",
+        "document": "Samsung Electronics FY2025 audited consolidated financial statements",
+        "table": "Note 10(A)-(C); tie to Note 30(A) 2025 KRW consolidated total",
+        "row": "Depreciation, total; already includes depreciation of right-of-use assets"
+      }
+    },
+    {
+      "key": "INTANGIBLE_AMORTIZATION", "basis": "operating_intangible_amortization",
+      "period_start": "2025-01-01", "period_end": "2025-12-31", "amount": 3320852, "scale": 1000000,
+      "evidence": {
+        "url": "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2025_con_quarter04_all.pdf",
+        "document": "Samsung Electronics FY2025 audited consolidated financial statements",
+        "table": "Note 11(A); tie to Note 30(A) 2025 KRW consolidated total",
+        "row": "Amortization, total"
+      }
+    },
+    {
+      "key": "interest", "basis": "recognized_pnl_interest_expense",
+      "period_start": "2025-01-01", "period_end": "2025-12-31", "amount": 605783, "scale": 1000000,
+      "evidence": {
+        "url": "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2025_con_quarter04_all.pdf",
+        "document": "Samsung Electronics FY2025 audited consolidated financial statements",
+        "table": "Note 24, Financial expenses, 2025 KRW",
+        "row": "Interest expenses, parent row, excluding FX and derivative losses"
+      }
+    }
+  ]
+}

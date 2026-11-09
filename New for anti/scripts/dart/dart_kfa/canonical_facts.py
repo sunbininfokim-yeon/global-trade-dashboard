@@ -521,7 +521,7 @@ def _pick_dart_rows(
         dict(row)
         for row in rows
         if str(row.get("fs_div") or "").upper() == fs_div
-        and str(row.get("sj_div") or "").upper() == spec["statement"]
+        and str(row.get("sj_div") or "").upper() in (spec.get("source_statements") or [spec["statement"]])
     ]
     aggregation = spec.get("aggregation") or {}
     if aggregation:
@@ -544,6 +544,11 @@ def _pick_dart_rows(
         matched = [row for row in candidates if str(row.get("account_id") or "") == source_id]
         if matched:
             matched.sort(key=lambda row: str(row.get("rcept_no") or ""))
+            if spec.get("source_statements"):
+                latest = [row for row in matched if row.get("rcept_no") == matched[-1].get("rcept_no")]
+                values = {tuple(_amount(row.get(field)) for field in ("thstrm_amount", "thstrm_add_amount")) for row in latest}
+                if len(values) > 1:
+                    return [], "conflict:duplicate_source_concept"
             return [matched[-1]], None
     for source_name in source_names:
         matched = [row for row in candidates if str(row.get("account_nm") or "").strip() == source_name.strip()]
@@ -604,6 +609,7 @@ def _dart_direct_quarter_point(
                 "source_field": field,
                 "source_value": row.get(field),
                 "period_value_kind": row.get("period_value_kind"),
+                **({"scope_source": row["scope_source"]} if row.get("scope_source") else {}),
             }
             for row, field, _ in selected
         ],
@@ -677,6 +683,8 @@ def _dart_source_point(
             "business_year": first.get("bsns_year"),
             "source_account_id": first.get("account_id"),
             "source_account_name": first.get("account_nm"),
+            "source_statement": first.get("sj_div"),
+            **({"scope_source": first["scope_source"]} if first.get("scope_source") else {}),
             "source_table_id": first.get("source_table_id") or first.get("table_id"),
             "source_row_id": first.get("source_row_id") or first.get("row_id"),
             "source_field": field,
@@ -795,7 +803,7 @@ def default_sec_account_specs() -> dict[str, dict[str, Any]]:
     """Return the existing SEC concept catalogue in canonical-spec form."""
     from .sec_xbrl import SJ, US_GAAP_TAGS
 
-    return {
+    result = {
         account_id: {
             "nature": "balance" if SJ.get(account_id) == "BS" else "flow",
             "statement": SJ.get(account_id, "IS"),
@@ -804,6 +812,9 @@ def default_sec_account_specs() -> dict[str, dict[str, Any]]:
         }
         for account_id, concepts in US_GAAP_TAGS.items()
     }
+    from .pe_cr import account_specs
+    result.update({key: spec for key, spec in account_specs().items() if spec["sec_concepts"]})
+    return result
 
 
 def default_dart_account_specs(
@@ -826,6 +837,8 @@ def default_dart_account_specs(
             "unit_kind": "currency",
             "aggregation": deepcopy(raw.get("aggregation") or {}),
         }
+    from .pe_cr import account_specs
+    out.update(account_specs())
     return out
 
 
