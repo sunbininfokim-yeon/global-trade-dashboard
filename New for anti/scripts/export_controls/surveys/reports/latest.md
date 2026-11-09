@@ -1,27 +1,27 @@
-# 수출통제 주간 점검 2026-W45 (2026-11-02)
+# 수출통제 주간 점검 2026-W46 (2026-11-09)
 
 | 항목 | 건수 |
 |---|---|
-| 기한 지남·임박 | 3 |
+| 기한 지남·임박 | 4 |
 | 링크 깨짐 / 자동 확인 불가 | 0 / 9 (확인 24) |
-| 이번 주 공고 → 기존 행 갱신 후보 | 1 |
+| 이번 주 공고 → 기존 행 갱신 후보 | 0 |
 | 이번 주 공고 → 신규 행 후보 | 0 |
-| 카탈로그 행 / 재확인 필요 | 24 / 14 |
+| 카탈로그 행 / 재확인 필요 | 24 / 13 |
 | 감시 쌍: 현행 / 해제 / 미확인 | 31 / 1 / 265 |
 
 ## 1. 기한
 
 | 행 | 국가 | 구분 | 날짜 | 상태 |
 |---|---|---|---|---|
-| `rus-fuel-products` | 러시아 | 재검토 기한 | 2026-10-31 | **지남** (2일 지남) |
-| `chn-rare-earths` | 중국 | 재검토 기한 | 2026-11-13 | **임박** (11일 남음) |
-| `gab-manganese` | 가봉 | 재검토 기한 | 2026-11-14 | **임박** (12일 남음) |
+| `chn-rare-earths` | 중국 | 재검토 기한 | 2026-11-12 | **임박** (3일 남음) |
+| `gab-manganese` | 가봉 | 재검토 기한 | 2026-11-14 | **임박** (5일 남음) |
+| `chn-gallium` | 중국 | 재검토 기한 | 2026-11-27 | **임박** (18일 남음) |
+| `chn-graphite` | 중국 | 재검토 기한 | 2026-11-27 | **임박** (18일 남음) |
 
 ## 2. 원문 링크
 
 | 행 | 상태 | 응답 | 링크 |
 |---|---|---|---|
-| `ind-wheat` | 자동 확인 불가 | 403 | https://www.bloomberg.com/news/articles/2026-08-24/india-lifts-wheat-export-ban-in-boost-to-war-hit-global-supply |
 | `rus-wheat` | 자동 확인 불가 | 403 | https://www.bloomberg.com/news/articles/2026-09-02/russia-pauses-grain-export-duty-through-the-end-of-2026 |
 | `ukr-soybeans` | 자동 확인 불가 | 403 | https://www.fas.usda.gov/data/gain-report/2026/04/Oilseeds%20and%20Products%20Annual_Kyiv_Ukraine_UP2026-0011.pdf |
 | `idn-coal-single-gate` | 자동 확인 불가 | 403 | https://www.lexology.com/library/detail.aspx?g=103ff22e-019e-48e3-877a-a7ea7d683f60 |
@@ -30,16 +30,13 @@
 | `cod-cobalt` | 자동 확인 불가 | 403 | https://www.iea.org/policies/29138-drc-arecoms-decision-no-0042025-cobalt-quota-system |
 | `chl-lithium` | 자동 확인 불가 | 403 | https://investmentpolicy.unctad.org/investment-policy-monitor/measures/4305/chile-launches-a-new-national-strategy-for-lithium |
 | `idn-ferroalloys-single-gate` | 자동 확인 불가 | 403 | https://www.lexology.com/library/detail.aspx?g=103ff22e-019e-48e3-877a-a7ea7d683f60 |
+| `gab-manganese` | 자동 확인 불가 | 응답 없음 | https://journal-officiel.ga/738-decret/ |
 
 「자동 확인 불가」는 사이트가 봇을 막거나 시간 초과된 것이다. 깨졌다는 뜻이 아니다.
 
 ## 3. 최근 8일 공고 → 카탈로그 후보
 
-| 날짜 | 발표국 | 조치 | 공고 | 품목 | 판단 |
-|---|---|---|---|---|---|
-| 2026-10-31 | RUS | 수출금지 | [정부는 생산자들의 특정 유종 수출에 대한 한시적 금지 조치를 연장했다.](http://government.ru/docs/60326/) | petroleum_products | 갱신 후보: `rus-fuel-products` |
-
-조치 종류·품목은 공고 제목 한 줄을 Gemini 가 읽은 값이다. 금지인지 제한인지는 원문으로 정한다.
+원자재를 명시한 수출 금지·제한·해제 공고 없음 (보드 전체 72건 중).
 
 원자재를 명시하지 않은 수출통제 공고 2건(반도체·무기·항공 등 기술 통제)은 후보에서 뺐다. 수출통제 모니터 「최근 공고」 탭에서 볼 수 있다.
 
