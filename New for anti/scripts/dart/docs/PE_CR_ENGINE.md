@@ -4,11 +4,11 @@
 
 CR은 기업구조조정 관점이다. 신규 모듈은 공시 수치의 재현 가능한 진단을 제공하며 투자 권유, 자동 정상화 EBITDA, 자동 청산가치 또는 LBO 가격을 산출하지 않는다.
 
-- 구현: `dart_kfa/pe_cr.py`, 계정·산업 설정 `config/pe_cr_inputs.json`, 오프라인 진입점 `build_pe_cr.py`.
+- 구현: `dart_kfa/pe_cr.py`, 업종 분기 `dart_kfa/pe_cr_industry.py`, 계정·산업 설정 `config/pe_cr_inputs.json`, 오프라인 진입점 `build_pe_cr.py`.
 - 기존 `analyze_canonical_facts()` 결과에 `pe_cr`를 추가했다. 기존 `basic_cards`, 모델, 금융업 매핑을 덮어쓰지 않는다.
 - 원본→canonical 어댑터의 기본 계정 목록에 `PECR_` 접두어 계정을 추가했다. 과거 canonical JSON은 원본에서 재생성해야 이 입력들이 생긴다.
 - Worker/UI/라이브 fetch/배포는 변경하지 않았다. 이 구현만으로 서비스 화면이 바뀌지 않는다.
-- 합성 회귀 테스트와 삼성전자 FY2025 공식 감사보고서 금액 대조를 별도로 수행했다. 공시 수치를 API 응답 모양으로 옮긴 테스트는 실시간 DART 태그 검증이 아니다.
+- 합성 회귀 테스트와 삼성전자·Costco·ITT 공식 공시 금액 대조를 별도로 수행했다. 공시 수치를 API 응답 모양으로 옮긴 테스트는 실시간 API 검증이 아니다.
 
 ## 데이터 흐름
 
@@ -42,18 +42,29 @@ CR은 기업구조조정 관점이다. 신규 모듈은 공시 수치의 재현 
 
 D&A는 현금흐름표 조정행 또는 주석에서 별도 항목을 확보해야 한다. 전체 상각 합계와 하위 상각액을 중복 가산하거나 충당금·손상차손을 상각비에 포함하면 안 된다. CF 상각액의 범위가 영업이익에 포함된 비용과 일치하는지도 매핑 승인 시 확인해야 한다. CLI는 검토한 주석 묶음을 받을 수 있지만 문서에서 자동 추출하지는 않는다.
 
-## 산업 설정
+## 산업별 계산과 입력 매핑
 
-| 키트 | 우선 지표 | 추가 공시 확보 대상 |
+| 키트 | CCC 정책 | 계산과 원본 계정·주석 |
 |---|---|---|
-| manufacturing | FCF, ICR, CCC, CapEx | 매출채권·재고·매입채무, 순수이자, 투자 내역 |
-| semiconductor | 재고일수, CapEx, FCF, EBITDA | 제품별 매출, 재고평가손실, 투자계획; HBM/DRAM 중첩 주의 |
-| shipbuilding | 계약자산/매출, 계약부채/매출, FCF | 수주잔고·신규수주·선수금·이행보증 |
-| construction | 계약자산/매출, 계약부채/매출, ICR | 미청구·미수공사, PF·보증·충당금 |
-| shipping | FCF, ICR, 만기부채 상태 | 용선·리스부채, 만기표, 선박투자·담보. 제조업식 CCC는 이번 키트에서 숨김 |
-| financial | 기존 금융업 하위 업권 경로 유지 | 은행/증권/보험 등 기존 분류·매핑 사용; 이 모듈의 산업기업 지표는 비표시 |
+| `shipbuilding` 조선 | 보조 | 유동 계약자산·계약부채 ÷ 동기간 매출, 그리고 두 잔액의 차이 ÷ 매출. 수주잔고(기말)와 신규 확정수주(기간)는 확인된 주석에서 별도 표시 |
+| `machinery` 기계제조 | 우선 | CCC·재고일수. 주석 순재공품/순원재료 ÷ 본표 총재고: 주석 총재고가 본표와 같고 두 구성항목 합이 총재고를 넘지 않아야 함. 계약자산과 재공품은 합치지 않음 |
+| `manufacturing` 일반제조 | 우선 | 매출·원가·기초/기말 매출채권·재고·매입채무로 CCC, CF로 FCF와 CapEx 부담 |
+| `retail_wholesale` 직매입 유통 | 우선 | 평균재고·평균매입채무·평균순매출채권으로 DIO/DPO/DSO. 기간 재고회전과 기말 재고−매입채무도 분리. 매입채무와 범위가 맞는 순상품매입액이 공시된 경우 별도 DPO/CCC |
+| `retail_platform` / `retail_mixed` 중개 / 구조 미확인 유통 | 비적용 / 보류 | 그룹 순수수료에 거래액·입점업체 정산잔액·직매입재고를 섞어 DSO·CCC를 계산하지 않음 |
+| `it_services` IT서비스·소프트웨어 | 비적용 | 서비스 DSO, 유동 계약부채/매출, 비용 처리 R&D/매출, 내부개발 자산화 증가액/매출. 계약부채≠ARR, 개발비 증가액≠무형자산 현금취득 |
+| `it_hardware` / `semiconductor` IT하드웨어·반도체 | 우선 | 재고·CapEx·FCF. HBM/DRAM처럼 제품 매출 범위가 중첩되면 합산 금지 |
+| `construction` / `shipping` 건설 / 해운 | 보조 / 비적용 | 건설은 계약자산·계약부채와 PF·보증, 해운은 리스·용선·만기부채 |
+| `financial` 금융 | 비적용 | 기존 금융업 하위 업권 경로 유지; 산업기업 지표 비표시 |
 
-키트는 관찰 지표·적용 여부 설정이지 산업별 주석 추출 완성본이 아니다. 금융 이외 산업은 호출자가 검증된 업종을 지정한다. 복합기업을 매출액만으로 자동 분류하지 않는다.
+OpenDART 기업개황의 `corp.induty_code`(또는 검토된 `corp.ksic`/기존 `corp.industry`)에서 긴 KSIC 코드가 우선한다. `311`(조선), `29`(기계), `47912`(전자상거래 직매입 소매 쪽), `47911`(중개), `582`/`62`/`63`(IT서비스), `26`(하드웨어) 등만 좁게 분기한다. `46`/`47`/`4791`처럼 범위가 넓으면 거래 구조 미확인이다. 업종코드는 주 사업의 분류이지 본인·대리인 판단이나 부문별 범위 검증이 아니다. 혼합 기업은 실제 공시를 확인하고 `industry="retail_mixed"` 등으로 지정한다. SEC에는 KSIC를 적용하지 않는다. 검토된 `corp.industry_kit` 또는 호출자 지정 키트를 사용한다. 기존 입력에서 업종 메타데이터를 아예 주지 않으면 `legacy_default`가 표시된다. 금융 우선 차단은 명시 키트 지정으로 덮어쓸 수 없다.
+
+`industry_profile`은 적용 업종, 분류 근거, KSIC, CCC 정책, 받을 수 있는 주석 키 목록을 전달한다. 기존 `focus`는 우선 카드 목록, `visible_cards`는 실제 값이 있는 카드 목록이다. 주석 키가 있다는 사실은 해당 공시 자료의 수집이 끝났다는 뜻이 아니다. 정확한 표준 계정이 없을 때만 검토된 순매출채권·매입채무 주석으로 대체할 수 있고, 기초·기말 모두 날짜가 맞아야 한다. 매입액 미공시 시 매출원가 대용치를 `ccc_days_on_purchases`에 복제하지 않는다. 음수 CCC는 정상적으로 표시하며 부실 신호로 단정하지 않는다.
+
+공시 대조 예시:
+
+- Costco FY2025 SEC 10-K: 364일 기준 재고일수 약 27.9일, 매출원가 기준 매입채무 지급일수 약 29.7일. 채권에는 공급업체·보험·세금채권 등이 섞여 DSO와 전체 CCC는 보류. 매입액 기준 DPO도 해당 매입액을 확보하지 않아 보류.
+- ITT FY2025 SEC 10-K 주석 9: 재공품 125.2백만 달러·원재료 411.8백만 달러·총재고 671.9백만 달러를 검토 입력으로 추가. 본표 일치 시 재공품 비중 18.6%, 원재료 비중 61.3%.
+- 국내 조선·기계·유통·IT의 기업별 확장태그와 주석 자동추출은 별도 검증 대상. 같은 방식으로 원본 표·행·기간·범위·단위가 확인된 입력만 추가한다.
 
 ## 계정 매핑 원칙
 
@@ -93,7 +104,7 @@ IFRS 만기표의 미할인 현금흐름에는 원금 외 금액이 포함될 �
 
 OpenDART 원본 응답은 `filings.FY = {"request": {"corp_code": "00126380", "bsns_year": "2025", "reprt_code": "11011", "fs_div": "CFS"}, "response": {...}}`처럼 요청 메타데이터와 함께 저장한다(인증키 제외). 응답의 회사·연도·보고서 코드와 일치하면 요청 범위를 행에 보존한다. 중간 IS/CIS의 당기금액만 직접 분기로 표시하고, 현금흐름은 기존 누적 차분 로직을 유지한다. 요청 정보가 없는 레거시 입력은 기존처럼 행의 `fs_div`가 필요하다.
 
-CLI 입력의 `reviewed_disclosures`에 위 묶음 JSON 객체를 선택적으로 넣는다. 기존 통합 함수에서는 `pe_cr_reviewed_disclosures=...`, `pe_cr_history=[전기 canonical ...]`, `pe_cr_industry="shipbuilding"`을 전달한다. 분기 CCC에는 해당 분기의 시작 직전 BS가 필요하다. 주석 묶음을 모든 기업에 자동 적용하지 않는다.
+CLI 입력의 `reviewed_disclosures`에 위 묶음 JSON 객체를 선택적으로 넣는다. 기존 통합 함수에서는 `pe_cr_reviewed_disclosures=...`, `pe_cr_history=[전기 canonical ...]`, `corp={"induty_code": "31111"}` 또는 명시 `pe_cr_industry="shipbuilding"`을 전달한다. 분기 CCC에는 해당 분기의 시작 직전 BS가 필요하다. 주석 묶음을 모든 기업에 자동 적용하지 않는다.
 
 Claude는 계산식을 Worker에 재작성하지 말고 이 결과를 서빙하는 어댑터를 연결한다. 기존 서비스 `basic_cards`에 바로 붙이는 형식이 아니므로 카드별 단위/기간/series를 변환하는 경계가 필요하다. 계산 카드는 `unit` 문자열(`money`, `ratio`, `days`), `inputs`, 평탄 기간 필드를 사용한다. EBITDA도 이 형식으로 감싸고 P1 근거는 `inputs`에 보존한다. 무검증 object spread 금지. 새 계약 버전과 캐시 키를 함께 검토한다.
 
@@ -102,6 +113,11 @@ Claude는 계산식을 Worker에 재작성하지 말고 이 결과를 서빙하�
 ## 근거
 
 - OpenDART 전체 재무제표 API: https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS003&apiId=2019020 — 재무제표 구분·계정 ID·기간 금액 필드.
+- OpenDART 기업개황: https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019002 — `induty_code`.
+- 한국표준산업분류: https://www.law.go.kr/admRulInfoP.do?admRulSeq=2100000243048 및 https://kosis.kr/civilComplaint/qnaDetail.do?boardIdx=16377 — 직매입 소매와 중개의 분류 구분.
+- IFRS 15 본인·대리인: https://www.ifrs.org/news-and-events/updates/ifric/2021/ifric-update-november-2021/ — 업종코드만으로 본인·대리인 결론을 내릴 수 없음.
+- Costco FY2025 Form 10-K: https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm — 재고·매입채무 및 순채권의 구성.
+- ITT FY2025 Form 10-K: https://www.sec.gov/Archives/edgar/data/216228/000021622826000012/itt-20251231.htm — 주석 9 재고 세부 내역.
 - SEC Non-GAAP C&DIs 102.07: https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/non-gaap-financial-measures — FCF 정의 설명 필요, 가용현금과 동일시 금지.
 - IAS 7: https://www.ifrs.org/issued-standards/list-of-standards/ias-7-statement-of-cash-flows/ — 현금흐름 분류. 적용연도·기준에 따른 이자분류 차이는 별도 검토.
 - IFRS 7 B11D: https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ifrs-7-financial-instruments-disclosures.pdf — 계약 만기 공시의 미할인 현금흐름과 원금 구분.

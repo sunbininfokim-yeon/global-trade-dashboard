@@ -71,7 +71,7 @@ def analyze_canonical_facts(
     p1_annual_history: Iterable[Mapping[str, Any]] | None = None,
     p1_model_inputs: Mapping[str, Any] | None = None,
     pe_cr_history: Iterable[Mapping[str, Any]] = (),
-    pe_cr_industry: str = "manufacturing",
+    pe_cr_industry: str | None = None,
     pe_cr_reviewed_disclosures: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run the common metric/view engine without mixing annual and interim data."""
@@ -276,7 +276,7 @@ def analyze_canonical_facts(
     from .pe_cr import build_pe_cr
     output["pe_cr"] = build_pe_cr(
         canonical, selected_period=selected_period, history=list(pe_cr_history),
-        entity_policy=entity_policy, industry=pe_cr_industry, reviewed_disclosures=pe_cr_reviewed_disclosures,
+        entity_policy=entity_policy, industry=pe_cr_industry, corp=corp_in, reviewed_disclosures=pe_cr_reviewed_disclosures,
     )
     output["p1_models"] = build_p1_models(
         canonical,

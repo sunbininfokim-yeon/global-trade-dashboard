@@ -18,8 +18,18 @@ BASES = {
     "principal_paid": "financing_principal_paid_including_leases",
     "interest_paid": "financing_cash_interest_paid_including_leases",
     "maintenance_capex": "explicitly_disclosed_cash_maintenance_capex",
+    "order_backlog": "remaining_firm_customer_orders_reported_at_period_end",
+    "new_orders": "firm_customer_orders_signed_in_selected_period",
+    "wip_inventory": "net_work_in_process_included_in_total_inventory",
+    "raw_material_inventory": "net_raw_materials_included_in_total_inventory",
+    "inventory_note_total": "net_total_inventory_on_same_basis_as_note_components",
+    "merchandise_purchases": "net_merchandise_purchases_matching_trade_payables_scope",
+    "receivables": "current_trade_receivables_net_excluding_non_trade_and_settlement_receivables",
+    "payables": "current_trade_payables_excluding_non_trade_and_settlement_payables",
+    "rd_expense": "research_and_development_recognized_as_expense_in_profit_or_loss",
+    "capitalized_development": "internally_generated_development_additions_excluding_acquisitions_and_reclassifications",
 }
-BALANCES = {"financing_debt", "unrestricted_cash", "principal_due_1y"}
+BALANCES = {"financing_debt", "unrestricted_cash", "principal_due_1y", "order_backlog", "wip_inventory", "raw_material_inventory", "inventory_note_total", "receivables", "payables"}
 
 
 def reviewed_facts(pack, canonical):

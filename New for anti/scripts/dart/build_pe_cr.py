@@ -1,6 +1,6 @@
 """Offline entry point: saved OpenDART report responses -> auditable PE/CR JSON.
 
-Input: {entity_id, fiscal_year_end, fs_div, currency, industry,
+Input: {entity_id, fiscal_year_end, fs_div, currency, industry, corp: {induty_code},
         entity_policy, filings: {FY: {list: [...]}, Q1: ..., H1: ..., Q3: ...},
         history: [canonical-financial-facts/1 bundles], reviewed_disclosures}.
 An OpenDART raw report is stored as {request: {corp_code, bsns_year,
@@ -62,7 +62,7 @@ def build(payload, period="annual"):
     if payload.get("entity_policy", {}).get("is_financial_entity"):
         policy = payload["entity_policy"]
     return build_pe_cr(canonical, selected_period=period, history=payload.get("history", []),
-                       industry=payload.get("industry", "manufacturing"), entity_policy=policy,
+                       industry=payload.get("industry"), corp=payload.get("corp"), entity_policy=policy,
                        reviewed_disclosures=payload.get("reviewed_disclosures"))
 
 
