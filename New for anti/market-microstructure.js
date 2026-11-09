@@ -127,11 +127,75 @@ const msDirectionSection = (D) => {
         v.modelId ? `모델 ${finEsc(v.modelId)} (학습 ~${finEsc(msDayLabel(v.trained))})` : null].filter(Boolean).join(' · ');
     return `
     <section class="fin-block fin-block-wide">
-        <div class="ms-dir-section-head"><h2>다음 거래일 방향 (연구용)</h2><span class="ms-dir-badge ${badge[1]}">${badge[0]}</span></div>
+        <div class="ms-dir-section-head"><h2>통합 전망 · 다음 거래일 방향 (홈 카드와 같음)</h2><span class="ms-dir-badge ${badge[1]}">${badge[0]}</span></div>
         <p class="fin-lead">전날 국내 장 마감과 그 뒤 미국 장 마감을 반영해 한국 장 시작 전(08:30)에 확정합니다. 시작·마감 모두 전일 종가 대비이고, 두 확률은 따로 계산한 값이라 곱해서 경로 확률로 쓰면 안 됩니다. 매매 신호가 아닙니다.</p>
         ${body}
         ${foot ? `<div class="ms-dir-foot">${foot}</div>` : ''}
         <p class="fin-note">과거 시간순 평가(KOSPI, 1,047일) 적중은 시작 ${msPct0(h.open)} · 마감 ${msPct0(h.close)}입니다. 대부분은 전날 미국 장에서 나옵니다: "전날 나스닥(QQQ)이 오르면 상승"이라고만 해도 시작 ${msPct0(h.ruleOpen)} · 마감 ${msPct0(h.ruleClose)}였어요(KODEX 200 기준). 시가 이후 장중 방향은 미국 자료를 넣어도 맞히지 못했고, 「최근 빈도」 표시는 모델 대신 최근 비율만 반영한 값입니다.</p>
+    </section>`;
+};
+
+// --- Input-specific forecasts (#961 `factors`) --------------------------------
+// User decision 2026-11-08: home shows the integrated forecast; each tab shows
+// one force on its own -- 파생 수급 = K200 option flow, 가격대별 체결 = foreign
+// cash flow in the stock, 해외-국내 선행 = US prices. These are separate frozen
+// models; their probabilities are never added up or averaged into the home one.
+// A factor whose walk-forward validation says skill "none" gets no probability
+// on screen (it sits at the base rate) -- only the validation and a pointer to
+// the observed flows below. Contract: docs/ops/handoff/2026-11-08-codex-us-kr-factor-outputs.md.
+const MS_FACTOR_TEXT = {
+    options: { title: '옵션 수급만으로 본 다음 거래일 방향',
+        lead: 'KOSPI200 외국인 콜·풋 순매수(60일 순위·5일 평균)만 넣은 별도 고정 모델입니다.',
+        observe: '실제 콜·풋 수급은 아래 「외국인 KOSPI200 파생 수급」 표에 있습니다.' },
+    foreign_stock_flow: { title: '외국인 현물 수급만으로 본 다음 거래일 방향',
+        lead: '삼성전자·SK하이닉스 각 종목의 외국인 순매수(시장 매수대금 대비, 당일·5일 평균)만 넣은 별도 고정 모델입니다.',
+        observe: '외국인이 어느 가격대에서 샀는지는 아래 「가격대별 누적 수급」에 있습니다.' },
+    us_price: { title: '미국 주가만으로 본 다음 거래일 방향',
+        lead: '전날 미국 장 마감(QQQ·SPY·SMH·MU·NVDA·AMD 수익률, VIX 수준·변화)만 넣은 별도 고정 모델입니다. 국내 가격·수급은 넣지 않았습니다.',
+        observe: '' }
+};
+const msFactorScore = (s) => (s && Number.isFinite(Number(s.up_probability)))
+    ? { probability: Number(s.up_probability), information_state: s.information_state } : null;
+const msFactorSection = (D, key) => {
+    const txt = MS_FACTOR_TEXT[key];
+    const v = msDirectionView(D.direction);
+    const f = ((D.direction || {}).factors || {})[key];
+    const val = (f && f.validation) || {};
+    const skill = val.skill;
+    const badge = !f || v.state === 'missing' ? ['자료 없음', 'is-muted']
+        : skill === 'yes' ? ['과거 검증 · 예측력 있음', 'is-research']
+        : skill === 'weak' ? ['과거 검증 · 약함', 'is-muted'] : ['과거 검증 · 방향 정보 없음', 'is-muted'];
+    let body;
+    if (!f || v.state === 'missing') {
+        body = `<div class="ms-dir-card"><div class="ms-dir-empty">—</div><p class="ms-dir-note">${finEsc(v.reason || '입력별 전망이 아직 없어요. 개장 전 실행이 한 번 돌면 생겨요.')}</p></div>`;
+    } else if (skill !== 'yes' && skill !== 'weak') {
+        body = `<div class="ms-dir-card"><p class="ms-dir-note">2021년 이후 시간순 검증에서 이 입력만으로는 다음 거래일 방향을 기저율보다 잘 맞히지 못했습니다
+            (적중 ${msPct0(val.hit || 0)}, 실제 상승 비율 ${msPct0(val.base_rate || 0)}, 상승·하락 균형 적중 ${msPct0(val.balanced_hit || 0)}).
+            그래서 확률은 표시하지 않습니다. ${finEsc(txt.observe)}</p></div>`;
+    } else {
+        const muted = v.state === 'replay';
+        const order = (t) => MS_DIRECTION_ORDER.indexOf(t);
+        body = `<div class="ms-dir-grid">${(f.cards || []).slice().sort((a, b) => order(a.ticker) - order(b.ticker)).map((c) => {
+            const name = ({ KOSPI: 'KOSPI', '005930': '삼성전자', '000660': 'SK하이닉스' })[c.ticker] || c.ticker;
+            if (c.status !== 'available') return `<div class="ms-dir-card"><div class="ms-dir-head"><span class="ms-dir-title">${finEsc(name)}</span></div><p class="ms-dir-note">자료 없음 · 기준일 원자료가 아직 없어요.</p></div>`;
+            return `<div class="ms-dir-card">
+                <div class="ms-dir-head"><span class="ms-dir-title">${finEsc(name)}</span></div>
+                ${msDirSplitRow('시작 · 시가 vs 전일 종가', msFactorScore(c.scores.opening_up), muted)}
+                ${msDirSplitRow('마감 · 종가 vs 전일 종가', msFactorScore(c.scores.closing_up), muted)}
+            </div>`;
+        }).join('')}</div>`;
+    }
+    const period = val.period ? `${val.period.start} ~ ${val.period.end}` : '';
+    const foot = f ? [v.target ? `대상 ${msDayLabel(v.target)}` : null,
+        f.as_of ? `입력 기준일 ${msDayLabel(f.as_of)}` : (f.expected_source_date ? `입력 기준일 ${msDayLabel(f.expected_source_date)} 미도착` : null),
+        period ? `검증 ${finEsc(period)} · ${Number(val.n || 0).toLocaleString()}건 · 적중 ${msPct0(val.hit || 0)} (기저 ${msPct0(val.base_rate || 0)})` : null,
+        f.model_id ? `모델 ${finEsc(String(f.model_id).slice(0, 7))}` : null].filter(Boolean).join(' · ') : '';
+    return `
+    <section class="fin-block fin-block-wide">
+        <div class="ms-dir-section-head"><h2>${finEsc(txt.title)}</h2><span class="ms-dir-badge ${badge[1]}">${badge[0]}</span></div>
+        <p class="fin-lead">${finEsc(txt.lead)} 홈 카드의 통합 전망과는 다른 모델이고, 서로 더하거나 평균하지 않습니다. 매매 신호가 아닙니다.</p>
+        ${body}
+        ${foot ? `<div class="ms-dir-foot">${foot}</div>` : ''}
     </section>`;
 };
 
@@ -1074,6 +1138,7 @@ const msLevelsTab = (D) => {
     const L = kl.latest || {};
 
     return `
+    ${msFactorSection(D, 'foreign_stock_flow')}
     <section class="fin-block fin-block-wide">
         <h2>가격대별 누적 수급 <span class="ms-q">${finEsc(src.quality || '')}</span></h2>
         <p class="fin-lead">
@@ -1199,6 +1264,7 @@ const msUsKr = (D) => {
     });
 
     return `
+    ${msFactorSection(D, 'us_price')}
     <section class="fin-block fin-block-wide">
         <h2>현재 관찰되는 US → KR 연결</h2>
         <div class="ms-headline">
@@ -1887,6 +1953,7 @@ const msDerivatives = (D) => {
         : missingSplitRow(label, state.reason);
 
     return `
+    ${msFactorSection(D, 'options')}
     ${msDirectionSection(D)}
 
     <section class="fin-block fin-block-wide">
