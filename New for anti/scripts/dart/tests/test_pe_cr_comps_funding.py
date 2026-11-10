@@ -41,7 +41,7 @@ class ValuationFundingTests(unittest.TestCase):
                               "receivables": 80, "inventory": 100, "payables": 40})
         c = build_pe_cr(b, history=[prior], reviewed_disclosures=evidence(b), market=quote(), corp={"accounting_basis": "K-IFRS"})["cards"]
         expected = dict(market_cap=500, per=10, pbr=500/350, roe=.16, roa=65/900, debt_ratio=1,
-                        current_ratio=2, working_capital=200, operating_nwc=160, operating_nwc_change=20,
+                        current_ratio=2, current_liabilities_share=.4, working_capital=200, operating_nwc=160, operating_nwc_change=20,
                         operating_income=100, ebit=95, ebitda=115, net_debt=140, ev=690, ev_to_ebitda=6,
                         ev_to_ebit=690/95, ev_to_sales=.69, debt_due_within_1y=100, liquidity_coverage_1y=.6,
                         owner_earnings_proxy=139)
@@ -97,7 +97,9 @@ class ValuationFundingTests(unittest.TestCase):
         out = company("target", peers=peers)["peer_comparison"]
         self.assertEqual(out["summary"]["per"]["median"], 7.5)
         self.assertEqual(out["summary"]["per"]["count"], 2)
-        self.assertEqual(len(out["excluded"]), 3)
+        self.assertEqual(len(out["excluded"]), 2)
+        dated = next(row for row in out["included"] if row["entity_id"] == "p4")
+        self.assertEqual(dated["cells"]["per"]["reason"], "incompatible:peer_market_date")
         self.assertIsNone(company("target", peers=peers[:1])["peer_comparison"]["summary"]["per"]["median"])
 
     def test_financial_profile_separates_issuer_maturity_and_bond_duration(self):
@@ -155,6 +157,44 @@ class ValuationFundingTests(unittest.TestCase):
             build_pe_cr(b, funding={**packet(b, "funding"), "currency": "USD"})
         with self.assertRaisesRegex(ValueError, "incompatible:segment_period_start"):
             build_pe_cr(b, segments=packet(b, "segment", period_start="2025-10-01"))
+
+    def test_funding_gap_and_short_term_principal_require_matching_schedules(self):
+        b = bundle(values=VALUES_PLUS)
+        def table(key, side, buckets):
+            return {"id": key, "side": side, "group": key, "measure": "principal", "source": SOURCE,
+                    "buckets": [{"from_month": a, "to_month": z, "amount": amount} for a, z, amount in buckets]}
+        liability = table("debt", "liability", [(0, 12, 100), (12, None, 300)])
+        asset = table("assets", "asset", [(0, 12, 40), (12, None, 370)])
+        data = packet(b, "funding", tables=[liability, asset],
+                      principal_profile={"table_id": "debt", "coverage": "complete_financing_principal_including_leases", "source": SOURCE},
+                      matched_gap={"asset_table_id": "assets", "liability_table_id": "debt", "coverage": "comparable_contractual_funding_cashflows", "source": SOURCE})
+        r = build_pe_cr(b, funding=data, reviewed_disclosures=reviewed(b, {"unrestricted_cash": 70}))
+        self.assertEqual(r["cards"]["debt_due_within_1y"]["value"], 100)
+        self.assertEqual(r["cards"]["liquidity_coverage_1y"]["value"], .7)
+        self.assertEqual(r["cards"]["financing_principal_due_1y_share"]["value"], .25)
+        gap = r["disclosure_profile"]["contractual_funding_gap"]["rows"]
+        self.assertEqual([row["gap"] for row in gap], [-60, 70])
+        self.assertEqual(gap[-1]["cumulative_gap"], 10)
+        conflict = build_pe_cr(b, funding=data, reviewed_disclosures=reviewed(b, {"principal_due_1y": 90}))["cards"]
+        self.assertIsNone(conflict["debt_due_within_1y"]["value"])
+        self.assertIsNone(conflict["financing_principal_due_1y_share"]["value"])
+        liability["measure"] = "undiscounted_contractual_cash_flow"
+        r = build_pe_cr(b, funding=data)
+        self.assertEqual(r["disclosure_profile"]["contractual_funding_gap"]["reason"], "incompatible:asset_liability_measure_or_side")
+        self.assertIsNone(r["cards"]["financing_principal_due_1y_share"]["value"])
+
+    def test_selected_peer_order_and_missing_reason(self):
+        b = bundle(values=VALUES_PLUS)
+        p = {**b, "entity_id": "peer"}
+        metadata = {"accounting_basis": "K-IFRS"}
+        peer = build_pe_cr(p, peer_group="machinery", corp={**metadata, "name": "Peer A"}, industry="machinery")
+        r = build_pe_cr(b, peer_group="machinery", corp=metadata, industry="machinery", peers=[peer], peer_ids=["missing", "peer"])
+        comp = r["peer_comparison"]
+        self.assertEqual(comp["selection"]["peer_ids"], ["missing", "peer"])
+        self.assertEqual(comp["target"]["entity_id"], "test")
+        self.assertEqual(comp["included"][0]["label"], "Peer A")
+        self.assertEqual(comp["excluded"][0]["reason"], "missing:resolved_peer_snapshot")
+        self.assertEqual(comp["columns"][0]["display"], "multiple")
 
 
 if __name__ == "__main__":

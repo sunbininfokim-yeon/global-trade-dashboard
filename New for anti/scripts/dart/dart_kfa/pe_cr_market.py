@@ -58,11 +58,47 @@ def market_observation(raw, canonical):
 
 
 COMPS = ("per", "pbr", "ev_to_ebitda", "ev_to_ebit", "ev_to_sales", "roe", "roa", "ccc_days")
+MARKET_COMPS = frozenset(COMPS[:5])
+PEER_COLUMNS = (
+    ("per", "PER", "multiple"), ("pbr", "PBR", "multiple"), ("ev_to_ebitda", "EV/EBITDA", "multiple"),
+    ("ev_to_ebit", "EV/EBIT", "multiple"), ("ev_to_sales", "EV/매출", "multiple"),
+    ("roe", "ROE", "percent"), ("roa", "ROA", "percent"), ("ccc_days", "CCC", "days"),
+)
 
 
-def compare_peers(target, peers):
+def _peer_cells(snapshot, *, market_date_matches=True):
+    cards = snapshot.get("cards") or {}
+    result = {}
+    for key in COMPS:
+        cell = cards.get(key) or {}
+        value = cell.get("value")
+        if key in MARKET_COMPS and not market_date_matches:
+            result[key] = {"value": None, "reason": "incompatible:peer_market_date"}
+        elif cell.get("status") == "computed" and type(value) in (int, float) and math.isfinite(value):
+            result[key] = {"value": value, "reason": None}
+        else:
+            result[key] = {"value": None, "reason": cell.get("reason") or "missing:metric"}
+    return result
+
+
+def compare_peers(target, peers, *, peer_ids=None):
     """Compare explicit peer snapshots, not rankings or investment signals."""
     context = target["comparison_context"]
+    if peer_ids is not None:
+        if (not isinstance(peer_ids, (list, tuple)) or len(peer_ids) > 8
+                or any(not isinstance(i, str) or not i.strip() or i != i.strip() for i in peer_ids)
+                or len(set(peer_ids)) != len(peer_ids)):
+            raise ValueError("invalid:peer_selection_requires_up_to_eight_distinct_resolved_ids")
+        snapshots = {}
+        for peer in peers:
+            if not isinstance(peer, dict):
+                continue
+            identity = (peer.get("comparison_context") or {}).get("entity_id")
+            if identity in peer_ids:
+                if identity in snapshots:
+                    raise ValueError("conflict:duplicate_resolved_peer_snapshot")
+                snapshots[identity] = peer
+        peers = [snapshots.get(i, {"comparison_context": {"entity_id": i}, "selection_missing": True}) for i in peer_ids]
     rows, excluded, seen = [], [], {context.get("entity_id")}
     for peer in peers:
         if not isinstance(peer, dict):
@@ -71,12 +107,14 @@ def compare_peers(target, peers):
         other = peer.get("comparison_context") or {}
         eid = other.get("entity_id")
         reason = None
-        if peer.get("schema_version") != "kfa-pe-cr/1" or not eid or eid in seen:
+        if peer.get("selection_missing") is True:
+            reason = "missing:resolved_peer_snapshot"
+        elif peer.get("schema_version") != "kfa-pe-cr/1" or not eid or eid in seen:
             reason = "invalid_or_duplicate_peer_identity"
         elif not context.get("accounting_basis") or not other.get("accounting_basis"):
             reason = "requires_confirmed_accounting_basis"
         elif not context.get("peer_group") or any(other.get(k) != context.get(k) for k in
-                 ("peer_group", "industry", "source", "accounting_basis", "fs_div", "period_start", "period_end", "market_date")):
+                 ("peer_group", "industry", "source", "accounting_basis", "fs_div", "period_start", "period_end")):
             reason = "incompatible_peer_group_or_basis"
         elif context.get("period") != "annual" or other.get("period") != "annual" or context.get("fs_div") != "CFS":
             reason = "requires_consolidated_annual_basis"
@@ -84,9 +122,9 @@ def compare_peers(target, peers):
             excluded.append({"entity_id": eid, "reason": reason})
             continue
         seen.add(eid)
-        cells = peer.get("cards") or {}
-        rows.append({"entity_id": eid, "metrics": {
-            metric: cells[metric].get("value") if (cells.get(metric) or {}).get("status") == "computed" else None for metric in COMPS}})
+        cells = _peer_cells(peer, market_date_matches=bool(context.get("market_date")) and other.get("market_date") == context["market_date"])
+        rows.append({"entity_id": eid, "label": other.get("entity_label"), "market_date": other.get("market_date"),
+                     "metrics": {k: v["value"] for k, v in cells.items()}, "cells": cells})
     statistics = {}
     for key in COMPS:
         values = [row["metrics"][key] for row in rows
@@ -94,4 +132,7 @@ def compare_peers(target, peers):
         statistics[key] = {"count": len(values), "median": median(values) if len(values) >= 2 else None,
                            "reason": None if len(values) >= 2 else "requires:two_comparable_observations"}
     return {"peer_group": context.get("peer_group"), "included": rows, "excluded": excluded, "summary": statistics,
+            "columns": [{"id": k, "label": label, "display": unit} for k, label, unit in PEER_COLUMNS],
+            "target": {"entity_id": context.get("entity_id"), "label": context.get("entity_label"), "cells": _peer_cells(target)},
+            "selection": {"peer_ids": list(peer_ids) if peer_ids is not None else None, "max_selected": 8},
             "target_excluded_from_median": True}

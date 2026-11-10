@@ -36,7 +36,7 @@ class Unavailable(ValueError):
 def build_pe_cr(canonical, *, selected_period="annual", history=(),
                 entity_policy=None, industry=None, corp=None, reviewed_disclosures=None,
                 market=None, peer_group=None, peers=(), funding=None, segments=None,
-                dart_shares=None, dart_bonds=None):
+                dart_shares=None, dart_bonds=None, peer_ids=None):
     """History contains canonical bundles, including opening BS for averages.
 
     EBITDA reuses the existing P1 strict disclosure calculator.
@@ -127,6 +127,9 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     anchor = next((a for a in anchors if a.get("period_start") and a.get("period_end")), {})
     start, end = anchor.get("period_start"), anchor.get("period_end")
     days = (date.fromisoformat(end) - date.fromisoformat(start)).days + 1 if start and end else None
+    from .pe_cr_funding import build_disclosure_profile
+    profile = build_disclosure_profile(canonical, start=start, end=end, funding=funding, segments=segments, dart_bonds=dart_bonds)
+    principal_profile = profile["principal_profile"]
 
     def ratio(a, b):
         if b <= 0:
@@ -174,6 +177,14 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
          "재무상태표 운전자본; 영업운전자본과 범위가 다름")
     emit("debt_ratio", "total liabilities / total equity", lambda: ratio(read("liabilities"), read("equity")),
          note="총부채 기준; 금융사 규제 자본비율·이자부 레버리지 아님", financial_allowed=True)
+    def current_liabilities_share():
+        current, total = read("current_liabilities"), read("liabilities")
+        if current > total:
+            raise Unavailable("conflict:current_liabilities_exceed_total")
+        return ratio(current, total)
+
+    emit("current_liabilities_share", "current liabilities / total liabilities", current_liabilities_share,
+         note="총부채 중 유동부채; 매입채무·세금 포함, 금융차입 원금 만기 비율 아님", financial_allowed=True)
     def return_on_average(flow, balance):
         first, last = read(balance, opening=True), read(balance)
         if first <= 0 or last <= 0:
@@ -305,10 +316,25 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     emit("net_debt", "complete financing debt carrying amount including leases - unrestricted cash",
          lambda: read_reviewed("financing_debt") - read_reviewed("unrestricted_cash"), "money",
          "순현금이면 음수; 총부채·비유동부채로 대체하지 않음")
-    emit("debt_due_within_1y", "complete financing and lease principal due within 12 months", lambda: read_reviewed("principal_due_1y"), "money",
+    def principal_due_1y():
+        if principal_profile["value"] is None:
+            return read_reviewed("principal_due_1y")
+        used.append({"input": "reviewed_financing_principal_schedule", **principal_profile})
+        if reviewed("principal_due_1y") and read_reviewed("principal_due_1y") != principal_profile["value"]:
+            raise Unavailable("conflict:reviewed_financing_principal_due_1y")
+        return principal_profile["value"]
+
+    def principal_concentration():
+        if principal_profile["value"] is None:
+            raise Unavailable(principal_profile["reason"])
+        return ratio(principal_due_1y(), principal_profile["total_principal"])
+
+    emit("debt_due_within_1y", "complete financing and lease principal due within 12 months", principal_due_1y, "money",
          "약정 원금만 포함; 유동부채·리스장부잔액·원리금 만기표 합계와 다름", financial_allowed=True)
     emit("liquidity_coverage_1y", "unrestricted cash / complete principal due within 12 months",
-         lambda: ratio(read_reviewed("unrestricted_cash"), read_reviewed("principal_due_1y")), note="원금 기준, 이자·신용한도 제외; 규제 LCR 아님", financial_allowed=True)
+         lambda: ratio(read_reviewed("unrestricted_cash"), principal_due_1y()), note="원금 기준, 이자·신용한도 제외; 규제 LCR 아님", financial_allowed=True)
+    emit("financing_principal_due_1y_share", "12-month financing principal / all financing principal on the same verified schedule",
+         principal_concentration, note="전체 약정 원금과 같은 만기표가 확인된 경우만", financial_allowed=True)
     emit("dscr", "historical CFADS / (financing principal paid + cash interest paid)",
          lambda: ratio(read_reviewed("cfads"), read_reviewed("principal_paid") + read_reviewed("interest_paid")),
          note="동일 기간 실적 DSCR; 계약상 정의·미래 시나리오와 다름")
@@ -441,11 +467,11 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
                                  "ccc_policy": ccc_policy, "disclosure_inputs": kit.get("note_inputs", [])},
             "cards": cards, "focus": kit["focus"], "notes": kit["notes"],
             "visible_cards": [k for k, v in cards.items() if v["value"] is not None],
-            "comparison_context": {"entity_id": canonical.get("entity_id"), "peer_group": peer_group, "industry": industry,
+            "comparison_context": {"entity_id": canonical.get("entity_id"), "entity_label": (corp or {}).get("name") or (corp or {}).get("corp_name"),
+                                   "peer_group": peer_group, "industry": industry,
                                    "source": canonical.get("source"), "accounting_basis": accounting_basis, "fs_div": canonical.get("fs_div"), "period": selected_period,
                                    "period_start": start, "period_end": end, "market_date": (market_data or {}).get("as_of")},
             "no_price_target": True}
-    result["peer_comparison"] = compare_peers(result, peers)
-    from .pe_cr_funding import build_disclosure_profile
-    result["disclosure_profile"] = build_disclosure_profile(canonical, start=start, end=end, funding=funding, segments=segments, dart_bonds=dart_bonds)
+    result["peer_comparison"] = compare_peers(result, peers, peer_ids=peer_ids)
+    result["disclosure_profile"] = profile
     return result

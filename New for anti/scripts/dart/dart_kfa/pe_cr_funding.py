@@ -126,6 +126,45 @@ def _segments(segments, start):
     return rows
 
 
+def _principal_profile(tables, selected):
+    empty = {"value": None, "reason": "missing:verified_complete_financing_principal_schedule"}
+    if selected is None:
+        return empty
+    if not isinstance(selected, dict) or selected.get("coverage") != "complete_financing_principal_including_leases":
+        raise ValueError("invalid:principal_schedule_coverage")
+    source = _source(selected)
+    table = tables.get(selected.get("table_id"))
+    if not table or table["side"] != "liability" or table["measure"] != "principal" or not table["covers_open_ended_tail"]:
+        return {**empty, "reason": "incompatible:principal_schedule_requires_liability_principal_with_full_tail"}
+    if table["within_12_months"] is None:
+        return {**empty, "reason": table["within_12_months_reason"]}
+    return {"value": table["within_12_months"], "total_principal": table["reported_covered_total"],
+            "table_id": table["id"], "reason": None, "source": source, "table_source": table["source"]}
+
+
+def _matched_gap(tables, selected):
+    if selected is None:
+        return {"rows": [], "reason": "missing:matched_asset_liability_scope"}
+    if not isinstance(selected, dict) or selected.get("coverage") != "comparable_contractual_funding_cashflows":
+        raise ValueError("invalid:funding_gap_coverage")
+    source = _source(selected)
+    asset, debt = tables.get(selected.get("asset_table_id")), tables.get(selected.get("liability_table_id"))
+    if (not asset or not debt or asset["side"] != "asset" or debt["side"] != "liability"
+            or asset["measure"] != debt["measure"] or asset["measure"] not in {"principal", "undiscounted_contractual_cash_flow"}):
+        return {"rows": [], "reason": "incompatible:asset_liability_measure_or_side"}
+    boundaries = lambda table: [(r["from_month"], r["to_month"]) for r in table["buckets"]]
+    if boundaries(asset) != boundaries(debt):
+        return {"rows": [], "reason": "incompatible:asset_liability_bucket_boundaries"}
+    cumulative, rows = 0, []
+    for left, right in zip(asset["buckets"], debt["buckets"]):
+        gap = left["amount"] - right["amount"]
+        cumulative += gap
+        rows.append({"from_month": left["from_month"], "to_month": left["to_month"], "contractual_inflows": left["amount"],
+                     "contractual_outflows": right["amount"], "gap": gap, "cumulative_gap": cumulative})
+    return {"rows": rows, "reason": None, "measure": asset["measure"], "asset_table_id": asset["id"],
+            "liability_table_id": debt["id"], "source": source, "policy": "excludes_opening_cash_expected_recoveries_and_refinancing"}
+
+
 def build_disclosure_profile(canonical, *, start, end, funding=None, segments=None, dart_bonds=None):
     tables, bonds, rows = [], [], []
     if funding is not None:
@@ -141,8 +180,11 @@ def build_disclosure_profile(canonical, *, start, end, funding=None, segments=No
     if segments is not None:
         _packet(segments, "kfa-segment-disclosure/1", canonical, end)
         rows = _segments(segments, start)
+    by_id = {table["id"]: table for table in tables}
     return {"as_of": end, "period_start": start, "currency": canonical.get("currency"), "fs_div": canonical.get("fs_div"),
             "maturity": {"tables": tables, "reason": None if tables else "missing:reviewed_contractual_maturity_tables"},
+            "principal_profile": _principal_profile(by_id, (funding or {}).get("principal_profile")),
+            "contractual_funding_gap": _matched_gap(by_id, (funding or {}).get("matched_gap")),
             "duration": {"bonds": bonds, "reason": None if bonds else "missing:fixed_bond_cashflows_and_dated_yields"},
             "segments": {"rows": rows, "reason": None if rows else "missing:reviewed_segment_rows"},
             "aggregation_policy": "no_implicit_sum_across_tables_segments_or_assets_and_liabilities"}

@@ -3,7 +3,7 @@
 Input: {entity_id, fiscal_year_end, fs_div, currency, industry, corp: {induty_code},
         entity_policy, filings: {FY: {list: [...]}, Q1: ..., H1: ..., Q3: ...},
         history: [canonical-financial-facts/1 bundles], reviewed_disclosures,
-        market, peer_group, peers, funding, segments, dart_shares, dart_bonds}.
+        market, peer_group, peers, peer_ids, funding, segments, dart_shares, dart_bonds}.
 An OpenDART raw report is stored as {request: {corp_code, bsns_year,
 reprt_code, fs_div}, response: {status, list}} inside each filings bucket.
 No credentials, network calls, or publishing. Output goes to stdout.
@@ -67,7 +67,7 @@ def build(payload, period="annual"):
                        reviewed_disclosures=payload.get("reviewed_disclosures"), market=payload.get("market"),
                        peer_group=payload.get("peer_group"), peers=payload.get("peers") or (),
                        funding=payload.get("funding"), segments=payload.get("segments"),
-                       dart_shares=payload.get("dart_shares"), dart_bonds=payload.get("dart_bonds"))
+                       dart_shares=payload.get("dart_shares"), dart_bonds=payload.get("dart_bonds"), peer_ids=payload.get("peer_ids"))
 
 
 if __name__ == "__main__":
