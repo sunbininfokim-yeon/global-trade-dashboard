@@ -53,7 +53,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     accounting_basis = (corp or {}).get("accounting_basis")
     if accounting_basis not in ("K-IFRS", "IFRS", "US-GAAP", "K-GAAP"):
         accounting_basis = None
-    identity_policy = classify_entity({"corp_code": canonical.get("entity_id"), "source": canonical.get("source")})
+    identity_policy = classify_entity({**(corp or {}), "corp_code": canonical.get("entity_id"), "source": canonical.get("source")})
     financial = is_financial(entity_policy or {}) or is_financial(identity_policy) or industry == "financial"
     if financial and industry != "financial":
         industry, selection_basis = "financial", "financial_entity_policy"
@@ -141,7 +141,8 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     start, end = anchor.get("period_start"), anchor.get("period_end")
     days = (date.fromisoformat(end) - date.fromisoformat(start)).days + 1 if start and end else None
     from .pe_cr_funding import build_disclosure_profile
-    profile = build_disclosure_profile(canonical, start=start, end=end, funding=funding, segments=segments, dart_bonds=dart_bonds)
+    profile = build_disclosure_profile(canonical, start=start, end=end, funding=funding, segments=segments, dart_bonds=dart_bonds,
+                                       issuer_policy=identity_policy)
     principal_profile = profile["principal_profile"]
 
     def ratio(a, b):

@@ -20,6 +20,8 @@ ENTITY_OVERRIDES: tuple[dict[str, str], ...] = (
     {"source": "dart", "corp_code": "00547583", "entity_class": "bank", "label": "Hana Financial Group"},
     {"source": "dart", "corp_code": "01350869", "entity_class": "bank", "label": "Woori Financial Group"},
     {"source": "dart", "corp_code": "00126256", "entity_class": "insurance", "label": "Samsung Life Insurance"},
+    {"source": "dart", "corp_code": "00819268", "entity_class": "npl_asset_management", "label": "UAMCO"},
+    {"source": "dart", "corp_code": "00149594", "entity_class": "specialized_credit_finance", "label": "Korea Capital"},
     {"source": "sec", "corp_code": "0000019617", "entity_class": "bank", "label": "JPMorgan Chase"},
 )
 
@@ -47,7 +49,8 @@ def _source(corp: dict[str, Any] | None) -> str:
 
 
 def _policy(entity_class: str, *, status: str, source: str, evidence: str) -> dict[str, Any]:
-    financial = entity_class in {"bank", "insurance", "financial_other", "financial_suspected"}
+    financial = entity_class in {"bank", "insurance", "financial_other", "financial_suspected",
+                                 "specialized_credit_finance", "npl_asset_management"}
     return {
         "version": POLICY_VERSION,
         "entity_class": entity_class,
@@ -82,7 +85,12 @@ def classify_entity(corp: dict[str, Any] | None = None) -> dict[str, Any]:
         if override["source"] == source and override["corp_code"] == corp_code:
             return _policy(override["entity_class"], status="complete", source=source, evidence=f"override:{override['label']}")
 
-    industry = _norm(corp.get("industry"))
+    raw_industry = corp.get("induty_code") or corp.get("ksic") or corp.get("industry")
+    industry = _norm(raw_industry)
+    if source == "dart" and industry.removeprefix("k") in {"64911", "64913"}:
+        return _policy("specialized_credit_finance", status="complete", source=source, evidence=f"ksic:{raw_industry}")
+    if source == "dart" and industry.removeprefix("k").startswith("649"):
+        return _policy("financial_other", status="complete", source=source, evidence=f"ksic:{raw_industry}")
     if industry.startswith("k65") or industry.startswith("65"):
         return _policy("insurance", status="complete", source=source, evidence=f"ksic:{corp.get('industry')}")
     if industry.startswith("k64") or industry.startswith("64"):

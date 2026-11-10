@@ -165,7 +165,7 @@ def _matched_gap(tables, selected):
             "liability_table_id": debt["id"], "source": source, "policy": "excludes_opening_cash_expected_recoveries_and_refinancing"}
 
 
-def build_disclosure_profile(canonical, *, start, end, funding=None, segments=None, dart_bonds=None):
+def build_disclosure_profile(canonical, *, start, end, funding=None, segments=None, dart_bonds=None, issuer_policy=None):
     tables, bonds, rows = [], [], []
     if funding is not None:
         _packet(funding, "kfa-funding-disclosure/1", canonical, end)
@@ -181,10 +181,24 @@ def build_disclosure_profile(canonical, *, start, end, funding=None, segments=No
         _packet(segments, "kfa-segment-disclosure/1", canonical, end)
         rows = _segments(segments, start)
     by_id = {table["id"]: table for table in tables}
-    return {"as_of": end, "period_start": start, "currency": canonical.get("currency"), "fs_div": canonical.get("fs_div"),
+    result = {"as_of": end, "period_start": start, "currency": canonical.get("currency"), "fs_div": canonical.get("fs_div"),
             "maturity": {"tables": tables, "reason": None if tables else "missing:reviewed_contractual_maturity_tables"},
             "principal_profile": _principal_profile(by_id, (funding or {}).get("principal_profile")),
             "contractual_funding_gap": _matched_gap(by_id, (funding or {}).get("matched_gap")),
             "duration": {"bonds": bonds, "reason": None if bonds else "missing:fixed_bond_cashflows_and_dated_yields"},
             "segments": {"rows": rows, "reason": None if rows else "missing:reviewed_segment_rows"},
             "aggregation_policy": "no_implicit_sum_across_tables_segments_or_assets_and_liabilities"}
+    policy = issuer_policy or {}
+    issuer_class = policy.get("entity_class")
+    labels = {"specialized_credit_finance": "여신전문금융", "npl_asset_management": "NPL 투자·관리"}
+    instruments = (funding or {}).get("dart_instruments")
+    if instruments is not None or issuer_class in labels:
+        from .pe_cr_dart_schedules import dart_instrument_profile
+        result["instrument_maturity"] = {
+            "schema_version": "kfa-funding-instruments/1",
+            "issuer_type": {"id": issuer_class if issuer_class in labels else "unclassified",
+                            "label_ko": labels.get(issuer_class), "evidence": policy.get("evidence") if issuer_class in labels else None},
+            "rows": dart_instrument_profile(instruments, canonical, end),
+            "aggregation_policy": "do_not_sum_with_legacy_bond_table_or_complete_financing_principal",
+        }
+    return result
