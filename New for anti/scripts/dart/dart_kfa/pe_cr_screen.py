@@ -8,7 +8,7 @@ from .pe_cr_screen_inputs import cash_plan_13w, governance_profile, industry_met
 
 SECTIONS = (
     ("profitability", "수익성", ("operating_income", "operating_margin", "ebitda", "ebitda_margin", "cogs_to_sales")),
-    ("cash_flow", "현금흐름", ("cfo", "fcf", "operating_nwc", "operating_nwc_change", "ccc_days")),
+    ("cash_flow", "현금흐름", ("cfo", "cfi", "cff", "cash_flow_net_activities", "cash_flow_fx_effect", "fcf", "operating_nwc", "operating_nwc_change", "ccc_days")),
     ("repayment", "상환능력", ("interest_coverage", "dscr")),
     ("capital_structure", "재무구조", ("net_debt", "net_debt_to_ebitda", "debt_ratio", "capital_erosion_ratio")),
     ("short_term_liquidity", "단기유동성", ("current_ratio", "current_liabilities_share", "debt_due_within_1y", "liquidity_coverage_1y", "financing_principal_due_1y_share")),
@@ -163,5 +163,6 @@ def build_screen(canonical, result, *, history, period, start, end, financial, r
             "lens_order": {"cr": ["short_term_liquidity", "repayment", "cash_flow", "capital_structure", "profitability", "industry", "governance"],
                            "pe": ["profitability", "cash_flow", "industry", "capital_structure", "repayment", "short_term_liquidity", "governance"]},
             "annual_history": points, "signals": signals, "cash_plan_13w": cash, "industry_observations": industry,
-            "governance": governance, "references": {"funding": "disclosure_profile", "comparables": "peer_comparison"},
+            "governance": governance, "references": {"funding": "disclosure_profile", "comparables": "peer_comparison",
+                                                     "cash_flow": "cash_flow_statement"},
             "no_risk_rating_or_investment_recommendation": True}
