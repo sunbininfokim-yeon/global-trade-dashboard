@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 from urllib.parse import parse_qs, urlsplit
 
+from .it_service_reporting import build_it_service_reporting
 from .pe_cr_evidence import reviewed_facts
 from .shipbuilding_orderbook import build_shipbuilding_orderbook
 from .shipbuilding_rg import build_shipbuilding_rg
@@ -280,6 +281,9 @@ def build_industry_note_profile(canonical, industry, period, *, publication_cuto
             rows, reason = _build_rows(packet, definitions, canonical, period)
             trade_balances = _retail_trade_balances(packet, canonical)
             mapping_id = packet["id"] if trade_balances or any(row["status"] == "reported" for row in rows.values()) else None
+    it_service = build_it_service_reporting(canonical, industry, period, start, end, publication_cutoff=publication_cutoff)
+    if it_service and not mapping_id:
+        mapping_id, reason = it_service["mapping_id"], it_service["reason"]
     profile = {"schema_version": "kfa-industry-note-profile/1", "industry": industry, "mapping_id": mapping_id,
             "period": period, "period_start": start, "period_end": end, "reason": reason,
             "rows": [rows[key] if key in rows else {"id": key, "label_ko": definitions["metrics"][key][0], "value": None,
@@ -287,6 +291,13 @@ def build_industry_note_profile(canonical, industry, period, *, publication_cuto
                      for key in expected]}
     if trade_balances:
         profile["retail_trade_balances"] = trade_balances
+    if it_service:
+        profile["it_service_reporting"] = it_service
+        orders = it_service.get("long_term_orders")
+        if orders:
+            for row in profile["rows"]:
+                if row["id"] == "firm_order_backlog" and row["value"] is None:
+                    row.update(reason=orders["reason"])
     rg = build_shipbuilding_rg(canonical, industry, end, publication_cutoff=publication_cutoff)
     if rg is not None:
         profile["shipbuilding_rg"] = rg
