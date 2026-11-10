@@ -58,9 +58,34 @@ class ShipbuildingRGTests(unittest.TestCase):
         before = build_industry_note_profile(data, "shipbuilding", "annual", publication_cutoff="2026-03-16")
         self.assertEqual(before["shipbuilding_rg"]["reason"], "unavailable:filing_after_publication_cutoff")
         self.assertEqual(build_shipbuilding_rg({**data, "fs_div": "OFS"}, "shipbuilding", END)["portfolios"], [])
-        self.assertEqual(build_shipbuilding_rg(data, "shipbuilding", "2025-09-30")["portfolios"], [])
+        self.assertEqual(build_shipbuilding_rg(data, "shipbuilding", "2025-06-30")["portfolios"], [])
         self.assertEqual(build_shipbuilding_rg({**data, "entity_id": "01390344"}, "shipbuilding", END)["portfolios"], [])
         self.assertIsNone(build_shipbuilding_rg(data, "financial", END))
+
+    def test_hanwha_interim_snapshot_uses_the_exact_dart_reporting_date(self):
+        b = {**bundle(2026), "entity_id": HANWHA}
+        profile = build_industry_note_profile(b, "shipbuilding", "Q2")["shipbuilding_rg"]
+        pool = profile["portfolios"][0]
+        self.assertEqual(pool["evidence"]["provider"], "DART")
+        self.assertEqual(profile["as_of"], "2026-06-30")
+        self.assertEqual(pool["rows"][0]["outstanding"], 3_953_050_000)
+        self.assertAlmostEqual(pool["rows"][0]["utilization"], 3953.05 / 6300)
+        self.assertFalse(profile["rg_only_available"])
+
+    def test_ksoe_separate_limits_and_samsung_pure_insurance_do_not_become_issued_balances(self):
+        separate = {**bundle(scope="OFS"), "entity_id": KSOE}
+        self.assertEqual(build_shipbuilding_rg(separate, "shipbuilding", END)["portfolios"][0]["rows"][0]["limit"], 157_839_000_000)
+        b = {**bundle(2026), "entity_id": "00126478"}
+        result = build_shipbuilding_rg(b, "shipbuilding", "2026-06-30")
+        pool = result["portfolios"][0]
+        row = pool["rows"][0]
+        self.assertTrue(result["rg_only_available"])
+        self.assertEqual(pool["basis"], "rg_insurance_only")
+        self.assertEqual((row["currency"], row["limit"]), ("USD", 11_616_000_000))
+        self.assertIsNone(row["outstanding"])
+        self.assertIsNone(row["utilization"])
+        self.assertEqual(pool["related_collateral"][0]["amount"], 22_233_000_000)
+        self.assertEqual(pool["related_collateral"][0]["currency"], "KRW")
 
     def test_pure_portfolio_is_distinct_and_bad_pair_does_not_calculate(self):
         b = {**bundle(), "entity_id": HANWHA}
@@ -78,6 +103,14 @@ class ShipbuildingRGTests(unittest.TestCase):
             synthetic["rows"].append(deepcopy(synthetic["rows"][0]))
             with self.assertRaisesRegex(ValueError, "row_or_duplicate"):
                 build_shipbuilding_rg(b, "shipbuilding", END)
+
+    def test_every_committed_registry_packet_resolves_with_its_own_scope(self):
+        for packet in _packets():
+            with self.subTest(issuer=packet["entity_id"], as_of=packet["as_of"], scope=packet["fs_div"]):
+                b = {"source": "DART", "entity_id": packet["entity_id"], "fs_div": packet["fs_div"]}
+                found = build_shipbuilding_rg(b, "shipbuilding", packet["as_of"])["portfolios"]
+                self.assertEqual(len(found), 1)
+                self.assertEqual(found[0]["evidence"]["filing_id"], packet["source"]["filing_id"])
 
 
 if __name__ == "__main__":

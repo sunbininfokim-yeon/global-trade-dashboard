@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 from urllib.parse import parse_qs, urlsplit
 
+from .shipbuilding_orderbook import build_shipbuilding_orderbook
 from .shipbuilding_rg import build_shipbuilding_rg
 
 
@@ -181,4 +182,7 @@ def build_industry_note_profile(canonical, industry, period, *, publication_cuto
     rg = build_shipbuilding_rg(canonical, industry, end, publication_cutoff=publication_cutoff)
     if rg is not None:
         profile["shipbuilding_rg"] = rg
+    orderbook = build_shipbuilding_orderbook(canonical, industry, period, end, publication_cutoff=publication_cutoff)
+    if orderbook is not None:
+        profile["shipbuilding_orderbook"] = orderbook
     return profile

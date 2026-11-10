@@ -5,12 +5,14 @@ from functools import lru_cache
 import json
 from pathlib import Path
 import re
-from urllib.parse import urlsplit
+
+from .reviewed_periodic import reviewed_periodic_source
 
 
 REGISTRY = Path(__file__).resolve().parents[1] / "config/shipbuilding_rg_registry.json"
 BASIS = {
     "rg_only": "선수금환급보증(RG) 단독",
+    "rg_insurance_only": "선수금환급보증보험",
     "rg_and_other_performance": "선수금환급보증(RG) 등 이행성보증",
 }
 
@@ -37,20 +39,6 @@ def _money(raw, scale):
     return int(result)
 
 
-def _source(packet):
-    source = packet["source"]
-    url = urlsplit(source["url"])
-    filing, form, filed = source["filing_id"], source["form"], source["filed"]
-    filed_date = date.fromisoformat(filed)
-    if (source["provider"] != "KRX_KIND" or url.scheme != "https" or url.netloc != "kind.krx.co.kr"
-            or url.query or url.fragment or filed_date < date.fromisoformat(packet["as_of"])
-            or not re.fullmatch(r"[0-9]{14}", filing) or not filing.startswith(filed_date.strftime("%Y%m%d"))
-            or form not in {"11011", "11012", "11013", "11014"}
-            or not re.fullmatch(rf"/external/{filed.replace('-', '/')}/[0-9]{{6}}/{filing}/{form}\.htm", url.path)):
-        raise ValueError("invalid:shipbuilding_rg_filing")
-    return dict(source)
-
-
 def build_shipbuilding_rg(canonical, industry, end, *, publication_cutoff=None):
     if industry == "financial":
         return None
@@ -65,7 +53,7 @@ def build_shipbuilding_rg(canonical, industry, end, *, publication_cutoff=None):
     for packet in eligible:
         if packet["as_of"] != end or packet["fs_div"] != canonical.get("fs_div"):
             continue
-        source = _source(packet)
+        source = reviewed_periodic_source(packet["source"], packet["as_of"])
         if publication_cutoff and date.fromisoformat(source["filed"]) > date.fromisoformat(publication_cutoff):
             result["reason"] = "unavailable:filing_after_publication_cutoff"
             continue
@@ -98,10 +86,22 @@ def build_shipbuilding_rg(canonical, industry, end, *, publication_cutoff=None):
                          "limit": limit, "outstanding": outstanding, "limit_less_outstanding": headroom,
                          "utilization": utilization, "calculation_reason": reason,
                          "source_scale": scale, "source_limit": row.get("limit"), "source_outstanding": row.get("outstanding")})
-        result["portfolios"].append({"basis": basis, "label_ko": BASIS[basis], "rows": rows,
-                                     "evidence": {**source, "table": table}})
+        portfolio = {"basis": basis, "label_ko": BASIS[basis], "rows": rows, "evidence": {**source, "table": table}}
+        if packet.get("related_collateral"):
+            collateral = []
+            for item in packet["related_collateral"]:
+                if (item.get("basis") != "financial_assets_pledged_for_rg_issuance" or item.get("currency") != "KRW"
+                        or type(item.get("scale")) is not int or item["scale"] not in {1, 1000, 1000000, 100000000}
+                        or not all(isinstance(item.get(k), str) and item[k].strip() for k in ("counterparty", "table"))
+                        or item.get("amount") is None):
+                    raise ValueError("invalid:shipbuilding_rg_collateral")
+                collateral.append({"counterparty": item["counterparty"], "basis": item["basis"], "currency": item["currency"],
+                                   "amount": _money(item["amount"], item["scale"]),
+                                   "evidence": {**source, "table": item["table"], "source_scale": item["scale"]}})
+            portfolio["related_collateral"] = collateral
+        result["portfolios"].append(portfolio)
     if result["portfolios"]:
-        rg_only = "rg_only" in seen_portfolios
+        rg_only = bool({"rg_only", "rg_insurance_only"} & seen_portfolios)
         result.update(status="reported" if rg_only else "partial", rg_only_available=rg_only,
                       reason=None if rg_only else "missing:rg_only_breakdown")
     return result
