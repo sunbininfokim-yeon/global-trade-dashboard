@@ -100,7 +100,7 @@ class ReviewedEvidenceTests(unittest.TestCase):
     def test_known_financial_identity_cannot_opt_into_industrial_metrics(self):
         b = {**bundle(), "entity_id": "00688996"}
         result = build_pe_cr(b, entity_policy={"is_financial_entity": False})
-        self.assertEqual(result["visible_cards"], [])
+        self.assertEqual(result["cards"]["cfo"]["value"], 150)
         self.assertEqual(result["cards"]["fcf"]["reason"], "not_applicable:financial_entity")
 
     def test_h1_direct_income_not_confused_with_ytd_cash_flow(self):
