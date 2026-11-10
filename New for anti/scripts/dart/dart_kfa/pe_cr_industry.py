@@ -1,6 +1,8 @@
 """Route PE/CR metrics from issuer metadata, never from account labels."""
 import re
 
+from .industry_note_mapping import reviewed_issuer_industry
+
 
 _KSIC = re.compile(r"([A-Z]?)([0-9]{2,5})\Z")
 _ALIASES = {"general_machinery": "machinery", "retail": "retail_wholesale", "it": "it_services",
@@ -42,6 +44,9 @@ def resolve_industry(kits, *, canonical, corp=None, requested=None):
         return selected, "explicit", code
     if code:
         return mapped, "dart_ksic", code
+    issuer_kit = reviewed_issuer_industry(canonical)
+    if issuer_kit in kits:
+        return issuer_kit, "reviewed_issuer_industry", None
     metadata_kit = corp.get("industry_kit")
     metadata_kit = _ALIASES.get(metadata_kit, metadata_kit)
     if metadata_kit in kits:

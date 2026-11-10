@@ -128,6 +128,44 @@
         {"metric": "inventory_finished_goods", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 8725, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Finished goods"},
         {"metric": "inventory_supplies", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 378, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Supplies"}
       ]
+    },
+    {
+      "id": "bgf-retail-fy2025-trade-balances",
+      "entity_id": "01263022", "financial_provider": "DART", "industry": "retail_wholesale",
+      "period": "annual", "period_start": "2025-01-01", "period_end": "2025-12-31", "fs_div": "CFS", "currency": "KRW",
+      "source": {"provider": "DART", "entity_id": "01263022", "filing_id": "20260318000829", "filed": "2026-03-18", "form": "11011",
+                 "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20260318000829&dcmNo=11138288&eleId=45&offset=1919066&length=33648&dtd=dart4.xsd"},
+      "rows": [
+        {"metric": "retail_franchise_settlement_payables", "scope": "consolidated_group", "basis": "reported_franchise_settlement_payables_excluded_from_trade_payables", "unit": "KRW", "amount": 76075, "scale": 1000000, "table": "연결 주석 21 / 매입채무 및 기타채무", "row": "가맹점계정대 / 당기",
+         "methodology_ko": "가맹점 정산 잔액으로 매입채무 및 CCC에 합산하지 않음."},
+        {"metric": "retail_supplier_finance", "scope": "consolidated_group", "basis": "reported_supplier_finance_liability_carrying_amount", "unit": "KRW", "amount": 2872, "scale": 1000000, "table": "연결 주석 21 / 공급자금융약정의 조건에 대한 공시", "row": "금융부채",
+         "methodology_ko": "공시 장부액. 원채무의 제거 없이 금융부채에 포함되므로 차입금·매입채무에 별도로 더하거나 빼지 않음."},
+        {"metric": "retail_inventory_purchases_reported", "scope": "consolidated_group", "basis": "reported_inventory_purchases_not_reconciled_to_trade_payables", "unit": "KRW", "amount": 7238279, "scale": 1000000, "table": "연결 주석 35 / 비용의 성격별 분류", "row": "재고자산의 매입 / 당기",
+         "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20260318000829&dcmNo=11138288&eleId=59&offset=2669765&length=30210&dtd=dart4.xsd",
+         "methodology_ko": "비용 주석의 재고 매입액. 동일 범위의 외상매입액으로 확인되지 않아 매입액 기준 DPO·CCC 분모로 사용하지 않음."}
+      ],
+      "retail_trade_balances": [
+        {"key": "receivables", "period_start": null, "period_end": "2025-12-31", "basis": "current_trade_receivables_net_excluding_non_trade_and_settlement_receivables", "amount": 26705, "allowance": 53, "scale": 1000000, "table": "연결 주석 13 / 매출채권 및 기타채권의 상세내역 공시", "row": "매출채권 / 당기 총장부금액 및 손상차손누계액",
+         "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20260318000829&dcmNo=11138288&eleId=37&offset=1089389&length=100124&dtd=dart4.xsd"},
+        {"key": "receivables", "period_start": null, "period_end": "2024-12-31", "basis": "current_trade_receivables_net_excluding_non_trade_and_settlement_receivables", "amount": 26700, "allowance": 53, "scale": 1000000, "table": "연결 주석 13 / 매출채권 및 기타채권의 상세내역 공시", "row": "매출채권 / 전기 총장부금액 및 손상차손누계액",
+         "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20260318000829&dcmNo=11138288&eleId=37&offset=1089389&length=100124&dtd=dart4.xsd"},
+        {"key": "payables", "period_start": null, "period_end": "2025-12-31", "basis": "current_trade_payables_excluding_non_trade_and_settlement_payables", "amount": 544989, "scale": 1000000, "table": "연결 주석 21 / 매입채무 및 기타채무", "row": "매입채무 / 당기"},
+        {"key": "payables", "period_start": null, "period_end": "2024-12-31", "basis": "current_trade_payables_excluding_non_trade_and_settlement_payables", "amount": 536408, "scale": 1000000, "table": "연결 주석 21 / 매입채무 및 기타채무", "row": "매입채무 / 전기"}
+      ]
+    },
+    {
+      "id": "ebay-fy2025-marketplace",
+      "entity_id": "0001065088", "financial_provider": "SEC", "industry": "retail_platform",
+      "period": "annual", "period_start": "2025-01-01", "period_end": "2025-12-31", "fs_div": "CFS", "currency": "USD",
+      "source": {"provider": "SEC", "entity_id": "0001065088", "filing_id": "0001065088-26-000027", "filed": "2026-02-19", "form": "10-K",
+                 "url": "https://www.sec.gov/Archives/edgar/data/1065088/000106508826000027/ebay-20251231.htm"},
+      "platform_net_revenue_control": {"amount": 11100, "scale": 1000000, "table": "Item 7 / Key Operating Metrics", "row": "Net revenues / 2025 As Reported"},
+      "rows": [
+        {"metric": "platform_gmv", "scope": "issuer_marketplace_group", "basis": "issuer_defined_gross_merchandise_value", "unit": "USD", "amount": 79609, "scale": 1000000, "table": "Item 7 / Key Operating Metrics", "row": "GMV / 2025 As Reported",
+         "methodology_ko": "결제 거래액. 배송료와 세금을 포함하고 반품·취소를 조정하지 않음. 회계 매출이 아님."},
+        {"metric": "platform_take_rate_reported", "scope": "issuer_marketplace_group", "basis": "issuer_defined_net_revenue_over_gmv", "unit": "percent", "amount": "13.94", "scale": 1, "table": "Item 7 / Key Operating Metrics", "row": "Take rate / 2025 As Reported",
+         "methodology_ko": "회사가 공시한 순매출/GMV. 광고·배송 등도 매출에 포함될 수 있어 거래 수수료율과 다름."}
+      ]
     }
   ]
 }

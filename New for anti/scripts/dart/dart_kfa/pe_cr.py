@@ -50,7 +50,8 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     financial = is_financial(entity_policy or {}) or is_financial(identity_policy) or industry == "financial"
     if financial and industry != "financial":
         industry, selection_basis = "financial", "financial_entity_policy"
-    note_profile = build_industry_note_profile(canonical, industry, selected_period)
+    note_profile = build_industry_note_profile(canonical, industry, selected_period,
+                                              infer_industry=selection_basis != "explicit")
     if selection_basis in {"legacy_default", "unmapped_metadata"} and note_profile["industry"] == "machinery":
         industry, selection_basis = "machinery", "reviewed_issuer_filing"
     kit = cfg["kits"][industry]
@@ -70,6 +71,13 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
             raise Unavailable("missing:reviewed_" + key)
         used.append({"input": key, **fact})
         return fact["value"]
+
+    if industry == "retail_wholesale":
+        manual_accounts = {key for key, _, _ in evidence}
+        for fact in note_profile.get("retail_trade_balances", ()):
+            key = fact["account_id"]
+            if key not in manual_accounts:
+                evidence[key, None, fact["period_end"]] = fact
 
     def cell(bundle, key, period):
         s = bundle.get("series", {}).get("PECR_" + key, {})

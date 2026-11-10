@@ -1,5 +1,9 @@
 {
   "schema_version": "kfa-industry-note-metrics/1",
+  "issuer_industries": {
+    "DART": {"01263022": "retail_wholesale"},
+    "SEC": {"0000909832": "retail_wholesale", "0001065088": "retail_platform"}
+  },
   "metrics": {
     "dram_revenue": ["DRAM 매출", "money", "flow", "consolidated_external_product_revenue"],
     "nand_revenue": ["NAND 매출", "money", "flow", "consolidated_external_product_revenue"],
@@ -20,7 +24,11 @@
     "inventory_in_transit": ["미착품 순장부액", "money", "balance", "reported_net_inventory_carrying_amount"],
     "same_store_sales_growth": ["동일점 매출 증감률", "percent", "flow", "issuer_defined_comparable_store_growth"],
     "same_store_sales_growth_ex_fx_fuel": ["동일점 매출 증감률 (환율·연료가격 효과 제외)", "percent", "flow", "issuer_defined_comparable_store_growth_ex_fx_fuel"],
+    "retail_franchise_settlement_payables": ["가맹점 정산채무", "money", "balance", "reported_franchise_settlement_payables_excluded_from_trade_payables"],
+    "retail_supplier_finance": ["공급자금융약정 관련 금융부채", "money", "balance", "reported_supplier_finance_liability_carrying_amount"],
+    "retail_inventory_purchases_reported": ["공시 재고자산 매입액", "money", "flow", "reported_inventory_purchases_not_reconciled_to_trade_payables"],
     "platform_gmv": ["플랫폼 거래액 (GMV)", "money", "flow", "issuer_defined_gross_merchandise_value"],
+    "platform_take_rate_reported": ["공시 수익화율 (Take rate)", "percent", "flow", "issuer_defined_net_revenue_over_gmv"],
     "arr": ["연간 반복매출 지표 (ARR)", "money", "balance", "issuer_defined_annual_recurring_revenue"],
     "fleet_capacity_teu": ["선대 운항 선복량", "teu", "balance", "reported_operated_fleet_slot_capacity"],
     "chartered_in_vessels": ["용선 선박 척수", "vessels", "balance", "reported_chartered_in_vessels_in_operation"]
@@ -30,8 +38,8 @@
     "shipbuilding": ["firm_order_backlog", "funded_order_backlog", "unfunded_order_backlog", "firm_new_orders", "vessels_on_orderbook", "capacity_utilization"],
     "machinery": ["firm_order_backlog", "firm_new_orders", "capacity_utilization", "inventory_note_total", "inventory_raw_materials", "inventory_wip", "inventory_finished_goods", "inventory_merchandise", "inventory_supplies", "inventory_in_transit"],
     "construction": ["firm_order_backlog", "firm_new_orders"],
-    "retail_wholesale": ["same_store_sales_growth", "same_store_sales_growth_ex_fx_fuel"],
-    "retail_platform": ["platform_gmv"],
+    "retail_wholesale": ["same_store_sales_growth", "same_store_sales_growth_ex_fx_fuel", "retail_franchise_settlement_payables", "retail_supplier_finance", "retail_inventory_purchases_reported"],
+    "retail_platform": ["platform_gmv", "platform_take_rate_reported"],
     "retail_mixed": [],
     "it_services": ["arr", "firm_order_backlog"],
     "it_hardware": ["capacity_utilization"],

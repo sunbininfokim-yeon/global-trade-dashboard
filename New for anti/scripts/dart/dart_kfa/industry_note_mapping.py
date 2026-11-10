@@ -1,5 +1,5 @@
 """Issuer/period-qualified industry facts from reviewed public filing tables."""
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 import json
@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 from urllib.parse import parse_qs, urlsplit
 
+from .pe_cr_evidence import reviewed_facts
 from .shipbuilding_orderbook import build_shipbuilding_orderbook
 from .shipbuilding_rg import build_shipbuilding_rg
 from .reviewed_periodic import reviewed_periodic_source
@@ -30,6 +31,11 @@ def _catalog():
             or registry.get("schema_version") != "kfa-industry-note-registry/1"):
         raise ValueError("invalid:industry_note_catalog")
     return definitions, registry["packets"]
+
+
+def reviewed_issuer_industry(canonical):
+    definitions, _ = _catalog()
+    return (definitions["issuer_industries"].get(canonical.get("source")) or {}).get(canonical.get("entity_id"))
 
 
 def _string(value):
@@ -72,8 +78,12 @@ def _source(packet):
                 or source["form"] not in {"10-K", "10-Q", "20-F", "6-K", "F-1"}):
             raise ValueError("invalid:industry_note_sec_filing")
     elif provider == "DART":
+        if not re.fullmatch(r"[0-9]{8}", entity):
+            raise ValueError("invalid:industry_note_dart_filing")
+        if url.path == "/report/viewer.do":
+            return reviewed_periodic_source(source, packet["period_end"])
         if (url.netloc != "dart.fss.or.kr" or url.path != "/dsaf001/main.do"
-                or not re.fullmatch(r"[0-9]{8}", entity) or not re.fullmatch(r"[0-9]{14}", source["filing_id"])
+                or not re.fullmatch(r"[0-9]{14}", source["filing_id"])
                 or parse_qs(url.query) != {"rcpNo": [source["filing_id"]]}
                 or source["form"] not in {"11011", "11012", "11013", "11014"}):
             raise ValueError("invalid:industry_note_dart_filing")
@@ -84,6 +94,13 @@ def _source(packet):
     else:
         raise ValueError("invalid:industry_note_provider")
     return dict(source)
+
+
+def _row_source(packet, raw, source):
+    if "url" not in raw:
+        return source
+    # A deeper locator can change the section, never the filing or issuer.
+    return _source({**packet, "source": {**source, "url": raw["url"]}})
 
 
 def _point(canonical, account, period):
@@ -123,8 +140,24 @@ def _build_rows(packet, definitions, canonical, period):
                      "unit": "ratio" if unit_kind == "percent" else raw["unit"], "basis": basis, "scope": raw["scope"],
                      "period_start": start if nature == "flow" else None, "period_end": end, "fs_div": scope, "status": "reported",
                      "reason": None, "included_in": parent, "methodology_ko": raw.get("methodology_ko"),
-                     "evidence": {**source, "table": raw["table"], "row": raw["row"], "source_scale": scale,
+                     "evidence": {**_row_source(packet, raw, source), "table": raw["table"], "row": raw["row"], "source_scale": scale,
                                   "source_amount": raw["amount"], "source_unit": raw["unit"]}}
+    take_rate = rows.get("platform_take_rate_reported")
+    if take_rate:
+        gmv = rows.get("platform_gmv") or {}
+        control = packet.get("platform_net_revenue_control") or {}
+        net = _amount(control.get("amount"), control.get("scale"))
+        if (gmv.get("value", 0) <= 0 or net <= 0 or not _string(control.get("row"))
+                or take_rate["scope"] != gmv["scope"]
+                or take_rate["evidence"]["table"] != gmv["evidence"]["table"]
+                or control.get("table") != gmv["evidence"]["table"]
+                or take_rate["evidence"]["url"] != gmv["evidence"]["url"]
+                or (net / gmv["value"] * 100).quantize(Decimal("0.01"))
+                != Decimal(take_rate["evidence"]["source_amount"])):
+            raise ValueError("conflict:industry_note_platform_take_rate")
+        take_rate["evidence"]["reported_net_revenue_control"] = {
+            "row": control["row"], "source_amount": control["amount"], "source_scale": control["scale"],
+        }
     if BACKLOG_PARTS & rows.keys():
         group = BACKLOG_PARTS | {"firm_order_backlog"}
         if (not group <= rows.keys() or len({(rows[k]["scope"], rows[k]["evidence"]["table"]) for k in group}) != 1
@@ -182,7 +215,46 @@ def _build_rows(packet, definitions, canonical, period):
     return rows, None
 
 
-def build_industry_note_profile(canonical, industry, period, *, publication_cutoff=None):
+def _retail_trade_balances(packet, canonical):
+    raw_rows = packet.get("retail_trade_balances")
+    if raw_rows is None:
+        return []
+    start, end = packet["period_start"], packet["period_end"]
+    if (packet["industry"], packet["period"], packet["fs_div"]) != ("retail_wholesale", "annual", "CFS"):
+        raise ValueError("invalid:industry_note_trade_balance_scope")
+    source = _source(packet)
+    prior = (_date(start) - timedelta(days=1)).isoformat()
+    inputs, derived = [], set()
+    for raw in raw_rows:
+        key, closing = raw["key"], raw["period_end"]
+        if key not in {"receivables", "payables"} or closing not in {prior, end}:
+            raise ValueError("invalid:industry_note_trade_balance_period_or_key")
+        locator = {**_row_source(packet, raw, source), "document": source["filing_id"],
+                   "table": raw["table"], "row": raw["row"]}
+        amount = raw["amount"]
+        if key == "receivables":
+            scale = raw["scale"]
+            gross = _amount(amount, scale)
+            allowance = _amount(raw.get("allowance"), scale)
+            if not 0 <= allowance <= gross:
+                raise ValueError("invalid:industry_note_trade_receivables_allowance")
+            amount = str((gross - allowance) / scale)
+            locator.update(source_gross=raw["amount"], source_allowance=raw["allowance"],
+                           calculation="gross trade receivables less related loss allowance")
+            derived.add(closing)
+        inputs.append({**raw, "amount": amount, "evidence": locator})
+    pack = {"schema_version": "kfa-pe-cr-reviewed/1", "rows": inputs,
+            **{k: canonical.get(k) for k in ("entity_id", "fs_div", "currency", "fiscal_year_end", "source")}}
+    facts = reviewed_facts(pack, canonical)
+    for key in {f[0] for f in facts}:
+        if not all((key, None, d) in facts for d in (prior, end)):
+            raise ValueError("invalid:industry_note_trade_balance_pair")
+    for closing in derived:
+        facts["receivables", None, closing]["quality"] = "deterministic_derived"
+    return list(facts.values())
+
+
+def build_industry_note_profile(canonical, industry, period, *, publication_cutoff=None, infer_industry=True):
     """Exact-match committed evidence. No caller/API text can promote a row."""
     if period not in PERIODS:
         raise ValueError("invalid:industry_note_period")
@@ -192,26 +264,29 @@ def build_industry_note_profile(canonical, industry, period, *, publication_cuto
     matches = [p for p in registry if (p["financial_provider"], p["entity_id"]) == identity
                and p["period"] == period and p["period_start"] == start and p["period_end"] == end
                and p["fs_div"] == canonical.get("fs_div") and p["currency"] == canonical.get("currency")]
-    if industry in {"general", "manufacturing"} and len({p["industry"] for p in matches}) == 1:
+    if infer_industry and industry in {"general", "manufacturing"} and len({p["industry"] for p in matches}) == 1:
         industry = matches[0]["industry"]
     expected = definitions["kits"].get(industry, [])
     matches = [p for p in matches if p["industry"] == industry]
     if len(matches) > 1:
         raise ValueError("conflict:industry_note_packets")
     reason = "missing:reviewed_issuer_period_mapping" if expected else "not_applicable:no_industry_note_metrics"
-    rows, mapping_id = {}, None
+    rows, mapping_id, trade_balances = {}, None, []
     if matches:
         packet = matches[0]
         if publication_cutoff is not None and _date(packet["source"]["filed"]) > _date(publication_cutoff):
             reason = "unavailable:filing_after_publication_cutoff"
         else:
             rows, reason = _build_rows(packet, definitions, canonical, period)
-            mapping_id = packet["id"] if any(row["status"] == "reported" for row in rows.values()) else None
+            trade_balances = _retail_trade_balances(packet, canonical)
+            mapping_id = packet["id"] if trade_balances or any(row["status"] == "reported" for row in rows.values()) else None
     profile = {"schema_version": "kfa-industry-note-profile/1", "industry": industry, "mapping_id": mapping_id,
             "period": period, "period_start": start, "period_end": end, "reason": reason,
             "rows": [rows[key] if key in rows else {"id": key, "label_ko": definitions["metrics"][key][0], "value": None,
                                                     "status": "unavailable", "reason": reason or "missing:verified_disclosure_row"}
                      for key in expected]}
+    if trade_balances:
+        profile["retail_trade_balances"] = trade_balances
     rg = build_shipbuilding_rg(canonical, industry, end, publication_cutoff=publication_cutoff)
     if rg is not None:
         profile["shipbuilding_rg"] = rg
