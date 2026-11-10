@@ -71,7 +71,10 @@ def build_shipbuilding_rg(canonical, industry, end, *, publication_cutoff=None):
                 raise ValueError("invalid:shipbuilding_rg_row_or_duplicate")
             seen.add((guarantor, currency))
             limit, outstanding = _money(row.get("limit"), scale), _money(row.get("outstanding"), scale)
-            if limit is None and outstanding is None:
+            guaranteed = _money(row.get("reported_guaranteed_amount"), scale)
+            if guaranteed is not None and (basis != "rg_only" or limit is not None or outstanding is not None):
+                raise ValueError("incompatible:rg_reported_guaranteed_amount_basis")
+            if limit is None and outstanding is None and guaranteed is None:
                 raise ValueError("invalid:empty_shipbuilding_rg_row")
             headroom, utilization = None, None
             if limit is None or outstanding is None:
@@ -83,10 +86,22 @@ def build_shipbuilding_rg(canonical, industry, end, *, publication_cutoff=None):
             else:
                 headroom, utilization, reason = limit - outstanding, outstanding / limit, None
             rows.append({"guarantor": guarantor, "currency": currency, "currency_basis": currency_basis,
-                         "limit": limit, "outstanding": outstanding, "limit_less_outstanding": headroom,
+                         "limit": limit, "outstanding": outstanding, "reported_guaranteed_amount": guaranteed,
+                         "limit_less_outstanding": headroom,
                          "utilization": utilization, "calculation_reason": reason,
-                         "source_scale": scale, "source_limit": row.get("limit"), "source_outstanding": row.get("outstanding")})
+                         "source_scale": scale, "source_limit": row.get("limit"), "source_outstanding": row.get("outstanding"),
+                         "source_guaranteed_amount": row.get("reported_guaranteed_amount")})
         portfolio = {"basis": basis, "label_ko": BASIS[basis], "rows": rows, "evidence": {**source, "table": table}}
+        reported_total = packet.get("reported_guaranteed_total")
+        if reported_total is not None:
+            currency, scale = reported_total["currency"], reported_total["scale"]
+            if type(scale) is not int or scale not in {1, 1000, 1000000, 100000000}:
+                raise ValueError("invalid:shipbuilding_rg_total_scale")
+            amount = _money(reported_total["amount"], scale)
+            if (any(r["currency"] != currency or r["currency_basis"] != "as_disclosed" or r["reported_guaranteed_amount"] is None for r in rows)
+                    or sum(r["reported_guaranteed_amount"] for r in rows) != amount):
+                raise ValueError("conflict:shipbuilding_rg_reported_total")
+            portfolio["reported_guaranteed_total"] = {"currency": currency, "amount": amount, "source_scale": scale, "source_amount": reported_total["amount"]}
         if packet.get("related_collateral"):
             collateral = []
             for item in packet["related_collateral"]:

@@ -50,6 +50,9 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     financial = is_financial(entity_policy or {}) or is_financial(identity_policy) or industry == "financial"
     if financial and industry != "financial":
         industry, selection_basis = "financial", "financial_entity_policy"
+    note_profile = build_industry_note_profile(canonical, industry, selected_period)
+    if selection_basis in {"legacy_default", "unmapped_metadata"} and note_profile["industry"] == "machinery":
+        industry, selection_basis = "machinery", "reviewed_issuer_filing"
     kit = cfg["kits"][industry]
     ccc_policy = kit["ccc_policy"]
     ccc_allowed = ccc_policy in {"primary", "secondary"}
@@ -287,14 +290,32 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
          "공시에서 별도로 확인된 유지보수 현금투자; 전체 CapEx나 D&A로 대체하지 않음")
 
     if industry in {"shipbuilding", "machinery"}:
-        emit("order_backlog", "reported outstanding firm customer orders at period end", lambda: read_reviewed("order_backlog"), "money",
-             "확정 수주잔고; 옵션·미확정 계약·계약부채 또는 향후 인식할 매출과 동일시하지 않음")
+        def firm_backlog():
+            if industry == "machinery" and not reviewed("order_backlog"):
+                for row in note_profile["rows"]:
+                    if row["id"] == "firm_order_backlog" and row["status"] == "reported" and row["period_end"] == end:
+                        used.append(row)
+                        return row["value"]
+            return read_reviewed("order_backlog")
+
+        emit("order_backlog", "reported outstanding firm customer orders at period end", firm_backlog, "money",
+             "확정성이 있다고 회사가 공시한 수주잔고. 공시 근사치일 수 있으며, 계약부채·미래 매출과 동일하지 않음.")
         emit("new_orders", "reported firm customer orders signed within selected period", lambda: read_reviewed("new_orders"), "money")
         emit("net_contract_position_to_sales", "(current contract assets - current contract liabilities) / period revenue",
              lambda: ratio(read("contract_assets") - read("contract_liabilities"), read("revenue")),
              note="유동 계정만 사용한 분석용 차이; 재무제표상 상계를 뜻하지 않음")
     if industry == "machinery":
+        mapped_inventory = {row["id"]: row for row in note_profile["rows"] if row["id"].startswith("inventory_")}
+
         def inventory_share(key, other):
+            if not any(reviewed(k) for k in ("wip_inventory", "raw_material_inventory", "inventory_note_total")):
+                mapped = mapped_inventory.get("inventory_wip" if key == "wip_inventory" else "inventory_raw_materials") or {}
+                if mapped.get("share_of_net_inventory") is not None:
+                    read("inventory")
+                    used.extend((mapped, mapped_inventory["inventory_note_total"]))
+                    return mapped["share_of_net_inventory"]
+                if (mapped.get("reason") or "").startswith("conflict_or_missing:"):
+                    raise Unavailable(mapped["reason"])
             amount, total = read_reviewed(key), read("inventory")
             note_total = read_reviewed("inventory_note_total")
             if note_total != total:
@@ -327,7 +348,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     return {"schema_version": "kfa-pe-cr/1", "industry": industry,
             "industry_profile": {"label_ko": kit["label_ko"], "selection_basis": selection_basis, "ksic": ksic,
                                  "ccc_policy": ccc_policy, "disclosure_inputs": kit.get("note_inputs", [])},
-            "industry_note_metrics": build_industry_note_profile(canonical, industry, selected_period),
+            "industry_note_metrics": note_profile,
             "cards": cards, "focus": kit["focus"], "notes": kit["notes"],
             "visible_cards": [] if financial else [k for k, v in cards.items() if v["value"] is not None],
             "no_price_target": True}

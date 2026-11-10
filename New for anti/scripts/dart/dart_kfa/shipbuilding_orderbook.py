@@ -10,6 +10,7 @@ from .reviewed_periodic import REPORT_WINDOWS, reviewed_periodic_source
 REGISTRY = Path(__file__).resolve().parents[1] / "config/shipbuilding_orderbook_registry.json"
 PERIOD_FOR_FORM = {"11011": "annual", "11013": "Q1", "11012": "Q2", "11014": "Q3"}
 KEYS = ("opening", "contract_movement", "recognized", "closing")
+MOVEMENT_DETAILS = ("new_contracts_reported", "other_movement")
 
 
 @lru_cache(maxsize=1)
@@ -37,11 +38,19 @@ def _validate_rows(packet):
             values[field] = raw * scale
         if values["opening"] + values["contract_movement"] - values["recognized"] != values["closing"]:
             raise ValueError("conflict:shipbuilding_orderbook_rollforward")
+        if any(field in row for field in MOVEMENT_DETAILS):
+            if (any(type(row.get(field)) is not int or abs(row[field]) * scale > 10**20 for field in MOVEMENT_DETAILS)
+                    or sum(row[k] for k in MOVEMENT_DETAILS) != row["contract_movement"]):
+                raise ValueError("conflict:shipbuilding_orderbook_movement_details")
+            values.update({field: row[field] * scale for field in MOVEMENT_DETAILS})
         rows[key] = {"id": key, "label_ko": label, "included_in": None if key == "total" else "total", **values}
     total = rows.get("total")
     segments = [row for key, row in rows.items() if key != "total"]
     if not total or (segments and any(sum(row[k] for row in segments) != total[k] for k in KEYS)):
         raise ValueError("conflict:shipbuilding_orderbook_segments")
+    for field in MOVEMENT_DETAILS:
+        if segments and all(field in row for row in segments) and sum(row[field] for row in segments) != total.get(field):
+            raise ValueError("conflict:shipbuilding_orderbook_segment_movements")
     return list(rows.values()), total
 
 

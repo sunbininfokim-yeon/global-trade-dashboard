@@ -97,6 +97,37 @@
         {"metric": "funded_order_backlog", "scope": "all_reported_segments_including_mission_technologies", "basis": "firm_orders_with_contractually_obligated_funding", "unit": "USD", "amount": 31985, "scale": 1000000, "table": "Item 7 / Backlog by segment", "row": "Total backlog / Funded", "methodology_ko": "고객의 자금지원 의무가 계약상 확정된 잔고."},
         {"metric": "unfunded_order_backlog", "scope": "all_reported_segments_including_mission_technologies", "basis": "firm_orders_without_currently_obligated_funding", "unit": "USD", "amount": 21154, "scale": 1000000, "table": "Item 7 / Backlog by segment", "row": "Total backlog / Unfunded", "methodology_ko": "확정 수주지만 고객의 자금지원 의무가 아직 확정되지 않은 잔고."}
       ]
+    },
+    {
+      "id": "hd-construction-equipment-fy2025-inventory",
+      "entity_id": "01205842", "financial_provider": "DART", "industry": "machinery",
+      "period": "annual", "period_start": "2025-01-01", "period_end": "2025-12-31", "fs_div": "CFS", "currency": "KRW",
+      "source": {"provider": "KRX_KIND", "entity_id": "01205842", "filing_id": "20260318007741", "filed": "2026-03-18", "form": "11011",
+                 "url": "https://kind.krx.co.kr/external/2026/03/18/001671/20260318007741/11011.htm"},
+      "rows": [
+        {"metric": "inventory_note_total", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 1084094, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "총유동재고자산 / 장부금액", "methodology_ko": "평가충당금 차감 후, 2026년 HD현대인프라코어 합병 전 범위."},
+        {"metric": "inventory_merchandise", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 333912, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동상품 / 장부금액"},
+        {"metric": "inventory_finished_goods", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 369501, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동제품 / 장부금액"},
+        {"metric": "inventory_wip", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 67209, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동재공품 / 장부금액"},
+        {"metric": "inventory_raw_materials", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 212624, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동원재료 / 장부금액"},
+        {"metric": "inventory_supplies", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 234, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동저장품 / 장부금액"},
+        {"metric": "inventory_in_transit", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 100614, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "운송중 재고자산 / 장부금액"}
+      ]
+    },
+    {
+      "id": "caterpillar-fy2025-machinery",
+      "entity_id": "0000018230", "financial_provider": "SEC", "industry": "machinery",
+      "period": "annual", "period_start": "2025-01-01", "period_end": "2025-12-31", "fs_div": "CFS", "currency": "USD",
+      "source": {"provider": "SEC", "entity_id": "0000018230", "filing_id": "0000018230-26-000008", "filed": "2026-02-13", "form": "10-K",
+                 "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000008/cat-20251231.htm"},
+      "rows": [
+        {"metric": "firm_order_backlog", "scope": "issuer_reported_firm_order_backlog", "basis": "remaining_value_of_firm_orders", "unit": "USD", "amount": "51.2", "scale": 1000000000, "table": "Item 1 / Order Backlog", "row": "December 31, 2025", "methodology_ko": "회사가 확정성이 있다고 본 수주잔고의 공시 근사치. 계약부채나 수익 인식 금액이 아님."},
+        {"metric": "inventory_note_total", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 18135, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Total inventories", "methodology_ko": "공시 장부액. 2025년 총재고 약 70%는 LIFO 기준; FIFO로 조정하지 않음."},
+        {"metric": "inventory_raw_materials", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 7434, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Raw materials"},
+        {"metric": "inventory_wip", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 1598, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Work-in-process"},
+        {"metric": "inventory_finished_goods", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 8725, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Finished goods"},
+        {"metric": "inventory_supplies", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 378, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Supplies"}
+      ]
     }
   ]
 }

@@ -9,12 +9,14 @@ from urllib.parse import parse_qs, urlsplit
 
 from .shipbuilding_orderbook import build_shipbuilding_orderbook
 from .shipbuilding_rg import build_shipbuilding_rg
+from .reviewed_periodic import reviewed_periodic_source
 
 
 CONFIG = Path(__file__).resolve().parents[1] / "config"
 PRODUCTS = {"dram_revenue", "nand_revenue", "other_product_revenue"}
 HBM = "hbm_revenue"
 BACKLOG_PARTS = {"funded_order_backlog", "unfunded_order_backlog"}
+INVENTORY_REQUIRED = {"inventory_note_total", "inventory_raw_materials", "inventory_wip"}
 SCALES = {1, 1000, 1000000, 100000000, 1000000000}
 CROSS_IDS = {("DART", "00164779", "SEC", "0002120882")}
 PERIODS = {"annual", "Q1", "Q2", "Q3", "Q4"}
@@ -56,7 +58,8 @@ def _source(packet):
         raise ValueError("invalid:industry_note_source")
     provider, entity = source["provider"], source["entity_id"]
     identity = (packet["financial_provider"], packet["entity_id"], provider, entity)
-    if (identity[0] != provider or identity[1] != entity) and identity not in CROSS_IDS:
+    same = identity[1] == entity and (identity[0] == provider or (identity[0], provider) == ("DART", "KRX_KIND"))
+    if not same and identity not in CROSS_IDS:
         raise ValueError("incompatible:industry_note_source_identity")
     url = urlsplit(source["url"])
     if url.scheme != "https" or url.username or url.password or _date(source["filed"]) < _date(packet["period_end"]):
@@ -74,6 +77,10 @@ def _source(packet):
                 or parse_qs(url.query) != {"rcpNo": [source["filing_id"]]}
                 or source["form"] not in {"11011", "11012", "11013", "11014"}):
             raise ValueError("invalid:industry_note_dart_filing")
+    elif provider == "KRX_KIND":
+        if not re.fullmatch(r"[0-9]{8}", entity):
+            raise ValueError("invalid:industry_note_kind_identity")
+        return reviewed_periodic_source(source, packet["period_end"])
     else:
         raise ValueError("invalid:industry_note_provider")
     return dict(source)
@@ -146,6 +153,32 @@ def _build_rows(packet, definitions, canonical, period):
             return {}, "conflict_or_missing:canonical_consolidated_revenue_control"
         for key in product_ids:
             rows[key]["share_of_consolidated_revenue"] = float(rows[key]["value"] / target)
+    inventory = {k: v for k, v in rows.items() if k.startswith("inventory_")}
+    if inventory:
+        total = inventory.get("inventory_note_total") or {}
+        total_value = total.get("value", 0)
+        total_scale = (total.get("evidence") or {}).get("source_scale")
+        if (not INVENTORY_REQUIRED <= inventory.keys() or total_value <= 0
+                or len({(r["evidence"]["table"], r["scope"], r["evidence"]["source_scale"]) for r in inventory.values()}) != 1
+                or any(r["scope"] != "consolidated_group" for r in inventory.values())
+                or sum(r["value"] for k, r in inventory.items() if k != "inventory_note_total") != total_value):
+            raise ValueError("conflict:industry_note_inventory_partition")
+        fact = _point(canonical, "PECR_inventory", period)
+        unit = fact.get("unit") or {}
+        value = fact.get("value")
+        value = Decimal(str(value)) if type(value) in {int, float} else Decimal("NaN")
+        if (scope != "CFS" or fact.get("source") != packet["financial_provider"] or fact.get("fs_div") != scope
+                or fact.get("period_end") != end or fact.get("nature") != "balance" or fact.get("period_start") is not None
+                or fact.get("availability") != "available" or fact.get("quality") != "reported" or not fact.get("provenance")
+                or unit.get("kind") != "currency" or unit.get("currency") != currency or unit.get("scale") != 1
+                or not value.is_finite() or abs(value - total_value) >= total_scale):
+            for row in inventory.values():
+                row.update(value=None, status="unavailable", reason="conflict_or_missing:canonical_net_inventory_control")
+        else:
+            for key, row in inventory.items():
+                if key != "inventory_note_total":
+                    row["included_in"] = "inventory_note_total"
+                    row["share_of_net_inventory"] = row["value"] / total_value
     return rows, None
 
 
@@ -173,7 +206,7 @@ def build_industry_note_profile(canonical, industry, period, *, publication_cuto
             reason = "unavailable:filing_after_publication_cutoff"
         else:
             rows, reason = _build_rows(packet, definitions, canonical, period)
-            mapping_id = packet["id"] if rows else None
+            mapping_id = packet["id"] if any(row["status"] == "reported" for row in rows.values()) else None
     profile = {"schema_version": "kfa-industry-note-profile/1", "industry": industry, "mapping_id": mapping_id,
             "period": period, "period_start": start, "period_end": end, "reason": reason,
             "rows": [rows[key] if key in rows else {"id": key, "label_ko": definitions["metrics"][key][0], "value": None,
