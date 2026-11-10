@@ -1,0 +1,171 @@
+{
+  "schema_version": "kfa-industry-note-registry/1",
+  "packets": [
+    {
+      "id": "micron-fy2025-product-revenue",
+      "entity_id": "0000723125",
+      "financial_provider": "SEC",
+      "industry": "semiconductor",
+      "period": "annual",
+      "period_start": "2024-08-30",
+      "period_end": "2025-08-28",
+      "fs_div": "CFS",
+      "currency": "USD",
+      "source": {
+        "provider": "SEC",
+        "entity_id": "0000723125",
+        "filing_id": "0000723125-25-000028",
+        "filed": "2025-10-03",
+        "form": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm"
+      },
+      "product_revenue_control": {"amount": 37378, "scale": 1000000, "table": "Note 21 / Revenue by Technology"},
+      "rows": [
+        {"metric": "dram_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "USD", "amount": 28578, "scale": 1000000, "table": "Note 21 / Revenue by Technology", "row": "DRAM"},
+        {"metric": "nand_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "USD", "amount": 8503, "scale": 1000000, "table": "Note 21 / Revenue by Technology", "row": "NAND"},
+        {"metric": "other_product_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "USD", "amount": 297, "scale": 1000000, "table": "Note 21 / Revenue by Technology", "row": "Other (primarily NOR)"}
+      ]
+    },
+    {
+      "id": "sk-hynix-fy2025-product-revenue",
+      "entity_id": "00164779",
+      "financial_provider": "DART",
+      "industry": "semiconductor",
+      "period": "annual",
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31",
+      "fs_div": "CFS",
+      "currency": "KRW",
+      "source": {
+        "provider": "SEC",
+        "entity_id": "0002120882",
+        "filing_id": "0001193125-26-280172",
+        "filed": "2026-06-24",
+        "form": "F-1",
+        "url": "https://www.sec.gov/Archives/edgar/data/2120882/000119312526280172/d32785df1.htm"
+      },
+      "product_revenue_control": {"amount": 97146675, "scale": 1000000, "table": "Audited consolidated statements / Note 24(2), F-66"},
+      "rows": [
+        {"metric": "dram_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "KRW", "amount": 74904134, "scale": 1000000, "table": "Audited consolidated statements / Note 24(2), F-66", "row": "DRAM"},
+        {"metric": "nand_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "KRW", "amount": 20690084, "scale": 1000000, "table": "Audited consolidated statements / Note 24(2), F-66", "row": "NAND Flash"},
+        {"metric": "other_product_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "KRW", "amount": 1552457, "scale": 1000000, "table": "Audited consolidated statements / Note 24(2), F-66", "row": "Others"}
+      ]
+    },
+    {
+      "id": "costco-fy2025-comparable-sales",
+      "entity_id": "0000909832",
+      "financial_provider": "SEC",
+      "industry": "retail_wholesale",
+      "period": "annual",
+      "period_start": "2024-09-02",
+      "period_end": "2025-08-31",
+      "fs_div": "CFS",
+      "currency": "USD",
+      "source": {
+        "provider": "SEC",
+        "entity_id": "0000909832",
+        "filing_id": "0000909832-25-000101",
+        "filed": "2025-10-08",
+        "form": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm"
+      },
+      "rows": [
+        {"metric": "same_store_sales_growth", "scope": "total_company_eligible_warehouses_and_ecommerce", "basis": "issuer_defined_comparable_store_growth", "unit": "percent", "amount": 6, "scale": 1, "table": "Item 7 / Results of Operations / Net Sales", "row": "Total Company / Changes in comparable sales", "methodology_ko": "운영 1년 초과 창고 및 전자상거래 포함. 환율·연료가격 영향 포함."},
+        {"metric": "same_store_sales_growth_ex_fx_fuel", "scope": "total_company_eligible_warehouses_and_ecommerce", "basis": "issuer_defined_comparable_store_growth_ex_fx_fuel", "unit": "percent", "amount": 8, "scale": 1, "table": "Item 7 / Results of Operations / Net Sales", "row": "Total Company / Adjusted comparable sales", "methodology_ko": "동일 범위에서 환율·연료가격 변동 효과 제외."}
+      ]
+    },
+    {
+      "id": "hii-fy2025-backlog-funding",
+      "entity_id": "0001501585",
+      "financial_provider": "SEC",
+      "industry": "shipbuilding",
+      "period": "annual",
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31",
+      "fs_div": "CFS",
+      "currency": "USD",
+      "source": {
+        "provider": "SEC",
+        "entity_id": "0001501585",
+        "filing_id": "0001501585-26-000006",
+        "filed": "2026-02-05",
+        "form": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1501585/000150158526000006/hii-20251231.htm"
+      },
+      "rows": [
+        {"metric": "firm_order_backlog", "scope": "all_reported_segments_including_mission_technologies", "basis": "remaining_value_of_firm_orders", "unit": "USD", "amount": 53139, "scale": 1000000, "table": "Item 7 / Backlog by segment", "row": "Total backlog / Total", "methodology_ko": "조선 이외 Mission Technologies도 포함한 전사 확정 수주잔고. 미행사 옵션 등은 제외."},
+        {"metric": "funded_order_backlog", "scope": "all_reported_segments_including_mission_technologies", "basis": "firm_orders_with_contractually_obligated_funding", "unit": "USD", "amount": 31985, "scale": 1000000, "table": "Item 7 / Backlog by segment", "row": "Total backlog / Funded", "methodology_ko": "고객의 자금지원 의무가 계약상 확정된 잔고."},
+        {"metric": "unfunded_order_backlog", "scope": "all_reported_segments_including_mission_technologies", "basis": "firm_orders_without_currently_obligated_funding", "unit": "USD", "amount": 21154, "scale": 1000000, "table": "Item 7 / Backlog by segment", "row": "Total backlog / Unfunded", "methodology_ko": "확정 수주지만 고객의 자금지원 의무가 아직 확정되지 않은 잔고."}
+      ]
+    },
+    {
+      "id": "hd-construction-equipment-fy2025-inventory",
+      "entity_id": "01205842", "financial_provider": "DART", "industry": "machinery",
+      "period": "annual", "period_start": "2025-01-01", "period_end": "2025-12-31", "fs_div": "CFS", "currency": "KRW",
+      "source": {"provider": "KRX_KIND", "entity_id": "01205842", "filing_id": "20260318007741", "filed": "2026-03-18", "form": "11011",
+                 "url": "https://kind.krx.co.kr/external/2026/03/18/001671/20260318007741/11011.htm"},
+      "rows": [
+        {"metric": "inventory_note_total", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 1084094, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "총유동재고자산 / 장부금액", "methodology_ko": "평가충당금 차감 후, 2026년 HD현대인프라코어 합병 전 범위."},
+        {"metric": "inventory_merchandise", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 333912, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동상품 / 장부금액"},
+        {"metric": "inventory_finished_goods", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 369501, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동제품 / 장부금액"},
+        {"metric": "inventory_wip", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 67209, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동재공품 / 장부금액"},
+        {"metric": "inventory_raw_materials", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 212624, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동원재료 / 장부금액"},
+        {"metric": "inventory_supplies", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 234, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "유동저장품 / 장부금액"},
+        {"metric": "inventory_in_transit", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "KRW", "amount": 100614, "scale": 1000000, "table": "연결 주석 11 / 재고자산 세부내역", "row": "운송중 재고자산 / 장부금액"}
+      ]
+    },
+    {
+      "id": "caterpillar-fy2025-machinery",
+      "entity_id": "0000018230", "financial_provider": "SEC", "industry": "machinery",
+      "period": "annual", "period_start": "2025-01-01", "period_end": "2025-12-31", "fs_div": "CFS", "currency": "USD",
+      "source": {"provider": "SEC", "entity_id": "0000018230", "filing_id": "0000018230-26-000008", "filed": "2026-02-13", "form": "10-K",
+                 "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000008/cat-20251231.htm"},
+      "rows": [
+        {"metric": "firm_order_backlog", "scope": "issuer_reported_firm_order_backlog", "basis": "remaining_value_of_firm_orders", "unit": "USD", "amount": "51.2", "scale": 1000000000, "table": "Item 1 / Order Backlog", "row": "December 31, 2025", "methodology_ko": "회사가 확정성이 있다고 본 수주잔고의 공시 근사치. 계약부채나 수익 인식 금액이 아님."},
+        {"metric": "inventory_note_total", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 18135, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Total inventories", "methodology_ko": "공시 장부액. 2025년 총재고 약 70%는 LIFO 기준; FIFO로 조정하지 않음."},
+        {"metric": "inventory_raw_materials", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 7434, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Raw materials"},
+        {"metric": "inventory_wip", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 1598, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Work-in-process"},
+        {"metric": "inventory_finished_goods", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 8725, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Finished goods"},
+        {"metric": "inventory_supplies", "scope": "consolidated_group", "basis": "reported_net_inventory_carrying_amount", "unit": "USD", "amount": 378, "scale": 1000000, "table": "Note 8 / Inventories", "row": "Supplies"}
+      ]
+    },
+    {
+      "id": "bgf-retail-fy2025-trade-balances",
+      "entity_id": "01263022", "financial_provider": "DART", "industry": "retail_wholesale",
+      "period": "annual", "period_start": "2025-01-01", "period_end": "2025-12-31", "fs_div": "CFS", "currency": "KRW",
+      "source": {"provider": "DART", "entity_id": "01263022", "filing_id": "20260318000829", "filed": "2026-03-18", "form": "11011",
+                 "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20260318000829&dcmNo=11138288&eleId=45&offset=1919066&length=33648&dtd=dart4.xsd"},
+      "rows": [
+        {"metric": "retail_franchise_settlement_payables", "scope": "consolidated_group", "basis": "reported_franchise_settlement_payables_excluded_from_trade_payables", "unit": "KRW", "amount": 76075, "scale": 1000000, "table": "연결 주석 21 / 매입채무 및 기타채무", "row": "가맹점계정대 / 당기",
+         "methodology_ko": "가맹점 정산 잔액으로 매입채무 및 CCC에 합산하지 않음."},
+        {"metric": "retail_supplier_finance", "scope": "consolidated_group", "basis": "reported_supplier_finance_liability_carrying_amount", "unit": "KRW", "amount": 2872, "scale": 1000000, "table": "연결 주석 21 / 공급자금융약정의 조건에 대한 공시", "row": "금융부채",
+         "methodology_ko": "공시 장부액. 원채무의 제거 없이 금융부채에 포함되므로 차입금·매입채무에 별도로 더하거나 빼지 않음."},
+        {"metric": "retail_inventory_purchases_reported", "scope": "consolidated_group", "basis": "reported_inventory_purchases_not_reconciled_to_trade_payables", "unit": "KRW", "amount": 7238279, "scale": 1000000, "table": "연결 주석 35 / 비용의 성격별 분류", "row": "재고자산의 매입 / 당기",
+         "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20260318000829&dcmNo=11138288&eleId=59&offset=2669765&length=30210&dtd=dart4.xsd",
+         "methodology_ko": "비용 주석의 재고 매입액. 동일 범위의 외상매입액으로 확인되지 않아 매입액 기준 DPO·CCC 분모로 사용하지 않음."}
+      ],
+      "retail_trade_balances": [
+        {"key": "receivables", "period_start": null, "period_end": "2025-12-31", "basis": "current_trade_receivables_net_excluding_non_trade_and_settlement_receivables", "amount": 26705, "allowance": 53, "scale": 1000000, "table": "연결 주석 13 / 매출채권 및 기타채권의 상세내역 공시", "row": "매출채권 / 당기 총장부금액 및 손상차손누계액",
+         "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20260318000829&dcmNo=11138288&eleId=37&offset=1089389&length=100124&dtd=dart4.xsd"},
+        {"key": "receivables", "period_start": null, "period_end": "2024-12-31", "basis": "current_trade_receivables_net_excluding_non_trade_and_settlement_receivables", "amount": 26700, "allowance": 53, "scale": 1000000, "table": "연결 주석 13 / 매출채권 및 기타채권의 상세내역 공시", "row": "매출채권 / 전기 총장부금액 및 손상차손누계액",
+         "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20260318000829&dcmNo=11138288&eleId=37&offset=1089389&length=100124&dtd=dart4.xsd"},
+        {"key": "payables", "period_start": null, "period_end": "2025-12-31", "basis": "current_trade_payables_excluding_non_trade_and_settlement_payables", "amount": 544989, "scale": 1000000, "table": "연결 주석 21 / 매입채무 및 기타채무", "row": "매입채무 / 당기"},
+        {"key": "payables", "period_start": null, "period_end": "2024-12-31", "basis": "current_trade_payables_excluding_non_trade_and_settlement_payables", "amount": 536408, "scale": 1000000, "table": "연결 주석 21 / 매입채무 및 기타채무", "row": "매입채무 / 전기"}
+      ]
+    },
+    {
+      "id": "ebay-fy2025-marketplace",
+      "entity_id": "0001065088", "financial_provider": "SEC", "industry": "retail_platform",
+      "period": "annual", "period_start": "2025-01-01", "period_end": "2025-12-31", "fs_div": "CFS", "currency": "USD",
+      "source": {"provider": "SEC", "entity_id": "0001065088", "filing_id": "0001065088-26-000027", "filed": "2026-02-19", "form": "10-K",
+                 "url": "https://www.sec.gov/Archives/edgar/data/1065088/000106508826000027/ebay-20251231.htm"},
+      "platform_net_revenue_control": {"amount": 11100, "scale": 1000000, "table": "Item 7 / Key Operating Metrics", "row": "Net revenues / 2025 As Reported"},
+      "rows": [
+        {"metric": "platform_gmv", "scope": "issuer_marketplace_group", "basis": "issuer_defined_gross_merchandise_value", "unit": "USD", "amount": 79609, "scale": 1000000, "table": "Item 7 / Key Operating Metrics", "row": "GMV / 2025 As Reported",
+         "methodology_ko": "결제 거래액. 배송료와 세금을 포함하고 반품·취소를 조정하지 않음. 회계 매출이 아님."},
+        {"metric": "platform_take_rate_reported", "scope": "issuer_marketplace_group", "basis": "issuer_defined_net_revenue_over_gmv", "unit": "percent", "amount": "13.94", "scale": 1, "table": "Item 7 / Key Operating Metrics", "row": "Take rate / 2025 As Reported",
+         "methodology_ko": "회사가 공시한 순매출/GMV. 광고·배송 등도 매출에 포함될 수 있어 거래 수수료율과 다름."}
+      ]
+    }
+  ]
+}
