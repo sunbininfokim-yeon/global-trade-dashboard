@@ -18,6 +18,44 @@ import run_us_kr_preopen as runner
 
 
 class RunnerTests(unittest.TestCase):
+    def yahoo_chart(self):
+        unix = lambda stamp: int(datetime.fromisoformat(stamp).timestamp())
+        return {
+            'timestamp': [unix('2026-11-06T09:30:00-05:00'), unix('2026-11-09T09:30:00-05:00')],
+            'meta': {'symbol': 'QQQ', 'instrumentType': 'ETF', 'regularMarketPrice': 679.35,
+                     'regularMarketTime': unix('2026-11-09T16:00:00-05:00')},
+            'indicators': {'adjclose': [{'adjclose': [656.10, None]}], 'quote': [{'close': [656.10, None]}]},
+        }
+
+    @patch.object(runner.requests, 'get')
+    def test_recovers_delayed_bar_from_exact_regular_close(self, get):
+        chart = self.yahoo_chart()
+        get.return_value.json.return_value = {'chart': {'result': [chart]}}
+        pair, field = runner.yahoo_session_pair('QQQ', '2026-11-06', '2026-11-09', '2026-11-09T21:00:00Z')
+        self.assertEqual([r['close'] for r in pair], [656.10, 679.35])
+        self.assertEqual(field, 'regular_market_close_no_adjustment')
+        chart['indicators']['adjclose'][0]['adjclose'][1] = 679.32
+        pair, field = runner.yahoo_session_pair('QQQ', '2026-11-06', '2026-11-09', '2026-11-09T21:00:00Z')
+        self.assertEqual(pair[-1]['close'], 679.32)
+        self.assertEqual(field, 'adjusted_close')
+
+    @patch.object(runner.requests, 'get')
+    def test_refuses_intraday_stale_and_unadjustable_quotes(self, get):
+        for case in ('intraday', 'stale', 'action', 'adjusted'):
+            with self.subTest(case=case):
+                chart = self.yahoo_chart()
+                if case == 'intraday':
+                    chart['meta']['regularMarketTime'] -= 60
+                elif case == 'stale':
+                    chart['meta']['regularMarketTime'] -= 3 * 86400
+                elif case == 'action':
+                    chart['events'] = {'dividends': {'1': {'amount': 1}}}
+                else:
+                    chart['indicators']['quote'][0]['close'][0] += 1
+                get.return_value.json.return_value = {'chart': {'result': [chart]}}
+                with self.assertRaisesRegex(ValueError, 'adjusted basis'):
+                    runner.yahoo_session_pair('QQQ', '2026-11-06', '2026-11-09', '2026-11-09T21:00:00Z')
+
     def forecast(self,status='research_preopen_forecast',target='2026-11-05'):
         score={'probability':.51,'score_0_100':51,'direction':'UP','information_state':'model_score_with_calibration'}
         return {'status':status,'target_date':target,'generated_at':'2026-11-05T07:00:00+09:00',

@@ -92,6 +92,9 @@ ISRAEL_CI_PATHS = frozenset({'.github/workflows/israel_analysis_validation.yml'}
 
 
 def scoped_paths(branch):
+    # User requested recovery of the existing pre-open automation on 2026-11-10.
+    if branch == 'codex/us-kr-preopen-recovery-20261110':
+        return frozenset({'_worker.js', '.github/workflows/us_kr_direction_preopen.yml'})
     # 2026-11-05: user explicitly requested lobbying implementation and automatic
     # pipeline connection. Exact new workflow and Worker dispatch only.
     if branch == 'codex/lobbying-policy-pipeline-20261105':

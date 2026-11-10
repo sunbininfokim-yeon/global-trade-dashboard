@@ -139,7 +139,7 @@ export default {
     // (see dispatchPreopenDirection below).
     async scheduled(event, env, ctx) {
         if (PREOPEN_CRONS.includes(event.cron)) {
-            ctx.waitUntil(dispatchPreopenDirection(env));
+            ctx.waitUntil(dispatchPreopenDirection(env, event.cron));
             return;
         }
         ctx.waitUntil(warmComtradeCache(env));
@@ -163,10 +163,9 @@ const PREOPEN_CRONS = ['25 21 * * *', '5 22 * * *'];
 const PREOPEN_WORKFLOW_URL =
     'https://api.github.com/repos/sunbininfokim-yeon/global-trade-dashboard/actions/workflows/us_kr_direction_preopen.yml/dispatches';
 
-async function dispatchPreopenDirection(env) {
+async function dispatchPreopenDirection(env, cron) {
     if (!env.GH_DISPATCH_TOKEN) {
-        console.warn('preopen dispatch skipped: GH_DISPATCH_TOKEN is not set');
-        return;
+        throw new Error(`preopen dispatch ${cron}: GH_DISPATCH_TOKEN is not set`);
     }
     const res = await fetch(PREOPEN_WORKFLOW_URL, {
         method: 'POST',
@@ -178,10 +177,10 @@ async function dispatchPreopenDirection(env) {
         },
         body: JSON.stringify({ ref: 'main' }),
     });
-    // 204 = queued. Anything else is logged so `wrangler tail` shows why.
-    if (res.status !== 204) {
-        console.error(`preopen dispatch failed: HTTP ${res.status} ${(await res.text()).slice(0, 300)}`);
+    if (!res.ok) {
+        throw new Error(`preopen dispatch ${cron}: HTTP ${res.status} ${(await res.text()).slice(0, 300)}`);
     }
+    console.log(`preopen dispatch ${cron} accepted: HTTP ${res.status}`);
 }
 
 

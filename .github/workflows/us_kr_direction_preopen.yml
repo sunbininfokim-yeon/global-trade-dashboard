@@ -25,19 +25,53 @@ on:
   schedule:
     # 06:25 KST every day = 21:25 UTC.
     - cron: '25 21 * * *'
+    # Separate GitHub fallback slots while Cloudflare dispatch is unavailable.
+    - cron: '43 21 * * *'
+    - cron: '17 22 * * *'
   workflow_dispatch:
     inputs:
       target:
         description: Korean target session YYYY-MM-DD; blank means the next session on or after today (KST)
         required: false
         type: string
+      dispatch_check:
+        description: Diagnose the Worker token without collecting or publishing
+        required: false
+        type: choice
+        options:
+          - ''
+          - check
+          - receipt
 
 concurrency:
-  group: us-kr-direction-preopen
+  group: us-kr-direction-preopen-${{ inputs.dispatch_check || 'forecast' }}
   cancel-in-progress: false
 
 jobs:
+  dispatch_check:
+    if: github.ref == 'refs/heads/main' && inputs.dispatch_check
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions: {}
+    steps:
+      - name: Check the token used by the Worker
+        if: inputs.dispatch_check == 'check'
+        env:
+          GH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::GH_DISPATCH_TOKEN is missing"
+            exit 1
+          fi
+          printf '%s' '{"ref":"main","inputs":{"dispatch_check":"receipt"}}' | \
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/us_kr_direction_preopen.yml/dispatches" --input -
+          echo 'GitHub accepted the dispatch using the Worker token.'
+      - name: Confirm receipt
+        if: inputs.dispatch_check == 'receipt'
+        run: echo 'Worker token dispatch received. No forecast was run.'
+
   preopen:
+    if: ${{ !inputs.dispatch_check }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -157,7 +191,7 @@ jobs:
   # Independent of the preopen job above: it neither reads nor changes the
   # public card, and it retries on its own if the home forecast already exists.
   hypothesis_shadow:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && !inputs.dispatch_check
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
