@@ -8,9 +8,11 @@ import os
 import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import exchange_calendars as xc
 import pandas as pd
+import requests
 
 from backfill_detailed_15007_history import merge_date_folder, missing_required_files, REQUIRED_FILES
 from build_kospi200_price_panel import fetch_naver_chart, NAVER_CHART
@@ -85,6 +87,42 @@ def collect_kr_prices(source,now):
             {**metadata,'candidates':[c for c in candidates if c['ticker']=='KOSPI']})
 
 
+def yahoo_session_pair(symbol, previous, day, closed):
+    """Recover an exact pair from Yahoo when the adjusted daily bar is delayed."""
+    exchange_tz = ZoneInfo('America/New_York')
+    start = datetime.fromisoformat(previous).replace(tzinfo=exchange_tz)
+    end = datetime.fromisoformat(day).replace(tzinfo=exchange_tz) + timedelta(days=1)
+    response = requests.get(
+        f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}',
+        params={'period1': int(start.timestamp()), 'period2': int(end.timestamp()),
+                'interval': '1d', 'events': 'div,splits,capitalGains'},
+        headers={'User-Agent': 'Mozilla/5.0'}, timeout=8,
+    )
+    response.raise_for_status()
+    chart = response.json()['chart']['result'][0]
+    indices = {datetime.fromtimestamp(stamp, exchange_tz).date().isoformat(): i
+               for i, stamp in enumerate(chart['timestamp'])}
+    previous_index, current_index = indices[previous], indices[day]
+    adjusted = chart['indicators']['adjclose'][0]['adjclose']
+    prior, close = adjusted[previous_index], adjusted[current_index]
+    field = 'adjusted_close'
+    if close is None:
+        meta = chart['meta']
+        quoted_at = datetime.fromtimestamp(meta['regularMarketTime'], timezone.utc)
+        session_close = pd.Timestamp(closed).to_pydatetime()
+        raw = chart['indicators']['quote'][0]['close'][previous_index]
+        if (meta['symbol'] != symbol or meta['instrumentType'] not in {'EQUITY', 'ETF'}
+                or not session_close <= quoted_at <= session_close + timedelta(minutes=5)
+                or prior != raw or chart.get('events')):
+            raise ValueError('regular-market quote cannot be used on the adjusted basis')
+        close = meta['regularMarketPrice']
+        field = 'regular_market_close_no_adjustment'
+    if not all(isinstance(value, (int, float)) and math.isfinite(value) and value > 0
+               for value in (prior, close)):
+        raise ValueError('invalid exact-session Yahoo close')
+    return [{'date': previous, 'close': prior}, {'date': day, 'close': close}], field
+
+
 def collect_us_prices(target,now):
     import yfinance as yf
     cal=xc.get_calendar('XNYS',start='2018-01-01',end='2027-12-31')
@@ -93,18 +131,25 @@ def collect_us_prices(target,now):
     frame=yf.download(SYMBOLS,start=previous,end=end,interval='1d',group_by='ticker',
                       auto_adjust=True,progress=False,threads=False)
     out={}
+    recovered={}
     for sym in SYMBOLS:
-        sub=frame[sym];bars={}
-        for date,row in sub.iterrows():
-            d=date.strftime('%Y-%m-%d')
-            if d in [previous,day]:bars[d]={'date':d,'close':float(row['Close'])}
-        if any(d not in bars or not math.isfinite(bars[d]['close']) or bars[d]['close']<=0 for d in [previous,day]):
-            raise ValueError('missing expected US price pair: '+sym)
-        out[sym]=[bars[previous],bars[day]]
+        bars={}
+        if sym in frame.columns.get_level_values(0):
+            for date,value in frame[sym]['Close'].items():
+                d=date.strftime('%Y-%m-%d')
+                if d in [previous,day]:bars[d]={'date':d,'close':float(value)}
+        if all(d in bars and math.isfinite(bars[d]['close']) and bars[d]['close']>0 for d in (previous,day)):
+            out[sym]=[bars[previous],bars[day]]
+            continue
+        try:
+            out[sym], recovered[sym] = yahoo_session_pair(sym, previous, day, closed)
+        except (requests.RequestException, ValueError, KeyError, IndexError, TypeError) as exc:
+            raise ValueError(f'missing expected US price pair: {sym} ({exc})') from exc
     return {'source':'yfinance Yahoo daily auto_adjust=True','collected_at':datetime.now(timezone.utc).isoformat(),
             'provider_published_at':'unknown','session_timezone':'America/New_York','symbols':out,
             'expected_US_source':day,'calendar_close_UTC':closed,
-            'window_policy':'both required sessions fetched together, no stale fallback'}
+            'recovered_yahoo_chart_fields':recovered,
+            'window_policy':'both required sessions use one price basis, no stale fallback'}
 
 
 def provenance_revisions(old,new):
