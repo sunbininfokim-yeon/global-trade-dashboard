@@ -11,6 +11,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from .entity_policy import is_financial, classify_entity
+from .pe_cr_cash_flow import add_cash_flow_statement
 from .pe_cr_evidence import BALANCES, reviewed_facts
 from .pe_cr_industry import resolve_industry
 from .pe_cr_market import compare_peers, market_observation, positive
@@ -198,7 +199,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     emit("operating_income", "reported operating income", lambda: read("op"), "money", "손익계산서 영업이익; 아래 EBIT와 정의 구분")
     emit("operating_margin", "operating income / positive revenue", lambda: ratio(read("op"), read("revenue")))
     emit("cogs_to_sales", "abs(cost of sales) / positive revenue", lambda: ratio(abs(read("cogs")), read("revenue")))
-    emit("cfo", "reported net cash from operating activities", lambda: read("cfo"), "money")
+    cash_flow_statement = add_cash_flow_statement(canonical, cards, cell, read, emit, used, selected_period)
     emit("book_equity", "reported total equity", lambda: read("equity"), "money", financial_allowed=True)
 
     def capital_erosion():
@@ -531,6 +532,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
          "배율을 적용한 시나리오 EV; 관측 시세 EV나 목표주가가 아님")
     result["visible_cards"] = [k for k, v in cards.items() if v["value"] is not None]
     result["disclosure_profile"] = profile
+    result["cash_flow_statement"] = cash_flow_statement
     from .pe_cr_screen import build_screen
     result["cr_pe_screen"] = build_screen(canonical, result, history=history, period=selected_period, start=start, end=end,
                                           financial=financial, reviewed_current=evidence, inputs=screen_inputs)

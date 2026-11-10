@@ -65,8 +65,9 @@ class PECRTests(unittest.TestCase):
 
     def test_financial_suppression(self):
         r = build_pe_cr(bundle(), entity_policy={"is_financial_entity": True})
-        self.assertEqual(r["visible_cards"], [])
-        self.assertTrue(all(c["value"] is None for c in r["cards"].values()))
+        self.assertEqual(r["visible_cards"], ["cfo", "cash_flow_capex_ppe", "cash_flow_capex_intangible"])
+        self.assertIsNone(r["cards"]["fcf"]["value"])
+        self.assertIsNone(r["cards"]["ccc_days"]["value"])
 
     def test_currency_scope_scale_and_proxies_rejected(self):
         for field, value in [("fs_div", "OFS"), ("quality", "proxy"), ("unit", {"currency": "USD", "scale": 1}), ("unit", {"currency": "KRW", "scale": 1000})]:
