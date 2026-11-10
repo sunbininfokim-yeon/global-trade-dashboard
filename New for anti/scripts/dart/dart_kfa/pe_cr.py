@@ -10,6 +10,7 @@ import math
 from datetime import date, timedelta
 from pathlib import Path
 
+from .industry_note_mapping import build_industry_note_profile
 from .entity_policy import is_financial, classify_entity
 from .pe_cr_evidence import BALANCES, reviewed_facts
 from .pe_cr_industry import resolve_industry
@@ -326,6 +327,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     return {"schema_version": "kfa-pe-cr/1", "industry": industry,
             "industry_profile": {"label_ko": kit["label_ko"], "selection_basis": selection_basis, "ksic": ksic,
                                  "ccc_policy": ccc_policy, "disclosure_inputs": kit.get("note_inputs", [])},
+            "industry_note_metrics": build_industry_note_profile(canonical, industry, selected_period),
             "cards": cards, "focus": kit["focus"], "notes": kit["notes"],
             "visible_cards": [] if financial else [k for k, v in cards.items() if v["value"] is not None],
             "no_price_target": True}

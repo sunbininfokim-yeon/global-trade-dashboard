@@ -1,0 +1,102 @@
+{
+  "schema_version": "kfa-industry-note-registry/1",
+  "packets": [
+    {
+      "id": "micron-fy2025-product-revenue",
+      "entity_id": "0000723125",
+      "financial_provider": "SEC",
+      "industry": "semiconductor",
+      "period": "annual",
+      "period_start": "2024-08-30",
+      "period_end": "2025-08-28",
+      "fs_div": "CFS",
+      "currency": "USD",
+      "source": {
+        "provider": "SEC",
+        "entity_id": "0000723125",
+        "filing_id": "0000723125-25-000028",
+        "filed": "2025-10-03",
+        "form": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm"
+      },
+      "product_revenue_control": {"amount": 37378, "scale": 1000000, "table": "Note 21 / Revenue by Technology"},
+      "rows": [
+        {"metric": "dram_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "USD", "amount": 28578, "scale": 1000000, "table": "Note 21 / Revenue by Technology", "row": "DRAM"},
+        {"metric": "nand_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "USD", "amount": 8503, "scale": 1000000, "table": "Note 21 / Revenue by Technology", "row": "NAND"},
+        {"metric": "other_product_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "USD", "amount": 297, "scale": 1000000, "table": "Note 21 / Revenue by Technology", "row": "Other (primarily NOR)"}
+      ]
+    },
+    {
+      "id": "sk-hynix-fy2025-product-revenue",
+      "entity_id": "00164779",
+      "financial_provider": "DART",
+      "industry": "semiconductor",
+      "period": "annual",
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31",
+      "fs_div": "CFS",
+      "currency": "KRW",
+      "source": {
+        "provider": "SEC",
+        "entity_id": "0002120882",
+        "filing_id": "0001193125-26-280172",
+        "filed": "2026-06-24",
+        "form": "F-1",
+        "url": "https://www.sec.gov/Archives/edgar/data/2120882/000119312526280172/d32785df1.htm"
+      },
+      "product_revenue_control": {"amount": 97146675, "scale": 1000000, "table": "Audited consolidated statements / Note 24(2), F-66"},
+      "rows": [
+        {"metric": "dram_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "KRW", "amount": 74904134, "scale": 1000000, "table": "Audited consolidated statements / Note 24(2), F-66", "row": "DRAM"},
+        {"metric": "nand_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "KRW", "amount": 20690084, "scale": 1000000, "table": "Audited consolidated statements / Note 24(2), F-66", "row": "NAND Flash"},
+        {"metric": "other_product_revenue", "scope": "consolidated_group", "basis": "consolidated_external_product_revenue", "unit": "KRW", "amount": 1552457, "scale": 1000000, "table": "Audited consolidated statements / Note 24(2), F-66", "row": "Others"}
+      ]
+    },
+    {
+      "id": "costco-fy2025-comparable-sales",
+      "entity_id": "0000909832",
+      "financial_provider": "SEC",
+      "industry": "retail_wholesale",
+      "period": "annual",
+      "period_start": "2024-09-02",
+      "period_end": "2025-08-31",
+      "fs_div": "CFS",
+      "currency": "USD",
+      "source": {
+        "provider": "SEC",
+        "entity_id": "0000909832",
+        "filing_id": "0000909832-25-000101",
+        "filed": "2025-10-08",
+        "form": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm"
+      },
+      "rows": [
+        {"metric": "same_store_sales_growth", "scope": "total_company_eligible_warehouses_and_ecommerce", "basis": "issuer_defined_comparable_store_growth", "unit": "percent", "amount": 6, "scale": 1, "table": "Item 7 / Results of Operations / Net Sales", "row": "Total Company / Changes in comparable sales", "methodology_ko": "운영 1년 초과 창고 및 전자상거래 포함. 환율·연료가격 영향 포함."},
+        {"metric": "same_store_sales_growth_ex_fx_fuel", "scope": "total_company_eligible_warehouses_and_ecommerce", "basis": "issuer_defined_comparable_store_growth_ex_fx_fuel", "unit": "percent", "amount": 8, "scale": 1, "table": "Item 7 / Results of Operations / Net Sales", "row": "Total Company / Adjusted comparable sales", "methodology_ko": "동일 범위에서 환율·연료가격 변동 효과 제외."}
+      ]
+    },
+    {
+      "id": "hii-fy2025-backlog-funding",
+      "entity_id": "0001501585",
+      "financial_provider": "SEC",
+      "industry": "shipbuilding",
+      "period": "annual",
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31",
+      "fs_div": "CFS",
+      "currency": "USD",
+      "source": {
+        "provider": "SEC",
+        "entity_id": "0001501585",
+        "filing_id": "0001501585-26-000006",
+        "filed": "2026-02-05",
+        "form": "10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1501585/000150158526000006/hii-20251231.htm"
+      },
+      "rows": [
+        {"metric": "firm_order_backlog", "scope": "all_reported_segments_including_mission_technologies", "basis": "remaining_value_of_firm_orders", "unit": "USD", "amount": 53139, "scale": 1000000, "table": "Item 7 / Backlog by segment", "row": "Total backlog / Total", "methodology_ko": "조선 이외 Mission Technologies도 포함한 전사 확정 수주잔고. 미행사 옵션 등은 제외."},
+        {"metric": "funded_order_backlog", "scope": "all_reported_segments_including_mission_technologies", "basis": "firm_orders_with_contractually_obligated_funding", "unit": "USD", "amount": 31985, "scale": 1000000, "table": "Item 7 / Backlog by segment", "row": "Total backlog / Funded", "methodology_ko": "고객의 자금지원 의무가 계약상 확정된 잔고."},
+        {"metric": "unfunded_order_backlog", "scope": "all_reported_segments_including_mission_technologies", "basis": "firm_orders_without_currently_obligated_funding", "unit": "USD", "amount": 21154, "scale": 1000000, "table": "Item 7 / Backlog by segment", "row": "Total backlog / Unfunded", "methodology_ko": "확정 수주지만 고객의 자금지원 의무가 아직 확정되지 않은 잔고."}
+      ]
+    }
+  ]
+}

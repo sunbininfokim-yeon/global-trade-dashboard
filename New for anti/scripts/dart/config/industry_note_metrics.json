@@ -1,0 +1,33 @@
+{
+  "schema_version": "kfa-industry-note-metrics/1",
+  "metrics": {
+    "dram_revenue": ["DRAM 매출", "money", "flow", "consolidated_external_product_revenue"],
+    "nand_revenue": ["NAND 매출", "money", "flow", "consolidated_external_product_revenue"],
+    "other_product_revenue": ["기타 제품·서비스 매출", "money", "flow", "consolidated_external_product_revenue"],
+    "hbm_revenue": ["HBM 매출 (DRAM 내)", "money", "flow", "explicit_hbm_subset_of_dram"],
+    "firm_order_backlog": ["확정 수주잔고", "money", "balance", "remaining_value_of_firm_orders"],
+    "funded_order_backlog": ["자금배정 확정 수주잔고", "money", "balance", "firm_orders_with_contractually_obligated_funding"],
+    "unfunded_order_backlog": ["자금 미배정 확정 수주잔고", "money", "balance", "firm_orders_without_currently_obligated_funding"],
+    "firm_new_orders": ["기간 신규 확정수주", "money", "flow", "new_firm_orders_signed_in_period"],
+    "vessels_on_orderbook": ["수주잔고 척수", "vessels", "balance", "firm_vessels_on_orderbook"],
+    "capacity_utilization": ["공시 가동률", "percent", "flow", "reported_actual_capacity_utilization"],
+    "same_store_sales_growth": ["동일점 매출 증감률", "percent", "flow", "issuer_defined_comparable_store_growth"],
+    "same_store_sales_growth_ex_fx_fuel": ["동일점 매출 증감률 (환율·연료가격 효과 제외)", "percent", "flow", "issuer_defined_comparable_store_growth_ex_fx_fuel"],
+    "platform_gmv": ["플랫폼 거래액 (GMV)", "money", "flow", "issuer_defined_gross_merchandise_value"],
+    "arr": ["연간 반복매출 지표 (ARR)", "money", "balance", "issuer_defined_annual_recurring_revenue"],
+    "fleet_capacity_teu": ["선대 운항 선복량", "teu", "balance", "reported_operated_fleet_slot_capacity"],
+    "chartered_in_vessels": ["용선 선박 척수", "vessels", "balance", "reported_chartered_in_vessels_in_operation"]
+  },
+  "kits": {
+    "semiconductor": ["dram_revenue", "nand_revenue", "other_product_revenue", "hbm_revenue", "capacity_utilization"],
+    "shipbuilding": ["firm_order_backlog", "funded_order_backlog", "unfunded_order_backlog", "firm_new_orders", "vessels_on_orderbook", "capacity_utilization"],
+    "machinery": ["firm_order_backlog", "firm_new_orders", "capacity_utilization"],
+    "construction": ["firm_order_backlog", "firm_new_orders"],
+    "retail_wholesale": ["same_store_sales_growth", "same_store_sales_growth_ex_fx_fuel"],
+    "retail_platform": ["platform_gmv"],
+    "retail_mixed": [],
+    "it_services": ["arr", "firm_order_backlog"],
+    "it_hardware": ["capacity_utilization"],
+    "shipping": ["fleet_capacity_teu", "chartered_in_vessels"]
+  }
+}
