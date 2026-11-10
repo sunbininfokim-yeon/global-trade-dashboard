@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-10T02:45:51.240282+00:00",
+  "generated_at": "2026-11-10T12:43:33.803417+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 173,
     "scored": 173,
     "selected": 40,
-    "indicators": 15
+    "indicators": 16
   },
   "feed_status": [
     {
@@ -301,6 +301,20 @@
       "published_at": "2026-11-08T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Monetary Base and the Bank of Japan's Transactions (Oct.)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2610.pdf",
+      "published_at": "2026-11-08T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -374,40 +388,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "01cfdfb380c8b2b3",
-      "published_at": "2026-09-17T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/letter/2026/cpi-inflation-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026"
-      },
-      "summary": "Exchange of letters between the Governor and the Chancellor",
-      "scores": {
-        "significance": 4.094,
-        "final": 4.094
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "e26f4bb4c3f411e3",
@@ -1701,6 +1681,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "aa3476eb0cb950e8",
+      "published_at": "2026-11-08T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2610.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Monetary Base and the Bank of Japan's Transactions (Oct.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Oct.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1813,6 +1828,17 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Banknote imagery advisory group minutes – 15 July 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
@@ -1886,40 +1912,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "01cfdfb380c8b2b3",
-      "published_at": "2026-09-17T11:00:00+00:00",
-      "source": {
-        "id": "uk_boe_news",
-        "name": "Bank of England",
-        "region": "gbr",
-        "slant": null
-      },
-      "url": "https://www.bankofengland.co.uk/letter/2026/cpi-inflation-september-2026",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026",
-        "original_lang": "en",
-        "ko": "[GBR·경제] Exchange of letters between the Governor and the Chancellor regarding CPI Inflation - September 2026"
-      },
-      "summary": "Exchange of letters between the Governor and the Chancellor",
-      "scores": {
-        "significance": 4.094,
-        "final": 4.094
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "e26f4bb4c3f411e3",
@@ -3200,6 +3192,41 @@
         "original": "Market Operations by the Bank of Japan (Oct.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Market Operations by the Bank of Japan (Oct.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "aa3476eb0cb950e8",
+      "published_at": "2026-11-08T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2610.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Monetary Base and the Bank of Japan's Transactions (Oct.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Oct.)"
       },
       "summary": "",
       "scores": {
