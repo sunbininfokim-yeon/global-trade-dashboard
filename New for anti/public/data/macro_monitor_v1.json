@@ -47168,6 +47168,21 @@
             "source": "ecos:901Y033",
             "data_status": "live",
             "chart_type": null
+          },
+          {
+            "id": "kr_corporate_credit_risk",
+            "label_ko": "기업 신용위험평가",
+            "unit": "개사",
+            "value": 221,
+            "display": "221개사",
+            "asof": "2025-12-18",
+            "observed_at": "2025-12-18",
+            "source": "금융감독원",
+            "data_status": "live",
+            "change_1m_pct": null,
+            "change_1y_pct": null,
+            "chart_type": "bar",
+            "note_ko": "채권은행의 연간 정기 신용위험평가에서 C·D등급을 받은 부실징후기업 수입니다. 수시평가 결과는 별도입니다."
           }
         ],
         "inflation": [
@@ -73794,6 +73809,132 @@
               "note_ko": "그달 신규연체 발생액 / 전월말 대출잔액(%). 상각·매각의 영향을 받지 않아 분기말 톱니가 없는, 가장 깨끗한 선행 신호입니다. 금융감독원 월별 보도자료 '국내은행의 원화대출 연체율 현황' PDF에서 읽은 값."
             }
           ]
+        },
+        {
+          "id": "kr_corporate_credit_risk",
+          "category": "growth",
+          "label_ko": "기업 신용위험평가",
+          "unit": "개사",
+          "format": "개사0_",
+          "history": {
+            "5y": {
+              "dates": [
+                "2022-12-31",
+                "2023-12-31",
+                "2024-12-31",
+                "2025-12-31"
+              ],
+              "values": [
+                185,
+                231,
+                230,
+                221
+              ]
+            },
+            "10y": {
+              "dates": [
+                "2022-12-31",
+                "2023-12-31",
+                "2024-12-31",
+                "2025-12-31"
+              ],
+              "values": [
+                185,
+                231,
+                230,
+                221
+              ]
+            }
+          },
+          "data_status": "live",
+          "quality": "live",
+          "value": 221,
+          "display": "221개사",
+          "display_chip": "221개사",
+          "asof": "2025-12-18",
+          "observed_at": "2025-12-18",
+          "reference_period": "2025",
+          "source": "금융감독원",
+          "source_urls": [
+            "https://eiec.kdi.re.kr/policy/materialView.do?num=274908",
+            "https://eiec.kdi.re.kr/policy/materialView.do?num=261497",
+            "https://eiec.kdi.re.kr/policy/materialView.do?num=246103",
+            "https://eiec.kdi.re.kr/policy/materialView.do?num=233532"
+          ],
+          "change_1m_pct": null,
+          "change_1y_pct": null,
+          "note_ko": "채권은행의 연간 정기 신용위험평가에서 C·D등급을 받은 부실징후기업 수입니다. 수시평가 결과는 별도입니다.",
+          "refresh_tier": "annual",
+          "retrieved_at": "2026-11-10T01:29:43Z",
+          "chart_type": "bar",
+          "panels": [
+            {
+              "id": "grade",
+              "label": "등급별",
+              "type": "stack",
+              "unit": "개사",
+              "dates": [
+                "2022",
+                "2023",
+                "2024",
+                "2025"
+              ],
+              "series": [
+                {
+                  "label": "C등급",
+                  "values": [
+                    84,
+                    118,
+                    100,
+                    104
+                  ]
+                },
+                {
+                  "label": "D등급",
+                  "values": [
+                    101,
+                    113,
+                    130,
+                    117
+                  ]
+                }
+              ],
+              "note_ko": "C등급은 경영정상화 가능성이 있는 기업, D등급은 경영정상화 가능성이 낮은 기업입니다."
+            },
+            {
+              "id": "size",
+              "label": "기업 규모별",
+              "type": "stack",
+              "unit": "개사",
+              "dates": [
+                "2022",
+                "2023",
+                "2024",
+                "2025"
+              ],
+              "series": [
+                {
+                  "label": "대기업",
+                  "values": [
+                    2,
+                    9,
+                    11,
+                    17
+                  ]
+                },
+                {
+                  "label": "중소기업",
+                  "values": [
+                    183,
+                    222,
+                    219,
+                    204
+                  ]
+                }
+              ],
+              "note_ko": "이 평가에서는 금융권 신용공여 500억원 이상을 대기업으로 분류합니다."
+            }
+          ]
         }
       ],
       "purpose_ko": "반도체 수출 사이클 · 가계부채/PF · 원달러가 한은 정책 제약. 수출↔내수 디커플링이 핵심.",
@@ -73841,7 +73982,7 @@
         ]
       },
       "data_status_summary": {
-        "live": 35,
+        "live": 36,
         "demo": 5,
         "live_latest": 3,
         "official_snapshot": 2,
