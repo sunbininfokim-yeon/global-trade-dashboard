@@ -25,3 +25,11 @@ FY2025 검토 매핑:
 4. UI는 `pe_cr.industry_note_metrics.rows`에서 `status:"reported"`인 행과 원문 근거만 렌더링한다. `unavailable`은 미확인이지 0이 아니다. 이 PR은 Python·JSON 계약까지이고 Worker/UI/배포/스케줄러, DART 문서 API 실호출, 전체 업종 데이터 적재는 하지 않는다.
 
 회귀 검증: `python3 -m unittest discover -s "New for anti/scripts/dart/tests"`. 공개 표의 수치를 옮긴 DART/SEC 응답 형식 테스트와 회사·기간·통화·CFS/OFS·단위·합계·HBM 중복 방지 테스트를 포함한다.
+
+## 조선: 선수금환급보증(RG)과 이행성보증
+
+[금융위원회 정의](https://www.fsc.go.kr/po010103/83744)에 따르면 RG는 선박 미인도 등 계약상 보증 사유가 발생할 때 발주자가 이미 낸 선수금의 환급을 보증기관에 요구할 수 있게 하는 보증이다. 조선사에 제공된 보증의 한도는 신규 차입·가용현금·수주잔고가 아니다. **이 모듈 값을 순차입금·계약부채·유동성 커버리지·DSCR에 자동 합산하지 않는다.**
+
+- 출력: `pe_cr.industry_note_metrics.shipbuilding_rg`. 검토된 연결 또는 별도 기준일의 발급기관·통화별 `limit`, `outstanding`, `limit_less_outstanding`, `utilization` 및 원문 근거. 같은 행의 한도·잔액이 모두 확인된 경우만 차이(한도−잔액)와 사용률(잔액÷양수 한도)을 계산한다. 단순 차이는 추가 발급 승인 또는 인출 가능 금액이 아니다. 잔액이 한도를 넘으면 원문 금액만 표시한다.
+- `portfolios[].basis`: `rg_only`와 `rg_and_other_performance`를 분리한다. 혼합 범위만 있으면 `status:"partial"`과 `rg_only_available:false`; 화면 제목을 “선수금환급보증(RG) 등 이행성보증”으로 표시한다. 발급기관·통화·연결/별도·사업 그룹을 임의 합산하지 않는다. 공란을 0으로 바꾸지 않는다.
+- 등록: [한화오션 FY2025 정정 사업보고서](https://kind.krx.co.kr/external/2026/03/17/000756/20260317002932/11011.htm) 연결 주석 17의 5개 기관·통화 행, [HD한국조선해양 FY2025 사업보고서](https://kind.krx.co.kr/external/2026/03/20/001327/20260320004889/11011.htm) 연결 주석 46의 회사가 원화 환산해 공시한 혼합 약정 한도. 후자의 실보증잔액은 이 표에서 확인되지 않아 미표시. 두 표 모두 순수 RG 단독으로 승격하지 않았다. KRX KIND 원문을 DART 회사 식별자에 명시 연결했으며 실시간 자동 파싱은 하지 않는다.

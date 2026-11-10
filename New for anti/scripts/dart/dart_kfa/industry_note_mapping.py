@@ -7,6 +7,8 @@ from pathlib import Path
 import re
 from urllib.parse import parse_qs, urlsplit
 
+from .shipbuilding_rg import build_shipbuilding_rg
+
 
 CONFIG = Path(__file__).resolve().parents[1] / "config"
 PRODUCTS = {"dram_revenue", "nand_revenue", "other_product_revenue"}
@@ -171,8 +173,12 @@ def build_industry_note_profile(canonical, industry, period, *, publication_cuto
         else:
             rows, reason = _build_rows(packet, definitions, canonical, period)
             mapping_id = packet["id"] if rows else None
-    return {"schema_version": "kfa-industry-note-profile/1", "industry": industry, "mapping_id": mapping_id,
+    profile = {"schema_version": "kfa-industry-note-profile/1", "industry": industry, "mapping_id": mapping_id,
             "period": period, "period_start": start, "period_end": end, "reason": reason,
             "rows": [rows[key] if key in rows else {"id": key, "label_ko": definitions["metrics"][key][0], "value": None,
                                                     "status": "unavailable", "reason": reason or "missing:verified_disclosure_row"}
                      for key in expected]}
+    rg = build_shipbuilding_rg(canonical, industry, end, publication_cutoff=publication_cutoff)
+    if rg is not None:
+        profile["shipbuilding_rg"] = rg
+    return profile
