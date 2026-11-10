@@ -36,7 +36,7 @@ class Unavailable(ValueError):
 def build_pe_cr(canonical, *, selected_period="annual", history=(),
                 entity_policy=None, industry=None, corp=None, reviewed_disclosures=None,
                 market=None, peer_group=None, peers=(), funding=None, segments=None,
-                dart_shares=None, dart_bonds=None, peer_ids=None, ev_scenario=None):
+                dart_shares=None, dart_bonds=None, peer_ids=None, ev_scenario=None, screen_inputs=None):
     """History contains canonical bundles, including opening BS for averages.
 
     EBITDA reuses the existing P1 strict disclosure calculator.
@@ -196,6 +196,19 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     emit("roa", "consolidated net income / average total assets", lambda: return_on_average("total_income", "assets"),
          note="전체 연결 범위; 선택 기간 수익률을 연환산하지 않음", financial_allowed=True)
     emit("operating_income", "reported operating income", lambda: read("op"), "money", "손익계산서 영업이익; 아래 EBIT와 정의 구분")
+    emit("operating_margin", "operating income / positive revenue", lambda: ratio(read("op"), read("revenue")))
+    emit("cogs_to_sales", "abs(cost of sales) / positive revenue", lambda: ratio(abs(read("cogs")), read("revenue")))
+    emit("cfo", "reported net cash from operating activities", lambda: read("cfo"), "money")
+    emit("book_equity", "reported total equity", lambda: read("equity"), "money", financial_allowed=True)
+
+    def capital_erosion():
+        if canonical.get("source") != "DART":
+            raise Unavailable("not_applicable:issued_capital_mapping_not_verified_for_sec")
+        capital, equity = read("issued_capital"), read("parent_equity")
+        return max(0, ratio(capital - equity, capital))
+
+    emit("capital_erosion_ratio", "max(0, (issued capital - equity attributable to owners of parent) / issued capital)",
+         capital_erosion, note="DART 동일 범위 단순 자본 대비 지표. 상장규정상 자본잠식 판정이 아님", financial_allowed=True)
     emit("ebit", "pretax income + recognized interest expense - recognized interest income",
          lambda: read("pretax_income") + abs(read_or_reviewed("interest")) - read_reviewed("interest_income"), "money",
          "손익 순이자 제거 방식; 다른 영업외 손익은 남을 수 있어 영업이익·조정 EBIT와 다름")
@@ -291,6 +304,14 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
         "note": "동일 범위의 별도 D&A 공시 입력 필요; 조정 EBITDA가 아님",
         "inputs": [{"input": "strict_ebitda", **ebitda}],
     }
+
+    def ebitda_margin():
+        if ebitda.get("value") is None:
+            raise Unavailable("missing:strict_ebitda:" + (ebitda.get("reason") or "unknown"))
+        used.append({"input": "strict_ebitda", **ebitda})
+        return ratio(ebitda["value"], read("revenue"))
+
+    emit("ebitda_margin", "strict operating EBITDA / positive revenue", ebitda_margin)
     def fcf_conversion():
         if ebitda.get("value") is None or cards["fcf"]["value"] is None:
             raise Unavailable("missing:strict_ebitda_or_fcf")
@@ -510,4 +531,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
          "배율을 적용한 시나리오 EV; 관측 시세 EV나 목표주가가 아님")
     result["visible_cards"] = [k for k, v in cards.items() if v["value"] is not None]
     result["disclosure_profile"] = profile
+    from .pe_cr_screen import build_screen
+    result["cr_pe_screen"] = build_screen(canonical, result, history=history, period=selected_period, start=start, end=end,
+                                          financial=financial, reviewed_current=evidence, inputs=screen_inputs)
     return result
