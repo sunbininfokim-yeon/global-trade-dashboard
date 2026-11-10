@@ -1,4 +1,4 @@
-"""Exact adapters for saved OpenDART share-count and corporate-bond responses."""
+"""Exact adapters for saved OpenDART share counts and funding schedules."""
 from datetime import date
 import re
 
@@ -8,6 +8,26 @@ BOND_BUCKETS = (
     ("yy2_excess_yy3_below", 24, 36), ("yy3_excess_yy4_below", 36, 48),
     ("yy4_excess_yy5_below", 48, 60), ("yy5_excess_yy10_below", 60, 120), ("yy10_excess", 120, None),
 )
+SHORT_BUCKETS = (
+    ("de10_below", "10일 이하", "10d"),
+    ("de10_excess_de30_below", "10일 초과~30일 이하", "30d"),
+    ("de30_excess_de90_below", "30일 초과~90일 이하", "90d"),
+    ("de90_excess_de180_below", "90일 초과~180일 이하", "180d"),
+    ("de180_excess_yy1_below", "180일 초과~1년 이하", "1y"),
+)
+CP_TAIL = (
+    ("yy1_excess_yy2_below", "1년 초과~2년 이하", "2y"),
+    ("yy2_excess_yy3_below", "2년 초과~3년 이하", "3y"),
+    ("yy3_excess", "3년 초과", None),
+)
+INSTRUMENTS = {
+    "corporate_bond": ("cprndNrdmpBlce", "회사채", tuple(
+        (field, f"{low // 12}년 초과~{high // 12}년 이하" if low and high else "1년 이하" if high else "10년 초과",
+         f"{high // 12}y" if high else None) for field, low, high in BOND_BUCKETS)),
+    "commercial_paper": ("entrprsBilScritsNrdmpBlce", "기업어음(CP)", SHORT_BUCKETS + CP_TAIL),
+    "short_term_bond": ("srtpdPsndbtNrdmpBlce", "단기사채", SHORT_BUCKETS),
+}
+SUMMARY_KEYS = ("10d", "30d", "90d", "180d", "1y")
 
 
 def _unsigned(raw, *, dash_zero=False):
@@ -94,3 +114,85 @@ def dart_bond_table(packet, canonical, end):
         raise ValueError("conflict:dart_bond_bucket_total")
     return {"id": "dart_corporate_bonds", "side": "liability", "group": "회사채 미상환 잔액", "measure": "reported_corporate_bond_outstanding",
             "buckets": buckets, "source": {"filing_id": packet["receipt"], "table": scope_evidence, "url": url}}
+
+
+def _instrument_schedule(packet, canonical, end, instrument, endpoint, label, specs):
+    if not isinstance(packet, dict) or packet.get("endpoint") != endpoint:
+        raise ValueError("incompatible:dart_instrument_endpoint")
+    if (packet.get("as_of") != end or not end or packet.get("currency") != canonical.get("currency")
+            or packet.get("scope") not in {"issuer_only", "CFS", "OFS"}
+            or (packet["scope"] != "issuer_only" and packet["scope"] != canonical.get("fs_div"))):
+        raise ValueError("incompatible:dart_instrument_scope_currency_or_date")
+    response = packet.get("response")
+    if isinstance(response, dict) and response.get("status") == "013" and not response.get("list"):
+        return {"status": "unavailable", "reason": "missing:opendart_no_data"}
+    rows, url = _report_rows(packet, canonical)
+    receipt = packet["receipt"]
+    if date.fromisoformat(f"{receipt[:4]}-{receipt[4:6]}-{receipt[6:8]}") < date.fromisoformat(end):
+        raise ValueError("incompatible:dart_instrument_filed_before_as_of")
+    scale = packet.get("scale")
+    selector = packet.get("row_selector", {"remndr_exprtn1": "미상환 잔액", "remndr_exprtn2": "합계"})
+    evidence = packet.get("scope_evidence")
+    if (type(scale) is not int or scale not in {1, 1000, 1000000, 100000000}
+            or not isinstance(evidence, str) or not evidence.strip()
+            or not isinstance(selector, dict) or set(selector) != {"remndr_exprtn1", "remndr_exprtn2"}
+            or not all(isinstance(v, str) and v.strip() for v in selector.values())):
+        raise ValueError("invalid:dart_instrument_row_scope_or_unit")
+    matches = [row for row in rows if all(str(row.get(k, "")).strip() == v.strip() for k, v in selector.items())]
+    if len(matches) != 1:
+        raise ValueError("missing_or_conflict:dart_instrument_exact_scope_row")
+    row = matches[0]
+    fields = {field for field, _, _ in specs}
+    known = {field for _, _, layout in INSTRUMENTS.values() for field, _, _ in layout}
+    if (known.intersection(row) != fields
+            or ("isu_lmt" in row, "remndr_lmt" in row) != ((True, True) if instrument == "short_term_bond" else (False, False))):
+        raise ValueError("incompatible:dart_instrument_bucket_layout")
+    def number(record, key):
+        return _unsigned(record.get(key), dash_zero=packet.get("dash_means_zero") is True) * scale
+
+    if selector["remndr_exprtn2"].strip() == "합계":
+        placements = {name: [entry for entry in rows
+                             if str(entry.get("remndr_exprtn1", "")).strip() == selector["remndr_exprtn1"].strip()
+                             and str(entry.get("remndr_exprtn2", "")).strip() == name]
+                      for name in ("공모", "사모")}
+        if all(placements.values()):
+            if any(len(entries) != 1 for entries in placements.values()):
+                raise ValueError("conflict:dart_instrument_placement_rows")
+            public, private = (entries[0] for entries in placements.values())
+            if any(number(public, k) + number(private, k) != number(row, k) for k in fields | {"sm"}):
+                raise ValueError("conflict:dart_instrument_placement_total")
+    buckets, total = [], number(row, "sm")
+    running, summary = 0, {key: None for key in SUMMARY_KEYS}
+    for field, name, boundary in specs:
+        amount = number(row, field)
+        running += amount
+        if boundary in summary:
+            summary[boundary] = running
+        buckets.append({"field": field, "label_ko": name, "upper_boundary": boundary, "amount": amount})
+    if running != total:
+        raise ValueError("conflict:dart_instrument_bucket_total")
+    return {"status": "reported", "reason": None, "scope": packet["scope"], "currency": packet["currency"],
+            "measure": "reported_outstanding_balance", "outstanding": total, "buckets": buckets,
+            "cumulative": {k: {"value": v, "reason": "missing:exact_reported_boundary" if v is None else None}
+                           for k, v in summary.items()},
+            "source": {"filing_id": packet["receipt"], "table": evidence, "url": url, "endpoint": endpoint,
+                       "source_scale": scale, "row_selector": selector}}
+
+
+def dart_instrument_profile(packets, canonical, end):
+    if packets is not None and (canonical.get("source") != "DART" or not isinstance(packets, dict)
+                                or set(packets) - INSTRUMENTS.keys()):
+        raise ValueError("invalid:dart_instrument_packets")
+    result = []
+    for instrument, (endpoint, label, specs) in INSTRUMENTS.items():
+        packet = (packets or {}).get(instrument)
+        if packet is None:
+            row = {"status": "unavailable", "reason": "missing:dart_instrument_packet"}
+        else:
+            try:
+                row = _instrument_schedule(packet, canonical, end, instrument, endpoint, label, specs)
+            except ValueError as exc:
+                # An unavailable instrument does not erase other validated products.
+                row = {"status": "unavailable", "reason": str(exc)}
+        result.append({"instrument": instrument, "label_ko": label, "outstanding": None, "buckets": [], "cumulative": {}, **row})
+    return result

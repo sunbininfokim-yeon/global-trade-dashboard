@@ -29,7 +29,8 @@ class IndustryTests(unittest.TestCase):
     def test_financial_code_cannot_be_overridden(self):
         r = build_pe_cr(bundle(), corp={"induty_code": "64201"}, industry="retail")
         self.assertEqual(r["industry"], "financial")
-        self.assertEqual(r["visible_cards"], [])
+        self.assertEqual(r["cards"]["cfo"]["value"], 150)
+        self.assertEqual(r["cards"]["fcf"]["reason"], "not_applicable:financial_entity")
 
     def test_cli_and_analysis_use_metadata(self):
         p = {**payload(saved_report(VALUES)), "corp": {"induty_code": "47912"}}

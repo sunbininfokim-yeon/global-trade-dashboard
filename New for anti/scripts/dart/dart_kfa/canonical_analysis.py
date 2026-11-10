@@ -82,6 +82,7 @@ def analyze_canonical_facts(
     pe_cr_dart_bonds: Mapping[str, Any] | None = None,
     pe_cr_peer_ids: Iterable[str] | None = None,
     pe_cr_ev_scenario: Mapping[str, Any] | None = None,
+    pe_cr_screen_inputs: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run the common metric/view engine without mixing annual and interim data."""
     if canonical.get("schema_version") != "canonical-financial-facts/1":
@@ -288,7 +289,7 @@ def analyze_canonical_facts(
         entity_policy=entity_policy, industry=pe_cr_industry, corp=corp_in, reviewed_disclosures=pe_cr_reviewed_disclosures,
         market=pe_cr_market, peer_group=pe_cr_peer_group, peers=pe_cr_peers, funding=pe_cr_funding, segments=pe_cr_segments,
         dart_shares=pe_cr_dart_shares, dart_bonds=pe_cr_dart_bonds,
-        peer_ids=None if pe_cr_peer_ids is None else list(pe_cr_peer_ids), ev_scenario=pe_cr_ev_scenario,
+        peer_ids=None if pe_cr_peer_ids is None else list(pe_cr_peer_ids), ev_scenario=pe_cr_ev_scenario, screen_inputs=pe_cr_screen_inputs,
     )
     output["p1_models"] = build_p1_models(
         canonical,
@@ -298,4 +299,11 @@ def analyze_canonical_facts(
     )
     view_inputs = {"valuation_assumptions": valuation_assumptions} if valuation_assumptions else {}
     output["unified_views"] = build_unified_views(output, user_inputs=view_inputs)
+    screen = output["pe_cr"]["cr_pe_screen"]
+    output["unified_views"]["expert_diagnostics"] = {
+        "schema_version": screen["schema_version"],
+        "source_path": "pe_cr.cr_pe_screen",
+        "card_registry_path": "pe_cr.cards",
+        "lenses": {name: {"section_order": sections} for name, sections in screen["lens_order"].items()},
+    }
     return output
