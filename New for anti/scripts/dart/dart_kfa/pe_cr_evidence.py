@@ -28,8 +28,13 @@ BASES = {
     "payables": "current_trade_payables_excluding_non_trade_and_settlement_payables",
     "rd_expense": "research_and_development_recognized_as_expense_in_profit_or_loss",
     "capitalized_development": "internally_generated_development_additions_excluding_acquisitions_and_reclassifications",
+    "interest_income": "complete_recognized_pnl_interest_income",
+    "preferred_dividends": "preferred_dividends_and_allocations_deductible_from_parent_net_income",
+    "preferred_book_value": "preferred_equity_carrying_value_in_parent_equity",
+    "noncontrolling_value": "noncontrolling_interest_book_value_at_reporting_date_or_explicit_zero",
 }
-BALANCES = {"financing_debt", "unrestricted_cash", "principal_due_1y", "order_backlog", "wip_inventory", "raw_material_inventory", "inventory_note_total", "receivables", "payables"}
+BALANCES = {"financing_debt", "unrestricted_cash", "principal_due_1y", "order_backlog", "wip_inventory", "raw_material_inventory", "inventory_note_total", "receivables", "payables",
+            "preferred_book_value", "noncontrolling_value"}
 
 
 def reviewed_facts(pack, canonical):

@@ -73,6 +73,13 @@ def analyze_canonical_facts(
     pe_cr_history: Iterable[Mapping[str, Any]] = (),
     pe_cr_industry: str | None = None,
     pe_cr_reviewed_disclosures: Mapping[str, Any] | None = None,
+    pe_cr_market: Mapping[str, Any] | None = None,
+    pe_cr_peer_group: str | None = None,
+    pe_cr_peers: Iterable[Mapping[str, Any]] = (),
+    pe_cr_funding: Mapping[str, Any] | None = None,
+    pe_cr_segments: Mapping[str, Any] | None = None,
+    pe_cr_dart_shares: Mapping[str, Any] | None = None,
+    pe_cr_dart_bonds: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run the common metric/view engine without mixing annual and interim data."""
     if canonical.get("schema_version") != "canonical-financial-facts/1":
@@ -277,6 +284,8 @@ def analyze_canonical_facts(
     output["pe_cr"] = build_pe_cr(
         canonical, selected_period=selected_period, history=list(pe_cr_history),
         entity_policy=entity_policy, industry=pe_cr_industry, corp=corp_in, reviewed_disclosures=pe_cr_reviewed_disclosures,
+        market=pe_cr_market, peer_group=pe_cr_peer_group, peers=pe_cr_peers, funding=pe_cr_funding, segments=pe_cr_segments,
+        dart_shares=pe_cr_dart_shares, dart_bonds=pe_cr_dart_bonds,
     )
     output["p1_models"] = build_p1_models(
         canonical,

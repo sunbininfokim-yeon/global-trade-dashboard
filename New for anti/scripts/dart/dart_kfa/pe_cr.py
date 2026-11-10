@@ -13,6 +13,7 @@ from pathlib import Path
 from .entity_policy import is_financial, classify_entity
 from .pe_cr_evidence import BALANCES, reviewed_facts
 from .pe_cr_industry import resolve_industry
+from .pe_cr_market import compare_peers, market_observation
 
 
 def config():
@@ -33,7 +34,9 @@ class Unavailable(ValueError):
 
 
 def build_pe_cr(canonical, *, selected_period="annual", history=(),
-                entity_policy=None, industry=None, corp=None, reviewed_disclosures=None):
+                entity_policy=None, industry=None, corp=None, reviewed_disclosures=None,
+                market=None, peer_group=None, peers=(), funding=None, segments=None,
+                dart_shares=None, dart_bonds=None):
     """History contains canonical bundles, including opening BS for averages.
 
     EBITDA reuses the existing P1 strict disclosure calculator.
@@ -45,6 +48,9 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     history = tuple(history)
     cfg = config()
     industry, selection_basis, ksic = resolve_industry(cfg["kits"], canonical=canonical, corp=corp, requested=industry)
+    accounting_basis = (corp or {}).get("accounting_basis")
+    if accounting_basis not in ("K-IFRS", "IFRS", "US-GAAP", "K-GAAP"):
+        accounting_basis = None
     identity_policy = classify_entity({"corp_code": canonical.get("entity_id"), "source": canonical.get("source")})
     financial = is_financial(entity_policy or {}) or is_financial(identity_policy) or industry == "financial"
     if financial and industry != "financial":
@@ -55,7 +61,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     trade_receivables_allowed = kit.get("trade_receivables", industry != "shipping")
     cards = {}
     used = []
-    evidence = reviewed_facts(reviewed_disclosures, canonical) if not financial else {}
+    evidence = reviewed_facts(reviewed_disclosures, canonical)
 
     def reviewed(key):
         return evidence.get((key, None if key in BALANCES else start, end))
@@ -111,7 +117,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
             raise Unavailable("missing:provenance_" + key)
         if not opening and (f.get("period_end") != end or (sj != "BS" and f.get("period_start") != start)):
             raise Unavailable("period_mismatch:" + key)
-        if sj == "BS" and value < 0 and key != "equity":
+        if sj == "BS" and value < 0 and key not in {"equity", "parent_equity"}:
             raise Unavailable("negative_balance:" + key)
         used.append({"input": key, "opening": opening, **f})
         return value
@@ -135,13 +141,13 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
             return read_reviewed(key)
         return read(key)
 
-    def emit(key, formula, fn, unit="ratio", note=None):
+    def emit(key, formula, fn, unit="ratio", note=None, *, financial_allowed=False, requires_period=True):
         used.clear()
         value, reason = None, None
         try:
-            if financial:
+            if financial and not financial_allowed:
                 raise Unavailable("not_applicable:financial_entity")
-            if days is None or days <= 0:
+            if requires_period and (days is None or days <= 0):
                 raise Unavailable("missing:period_bounds")
             value = fn()
             if not math.isfinite(value):
@@ -164,6 +170,24 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     emit("finance_cost_coverage", "operating_income / abs(finance_costs)",
          lambda: ratio(read("op"), abs(read("finance_costs"))), note="금융원가 커버리지; 이자보상배율·한계기업 판정에 사용 금지")
     emit("current_ratio", "current_assets / current_liabilities", lambda: ratio(read("current_assets"), read("current_liabilities")))
+    emit("working_capital", "current assets - current liabilities", lambda: read("current_assets") - read("current_liabilities"), "money",
+         "재무상태표 운전자본; 영업운전자본과 범위가 다름")
+    emit("debt_ratio", "total liabilities / total equity", lambda: ratio(read("liabilities"), read("equity")),
+         note="총부채 기준; 금융사 규제 자본비율·이자부 레버리지 아님", financial_allowed=True)
+    def return_on_average(flow, balance):
+        first, last = read(balance, opening=True), read(balance)
+        if first <= 0 or last <= 0:
+            raise Unavailable("nonpositive:opening_or_closing_" + balance)
+        return ratio(read(flow), (first + last) / 2)
+
+    emit("roe", "parent net income / average parent equity", lambda: return_on_average("parent_income", "parent_equity"),
+         note="지배주주 기준; 선택 기간 수익률을 연환산하지 않음", financial_allowed=True)
+    emit("roa", "consolidated net income / average total assets", lambda: return_on_average("total_income", "assets"),
+         note="전체 연결 범위; 선택 기간 수익률을 연환산하지 않음", financial_allowed=True)
+    emit("operating_income", "reported operating income", lambda: read("op"), "money", "손익계산서 영업이익; 아래 EBIT와 정의 구분")
+    emit("ebit", "pretax income + recognized interest expense - recognized interest income",
+         lambda: read("pretax_income") + abs(read_or_reviewed("interest")) - read_reviewed("interest_income"), "money",
+         "손익 순이자 제거 방식; 다른 영업외 손익은 남을 수 있어 영업이익·조정 EBIT와 다름")
     emit("cash_ratio", "cash / current_liabilities", lambda: ratio(read("cash"), read("current_liabilities")))
     emit("current_borrowings", "reported current borrowings including current portion", lambda: read("debt_current_total"), "money", "리스 포함 여부 미확인; 총 1년 만기부채와 다름")
     emit("cash_to_current_borrowings", "cash / reported current borrowings", lambda: ratio(read("cash"), read("debt_current_total")), note="은행 규제 LCR 아님; 리스 포함 총 만기 커버리지 아님")
@@ -202,6 +226,9 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
         require_inventory_cycle()
         return read("receivables", opening=opening) + read("inventory", opening=opening) - read("payables", opening=opening)
     emit("nwc_change_to_sales", "change in (trade receivables + inventory - trade payables) / revenue", lambda: ratio(nwc() - nwc(True), read("revenue")), note="좁은 영업운전자본 정의; 계약자산·선수금 별도, CFO에서 재차감 금지")
+    emit("operating_nwc", "closing trade receivables + inventory - trade payables", nwc, "money",
+         "현금·차입·계약잔액 제외한 좁은 영업운전자본")
+    emit("operating_nwc_change", "closing narrow operating NWC - opening narrow operating NWC", lambda: nwc() - nwc(True), "money")
     from .p1_disclosures import compute_strict_ebitda
     ebitda_canonical = canonical
     op_fact = cell(canonical, "op", selected_period)
@@ -275,15 +302,101 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
         return ratio(debt, ebitda["value"])
 
     emit("net_debt_to_ebitda", "(financing debt including leases - unrestricted cash) / annual EBITDA", annual_leverage)
+    emit("net_debt", "complete financing debt carrying amount including leases - unrestricted cash",
+         lambda: read_reviewed("financing_debt") - read_reviewed("unrestricted_cash"), "money",
+         "순현금이면 음수; 총부채·비유동부채로 대체하지 않음")
     emit("debt_due_within_1y", "complete financing and lease principal due within 12 months", lambda: read_reviewed("principal_due_1y"), "money",
-         "약정 원금만 포함; 유동부채·리스장부잔액·원리금 만기표 합계와 다름")
+         "약정 원금만 포함; 유동부채·리스장부잔액·원리금 만기표 합계와 다름", financial_allowed=True)
     emit("liquidity_coverage_1y", "unrestricted cash / complete principal due within 12 months",
-         lambda: ratio(read_reviewed("unrestricted_cash"), read_reviewed("principal_due_1y")), note="원금 기준, 이자·신용한도 제외; 규제 LCR 아님")
+         lambda: ratio(read_reviewed("unrestricted_cash"), read_reviewed("principal_due_1y")), note="원금 기준, 이자·신용한도 제외; 규제 LCR 아님", financial_allowed=True)
     emit("dscr", "historical CFADS / (financing principal paid + cash interest paid)",
          lambda: ratio(read_reviewed("cfads"), read_reviewed("principal_paid") + read_reviewed("interest_paid")),
          note="동일 기간 실적 DSCR; 계약상 정의·미래 시나리오와 다름")
     emit("maintenance_capex", "explicitly disclosed cash maintenance capex", lambda: read_reviewed("maintenance_capex"), "money",
          "공시에서 별도로 확인된 유지보수 현금투자; 전체 CapEx나 D&A로 대체하지 않음")
+    emit("owner_earnings_proxy", "CFO - explicitly disclosed cash maintenance capex",
+         lambda: read("cfo") - read_reviewed("maintenance_capex"), "money",
+         "오너어닝스 대용치; 정상화 운전자본·필요 재투자 추정 아님. CFO에 반영된 운전자본을 재차감하지 않음")
+
+    if dart_shares is not None:
+        from .pe_cr_dart_schedules import attach_dart_shares
+        market = attach_dart_shares(market, dart_shares, canonical)
+    market_data, market_reason = market_observation(market, canonical)
+
+    def market_cap():
+        if market_data is None:
+            raise Unavailable(market_reason)
+        used.append({"input": "market_observation", **market_data})
+        return market_data["market_cap"]
+
+    def priced_basis(*, annual=False):
+        if canonical.get("fs_div") != "CFS" or (annual and selected_period != "annual"):
+            raise Unavailable("requires:consolidated_annual_fundamentals" if annual else "requires:consolidated_fundamentals")
+        cap = market_cap()
+        try:
+            quote_date = date.fromisoformat(market_data["as_of"])
+            published = date.fromisoformat(market_data["fundamentals_available_date"])
+            fiscal_end = date.fromisoformat(end)
+        except (TypeError, ValueError):
+            raise Unavailable("missing_or_invalid:filing_available_date") from None
+        if not fiscal_end <= published <= quote_date:
+            raise Unavailable("incompatible:filing_not_public_at_market_date")
+        for key in cfg["inputs"]:
+            f = cell(canonical, key, selected_period)
+            if f.get("availability") != "available":
+                continue
+            p = f.get("provenance") or {}
+            reported = p.get("filed_at")
+            receipt = p.get("filing_id")
+            if canonical.get("source") == "DART" and isinstance(receipt, str) and len(receipt) == 14 and receipt.isascii() and receipt.isdigit():
+                reported = f"{receipt[:4]}-{receipt[4:6]}-{receipt[6:8]}"
+            if reported:
+                try:
+                    filing_date = date.fromisoformat(reported)
+                except (ValueError, TypeError):
+                    raise Unavailable("invalid:fact_filing_date") from None
+                if filing_date > published:
+                    raise Unavailable("incompatible:fact_filed_after_declared_public_date")
+        return cap
+
+    def use_card(key):
+        card = cards[key]
+        if card["value"] is None:
+            raise Unavailable("missing:card_" + key + ":" + card["reason"])
+        used.extend(card["inputs"])
+        return card["value"]
+
+    def enterprise_value():
+        cap = priced_basis()
+        pref = market_data["preferred_equity"]
+        if pref is None:
+            raise Unavailable("missing:dated_preferred_equity_value_or_explicit_zero")
+        used.append({"input": "preferred_equity_market", **pref})
+        return cap + use_card("net_debt") + pref["value"] + read_reviewed("noncontrolling_value")
+
+    def ev_multiple(key):
+        if selected_period != "annual":
+            raise Unavailable("requires:annual_multiples_basis_no_quarter_annualization")
+        ev = use_card("ev")
+        if ev <= 0:
+            raise Unavailable("nonpositive:enterprise_value")
+        if key in {"ebitda", "ebit"} and (canonical.get("source") != "DART" or accounting_basis not in {"K-IFRS", "IFRS"}):
+            raise Unavailable("requires:confirmed_consistent_lease_treatment_for_ev_multiples")
+        denom = read("revenue") if key == "sales" else use_card(key)
+        return ratio(ev, denom)
+
+    emit("market_cap", "sum of price times outstanding shares across all ordinary classes", market_cap, "money",
+         "보통주 합산 시가총액; 재무제표 기준일과 별도 시장일자 사용", financial_allowed=True, requires_period=False)
+    if market_data:
+        cards["market_cap"]["market_date"] = market_data["as_of"]
+    emit("per", "ordinary market cap / (parent FY net income - preferred allocations)",
+         lambda: ratio(priced_basis(annual=True), read("parent_income") - read_reviewed("preferred_dividends")), financial_allowed=True)
+    emit("pbr", "ordinary market cap / (parent equity - preferred book equity)",
+         lambda: ratio(priced_basis(), read("parent_equity") - read_reviewed("preferred_book_value")), financial_allowed=True)
+    emit("ev", "ordinary market cap + complete net debt including leases + market preferred equity + NCI book value",
+         enterprise_value, "money", "차입·비지배는 공시 장부액 사용. 우선주·비지배 부재도 명시 근거 필요. 금융사에는 미적용")
+    for key in ("ebitda", "ebit", "sales"):
+        emit("ev_to_" + key, "EV / positive annual " + key, lambda key=key: ev_multiple(key))
 
     if industry in {"shipbuilding", "machinery"}:
         emit("order_backlog", "reported outstanding firm customer orders at period end", lambda: read_reviewed("order_backlog"), "money",
@@ -323,9 +436,16 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
         emit("capitalized_development_to_sales", "internally generated development additions / revenue",
              lambda: ratio(read_reviewed("capitalized_development"), read("revenue")), note="자산화 증가액; 무형자산 현금취득·외부인수와 구분")
 
-    return {"schema_version": "kfa-pe-cr/1", "industry": industry,
+    result = {"schema_version": "kfa-pe-cr/1", "industry": industry,
             "industry_profile": {"label_ko": kit["label_ko"], "selection_basis": selection_basis, "ksic": ksic,
                                  "ccc_policy": ccc_policy, "disclosure_inputs": kit.get("note_inputs", [])},
             "cards": cards, "focus": kit["focus"], "notes": kit["notes"],
-            "visible_cards": [] if financial else [k for k, v in cards.items() if v["value"] is not None],
+            "visible_cards": [k for k, v in cards.items() if v["value"] is not None],
+            "comparison_context": {"entity_id": canonical.get("entity_id"), "peer_group": peer_group, "industry": industry,
+                                   "source": canonical.get("source"), "accounting_basis": accounting_basis, "fs_div": canonical.get("fs_div"), "period": selected_period,
+                                   "period_start": start, "period_end": end, "market_date": (market_data or {}).get("as_of")},
             "no_price_target": True}
+    result["peer_comparison"] = compare_peers(result, peers)
+    from .pe_cr_funding import build_disclosure_profile
+    result["disclosure_profile"] = build_disclosure_profile(canonical, start=start, end=end, funding=funding, segments=segments, dart_bonds=dart_bonds)
+    return result
