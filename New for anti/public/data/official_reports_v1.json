@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-10T12:43:33.803417+00:00",
+  "generated_at": "2026-11-10T21:50:31.901192+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 173,
     "scored": 173,
     "selected": 40,
-    "indicators": 16
+    "indicators": 19
   },
   "feed_status": [
     {
@@ -250,6 +250,20 @@
       "label_ko": "ECB 정책",
       "country": "EUR",
       "domains": [
+        "finance",
+        "economy"
+      ],
+      "title": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
+      "published_at": "2026-11-10T16:45:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.64
+    },
+    {
+      "series_id": "EU_ECB_POLICY",
+      "label_ko": "ECB 정책",
+      "country": "EUR",
+      "domains": [
         "economy",
         "finance"
       ],
@@ -315,44 +329,37 @@
       "published_at": "2026-11-08T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan's Transactions with the Government (Oct.)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2610.pdf",
+      "published_at": "2026-11-08T23:50:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
-    {
-      "id": "aaf43852cd39d583",
-      "published_at": "2026-10-29T16:27:20+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-unleashes-the-american-economy-gdp-surges-as-investment-hits-multi-year-high/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "President Trump Unleashes the American Economy: GDP Surges as Investment Hits Multi-Year High",
-        "original_lang": "en",
-        "ko": "[USA·경제] President Trump Unleashes the American Economy: GDP Surges as Investment Hits Multi-Year High"
-      },
-      "summary": "The U.S. economy grew at a strong annual rate of 3.4% in the third quarter of 2026 — the strongest pace in a year. President Donald J. Trump’s America First agenda is delivering as promised: faster growth, historic levels of investment, and an economy that continues to outperform",
-      "scores": {
-        "significance": 4.508,
-        "final": 4.508
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
     {
       "id": "2c51ca16b9606baa",
       "published_at": "2026-11-04T23:50:00+00:00",
@@ -840,6 +847,41 @@
       "site_slot": null
     },
     {
+      "id": "4fe1c1d659136215",
+      "published_at": "2026-11-10T16:45:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Philip R. Lane: The science and practice of monetary policy communication: the ECB experience"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "9c016461fa88d62d",
       "published_at": "2026-11-04T00:00:00+00:00",
       "source": {
@@ -1073,76 +1115,6 @@
         "ko": "[USA·경제] President Trump Is Powering an American Manufacturing Renaissance"
       },
       "summary": "American manufacturing is surging under President Donald J. Trump. A new report shows the sector expanding for the tenth consecutive month, with production growing at its fastest pace in nearly five years. Factories are expanding. Jobs are returning. Paychecks are rising faster t",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "89925da8f947d92a",
-      "published_at": "2026-10-30T20:28:51+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/what-they-are-saying-president-trump-puts-americas-fishermen-first-and-secures-american-seafood-dominance/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "WHAT THEY ARE SAYING: President Trump Puts America’s Fishermen First and Secures American Seafood Dominance",
-        "original_lang": "en",
-        "ko": "[USA·경제] WHAT THEY ARE SAYING: President Trump Puts America’s Fishermen First and Secures American Seafood Dominance"
-      },
-      "summary": "President Trump has delivered historic wins for America’s fishing industry by putting American fishermen first, unlocking billions of dollars in economic growth, revitalizing the industry, and providing critical regulatory relief. Just one week ago, the Trump Administration unvei",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "658a64ae3c3ac034",
-      "published_at": "2026-10-29T14:28:02+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/memorandum-of-understanding-between-the-government-of-the-united-states-of-america-and-the-government-of-finland-regarding-the-technology-prosperity-deal/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Memorandum of Understanding Between The Government of the United States of America and the Government of Finland Regarding the Technology Prosperity Deal",
-        "original_lang": "en",
-        "ko": "[USA·외교] Memorandum of Understanding Between The Government of the United States of America and the Government of Finland Regarding the Technology Prosperity Deal"
-      },
-      "summary": "The Government of the United States of America and the Government of Finland (hereinafter referred to as the “Participants”), Expressing mutual interest in science and technology capabilities and standards to usher in the next Golden Age of Innovation to fortify freedom and prosp",
       "scores": {
         "significance": 2.438,
         "final": 2.438
@@ -1716,20 +1688,79 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "d8ac17d10f4e1b45",
+      "published_at": "2026-11-08T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2610.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan's Transactions with the Government (Oct.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (Oct.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "5c6d5ab022db6344",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
-    {
-      "title": "USDA Announces Delegation for Agribusiness Trade Mission to Vietnam",
-      "url": "https://www.fas.usda.gov/newsroom/usda-announces-delegation-agribusiness-trade-mission-vietnam",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "agriculture"
-      ],
-      "significance": 2.236,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
     {
       "title": "Isabel Schnabel: Navigating stormy waters: reflections on monetary policy",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261105_1~5e97d9d5a0.en.html",
@@ -1839,44 +1870,42 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the SONIA Stakeholder Advisory Group - 25 September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/sonia-stakeholder-advisory-group-25-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Money Market Committee meeting – September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Bank of England announces the four animals that will feature on our next series of banknotes",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
-    {
-      "id": "aaf43852cd39d583",
-      "published_at": "2026-10-29T16:27:20+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/president-trump-unleashes-the-american-economy-gdp-surges-as-investment-hits-multi-year-high/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "President Trump Unleashes the American Economy: GDP Surges as Investment Hits Multi-Year High",
-        "original_lang": "en",
-        "ko": "[USA·경제] President Trump Unleashes the American Economy: GDP Surges as Investment Hits Multi-Year High"
-      },
-      "summary": "The U.S. economy grew at a strong annual rate of 3.4% in the third quarter of 2026 — the strongest pace in a year. President Donald J. Trump’s America First agenda is delivering as promised: faster growth, historic levels of investment, and an economy that continues to outperform",
-      "scores": {
-        "significance": 4.508,
-        "final": 4.508
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
     {
       "id": "2c51ca16b9606baa",
       "published_at": "2026-11-04T23:50:00+00:00",
@@ -2364,6 +2393,41 @@
       "site_slot": null
     },
     {
+      "id": "4fe1c1d659136215",
+      "published_at": "2026-11-10T16:45:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Philip R. Lane: The science and practice of monetary policy communication: the ECB experience"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "9c016461fa88d62d",
       "published_at": "2026-11-04T00:00:00+00:00",
       "source": {
@@ -2597,76 +2661,6 @@
         "ko": "[USA·경제] President Trump Is Powering an American Manufacturing Renaissance"
       },
       "summary": "American manufacturing is surging under President Donald J. Trump. A new report shows the sector expanding for the tenth consecutive month, with production growing at its fastest pace in nearly five years. Factories are expanding. Jobs are returning. Paychecks are rising faster t",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "89925da8f947d92a",
-      "published_at": "2026-10-30T20:28:51+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/what-they-are-saying-president-trump-puts-americas-fishermen-first-and-secures-american-seafood-dominance/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "WHAT THEY ARE SAYING: President Trump Puts America’s Fishermen First and Secures American Seafood Dominance",
-        "original_lang": "en",
-        "ko": "[USA·경제] WHAT THEY ARE SAYING: President Trump Puts America’s Fishermen First and Secures American Seafood Dominance"
-      },
-      "summary": "President Trump has delivered historic wins for America’s fishing industry by putting American fishermen first, unlocking billions of dollars in economic growth, revitalizing the industry, and providing critical regulatory relief. Just one week ago, the Trump Administration unvei",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "658a64ae3c3ac034",
-      "published_at": "2026-10-29T14:28:02+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/10/memorandum-of-understanding-between-the-government-of-the-united-states-of-america-and-the-government-of-finland-regarding-the-technology-prosperity-deal/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "diplomacy",
-        "economy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Memorandum of Understanding Between The Government of the United States of America and the Government of Finland Regarding the Technology Prosperity Deal",
-        "original_lang": "en",
-        "ko": "[USA·외교] Memorandum of Understanding Between The Government of the United States of America and the Government of Finland Regarding the Technology Prosperity Deal"
-      },
-      "summary": "The Government of the United States of America and the Government of Finland (hereinafter referred to as the “Participants”), Expressing mutual interest in science and technology capabilities and standards to usher in the next Golden Age of Innovation to fortify freedom and prosp",
       "scores": {
         "significance": 2.438,
         "final": 2.438
@@ -3227,6 +3221,76 @@
         "original": "Monetary Base and the Bank of Japan's Transactions (Oct.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Oct.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "d8ac17d10f4e1b45",
+      "published_at": "2026-11-08T23:50:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2610.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan's Transactions with the Government (Oct.)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (Oct.)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "5c6d5ab022db6344",
+      "published_at": "2026-11-04T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
       "summary": "",
       "scores": {
