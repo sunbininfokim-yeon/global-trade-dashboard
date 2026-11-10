@@ -13,7 +13,7 @@ from pathlib import Path
 from .entity_policy import is_financial, classify_entity
 from .pe_cr_evidence import BALANCES, reviewed_facts
 from .pe_cr_industry import resolve_industry
-from .pe_cr_market import compare_peers, market_observation
+from .pe_cr_market import compare_peers, market_observation, positive
 
 
 def config():
@@ -36,7 +36,7 @@ class Unavailable(ValueError):
 def build_pe_cr(canonical, *, selected_period="annual", history=(),
                 entity_policy=None, industry=None, corp=None, reviewed_disclosures=None,
                 market=None, peer_group=None, peers=(), funding=None, segments=None,
-                dart_shares=None, dart_bonds=None, peer_ids=None):
+                dart_shares=None, dart_bonds=None, peer_ids=None, ev_scenario=None):
     """History contains canonical bundles, including opening BS for averages.
 
     EBITDA reuses the existing P1 strict disclosure calculator.
@@ -352,13 +352,23 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     def market_cap():
         if market_data is None:
             raise Unavailable(market_reason)
+        if market_data["market_cap"] is None:
+            raise Unavailable(market_data["market_cap_reason"])
         used.append({"input": "market_observation", **market_data})
         return market_data["market_cap"]
 
-    def priced_basis(*, annual=False):
+    def total_equity_market_value():
+        if market_data is None:
+            raise Unavailable(market_reason)
+        if market_data["equity_market_value_total"] is None:
+            raise Unavailable(market_data["equity_market_value_total_reason"])
+        used.append({"input": "market_observation", **market_data})
+        return market_data["equity_market_value_total"]
+
+    def priced_basis(*, annual=False, ordinary=True):
         if canonical.get("fs_div") != "CFS" or (annual and selected_period != "annual"):
             raise Unavailable("requires:consolidated_annual_fundamentals" if annual else "requires:consolidated_fundamentals")
-        cap = market_cap()
+        cap = market_cap() if ordinary else total_equity_market_value()
         try:
             quote_date = date.fromisoformat(market_data["as_of"])
             published = date.fromisoformat(market_data["fundamentals_available_date"])
@@ -393,12 +403,7 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
         return card["value"]
 
     def enterprise_value():
-        cap = priced_basis()
-        pref = market_data["preferred_equity"]
-        if pref is None:
-            raise Unavailable("missing:dated_preferred_equity_value_or_explicit_zero")
-        used.append({"input": "preferred_equity_market", **pref})
-        return cap + use_card("net_debt") + pref["value"] + read_reviewed("noncontrolling_value")
+        return priced_basis(ordinary=False) + use_card("net_debt") + read_reviewed("noncontrolling_value")
 
     def ev_multiple(key):
         if selected_period != "annual":
@@ -411,16 +416,18 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
         denom = read("revenue") if key == "sales" else use_card(key)
         return ratio(ev, denom)
 
-    emit("market_cap", "sum of price times outstanding shares across all ordinary classes", market_cap, "money",
-         "보통주 합산 시가총액; 재무제표 기준일과 별도 시장일자 사용", financial_allowed=True, requires_period=False)
+    emit("market_cap", "verified ordinary equity market capitalization or sum of all ordinary class price times outstanding shares", market_cap, "money",
+         "보통주만; 포털의 시총 범위가 불명확하면 사용하지 않음", financial_allowed=True, requires_period=False)
+    emit("equity_market_value_total", "verified market value of ordinary and preferred equity together", total_equity_market_value, "money",
+         "보통주·우선주 합산. 이미 포함된 우선주는 한 번 더 더하지 않음", financial_allowed=True, requires_period=False)
     if market_data:
         cards["market_cap"]["market_date"] = market_data["as_of"]
     emit("per", "ordinary market cap / (parent FY net income - preferred allocations)",
          lambda: ratio(priced_basis(annual=True), read("parent_income") - read_reviewed("preferred_dividends")), financial_allowed=True)
     emit("pbr", "ordinary market cap / (parent equity - preferred book equity)",
          lambda: ratio(priced_basis(), read("parent_equity") - read_reviewed("preferred_book_value")), financial_allowed=True)
-    emit("ev", "ordinary market cap + complete net debt including leases + market preferred equity + NCI book value",
-         enterprise_value, "money", "차입·비지배는 공시 장부액 사용. 우선주·비지배 부재도 명시 근거 필요. 금융사에는 미적용")
+    emit("ev", "market value of ordinary and preferred equity + complete net debt including leases + NCI book value",
+         enterprise_value, "money", "시세 기반 EV. 차입·비지배는 공시 장부액 사용. 우선주 중복 가산 금지. 금융사에는 미적용")
     for key in ("ebitda", "ebit", "sales"):
         emit("ev_to_" + key, "EV / positive annual " + key, lambda key=key: ev_multiple(key))
 
@@ -473,5 +480,34 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
                                    "period_start": start, "period_end": end, "market_date": (market_data or {}).get("as_of")},
             "no_price_target": True}
     result["peer_comparison"] = compare_peers(result, peers, peer_ids=peer_ids)
+    def implied_enterprise_value():
+        if ev_scenario is None:
+            raise Unavailable("missing:explicit_ev_scenario")
+        if not isinstance(ev_scenario, dict):
+            raise Unavailable("invalid:ev_scenario")
+        if selected_period != "annual" or canonical.get("fs_div") != "CFS" or canonical.get("source") != "DART" or accounting_basis not in {"K-IFRS", "IFRS"}:
+            raise Unavailable("requires:consolidated_fy_with_confirmed_ev_ebitda_basis")
+        method = ev_scenario.get("method")
+        if method == "user_ev_ebitda_multiple" and set(ev_scenario) == {"method", "multiple"}:
+            multiple = ev_scenario["multiple"]
+            source = {"input": "user_assumption", "method": method, "value": multiple}
+        elif method == "peer_median_ev_ebitda" and set(ev_scenario) == {"method"}:
+            benchmark = result["peer_comparison"]["summary"]["ev_to_ebitda"]
+            multiple = benchmark["median"]
+            source = {"input": "peer_median", "method": method, "value": multiple, "count": benchmark["count"],
+                      "entity_ids": [row["entity_id"] for row in result["peer_comparison"]["included"] if row["metrics"]["ev_to_ebitda"] is not None]}
+        else:
+            raise Unavailable("invalid:ev_scenario_method_or_fields")
+        if not positive(multiple):
+            raise Unavailable("requires:positive_ev_ebitda_multiple_or_two_valid_peers")
+        ebitda_value = use_card("ebitda")
+        if not positive(ebitda_value):
+            raise Unavailable("nonpositive:scenario_ebitda")
+        used.append(source)
+        return multiple * ebitda_value
+
+    emit("implied_ev", "explicit selected EV/EBITDA multiple times positive FY EBITDA", implied_enterprise_value, "money",
+         "배율을 적용한 시나리오 EV; 관측 시세 EV나 목표주가가 아님")
+    result["visible_cards"] = [k for k, v in cards.items() if v["value"] is not None]
     result["disclosure_profile"] = profile
     return result

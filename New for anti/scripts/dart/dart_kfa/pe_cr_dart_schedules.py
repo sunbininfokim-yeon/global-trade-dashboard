@@ -38,7 +38,10 @@ def _report_rows(packet, canonical):
 
 def attach_dart_shares(market, packet, canonical):
     rows, url = _report_rows(packet, canonical)
-    if not isinstance(market, dict) or not isinstance(market.get("classes"), list):
+    if not isinstance(market, dict):
+        raise ValueError("missing:market_class_prices_for_dart_shares")
+    groups = [k for k in ("classes", "preferred_classes") if market.get(k) is not None]
+    if not groups or any(not isinstance(market[k], list) or not market[k] for k in groups):
         raise ValueError("missing:market_class_prices_for_dart_shares")
     try:
         report_available = date.fromisoformat(f'{packet["receipt"][:4]}-{packet["receipt"][4:6]}-{packet["receipt"][6:8]}')
@@ -47,24 +50,27 @@ def attach_dart_shares(market, packet, canonical):
         raise ValueError("invalid:dart_shares_or_market_date") from None
     if report_available > quote_date:
         raise ValueError("incompatible:shares_filing_not_public_at_market_date")
-    classes, used = [], set()
-    for item in market["classes"]:
-        label = item.get("dart_security_type")
-        if not isinstance(label, str) or not label or label in {"합계", "총계", "계", "비고"} or label in used:
-            raise ValueError("invalid:dart_security_class_selector")
-        matches = [row for row in rows if row.get("se") == label]
-        if len(matches) != 1:
-            raise ValueError("missing_or_conflict:dart_security_class")
-        row = matches[0]
-        issued = _unsigned(row.get("istc_totqy"))
-        treasury = _unsigned(row.get("tesstk_co"), dash_zero=packet.get("dash_means_zero") is True)
-        dist = _unsigned(row.get("distb_stock_co"))
-        if dist != issued - treasury or (item.get("shares_out") is not None and item["shares_out"] != dist):
-            raise ValueError("conflict:dart_outstanding_share_reconciliation")
-        classes.append({**item, "shares_out": dist, "shares_date": packet["as_of"], "shares_source": url,
-                        "share_basis": "outstanding_excluding_treasury"})
-        used.add(label)
-    return {**market, "classes": classes}
+    out, used = dict(market), set()
+    for key in groups:
+        classes = []
+        for item in market[key]:
+            label = item.get("dart_security_type") if isinstance(item, dict) else None
+            if not isinstance(label, str) or not label or label in {"합계", "총계", "계", "비고"} or label in used:
+                raise ValueError("invalid:dart_security_class_selector")
+            matches = [row for row in rows if row.get("se") == label]
+            if len(matches) != 1:
+                raise ValueError("missing_or_conflict:dart_security_class")
+            row = matches[0]
+            issued = _unsigned(row.get("istc_totqy"))
+            treasury = _unsigned(row.get("tesstk_co"), dash_zero=packet.get("dash_means_zero") is True)
+            dist = _unsigned(row.get("distb_stock_co"))
+            if dist != issued - treasury or (item.get("shares_out") is not None and item["shares_out"] != dist):
+                raise ValueError("conflict:dart_outstanding_share_reconciliation")
+            classes.append({**item, "shares_out": dist, "shares_date": packet["as_of"], "shares_source": url,
+                            "share_basis": "outstanding_excluding_treasury"})
+            used.add(label)
+        out[key] = classes
+    return out
 
 
 def dart_bond_table(packet, canonical, end):

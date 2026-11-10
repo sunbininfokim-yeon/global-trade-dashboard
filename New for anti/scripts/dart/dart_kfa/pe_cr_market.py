@@ -8,22 +8,9 @@ def positive(value):
     return type(value) in (int, float) and math.isfinite(value) and value > 0
 
 
-def market_observation(raw, canonical):
-    if raw is None:
-        return None, "missing:market_observation"
-    if not isinstance(raw, dict) or raw.get("is_listed") is not True:
-        return None, "not_applicable:not_listed_or_unconfirmed"
-    if not raw.get("entity_id") or raw["entity_id"] != canonical.get("entity_id") or raw.get("currency") != canonical.get("currency"):
-        return None, "incompatible:market_entity_or_currency"
-    if raw.get("coverage") != "all_ordinary_share_classes":
-        return None, "requires:all_ordinary_share_classes"
-    try:
-        as_of = date.fromisoformat(raw["as_of"])
-    except (ValueError, TypeError, KeyError):
-        return None, "invalid:market_date"
-    classes = raw.get("classes")
+def _class_observations(classes, raw, as_of):
     if not isinstance(classes, list) or not classes:
-        return None, "missing:ordinary_share_classes"
+        return None, "missing:share_classes"
     seen, parts = set(), []
     for row in classes:
         if not isinstance(row, dict):
@@ -45,15 +32,94 @@ def market_observation(raw, canonical):
         seen.add(key)
         parts.append({**{k: row[k] for k in ("id", "shares_out", "price", "price_date", "shares_date", "price_source", "shares_source", "share_basis", "currency")},
                       "corporate_actions_checked": row.get("corporate_actions_checked") is True})
-    cap = sum(p["price"] * p["shares_out"] for p in parts)
-    if not positive(cap):
-        return None, "invalid:market_cap"
+    return parts, None
+
+
+def _dated_value(item, raw, *, allow_zero=False):
+    if not isinstance(item, dict):
+        return False
+    v = item.get("value")
+    return ((positive(v) or (allow_zero and type(v) in (int, float) and v == 0))
+            and item.get("as_of") == raw["as_of"] and item.get("currency") == raw["currency"]
+            and isinstance(item.get("source"), str) and bool(item["source"].strip()))
+
+
+def _preferred(raw, as_of, ordinary_classes):
     pref = raw.get("preferred_equity")
-    if (not isinstance(pref, dict) or (pref.get("value") != 0 and not positive(pref.get("value")))
-            or type(pref.get("value")) not in (int, float) or pref.get("as_of") != raw["as_of"]
-            or pref.get("currency") != raw["currency"] or not isinstance(pref.get("source"), str) or not pref["source"].strip()):
-        pref = None
-    return {"as_of": raw["as_of"], "currency": raw["currency"], "market_cap": cap, "preferred_equity": pref,
+    if raw.get("preferred_classes") is not None:
+        if pref is not None:
+            return None, "conflict:choose_preferred_classes_or_preferred_value"
+        if raw.get("preferred_coverage") != "all_preferred_share_classes":
+            return None, "requires:all_preferred_share_classes"
+        parts, problem = _class_observations(raw["preferred_classes"], raw, as_of)
+        if problem:
+            return None, problem
+        if {p["id"] for p in parts} & {p["id"] for p in ordinary_classes}:
+            return None, "conflict:ordinary_and_preferred_class_identity"
+        value = sum(p["price"] * p["shares_out"] for p in parts)
+        if not positive(value):
+            return None, "invalid:preferred_equity_value"
+        return {"value": value, "as_of": raw["as_of"], "currency": raw["currency"],
+                "basis": "quoted_preferred_class_prices_times_shares", "classes": parts}, None
+    if _dated_value(pref, raw, allow_zero=True):
+        if pref["value"] == 0 and pref.get("basis") != "verified_no_preferred_outstanding":
+            return None, "requires:verified_absence_of_preferred_equity"
+        return {**{k: pref[k] for k in ("value", "as_of", "currency", "source")},
+                "basis": pref.get("basis") or "documented_preferred_value"}, None
+    return None, "missing:dated_preferred_equity_value_or_explicit_zero"
+
+
+def market_observation(raw, canonical):
+    if raw is None:
+        return None, "missing:market_observation"
+    if not isinstance(raw, dict) or raw.get("is_listed") is not True:
+        return None, "not_applicable:not_listed_or_unconfirmed"
+    if not raw.get("entity_id") or raw["entity_id"] != canonical.get("entity_id") or raw.get("currency") != canonical.get("currency"):
+        return None, "incompatible:market_entity_or_currency"
+    try:
+        as_of = date.fromisoformat(raw["as_of"])
+    except (ValueError, TypeError, KeyError):
+        return None, "invalid:market_date"
+    supplied = raw.get("reported_market_cap")
+    observed, parts = None, []
+    if supplied is not None:
+        if raw.get("classes"):
+            return None, "conflict:choose_reported_or_class_based_market_cap"
+        if (not _dated_value(supplied, raw) or supplied.get("scope") not in {"all_ordinary", "all_ordinary_and_preferred"}
+                or type(supplied.get("scale")) is not int or supplied["scale"] != 1
+                or supplied.get("share_basis") != "outstanding_excluding_treasury"
+                or not isinstance(supplied.get("scope_evidence"), str) or not supplied["scope_evidence"].strip()):
+            return None, "requires:documented_market_cap_scope_share_basis_and_date"
+        observed = {k: supplied[k] for k in ("value", "as_of", "currency", "source", "scope", "share_basis", "scope_evidence", "scale")}
+    else:
+        if raw.get("coverage") != "all_ordinary_share_classes":
+            return None, "requires:all_ordinary_share_classes"
+        parts, problem = _class_observations(raw.get("classes"), raw, as_of)
+        if problem:
+            return None, problem
+    preferred, preferred_reason = _preferred(raw, as_of, parts)
+    pref_value = preferred["value"] if preferred else None
+    ordinary_reason, total_reason = None, None
+    if observed and observed["scope"] == "all_ordinary_and_preferred":
+        total = observed["value"]
+        ordinary = total - pref_value if pref_value is not None else None
+        if pref_value is None:
+            ordinary_reason = "requires:preferred_split_for_ordinary_market_cap"
+        elif not positive(ordinary):
+            return None, "conflict:preferred_value_exceeds_or_equals_reported_total_equity"
+        method = "reported_total_equity_preferred_already_included"
+    else:
+        ordinary = observed["value"] if observed else sum(p["price"] * p["shares_out"] for p in parts)
+        if not positive(ordinary):
+            return None, "invalid:market_cap"
+        total = ordinary + pref_value if pref_value is not None else None
+        if total is not None and not positive(total):
+            return None, "invalid:total_equity_market_value"
+        total_reason = preferred_reason
+        method = "ordinary_equity_plus_separate_preferred"
+    return {"as_of": raw["as_of"], "currency": raw["currency"], "market_cap": ordinary,
+            "market_cap_reason": ordinary_reason, "equity_market_value_total": total, "equity_market_value_total_reason": total_reason,
+            "equity_market_value_method": method, "reported_market_cap": observed, "preferred_equity": preferred, "preferred_reason": preferred_reason,
             "classes": parts, "fundamentals_available_date": raw.get("fundamentals_available_date")}, None
 
 

@@ -196,6 +196,81 @@ class ValuationFundingTests(unittest.TestCase):
         self.assertEqual(comp["excluded"][0]["reason"], "missing:resolved_peer_snapshot")
         self.assertEqual(comp["columns"][0]["display"], "multiple")
 
+    def test_reported_market_cap_scope_controls_preferred_double_counting(self):
+        b = bundle(values=VALUES_PLUS)
+        q = quote()
+        q.pop("classes")
+        q["reported_market_cap"] = {"value": 500, "scope": "all_ordinary", "scale": 1, "as_of": q["as_of"],
+                                    "currency": "KRW", "source": "synthetic verified feed", "scope_evidence": "synthetic issuer scope",
+                                    "share_basis": "outstanding_excluding_treasury"}
+        def calc():
+            return build_pe_cr(b, market=q, reviewed_disclosures=evidence(b))["cards"]
+        self.assertEqual(calc()["ev"]["value"], 690)
+        q["reported_market_cap"].update(value=520, scope="all_ordinary_and_preferred")
+        c = calc()
+        self.assertEqual(c["market_cap"]["value"], 500)
+        self.assertEqual(c["equity_market_value_total"]["value"], 520)
+        self.assertEqual(c["ev"]["value"], 690)
+        q.pop("preferred_equity")
+        c = calc()
+        self.assertIsNone(c["market_cap"]["value"])
+        self.assertIsNone(c["per"]["value"])
+        self.assertEqual(c["ev"]["value"], 690)
+        q["reported_market_cap"]["scope"] = "single_ticker_unknown_coverage"
+        self.assertIsNone(calc()["ev"]["value"])
+
+    def test_listed_preferred_uses_own_share_price_and_no_zero_guess(self):
+        b = bundle(values=VALUES_PLUS)
+        q = quote()
+        explicit = q.pop("preferred_equity")
+        q.update(preferred_coverage="all_preferred_share_classes",
+                 preferred_classes=[{**q["classes"][0], "id": "P", "price": 2, "shares_out": 10}])
+        def calc():
+            return build_pe_cr(b, market=q, reviewed_disclosures=evidence(b))["cards"]
+        self.assertEqual(calc()["ev"]["value"], 690)
+        q["preferred_classes"][0]["id"] = "A"
+        self.assertEqual(calc()["ev"]["reason"], "conflict:ordinary_and_preferred_class_identity")
+        del q["preferred_classes"]
+        q["preferred_equity"] = {**explicit, "value": 0}
+        self.assertEqual(calc()["ev"]["reason"], "requires:verified_absence_of_preferred_equity")
+        q["preferred_equity"]["basis"] = "verified_no_preferred_outstanding"
+        self.assertEqual(calc()["ev"]["value"], 670)
+
+    def test_dart_share_response_supplies_preferred_class(self):
+        b = {**bundle(values=VALUES_PLUS), "entity_id": "00126380"}
+        q = quote(b["entity_id"])
+        common = {k: v for k, v in q["classes"][0].items() if k != "shares_out"}
+        q["classes"] = [{**common, "dart_security_type": "보통주"}]
+        q.pop("preferred_equity")
+        q.update(preferred_coverage="all_preferred_share_classes",
+                 preferred_classes=[{**common, "id": "P", "price": 2, "dart_security_type": "우선주"}])
+        row = {"corp_code": b["entity_id"], "rcept_no": "20260310000001", "stlm_dt": END, "se": "보통주",
+               "istc_totqy": "1,000", "tesstk_co": "100", "distb_stock_co": "900"}
+        preferred_row = {**row, "se": "우선주", "istc_totqy": "100", "tesstk_co": "10", "distb_stock_co": "90"}
+        data = dict(as_of=END, receipt=row["rcept_no"], response={"status": "000", "list": [row, preferred_row]})
+        c = build_pe_cr(b, market=q, dart_shares=data, reviewed_disclosures=evidence(b))["cards"]
+        self.assertEqual(c["equity_market_value_total"]["value"], 3780)
+        self.assertEqual(c["ev"]["value"], 3950)
+
+    def test_implied_ev_is_opt_in_and_separate_from_observed_ev(self):
+        def company(eid, price=4, peers=(), scenario=None, listed=True):
+            b = {**bundle(values=VALUES_PLUS), "entity_id": eid}
+            q = quote(eid)
+            q["classes"][0]["price"] = price
+            q["is_listed"] = listed
+            return build_pe_cr(b, market=q, reviewed_disclosures=evidence(b), corp={"accounting_basis": "K-IFRS"},
+                               industry="machinery", peer_group="machines", peers=peers, ev_scenario=scenario)
+        self.assertIsNone(company("target")["cards"]["implied_ev"]["value"])
+        c = company("target", scenario={"method": "user_ev_ebitda_multiple", "multiple": 8}, listed=False)["cards"]
+        self.assertIsNone(c["ev"]["value"])
+        self.assertEqual(c["implied_ev"]["value"], 920)
+        first, second = company("p1"), company("p2", price=6.3)
+        scenario = {"method": "peer_median_ev_ebitda"}
+        c = company("target", peers=[first, second], scenario=scenario)["cards"]
+        self.assertEqual(c["ev"]["value"], 690)
+        self.assertEqual(c["implied_ev"]["value"], 805)
+        self.assertIsNone(company("target", peers=[first], scenario=scenario)["cards"]["implied_ev"]["value"])
+
 
 if __name__ == "__main__":
     unittest.main()
