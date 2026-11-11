@@ -33,7 +33,7 @@ test('a parliamentary executive points at the chamber that produces it (Germany)
     const html = card('DEU');
     assert.match(html, /의회에서 선출/);
     assert.match(html, /근거 선거/);
-    assert.match(html, /직전 선거 기록이 아직 수집되지 않았습니다/); // Bundestag row not collected yet
+    assert.match(html, /연방하원/); // the Bundestag record is collected now
 });
 
 test('countries due for issue research say so until issues arrive', () => {

@@ -1,0 +1,116 @@
+{
+  "schema": "election_records_input_v1",
+  "country": "KOR",
+  "as_of": "2026-11-07",
+  "note_ko": "2025 대선 개표표, 2022 대선 전국 투표율, 2024 총선 전국 투표율, 2026 지방 광역단체장 당선 수만 넣었다. 2022 후보 득표와 2024 정당 의석 표는 이번 조회에서 열리지 않았다. 쟁점 공약집과 여론조사 원문도 열지 않았다.",
+  "offices": [
+    {
+      "key": "executive",
+      "system_id": "kor-president",
+      "elected_how": "direct",
+      "incumbent": {
+        "name": "이재명",
+        "party": "더불어민주당",
+        "since": null,
+        "term_end": null,
+        "sources": [
+          "http://info.nec.go.kr/electioninfo/electionInfo_report.xhtml?cityCode=0&electionCode=1&electionId=0020250603&requestURI=%2Felectioninfo%2F0020250603%2Fvc%2Fvccp09.jsp&secondMenuId=VCCP09&statementId=VCCP09_%231"
+        ],
+        "note_ko": "개표표의 당선인이다. 취임 선서일은 그 표에 없다."
+      },
+      "records": [
+        {
+          "election_id": "kor-2025-president",
+          "date": "2025-06-03",
+          "first_round_date": null,
+          "label_ko": "제21대 대통령 선거",
+          "status": "completed",
+          "term_start": null,
+          "term_end": null,
+          "electorate": 44391871,
+          "turnout_pct": null,
+          "winner_ko": "이재명 · 더불어민주당",
+          "candidates": [
+            {"name": "이재명", "party": "더불어민주당", "votes": 17287513, "vote_pct": 49.42, "elected": true, "incumbent": false},
+            {"name": "김문수", "party": "국민의힘", "votes": 14395639, "vote_pct": 41.15, "elected": false, "incumbent": false},
+            {"name": "이준석", "party": "개혁신당", "votes": 2917523, "vote_pct": 8.34, "elected": false, "incumbent": false},
+            {"name": "권영국", "party": "민주노동당", "votes": 344150, "vote_pct": 0.98, "elected": false, "incumbent": false},
+            {"name": "송진호", "party": "무소속", "votes": 35791, "vote_pct": 0.10, "elected": false, "incumbent": false}
+          ],
+          "summary_ko": "합계 행의 투표수 35,236,497, 유효 34,980,616, 무효 255,881. 득표율은 선관위가 소수 셋째 자리에서 버린 값이다. 그 합은 99.99다. 전국 투표율 %는 이 표에 없다.",
+          "sources": [
+            "http://info.nec.go.kr/electioninfo/electionInfo_report.xhtml?cityCode=0&electionCode=1&electionId=0020250603&requestURI=%2Felectioninfo%2F0020250603%2Fvc%2Fvccp09.jsp&secondMenuId=VCCP09&statementId=VCCP09_%231"
+          ],
+          "verification": "official"
+        },
+        {
+          "election_id": "kor-2022-president",
+          "date": "2022-03-09",
+          "label_ko": "제20대 대통령 선거",
+          "status": "completed",
+          "turnout_pct": 77.1,
+          "winner_ko": null,
+          "summary_ko": "역대 투표율 표가 제20대 대통령선거 전국 77.1%라고 적는다. 후보별 득표 표는 이번 조회에서 열리지 않아 비웠다.",
+          "sources": [
+            "http://info.nec.go.kr/m/main/main_previous_load.xhtml"
+          ],
+          "verification": "official_partial"
+        }
+      ],
+      "next": {
+        "date": null,
+        "date_status": null,
+        "label_ko": "공고된 다음 대선일 없음",
+        "source": "http://info.nec.go.kr/m/main/main_previous_load.xhtml"
+      }
+    },
+    {
+      "key": "legislature",
+      "system_id": "kor-na",
+      "records": [
+        {
+          "election_id": "kor-2024-na",
+          "date": "2024-04-10",
+          "label_ko": "제22대 국회의원 선거",
+          "status": "completed",
+          "turnout_pct": 67.0,
+          "seats_total": null,
+          "summary_ko": "역대 투표율 표가 제22대 국회의원선거 전국 67.0%라고 적는다. 정당별 의석과 비례 득표 표는 이번 조회에서 열리지 않았다. 지역구와 비례를 합친 의석 정수는 만들지 않는다.",
+          "sources": [
+            "http://info.nec.go.kr/m/main/main_previous_load.xhtml"
+          ],
+          "verification": "official_partial"
+        }
+      ],
+      "next": {
+        "date": null,
+        "date_status": null,
+        "label_ko": "공고된 다음 총선일 없음",
+        "source": "http://info.nec.go.kr/m/main/main_previous_load.xhtml"
+      }
+    },
+    {
+      "key": "local",
+      "system_id": "kor-local",
+      "records": [
+        {
+          "election_id": "kor-2026-local",
+          "date": "2026-06-03",
+          "label_ko": "제9회 전국동시지방선거 광역단체장",
+          "status": "completed",
+          "turnout_pct": null,
+          "seats_total": 16,
+          "seats": [
+            {"party": "더불어민주당", "party_ko": "더불어민주당", "seats": 12, "vote_pct": null},
+            {"party": "국민의힘", "party_ko": "국민의힘", "seats": 4, "vote_pct": null}
+          ],
+          "summary_ko": "선관위 당선인명부에서 이미 읽은 광역단체장 16명의 정당을 센 것이다. 명부 페이지가 12와 4를 찍지는 않는다. 전남과 광주는 전남광주통합특별시 한 자리로 남아 있다. 투표율은 그 명부에 없다.",
+          "sources": [
+            "https://www.nec.go.kr/site/nec/ex/bbs/View.do?bcIdx=327938&cbIdx=1129"
+          ],
+          "verification": "official"
+        }
+      ]
+    }
+  ]
+}

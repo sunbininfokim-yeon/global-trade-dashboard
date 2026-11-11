@@ -1,0 +1,68 @@
+{
+  "schema": "election_records_input_v1",
+  "country": "GEO",
+  "as_of": "2026-11-09",
+  "note_ko": "총리 선출 방식과 의회 구성 규칙은 헌법을 열어서 적었다. 2024년과 2020년 선거 득표·의석은 중앙선거위원회 파일을 열지 못해 비웠다. 현직 이름은 정부 페이지가 열리지 않아 비웠다.",
+  "offices": [
+    {
+      "key": "executive",
+      "title_ko": "총리",
+      "elected_how": "by_legislature",
+      "selected_by_system_id": "geo-parliament",
+      "coverage": "partial",
+      "coverage_note_ko": "선출 방식만 헌법에서 확인했다. 현직 이름과 신임 투표 득표는 없다.",
+      "method_ko": "헌법 55·56조. 총리는 정부의 수반이다. 의회가 권한을 승인하면 새 총리 후보가 정부 구성과 강령을 내고, 전체 의원의 과반 신임을 받아야 한다. 대통령은 신임 후 이틀 안에 총리를 임명한다.",
+      "note_ko": "정부 홈페이지는 응답이 없어 현직을 적지 않았다. 선거관리위원회 홈은 확인 페이지로 막혀 결과 의석으로 총리 소속 정당을 메우지 않았다.",
+      "unreachable_sources": [
+        {
+          "url": "https://www.gov.ge/index.php?lang_id=ENG&sec_id=195",
+          "reason": "timeout"
+        },
+        {
+          "url": "https://cesko.ge/en",
+          "reason": "blocked"
+        },
+        {
+          "url": "https://results.cec.gov.ge/",
+          "reason": "blocked"
+        }
+      ],
+      "records": []
+    },
+    {
+      "key": "legislature",
+      "system_id": "geo-parliament",
+      "title_ko": "의회",
+      "elected_how": "direct",
+      "term_years": 4,
+      "dissolution_possible": true,
+      "seats_total": 150,
+      "coverage": "not_collected",
+      "coverage_note_ko": "의석 150은 헌법 37조 2항의 구성이다. 선거 결과로 센 숫자가 아니고, 의원 명단을 세어 만든 숫자도 아니다. 2024년 10월과 2020년 선거 요약서는 열지 못했다.",
+      "method_ko": "헌법 37조. 관할이 전 영토에 회복되기 전에는 의원 150명을 전국 단일 선거구 비례대표로 4년 뽑는다. 유효표 5% 미만 정당에는 의석을 배분하지 않는다. 정기 선거는 임기가 끝나는 해 10월의 마지막 토요일이다. 해산하면 45일에서 60일 사이에 선거한다.",
+      "sources": [
+        "https://matsne.gov.ge/en/document/view/30346"
+      ],
+      "note_ko": "37조 6항의 의석 계산은 5%를 넘은 정당의 득표에 150을 곱하고 그 정당들 득표 합으로 나눈 뒤, 정수만 먼저 주고 남은 의석은 성적이 좋은 정당부터 한 석씩 준다. 2024년과 2020년에 그 식이 어떤 숫자로 적용됐는지는 요약서를 열지 않아 적지 않는다.",
+      "unreachable_sources": [
+        {
+          "url": "https://cesko.ge/en",
+          "reason": "blocked"
+        },
+        {
+          "url": "https://results.cec.gov.ge/",
+          "reason": "blocked"
+        }
+      ],
+      "records": []
+    },
+    {
+      "key": "local",
+      "title_ko": "지방선거",
+      "elected_how": "direct",
+      "coverage": "not_collected",
+      "coverage_note_ko": "전국 지방선거 합계는 열지 않았다.",
+      "records": []
+    }
+  ]
+}
