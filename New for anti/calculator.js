@@ -361,7 +361,10 @@ const loadCompany = async (out, inst) => {
 // whichever view the payload's own view_presets describe. No card copy comes
 // from the engine, so the Korean label/plain-text for each metric key lives
 // here, same as CO_LEVELS does for the SEC calculator.
-const KFA_VIEW_LABELS = { basic: '기본', investor: '투자자', pe: 'PE', deal: '딜' };
+const KFA_VIEW_LABELS = { basic: '기본', investor: '투자자', cr: 'CR(구조조정)', pe: 'PE·LBO', deal: '딜·밸류에이션' };
+// Views drawn by calculator-pecr.js from the PE/CR engine snapshot instead of
+// from view_presets card keys.
+const KFA_PECR_VIEWS = new Set(['cr', 'pe', 'deal']);
 
 const KFA_CARD_META = {
     revenue: { label: '매출', unit: 'money', plain: '한 해 동안 벌어들인 전체 매출입니다.' },
@@ -630,6 +633,7 @@ const renderKfaResult = (out, data) => {
                 data-kfa-view="${finEsc(v)}">${finEsc(KFA_VIEW_LABELS[v] || v)}</button>`).join('')}
         </div>
 
+        ${KFA_PECR_VIEWS.has(KFA_VIEW) ? pecrViewHtml(data, KFA_VIEW) : `
         <div class="fin-cards co-kfa-cards">
             ${cardKeys.map((key) => {
                 const meta = KFA_CARD_META[key] || { label: key, unit: 'text', plain: '' };
@@ -656,9 +660,9 @@ const renderKfaResult = (out, data) => {
                             (v) => kfaFmt(key, v, currency))}</div>` : ''}
                     </div>`;
             }).join('')}
-        </div>
+        </div>`}
 
-        ${models.length ? `
+        ${models.length && !KFA_PECR_VIEWS.has(KFA_VIEW) ? `
         <div class="fin-note">이 단계는 다음 모델도 다룹니다: ${models.map(finEsc).join(', ')} —
             계산 로직은 아직 엔진에 없어 카드 값만 우선 표시합니다.</div>` : ''}
 
@@ -666,6 +670,8 @@ const renderKfaResult = (out, data) => {
             <p class="fin-disclaimer">투자 판단의 책임은 본인에게 있습니다. 목표주가·매수매도 의견을 포함하지 않습니다.</p>
             <p class="fin-engine">엔진: <code>scripts/dart</code> (OpenDART) · 스키마 ${finEsc(data.schema || '')}</p>
         </div>`;
+
+    if (KFA_PECR_VIEWS.has(KFA_VIEW)) pecrBind(out, data);
 
     out.querySelectorAll('[data-kfa-view]').forEach((b) => b.addEventListener('click', () => {
         if (b.dataset.kfaView === KFA_VIEW) return;
@@ -738,8 +744,24 @@ const loadKfaCompany = async (out, inst, code, corpCode = null) => {
         return;
     }
 
+    // PE/CR engine snapshot (calculator-pecr.js). Industrial filers get
+    // CR / PE·LBO / 딜 tabs in place of the old 투자자/PE/딜 placeholders,
+    // whose cards had no engine behind them; a filer without a snapshot still
+    // gets the tabs, which say so. A financial filer gets a CR tab only when
+    // its snapshot has something to show there (funding maturities).
+    const corp = data.meta?.corp_code || corpCode;
+    data.pecr = await pecrLoad(corp).catch(() => null);
+    const financial = !!data.entity_policy?.is_financial_entity || data.pecr?.pe_cr?.industry === 'financial';
+    const basic = (data.view_presets?.views || {}).basic || { cards: [], models: [] };
+    const views = { basic };
+    if (!financial) Object.assign(views, { cr: { cards: [], models: [] }, pe: { cards: [], models: [] }, deal: { cards: [], models: [] } });
+    else if (data.pecr) views.cr = { cards: [], models: [] };
+    data.view_presets = { ...(data.view_presets || {}), default_view: 'basic', views };
+
     if (liveOnly) {
-        data.reasons = [...(data.reasons || []), '실시간 조회: 기본 12개 지표만 제공 (투자자/PE/딜 카드는 준비 중)'];
+        data.reasons = [...(data.reasons || []), data.pecr
+            ? `실시간 조회 + PE·CR 엔진 스냅샷(FY${data.pecr.fiscal_year})`
+            : '실시간 조회: 기본 지표 (PE·CR 엔진 스냅샷 없음)'];
     } else if (usedLegacySnapshot) {
         data.reasons = [...(data.reasons || []), '이전 정적 스냅샷: 실시간 조회 실패로 과거 저장본을 표시합니다'];
     }

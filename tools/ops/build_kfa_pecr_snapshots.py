@@ -467,7 +467,9 @@ def main() -> int:
             print(f'FAIL {label} {corp}: {failed[corp]}', file=sys.stderr)
             continue
         (OUT_DIR / f'{corp}_v1.json').write_text(json.dumps(snap, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n')
-        index[corp] = {'entity': snap['entity'], 'stock_code': stock, 'fiscal_year': snap['fiscal_year'], 'fs_div': snap['fs_div']}
+        index[corp] = {'entity': snap['entity'], 'stock_code': stock or (snap.get('stock_code')), 'fiscal_year': snap['fiscal_year'],
+                       'fs_div': snap['fs_div'], 'industry': snap['pe_cr'].get('industry'),
+                       'financial': snap['pe_cr'].get('industry') == 'financial'}
         print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]} market={snap["market_input"]}', file=sys.stderr)
     idx_path = OUT_DIR / 'index_v1.json'
     prev = json.loads(idx_path.read_text())['index'] if idx_path.exists() else {}
