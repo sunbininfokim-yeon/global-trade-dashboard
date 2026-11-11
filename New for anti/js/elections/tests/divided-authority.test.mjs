@@ -19,10 +19,11 @@ test('Libya and Yemen draw each side as its own numbered tier group', () => {
     const lby = row('LBY');
     assert.ok(isDivided(lby));
     const html = dividedAuthorityHtml(lby);
-    assert.match(html, /트리폴리\(서부\)/);
-    assert.match(html, /대표원\(동부\)/);
+    // Libya follows S/2026/661 (UN SG report, 2026-08-10): the names it uses, no side declared legitimate.
+    assert.match(html, /정부국가통합·대통령평의회/);
+    assert.match(html, /대표원과 대표원이 지명한 정부/);
+    assert.match(html, /S\/2026\/661/);
     assert.match(html, /elections-org-box/);
-    assert.match(html, /어느 쪽이 정통인지 판정하지 않습니다/);
     assert.ok(dividedAuthorityKeys(lby).has('tripoli'));
     const yem = dividedAuthorityHtml(row('YEM'));
     assert.match(yem, /대통령지도위원회/);
@@ -46,15 +47,32 @@ test('each side of a divided country gets its own structured dashboard', () => {
     const lby = row('LBY');
     assert.deepEqual(campTabs(lby).map(([, key]) => key), ['camp_government', 'camp_opposition']);
     const opp = campHtml(lby, 'camp_opposition');
-    for (const label of ['위상', '근거지', '무장 세력', '대외 후원', '정통성 주장', '통제 지역', '지도부']) assert.match(opp, new RegExp(label));
+    // Libya shows only what S/2026/661 supports: no sponsors, legitimacy claims or leadership roster.
+    for (const label of ['위상', '근거지', '무장 세력', '통제 지역']) assert.match(opp, new RegExp(label));
+    for (const label of ['위상', '근거지', '무장 세력', '대외 후원', '정통성 주장', '통제 지역', '지도부']) assert.match(campHtml(row('YEM'), 'camp_opposition'), new RegExp(label));
     assert.match(opp, /벵가지/);
-    assert.match(opp, /검증 전/, 'background facts are labelled as unverified');
+    assert.match(opp, /S\/2026\/661/, 'Libya background facts cite their dated source');
+    assert.match(campHtml(row('YEM'), 'camp_opposition'), /검증 전/, 'Yemen background facts are labelled as unverified');
     assert.match(campHtml(row('YEM'), 'camp_opposition'), /후티/);
     assert.equal(campHtml(row('GRC'), 'camp_government'), null);
 });
 
-test('every admin1 region of Libya and Yemen is assigned to a side, contested ones dimmed', () => {
-    for (const iso of ['LBY', 'YEM']) {
+test('Libya assigns no district to a side; every district is contested and cites S/2026/661', () => {
+    const country = row('LBY');
+    const geo = JSON.parse(readFileSync(new URL('../../../public/data/admin1/LBY.json', import.meta.url)));
+    for (const f of geo.features) {
+        const r = country.control_map.regions[f.properties.code];
+        assert.ok(r, `LBY ${f.properties.code} missing from control_map`);
+        assert.equal(r.contested, true, `LBY ${f.properties.code} must stay contested`);
+        assert.equal(controlCamp(country, f.properties.code), null, `LBY ${f.properties.code} must not be assigned a side`);
+        assert.match(r.source_url, /^https:\/\/docs\.un\.org\//);
+        assert.match(r.source_date, /^2026-08-10$/);
+        assert.equal(controlColor(country, f.properties.code)[3], 120, 'drawn dimmed, neutral');
+    }
+});
+
+test('every admin1 region of Yemen is assigned to a side, contested ones dimmed', () => {
+    for (const iso of ['YEM']) {
         const country = row(iso);
         const geo = JSON.parse(readFileSync(new URL(`../../../public/data/admin1/${iso}.json`, import.meta.url)));
         for (const f of geo.features) {
