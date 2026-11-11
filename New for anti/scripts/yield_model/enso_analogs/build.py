@@ -140,12 +140,17 @@ def strong_events(text):
 
 def load_fao():
     names = {a for a in AREAS.values()}
+    ivory = "Ivory Coast"
     items = {alias for aliases, _ in ITEMS.values() for alias in aliases}
     blob = fetch(FAO_URL)
     parts = []
     with zipfile.ZipFile(io.BytesIO(blob)) as z, z.open(FAO_MEMBER) as f:
         for chunk in pd.read_csv(f, encoding="latin-1", chunksize=300000,
                                  usecols=["Area", "Item", "Element", "Year", "Unit", "Value"]):
+            # The Cote d'Ivoire spelling varies across FAOSTAT releases
+            # (accented, unaccented, mis-decoded); match on the tail.
+            civ = chunk.Area.str.endswith("te d'Ivoire", na=False)
+            chunk.loc[civ, "Area"] = AREAS[ivory]
             keep = chunk.Area.isin(names) & chunk.Item.isin(items) & chunk.Element.eq("Yield")
             if keep.any():
                 parts.append(chunk[keep])
@@ -175,6 +180,11 @@ def deviation(series: pd.Series, year: int):
 
 def main():
     events, oni_rows, ongoing = strong_events(fetch(ONI_URL, 60).decode("utf-8", "replace"))
+    if ongoing and events and events[-1]["year"] >= oni_rows[-1][1] - 1:
+        current = events.pop()          # compared with history, not part of it
+    else:
+        current = None
+    events = [e for e in events if e["year"] >= 1961]   # FAOSTAT starts in 1961
     log(f"strong El Nino years: {[e['year'] for e in events]}; ongoing episode: {ongoing}")
     fao = load_fao()
     out = {}
@@ -216,8 +226,9 @@ def main():
         "spec": __doc__.split("Run from")[0].strip(),
         "source": "FAOSTAT QCL (national yield) · NOAA CPC ONI",
         "events": events,
-        "current_episode": ({"year": oni_rows[-1][1], "latest": oni_rows[-1][2],
-                             "season": oni_rows[-1][0]} if ongoing else None),
+        "current_episode": ({"year": current["year"], "peak_so_far": current["peak"],
+                             "latest": oni_rows[-1][2], "season": oni_rows[-1][0]}
+                            if current else None),
         "countries": out,
     }
     os.makedirs(os.path.dirname(OUT), exist_ok=True)

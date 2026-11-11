@@ -4026,6 +4026,56 @@ const SST_BAND_STYLE = {
     cold: ['한랭', '#7dd3fc'], normal: ['평년', '#94a3b8'],
 };
 
+let ensoAnalogDoc = null;
+let ensoAnalogPromise = null;
+const loadEnsoAnalogs = () => {
+    if (ensoAnalogPromise) return ensoAnalogPromise;
+    ensoAnalogPromise = fetch('/public/data/enso_analogs_v1.json', { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { ensoAnalogDoc = d; return d; })
+        .catch(() => null);
+    return ensoAnalogPromise;
+};
+
+/**
+ * "엘니뇨 때 과거 성적": each main crop's national yield in past strong El
+ * Nino years against its own trend (enso_analogs/build.py). The harvest of
+ * the event year and of the next year are both shown, since the same event
+ * reaches different crops a season apart.
+ */
+const renderEnsoAnalogCard = (countryName) => {
+    const c = ensoAnalogDoc?.countries?.[countryName];
+    if (!c?.crops?.length) return '';
+    const ev = ensoAnalogDoc.events || [];
+    const f = (v) => (v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`);
+    const col = (v) => (v == null ? '#94a3b8' : v <= -3 ? '#f87171' : v < 0 ? '#fbbf24' : '#86efac');
+    const cell = (sm) => (sm?.n ? `<span style="color:${col(sm.mean)};font-weight:600;">${f(sm.mean)}</span>
+        <span style="color:#64748b;font-size:10px;"> ${sm.below}/${sm.n}해 하락</span>` : '—');
+    const cur = ensoAnalogDoc.current_episode;
+    const head = cur ? `지금 강한 엘니뇨(${cur.year}년 발생)가 진행 중이라, ${cur.year}년 수확과 ${cur.year + 1}년 수확이 아래 표의 해당 열에 대응합니다.` : '';
+    const rows = c.crops.map((x) => `
+        <div class="climate-table-row" style="align-items:baseline;">
+            <span style="flex:1;">${x.label_ko}</span>
+            <span style="width:36%;text-align:right;">${cell(x.y0)}</span>
+            <span style="width:36%;text-align:right;">${cell(x.y1)}</span>
+        </div>`).join('');
+    const detail = c.crops.map((x) => `
+        <div class="climate-sub" style="margin-top:6px;"><b>${x.label_ko}</b> (평소 해마다 ±${x.normal_sd_pct ?? '—'}% 정도 출렁임, 자료 ${x.last_year}년까지)</div>
+        <div class="climate-sub" style="font-size:10px;">${x.events.map((e) => `${e.event}: ${f(e.dev_y0)} → ${f(e.dev_y1)}`).join(' · ')}</div>`).join('');
+    return `<div class="climate-card">
+        <h3>엘니뇨 때 과거 성적 <span class="src-tag">FAOSTAT · ${ev.length}회</span></h3>
+        <div class="climate-sub" style="margin-bottom:6px;">강한 엘니뇨(${ev.map((e) => e.year).join('·')}) 해의 전국 단수, 추세 대비.
+            ${head}</div>
+        <div class="climate-table-row" style="color:#64748b;font-size:10px;"><span style="flex:1;">작물</span><span style="width:36%;text-align:right;">발생 해 수확</span><span style="width:36%;text-align:right;">다음 해 수확</span></div>
+        ${rows}
+        <details class="climate-fold" style="margin-top:6px;">
+            <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">해마다 보기 (발생 해 → 다음 해) ▾</summary>
+            ${detail}
+        </details>
+        <div class="climate-sub" style="margin-top:6px;">전국 평균이라 산지별 차이는 묻힙니다. 예측이 아니라 과거 기록입니다.</div>
+    </div>`;
+};
+
 /** "관련 해역" card on a country's left panel. */
 const renderCountrySstCard = (countryName) => {
     const ids = COUNTRY_SST_REGIONS[countryName] || [];
@@ -4464,6 +4514,7 @@ const showClimateCountry = async (countryName) => {
     await loadClimateGlobal();
     await loadSst();
     await loadSstRegions();
+    await loadEnsoAnalogs();
     const admin1 = await loadAdmin1(cfg.iso);
     // Req 4: the country drill is a workspace, not just a zoom. The map keeps
     // the same globe but frames the target with a HUD, dims every other
@@ -4608,6 +4659,7 @@ const renderCountryPanel = async (cfg, points = null) => {
         const refCrops = Object.keys(CROP_CALENDAR_SEED[climateCountry] || {});
         forecastContentEl.innerHTML = renderClimateReferencePanelHtml(cfg, fc || {})
             + renderCountrySstCard(climateCountry)
+            + renderEnsoAnalogCard(climateCountry)
             + (refCrops.length ? `<div class="climate-card">
                 <h3>작물 캘린더 · 현재 단계 (seed)</h3>
                 ${renderCropCalendarHtml(climateCountry, refCrops)}
@@ -4727,6 +4779,7 @@ const renderCountryPanel = async (cfg, points = null) => {
         <div class="climate-scroll">
             ${climateNavBackHtml(cfg.label)}
             ${renderCountrySstCard(climateCountry)}
+            ${renderEnsoAnalogCard(climateCountry)}
             ${gainHtml}
             ${unitBridgeHtml}
             <div class="climate-card">
