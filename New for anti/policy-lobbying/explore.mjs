@@ -39,11 +39,11 @@ export function mountExplorer(root, navigate) {
         <p class="lobby-note">FARA 관계는 원문 근거가 있는 자동 추출 후보입니다. LDA는 신고된 이슈 묶음이며, 각 항목에서 근거와 검토 상태를 확인할 수 있습니다.</p>`;
       root.querySelector('[data-structure-facets]').innerHTML = `<p>필터에 해당하는 활동 묶음 ${Number(data.total_groups).toLocaleString()}개${data.semantic?' · 아래 결과는 의미 유사도순':''}</p>` +
         [['countries','country','의뢰인 국가',{}], ['principal_kinds','principal_kind','의뢰인 유형',kinds], ['branches','branch','접촉 대상 소속',branches], ['recipients','recipient','접촉 기관·인물',{}]].map(([field, filter, title, labels]) =>
-          `<details open><summary>${title}</summary><div class="lobby-cases">${data[field].map(item =>
+          `<details ${filter==='recipient'?'':'open'}><summary>${title}</summary><div class="lobby-cases">${data[field].map(item =>
             `<button type="button" data-facet="${filter}" data-value="${escape(item.value)}" ${filter==='country'&&item.value==='unknown'?'disabled':''}>${escape(labels[item.value] || (item.value==='unknown'?'미확인':item.value))} ${Number(item.count).toLocaleString()}</button>`).join('') || '확보된 분류 없음'}</div></details>`).join('');
       root.querySelector('[data-structure-results]').innerHTML = data.items.map(item => {
         const detail = item.detail;
-        const recipients = detail.recipients.map(actor => [actor.name, actor.role, actor.organization, actor.department].filter(Boolean).join(' · ')).join(' / ');
+        const recipients = detail.recipients.map(actor => [...new Set([actor.name, actor.role, actor.organization, actor.department].filter(Boolean))].join(' · ')).join(' / ');
         return `<article class="lobby-activity"><small>${escape(item.source.toUpperCase())} · ${escape(grains[item.grain])} · ${item.review_status==='source_structured'?'신고 원문 구조':'자동 추출·검토 대기'}</small>
           <h3>${escape(detail.summary_ko || detail.issue)}</h3>
           <p>${escape(detail.principal?.name || '의뢰인 미확인')} → ${escape(recipients || '접촉 대상 미확인')}</p>

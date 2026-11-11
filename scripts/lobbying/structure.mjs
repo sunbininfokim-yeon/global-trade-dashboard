@@ -81,14 +81,14 @@ country must be an ISO two-letter code only if the country is explicitly identif
 summary_ko is a short Korean account of the evidenced activity. issue is the source wording of its policy subject.
 Return {"units":[]} if this passage contains no reported activity. Do not claim completeness beyond this passage.`;
 
-function anchored(quote, content) {
-  return typeof quote === 'string' && normalized(quote).length >= 8
+function anchored(quote, content, minimum = 8) {
+  return typeof quote === 'string' && normalized(quote).length >= minimum
     && normalized(content).includes(normalized(quote));
 }
 
 function validateActor(actor, content) {
-  if (!actor || typeof actor.name !== 'string' || actor.name.length > 300
-      || !anchored(actor.quote, content) || !normalized(actor.quote).toLowerCase().includes(normalized(actor.name).toLowerCase())
+  if (!actor || typeof actor.name !== 'string' || !actor.name.trim() || actor.name.length > 300
+      || !anchored(actor.quote, content, 1) || !normalized(actor.quote).toLowerCase().includes(normalized(actor.name).toLowerCase())
       || !ENTITY_KINDS.includes(actor.kind) || !BRANCHES.includes(actor.branch)) {
     throw Error('Actor is not anchored to the supplied passage');
   }
@@ -131,7 +131,7 @@ export function ldaUnits(record, passage) {
   }));
   return [{
     grain: 'filing_issue_block', date: null, summary_ko: null, issue: passage.content, method: null,
-    quote: passage.content, principal: { name: record.client_name, kind: 'unknown', country: record.country_codes?.[0] || null,
+    quote: passage.content, principal: { name: record.client_name, kind: record.raw_payload.client?.client_government_entity === true ? 'government' : 'unknown', country: record.country_codes?.[0] || null,
       evidence: { json_path: '$.client' } },
     recipients, issue_code: block.general_issue_code, review_status: 'source_structured', evidence: passage.locator,
   }];

@@ -25,6 +25,11 @@ test('unsupported contacts, affiliations and dates are held', () => {
   assert.throws(() => validateExtraction({units: [affiliation]}, passage), /affiliation/);
   assert.throws(() => validateExtraction({units: [{...unit(), date: '2025-02-31'}]}, passage), /date/);
   assert.throws(() => validateExtraction({units: [{...unit(), recipients: []}]}, passage), /recipient/);
+  const short = unit();
+  short.recipients[0] = {...short.recipients[0], name: 'Smith', quote: 'Smith', role: null};
+  assert.equal(validateExtraction({units: [short]}, passage)[0].recipients[0].name, 'Smith');
+  short.recipients[0].name = '';
+  assert.throws(() => validateExtraction({units: [short]}, passage), /anchored/);
 });
 
 test('LDA institutions remain one issue group with no inferred date or meetings', () => {
