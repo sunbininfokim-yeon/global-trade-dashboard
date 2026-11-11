@@ -1905,6 +1905,10 @@ const renderOceanRegionPanel = (region) => {
             </div>
             <div class="climate-sub">${region.latest_month} · 최근 12개월 평균 ${sign(region.mean_12m)}${region.mean_12m.toFixed(2)}°C</div>
             ${sstSameMonthRank(region)}
+            ${(() => {
+                const j = Object.values(climateGlobalCache?.jma?.indices || {}).find((x) => x.oisst_region === region.id);
+                return j ? `<div class="climate-sub" style="margin-top:2px;">교차 확인 · 일본 기상청(COBE-SST) ${j.label_ko} ${j.latest >= 0 ? '+' : ''}${j.latest.toFixed(1)}°C (${j.as_of}, 박스 범위가 조금 다름)</div>` : '';
+            })()}
             ${sstSparkline(s)}
             <div class="sst-axis"><span>${s[0]?.[0] ?? ''}</span><span>${region.latest_month}</span></div>
             ${sstLevelNote(region)}
@@ -4136,6 +4140,8 @@ const renderClimateWorldLeft = async () => {
     const enso = g?.enso || {};
     const iod = g?.iod || {};
     const pdo = g?.pdo || {};
+    const jmaN3 = g?.jma?.indices?.nino3 || null;
+    const jmaIod = g?.jma?.indices?.dmi || g?.jma?.indices?.iobw || null;
     const amo = g?.north_atlantic || {};
     const continents = g?.continent_temp_anomaly?.values || [];
     const maxAbsC = Math.max(0.5, ...continents.map(c => Math.abs(c.anomaly || 0)));
@@ -4160,6 +4166,9 @@ const renderClimateWorldLeft = async () => {
                 <div class="climate-sub">${enso.state_ko || '상태 미정'}
                     ${enso.prob_continue_pct != null ? ` · 지속 확률 ${enso.prob_continue_pct}%` : ''}</div>
                 ${renderEnsoBars(enso.series, enso.history)}
+                ${jmaN3 ? `<div class="climate-sub" style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(148,163,184,.15);">
+                    교차 확인 · 일본 기상청(COBE-SST) ${jmaN3.label_ko} <b style="color:${jmaN3.latest >= 0 ? '#fca5a5' : '#7dd3fc'};">${jmaN3.latest >= 0 ? '+' : ''}${jmaN3.latest.toFixed(1)}°C</b> (${jmaN3.as_of})
+                    <span style="color:#64748b;">· NOAA와 독립된 수온 분석, 해역이 조금 달라(Niño 3 = 150°W~90°W) 값이 같지는 않음</span></div>` : ''}
                 <div class="climate-sub" style="margin-top:4px;">기준: ${climateAsOf || '—'}</div>
             </div>
             <div class="climate-card">
@@ -4171,6 +4180,8 @@ const renderClimateWorldLeft = async () => {
                     <span class="climate-status-pill ${ (iod.latest||0) >= 0 ? 'red' : 'blue' }">${iod.state_ko || '—'}</span>
                 </div>
                 <div class="climate-sub">${iod.note_ko || ''}${iod.as_of ? ` · ${iod.as_of} 기준` : ''}</div>
+                ${jmaIod ? `<div class="climate-sub" style="margin-top:4px;">교차 확인 · 일본 기상청 ${jmaIod.label_ko}
+                    <b style="color:${jmaIod.latest >= 0 ? '#fca5a5' : '#7dd3fc'};">${jmaIod.latest >= 0 ? '+' : ''}${jmaIod.latest.toFixed(2)}</b> (${jmaIod.as_of})</div>` : ''}
                 ${iod.series?.length ? `<details class="climate-fold" style="margin-top:6px;">
                     <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">
                         최근 12개월 추이·과거 정점 보기 ▾</summary>

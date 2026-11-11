@@ -38,17 +38,6 @@ jobs:
         working-directory: "New for anti/scripts/yield_model"
         run: python3 -m enso_analogs.build
 
-      # NOAA 외 기관 지수 접근 확인 (JMA COBE-SST). 실패해도 진행.
-      - name: Probe non-NOAA SST indices
-        continue-on-error: true
-        run: |
-          curl -sL -m 30 https://ds.data.jma.go.jp/tcc/tcc/products/elnino/index/ | grep -oiE 'href="[^"]+"' | sort -u | head -80
-          curl -sL -m 30 https://www.data.jma.go.jp/cpd/data/elnino/index/dattab.html | grep -oiE 'href="[^"]+"' | sort -u | head -80
-          for d in NINO.WEST NINO_WEST Nino_West IOBW Iobw IOB; do
-            u="https://ds.data.jma.go.jp/tcc/tcc/products/elnino/index/sstindex/base_period_9120/$d/anomaly"
-            echo "=== $u $(curl -sL -m 20 -o /dev/null -w '%{http_code}' $u)"
-          done
-
       - name: Commit to the pull request branch
         if: github.event_name == 'pull_request'
         run: |
