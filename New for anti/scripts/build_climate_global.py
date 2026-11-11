@@ -21,6 +21,7 @@ Usage:
 """
 
 import json
+import re
 import os
 import sys
 import urllib.request
@@ -34,6 +35,20 @@ DMI_URL = "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data"
 # Pacific Decadal Oscillation, ERSST v5 (NOAA NCEI), monthly since 1854.
 PDO_URL = "https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/index/ersst.v5.pdo.dat"
 PDO_SINCE = 1900
+# Japan Meteorological Agency, COBE-SST analysis -- an SST record built
+# independently of NOAA's, so a second opinion rather than a copy.
+JMA_ROOT = "https://ds.data.jma.go.jp/tcc/tcc/products/elnino/index/sstindex"
+# key -> (path under JMA_ROOT, label, our OISST region it cross-checks)
+JMA_INDICES = {
+    "nino3": ("base_period_9120/Nino_3/anomaly", "NINO.3 (적도 동태평양)", None),
+    "nino12": ("base_period_9120/Nino_1+2/anomaly", "NINO.1+2 (페루 연안)", "nino12"),
+    "nino4": ("base_period_9120/Nino_4/anomaly", "NINO.4 (적도 중태평양)", None),
+    "nino_west": ("base_period_9120/Nino_West/anomaly", "NINO.WEST (서태평양)", "west_pacific"),
+    # Indian Ocean basin-wide; JMA publishes it against a sliding 30-year base.
+    "iobw": ("sliding_30year_period/IOBW/deviation", "IOBW (인도양 전체)", None),
+}
+# JMA's own DMI, an HTML table (kaiyou desk). Parsed tolerantly.
+JMA_DMI_URL = "https://www.data.jma.go.jp/kaiyou/data/db/climate/iod/dmi_mon.html"
 
 # NOAA's own thresholds: ±0.5 for an event, then weak / moderate / strong.
 def enso_state(oni):
@@ -328,12 +343,45 @@ def main():
             "history": pdo_history(pdo_rows),
         }
 
+    # --- JMA cross-check ---------------------------------------------------
+    jma = {}
+    for key, (path, label, ours) in JMA_INDICES.items():
+        url = f"{JMA_ROOT}/{path}"
+        try:
+            rows = parse_pdo(fetch(url))   # same year x 12 layout
+        except OSError as e:
+            print(f"JMA {path} 실패: {e}", file=sys.stderr)
+            continue
+        if rows:
+            m, v = rows[-1]
+            jma[key] = {"label_ko": label, "latest": v, "as_of": m, "oisst_region": ours,
+                        "series": [{"label": f"{mm[2:4]}-{mm[5:]}", "value": vv} for mm, vv in rows[-12:]],
+                        "source_url": url}
+    try:
+        html = fetch(JMA_DMI_URL)
+        text = re.sub(r"<[^>]+>", " ", html)
+        text = re.sub(r"[ \t]*\n[ \t]*(?=-?\d)", " ", text)       # cells split over lines
+        rows = parse_pdo("\n".join(re.findall(r"(?:19|20)\d\d(?:\s+-?\d+\.\d+){1,12}", text)))
+        # A misread table would publish nonsense next to NOAA's number; only
+        # keep it if it looks like a monthly DMI record.
+        if len(rows) >= 120 and all(abs(x) < 3 for _, x in rows):
+            m, v = rows[-1]
+            jma["dmi"] = {"label_ko": "DMI (인도양 쌍극자)", "latest": v, "as_of": m, "oisst_region": None,
+                          "series": [{"label": f"{mm[2:4]}-{mm[5:]}", "value": vv} for mm, vv in rows[-12:]],
+                          "source_url": JMA_DMI_URL}
+    except OSError as e:
+        print(f"JMA DMI 실패: {e}", file=sys.stderr)
+    if jma:
+        doc["jma"] = {"source": "JMA COBE-SST (일본 기상청)", "baseline": "1991-2020", "indices": jma}
+
     doc["generated_at"] = datetime.now(timezone.utc).isoformat()
     doc["note"] = (
         "ENSO·IOD·PDO 는 NOAA 원본에서 실시간 갱신됩니다 (build_climate_global.py). "
         "도시 기온·대륙 편차 등 나머지 항목은 아직 seed 이며 갱신 예정입니다."
     )
 
+    for k, j in (doc.get("jma") or {}).get("indices", {}).items():
+        print(f"JMA {k:10} {j['as_of']}  {j['latest']:+.2f}")
     print(f"ONI {doc['enso']['season']}  {doc['enso']['latest_c']:+.2f}  {doc['enso']['state_ko']}")
     if doc.get("pdo"):
         print(f"PDO {doc['pdo']['as_of']}  {doc['pdo']['latest']:+.2f}  {doc['pdo']['state_ko']}")
