@@ -41,6 +41,33 @@ def enso_label(oni):
     return "neutral", oni
 
 
+def _not_yet(cfg, season, r):
+    """Region stub for a season whose weather window has not started."""
+    last = None
+    try:
+        import pandas as pd
+        h = pd.read_csv(os.path.join(os.path.dirname(__file__), "training", f"{cfg.key}.csv"))
+        h = h.dropna(subset=["yield_kg_ha"])
+        if len(h):
+            row = h.sort_values("year").iloc[-1]
+            last = {"year": int(row.year), "yield": round(float(row.yield_kg_ha), 1)}
+    except (OSError, KeyError, ValueError):
+        pass
+    crop = {"label_ko": cfg.label_ko, "unit": "kg/ha"}
+    if last:
+        crop["last_actual"] = last
+    return {
+        "label": cfg.label,
+        "label_ko": cfg.label_ko,
+        "unit": "kg/ha",
+        "forecast_available": False,
+        "reason_ko": (f"{season}년 작기의 기상 관측 구간이 아직 시작되지 않아 예측 전입니다 "
+                      f"(필요 변수: {r['error'].split(': ', 1)[-1]})."),
+        "weather_through": r.get("weather_through"),
+        "crops": {cfg.crop: crop},
+    }
+
+
 def main():
     override = int(sys.argv[1]) if len(sys.argv) > 1 else None
     oni = load_oni()
@@ -82,6 +109,14 @@ def main():
     for cfg in ALL:
         target = override or current_season(cfg)
         r = predict_one(cfg, target, oni)
+        if r and str(r.get("error", "")).startswith("features unavailable"):
+            # The target season has not been observed yet (the winter-spring
+            # crop rolls over in November, before its weather exists). Keep
+            # the region on screen per DATA_LAYOUT section 4 instead of
+            # dropping it, which the registry check reads as a lost region.
+            log(f"{cfg.key}: {r['error']} -- published as not yet available")
+            payload["regions"][cfg.key] = _not_yet(cfg, target, r)
+            continue
         if not r or "error" in r:
             if r and "error" in r:
                 log(f"{cfg.key}: {r['error']}")

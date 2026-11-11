@@ -6,6 +6,24 @@
   "source_note": "Weather: NASA POWER daily (GWETROOT, TEMP, precip, radiation), ET0 FAO-56. ENSO: NOAA CPC ONI. Mekong WS labels: GSO Yearbook Mekong-region spring paddy (2018–2023) + MTN provincial Đông Xuân (2017/2024); pre-2017 FAOSTAT national rice scaled to WS overlap (season imperfect). Central Highlands coffee: FAOSTAT Viet Nam Coffee, green (the region holds ~90% of national coffee area). RRD has no labels. Salinity: coastal distance × dry-season hydrology proxy (not EC). GEE CHIRPS/SMAP/S1 and MRC discharge not executed in this build.",
   "methodology_note": "T1 models from Regions/베트남 master: Mekong WS rice (salt/ENSO), Central Highlands robusta (WD_eff + Kath), Red River rice (flood/typhoon rain proxy). Ridge on log-yield residual vs trend; read labels_provisional / labels_season_imperfect on each region.",
   "regions": {
+    "mekong_rice_ws": {
+      "label": "Mekong Delta Winter–Spring rice",
+      "label_ko": "메콩 삼각주 동춘(건기) 쌀",
+      "unit": "kg/ha",
+      "forecast_available": false,
+      "reason_ko": "2027년 작기의 기상 관측 구간이 아직 시작되지 않아 예측 전입니다 (필요 변수: oni_djf, precip_dry_ws, heat_days_35_ws, wd_dry_ws).",
+      "weather_through": "2026-11-05",
+      "crops": {
+        "rice": {
+          "label_ko": "메콩 삼각주 동춘(건기) 쌀",
+          "unit": "kg/ha",
+          "last_actual": {
+            "year": 2024,
+            "yield": 7231.0
+          }
+        }
+      }
+    },
     "central_highlands_coffee": {
       "label": "Central Highlands robusta coffee",
       "label_ko": "중부 고원 로부스타 커피",

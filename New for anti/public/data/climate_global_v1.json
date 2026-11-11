@@ -1,7 +1,7 @@
 {
   "schema_version": "climate-global-v1",
-  "generated_at": "2026-11-08T03:53:28.722163+00:00",
-  "note": "ENSO·IOD 는 NOAA 원본에서 실시간 갱신됩니다 (build_climate_global.py). 도시 기온·대륙 편차 등 나머지 항목은 아직 seed 이며 갱신 예정입니다.",
+  "generated_at": "2026-11-11T16:09:11.655488+00:00",
+  "note": "ENSO·IOD·PDO 는 NOAA 원본에서 실시간 갱신됩니다 (build_climate_global.py). 도시 기온·대륙 편차 등 나머지 항목은 아직 seed 이며 갱신 예정입니다.",
   "enso": {
     "index": "Niño 3.4 ONI",
     "source": "NOAA CPC (live)",
@@ -336,5 +336,106 @@
     "China": 3.1,
     "Australia": 0.9,
     "Indonesia": 0.6
+  },
+  "pdo": {
+    "index": "Pacific Decadal Oscillation (ERSST v5)",
+    "source": "NOAA NCEI ERSST v5",
+    "source_url": "https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/index/ersst.v5.pdo.dat",
+    "latest": -2.26,
+    "as_of": "2026-10",
+    "state_ko": "음 (차가운 국면)",
+    "note_ko": "음의 PDO는 미 남부 대평원 가뭄·겨울밀 작황 부진, 라니냐 영향 강화와 자주 겹칩니다. 수십 년 단위로 국면이 바뀝니다.",
+    "series": [
+      {
+        "label": "25-11",
+        "pdo": -1.51
+      },
+      {
+        "label": "25-12",
+        "pdo": -0.96
+      },
+      {
+        "label": "26-01",
+        "pdo": -1.24
+      },
+      {
+        "label": "26-02",
+        "pdo": -1.0
+      },
+      {
+        "label": "26-03",
+        "pdo": -1.42
+      },
+      {
+        "label": "26-04",
+        "pdo": -1.62
+      },
+      {
+        "label": "26-05",
+        "pdo": -1.68
+      },
+      {
+        "label": "26-06",
+        "pdo": -1.72
+      },
+      {
+        "label": "26-07",
+        "pdo": -2.16
+      },
+      {
+        "label": "26-08",
+        "pdo": -1.88
+      },
+      {
+        "label": "26-09",
+        "pdo": -1.52
+      },
+      {
+        "label": "26-10",
+        "pdo": -2.26
+      }
+    ],
+    "history": {
+      "since": 1900,
+      "rank": 67,
+      "rank_ko": "1900년 이후 1522개월 중 67번째로 낮음",
+      "peak_word_ko": "최저",
+      "top_peaks": [
+        {
+          "label": "1950",
+          "peak": -3.65,
+          "season": "1950-07"
+        },
+        {
+          "label": "1955",
+          "peak": -3.35,
+          "season": "1955-10"
+        },
+        {
+          "label": "2012",
+          "peak": -2.99,
+          "season": "2012-09"
+        },
+        {
+          "label": "1999",
+          "peak": -2.54,
+          "season": "1999-10"
+        }
+      ],
+      "thresholds": [
+        {
+          "value": 0.5,
+          "label_ko": "양의 PDO 기준"
+        },
+        {
+          "value": -0.5,
+          "label_ko": "음의 PDO 기준"
+        },
+        {
+          "value": -1.5,
+          "label_ko": "강한 음"
+        }
+      ]
+    }
   }
 }
