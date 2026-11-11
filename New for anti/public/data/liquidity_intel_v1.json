@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-11-11T06:10:30.363079+00:00",
+  "generated_at": "2026-11-11T14:16:15.891353+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -150,7 +150,7 @@
       {
         "author": "양영빈",
         "articles_scanned": 8,
-        "articles_with_hits": 3,
+        "articles_with_hits": 4,
         "top_indicators": [
           {
             "id": "qra",
@@ -176,24 +176,51 @@
             "evidence": [
               "년 1분기 무려 8000억달러에 달하는 초대형 차입 계획과 1조달러라는 재무부 일반계정(T"
             ]
+          },
+          {
+            "id": "fomc_liquidity",
+            "score": 0.85,
+            "label_ko": "FOMC·금리 유동성",
+            "evidence": [
+              "0월 CPI…시장예상 웃돌아 [이코노미21 양양빈] 지난 10월 28일 FOMC에서 기준 금리를 동결하기로 결정한 이후 처음 나온 10월 CPI 인플레이션 지표는 시장의 예상을 웃도는 수"
+            ]
           }
         ],
         "themes_ko": [
           "QRA·순발행 (점수 7.2)",
           "달러/엔 (점수 1.8)",
-          "TGA 재무부 일반계정 (점수 1.3)"
+          "TGA 재무부 일반계정 (점수 1.3)",
+          "FOMC·금리 유동성 (점수 0.85)"
         ],
         "hint_weights": {
           "tightening": 7.2,
           "fx_pair": 1.8,
-          "tga": 1.3
+          "tga": 1.3,
+          "policy": 0.85
         },
         "reporter_signals": [
           "reporter_tightening_theme",
           "reporter_tga_focus"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 3개 테마",
         "per_article": [
+          {
+            "title": "[연준와처] 전쟁 후과를 보여준 10월 CPI…시장예상 웃돌아",
+            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017395",
+            "published": "2026-11-11 15:50",
+            "author": "양영빈",
+            "indicators": [
+              {
+                "id": "fomc_liquidity",
+                "label_ko": "FOMC·금리 유동성",
+                "mentions": 1,
+                "hint": "policy",
+                "evidence": [
+                  "0월 CPI…시장예상 웃돌아 [이코노미21 양양빈] 지난 10월 28일 FOMC에서 기준 금리를 동결하기로 결정한 이후 처음 나온 10월 CPI 인플레이션 지표는 시장의 예상을 웃도는 수"
+                ]
+              }
+            ]
+          },
           {
             "title": "2차 QRA가 국채 시장에 대해 말해 주는 것은?",
             "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017371",
@@ -265,13 +292,14 @@
           "reporter_liquidity_themes": [
             "QRA·순발행 (점수 7.2)",
             "달러/엔 (점수 1.8)",
-            "TGA 재무부 일반계정 (점수 1.3)"
+            "TGA 재무부 일반계정 (점수 1.3)",
+            "FOMC·금리 유동성 (점수 0.85)"
           ],
           "reporter_liquidity_signals": [
             "reporter_tightening_theme",
             "reporter_tga_focus"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 3개 테마"
         }
       }
     ],
@@ -287,18 +315,19 @@
       "reporter_liquidity_themes": [
         "QRA·순발행 (점수 7.2)",
         "달러/엔 (점수 1.8)",
-        "TGA 재무부 일반계정 (점수 1.3)"
+        "TGA 재무부 일반계정 (점수 1.3)",
+        "FOMC·금리 유동성 (점수 0.85)"
       ],
       "reporter_liquidity_signals": [
         "reporter_tightening_theme",
         "reporter_tga_focus"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 3개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-317614567472",
+      "id": "qra-619060236978",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -331,7 +360,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-961137516146",
+      "id": "fed-898375486444",
       "published_at": "Wed, 28 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -362,7 +391,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-71060515676",
+      "id": "fed-773589412427",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -393,7 +422,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-699741096609",
+      "id": "fed-229858500784",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -424,7 +453,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-439515161859",
+      "id": "fed-213327312176",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -455,7 +484,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-2382363041",
+      "id": "fed-747894229838",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -486,7 +515,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-482207097175",
+      "id": "fed-443473261503",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -517,7 +546,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-110937257541",
+      "id": "fed-843585950537",
       "published_at": "Tue, 13 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -548,7 +577,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-47281371202",
+      "id": "fed-631187021838",
       "published_at": "Thu, 8 Oct 2026 20:30:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -579,7 +608,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-619099454631",
+      "id": "fed-802842903528",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -610,7 +639,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-575751476872",
+      "id": "fed-474500409058",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -641,7 +670,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-71551792010",
+      "id": "fed-312114989346",
       "published_at": "Tue, 26 May 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -672,7 +701,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-792531317212",
+      "id": "liq-ind-805495036801",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -680,7 +709,7 @@
         "region": "korea",
         "slant": null
       },
-      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017371",
+      "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017395",
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
@@ -688,7 +717,7 @@
         "original_lang": "ko",
         "ko": "[유동성지표·양영빈] QRA·순발행 · 달러/엔 · TGA 재무부 일반계정"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 3개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -727,6 +756,14 @@
           "label_ko": "TGA 재무부 일반계정",
           "evidence": [
             "년 1분기 무려 8000억달러에 달하는 초대형 차입 계획과 1조달러라는 재무부 일반계정(T"
+          ]
+        },
+        {
+          "id": "fomc_liquidity",
+          "score": 0.85,
+          "label_ko": "FOMC·금리 유동성",
+          "evidence": [
+            "0월 CPI…시장예상 웃돌아 [이코노미21 양양빈] 지난 10월 28일 FOMC에서 기준 금리를 동결하기로 결정한 이후 처음 나온 10월 CPI 인플레이션 지표는 시장의 예상을 웃도는 수"
           ]
         }
       ]
@@ -768,7 +805,7 @@
     "ticker_items": 13,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 3,
+    "reporter_indicator_hits": 4,
     "sources_ok": 5,
     "sources_failed": 0
   }
