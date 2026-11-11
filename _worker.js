@@ -880,6 +880,10 @@ const COMTRADE_TTL = {
     "1511": 1209600, // Palm oil: 14 days
     "4001": 1209600, // Natural rubber: 14 days
     "0901": 1209600, // Coffee: 14 days
+    "1006": 1209600, // Rice: 14 days
+    "5201": 1209600, // Raw cotton: 14 days
+    "1205": 1209600, // Rapeseed/canola: 14 days
+    "080510": 1209600, // Fresh oranges: 14 days
 
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
     // year, so a week of staleness costs nothing.
@@ -3436,6 +3440,10 @@ const FUTURES = {
     soybeans:  { symbol: "ZS=F",  unit: "부셸",      exchange: "CBOT" },
     sugar:     { symbol: "SB=F",  unit: "파운드",    exchange: "ICE" },
     coffee:    { symbol: "KC=F",  unit: "파운드",    exchange: "ICE" },
+    cotton:    { symbol: "CT=F",  unit: "파운드",    exchange: "ICE" },
+    rice:      { symbol: "ZR=F",  unit: "cwt(100파운드)", exchange: "CBOT" },
+    // Frozen concentrated orange juice: the only orange contract there is.
+    orange:    { symbol: "OJ=F",  unit: "파운드(주스)", exchange: "ICE" },
     copper:    { symbol: "HG=F",  unit: "파운드",    exchange: "COMEX" },
     gold:      { symbol: "GC=F",  unit: "온스",      exchange: "COMEX" },
     silver:    { symbol: "SI=F",  unit: "온스",      exchange: "COMEX" },
@@ -3467,6 +3475,7 @@ const FUTURES_UNPRICED = {
     light_oils: "무료로 확인 가능한 실시간 시세가 없습니다 (납사·휘발유 모두 Platts·Argus 유료 평가가)",
     palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
     rubber: "기준 계약인 SGX SICOM TSR20·오사카거래소 RSS3 시세는 무료로 제공되지 않습니다",
+    canola: "ICE 카놀라 선물은 캐나다달러 표시라 이 카드(미국 달러)에는 싣지 않습니다",
 };
 
 async function handleFutures(request, env) {
