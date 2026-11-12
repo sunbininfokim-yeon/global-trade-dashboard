@@ -9,7 +9,7 @@
  * weather risks taken from the crop monitor's stage calls.
  */
 (() => {
-    const VIEWS = ['wheat', 'corn', 'soybeans', 'sugar', 'palm_oil', 'coffee'];
+    const VIEWS = ['wheat', 'corn', 'soybeans', 'sugar', 'palm_oil', 'coffee', 'rice', 'cotton', 'canola', 'orange'];
     const MAX_WEATHER = 6;
     const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     // PSD thousands -> millions, in the crop's unit (coffee: 60-kg bags).
@@ -66,7 +66,7 @@
         if (vt) vt.innerHTML = `${mt(c.current.production_kt)} <span style="font-size:13px;">${pct(c.current.change_pct)}</span>`;
     }
 
-    const TAG = { supply: '공급', stocks: '재고', weather: '날씨' };
+    const TAG = { supply: '공급', stocks: '재고', weather: '날씨', china: '중국' };
     function riskHtml(r) {
         const why = r.kind === 'weather'
             ? `${esc(r.crop_ko)} ${esc(r.season)} · ${esc((r.reason || []).join(' / '))}${r.reference_only ? ' · 과거 판정이 실제 수확과 맞지 않아 참고만' : ''}`
@@ -104,6 +104,21 @@
         return `<p class="trade-rank-group-head" style="margin-top:10px;">국제곡물이사회(IGC)</p>${sub}${text}`;
     }
 
+    // China: what it grows, buys and holds. Its grain and cotton stocks are
+    // mostly state reserves, which is why the stock check leaves them out.
+    function chinaHtml(ch) {
+        if (!ch) return '';
+        const row = (k, label, of) => {
+            const v = ch[k];
+            if (!v || !v.kt) return '';
+            return `<div class="gb-line"><span>${label}${v.share_pct != null ? ` <span class="stock-note">${of} ${v.share_pct}%</span>` : ''}</span><span>${mt(v.kt)} ${pct(v.change_pct)}</span></div>`;
+        };
+        const rows = [row('production', '생산', '세계의'), row('consumption', '소비', '세계의'),
+            row('imports', '수입', '세계 수입의'), row('ending_stocks', '기말재고', '세계 재고의')].join('');
+        if (!rows) return '';
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">중국 (전년 대비)</p>${rows}`;
+    }
+
     function cardHtml(c) {
         const cur = c.current;
         const weather = c.risks.filter((r) => r.kind === 'weather');
@@ -113,9 +128,9 @@
         const more = weather.length > MAX_WEATHER ? `<div class="stock-note">날씨 불리 판정 ${weather.length - MAX_WEATHER}곳 더 (작황 모니터)</div>` : '';
         const producers = (c.producers || []).slice(0, 6).map((p) => `<div class="gb-line"><span>${esc(p.country_ko)} <span class="stock-note">${p.share_pct}%</span></span><span>${mt(p.production_kt)} ${pct(p.change_pct)}</span></div>`).join('');
         return `<p class="section-title">세계 수급 · ${esc(c.label_ko)} ${esc(cur.season)}</p>
-            <div class="gb-line"><span>기말재고율</span><span>${cur.stocks_to_use_pct}% <span class="stock-note">5년 평균 ${cur.stocks_to_use_5y_avg_pct}%</span></span></div>
-            <div class="gb-line"><span>세계 수출</span><span>${mt(cur.exports_kt)}</span></div>
-            <div class="gb-line"><span>기말재고</span><span>${mt(cur.ending_stocks_kt)}</span></div>
+            ${cur.stocks_to_use_pct == null ? '<div class="stock-note">USDA가 재고를 집계하지 않는 품목이라 재고율·재고-가격 검증은 없습니다.</div>' : `<div class="gb-line"><span>기말재고율</span><span>${cur.stocks_to_use_pct}% <span class="stock-note">5년 평균 ${cur.stocks_to_use_5y_avg_pct}%</span></span></div>`}
+            ${cur.exports_kt == null ? '' : `<div class="gb-line"><span>세계 수출</span><span>${mt(cur.exports_kt)}</span></div>`}
+            ${cur.ending_stocks_kt == null ? '' : `<div class="gb-line"><span>기말재고</span><span>${mt(cur.ending_stocks_kt)}</span></div>`}
             ${shown.length ? `<details class="gb-risks">
                 <summary><span>주요 리스크 <b>${c.risks.length}</b>건</span><span class="hint">${esc(shown.slice(0, 2).map((r) => r.text_ko).join(' · '))}</span><span class="chev">▸</span></summary>
                 ${shown.map(riskHtml).join('')}
@@ -124,6 +139,7 @@
             </details>` : '<div class="stock-note" style="margin-top:10px;">주요 리스크: 눈에 띄는 것 없음</div>'}
             ${priceCheckHtml(c.price_check)}
             ${igcHtml(c.igc)}
+            ${chinaHtml(c.china)}
             <p class="trade-rank-group-head" style="margin-top:10px;">주요 생산국 (전년 대비)</p>
             ${producers}
             <div class="stock-note" style="margin-top:6px;">출처: <a href="${esc(c.url)}" target="_blank" rel="noopener" style="color:#7dd3fc;">${esc(c.release)}</a></div>`;
@@ -142,7 +158,7 @@
         if (token !== generation || currentCommodity !== crop) return;
         const c = doc?.crops?.[crop];
         if (!c) return;
-        unit = c.unit === 'kbag60' ? '백만 포대(60kg)' : '백만 t';
+        unit = { kbag60: '백만 포대(60kg)', kbale480: '백만 베일(480파운드)' }[c.unit] || '백만 t';
         // A focused country rewrote the boxes for its own routes; leave them.
         if (typeof tradeFocusCountry === 'undefined' || !tradeFocusCountry) setStats(c);
         const card = host?.querySelector('.trade-focus-card');
