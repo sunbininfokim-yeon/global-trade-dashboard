@@ -22,7 +22,7 @@
     "cash": ["BS", ["ifrs-full_CashAndCashEquivalents"], ["CashAndCashEquivalentsAtCarryingValue"]],
     "receivables": ["BS", ["dart_ShortTermTradeReceivable", "ifrs-full_CurrentTradeReceivables"], ["AccountsReceivableNetCurrent"]],
     "inventory": ["BS", ["ifrs-full_Inventories"], ["InventoryNet"]],
-    "payables": ["BS", ["ifrs-full_TradePayables", "dart_ShortTermTradePayables"], ["AccountsPayableCurrent"]],
+    "payables": ["BS", ["ifrs-full_TradePayables", "dart_ShortTermTradePayables", "ifrs-full_TradeAndOtherCurrentPayablesToTradeSuppliers"], ["AccountsPayableCurrent"]],
     "current_assets": ["BS", ["ifrs-full_CurrentAssets"], ["AssetsCurrent"]],
     "current_liabilities": ["BS", ["ifrs-full_CurrentLiabilities"], ["LiabilitiesCurrent"]],
     "assets": ["BS", ["ifrs-full_Assets"], ["Assets"]],
@@ -32,8 +32,20 @@
     "liabilities": ["BS", ["ifrs-full_Liabilities"], ["Liabilities"]],
     "debt_current_total": ["BS", ["ifrs-full_CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings"], []],
     "contract_assets": ["BS", ["ifrs-full_CurrentContractAssets"], ["ContractWithCustomerAssetCurrent"]],
-    "contract_liabilities": ["BS", ["ifrs-full_CurrentContractLiabilities"], ["ContractWithCustomerLiabilityCurrent"]]
+    "contract_liabilities": ["BS", ["ifrs-full_CurrentContractLiabilities"], ["ContractWithCustomerLiabilityCurrent"]],
+    "cf_depreciation": ["CF", ["ifrs-full_AdjustmentsForDepreciationExpense"], []],
+    "cf_amortisation": ["CF", ["ifrs-full_AdjustmentsForAmortisationExpense"], []],
+    "cf_dep_amort_total": ["CF", ["ifrs-full_AdjustmentsForDepreciationAndAmortisationExpense"], []],
+    "cf_rou_depreciation": ["CF", ["dart_AdjustmentsForDepreciationRightofuseAssets"], []],
+    "borrowings_short": ["BS", ["ifrs-full_ShorttermBorrowings"], []],
+    "borrowings_current_portion": ["BS", ["ifrs-full_CurrentPortionOfLongtermBorrowings"], []],
+    "bonds_current": ["BS", ["ifrs-full_CurrentPortionOfNoncurrentBondsIssued", "ifrs-full_CurrentPortionOfBondsIssued"], []],
+    "borrowings_long": ["BS", ["ifrs-full_LongtermBorrowings", "ifrs-full_NoncurrentPortionOfNoncurrentLoansReceived"], []],
+    "bonds_noncurrent": ["BS", ["ifrs-full_NoncurrentPortionOfNoncurrentBondsIssued", "ifrs-full_BondsIssued"], []],
+    "lease_current": ["BS", ["ifrs-full_CurrentLeaseLiabilities"], []],
+    "lease_noncurrent": ["BS", ["ifrs-full_NoncurrentLeaseLiabilities"], []]
   },
+  "reported_basis_note": "cf_*, borrowings_*, bonds_*, lease_* (Claude, 2026-11-12) feed only the reported-basis cards ebitda_cf, net_debt_reported, interest_coverage_cash, ev_reported and their ratios. They never fill the strict ebitda / net_debt / interest_coverage cards, which still require reviewed disclosures.",
   "kits": {
     "shipbuilding": {
       "label_ko": "조선", "ksic_prefixes": ["C311"], "ccc_policy": "secondary",

@@ -4085,6 +4085,38 @@ body.mypage-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 16
 .fin-card-parts { font-size: 11.5px; line-height: 1.55; color: #cbd5e1; margin: -4px 0 8px; font-variant-numeric: tabular-nums; }
 .fin-card-value-text { font-size: 15px; line-height: 1.45; }
 .fin-sector-note { margin-bottom: 16px; }
+
+/* PE·CR engine views (calculator-pecr.js) */
+.pecr-head { margin: 4px 0 14px; }
+.pecr-section { margin-bottom: 22px; }
+.pecr-section h3 { font-size: 13.5px; font-weight: 620; color: #e2e8f0; margin: 0 0 10px; }
+.pecr-badge { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 6px; font-size: 10px;
+    letter-spacing: 0; color: #fcd34d; background: rgba(252, 211, 77, .12); border: 1px solid rgba(252, 211, 77, .35); vertical-align: 1px; }
+.pecr-empty .fin-card-value { color: #64748b; }
+.pecr-reason { color: #64748b; }
+.pecr-signals { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pecr-signals li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; padding: 8px 12px; border-radius: 9px;
+    background: rgba(30, 41, 59, .42); border: 1px solid var(--border); font-size: 12.5px; color: #cbd5e1; }
+.pecr-sig-dot { width: 8px; height: 8px; border-radius: 50%; background: #64748b; flex: none; align-self: center; }
+.pecr-sig-on .pecr-sig-dot { background: #f87171; }
+.pecr-sig-on { border-color: rgba(248, 113, 113, .45); }
+.pecr-sig-off .pecr-sig-dot { background: #34d399; }
+.pecr-sig-word { font-size: 11.5px; color: #94a3b8; }
+.pecr-sig-on .pecr-sig-word { color: #fca5a5; font-weight: 600; }
+.pecr-sig-trail { font-size: 11.5px; color: #64748b; font-variant-numeric: tabular-nums; }
+.pecr-table td, .pecr-table th { white-space: nowrap; }
+.pecr-table .pecr-self td { color: #f1f5f9; font-weight: 600; }
+.pecr-table .pecr-median td { border-top: 1px solid var(--border); color: #cbd5e1; font-style: italic; }
+.pecr-na { color: #475569; }
+.pecr-lbo-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 8px 0 14px; }
+.pecr-lbo-field { display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; color: #94a3b8; position: relative; }
+.pecr-lbo-field input { background: rgba(15, 23, 42, .6); border: 1px solid var(--border); border-radius: 8px; color: #f1f5f9;
+    padding: 7px 34px 7px 10px; font-size: 14px; font-variant-numeric: tabular-nums; width: 100%; box-sizing: border-box; }
+.pecr-lbo-field em { position: absolute; right: 10px; bottom: 8px; font-style: normal; font-size: 11px; color: #64748b; }
+.pecr-lbo-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.pecr-lbo-kpis div { background: rgba(30, 41, 59, .42); border: 1px solid var(--border); border-radius: 9px; padding: 9px 11px; }
+.pecr-lbo-kpis span { display: block; font-size: 11px; color: #94a3b8; }
+.pecr-lbo-kpis b { display: block; margin-top: 3px; font-size: 16px; color: #f1f5f9; font-variant-numeric: tabular-nums; }
 .fin-sector-note ul { margin: 0; padding-left: 17px; }
 .fin-sector-note li { font-size: 12.5px; line-height: 1.65; color: #94a3b8; margin-bottom: 4px; }
 
