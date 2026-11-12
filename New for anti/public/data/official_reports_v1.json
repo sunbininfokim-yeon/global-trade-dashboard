@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-11T22:44:23.269934+00:00",
+  "generated_at": "2026-11-12T07:18:06.236208+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,10 +15,10 @@
     }
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 1,
-    "raw_items": 167,
-    "scored": 167,
+    "sources_ok": 10,
+    "sources_failed": 0,
+    "raw_items": 173,
+    "scored": 173,
     "selected": 40,
     "indicators": 19
   },
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 6,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -310,6 +310,20 @@
         "economy",
         "finance"
       ],
+      "title": "Bank of Japan Accounts (November 10)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261110.htm",
+      "published_at": "2026-11-12T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
       "title": "Market Operations by the Bank of Japan (Oct.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2610.xlsx",
       "published_at": "2026-11-08T23:50:00+00:00",
@@ -341,20 +355,6 @@
       "title": "Bank of Japan's Transactions with the Government (Oct.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/tseifu/release/2026/seifu2610.pdf",
       "published_at": "2026-11-08T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Japanese Government Bonds Held by the Bank of Japan",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
-      "published_at": "2026-11-04T08:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -395,40 +395,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "e26f4bb4c3f411e3",
-      "published_at": "2026-10-27T05:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Indicators for Core CPI",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Indicators for Core CPI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.591,
-        "final": 3.591
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "a9a53da57c309a37",
@@ -1200,6 +1166,40 @@
       "site_slot": null
     },
     {
+      "id": "0f26ee63b6374c09",
+      "published_at": "2026-11-12T01:30:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko261112a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Speech by Board Member ASADA in Nagasaki (Economic Activity, Prices, and Monetary Policy in Japan)",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Speech by Board Member ASADA in Nagasaki (Economic Activity, Prices, and Monetary Policy in Japan)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.376,
+        "final": 2.376
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "55be9e531967800d",
       "published_at": "2026-11-09T21:00:00+00:00",
       "source": {
@@ -1620,6 +1620,41 @@
       "site_slot": null
     },
     {
+      "id": "b8f8b23a57b91026",
+      "published_at": "2026-11-12T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261110.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (November 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "9609de4af31a1b69",
       "published_at": "2026-11-08T23:50:00+00:00",
       "source": {
@@ -1710,41 +1745,6 @@
         "original": "Bank of Japan's Transactions with the Government (Oct.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (Oct.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "5c6d5ab022db6344",
-      "published_at": "2026-11-04T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
       "summary": "",
       "scores": {
@@ -1892,17 +1892,6 @@
       ],
       "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Bank of England announces the four animals that will feature on our next series of banknotes",
-      "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
     }
   ],
   "items": [
@@ -1941,40 +1930,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "e26f4bb4c3f411e3",
-      "published_at": "2026-10-27T05:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/research/research_data/cpi/index.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Indicators for Core CPI",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Indicators for Core CPI"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.591,
-        "final": 3.591
-      },
-      "rank_reasons": [
-        "domains:economy,finance"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "a9a53da57c309a37",
@@ -2746,6 +2701,40 @@
       "site_slot": null
     },
     {
+      "id": "0f26ee63b6374c09",
+      "published_at": "2026-11-12T01:30:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko261112a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Speech by Board Member ASADA in Nagasaki (Economic Activity, Prices, and Monetary Policy in Japan)",
+        "original_lang": "en",
+        "ko": "[JPN·금융] Speech by Board Member ASADA in Nagasaki (Economic Activity, Prices, and Monetary Policy in Japan)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.376,
+        "final": 2.376
+      },
+      "rank_reasons": [
+        "domains:economy,finance"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "55be9e531967800d",
       "published_at": "2026-11-09T21:00:00+00:00",
       "source": {
@@ -3166,6 +3155,41 @@
       "site_slot": null
     },
     {
+      "id": "b8f8b23a57b91026",
+      "published_at": "2026-11-12T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261110.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (November 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "9609de4af31a1b69",
       "published_at": "2026-11-08T23:50:00+00:00",
       "source": {
@@ -3256,41 +3280,6 @@
         "original": "Bank of Japan's Transactions with the Government (Oct.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Bank of Japan's Transactions with the Government (Oct.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "5c6d5ab022db6344",
-      "published_at": "2026-11-04T08:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261030.xlsx",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Japanese Government Bonds Held by the Bank of Japan",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
       "summary": "",
       "scores": {
