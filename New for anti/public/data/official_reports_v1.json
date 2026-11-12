@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-12T07:18:06.236208+00:00",
+  "generated_at": "2026-11-12T16:51:34.561238+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,10 +17,10 @@
   "stats": {
     "sources_ok": 10,
     "sources_failed": 0,
-    "raw_items": 173,
-    "scored": 173,
+    "raw_items": 174,
+    "scored": 174,
     "selected": 40,
-    "indicators": 19
+    "indicators": 20
   },
   "feed_status": [
     {
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 25,
+      "count": 26,
       "error": null,
       "mode": "live"
     },
@@ -296,11 +296,25 @@
         "security",
         "agriculture"
       ],
-      "title": "United States on track for record crude oil production in 2026",
-      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68125",
-      "published_at": "2026-09-10T14:00:00+00:00",
+      "title": "EIA forecasts Alaskan crude oil production to grow 13% in 2027",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68444",
+      "published_at": "2026-11-12T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261110.xlsx",
+      "published_at": "2026-11-12T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     },
     {
       "series_id": "JP_BOJ_POLICY",
@@ -607,41 +621,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "8510f6d3cbee65f8",
-      "published_at": "2026-10-30T03:02:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k261030b.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "(Reference) Outlook Report and Indicators Related to Underlying Inflation",
-        "original_lang": "en",
-        "ko": "[JPN·경제] (Reference) Outlook Report and Indicators Related to Underlying Inflation"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.051,
-        "final": 3.051
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "3cca32bae0b4604e",
@@ -1093,15 +1072,15 @@
       "site_slot": null
     },
     {
-      "id": "cc44b028b9d9b6f1",
-      "published_at": "2026-09-10T14:00:00+00:00",
+      "id": "6dc114853b042bda",
+      "published_at": "2026-11-12T14:00:00+00:00",
       "source": {
         "id": "us_eia",
         "name": "EIA",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68125",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68444",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1111,11 +1090,11 @@
       ],
       "series_id": "US_EIA_ENERGY",
       "title": {
-        "original": "United States on track for record crude oil production in 2026",
+        "original": "EIA forecasts Alaskan crude oil production to grow 13% in 2027",
         "original_lang": "en",
-        "ko": "[USA·경제] United States on track for record crude oil production in 2026"
+        "ko": "[USA·경제] EIA forecasts Alaskan crude oil production to grow 13% in 2027"
       },
-      "summary": "We forecast U.S. crude oil production will average 13.8 million barrels per day (b/d) in 2026, surpassing the previous record of 13.7 million b/d set in 2025, in our latest Short-Term Energy Outlook (STEO).",
+      "summary": "After decades of decline, crude oil production in Alaska is growing, driven by two projects on Alaska's North Slope. In our latest Short-Term Energy Outlook, we expect a 23,000 barrels per day (b/d) (6%) increase in 2026, followed by a 60,000 b/d (13%) rise in 2027. At a forecast",
       "scores": {
         "significance": 2.402,
         "final": 2.402
@@ -1618,6 +1597,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "bbf10a99ec337bf4",
+      "published_at": "2026-11-12T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261110.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "b8f8b23a57b91026",
@@ -2144,41 +2158,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "8510f6d3cbee65f8",
-      "published_at": "2026-10-30T03:02:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k261030b.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "(Reference) Outlook Report and Indicators Related to Underlying Inflation",
-        "original_lang": "en",
-        "ko": "[JPN·경제] (Reference) Outlook Report and Indicators Related to Underlying Inflation"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.051,
-        "final": 3.051
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "3cca32bae0b4604e",
       "published_at": "2026-09-16T18:00:00+00:00",
       "source": {
@@ -2628,15 +2607,15 @@
       "site_slot": null
     },
     {
-      "id": "cc44b028b9d9b6f1",
-      "published_at": "2026-09-10T14:00:00+00:00",
+      "id": "6dc114853b042bda",
+      "published_at": "2026-11-12T14:00:00+00:00",
       "source": {
         "id": "us_eia",
         "name": "EIA",
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68125",
+      "url": "https://www.eia.gov/todayinenergy/detail.php?id=68444",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2646,11 +2625,11 @@
       ],
       "series_id": "US_EIA_ENERGY",
       "title": {
-        "original": "United States on track for record crude oil production in 2026",
+        "original": "EIA forecasts Alaskan crude oil production to grow 13% in 2027",
         "original_lang": "en",
-        "ko": "[USA·경제] United States on track for record crude oil production in 2026"
+        "ko": "[USA·경제] EIA forecasts Alaskan crude oil production to grow 13% in 2027"
       },
-      "summary": "We forecast U.S. crude oil production will average 13.8 million barrels per day (b/d) in 2026, surpassing the previous record of 13.7 million b/d set in 2025, in our latest Short-Term Energy Outlook (STEO).",
+      "summary": "After decades of decline, crude oil production in Alaska is growing, driven by two projects on Alaska's North Slope. In our latest Short-Term Energy Outlook, we expect a 23,000 barrels per day (b/d) (6%) increase in 2026, followed by a 60,000 b/d (13%) rise in 2027. At a forecast",
       "scores": {
         "significance": 2.402,
         "final": 2.402
@@ -3153,6 +3132,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "bbf10a99ec337bf4",
+      "published_at": "2026-11-12T08:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261110.xlsx",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     },
     {
       "id": "b8f8b23a57b91026",
