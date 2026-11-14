@@ -1,11 +1,11 @@
 {
   "schema_version": "us-kr-direction-display-v1",
-  "status": "research_preopen_forecast",
-  "target_date": "2026-11-11",
-  "generated_at": "2026-11-10T21:24:55.287094+00:00",
-  "KR_source_date": "2026-11-10",
-  "US_source_date": "2026-11-10",
-  "forecast_cutoff_KST": "2026-11-11T08:30:00+09:00",
+  "status": "unavailable",
+  "target_date": "2026-11-16",
+  "generated_at": "2026-11-14T01:33:45.525448+00:00",
+  "KR_source_date": "2026-11-13",
+  "US_source_date": "2026-11-13",
+  "forecast_cutoff_KST": "2026-11-16T08:30:00+09:00",
   "model_id": "115ddb42c8c8449b63c57c35fe7642d22f9af3f2fe84def467bebd30ed976d07",
   "trained_through": "2026-10-22",
   "research_only": true,
@@ -30,114 +30,18 @@
     "flat_probability": "not estimated; do not interpret binary complements as a three-class forecast",
     "reference_only": "recent base rate only; probabilities are not a model direction signal"
   },
-  "cards": [
-    {
-      "ticker": "005930",
-      "label_ko": "삼성전자",
-      "scores": {
-        "opening_up": {
-          "probability": 0.542771520101111,
-          "score_0_100": 54.277152010111095,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.542771520101111,
-          "down_probability": 0.45722847989888904
-        },
-        "closing_up": {
-          "probability": 0.5618164182505966,
-          "score_0_100": 56.18164182505966,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.5618164182505966,
-          "down_probability": 0.4381835817494034
-        },
-        "direction_persists": {
-          "probability": 0.7575757558441847,
-          "score_0_100": 75.75757558441848,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        },
-        "opening_extends": {
-          "probability": 0.49494951009868016,
-          "score_0_100": 49.49495100986802,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        }
-      }
-    },
-    {
-      "ticker": "000660",
-      "label_ko": "SK하이닉스",
-      "scores": {
-        "opening_up": {
-          "probability": 0.4312759759840056,
-          "score_0_100": 43.127597598400556,
-          "direction": "DOWN",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.4312759759840056,
-          "down_probability": 0.5687240240159944
-        },
-        "closing_up": {
-          "probability": 0.5630121509047711,
-          "score_0_100": 56.30121509047711,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.5630121509047711,
-          "down_probability": 0.4369878490952289
-        },
-        "direction_persists": {
-          "probability": 0.676767676965397,
-          "score_0_100": 67.6767676965397,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        },
-        "opening_extends": {
-          "probability": 0.4848484818619135,
-          "score_0_100": 48.48484818619135,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        }
-      }
-    },
-    {
-      "ticker": "KOSPI",
-      "label_ko": "KOSPI",
-      "scores": {
-        "opening_up": {
-          "probability": 0.4078160547170631,
-          "score_0_100": 40.781605471706314,
-          "direction": "DOWN",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.4078160547170631,
-          "down_probability": 0.5921839452829369
-        },
-        "closing_up": {
-          "probability": 0.5069970701180211,
-          "score_0_100": 50.69970701180211,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.5069970701180211,
-          "down_probability": 0.4930029298819789
-        },
-        "direction_persists": {
-          "probability": 0.7227723562163977,
-          "score_0_100": 72.27723562163976,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        },
-        "opening_extends": {
-          "probability": 0.5451614551614602,
-          "score_0_100": 54.51614551614602,
-          "direction": "EXTEND",
-          "information_state": "model_score_with_calibration"
-        }
-      }
-    }
-  ],
+  "cards": [],
   "refresh": {
-    "status": "research_preopen_forecast",
-    "checked_at": "2026-11-10T21:24:55.287094+00:00",
-    "reasons": []
+    "status": "unavailable",
+    "checked_at": "2026-11-14T01:33:45.525448+00:00",
+    "reasons": [
+      "missing or invalid required source data"
+    ]
+  },
+  "last_available": {
+    "target_date": "2026-11-11",
+    "generated_at": "2026-11-10T21:24:55.287094+00:00",
+    "status": "research_preopen_forecast"
   },
   "factors": {
     "options": {
@@ -149,77 +53,77 @@
         "call_mean5",
         "put_mean5"
       ],
-      "status": "available",
-      "as_of": "2026-11-10",
-      "expected_source_date": "2026-11-10",
-      "generated_at": "2026-11-10T21:24:56.574841+00:00",
+      "status": "unavailable",
+      "as_of": null,
+      "expected_source_date": "2026-11-13",
+      "generated_at": "2026-11-14T01:33:45.735117+00:00",
       "cards": [
         {
           "ticker": "KOSPI",
-          "status": "available",
-          "reason": null,
+          "status": "unavailable",
+          "reason": "missing exact-session inputs",
           "scores": {
             "opening_up": {
-              "probability": 0.5121951219525275,
-              "up_probability": 0.5121951219525275,
-              "down_probability": 0.4878048780474725,
-              "score_0_100": 51.21951219525275,
-              "information_state": "recent_base_rate_only",
-              "direction": "REFERENCE_ONLY"
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
             },
             "closing_up": {
-              "probability": 0.5365853656019107,
-              "up_probability": 0.5365853656019107,
-              "down_probability": 0.4634146343980893,
-              "score_0_100": 53.658536560191074,
-              "information_state": "recent_base_rate_only",
-              "direction": "REFERENCE_ONLY"
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
             }
           }
         },
         {
           "ticker": "005930",
-          "status": "available",
-          "reason": null,
+          "status": "unavailable",
+          "reason": "missing exact-session inputs",
           "scores": {
             "opening_up": {
-              "probability": 0.496250028219089,
-              "up_probability": 0.496250028219089,
-              "down_probability": 0.5037499717809111,
-              "score_0_100": 49.6250028219089,
-              "information_state": "model_score_with_calibration",
-              "direction": "DOWN"
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
             },
             "closing_up": {
-              "probability": 0.5324766672051716,
-              "up_probability": 0.5324766672051716,
-              "down_probability": 0.4675233327948284,
-              "score_0_100": 53.24766672051716,
-              "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
             }
           }
         },
         {
           "ticker": "000660",
-          "status": "available",
-          "reason": null,
+          "status": "unavailable",
+          "reason": "missing exact-session inputs",
           "scores": {
             "opening_up": {
-              "probability": 0.5081967213166815,
-              "up_probability": 0.5081967213166815,
-              "down_probability": 0.4918032786833185,
-              "score_0_100": 50.81967213166815,
-              "information_state": "recent_base_rate_only",
-              "direction": "REFERENCE_ONLY"
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
             },
             "closing_up": {
-              "probability": 0.5571485722812968,
-              "up_probability": 0.5571485722812968,
-              "down_probability": 0.4428514277187032,
-              "score_0_100": 55.714857228129674,
-              "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "probability": null,
+              "up_probability": null,
+              "down_probability": null,
+              "score_0_100": null,
+              "information_state": "unavailable",
+              "direction": null
             }
           }
         }
@@ -337,8 +241,8 @@
       ],
       "status": "unavailable",
       "as_of": null,
-      "expected_source_date": "2026-11-10",
-      "generated_at": "2026-11-10T21:24:56.574841+00:00",
+      "expected_source_date": "2026-11-13",
+      "generated_at": "2026-11-14T01:33:45.735117+00:00",
       "cards": [
         {
           "ticker": "005930",
@@ -479,9 +383,9 @@
         "AMD_return1"
       ],
       "status": "available",
-      "as_of": "2026-11-10",
-      "expected_source_date": "2026-11-10",
-      "generated_at": "2026-11-10T21:24:56.574841+00:00",
+      "as_of": "2026-11-13",
+      "expected_source_date": "2026-11-13",
+      "generated_at": "2026-11-14T01:33:45.735117+00:00",
       "cards": [
         {
           "ticker": "KOSPI",
@@ -489,20 +393,20 @@
           "reason": null,
           "scores": {
             "opening_up": {
-              "probability": 0.4811623445877268,
-              "up_probability": 0.4811623445877268,
-              "down_probability": 0.5188376554122732,
-              "score_0_100": 48.11623445877268,
+              "probability": 0.3090020963889628,
+              "up_probability": 0.3090020963889628,
+              "down_probability": 0.6909979036110372,
+              "score_0_100": 30.900209638896282,
               "information_state": "model_score_with_calibration",
               "direction": "DOWN"
             },
             "closing_up": {
-              "probability": 0.5518382845628481,
-              "up_probability": 0.5518382845628481,
-              "down_probability": 0.4481617154371519,
-              "score_0_100": 55.183828456284814,
+              "probability": 0.43197531494864183,
+              "up_probability": 0.43197531494864183,
+              "down_probability": 0.5680246850513582,
+              "score_0_100": 43.19753149486418,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             }
           }
         },
@@ -512,20 +416,20 @@
           "reason": null,
           "scores": {
             "opening_up": {
-              "probability": 0.4428660863467387,
-              "up_probability": 0.4428660863467387,
-              "down_probability": 0.5571339136532614,
-              "score_0_100": 44.28660863467387,
+              "probability": 0.3056273702052307,
+              "up_probability": 0.3056273702052307,
+              "down_probability": 0.6943726297947693,
+              "score_0_100": 30.562737020523066,
               "information_state": "model_score_with_calibration",
               "direction": "DOWN"
             },
             "closing_up": {
-              "probability": 0.5200882826066466,
-              "up_probability": 0.5200882826066466,
-              "down_probability": 0.47991171739335337,
-              "score_0_100": 52.008828260664664,
+              "probability": 0.4610136808973104,
+              "up_probability": 0.4610136808973104,
+              "down_probability": 0.5389863191026896,
+              "score_0_100": 46.10136808973104,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             }
           }
         },
@@ -535,20 +439,20 @@
           "reason": null,
           "scores": {
             "opening_up": {
-              "probability": 0.4424333051274463,
-              "up_probability": 0.4424333051274463,
-              "down_probability": 0.5575666948725537,
-              "score_0_100": 44.24333051274463,
+              "probability": 0.3148517580464147,
+              "up_probability": 0.3148517580464147,
+              "down_probability": 0.6851482419535853,
+              "score_0_100": 31.485175804641468,
               "information_state": "model_score_with_calibration",
               "direction": "DOWN"
             },
             "closing_up": {
-              "probability": 0.5393137226334221,
-              "up_probability": 0.5393137226334221,
-              "down_probability": 0.46068627736657786,
-              "score_0_100": 53.93137226334221,
+              "probability": 0.48965076192501955,
+              "up_probability": 0.48965076192501955,
+              "down_probability": 0.5103492380749804,
+              "score_0_100": 48.965076192501954,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             }
           }
         }
