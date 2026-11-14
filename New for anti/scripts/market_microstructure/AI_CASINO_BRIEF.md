@@ -1,4 +1,4 @@
-# AI Casino brief — 2026-11-12
+# AI Casino brief — 2026-11-13
 
 _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 
@@ -8,13 +8,13 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 
 비유: 주차장(코스피 거래)에 차 100대가 들어오면, 그 중 약 25대가 ‘가속 페달 달린 특수차(레버·인버스 ETF)’입니다. 특수차 1대는 일반차 2대 분량의 힘을 씁니다(2배 레버).
 
-- 레버·인버스 ETF가 코스피 현금 거래의 상당 부분을 차지할 수 있음
-- ETF 시장 안에서는 레버·인버스가 약 35.2%
-- 단일종목 레버는 소수, 대부분은 지수형
+- 오늘 코스피 현금 거래 중, 레버·인버스 ETF 거래는 대략 34.5% 수준
+- ETF 시장 안에서는 레버·인버스가 약 36.8%
+- ‘한 종목’ 레버(삼전·하닉)만 보면 코스피 거래의 약 2.96% — 나머지는 지수/섹터 레버
 - 하닉: 현물 거래 100원이면 레버 ETF가 약 9원 같이 움직임(당일 기준)
 - 삼전: 현물 100원 대비 레버 ETF 약 4원
 - 레버리지 2배 ETF를 100만 원어치 사면, 하이닉스가 1% 움직일 때 그 상품은 대략 2%를 목표로 합니다. 그래서 ‘지갑의 100만 원’이 시장에서는 ‘약 200만 원짜리 베팅’처럼 움직입니다. 우리가 쓰는 노셔널(AUM×2)이 그 의미입니다.
-- 시총 쏠림: 삼성+하닉만 코스피의 약 48.2915%
+- 시총 쏠림: 삼성+하닉만 코스피의 약 47.8286%
 
 ## 전문가 — 상세
 
@@ -32,6 +32,16 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 - expert: Price target ≈ L×R (daily reset). Exposure stock = AUM×|L|. End-of-day hedge/rebalance notional TR = AUM×(L²−L)×R; IR = |TR|/ADV_spot. Long and inverse TR computed separately then summed.
 - formulas: {'notional_exposure': 'Σ AUM × |L| × β', 'daily_rebalance_TR': 'Σ AUM × (L² − L) × R', 'L2_example': 'L=+2 → (L²−L)=2; L=-2 → (L²−L)=6 (인버스가 AUM 대비 리밸런싱 더 큼)'}
 
+## Trading share (당일 거래대금)
+
+| metric | value |
+|--------|------:|
+| 레버+인버스 / 전체 ETF % | 36.8 |
+| 레버+인버스 / KOSPI % | 34.5 |
+| 단일종목 LETF / KOSPI % | 2.96 |
+| 레버 TV 조 | 5.77 |
+| KOSPI TV 조 | 16.72 |
+
 ## Product UX (목록 vs 검색)
 
 국내 단일종목 레버/인버스는 소수(삼전·하닉만)라 옆 후보 목록이 맞음. ELW·옵션·개별선물까지 보면 종목이 폭증하므로 그때는 검색/필터. 하이브리드: LETF는 카탈로그, 기타 파생은 검색.
@@ -45,31 +55,31 @@ _Market Ear / Soc Gen AI Casino closing — quantitative mirror, not advice_
 
 ### Concentration matters / 집중도
 
-**Conc_top2 48.3%**
+**Conc_top2 47.8%**
 
-삼성+하닉 48.3% · Top5 55.5% · Top10 62.1% · tickers Top5=['005930', '000660', '005935', '402340', '373220'] (분모=KOSPI 전체시총)
+삼성+하닉 47.8% · Top5 55.0% · Top10 61.6% · tickers Top5=['005930', '000660', '005935', '402340', '373220'] (분모=KOSPI 전체시총)
 
 > paper: elevated concentration amplifies idiosyncratic + leverage feedback
 
 ### Leverage reset / 레버리지 AUM
 
-**$12.94bn KR levered ETF**
+**$0.0bn KR levered ETF**
 
-KR 레버/인버스 ETF AUM $12.94bn (paper anchor $26.0bn). 단일종목 LETF $2.42bn.
+KR 레버/인버스 ETF AUM $0.0bn (paper anchor $26.0bn). 단일종목 LETF $0.0bn.
 
 > paper: paper peak ~$53bn → recent ~$26bn; model is live KR listing sum
 
 ### Leverage vs free float / 유동시총 대비 레버 비중
 
-**0.5472% of KOSPI free float (AUM)**
+**0.0% of KOSPI free float (AUM)**
 
-paper-style AUM/FF = 0.5472% (paper 2.1%). 단일종목 LETF AUM/KOSPI FF = 0.1024%. 노셔널 ΣAUM×|L|/커버종목 FF = 0.4487%. HK·crypto는 분모에 넣지 않음.
+paper-style AUM/FF = 0.0% (paper 2.1%). 단일종목 LETF AUM/KOSPI FF = 0.0%. 노셔널 ΣAUM×|L|/커버종목 FF = None%. HK·crypto는 분모에 넣지 않음.
 
 > paper: Soc Gen chart ≈ levered ETF AUM / free float (not always ×|L|)
 
 ### Foreign vs retail / 외인 vs 개인
 
-**foreign -0.11조 · retail -0.53조**
+**foreign -0.45조 · retail 0.07조**
 
 scope=covered_underlyings_spot · quality=estimated
 
@@ -77,17 +87,17 @@ scope=covered_underlyings_spot · quality=estimated
 
 ### Largest leverage product / 최대 레버 상품
 
-**0193T0 · $0.78bn AUM**
+**0193T0 · $0.0bn AUM**
 
-KR KODEX SK하이닉스단일종목레버리지 · underlying 000660 · L=2.0 · notional $1.57bn · KRX LETF — TR/IR · wag-the-dog 대상. (참고: 하이닉스 HK 메인은 7709.HK. 7708은 현재 유니버스/Yahoo에 없음.)
+KR KODEX SK하이닉스단일종목레버리지 · underlying 000660 · L=2.0 · notional $0.0bn · KRX LETF — TR/IR · wag-the-dog 대상. (참고: 하이닉스 HK 메인은 7709.HK. 7708은 현재 유니버스/Yahoo에 없음.)
 
 > paper: drill-down: ranked product table
 
 ### Hynix wag-the-dog / 하이닉스 ETF 영향도
 
-**LETF/ADV 6.35% · IR 1.3983%**
+**LETF/ADV 9.94% · IR None%**
 
-현물 ADV 5.38조 · LETF TV 0.342조 · AUM 1.953조
+현물 ADV 4.014조 · LETF TV 0.399조 · AUM 0.0조
 
 > paper: YouTube reverse: turnover ratio + short-gamma IR
 
@@ -97,10 +107,10 @@ KR KODEX SK하이닉스단일종목레버리지 · underlying 000660 · L=2.0 ·
 
 | metric | value |
 |--------|------:|
-| KOSPI free float (USD bn, approx) | 2365.17 |
-| KR all levered ETF AUM / KOSPI FF % | 0.5472 |
-| KR single-stock LETF AUM / KOSPI FF % | 0.1024 |
-| KR single-stock notional / covered FF % | 0.4487 |
+| KOSPI free float (USD bn, approx) | 2343.87 |
+| KR all levered ETF AUM / KOSPI FF % | 0.0 |
+| KR single-stock LETF AUM / KOSPI FF % | 0.0 |
+| KR single-stock notional / covered FF % | None |
 | paper anchor % | 2.1 |
 
 ## Concentration (시총 TopN → Conc)
@@ -109,45 +119,45 @@ Conc_topN = Σ(시총 TopN) / KOSPI 전체시총 ×100. constituent 표는 Top30
 
 | metric | value |
 |--------|------:|
-| Conc_top2 삼성+하닉 % | 48.2915 |
-| Conc_top5 % | 55.4601 |
-| Conc_top10 % | 62.0585 |
+| Conc_top2 삼성+하닉 % | 47.8286 |
+| Conc_top5 % | 54.9885 |
+| Conc_top10 % | 61.6352 |
 | Top5 tickers | 005930, 000660, 005935, 402340, 373220 |
-| Top10 tickers | 005930, 000660, 005935, 402340, 373220, 207940, 009150, 005380, 105560, 032830 |
+| Top10 tickers | 005930, 000660, 005935, 402340, 373220, 207940, 009150, 105560, 005380, 032830 |
 
 ## Top 3 ETF by AUM/NAV
 
 | # | venue | ticker | name | AUM $bn | notional $bn |
 |--:|-------|--------|------|--------:|-------------:|
-| 1 | KR | 0193T0 | KODEX SK하이닉스단일종목레버리지 | 0.78 | 1.57 |
-| 2 | KR | 0193W0 | KODEX 삼성전자단일종목레버리지 | 0.61 | 1.22 |
-| 3 | KR | 0195S0 | TIGER SK하이닉스단일종목레버리지 | 0.5 | 1.01 |
+| 1 | KR | 0193T0 | KODEX SK하이닉스단일종목레버리지 | 0.0 | 0.0 |
+| 2 | KR | 0195S0 | TIGER SK하이닉스단일종목레버리지 | 0.0 | 0.0 |
+| 3 | KR | 0194T0 | ACE SK하이닉스단일종목레버리지 | 0.0 | 0.0 |
 
 AUM≈NAV×발행좌수 프록시 (KR MarCap / HK Yahoo marketCap)
 
 ## Hynix — YouTube wag-the-dog reverse
 
-현물 ADV **5.38조** ($3.84bn) · 시총 $654.31bn · day R -0.018000000000000002
+현물 ADV **4.014조** ($2.87bn) · 시총 $634.48bn · day R -0.030299999999999997
 
-KR LETF AUM **1.953조** ($1.4bn) · 일거래 **0.342조** · 노셔널 $2.79bn
+KR LETF AUM **0.0조** ($0.0bn) · 일거래 **0.399조** · 노셔널 $0.0bn
 
 | YouTube metric | value |
 |---------------|------:|
-| LETF 일거래대금 / 현물 당일 거래대금 % | 6.35 (mid) |
-| LETF AUM / 하이닉스 시총 % | 0.2132 |
-| LETF AUM×|L| / 유동시총 % | 0.5922 |
-| 실현 IR (순합 리밸런싱 추정) % | 1.3983 |
-| 인버스 ETF 거래대금 비중 % | 48.88 |
+| LETF 일거래대금 / 현물 당일 거래대금 % | 9.94 (mid) |
+| LETF AUM / 하이닉스 시총 % | 0.0 |
+| LETF AUM×|L| / 유동시총 % | 0.0 |
+| 실현 IR (순합 리밸런싱 추정) % | None |
+| 인버스 ETF 거래대금 비중 % | 39.66 |
 
 ### Hynix KR LETF Top3 AUM
 
 | ticker | name | L | AUM 조 | day TV 조 |
 |--------|------|--:|------:|----------:|
-| 0193T0 | KODEX SK하이닉스단일종목레버리지 | 2.0 | 1.098 | 0.131 |
-| 0195S0 | TIGER SK하이닉스단일종목레버리지 | 2.0 | 0.706 | 0.040 |
-| 0197X0 | SOL SK하이닉스선물단일종목인버스2X | -2.0 | 0.068 | 0.167 |
+| 0193T0 | KODEX SK하이닉스단일종목레버리지 | 2.0 | 0.000 | 0.194 |
+| 0195S0 | TIGER SK하이닉스단일종목레버리지 | 2.0 | 0.000 | 0.044 |
+| 0194T0 | ACE SK하이닉스단일종목레버리지 | 2.0 | 0.000 | 0.000 |
 
-HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)) · HK turnover 16.99% of KR cash turnover (observed) · crypto OI $0.0bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
+HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미공개 (가변 배율 구간)) · HK turnover 14.45% of KR cash turnover (observed) · crypto OI $0.0bn — 규모 비교용. 스왑→한국 기관 헷지 경로 가능 (YouTube wag reverse / 유튜브 하닉 레버 역산 계열).
 
 ## Ranked leverage ETFs (click / open detail)
 
@@ -155,22 +165,22 @@ HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미�
 
 | # | venue | ticker | name | und | L | AUM $bn | notional $bn | impact |
 |--:|-------|--------|------|-----|--:|--------:|-------------:|--------|
-| 1 | KR | 0193T0 | KODEX SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.78 | 1.57 | direct_cash_or_futures |
-| 2 | KR | 0193W0 | KODEX 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.61 | 1.22 | direct_cash_or_futures |
-| 3 | KR | 0195S0 | TIGER SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.5 | 1.01 | direct_cash_or_futures |
-| 4 | KR | 0195R0 | TIGER 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.36 | 0.72 | direct_cash_or_futures |
-| 5 | KR | 0197X0 | SOL SK하이닉스선물단일종목인버스2X | 000660 | -2.0 | 0.05 | 0.1 | direct_cash_or_futures |
-| 6 | KR | 0194M0 | ACE 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.02 | 0.04 | direct_cash_or_futures |
-| 7 | KR | 0194T0 | ACE SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.02 | 0.03 | direct_cash_or_futures |
-| 8 | KR | 0197W0 | SOL SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.02 | 0.03 | direct_cash_or_futures |
-| 9 | KR | 0192L0 | RISE SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.01 | 0.03 | direct_cash_or_futures |
-| 10 | KR | 0193L0 | PLUS 삼성전자선물단일종목인버스2X | 005930 | -2.0 | 0.01 | 0.02 | direct_cash_or_futures |
-| 11 | KR | 0192M0 | RISE 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.02 | direct_cash_or_futures |
-| 12 | KR | 0198D0 | 1Q SK하이닉스선물단일종목레버리지 | 000660 | 2.0 | 0.01 | 0.01 | direct_cash_or_futures |
-| 13 | KR | 0198B0 | 1Q 삼성전자선물단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.01 | direct_cash_or_futures |
-| 14 | KR | 0193K0 | PLUS 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.01 | 0.01 | direct_cash_or_futures |
-| 15 | KR | 0194R0 | KIWOOM SK하이닉스선물단일종목레버리지 | 000660 | 2.0 | 0.0 | 0.01 | direct_cash_or_futures |
-| 16 | KR | 0194N0 | KIWOOM 삼성전자선물단일종목레버리지 | 005930 | 2.0 | 0.0 | 0.01 | direct_cash_or_futures |
+| 1 | KR | 0193T0 | KODEX SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 2 | KR | 0195S0 | TIGER SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 3 | KR | 0194T0 | ACE SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 4 | KR | 0192L0 | RISE SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 5 | KR | 0197W0 | SOL SK하이닉스단일종목레버리지 | 000660 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 6 | KR | 0194R0 | KIWOOM SK하이닉스선물단일종목레버리지 | 000660 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 7 | KR | 0198D0 | 1Q SK하이닉스선물단일종목레버리지 | 000660 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 8 | KR | 0197X0 | SOL SK하이닉스선물단일종목인버스2X | 000660 | -2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 9 | KR | 0193W0 | KODEX 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 10 | KR | 0195R0 | TIGER 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 11 | KR | 0194M0 | ACE 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 12 | KR | 0192M0 | RISE 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 13 | KR | 0193K0 | PLUS 삼성전자단일종목레버리지 | 005930 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 14 | KR | 0194N0 | KIWOOM 삼성전자선물단일종목레버리지 | 005930 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 15 | KR | 0198B0 | 1Q 삼성전자선물단일종목레버리지 | 005930 | 2.0 | 0.0 | 0.0 | direct_cash_or_futures |
+| 16 | KR | 0193L0 | PLUS 삼성전자선물단일종목인버스2X | 005930 | -2.0 | 0.0 | 0.0 | direct_cash_or_futures |
 | — | HK | 7709.HK | CSOP SK Hynix Daily Max (2x) | 000660 | — | — | — | indirect_swap |
 | — | HK | 7747.HK | CSOP Samsung Electronics Daily Max (2x) | 005930 | — | — | — | indirect_swap |
 | — | HK | 7347.HK | CSOP Samsung Electronics Daily Max (-2x) | 005930 | — | — | — | indirect_swap |
@@ -179,5 +189,5 @@ HK notional unobserved (운용사 기준일 AUM 또는 당일 목표 배율 미�
 
 | ticker | day_R | LETF/ADV | lev% FF | wag | realized IR% |
 |--------|------:|---------:|--------:|-----|-------------:|
-| 000660 | -0.018000000000000002 | 0.0635 | 0.5922 | mid | 1.3983 |
-| 005930 | 0.0097 | 0.0219 | 0.3375 | low | 0.6916 |
+| 000660 | -0.030299999999999997 | 0.0994 | None | mid | None |
+| 005930 | -0.0096 | 0.0356 | None | low | None |
