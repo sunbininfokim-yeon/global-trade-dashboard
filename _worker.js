@@ -159,7 +159,9 @@ export default {
 // GH_DISPATCH_TOKEN: 이 저장소 Actions write 권한의 fine-grained PAT. GitHub
 // Actions secret 에 두면 deploy.yml 이 배포 때마다 Worker secret 으로 복사한다.
 // 없으면 GitHub cron 만 남는다.
-const PREOPEN_CRONS = ['25 21 * * *', '5 22 * * *'];
+// 08:05 KST 은 마감 직전 마지막 재시도 (2026-11-16 15007 이 07:54~08:05 에 들어와
+// 07:05 재시도를 놓쳤다).
+const PREOPEN_CRONS = ['25 21 * * *', '5 22 * * *', '5 23 * * *'];
 const PREOPEN_WORKFLOW_URL =
     'https://api.github.com/repos/sunbininfokim-yeon/global-trade-dashboard/actions/workflows/us_kr_direction_preopen.yml/dispatches';
 

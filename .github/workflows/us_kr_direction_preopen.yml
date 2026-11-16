@@ -7,7 +7,7 @@ name: US KR direction preopen
 # GitHub's own schedule is not enough for that window. market_microstructure
 # _daily's 06:13 KST cron has landed at 09:24-11:53 KST (2026-10-27..11-04),
 # i.e. after the cutoff every time. The on-time trigger is the Cloudflare
-# Worker cron (wrangler.jsonc, 21:25 and 22:05 UTC every day), which calls
+# Worker cron (wrangler.jsonc, 21:25 / 22:05 / 23:05 UTC every day), which calls
 # workflow_dispatch with GH_DISPATCH_TOKEN (a GitHub Actions secret that
 # deploy.yml copies to the Worker). The schedule below is a fallback only.
 #
@@ -23,11 +23,18 @@ name: US KR direction preopen
 
 on:
   schedule:
-    # 06:25 KST every day = 21:25 UTC.
-    - cron: '25 21 * * *'
-    # Separate GitHub fallback slots while Cloudflare dispatch is unavailable.
-    - cron: '43 21 * * *'
-    - cron: '17 22 * * *'
+    # GitHub's own schedule lands 3.0-4.7 h late here (measured 2026-11-06..16:
+    # 21:25-22:17 UTC slots ran at 10:04-12:41 KST, after the cutoff every day).
+    # So it is fired ~3.5 h early, every 30 min from 02:50 to 04:50 KST, to land
+    # roughly 06:00-08:30 KST. The gate skips a run that lands before the US
+    # close or after a forecast exists, so the extra slots cost one short job.
+    # The Cloudflare Worker (06:25 / 07:05 / 08:05 KST) is the on-time trigger
+    # once GH_DISPATCH_TOKEN can dispatch (needs Actions: Read and write).
+    - cron: '50 17 * * *'
+    - cron: '20 18 * * *'
+    - cron: '50 18 * * *'
+    - cron: '20 19 * * *'
+    - cron: '50 19 * * *'
   workflow_dispatch:
     inputs:
       target:

@@ -70,6 +70,22 @@ class ResolveTarget(unittest.TestCase):
         self.assertEqual(resolve(at("2026-11-07", "10:00"), "2026-11-08", None, is_session)[:3],
                          ("2026-11-08", False, False))
 
+    def test_early_automatic_run_waits_for_close(self):
+        waiting = lambda target, now: "US source session not closed" if now.hour < 6 else ""
+        target, run, _, why = resolve(at("2026-11-10", "05:10"), "", None, is_session, waiting)
+        self.assertEqual((target, run), ("2026-11-10", False))
+        self.assertIn("waiting", why)
+        self.assertTrue(resolve(at("2026-11-10", "06:40"), "", None, is_session, waiting)[1])
+
+    def test_requested_target_ignores_the_wait(self):
+        waiting = lambda target, now: "US source session not closed"
+        self.assertTrue(resolve(at("2026-11-10", "05:10"), "2026-11-10", None, is_session, waiting)[1])
+
+    def test_existing_forecast_still_wins_over_wait(self):
+        waiting = lambda target, now: "US source session not closed"
+        doc = dict(FORECAST, target_date="2026-11-10")
+        self.assertIn("already", resolve(at("2026-11-10", "05:10"), "", doc, is_session, waiting)[3])
+
 
 if __name__ == "__main__":
     unittest.main()
