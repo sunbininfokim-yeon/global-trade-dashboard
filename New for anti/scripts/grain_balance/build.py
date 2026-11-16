@@ -85,7 +85,9 @@ CROPS = {
     "orange_juice": ("Orange Juice", "오렌지주스", set()),
 }
 # PSD units: 1000 t, except coffee in 1000 60-kg bags.
-UNITS = {"coffee": "kbag60", "cotton": "kbale480"}
+UNITS = {"coffee": "kbag60", "cotton": "kbale480", "orange_juice": "kt65brix"}
+# PSD reports orange juice in tonnes (65 degrees Brix), not thousands.
+SCALE = {"Orange Juice": 0.001}
 # China's stocks are held back from trade for grains; elsewhere the world
 # figure is the headline.
 EX_CHINA = {"wheat", "corn", "soybeans", "rice", "cotton"}
@@ -138,6 +140,9 @@ def fetch():
 def normalize(df):
     df = df.copy()
     df["Attribute_Description"] = df["Attribute_Description"].replace(ATTR_ALIASES)
+    for commodity, k in SCALE.items():
+        m = df.Commodity_Description == commodity
+        df.loc[m, "Value"] = df.loc[m, "Value"] * k
     return df
 
 

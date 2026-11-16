@@ -159,7 +159,7 @@
         if (token !== generation || currentCommodity !== crop) return;
         const c = doc?.crops?.[crop];
         if (!c) return;
-        unit = { kbag60: '백만 포대(60kg)', kbale480: '백만 베일(480파운드)' }[c.unit] || '백만 t';
+        unit = { kbag60: '백만 포대(60kg)', kbale480: '백만 베일(480파운드)', kt65brix: '백만 t(65브릭스)' }[c.unit] || '백만 t';
         // A focused country rewrote the boxes for its own routes; leave them.
         if (typeof tradeFocusCountry === 'undefined' || !tradeFocusCountry) setStats(c);
         const card = host?.querySelector('.trade-focus-card');
