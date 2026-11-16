@@ -287,11 +287,12 @@ def _num(frame, year, col):
     return round(float(frame.loc[year, col]))
 
 
-def china_block(g, w, cur, prev):
-    """China's share of the world for this crop: what it grows, buys and
-    holds. For grains and cotton its stocks are mostly state reserves that
-    do not come to market, which is why the stock checks leave them out."""
-    c = g[g.Country_Name == "China"].pivot_table(
+def country_block(g, w, cur, prev, country="China"):
+    """One country's share of the world for this crop: what it grows, buys
+    and holds. China for every crop (its grain and cotton stocks are mostly
+    state reserves that do not come to market, which is why the stock checks
+    leave them out), and South Korea, the home market."""
+    c = g[g.Country_Name == country].pivot_table(
         index="Market_Year", columns="Attribute_Description", values="Value", aggfunc="sum")
     if c.empty or cur not in c.index:
         return None
@@ -347,7 +348,8 @@ def crop_block(key, g, release):
         risks.append({"kind": "stocks",
                       "text_ko": f"세계 기말재고율 {stu.loc[cur]:.1f}% · 5년 평균 {stu_avg:.1f}%보다 낮음"})
     wx, tally = palm_risks() if key == "palm_oil" else weather_risks(stage_crops)
-    china = china_block(g, w, cur, prev)
+    china = country_block(g, w, cur, prev, "China")
+    korea = country_block(g, w, cur, prev, "Korea, South")
     imp = (china or {}).get("imports")
     if imp and imp["change_pct"] is not None and imp["share_pct"] and imp["share_pct"] >= 5 \
             and abs(imp["change_pct"]) >= 15:
@@ -371,6 +373,7 @@ def crop_block(key, g, release):
                     "stocks_to_use_pct": float(stu.loc[cur]) if has_stocks else None,
                     "stocks_to_use_5y_avg_pct": round(stu_avg, 1) if has_stocks else None},
         "china": china,
+        "korea": korea,
         "producers": producers,
         "risks": risks + wx,
         "weather_tally": tally,

@@ -106,7 +106,7 @@
 
     // China: what it grows, buys and holds. Its grain and cotton stocks are
     // mostly state reserves, which is why the stock check leaves them out.
-    function chinaHtml(ch) {
+    function chinaHtml(ch, title = '중국') {
         if (!ch) return '';
         const row = (k, label, of) => {
             const v = ch[k];
@@ -116,7 +116,7 @@
         const rows = [row('production', '생산', '세계의'), row('consumption', '소비', '세계의'),
             row('imports', '수입', '세계 수입의'), row('ending_stocks', '기말재고', '세계 재고의')].join('');
         if (!rows) return '';
-        return `<p class="trade-rank-group-head" style="margin-top:10px;">중국 (전년 대비)</p>${rows}`;
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">${title} (전년 대비)</p>${rows}`;
     }
 
     function cardHtml(c) {
@@ -139,6 +139,7 @@
             </details>` : '<div class="stock-note" style="margin-top:10px;">주요 리스크: 눈에 띄는 것 없음</div>'}
             ${priceCheckHtml(c.price_check)}
             ${igcHtml(c.igc)}
+            ${chinaHtml(c.korea, '한국')}
             ${chinaHtml(c.china)}
             <p class="trade-rank-group-head" style="margin-top:10px;">주요 생산국 (전년 대비)</p>
             ${producers}
