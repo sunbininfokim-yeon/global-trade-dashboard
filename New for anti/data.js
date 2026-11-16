@@ -584,6 +584,12 @@
             hsCode: "080510", strictHs: true,
             colorScheme: { source: [234, 88, 12], target: [251, 146, 60] }
         },
+        // Orange juice: frozen (200911), not frozen under Brix 20 (200912)
+        // and other (200919), summed. Brazil ships most of it as FCOJ/NFC.
+        orange_juice: {
+            hsCode: "200911,200912,200919",
+            colorScheme: { source: [234, 88, 12], target: [253, 186, 116] }
+        },
         // 1511 = palm oil and its fractions, crude and refined. Palm kernel
         // oil (1513) is a separate, much smaller market and is left out, the
         // same line the monthly pipeline draws (commodity_id palm_oil = 1511).
@@ -1316,6 +1322,14 @@
             topExporter: "남아공 / 이집트",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 080510)
             news: defaultNews("Oranges")
+        },
+        orange_juice: {
+            title: "농산물: 오렌지주스 (Orange Juice)",
+            desc: "오렌지주스(HS 2009.11·12·19, 냉동농축·비농축) 수출입 무역 흐름",
+            totalVolume: "…",
+            topExporter: "브라질",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 200911/200912/200919)
+            news: defaultNews("Orange juice")
         },
         rubber: {
             title: "농산물: 천연고무 (Natural Rubber)",

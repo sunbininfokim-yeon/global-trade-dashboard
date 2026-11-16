@@ -9,7 +9,7 @@
  * weather risks taken from the crop monitor's stage calls.
  */
 (() => {
-    const VIEWS = ['wheat', 'corn', 'soybeans', 'sugar', 'palm_oil', 'coffee', 'rice', 'cotton', 'canola', 'orange'];
+    const VIEWS = ['wheat', 'corn', 'soybeans', 'sugar', 'palm_oil', 'coffee', 'rice', 'cotton', 'canola', 'orange', 'orange_juice'];
     const MAX_WEATHER = 6;
     const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     // PSD thousands -> millions, in the crop's unit (coffee: 60-kg bags).
@@ -87,7 +87,7 @@
             tight_only: '<span style="color:#86efac;">재고가 빠듯한 해에만 가격이 뚜렷이 올랐습니다 · 여유·평년은 차이 없음</span>',
         }[h.verdict] || '<span style="color:#94a3b8;">재고와 가격이 뚜렷이 맞지 않아 참고만</span>';
         return `<p class="trade-rank-group-head" style="margin-top:10px;">재고-가격 검증 (${esc(h.seasons[0])}~${esc(h.seasons[1])})</p>
-            <div class="stock-note">${basis} 5년 평균 대비 ±${pc.band_pct}%로 나눈 해별 국제가격(IMF) 변화: ${parts} · 상관 ${h.corr_gap_vs_change}</div>
+            <div class="stock-note">${basis} 5년 평균 대비 ±${pc.band_pct}%로 나눈 해별 ${pc.proxy_ko ? esc(pc.proxy_ko) : '국제가격'}(IMF) 변화: ${parts} · 상관 ${h.corr_gap_vs_change}</div>
             <div class="stock-note" style="margin-top:2px;">${verdict}</div>`;
     }
 

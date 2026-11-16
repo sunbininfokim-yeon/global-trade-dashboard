@@ -886,6 +886,7 @@ const COMTRADE_TTL = {
     "5201": 1209600, // Raw cotton: 14 days
     "1205": 1209600, // Rapeseed/canola: 14 days
     "080510": 1209600, // Fresh oranges: 14 days
+    "200911,200912,200919": 1209600, // Orange juice (frozen, not frozen, other): 14 days
 
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
     // year, so a week of staleness costs nothing.
@@ -3446,6 +3447,7 @@ const FUTURES = {
     rice:      { symbol: "ZR=F",  unit: "cwt(100파운드)", exchange: "CBOT" },
     // Frozen concentrated orange juice: the only orange contract there is.
     orange:    { symbol: "OJ=F",  unit: "파운드(주스)", exchange: "ICE" },
+    orange_juice: { symbol: "OJ=F", unit: "파운드", exchange: "ICE" },
     copper:    { symbol: "HG=F",  unit: "파운드",    exchange: "COMEX" },
     gold:      { symbol: "GC=F",  unit: "온스",      exchange: "COMEX" },
     silver:    { symbol: "SI=F",  unit: "온스",      exchange: "COMEX" },
