@@ -22,14 +22,27 @@ import io
 import json
 import os
 import statistics
+import sys
 import urllib.request
+
+import sea_ice_forecast
 from datetime import date, datetime, timedelta, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.abspath(os.path.join(HERE, "..", "public", "data", "sea_ice_v1.json"))
-URL = ("https://noaadata.apps.nsidc.org/NOAA/G02135/north/daily/data/"
-       "N_seaice_extent_daily_v3.0.csv")
+DIR = "https://noaadata.apps.nsidc.org/NOAA/G02135/north/daily/data/"
+# The file name carries the product version (v3.0 until 2025, then v4.0).
+# Read the directory listing for the current one, then fall back to known names.
+URL_GUESSES = [DIR + "N_seaice_extent_daily_v4.0.csv", DIR + "N_seaice_extent_daily_v3.0.csv"]
+URL = URL_GUESSES[0]
 BASE = (1981, 2010)
+# PIOMAS monthly ice volume (UW Polar Science Center). Optional input to the
+# outlook; the file name has changed over versions, so try the known ones.
+PIOMAS_URLS = [
+    "https://psc.apl.uw.edu/wordpress/wp-content/uploads/schweiger/ice_volume/PIOMAS.2sst.monthly.Current.v2.1.txt",
+    "https://psc.apl.uw.edu/wordpress/wp-content/uploads/schweiger/ice_volume/PIOMAS.monthly.Current.v2.1.txt",
+    "https://psc.apl.washington.edu/wordpress/wp-content/uploads/schweiger/ice_volume/PIOMAS.2sst.monthly.Current.v2.1.txt",
+]
 
 
 def fetch(url):
@@ -71,7 +84,25 @@ def nearest(daily, d, slack=1):
 
 
 def main():
-    daily = parse(fetch(URL))
+    global URL
+    urls = list(URL_GUESSES)
+    try:
+        import re
+        names = sorted(set(re.findall(r'N_seaice_extent_daily_v[\d.]+\.csv', fetch(DIR))), reverse=True)
+        urls = [DIR + n for n in names] + urls
+    except OSError as e:
+        print(f"목록 실패: {e}", file=sys.stderr)
+    daily = {}
+    for u in urls:
+        try:
+            daily = parse(fetch(u))
+        except OSError as e:
+            print(f"{u}: {e}", file=sys.stderr)
+            continue
+        if daily:
+            URL = u
+            print(f"source {u}")
+            break
     if not daily:
         raise SystemExit("NSIDC 파싱 실패")
     last = max(daily)
@@ -131,7 +162,7 @@ def main():
     doc = {
         "schema_version": "sea-ice-v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source": "NSIDC Sea Ice Index v3 (G02135)",
+        "source": "NSIDC Sea Ice Index (G02135) " + URL.rsplit("_", 1)[-1].replace(".csv", ""),
         "source_url": URL,
         "unit": "백만 km²",
         "baseline": f"{BASE[0]}-{BASE[1]}",
@@ -159,10 +190,30 @@ def main():
         "note_ko": ("해빙 면적(extent)은 해빙 농도 15% 이상인 격자의 면적입니다. 9월이 연중 최소, "
                     "3월이 최대입니다. 북극항로(북동항로)는 보통 8~10월에 열립니다."),
     }
+    volume, vol_src = {}, None
+    for u in PIOMAS_URLS:
+        try:
+            v_ = sea_ice_forecast.parse_piomas_monthly(fetch(u))
+        except (OSError, ValueError) as e:
+            print(f"PIOMAS {u}: {e}", file=sys.stderr)
+            continue
+        if len(v_) >= 300:
+            volume, vol_src = v_, u
+            break
+    print(f"PIOMAS: {len(volume)}개월" + (f" ({vol_src})" if vol_src else " -- 없이 진행"))
+    doc["outlook"] = sea_ice_forecast.outlook(daily, volume or None)
+    doc["outlook"]["volume_source"] = vol_src
+    if volume:
+        last_m = max(volume)
+        doc["volume_latest"] = {"month": f"{last_m[0]}-{last_m[1]:02d}", "volume_1000km3": volume[last_m]}
+
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(doc, f, ensure_ascii=False, indent=1)
     L = doc["latest"]
     print(f"{L['date']}  {L['extent']:.2f}  평년 {L['clim']:.2f}  {L['anomaly_pct']:+.1f}%  {L['rank_ko']}")
+    o = doc["outlook"]
+    print(f"전망 {o['target']}: {o['point']} ({o['method']}, 68% {o['range_68']}, 95% {o['range_95']}, "
+          f"추세 대비 {o['skill_vs_trend']}) · 발행월별 {o['skill_by_issue_month']}")
     if rec:
         print(f"최저 {rec['year']} {rec['min']}  · 9월 추세 {sep_trend}")
 

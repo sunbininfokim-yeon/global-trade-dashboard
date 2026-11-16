@@ -11,6 +11,7 @@ on:
   pull_request:
     paths:
       - 'New for anti/scripts/build_sea_ice.py'
+      - 'New for anti/scripts/sea_ice_forecast.py'
       - '.github/workflows/sea_ice_refresh.yml'
 
 concurrency:
@@ -34,7 +35,7 @@ jobs:
 
       - name: Fetch NSIDC daily extent
         working-directory: "New for anti/scripts"
-        run: python3 build_sea_ice.py
+        run: python3 build_sea_ice.py   # 해빙 + 9월 전망 엔진(sea_ice_forecast.py)
 
       - name: Commit to the pull request branch
         if: github.event_name == 'pull_request'
