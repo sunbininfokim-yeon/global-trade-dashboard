@@ -60,6 +60,17 @@ CONCEPTS = {
     "interest_income": ("InterestIncomeFinanceIncome",),
 }
 
+# Balance keys, read at the fiscal-year end and the prior year end (both are
+# in the same filing). Only trade-only concepts: "TradeAndOther*Receivables"
+# and "TradeAndOtherCurrentPayables" mix in non-trade items and are never used.
+# The face statement often shows only the trade-and-other total; the note
+# split is what makes a strict DSO/DPO (and so the CCC) possible.
+BALANCE_CONCEPTS = {
+    "receivables": ("ShortTermTradeReceivable", "CurrentTradeReceivables"),
+    "payables": ("ShortTermTradePayables", "TradeAndOtherCurrentPayablesToTradeSuppliers",
+                 "TradeAndOtherPayablesToTradeSuppliers"),
+}
+
 
 def instance_from_zip(blob: bytes) -> bytes:
     with zipfile.ZipFile(io.BytesIO(blob)) as z:
@@ -80,9 +91,10 @@ def parse_instance(xml: bytes):
         period = c.find(XBRLI + "period")
         start = period.findtext(XBRLI + "startDate") if period is not None else None
         end = period.findtext(XBRLI + "endDate") if period is not None else None
+        instant = period.findtext(XBRLI + "instant") if period is not None else None
         dims = {m.get("dimension"): (m.text or "").strip() for m in c.iter(XBRLDI + "explicitMember")}
         typed = any(True for _ in c.iter(XBRLDI + "typedMember"))
-        contexts[c.get("id")] = {"start": start, "end": end, "dims": dims, "typed": typed}
+        contexts[c.get("id")] = {"start": start, "end": end, "instant": instant, "dims": dims, "typed": typed}
     facts = []
     for el in root:
         ref = el.get("contextRef")
@@ -102,45 +114,75 @@ def note_bundle(instance: bytes, *, entity_id: str, fs_div: str, fiscal_year_end
     start = (end.replace(year=end.year - 1) + timedelta(days=1)).isoformat()
     uses_scope_axis = any(SCOPE_AXIS in c["dims"] for c in contexts.values())
 
-    def qualifies(ctx) -> bool:
-        if ctx is None or ctx["typed"] or ctx["start"] != start or ctx["end"] != fiscal_year_end:
-            return False
+    def scoped(ctx) -> bool:
         dims = dict(ctx["dims"])
         scope = dims.pop(SCOPE_AXIS, None)
         if uses_scope_axis and scope != SCOPE_MEMBER[fs_div]:
             return False
         return all((axis, member) in TOTAL_MEMBERS for axis, member in dims.items())
 
-    by_concept = {}
+    def qualifies(ctx) -> bool:
+        if ctx is None or ctx["typed"] or ctx["start"] != start or ctx["end"] != fiscal_year_end:
+            return False
+        return scoped(ctx)
+
+    prior_end = end.replace(year=end.year - 1).isoformat()
+    instants = (fiscal_year_end, prior_end)
+
+    def balance_at(ctx):
+        if ctx is None or ctx["typed"] or ctx["instant"] not in instants:
+            return None
+        return ctx["instant"] if scoped(ctx) else None
+
+    by_concept, by_balance = {}, {}
     for f in facts:
+        if not (f["unit"] and f["unit"].upper() == currency):
+            continue
         ctx = contexts.get(f["context"])
-        if qualifies(ctx) and f["unit"] and f["unit"].upper() == currency:
+        if qualifies(ctx):
             by_concept.setdefault(f["concept"], []).append(f)
+        at = balance_at(ctx)
+        if at:
+            by_balance.setdefault((f["concept"], at), []).append(f)
+
+    def single(hits):
+        try:
+            values = {Decimal(h["text"]) for h in hits}
+        except InvalidOperation:
+            return None
+        if len(values) != 1:
+            return None         # absent, or contexts disagree: never pick one
+        value = abs(values.pop())
+        return int(value) if value == value.to_integral_value() else None
+
+    def row(key, concept, hits, value, period_start, period_end):
+        return {
+            "key": key, "basis": BASES[key], "period_start": period_start, "period_end": period_end,
+            "amount": value, "scale": 1,
+            "evidence": {
+                "url": f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt}",
+                "document": "OpenDART 재무제표 원본 XBRL (fnlttXbrl.xml), 회사 태그 주석값 자동 추출",
+                "table": concept,
+                "row": "contexts " + ", ".join(sorted(h["context"] for h in hits)),
+            },
+        }
 
     rows = []
     for key, concepts in CONCEPTS.items():
         for concept in concepts:
             hits = by_concept.get(concept) or []
-            try:
-                values = {Decimal(h["text"]) for h in hits}
-            except InvalidOperation:
-                values = set()
-            if len(values) != 1:
-                continue        # absent, or contexts disagree: never pick one
-            value = abs(values.pop())
-            if value != value.to_integral_value():
-                continue
-            rows.append({
-                "key": key, "basis": BASES[key], "period_start": start, "period_end": fiscal_year_end,
-                "amount": int(value), "scale": 1,
-                "evidence": {
-                    "url": f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt}",
-                    "document": "OpenDART 재무제표 원본 XBRL (fnlttXbrl.xml), 회사 태그 주석값 자동 추출",
-                    "table": concept,
-                    "row": "contexts " + ", ".join(sorted(h["context"] for h in hits)),
-                },
-            })
-            break
+            value = single(hits)
+            if value is not None:
+                rows.append(row(key, concept, hits, value, start, fiscal_year_end))
+                break
+    for key, concepts in BALANCE_CONCEPTS.items():
+        for at in instants:
+            for concept in concepts:
+                hits = by_balance.get((concept, at)) or []
+                value = single(hits)
+                if value is not None:
+                    rows.append(row(key, concept, hits, value, None, at))
+                    break
     if not rows:
         return None
     return {"schema_version": "kfa-pe-cr-reviewed/1", "source": "DART", "entity_id": entity_id,

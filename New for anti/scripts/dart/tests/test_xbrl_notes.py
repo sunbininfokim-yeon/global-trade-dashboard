@@ -98,5 +98,51 @@ class XbrlNotes(unittest.TestCase):
         self.assertTrue(instance_from_zip(buf.getvalue()).startswith(b"<xbrli:xbrl"))
 
 
+def ictx(cid, at, **dims):
+    members = "".join(f'<xbrldi:explicitMember dimension="{a}">{m}</xbrldi:explicitMember>' for a, m in dims.items())
+    seg = f"<xbrli:segment>{members}</xbrli:segment>" if members else ""
+    return (f'<xbrli:context id="{cid}"><xbrli:entity><xbrli:identifier scheme="x">00872984</xbrli:identifier>{seg}'
+            f'</xbrli:entity><xbrli:period><xbrli:instant>{at}</xbrli:instant></xbrli:period></xbrli:context>')
+
+
+class TradeBalances(unittest.TestCase):
+    """E-mart FY2025 (receipt 20260318001024): the face shows only 매출채권 및
+    기타수취채권; the note tags the trade-only part for both year ends."""
+    CONS = {AX: "ifrs-full:ConsolidatedMember"}
+    CTX = [ictx("CFY2025eFY_c", "2025-12-31", **CONS), ictx("PFY2024eFY_c", "2024-12-31", **CONS),
+           ictx("CFY2025eFY_c_amort", "2025-12-31", **{**CONS, "ifrs-full:CategoriesOfFinancialAssetsAxis":
+                                                       "ifrs-full:FinancialAssetsAtAmortisedCostCategoryMember"}),
+           ictx("CFY2025eFY_c_allow", "2025-12-31", **{**CONS, "ifrs-full:ClassesOfFinancialAssetsAxis":
+                                                       "ifrs-full:AllowanceForCreditLossesMember"}),
+           ictx("CFY2025eFY_s", "2025-12-31", **{AX: "ifrs-full:SeparateMember"})]
+    FACTS = [("dart:ShortTermTradeReceivable", "CFY2025eFY_c", "1078625000000"),
+             ("dart:ShortTermTradeReceivable", "CFY2025eFY_c_amort", "1078625000000"),
+             ("dart:ShortTermTradeReceivable", "PFY2024eFY_c", "1215567000000"),
+             ("ifrs-full:CurrentTradeReceivables", "CFY2025eFY_c_allow", "-145423000000"),   # allowance row: ignored
+             ("ifrs-full:TradeAndOtherCurrentReceivables", "CFY2025eFY_c", "1476072239368"), # trade AND other: never
+             ("ifrs-full:TradeAndOtherPayablesToTradeSuppliers", "CFY2025eFY_c", "1340279000000"),
+             ("ifrs-full:TradeAndOtherPayablesToTradeSuppliers", "PFY2024eFY_c", "1392793000000"),
+             ("ifrs-full:TradeAndOtherCurrentPayables", "CFY2025eFY_c", "3020401025390"),
+             ("ifrs-full:TradeAndOtherCurrentReceivables", "CFY2025eFY_s", "388632431039")]
+
+    def test_closing_and_opening_from_one_filing(self):
+        pack = note_bundle(instance(self.FACTS, self.CTX), entity_id="00872984", fs_div="CFS",
+                           fiscal_year_end="2025-12-31", receipt="20260318001024")
+        got = {(r["key"], r["period_end"]): (r["amount"], r["period_start"]) for r in pack["rows"]}
+        self.assertEqual(got, {("receivables", "2025-12-31"): (1_078_625_000_000, None),
+                               ("receivables", "2024-12-31"): (1_215_567_000_000, None),
+                               ("payables", "2025-12-31"): (1_340_279_000_000, None),
+                               ("payables", "2024-12-31"): (1_392_793_000_000, None)})
+        facts = reviewed_facts(pack, {"entity_id": "00872984", "fs_div": "CFS", "currency": "KRW", "source": "DART",
+                                      "fiscal_year_end": "2025-12-31"})
+        self.assertEqual(facts[("receivables", None, "2024-12-31")]["nature"], "balance")
+
+    def test_disagreeing_contexts_leave_the_key_out(self):
+        facts = self.FACTS + [("dart:ShortTermTradeReceivable", "CFY2025eFY_c", "999")]
+        pack = note_bundle(instance(facts, self.CTX), entity_id="00872984", fs_div="CFS",
+                           fiscal_year_end="2025-12-31", receipt="x")
+        self.assertNotIn(("receivables", "2025-12-31"), {(r["key"], r["period_end"]) for r in pack["rows"]})
+
+
 if __name__ == "__main__":
     unittest.main()
