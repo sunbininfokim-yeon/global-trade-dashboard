@@ -337,6 +337,45 @@ def apply_input(doc: dict, extra: dict) -> None:
     doc["offices"].sort(key=lambda o: (OFFICE_ORDER.get(o["key"], 9), o.get("system_id") or ""))
 
 
+def settle_next(office: dict, today: str) -> None:
+    """'다음 선거'가 이미 치러졌으면 다음 선거에서 뺀다.
+    치러졌다 = 날짜가 오늘(빌드 기준일) 이전이거나, 그 날짜 이후의 정기 선거 기록이 이미 있다.
+    결과가 아직 없으면 next_held 로 남겨 화면이 '치러짐 · 결과 수집 전'이라고 말하게 한다."""
+    nxt = office.get("next") or {}
+    when = nxt.get("date")
+    if not when:
+        return
+    regular = [r for r in office.get("records") or [] if not r.get("by_election")]
+    recorded = any(r.get("date", "") >= when for r in regular)
+    if when >= today and not recorded:
+        return
+    office["next"] = None
+    if not recorded:
+        office["next_held"] = {k: nxt.get(k) for k in ("election_id", "date", "label_ko")}
+    main = regular[0] if regular else None
+    base = when if not recorded else (main or {}).get("date", when)
+    if office.get("term_years"):
+        office["next_due"] = {"year": int(base[:4]) + int(office["term_years"]), "basis": "last_election_plus_term",
+                              "note_ko": "직전 정기 선거 연도 + 임기. 조기 선거·해산이 있으면 앞당겨진다."}
+
+
+def data_warnings(doc: dict) -> list[str]:
+    """숫자가 맞지 않는 기록. 오류로 막지 않고 목록으로 남긴다 -- 검수 대상."""
+    out = []
+    for office in doc["offices"]:
+        for rec in office.get("records") or []:
+            where = rec.get("election_id")
+            seats = [s.get("seats") for s in rec.get("seats") or [] if isinstance(s.get("seats"), int)]
+            if rec.get("seats_total") and seats and sum(seats) != rec["seats_total"]:
+                out.append(f"{where}: 정당별 의석 합 {sum(seats)} ≠ 정수 {rec['seats_total']}")
+            rounds = rec.get("rounds") or [{"round": 1, "candidates": rec.get("candidates")}]
+            for rnd in rounds:
+                shares = [c["vote_pct"] for c in rnd.get("candidates") or [] if isinstance(c.get("vote_pct"), (int, float))]
+                if shares and sum(shares) > 100.5:
+                    out.append(f"{where}: {rnd.get('round', 1)}차 득표율 합 {sum(shares):.1f}% (한 표에 여러 선거가 섞였을 수 있음)")
+    return out
+
+
 def build(today: str) -> dict[str, dict]:
     systems = load(DATA / "elections_system_v1.json")["systems"]
     board = load(DATA / "elections_board_v1.json")
@@ -371,10 +410,14 @@ def build(today: str) -> dict[str, dict]:
                 nxt = {"election_id": event["id"], "date": day if DATE_FULL.match(day) else None,
                        "date_status": event.get("status"), "label_ko": event.get("label_ko"),
                        "note_ko": text(event.get("notes"))}
-                if nxt["date"] is None or nxt["date"] >= today:
-                    cur = office["next"]
-                    if cur is None or (nxt["date"] or "9999") < (cur["date"] or "9999"):
-                        office["next"] = nxt
+                # 오늘 이후 가장 이른 날짜를 고른다. 오늘 이후가 없으면 이미 지난 가장 최근 일정을 남겨
+                # settle_next 가 '치러짐 · 결과 수집 전'으로 바꾼다 (지난 일정을 버리면 화면이 그 선거를 잊는다).
+                def rank(row):
+                    d = row["date"] or "9999-12-31"
+                    return (0, d) if d >= today else (1, "".join(chr(0x10FFFF - ord(ch)) for ch in d))
+                cur = office["next"]
+                if cur is None or rank(nxt) < rank(cur):
+                    office["next"] = nxt
             prev = record_from_previous(event)
             if prev and not any(r["date"] == prev["date"] for r in office["records"]):
                 office["records"].append(prev)
@@ -413,6 +456,9 @@ def build(today: str) -> dict[str, dict]:
                                      "issues_expected": iso3 in ISSUE_COUNTRIES})
         apply_input(doc, extra)
     for doc in docs.values():
+        for office in doc["offices"]:
+            settle_next(office, today)
+        doc["data_warnings"] = data_warnings(doc)
         dates = [r["date"] for o in doc["offices"] for r in o["records"]]
         doc["latest_election"] = max(dates) if dates else None
         doc["records_total"] = sum(len(o["records"]) for o in doc["offices"])
@@ -425,6 +471,7 @@ def render(docs: dict[str, dict], today: str) -> dict[str, str]:
         "schema": "election_records_index_v1",
         "built_for": today,
         "countries": {iso3: {"records": doc["records_total"], "latest_election": doc["latest_election"],
+                             "warnings": len(doc.get("data_warnings") or []),
                              "researched": any(r.get("origin") == "researched" for o in doc["offices"] for r in o["records"])}
                       for iso3, doc in sorted(docs.items())},
     }
@@ -435,10 +482,14 @@ def render(docs: dict[str, dict], today: str) -> dict[str, str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
-    parser.add_argument("--today", default=None, help="YYYY-MM-DD; defaults to the board's as_of")
+    parser.add_argument("--today", default=None, help="YYYY-MM-DD; defaults to the latest as_of of the board and the inputs")
     args = parser.parse_args()
     board = load(DATA / "elections_board_v1.json")
-    today = args.today or str(board.get("as_of") or board.get("generated_at") or date.today().isoformat())[:10]
+    # 빌드 기준일: 보드 기준일과 조사 입력 기준일 중 가장 늦은 날. 실행 날짜를 쓰지 않는 것은
+    # --check 가 날마다 결과를 바꾸지 않게 하려는 것이다(화면은 실제 날짜로 한 번 더 거른다).
+    dates = [str(board.get("as_of") or board.get("generated_at") or "")[:10]]
+    dates += [str(load(p).get("as_of") or "")[:10] for p in CONFIG.glob("*.json")] if CONFIG.exists() else []
+    today = args.today or max([d for d in dates if DATE_FULL.match(d)] or [date.today().isoformat()])
     files = render(build(today), today)
     if args.check:
         stale = [name for name, body in files.items()
