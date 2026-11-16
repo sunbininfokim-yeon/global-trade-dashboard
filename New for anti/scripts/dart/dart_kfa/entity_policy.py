@@ -27,6 +27,8 @@ ENTITY_OVERRIDES: tuple[dict[str, str], ...] = (
 
 # Intentionally broad only after the policy has already elected to fail closed.
 FINANCIAL_NAME_HINTS = ("은행", "금융", "보험", "생명", "화재", "bank", "financial", "insurance")
+# Only for KSIC 64992 (holding companies): what a *financial* holding's name says.
+FINANCIAL_HOLDING_HINTS = ("금융", "은행", "보험", "생명", "화재", "증권", "캐피탈", "카드", "financial", "bank", "insurance")
 
 # These calculations are built on industrial working-capital, debt and cash-flow
 # assumptions and must never be interpreted for deposit-taking or insurance
@@ -89,6 +91,15 @@ def classify_entity(corp: dict[str, Any] | None = None) -> dict[str, Any]:
     industry = _norm(raw_industry)
     if source == "dart" and industry.removeprefix("k") in {"64911", "64913"}:
         return _policy("specialized_credit_finance", status="complete", source=source, evidence=f"ksic:{raw_industry}")
+    # 64992 is "지주회사" -- holding companies of any kind. HD한국조선해양,
+    # SK㈜, LG are 64992 too; only the name says whether it holds banks and
+    # insurers (KB금융지주, 한국금융지주, 메리츠금융지주) or shipyards.
+    if source == "dart" and industry.removeprefix("k") == "64992":
+        holding_name = _norm(corp.get("name") or corp.get("corp_name") or corp.get("entity"))
+        if not any(h in holding_name for h in FINANCIAL_HOLDING_HINTS):
+            return _policy("industrial_or_unknown", status="partial", source=source,
+                           evidence=f"ksic:{raw_industry}:nonfinancial_holding_name")
+        return _policy("financial_other", status="complete", source=source, evidence=f"ksic:{raw_industry}:financial_holding_name")
     if source == "dart" and industry.removeprefix("k").startswith("649"):
         return _policy("financial_other", status="complete", source=source, evidence=f"ksic:{raw_industry}")
     if industry.startswith("k65") or industry.startswith("65"):

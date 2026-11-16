@@ -35,6 +35,13 @@ def resolve_industry(kits, *, canonical, corp=None, requested=None):
             mapped = "manufacturing"
         else:
             mapped = "general"
+        # 64992 (지주회사) also covers non-financial holdings -- HD한국조선해양,
+        # SK, LG. Only a financial holding stays on the financial kit; the
+        # rest fall to "general" (their consolidated mix has no single kit).
+        if mapped == "financial" and number.startswith("64992"):
+            from .entity_policy import classify_entity
+            if not classify_entity({**corp, "induty_code": number})["is_financial_entity"]:
+                mapped = "general"
         if mapped == "financial":
             return mapped, "dart_ksic", code
     if requested is not None:
