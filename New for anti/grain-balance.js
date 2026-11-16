@@ -110,7 +110,7 @@
         if (!ch) return '';
         const row = (k, label, of) => {
             const v = ch[k];
-            if (!v || !v.kt) return '';
+            if (!v || !v.kt || v.kt < 50) return '';  // under 0.05 Mt prints as 0.0
             return `<div class="gb-line"><span>${label}${v.share_pct != null ? ` <span class="stock-note">${of} ${v.share_pct}%</span>` : ''}</span><span>${mt(v.kt)} ${pct(v.change_pct)}</span></div>`;
         };
         const rows = [row('production', '생산', '세계의'), row('consumption', '소비', '세계의'),
