@@ -1,0 +1,68 @@
+name: KFA market caps daily
+
+# Refreshes New for anti/public/data/kfa_market_v1.json -- the Naver Finance
+# close and 시가총액 for every company with a PE/CR engine snapshot. The
+# company calculator divides these by the snapshot's DART denominators
+# (PER / PBR / PSR / EV/EBITDA / P/FCF), so the multiples move daily without
+# rerunning the engine. 07:30 UTC = 16:30 KST, after the KRX close (15:30)
+# and the closing auction. Listed in deploy.yml's workflow_run so the file
+# reaches Cloudflare. On a KRX holiday the close does not move and the file
+# differs only in generated_at -- that still commits (one small file a day).
+
+on:
+  schedule:
+    - cron: '30 7 * * 1-5'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'tools/ops/fetch_kfa_market.py'
+      - '.github/workflows/kfa_market_daily.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kfa-market-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Exits 1 when a company failed, after writing the rest (the failed one
+      # keeps its previous quote, flagged stale) -- commit first, then fail.
+      - name: Fetch market caps
+        id: build
+        continue-on-error: true
+        run: python -u tools/ops/fetch_kfa_market.py
+      - name: Upload built file (dry run artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: kfa-market
+          path: New for anti/public/data/kfa_market_v1.json
+          if-no-files-found: warn
+      - name: Commit refreshed data
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/kfa_market_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh KFA market caps'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1
+      - name: Surface failures after persisting the rest
+        if: steps.build.outcome == 'failure'
+        run: exit 1
