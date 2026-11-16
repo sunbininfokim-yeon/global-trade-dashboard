@@ -1905,6 +1905,10 @@ const renderOceanRegionPanel = (region) => {
             </div>
             <div class="climate-sub">${region.latest_month} · 최근 12개월 평균 ${sign(region.mean_12m)}${region.mean_12m.toFixed(2)}°C</div>
             ${sstSameMonthRank(region)}
+            ${(() => {
+                const j = Object.values(climateGlobalCache?.jma?.indices || {}).find((x) => x.oisst_region === region.id);
+                return j ? `<div class="climate-sub" style="margin-top:2px;">교차 확인 · 일본 기상청(COBE-SST) ${j.label_ko} ${j.latest >= 0 ? '+' : ''}${j.latest.toFixed(1)}°C (${j.as_of}, 박스 범위가 조금 다름)</div>` : '';
+            })()}
             ${sstSparkline(s)}
             <div class="sst-axis"><span>${s[0]?.[0] ?? ''}</span><span>${region.latest_month}</span></div>
             ${sstLevelNote(region)}
@@ -2017,6 +2021,13 @@ const handleClimateDomAction = (e) => {
     if (t.closest('[data-ocean-close]')) {
         e.preventDefault();
         selectedOceanRegion = null;
+        showClimateWorld();
+        return;
+    }
+    const oceanOpen = t.closest('[data-ocean-open]');
+    if (oceanOpen) {
+        e.preventDefault();
+        selectedOceanRegion = oceanOpen.getAttribute('data-ocean-open');
         showClimateWorld();
         return;
     }
@@ -3946,11 +3957,12 @@ const setClimateMapLegend = (mode) => {
 const renderEnsoBars = (series, history, opts = {}) => {
     if (!series?.length) return '';
     const vals = series.map(s => s.oni);
-    const { floorTop = 2.8, digits = 1, legend = '점선 = 과거 최강 엘니뇨 정점, 파선 = NOAA 강도 구간' } = opts;
+    const { floorTop = 2.8, digits = 1, legend = '점선 = 과거 최강 엘니뇨 정점, 파선 = NOAA 강도 구간', peakWord = '최고' } = opts;
     const peaks = (history?.top_peaks || []).slice(0, 2);
     const lines = (history?.thresholds || []).filter(t => t.value > 0 || Math.min(...vals) < 0);
     const top = Math.max(floorTop, ...vals, ...peaks.map(p => p.peak)) + 0.15;
-    const bottom = Math.min(0, ...vals, ...lines.map(t => t.value)) - (Math.min(...vals) < 0 ? 0.1 : 0);
+    const bottom = Math.min(0, ...vals, ...lines.map(t => t.value), ...peaks.map(p => p.peak)) - (Math.min(...vals) < 0 ? 0.15 : 0)
+        - (peaks.some(p => p.peak < 0) ? 0.45 : 0);   // room for labels under low lines
     const H = 150;
     const y = (v) => ((top - v) / (top - bottom)) * H;
     const zero = y(0);
@@ -3964,11 +3976,11 @@ const renderEnsoBars = (series, history, opts = {}) => {
     }).join('');
     // Labels sit on the side the bars leave empty (the series climbs to the
     // right, so positive lines are labelled on the left), above the bars.
-    const rule = (v, label, style, color, side) => `<div style="position:absolute;left:0;right:0;top:${y(v).toFixed(1)}px;border-top:1px ${style};z-index:1;">
-            <span style="position:absolute;${side};top:-13px;font-size:10px;color:${color};background:rgba(15,23,42,0.8);padding:0 3px;border-radius:3px;white-space:nowrap;z-index:2;">${label}</span></div>`;
+    const rule = (v, label, style, color, side, below = false) => `<div style="position:absolute;left:0;right:0;top:${y(v).toFixed(1)}px;border-top:1px ${style};z-index:1;">
+            <span style="position:absolute;${side};top:${below ? 2 : -13}px;font-size:10px;color:${color};background:rgba(15,23,42,0.8);padding:0 3px;border-radius:3px;white-space:nowrap;z-index:2;">${label}</span></div>`;
     const ruleHtml = [
         ...lines.map(t => rule(t.value, `${fmt(t.value)} ${t.label_ko}`, 'dashed rgba(148,163,184,0.45)', '#94a3b8', t.value > 0 ? 'left:0' : 'right:0')),
-        ...peaks.map((p, i) => rule(p.peak, `${p.label} 최고 ${fmt(p.peak)}`, 'dotted rgba(251,191,36,0.8)', '#fcd34d', `left:${i ? 118 : 0}px`)),
+        ...peaks.map((p, i) => rule(p.peak, `${p.label} ${peakWord} ${fmt(p.peak)}`, 'dotted rgba(251,191,36,0.8)', '#fcd34d', `left:${i ? 118 : 0}px`, p.peak < 0)),
     ].join('');
     return `<div class="climate-enso-chart" title="ONI 최근 ${series.length}개 계절" style="position:relative;height:${H}px;margin-top:12px;">
             <div style="position:absolute;left:0;right:0;top:${zero.toFixed(1)}px;border-top:1px solid rgba(148,163,184,0.35);"></div>
@@ -3979,11 +3991,157 @@ const renderEnsoBars = (series, history, opts = {}) => {
         ${history?.rank_ko ? `<div class="climate-sub" style="margin-top:4px;">${history.rank_ko} · ${legend}</div>` : ''}`;
 };
 
+/**
+ * Ocean regions that feed each producing country's weather. These are the
+ * commonly cited teleconnection paths (same reasoning as each region's
+ * "affects" list), not links our models have tested -- the card says so.
+ */
+const COUNTRY_SST_REGIONS = {
+    'Argentina': ['nino34', 'south_atlantic'],
+    'Australia': ['nino34', 'iod_east', 'iod_west', 'coral_sea'],
+    'Brazil': ['nino34', 'south_atlantic', 'atlantic_nino'],
+    'Canada': ['north_pacific', 'nino34'],
+    'China': ['west_pacific', 'south_china_sea'],
+    'Colombia': ['nino34', 'nino12'],
+    'Ethiopia': ['iod_west', 'arabian_sea'],
+    'France': ['mediterranean', 'subpolar_atlantic'],
+    'India': ['bay_of_bengal', 'arabian_sea', 'iod_west', 'nino34'],
+    'Indonesia': ['iod_east', 'nino34', 'west_pacific'],
+    'Malaysia': ['south_china_sea', 'nino34'],
+    'Nigeria': ['atlantic_nino'],
+    'Russia': ['subpolar_atlantic'],
+    'South Africa': ['nino34'],
+    'Thailand': ['south_china_sea', 'bay_of_bengal', 'nino34'],
+    'Uganda': ['iod_west'],
+    'Ukraine': ['mediterranean'],
+    'United States': ['nino34', 'north_pacific', 'gulf_of_mexico', 'atlantic_mdr'],
+    'Vietnam': ['south_china_sea', 'nino34'],
+    'Ivory Coast': ['atlantic_nino'],
+    'Ghana': ['atlantic_nino'],
+};
+
+const sstBand = (r) => {
+    const lv = sstLevels(r.series || []);
+    if (!lv || r.latest == null) return null;
+    return r.latest >= lv.p99 ? 'extreme' : r.latest >= lv.p90 ? 'heat' : r.latest <= lv.p10 ? 'cold' : 'normal';
+};
+const SST_BAND_STYLE = {
+    extreme: ['극단', '#f87171'], heat: ['해양열파', '#fbbf24'],
+    cold: ['한랭', '#7dd3fc'], normal: ['평년', '#94a3b8'],
+};
+
+let ensoAnalogDoc = null;
+let ensoAnalogPromise = null;
+const loadEnsoAnalogs = () => {
+    if (ensoAnalogPromise) return ensoAnalogPromise;
+    ensoAnalogPromise = fetch('/public/data/enso_analogs_v1.json', { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { ensoAnalogDoc = d; return d; })
+        .catch(() => null);
+    return ensoAnalogPromise;
+};
+
+/**
+ * "엘니뇨 때 과거 성적": each main crop's national yield in past strong El
+ * Nino years against its own trend (enso_analogs/build.py). The harvest of
+ * the event year and of the next year are both shown, since the same event
+ * reaches different crops a season apart.
+ */
+const renderEnsoAnalogCard = (countryName) => {
+    const c = ensoAnalogDoc?.countries?.[countryName];
+    if (!c?.crops?.length) return '';
+    const ev = ensoAnalogDoc.events || [];
+    const f = (v) => (v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`);
+    const col = (v) => (v == null ? '#94a3b8' : v <= -3 ? '#f87171' : v < 0 ? '#fbbf24' : '#86efac');
+    const cell = (sm) => (sm?.n ? `<span style="color:${col(sm.mean)};font-weight:600;">${f(sm.mean)}</span>
+        <span style="color:#64748b;font-size:10px;"> ${sm.below}/${sm.n}해 하락</span>` : '—');
+    const cur = ensoAnalogDoc.current_episode;
+    const head = cur ? `지금 강한 엘니뇨(${cur.year}년 발생)가 진행 중이라, ${cur.year}년 수확과 ${cur.year + 1}년 수확이 아래 표의 해당 열에 대응합니다.` : '';
+    const rows = c.crops.map((x) => `
+        <div class="climate-table-row" style="align-items:baseline;">
+            <span style="flex:1;">${x.label_ko}</span>
+            <span style="width:36%;text-align:right;">${cell(x.y0)}</span>
+            <span style="width:36%;text-align:right;">${cell(x.y1)}</span>
+        </div>`).join('');
+    const detail = c.crops.map((x) => `
+        <div class="climate-sub" style="margin-top:6px;"><b>${x.label_ko}</b> (평소 해마다 ±${x.normal_sd_pct ?? '—'}% 정도 출렁임, 자료 ${x.last_year}년까지)</div>
+        <div class="climate-sub" style="font-size:10px;">${x.events.map((e) => `${e.event}: ${f(e.dev_y0)} → ${f(e.dev_y1)}`).join(' · ')}</div>`).join('');
+    return `<div class="climate-card">
+        <h3>엘니뇨 때 과거 성적 <span class="src-tag">FAOSTAT · ${ev.length}회</span></h3>
+        <div class="climate-sub" style="margin-bottom:6px;">강한 엘니뇨(${ev.map((e) => e.year).join('·')}) 해의 전국 단수, 추세 대비.
+            ${head}</div>
+        <div class="climate-table-row" style="color:#64748b;font-size:10px;"><span style="flex:1;">작물</span><span style="width:36%;text-align:right;">발생 해 수확</span><span style="width:36%;text-align:right;">다음 해 수확</span></div>
+        ${rows}
+        <details class="climate-fold" style="margin-top:6px;">
+            <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">해마다 보기 (발생 해 → 다음 해) ▾</summary>
+            ${detail}
+        </details>
+        <div class="climate-sub" style="margin-top:6px;">전국 평균이라 산지별 차이는 묻힙니다. 예측이 아니라 과거 기록입니다.</div>
+    </div>`;
+};
+
+/** "관련 해역" card on a country's left panel. */
+const renderCountrySstCard = (countryName) => {
+    const ids = COUNTRY_SST_REGIONS[countryName] || [];
+    const all = sstRegionsDoc?.regions || [];
+    const rows = ids.map((id) => all.find((r) => r.id === id)).filter(Boolean)
+        .map((r) => ({ r, band: sstBand(r) })).filter((x) => x.band);
+    if (!rows.length) return '';
+    const order = { extreme: 0, heat: 1, cold: 2, normal: 3 };
+    rows.sort((a, b) => order[a.band] - order[b.band]);
+    const hot = rows.filter((x) => x.band === 'extreme' || x.band === 'heat').length;
+    return `<div class="climate-card">
+        <h3>관련 해역 수온 ${hot ? `<span class="climate-status-pill red" style="margin-left:6px;">이상고온 ${hot}곳</span>` : ''}</h3>
+        ${rows.map(({ r, band }) => {
+            const [word, color] = SST_BAND_STYLE[band];
+            return `<div class="climate-table-row climate-click" data-ocean-open="${r.id}" role="button" tabindex="0" style="cursor:pointer;">
+                <span>${r.label_ko.replace(/\s*\(.*\)$/, '')}</span>
+                <span style="color:${color};font-weight:600;">${r.latest >= 0 ? '+' : ''}${r.latest.toFixed(1)}°C · ${word}</span>
+            </div>`;
+        }).join('')}
+        <div class="climate-sub" style="margin-top:6px;">${all[0]?.latest_month || ''} 기준 · 기준선은 해역별 1991-2020년 상위 10%·1%.
+            이 나라와의 연결은 일반적으로 알려진 기후 경로이며 우리 모델로 검증한 것은 아닙니다. 누르면 해역 추이가 열립니다.</div>
+    </div>`;
+};
+
+/**
+ * One card at the top of the world view: which ocean regions are in their
+ * marine-heatwave or extreme band right now (same levels as the region
+ * panel), so nobody has to click seventeen boxes to find them.
+ */
+const renderSstAlertCard = () => {
+    const regions = sstRegionsDoc?.regions || [];
+    const rows = regions.map((r) => ({ r, band: sstBand(r) }))
+        .filter((x) => x.band && x.band !== 'normal');
+    if (!regions.length) return '';
+    const by = (b) => rows.filter((x) => x.band === b).sort((a, c) => c.r.latest - a.r.latest);
+    const name = (r) => r.label_ko.replace(/\s*\(.*\)$/, '');
+    const chip = ({ r }, color) => `<span class="oa-chip climate-click" data-ocean-open="${r.id}" role="button" tabindex="0"
+        style="cursor:pointer;border-color:${color};color:${color};">${name(r)} ${r.latest >= 0 ? '+' : ''}${r.latest.toFixed(1)}°C</span>`;
+    const group = (list, label, color) => list.length ? `
+        <div class="climate-sub" style="margin-top:8px;color:${color};font-weight:600;">${label} ${list.length}곳</div>
+        <div class="ocean-affects">${list.map((x) => chip(x, color)).join('')}</div>` : '';
+    const extreme = by('extreme'); const heat = by('heat'); const cold = by('cold');
+    const month = regions[0]?.latest_month || '';
+    return `<div class="climate-card">
+        <h3>해역 수온 경보 <span class="src-tag">${month} · ${regions.length}개 해역</span></h3>
+        ${!rows.length ? '<div class="climate-sub">모든 해역이 평년 범위입니다.</div>' : ''}
+        ${group(extreme, '극단 (1991-2020년 상위 1% 이상)', '#f87171')}
+        ${group(heat, '해양열파 (상위 10% 이상)', '#fbbf24')}
+        ${group(cold, '한랭 (하위 10% 이하)', '#7dd3fc')}
+        <div class="climate-sub" style="margin-top:8px;">해역을 누르면 추이와 기준선이 열립니다.</div>
+    </div>`;
+};
+
 const renderClimateWorldLeft = async () => {
     const g = await loadClimateGlobal();
+    await loadSstRegions();
     await loadCityWx();
     const enso = g?.enso || {};
     const iod = g?.iod || {};
+    const pdo = g?.pdo || {};
+    const jmaN3 = g?.jma?.indices?.nino3 || null;
+    const jmaIod = g?.jma?.indices?.dmi || g?.jma?.indices?.iobw || null;
     const amo = g?.north_atlantic || {};
     const continents = g?.continent_temp_anomaly?.values || [];
     const maxAbsC = Math.max(0.5, ...continents.map(c => Math.abs(c.anomaly || 0)));
@@ -3999,6 +4157,7 @@ const renderClimateWorldLeft = async () => {
     forecastCountryTitle.textContent = '전역 기후 모니터';
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
+            ${renderSstAlertCard()}
             <div class="climate-card">
                 <h3>ENSO · Niño 3.4 <span class="src-tag">${enso.source || 'NOAA CPC'}</span></h3>
                 <div class="climate-big ${enso.latest_c < 0 ? 'neg' : 'pos'}">
@@ -4007,6 +4166,9 @@ const renderClimateWorldLeft = async () => {
                 <div class="climate-sub">${enso.state_ko || '상태 미정'}
                     ${enso.prob_continue_pct != null ? ` · 지속 확률 ${enso.prob_continue_pct}%` : ''}</div>
                 ${renderEnsoBars(enso.series, enso.history)}
+                ${jmaN3 ? `<div class="climate-sub" style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(148,163,184,.15);">
+                    교차 확인 · 일본 기상청(COBE-SST) ${jmaN3.label_ko} <b style="color:${jmaN3.latest >= 0 ? '#fca5a5' : '#7dd3fc'};">${jmaN3.latest >= 0 ? '+' : ''}${jmaN3.latest.toFixed(1)}°C</b> (${jmaN3.as_of})
+                    <span style="color:#64748b;">· NOAA와 독립된 수온 분석, 해역이 조금 달라(Niño 3 = 150°W~90°W) 값이 같지는 않음</span></div>` : ''}
                 <div class="climate-sub" style="margin-top:4px;">기준: ${climateAsOf || '—'}</div>
             </div>
             <div class="climate-card">
@@ -4018,6 +4180,8 @@ const renderClimateWorldLeft = async () => {
                     <span class="climate-status-pill ${ (iod.latest||0) >= 0 ? 'red' : 'blue' }">${iod.state_ko || '—'}</span>
                 </div>
                 <div class="climate-sub">${iod.note_ko || ''}${iod.as_of ? ` · ${iod.as_of} 기준` : ''}</div>
+                ${jmaIod ? `<div class="climate-sub" style="margin-top:4px;">교차 확인 · 일본 기상청 ${jmaIod.label_ko}
+                    <b style="color:${jmaIod.latest >= 0 ? '#fca5a5' : '#7dd3fc'};">${jmaIod.latest >= 0 ? '+' : ''}${jmaIod.latest.toFixed(2)}</b> (${jmaIod.as_of})</div>` : ''}
                 ${iod.series?.length ? `<details class="climate-fold" style="margin-top:6px;">
                     <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">
                         최근 12개월 추이·과거 정점 보기 ▾</summary>
@@ -4025,6 +4189,25 @@ const renderClimateWorldLeft = async () => {
                         { floorTop: 1.0, digits: 2, legend: '점선 = 과거 최강 양의 IOD, 파선 = ±0.4 IOD 기준' })}
                 </details>` : ''}
             </div>
+            ${pdo.latest != null ? `<div class="climate-card">
+                <h3>PDO · 태평양 10년 주기 진동 <span class="src-tag">${pdo.source || 'NOAA NCEI'}</span></h3>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                    <div class="climate-big ${pdo.latest >= 0 ? 'pos' : 'neg'}" style="font-size:22px;">
+                        ${(pdo.latest >= 0 ? '+' : '') + pdo.latest.toFixed(2)}
+                    </div>
+                    <span class="climate-status-pill ${pdo.latest >= 0 ? 'red' : 'blue'}">${pdo.state_ko || '—'}</span>
+                </div>
+                <div class="climate-sub">${pdo.note_ko || ''}${pdo.as_of ? ` · ${pdo.as_of} 기준` : ''}</div>
+                ${pdo.history?.rank_ko ? `<div class="climate-sub" style="margin-top:2px;">${pdo.history.rank_ko}</div>` : ''}
+                ${pdo.series?.length ? `<details class="climate-fold" style="margin-top:6px;">
+                    <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">
+                        최근 12개월 추이·과거 저점 보기 ▾</summary>
+                    ${renderEnsoBars(pdo.series.map(x => ({ label: x.label, oni: x.pdo })), { ...pdo.history, rank_ko: '' },
+                        { floorTop: 0.6, digits: 2, peakWord: pdo.history?.peak_word_ko || '최고',
+                          legend: '' })}
+                    <div class="climate-sub" style="margin-top:4px;">점선 = 과거 가장 깊었던 국면, 파선 = ±0.5 PDO 기준</div>
+                </details>` : ''}
+            </div>` : ''}
             <div class="climate-card">
                 <h3>해수면 수온(SST) 편차 · 지도 워시</h3>
                 <div class="climate-metric-row">
@@ -4341,6 +4524,8 @@ const showClimateCountry = async (countryName) => {
 
     await loadClimateGlobal();
     await loadSst();
+    await loadSstRegions();
+    await loadEnsoAnalogs();
     const admin1 = await loadAdmin1(cfg.iso);
     // Req 4: the country drill is a workspace, not just a zoom. The map keeps
     // the same globe but frames the target with a HUD, dims every other
@@ -4484,6 +4669,8 @@ const renderCountryPanel = async (cfg, points = null) => {
         // is on the map, so the calendar belongs here too.
         const refCrops = Object.keys(CROP_CALENDAR_SEED[climateCountry] || {});
         forecastContentEl.innerHTML = renderClimateReferencePanelHtml(cfg, fc || {})
+            + renderCountrySstCard(climateCountry)
+            + renderEnsoAnalogCard(climateCountry)
             + (refCrops.length ? `<div class="climate-card">
                 <h3>작물 캘린더 · 현재 단계 (seed)</h3>
                 ${renderCropCalendarHtml(climateCountry, refCrops)}
@@ -4602,6 +4789,8 @@ const renderCountryPanel = async (cfg, points = null) => {
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
             ${climateNavBackHtml(cfg.label)}
+            ${renderCountrySstCard(climateCountry)}
+            ${renderEnsoAnalogCard(climateCountry)}
             ${gainHtml}
             ${unitBridgeHtml}
             <div class="climate-card">

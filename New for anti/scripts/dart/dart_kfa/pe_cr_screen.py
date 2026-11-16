@@ -7,10 +7,12 @@ from .pe_cr_screen_inputs import cash_plan_13w, governance_profile, industry_met
 
 
 SECTIONS = (
-    ("profitability", "수익성", ("operating_income", "operating_margin", "ebitda", "ebitda_margin", "cogs_to_sales")),
-    ("cash_flow", "현금흐름", ("cfo", "cfi", "cff", "cash_flow_net_activities", "cash_flow_fx_effect", "fcf", "operating_nwc", "operating_nwc_change", "ccc_days")),
-    ("repayment", "상환능력", ("interest_coverage", "dscr")),
-    ("capital_structure", "재무구조", ("net_debt", "net_debt_to_ebitda", "debt_ratio", "capital_erosion_ratio")),
+    # *_cf / *_reported / *_cash are the reported-basis fallbacks (pe_cr.py);
+    # a renderer shows them where the strict card next to them is empty.
+    ("profitability", "수익성", ("operating_income", "operating_margin", "ebitda", "ebitda_cf", "ebitda_margin", "ebitda_cf_margin", "cogs_to_sales")),
+    ("cash_flow", "현금흐름", ("cfo", "cfi", "cff", "cash_flow_net_activities", "cash_flow_fx_effect", "fcf", "fcf_to_ebitda", "operating_nwc", "operating_nwc_change", "ccc_days")),
+    ("repayment", "상환능력", ("interest_coverage", "interest_coverage_cash", "finance_cost_coverage", "dscr")),
+    ("capital_structure", "재무구조", ("net_debt", "net_debt_reported", "net_debt_to_ebitda", "net_debt_reported_to_ebitda", "debt_ratio", "capital_erosion_ratio")),
     ("short_term_liquidity", "단기유동성", ("current_ratio", "current_liabilities_share", "debt_due_within_1y", "liquidity_coverage_1y", "financing_principal_due_1y_share")),
     ("industry", "산업경쟁력", ("order_backlog", "new_orders")),
     ("governance", "지배구조", ()),
@@ -68,11 +70,18 @@ def _annual_history(canonical, history, end, reviewed_current, reviewed_by_end):
             verified = reviewed_current if b is canonical else None
             if b is not canonical and finish in reviewed_by_end:
                 verified = reviewed_facts(reviewed_by_end[finish], b)
-            values = {key: _value(b, key, start, finish, verified) for key in ("op", "cfo", "revenue", "cogs", "interest")}
+            values = {key: _value(b, key, start, finish, verified)
+                      for key in ("op", "cfo", "revenue", "cogs", "interest", "cash_interest_operating", "cash_interest_financing")}
             op, cfo, sales, cogs, interest = [values[k][0] for k in ("op", "cfo", "revenue", "cogs", "interest")]
+            paid = [values[k][0] for k in ("cash_interest_operating", "cash_interest_financing") if values[k][0] is not None]
+            cash_interest = sum(abs(v) for v in paid) if paid else None
             metrics = {"operating_income": op, "cfo": cfo,
                        "cogs_to_sales": abs(cogs) / sales if cogs is not None and sales is not None and sales > 0 else None,
-                       "interest_coverage": op / abs(interest) if op is not None and interest not in (None, 0) else None}
+                       "interest_coverage": op / abs(interest) if op is not None and interest not in (None, 0) else None,
+                       # Reported-basis fallback: most Korean filers tag only total
+                       # finance costs on the P&L, never interest, so the strict
+                       # 3-year test above is nearly always "unavailable".
+                       "interest_coverage_cash": op / cash_interest if op is not None and cash_interest else None}
             observations.append({"fiscal_year": year, "start": start, "end": finish, "metrics": metrics,
                                  "inputs": {k: {"value": v[0], "provenance": v[1]} for k, v in values.items() if v[1]}, "reason": None})
         signatures = {(o["start"], o["end"], tuple((k, v["value"]) for k, v in o["inputs"].items())) for o in observations}
@@ -132,6 +141,8 @@ def build_screen(canonical, result, *, history, period, start, end, financial, r
         _trend("rising_cost_ratio_3y", "profitability", "3개년 매출원가율 연속 상승", points, "cogs_to_sales", 3, lambda v: v[0] > v[1] > v[2], financial),
         _trend("negative_cfo_2y", "cash_flow", "영업현금 유출 2년 연속", points, "cfo", 2, lambda v: all(x < 0 for x in v), financial),
         _trend("interest_coverage_under_1_3y", "repayment", "이자보상배율 3년 연속 1배 미만", points, "interest_coverage", 3, lambda v: all(x < 1 for x in v), financial),
+        _trend("interest_coverage_cash_under_1_3y", "repayment", "이자보상배율 3년 연속 1배 미만 (현금이자 기준, 한계기업 참고)", points,
+               "interest_coverage_cash", 3, lambda v: all(x < 1 for x in v), financial),
         _current_signal("dscr_under_1", "repayment", "검증된 실적 DSCR 1배 미만", cards, "dscr", lambda v: v < 1),
         _current_signal("negative_equity", "capital_structure", "총자본 음수", cards, "book_equity", lambda v: v < 0),
         _current_signal("equity_below_issued_capital", "capital_structure", "지배주주 자본이 납입자본 항목보다 작음", cards, "capital_erosion_ratio", lambda v: v > 0),

@@ -1,0 +1,3069 @@
+{
+ "schema_version": "enso-analogs-v1",
+ "generated_at": "2026-11-11T17:46:19.824407+00:00",
+ "spec": "How did each country's main crops do in past strong El Nino years?\n\nThe yield models answer \"what does this season's weather say\". For a\ncountry with no usable model (China) or one whose model ignores the ocean,\nthe plainest evidence of what a strong El Nino means is the record: the\nnational yield in the years of past strong events, measured against its own\ntrend so that technology gains do not hide the dip.\n\nFixed before looking at any result (2026-11-11):\n  events     NOAA CPC ONI episodes (>= +0.5 for 5+ overlapping seasons)\n             whose peak reached +1.5 (\"strong\"); year Y = the year of the\n             peak (a DJF-FMA peak counts for the year before). Crops harvested in Y and in Y+1 are both shown,\n             because the same event hits a September rice crop in Y and an\n             April palm or southern-hemisphere maize crop in Y+1.\n  labels     FAOSTAT national yield (QCL, Element \"Yield\"), 1961 onward.\n  trend      linear fit on the 15 years centred on the target year,\n             excluding the target year; at the ends of the record the\n             window shifts inward. At least 8 years or the year is skipped.\n  output     deviation % from that trend per event year, the mean, how many\n             of the events were below trend, and the spread of all years\n             (so a -3% can be read against a normal +-4%).\n\nNothing here feeds a forecast. It is a reference table.",
+ "source": "FAOSTAT QCL (national yield) · NOAA CPC ONI",
+ "events": [
+  {
+   "year": 1965,
+   "peak": 1.82,
+   "peak_season": "OND 1965"
+  },
+  {
+   "year": 1972,
+   "peak": 1.84,
+   "peak_season": "OND 1972"
+  },
+  {
+   "year": 1982,
+   "peak": 2.14,
+   "peak_season": "DJF 1983"
+  },
+  {
+   "year": 1991,
+   "peak": 1.54,
+   "peak_season": "DJF 1992"
+  },
+  {
+   "year": 1997,
+   "peak": 2.37,
+   "peak_season": "NDJ 1997"
+  },
+  {
+   "year": 2009,
+   "peak": 1.5,
+   "peak_season": "NDJ 2009"
+  },
+  {
+   "year": 2015,
+   "peak": 2.59,
+   "peak_season": "NDJ 2015"
+  },
+  {
+   "year": 2023,
+   "peak": 1.99,
+   "peak_season": "NDJ 2023"
+  }
+ ],
+ "current_episode": {
+  "year": 2026,
+  "peak_so_far": 2.46,
+  "latest": 2.46,
+  "season": "ASO"
+ },
+ "countries": {
+  "China": {
+   "fao_area": "China, mainland",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "rice",
+     "label_ko": "쌀",
+     "fao_item": "Rice",
+     "last_year": 2024,
+     "normal_sd_pct": 4.8,
+     "y0": {
+      "n": 8,
+      "mean": 1.8,
+      "below": 3
+     },
+     "y1": {
+      "n": 8,
+      "mean": 2.9,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 7.9,
+       "dev_y1": 11.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -5.3,
+       "dev_y1": -0.1
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 7.5,
+       "dev_y1": 8.5
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -1.5,
+       "dev_y1": 0.4
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 4.4,
+       "dev_y1": 4.6
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 1.0,
+       "dev_y1": -0.4
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 0.7,
+       "dev_y1": -0.3
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -0.5,
+       "dev_y1": -1.0
+      }
+     ]
+    },
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 7.3,
+     "y0": {
+      "n": 8,
+      "mean": 4.0,
+      "below": 2
+     },
+     "y1": {
+      "n": 8,
+      "mean": 2.6,
+      "below": 5
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 18.5,
+       "dev_y1": 14.5
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 0.8,
+       "dev_y1": -6.2
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 5.5,
+       "dev_y1": 16.0
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -6.1,
+       "dev_y1": -0.6
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 13.0,
+       "dev_y1": -1.3
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 1.3,
+       "dev_y1": -1.1
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 2.7,
+       "dev_y1": 1.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -3.3,
+       "dev_y1": -2.0
+      }
+     ]
+    },
+    {
+     "crop": "maize",
+     "label_ko": "옥수수",
+     "fao_item": "Maize (corn)",
+     "last_year": 2024,
+     "normal_sd_pct": 5.2,
+     "y0": {
+      "n": 8,
+      "mean": -2.6,
+      "below": 5
+     },
+     "y1": {
+      "n": 8,
+      "mean": 3.4,
+      "below": 2
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -1.4,
+       "dev_y1": 6.9
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -11.9,
+       "dev_y1": 3.0
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 0.7,
+       "dev_y1": 7.9
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 5.0,
+       "dev_y1": 2.3
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -9.2,
+       "dev_y1": 9.2
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -4.0,
+       "dev_y1": -1.7
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -0.7,
+       "dev_y1": -0.6
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 0.4,
+       "dev_y1": 0.1
+      }
+     ]
+    },
+    {
+     "crop": "soy",
+     "label_ko": "대두",
+     "fao_item": "Soya beans",
+     "last_year": 2024,
+     "normal_sd_pct": 7.6,
+     "y0": {
+      "n": 8,
+      "mean": -6.0,
+      "below": 6
+     },
+     "y1": {
+      "n": 8,
+      "mean": 4.5,
+      "below": 3
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -11.9,
+       "dev_y1": 20.0
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -14.9,
+       "dev_y1": 11.8
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -10.7,
+       "dev_y1": 6.2
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -9.4,
+       "dev_y1": -8.0
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 6.7,
+       "dev_y1": 6.6
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -6.4,
+       "dev_y1": 2.5
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -1.2,
+       "dev_y1": -2.8
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 0.1,
+       "dev_y1": -0.4
+      }
+     ]
+    }
+   ]
+  },
+  "United States": {
+   "fao_area": "United States of America",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "maize",
+     "label_ko": "옥수수",
+     "fao_item": "Maize (corn)",
+     "last_year": 2024,
+     "normal_sd_pct": 9.2,
+     "y0": {
+      "n": 8,
+      "mean": 3.8,
+      "below": 3
+     },
+     "y1": {
+      "n": 8,
+      "mean": 0.7,
+      "below": 3
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 4.5,
+       "dev_y1": 0.3
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 14.8,
+       "dev_y1": 6.0
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 12.6,
+       "dev_y1": -23.1
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -7.5,
+       "dev_y1": 11.7
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -1.6,
+       "dev_y1": 3.3
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 8.1,
+       "dev_y1": -2.4
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 3.1,
+       "dev_y1": 14.2
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -3.5,
+       "dev_y1": -4.3
+      }
+     ]
+    },
+    {
+     "crop": "soy",
+     "label_ko": "대두",
+     "fao_item": "Soya beans",
+     "last_year": 2024,
+     "normal_sd_pct": 7.0,
+     "y0": {
+      "n": 8,
+      "mean": 1.8,
+      "below": 3
+     },
+     "y1": {
+      "n": 8,
+      "mean": 0.6,
+      "below": 2
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -2.0,
+       "dev_y1": 0.6
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 2.5,
+       "dev_y1": 1.9
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 5.9,
+       "dev_y1": -14.3
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -0.6,
+       "dev_y1": 7.9
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 5.0,
+       "dev_y1": 3.3
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 3.5,
+       "dev_y1": 0.3
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 3.5,
+       "dev_y1": 10.7
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -3.5,
+       "dev_y1": -5.2
+      }
+     ]
+    },
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 6.8,
+     "y0": {
+      "n": 8,
+      "mean": 0.1,
+      "below": 3
+     },
+     "y1": {
+      "n": 8,
+      "mean": 6.8,
+      "below": 1
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 0.1,
+       "dev_y1": -3.0
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 9.7,
+       "dev_y1": 4.0
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 3.9,
+       "dev_y1": 14.2
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -8.3,
+       "dev_y1": 5.5
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 0.7,
+       "dev_y1": 10.2
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 2.2,
+       "dev_y1": 4.8
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -6.8,
+       "dev_y1": 13.6
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -1.0,
+       "dev_y1": 5.2
+      }
+     ]
+    }
+   ]
+  },
+  "Canada": {
+   "fao_area": "Canada",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 14.3,
+     "y0": {
+      "n": 8,
+      "mean": 2.5,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": 6.6,
+      "below": 3
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 9.8,
+       "dev_y1": 31.4
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -2.6,
+       "dev_y1": -2.8
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 17.3,
+       "dev_y1": 3.9
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 12.9,
+       "dev_y1": 4.1
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -5.5,
+       "dev_y1": -0.8
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 1.4,
+       "dev_y1": -2.2
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -7.4,
+       "dev_y1": 15.7
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -5.9,
+       "dev_y1": 3.2
+      }
+     ]
+    },
+    {
+     "crop": "rapeseed",
+     "label_ko": "유채·카놀라",
+     "fao_item": "Rape or colza seed",
+     "last_year": 2024,
+     "normal_sd_pct": 10.3,
+     "y0": {
+      "n": 8,
+      "mean": 1.9,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": -0.9,
+      "below": 5
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -5.4,
+       "dev_y1": 1.8
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -2.9,
+       "dev_y1": -8.6
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 5.9,
+       "dev_y1": -8.4
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 4.7,
+       "dev_y1": -3.9
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -4.2,
+       "dev_y1": 0.7
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 10.7,
+       "dev_y1": -0.6
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 7.3,
+       "dev_y1": 15.5
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -1.0,
+       "dev_y1": -3.7
+      }
+     ]
+    }
+   ]
+  },
+  "Australia": {
+   "fao_area": "Australia",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 21.1,
+     "y0": {
+      "n": 8,
+      "mean": -12.1,
+      "below": 6
+     },
+     "y1": {
+      "n": 8,
+      "mean": 16.0,
+      "below": 0
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -18.3,
+       "dev_y1": 28.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -30.7,
+       "dev_y1": 10.9
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -44.7,
+       "dev_y1": 27.8
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -9.4,
+       "dev_y1": 9.3
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 9.1,
+       "dev_y1": 8.6
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -6.4,
+       "dev_y1": 16.6
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -3.0,
+       "dev_y1": 26.0
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 6.3,
+       "dev_y1": 0.3
+      }
+     ]
+    },
+    {
+     "crop": "barley",
+     "label_ko": "보리",
+     "fao_item": "Barley",
+     "last_year": 2024,
+     "normal_sd_pct": 18.9,
+     "y0": {
+      "n": 8,
+      "mean": -11.4,
+      "below": 7
+     },
+     "y1": {
+      "n": 8,
+      "mean": 12.5,
+      "below": 0
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -9.0,
+       "dev_y1": 25.6
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -32.2,
+       "dev_y1": 9.2
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -42.8,
+       "dev_y1": 17.8
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -0.9,
+       "dev_y1": 9.2
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 4.7,
+       "dev_y1": 5.8
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -4.5,
+       "dev_y1": 11.6
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -3.5,
+       "dev_y1": 20.6
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -2.7,
+       "dev_y1": 0.0
+      }
+     ]
+    },
+    {
+     "crop": "sugarcane",
+     "label_ko": "사탕수수",
+     "fao_item": "Sugar cane",
+     "last_year": 2024,
+     "normal_sd_pct": 9.5,
+     "y0": {
+      "n": 8,
+      "mean": 0.3,
+      "below": 5
+     },
+     "y1": {
+      "n": 8,
+      "mean": -2.1,
+      "below": 6
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -5.8,
+       "dev_y1": -0.4
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -1.7,
+       "dev_y1": 6.6
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -4.7,
+       "dev_y1": -2.6
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -26.3,
+       "dev_y1": -27.0
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 21.2,
+       "dev_y1": 17.4
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -2.8,
+       "dev_y1": -3.6
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 5.9,
+       "dev_y1": -6.9
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 16.7,
+       "dev_y1": -0.3
+      }
+     ]
+    }
+   ]
+  },
+  "Indonesia": {
+   "fao_area": "Indonesia",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "palm",
+     "label_ko": "팜 열매",
+     "fao_item": "Oil palm fruit",
+     "last_year": 2024,
+     "normal_sd_pct": 10.1,
+     "y0": {
+      "n": 8,
+      "mean": -1.7,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": -1.8,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -9.9,
+       "dev_y1": -12.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 11.9,
+       "dev_y1": 19.7
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 0.4,
+       "dev_y1": 0.7
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -14.0,
+       "dev_y1": -16.5
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -4.7,
+       "dev_y1": -6.6
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -0.7,
+       "dev_y1": 6.1
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 2.4,
+       "dev_y1": -7.7
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 0.8,
+       "dev_y1": 2.4
+      }
+     ]
+    },
+    {
+     "crop": "rice",
+     "label_ko": "쌀",
+     "fao_item": "Rice",
+     "last_year": 2024,
+     "normal_sd_pct": 4.2,
+     "y0": {
+      "n": 8,
+      "mean": 2.4,
+      "below": 1
+     },
+     "y1": {
+      "n": 8,
+      "mean": 0.2,
+      "below": 3
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -6.1,
+       "dev_y1": -9.4
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 3.4,
+       "dev_y1": 3.3
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 8.3,
+       "dev_y1": 8.1
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 3.3,
+       "dev_y1": 2.6
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 1.3,
+       "dev_y1": -4.9
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 3.0,
+       "dev_y1": 2.4
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 5.0,
+       "dev_y1": -1.0
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 0.9,
+       "dev_y1": 0.7
+      }
+     ]
+    }
+   ]
+  },
+  "Malaysia": {
+   "fao_area": "Malaysia",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "palm",
+     "label_ko": "팜 열매",
+     "fao_item": "Oil palm fruit",
+     "last_year": 2024,
+     "normal_sd_pct": 6.3,
+     "y0": {
+      "n": 8,
+      "mean": 2.4,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": -5.7,
+      "below": 6
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 1.8,
+       "dev_y1": 5.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -1.1,
+       "dev_y1": -7.2
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 22.8,
+       "dev_y1": -9.6
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -9.9,
+       "dev_y1": -8.9
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 0.3,
+       "dev_y1": -14.4
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -0.5,
+       "dev_y1": -8.6
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 8.8,
+       "dev_y1": -7.9
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -2.9,
+       "dev_y1": 5.5
+      }
+     ]
+    }
+   ]
+  },
+  "Thailand": {
+   "fao_area": "Thailand",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "rice",
+     "label_ko": "쌀",
+     "fao_item": "Rice",
+     "last_year": 2024,
+     "normal_sd_pct": 4.4,
+     "y0": {
+      "n": 8,
+      "mean": -1.0,
+      "below": 6
+     },
+     "y1": {
+      "n": 8,
+      "mean": 0.1,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -1.0,
+       "dev_y1": 1.7
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -0.3,
+       "dev_y1": 4.7
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -3.1,
+       "dev_y1": 4.6
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 1.6,
+       "dev_y1": -0.7
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -2.7,
+       "dev_y1": -3.3
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -0.7,
+       "dev_y1": -3.3
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -3.1,
+       "dev_y1": -4.6
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 1.5,
+       "dev_y1": 1.8
+      }
+     ]
+    },
+    {
+     "crop": "sugarcane",
+     "label_ko": "사탕수수",
+     "fao_item": "Sugar cane",
+     "last_year": 2024,
+     "normal_sd_pct": 13.7,
+     "y0": {
+      "n": 8,
+      "mean": 6.2,
+      "below": 1
+     },
+     "y1": {
+      "n": 8,
+      "mean": 1.5,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 29.9,
+       "dev_y1": -3.3
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -15.4,
+       "dev_y1": 25.4
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 10.6,
+       "dev_y1": -6.1
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 6.4,
+       "dev_y1": 4.8
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 7.5,
+       "dev_y1": -14.9
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 6.9,
+       "dev_y1": 4.1
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 0.4,
+       "dev_y1": -0.6
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 3.6,
+       "dev_y1": 2.3
+      }
+     ]
+    }
+   ]
+  },
+  "Vietnam": {
+   "fao_area": "Viet Nam",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "rice",
+     "label_ko": "쌀",
+     "fao_item": "Rice",
+     "last_year": 2024,
+     "normal_sd_pct": 6.2,
+     "y0": {
+      "n": 8,
+      "mean": 1.5,
+      "below": 3
+     },
+     "y1": {
+      "n": 8,
+      "mean": 0.8,
+      "below": 3
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -0.6,
+       "dev_y1": -8.9
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 9.9,
+       "dev_y1": 10.3
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 4.5,
+       "dev_y1": 6.2
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -4.6,
+       "dev_y1": -0.3
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -0.1,
+       "dev_y1": 0.2
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 0.4,
+       "dev_y1": 1.1
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 2.0,
+       "dev_y1": -2.6
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 0.7,
+       "dev_y1": 0.5
+      }
+     ]
+    },
+    {
+     "crop": "coffee",
+     "label_ko": "커피",
+     "fao_item": "Coffee, green",
+     "last_year": 2024,
+     "normal_sd_pct": 19.6,
+     "y0": {
+      "n": 8,
+      "mean": 4.9,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": -5.7,
+      "below": 6
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 35.8,
+       "dev_y1": 5.3
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -1.4,
+       "dev_y1": -7.7
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -35.4,
+       "dev_y1": -40.6
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 0.2,
+       "dev_y1": -4.3
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 41.4,
+       "dev_y1": 6.9
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -0.3,
+       "dev_y1": -0.7
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 0.0,
+       "dev_y1": -2.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -0.7,
+       "dev_y1": -2.3
+      }
+     ]
+    }
+   ]
+  },
+  "Colombia": {
+   "fao_area": "Colombia",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "coffee",
+     "label_ko": "커피",
+     "fao_item": "Coffee, green",
+     "last_year": 2024,
+     "normal_sd_pct": 14.1,
+     "y0": {
+      "n": 8,
+      "mean": -1.5,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": 11.8,
+      "below": 1
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 5.7,
+       "dev_y1": 5.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -12.1,
+       "dev_y1": 6.9
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 2.9,
+       "dev_y1": 14.8
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 25.0,
+       "dev_y1": 42.1
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -13.3,
+       "dev_y1": 7.5
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -29.5,
+       "dev_y1": -19.9
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 25.6,
+       "dev_y1": 29.3
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -16.0,
+       "dev_y1": 8.2
+      }
+     ]
+    },
+    {
+     "crop": "palm",
+     "label_ko": "팜 열매",
+     "fao_item": "Oil palm fruit",
+     "last_year": 2024,
+     "normal_sd_pct": 5.0,
+     "y0": {
+      "n": 8,
+      "mean": 1.1,
+      "below": 1
+     },
+     "y1": {
+      "n": 8,
+      "mean": -0.8,
+      "below": 5
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 1.2,
+       "dev_y1": -0.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 0.5,
+       "dev_y1": -3.0
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -5.9,
+       "dev_y1": 2.7
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 1.1,
+       "dev_y1": -6.0
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 0.1,
+       "dev_y1": -3.2
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 1.4,
+       "dev_y1": 3.0
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 3.6,
+       "dev_y1": 0.6
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 7.2,
+       "dev_y1": -0.3
+      }
+     ]
+    }
+   ]
+  },
+  "Argentina": {
+   "fao_area": "Argentina",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "soy",
+     "label_ko": "대두",
+     "fao_item": "Soya beans",
+     "last_year": 2024,
+     "normal_sd_pct": 14.4,
+     "y0": {
+      "n": 8,
+      "mean": -11.5,
+      "below": 5
+     },
+     "y1": {
+      "n": 8,
+      "mean": 9.2,
+      "below": 1
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -6.8,
+       "dev_y1": 2.5
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -20.7,
+       "dev_y1": 18.9
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 8.0,
+       "dev_y1": -13.4
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 8.5,
+       "dev_y1": 9.3
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -26.1,
+       "dev_y1": 17.5
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -31.8,
+       "dev_y1": 9.2
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 17.9,
+       "dev_y1": 15.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -40.9,
+       "dev_y1": 14.6
+      }
+     ]
+    },
+    {
+     "crop": "maize",
+     "label_ko": "옥수수",
+     "fao_item": "Maize (corn)",
+     "last_year": 2024,
+     "normal_sd_pct": 12.6,
+     "y0": {
+      "n": 8,
+      "mean": -10.5,
+      "below": 6
+     },
+     "y1": {
+      "n": 8,
+      "mean": 9.0,
+      "below": 2
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -13.6,
+       "dev_y1": 9.7
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -24.2,
+       "dev_y1": 10.4
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -3.2,
+       "dev_y1": -5.3
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 2.7,
+       "dev_y1": 11.5
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -7.8,
+       "dev_y1": 18.9
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -16.9,
+       "dev_y1": 17.2
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 7.2,
+       "dev_y1": 11.1
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -28.3,
+       "dev_y1": -1.5
+      }
+     ]
+    },
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 13.1,
+     "y0": {
+      "n": 8,
+      "mean": 6.5,
+      "below": 2
+     },
+     "y1": {
+      "n": 8,
+      "mean": 8.4,
+      "below": 1
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -5.1,
+       "dev_y1": -14.9
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 13.3,
+       "dev_y1": 17.0
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 19.3,
+       "dev_y1": 5.2
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 6.5,
+       "dev_y1": 13.6
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 16.0,
+       "dev_y1": 0.1
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 2.3,
+       "dev_y1": 28.1
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -0.3,
+       "dev_y1": 13.3
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 0.2,
+       "dev_y1": 4.7
+      }
+     ]
+    }
+   ]
+  },
+  "Brazil": {
+   "fao_area": "Brazil",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "soy",
+     "label_ko": "대두",
+     "fao_item": "Soya beans",
+     "last_year": 2024,
+     "normal_sd_pct": 11.1,
+     "y0": {
+      "n": 8,
+      "mean": 0.6,
+      "below": 3
+     },
+     "y1": {
+      "n": 8,
+      "mean": 2.9,
+      "below": 2
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 13.5,
+       "dev_y1": 9.5
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 12.5,
+       "dev_y1": 2.9
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -5.6,
+       "dev_y1": 9.0
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -20.5,
+       "dev_y1": 3.5
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 3.0,
+       "dev_y1": 3.8
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -3.3,
+       "dev_y1": 6.9
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 0.2,
+       "dev_y1": -5.5
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 4.8,
+       "dev_y1": -7.3
+      }
+     ]
+    },
+    {
+     "crop": "maize",
+     "label_ko": "옥수수",
+     "fao_item": "Maize (corn)",
+     "last_year": 2024,
+     "normal_sd_pct": 8.4,
+     "y0": {
+      "n": 8,
+      "mean": 0.5,
+      "below": 3
+     },
+     "y1": {
+      "n": 8,
+      "mean": -1.4,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 5.5,
+       "dev_y1": -2.0
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -0.0,
+       "dev_y1": -0.6
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 2.0,
+       "dev_y1": 1.6
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -16.5,
+       "dev_y1": 3.7
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -0.8,
+       "dev_y1": 2.6
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -9.1,
+       "dev_y1": 3.5
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 14.7,
+       "dev_y1": -15.0
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 8.0,
+       "dev_y1": -4.8
+      }
+     ]
+    },
+    {
+     "crop": "coffee",
+     "label_ko": "커피",
+     "fao_item": "Coffee, green",
+     "last_year": 2024,
+     "normal_sd_pct": 20.4,
+     "y0": {
+      "n": 8,
+      "mean": 5.2,
+      "below": 6
+     },
+     "y1": {
+      "n": 8,
+      "mean": 1.0,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 51.2,
+       "dev_y1": -15.8
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 32.9,
+       "dev_y1": -15.8
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -8.0,
+       "dev_y1": 34.2
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -5.3,
+       "dev_y1": -12.9
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -11.6,
+       "dev_y1": 14.0
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -4.3,
+       "dev_y1": 11.7
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -10.2,
+       "dev_y1": 0.1
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -3.1,
+       "dev_y1": -7.4
+      }
+     ]
+    },
+    {
+     "crop": "sugarcane",
+     "label_ko": "사탕수수",
+     "fao_item": "Sugar cane",
+     "last_year": 2024,
+     "normal_sd_pct": 3.2,
+     "y0": {
+      "n": 8,
+      "mean": 1.9,
+      "below": 3
+     },
+     "y1": {
+      "n": 8,
+      "mean": 2.0,
+      "below": 1
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 0.4,
+       "dev_y1": 4.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -1.2,
+       "dev_y1": -3.5
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 5.9,
+       "dev_y1": 6.7
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -3.5,
+       "dev_y1": 0.1
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 2.1,
+       "dev_y1": 1.5
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 7.2,
+       "dev_y1": 5.1
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -1.5,
+       "dev_y1": 0.0
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 5.8,
+       "dev_y1": 2.1
+      }
+     ]
+    }
+   ]
+  },
+  "India": {
+   "fao_area": "India",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "rice",
+     "label_ko": "쌀",
+     "fao_item": "Rice",
+     "last_year": 2024,
+     "normal_sd_pct": 6.0,
+     "y0": {
+      "n": 8,
+      "mean": -3.9,
+      "below": 5
+     },
+     "y1": {
+      "n": 8,
+      "mean": -1.8,
+      "below": 5
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -15.3,
+       "dev_y1": -16.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -2.1,
+       "dev_y1": 2.6
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -10.6,
+       "dev_y1": 4.2
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 2.9,
+       "dev_y1": 0.8
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 1.0,
+       "dev_y1": -0.7
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -4.0,
+       "dev_y1": -2.3
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -3.4,
+       "dev_y1": -1.0
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 0.7,
+       "dev_y1": -1.6
+      }
+     ]
+    },
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 6.6,
+     "y0": {
+      "n": 8,
+      "mean": 1.6,
+      "below": 2
+     },
+     "y1": {
+      "n": 8,
+      "mean": -1.7,
+      "below": 5
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 0.3,
+       "dev_y1": -14.0
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 15.3,
+       "dev_y1": 2.2
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 0.0,
+       "dev_y1": 4.4
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 2.6,
+       "dev_y1": 5.4
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 6.9,
+       "dev_y1": -2.8
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 2.2,
+       "dev_y1": -1.3
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -13.5,
+       "dev_y1": -5.5
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -1.4,
+       "dev_y1": -2.2
+      }
+     ]
+    },
+    {
+     "crop": "soy",
+     "label_ko": "대두",
+     "fao_item": "Soya beans",
+     "last_year": 2024,
+     "normal_sd_pct": 18.6,
+     "y0": {
+      "n": 8,
+      "mean": -3.2,
+      "below": 6
+     },
+     "y1": {
+      "n": 8,
+      "mean": 10.8,
+      "below": 2
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -4.2,
+       "dev_y1": -9.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 35.2,
+       "dev_y1": 28.4
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -17.8,
+       "dev_y1": -4.5
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -10.5,
+       "dev_y1": 0.4
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 12.5,
+       "dev_y1": 14.4
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -3.2,
+       "dev_y1": 24.8
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -32.7,
+       "dev_y1": 11.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -4.7,
+       "dev_y1": 20.3
+      }
+     ]
+    }
+   ]
+  },
+  "South Africa": {
+   "fao_area": "South Africa",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "maize",
+     "label_ko": "옥수수",
+     "fao_item": "Maize (corn)",
+     "last_year": 2024,
+     "normal_sd_pct": 27.0,
+     "y0": {
+      "n": 8,
+      "mean": 7.9,
+      "below": 2
+     },
+     "y1": {
+      "n": 8,
+      "mean": -24.6,
+      "below": 7
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -19.6,
+       "dev_y1": -10.5
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 21.3,
+       "dev_y1": -39.5
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 3.1,
+       "dev_y1": -51.5
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 22.1,
+       "dev_y1": -62.8
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 13.2,
+       "dev_y1": -7.3
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 33.5,
+       "dev_y1": 18.9
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -28.6,
+       "dev_y1": -25.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 18.0,
+       "dev_y1": -18.4
+      }
+     ]
+    }
+   ]
+  },
+  "Ethiopia": {
+   "fao_area": "Ethiopia",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "coffee",
+     "label_ko": "커피",
+     "fao_item": "Coffee, green",
+     "last_year": 2024,
+     "normal_sd_pct": 10.2,
+     "y0": {
+      "n": 4,
+      "mean": 2.2,
+      "below": 1
+     },
+     "y1": {
+      "n": 4,
+      "mean": 2.0,
+      "below": 1
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 0.5,
+       "dev_y1": 3.5
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -3.8,
+       "dev_y1": 7.7
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 10.5,
+       "dev_y1": -7.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 1.8,
+       "dev_y1": 4.2
+      }
+     ]
+    }
+   ]
+  },
+  "Uganda": {
+   "fao_area": "Uganda",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "coffee",
+     "label_ko": "커피",
+     "fao_item": "Coffee, green",
+     "last_year": 2024,
+     "normal_sd_pct": 19.8,
+     "y0": {
+      "n": 8,
+      "mean": 1.9,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": -2.4,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -5.2,
+       "dev_y1": -21.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 11.7,
+       "dev_y1": 17.7
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 13.7,
+       "dev_y1": 8.2
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -18.9,
+       "dev_y1": -39.5
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 22.6,
+       "dev_y1": 15.2
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -0.1,
+       "dev_y1": 3.7
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -8.9,
+       "dev_y1": -2.8
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -0.0,
+       "dev_y1": -0.5
+      }
+     ]
+    }
+   ]
+  },
+  "Nigeria": {
+   "fao_area": "Nigeria",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "maize",
+     "label_ko": "옥수수",
+     "fao_item": "Maize (corn)",
+     "last_year": 2024,
+     "normal_sd_pct": 14.5,
+     "y0": {
+      "n": 8,
+      "mean": -4.2,
+      "below": 6
+     },
+     "y1": {
+      "n": 8,
+      "mean": -9.3,
+      "below": 7
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -4.8,
+       "dev_y1": -2.2
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -42.0,
+       "dev_y1": -36.0
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 8.6,
+       "dev_y1": -24.4
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -10.9,
+       "dev_y1": -14.0
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -5.4,
+       "dev_y1": -2.5
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 32.0,
+       "dev_y1": 9.0
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -5.3,
+       "dev_y1": -1.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -5.5,
+       "dev_y1": -2.6
+      }
+     ]
+    },
+    {
+     "crop": "palm",
+     "label_ko": "팜 열매",
+     "fao_item": "Oil palm fruit",
+     "last_year": 2024,
+     "normal_sd_pct": 1.6,
+     "y0": {
+      "n": 8,
+      "mean": -0.2,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": -0.9,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 0.0,
+       "dev_y1": 0.0
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 0.0,
+       "dev_y1": -0.0
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -2.1,
+       "dev_y1": -2.6
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 0.4,
+       "dev_y1": 0.5
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -1.0,
+       "dev_y1": 0.1
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 2.1,
+       "dev_y1": -4.0
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -0.3,
+       "dev_y1": -0.2
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -0.6,
+       "dev_y1": -0.8
+      }
+     ]
+    }
+   ]
+  },
+  "Russia": {
+   "fao_area": "Russian Federation",
+   "pacific_rim": true,
+   "crops": [
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 12.6,
+     "y0": {
+      "n": 4,
+      "mean": 3.3,
+      "below": 2
+     },
+     "y1": {
+      "n": 5,
+      "mean": -2.2,
+      "below": 3
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": null,
+       "dev_y1": 31.2
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 11.0,
+       "dev_y1": -21.4
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 9.3,
+       "dev_y1": -13.3
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -5.5,
+       "dev_y1": 5.1
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -1.7,
+       "dev_y1": -12.6
+      }
+     ]
+    }
+   ]
+  },
+  "Ukraine": {
+   "fao_area": "Ukraine",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 13.9,
+     "y0": {
+      "n": 4,
+      "mean": 1.5,
+      "below": 2
+     },
+     "y1": {
+      "n": 5,
+      "mean": -1.5,
+      "below": 3
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": null,
+       "dev_y1": 5.4
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -1.0,
+       "dev_y1": -6.9
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -2.1,
+       "dev_y1": -17.7
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 6.7,
+       "dev_y1": 14.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 2.2,
+       "dev_y1": -2.9
+      }
+     ]
+    },
+    {
+     "crop": "maize",
+     "label_ko": "옥수수",
+     "fao_item": "Maize (corn)",
+     "last_year": 2024,
+     "normal_sd_pct": 12.2,
+     "y0": {
+      "n": 4,
+      "mean": 6.8,
+      "below": 1
+     },
+     "y1": {
+      "n": 5,
+      "mean": -5.1,
+      "below": 3
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": null,
+       "dev_y1": 4.0
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 14.7,
+       "dev_y1": -15.8
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 5.9,
+       "dev_y1": -8.4
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -4.3,
+       "dev_y1": 7.8
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 11.0,
+       "dev_y1": -13.1
+      }
+     ]
+    }
+   ]
+  },
+  "Kazakhstan": {
+   "fao_area": "Kazakhstan",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 27.7,
+     "y0": {
+      "n": 4,
+      "mean": -1.9,
+      "below": 2
+     },
+     "y1": {
+      "n": 5,
+      "mean": 11.0,
+      "below": 2
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": null,
+       "dev_y1": null
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": null,
+       "dev_y1": 94.1
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -3.7,
+       "dev_y1": -43.8
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 13.3,
+       "dev_y1": -33.4
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 8.8,
+       "dev_y1": 11.4
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -26.1,
+       "dev_y1": 26.7
+      }
+     ]
+    }
+   ]
+  },
+  "France": {
+   "fao_area": "France",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "wheat",
+     "label_ko": "밀",
+     "fao_item": "Wheat",
+     "last_year": 2024,
+     "normal_sd_pct": 8.4,
+     "y0": {
+      "n": 8,
+      "mean": 6.9,
+      "below": 1
+     },
+     "y1": {
+      "n": 8,
+      "mean": -4.2,
+      "below": 5
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": 6.0,
+       "dev_y1": -13.1
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 17.6,
+       "dev_y1": 12.1
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": 1.8,
+       "dev_y1": -4.1
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 4.4,
+       "dev_y1": -1.1
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -3.3,
+       "dev_y1": 11.4
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 8.1,
+       "dev_y1": 1.9
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 12.2,
+       "dev_y1": -26.1
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 8.2,
+       "dev_y1": -14.6
+      }
+     ]
+    }
+   ]
+  },
+  "Ivory Coast": {
+   "fao_area": "Côte d'Ivoire",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "cocoa",
+     "label_ko": "코코아",
+     "fao_item": "Cocoa beans",
+     "last_year": 2024,
+     "normal_sd_pct": 7.8,
+     "y0": {
+      "n": 8,
+      "mean": -5.6,
+      "below": 6
+     },
+     "y1": {
+      "n": 8,
+      "mean": -0.7,
+      "below": 4
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -8.3,
+       "dev_y1": 6.9
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": -5.4,
+       "dev_y1": -7.7
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -23.3,
+       "dev_y1": -12.4
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": -3.3,
+       "dev_y1": -0.4
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": 0.4,
+       "dev_y1": 8.7
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": -2.7,
+       "dev_y1": 0.9
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": -2.8,
+       "dev_y1": -2.3
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": 0.6,
+       "dev_y1": 0.7
+      }
+     ]
+    }
+   ]
+  },
+  "Ghana": {
+   "fao_area": "Ghana",
+   "pacific_rim": false,
+   "crops": [
+    {
+     "crop": "cocoa",
+     "label_ko": "코코아",
+     "fao_item": "Cocoa beans",
+     "last_year": 2024,
+     "normal_sd_pct": 13.2,
+     "y0": {
+      "n": 8,
+      "mean": -2.3,
+      "below": 4
+     },
+     "y1": {
+      "n": 8,
+      "mean": -1.7,
+      "below": 5
+     },
+     "events": [
+      {
+       "event": 1965,
+       "peak": 1.82,
+       "dev_y0": -13.9,
+       "dev_y1": 8.1
+      },
+      {
+       "event": 1972,
+       "peak": 1.84,
+       "dev_y0": 9.8,
+       "dev_y1": -7.3
+      },
+      {
+       "event": 1982,
+       "peak": 2.14,
+       "dev_y0": -9.6,
+       "dev_y1": -18.4
+      },
+      {
+       "event": 1991,
+       "peak": 1.54,
+       "dev_y0": 2.6,
+       "dev_y1": 30.4
+      },
+      {
+       "event": 1997,
+       "peak": 2.37,
+       "dev_y0": -14.4,
+       "dev_y1": -14.1
+      },
+      {
+       "event": 2009,
+       "peak": 1.5,
+       "dev_y0": 5.2,
+       "dev_y1": -11.2
+      },
+      {
+       "event": 2015,
+       "peak": 2.59,
+       "dev_y0": 3.3,
+       "dev_y1": 0.3
+      },
+      {
+       "event": 2023,
+       "peak": 1.99,
+       "dev_y0": -1.1,
+       "dev_y1": -1.6
+      }
+     ]
+    }
+   ]
+  }
+ }
+}
