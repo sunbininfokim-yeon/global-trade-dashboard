@@ -56,6 +56,10 @@ def _report_rows(packet, canonical):
     return rows, f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt}"
 
 
+def _label(value):
+    return "".join(str(value or "").split())
+
+
 def attach_dart_shares(market, packet, canonical):
     rows, url = _report_rows(packet, canonical)
     if not isinstance(market, dict):
@@ -138,7 +142,9 @@ def _instrument_schedule(packet, canonical, end, instrument, endpoint, label, sp
             or not isinstance(selector, dict) or set(selector) != {"remndr_exprtn1", "remndr_exprtn2"}
             or not all(isinstance(v, str) and v.strip() for v in selector.values())):
         raise ValueError("invalid:dart_instrument_row_scope_or_unit")
-    matches = [row for row in rows if all(str(row.get(k, "")).strip() == v.strip() for k, v in selector.items())]
+    # Live OpenDART labels the row "미상환잔액"; the default selector and the
+    # fixtures say "미상환 잔액". Compare labels with whitespace removed.
+    matches = [row for row in rows if all(_label(row.get(k, "")) == _label(v) for k, v in selector.items())]
     if len(matches) != 1:
         raise ValueError("missing_or_conflict:dart_instrument_exact_scope_row")
     row = matches[0]
@@ -152,7 +158,7 @@ def _instrument_schedule(packet, canonical, end, instrument, endpoint, label, sp
 
     if selector["remndr_exprtn2"].strip() == "합계":
         placements = {name: [entry for entry in rows
-                             if str(entry.get("remndr_exprtn1", "")).strip() == selector["remndr_exprtn1"].strip()
+                             if _label(entry.get("remndr_exprtn1", "")) == _label(selector["remndr_exprtn1"])
                              and str(entry.get("remndr_exprtn2", "")).strip() == name]
                       for name in ("공모", "사모")}
         if all(placements.values()):

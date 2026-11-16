@@ -466,6 +466,113 @@ def build_pe_cr(canonical, *, selected_period="annual", history=(),
     for key in ("ebitda", "ebit", "sales"):
         emit("ev_to_" + key, "EV / positive annual " + key, lambda key=key: ev_multiple(key))
 
+    # --- Reported-basis cards (Claude, 2026-11-12) ---------------------------
+    # The strict cards above need reviewed note bundles, and live OpenDART
+    # rarely supplies them: across 15 FY2025 filers (docs/ops/handoff/
+    # 2026-11-11-claude-to-codex-pecr-live.md) strict EBITDA came out 1/15,
+    # P&L interest coverage 1/15, net debt 0/15. These cards answer the same
+    # questions from the statement lines that *are* tagged, under their own
+    # keys and definitions, and never write into the strict cards. A UI shows
+    # the strict card when it has a value and the reported-basis one otherwise,
+    # labelled as such.
+    def opt(key):
+        mark = len(used)
+        try:
+            return read(key)
+        except Unavailable:
+            del used[mark:]
+            return None
+
+    def reported_da():
+        total = opt("cf_dep_amort_total")
+        if total is None:
+            dep = opt("cf_depreciation")
+            if dep is None:
+                raise Unavailable("missing:cf_depreciation_addback")
+            total = abs(dep) + abs(opt("cf_amortisation") or 0)
+        else:
+            total = abs(total)
+        # A separate right-of-use line means it is not inside the line above.
+        return total + abs(opt("cf_rou_depreciation") or 0)
+
+    def ebitda_cf():
+        return read("op") + reported_da()
+
+    emit("ebitda_cf", "operating income + depreciation/amortisation add-backs in the cash-flow statement (incl. separate right-of-use depreciation)",
+         ebitda_cf, "money",
+         "현금흐름표 조정 항목의 상각비 기준(주석 검토 전). 조정 EBITDA 아님. 상각 범위가 영업이익 범위와 다를 수 있음")
+    emit("ebitda_cf_margin", "ebitda_cf / positive revenue", lambda: ratio(ebitda_cf(), read("revenue")))
+
+    def ebitda_best():
+        """Strict EBITDA when it exists, else the cash-flow add-back version."""
+        if ebitda.get("value") is not None:
+            used.append({"input": "strict_ebitda", **ebitda})
+            return ebitda["value"]
+        return ebitda_cf()
+
+    def reported_debt():
+        current = opt("debt_current_total")
+        if current is None:
+            parts = [opt(k) for k in ("borrowings_short", "borrowings_current_portion", "bonds_current")]
+            current = sum(v for v in parts if v is not None) if any(v is not None for v in parts) else None
+        longs = [opt(k) for k in ("borrowings_long", "bonds_noncurrent")]
+        noncurrent = sum(v for v in longs if v is not None) if any(v is not None for v in longs) else None
+        if current is None and noncurrent is None:
+            raise Unavailable("missing:tagged_borrowings")
+        leases = [opt(k) for k in ("lease_current", "lease_noncurrent")]
+        return (current or 0) + (noncurrent or 0) + sum(v for v in leases if v is not None)
+
+    def net_debt_reported():
+        return reported_debt() - read("cash")
+
+    emit("gross_debt_reported", "tagged borrowings + bonds + lease liabilities (current and non-current)", reported_debt, "money",
+         "표준 태그가 붙은 차입·사채·리스 계정 합. 회사 확장태그로만 공시된 차입은 빠질 수 있음(누락≠0)")
+    emit("net_debt_reported", "gross_debt_reported - cash and cash equivalents", net_debt_reported, "money",
+         "공시 계정 합산 순차입금(검토 전). 사용제한 현금·단기금융상품 미반영. 음수면 순현금")
+    def leverage_reported():
+        if selected_period != "annual":
+            raise Unavailable("requires:annual_ebitda_no_quarter_annualization")
+        return ratio(net_debt_reported(), ebitda_best())
+
+    emit("net_debt_reported_to_ebitda", "net_debt_reported / positive annual EBITDA (strict if available, else ebitda_cf)",
+         leverage_reported, note="분자는 공시 계정 합산 순차입금(검토 전). 사용한 EBITDA 종류는 inputs에 기록")
+
+    def cash_interest():
+        parts = [opt("cash_interest_operating"), opt("cash_interest_financing")]
+        if all(v is None for v in parts):
+            raise Unavailable("missing:cash_interest_paid")
+        paid = sum(abs(v) for v in parts if v is not None)
+        if paid == 0:
+            raise Unavailable("zero:cash_interest_paid")
+        return paid
+
+    emit("interest_coverage_cash", "operating income / cash interest paid (operating + financing classified)",
+         lambda: read("op") / cash_interest(),
+         note="손익 이자비용이 태그되지 않은 기업이 대부분이라 둔 현금이자 기준. 손익 이자보상배율과 다름; 영업손실이면 음수")
+
+    def noncontrolling_book():
+        nci = read("equity") - read("parent_equity")
+        if nci < 0:
+            raise Unavailable("conflict:parent_equity_exceeds_total_equity")
+        return nci
+
+    def ev_reported():
+        if selected_period != "annual":
+            raise Unavailable("requires:annual_period")
+        return priced_basis(ordinary=False) + net_debt_reported() + noncontrolling_book()
+
+    emit("ev_reported", "ordinary+preferred market value + net_debt_reported + NCI book (total equity - parent equity)", ev_reported, "money",
+         "시세 기반 EV, 순차입금은 공시 계정 합산(검토 전). 금융사 미적용")
+    emit("ev_reported_to_ebitda", "ev_reported / positive annual EBITDA (strict if available, else ebitda_cf)",
+         lambda: ratio(ev_reported(), ebitda_best()))
+    emit("ev_reported_to_sales", "ev_reported / positive revenue", lambda: ratio(ev_reported(), read("revenue")))
+    emit("per_basic", "ordinary market cap / parent FY net income (preferred allocation not deducted)",
+         lambda: ratio(priced_basis(annual=True), read("parent_income")), financial_allowed=True,
+         note="우선주 배당·귀속분을 빼지 않은 단순 PER. 우선주 비중이 큰 기업은 과소")
+    emit("pbr_basic", "ordinary market cap / parent equity (preferred book not deducted)",
+         lambda: ratio(priced_basis(), read("parent_equity")), financial_allowed=True,
+         note="우선주 장부가를 빼지 않은 단순 PBR")
+
     if industry in {"shipbuilding", "machinery"}:
         def firm_backlog():
             if industry == "machinery" and not reviewed("order_backlog"):
