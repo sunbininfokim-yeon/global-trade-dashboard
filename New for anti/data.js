@@ -561,6 +561,29 @@
             hsCode: "0901",
             colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
         },
+        // Rice in all forms (paddy, husked, milled, broken), as USDA counts
+        // milled-equivalent trade.
+        rice: {
+            hsCode: "1006",
+            colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        },
+        // Raw cotton, not carded or combed: the fibre as ginned and baled.
+        cotton: {
+            hsCode: "5201",
+            colorScheme: { source: [34, 197, 94], target: [74, 222, 128] }
+        },
+        // Rapeseed/canola seed. Oil (1514) and meal are separate markets.
+        canola: {
+            hsCode: "1205",
+            colorScheme: { source: [202, 138, 4], target: [250, 204, 21] }
+        },
+        // Fresh oranges (080510), the line USDA's orange balance counts.
+        // Orange juice (2009.11/12/19) is Brazil's main export and a
+        // separate market.
+        orange: {
+            hsCode: "080510", strictHs: true,
+            colorScheme: { source: [234, 88, 12], target: [251, 146, 60] }
+        },
         // 1511 = palm oil and its fractions, crude and refined. Palm kernel
         // oil (1513) is a separate, much smaller market and is left out, the
         // same line the monthly pipeline draws (commodity_id palm_oil = 1511).
@@ -1261,6 +1284,38 @@
             topExporter: "브라질",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 1201)
             news: defaultNews("Soybeans")
+        },
+        rice: {
+            title: "농산물: 쌀 (Rice)",
+            desc: "아시아 주식인 쌀(HS 1006, 도정·현미·쇄미 포함) 수출입 무역 흐름",
+            totalVolume: "…",
+            topExporter: "인도",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 1006)
+            news: defaultNews("Rice")
+        },
+        cotton: {
+            title: "농산물: 면화 (Cotton)",
+            desc: "섬유 원료인 원면(HS 5201) 수출입 무역 흐름",
+            totalVolume: "…",
+            topExporter: "브라질 / 미국",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 5201)
+            news: defaultNews("Cotton")
+        },
+        canola: {
+            title: "농산물: 유채·카놀라 (Rapeseed)",
+            desc: "식용유·바이오디젤 원료인 유채씨(HS 1205) 수출입 무역 흐름",
+            totalVolume: "…",
+            topExporter: "캐나다 / 호주",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 1205)
+            news: defaultNews("Canola")
+        },
+        orange: {
+            title: "농산물: 오렌지 (Oranges)",
+            desc: "생과 오렌지(HS 080510) 수출입 무역 흐름 · 오렌지주스는 별도 시장",
+            totalVolume: "…",
+            topExporter: "남아공 / 이집트",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 080510)
+            news: defaultNews("Oranges")
         },
         rubber: {
             title: "농산물: 천연고무 (Natural Rubber)",
