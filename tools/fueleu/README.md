@@ -56,8 +56,9 @@ FuelEU 데이터베이스는 비공개라 시장 전체 공식 잉여/부족 수
 ## 자동 갱신과 게시 종료
 
 `.github/workflows/fueleu_market_refresh.yml`가 매주 월요일 OPX 해설과 최신 MRV 2개 연도를 다시 받아
-`New for anti/public/data/fueleu_market_v1.json`을 만든다. `build_site_data.DISPLAY_UNTIL`(2026-12-03)이
-지나면 수집을 건너뛰고 가격·수급을 뺀 파일을 쓴다. 이 실행이 사용자가 정한 "한 달 뒤 내리기"다.
+`New for anti/public/data/fueleu_market_v1.json`을 만든다. 처음엔 2026-12-03까지만 게시하기로 했지만
+2026-11-17 사용자 결정으로 종료 없이 계속 게시한다(`build_site_data.DISPLAY_UNTIL = None`). 날짜를 다시 넣으면
+그날 이후 수집을 건너뛰고 가격·수급을 뺀 파일을 쓴다.
 
 ## 바이오 혼합 (engine.bio_fuel / blend_economics)
 
