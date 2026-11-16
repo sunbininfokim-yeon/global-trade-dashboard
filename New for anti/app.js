@@ -1992,6 +1992,8 @@ const renderSeaIceCard = () => {
         <div class="climate-sub" style="${hot ? 'color:#fca5a5;font-weight:600;' : ''}">${L.rank_ko}</div>
         <div class="climate-sub" style="margin-top:4px;">평년(${seaIceDoc.baseline}) ${fmtMkm2(L.clim)}
             ${seaIceDoc.record_min ? ` · 역대 최저 ${seaIceDoc.record_min.min}백만 km² (${seaIceDoc.record_min.year}년 ${Number(seaIceDoc.record_min.date.slice(5, 7))}월)` : ''}</div>
+        ${seaIceDoc.outlook?.point != null ? `<div class="climate-sub" style="margin-top:4px;">${seaIceDoc.outlook.target} 전망 <b>${seaIceDoc.outlook.point.toFixed(2)}</b>
+            (68% ${seaIceDoc.outlook.range_68[0].toFixed(2)}~${seaIceDoc.outlook.range_68[1].toFixed(2)})</div>` : ''}
         <div class="climate-sub" style="margin-top:4px;color:#7dd3fc;">누르거나 지도의 그린란드 위 원을 누르면 연중 추이·9월 최소치가 열립니다 →</div>
     </div>`;
 };
@@ -2058,6 +2060,34 @@ const seaIceMinimaBars = (doc, h = 90) => {
     <div class="climate-sub" style="display:flex;justify-content:space-between;"><span>${m[0].year}</span><span>${m[m.length - 1].year}</span></div>`;
 };
 
+/** September outlook card (sea_ice_forecast.py, recomputed daily). */
+const renderSeaIceOutlook = (o) => {
+    if (!o || o.point == null) return '';
+    const f2 = (v) => v.toFixed(2);
+    const usedModel = o.method !== '추세';
+    const rows = (o.skill_by_issue_month || []).map((r) => `
+        <div class="climate-table-row" style="font-size:11px;">
+            <span style="flex:1;">${r.issue} 발행</span>
+            <span style="width:30%;text-align:right;">오차 ±${f2(r.mae_model)}</span>
+            <span style="width:30%;text-align:right;color:${r.skill >= 0.1 ? '#86efac' : '#94a3b8'};">추세 대비 ${r.skill >= 0 ? '+' : ''}${Math.round(r.skill * 100)}%</span>
+        </div>`).join('');
+    return `<div class="climate-card">
+        <h3>${o.target} 전망 <span class="src-tag">매일 자동 계산</span></h3>
+        <div class="climate-big" style="font-size:22px;">${f2(o.point)}백만 km²</div>
+        <div class="climate-sub">68% 범위 ${f2(o.range_68[0])}~${f2(o.range_68[1])} · 95% 범위 ${f2(o.range_95[0])}~${f2(o.range_95[1])}</div>
+        <div class="climate-sub" style="margin-top:4px;">방법: <b>${o.method}</b>${usedModel ? '' : ' (현재 면적·부피를 더해도 과거 검증에서 추세보다 10% 이상 낫지 않아 추세만 씀)'}
+            · ${o.issued} 자료 기준 · 범위는 2001년 이후 같은 날짜 전진 검증 오차(${o.n_test_years}년)</div>
+        ${o.record_september ? `<div class="climate-sub" style="margin-top:2px;">참고: 9월 평균 역대 최저 ${f2(o.record_september)}백만 km²</div>` : ''}
+        <details class="climate-fold" style="margin-top:6px;">
+            <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">발행 시점별 과거 성적 ▾</summary>
+            ${rows}
+            <div class="climate-sub" style="margin-top:4px;">6~8월에 발행할수록 정확해집니다. 봄 이전은 "봄 예측 장벽"으로 추세 수준에 머무는 것이 학계 공통 결과입니다
+                (Bushuk et al. 2023, SIO 2008-2022 검증).</div>
+        </details>
+        <div class="climate-sub" style="margin-top:6px;">근거: 추세 기준선(SIO), 현재 면적 지속성(Petty et al. 2017), 얼음 부피 PIOMAS(두께 기억, Day et al. 2014)${o.volume_used ? '' : ' -- 이번 계산에서는 PIOMAS를 받지 못해 제외'}.</div>
+    </div>`;
+};
+
 const renderSeaIcePanel = () => {
     const doc = seaIceDoc;
     if (!climateRightContentEl || !doc?.latest) return;
@@ -2076,6 +2106,7 @@ const renderSeaIcePanel = () => {
             <div class="climate-sub" style="margin-top:4px;${L.rank_low <= 3 ? 'color:#fca5a5;font-weight:600;' : ''}">${L.rank_ko}</div>
             ${seaIceSeasonChart(doc)}
         </div>
+        ${renderSeaIceOutlook(doc.outlook)}
         <div class="climate-card">
             <h3>9월 최소 면적 (해마다)</h3>
             ${seaIceMinimaBars(doc)}
