@@ -194,6 +194,80 @@ const pecrFunding = (snap) => {
         </section>`;
 };
 
+// --- Regulatory capital (K-ICS / Basel / NCR / 조정자기자본비율) -----------------
+// snapshot.regulatory comes from scripts/dart/dart_kfa/regulatory_capital.py:
+// the filer's own 재무건전성 table in its 사업·분기보고서, never estimated.
+const PECR_REG = {
+    kics: { title: '지급여력비율 (K-ICS)', ratio: 'ratio', amounts: [['available', '가용자본 (A)'], ['required', '요구자본 (B)']],
+        plain: '가용자본 ÷ 요구자본. 요구자본은 1년 99.5% 신뢰수준의 손실 규모(보험·시장·신용·운영 위험)입니다.' },
+    ncr: { title: '순자본비율 (NCR)', ratio: 'ratio', amounts: [['ncr_capital', '영업용순자본 (A)'], ['total_risk', '총위험액 (B)'], ['required_equity', '필요유지자기자본 (C)']],
+        plain: '(영업용순자본 − 총위험액) ÷ 필요유지자기자본.' },
+    credit_finance: { title: '조정자기자본비율', ratio: 'ratio', amounts: [['adjusted_equity', '조정자기자본'], ['adjusted_assets', '조정총자산']],
+        plain: '조정자기자본 ÷ 조정총자산. 여신전문금융업 경영지도비율입니다.' },
+    basel: { title: 'BIS 자기자본비율 (바젤 III)', ratio: 'cet1_ratio', amounts: [['cet1', '보통주자본'], ['tier1', '기본자본'], ['total_capital', '총자본'], ['rwa', '위험가중자산']],
+        plain: '자본 ÷ 위험가중자산(RWA). 보통주자본비율(CET1)이 가장 엄격한 기준입니다.' },
+};
+const pecrPct = (v) => (Number.isFinite(v) ? `${(v * 100).toFixed(v >= 10 ? 0 : 1)}%` : '—');
+
+const pecrRegulatory = (snap) => {
+    const r = snap?.regulatory;
+    const spec = r && PECR_REG[r.kind];
+    if (!spec || !(r.series || []).length) return '';
+    const series = r.series;
+    const last = series[series.length - 1];
+    const cards = [];
+    const card = (label, value, plain, extra = '') => cards.push(`
+        <div class="fin-card pecr-card"><span class="fin-card-title">${finEsc(label)}</span>
+            <span class="fin-card-value">${value}</span><p class="fin-card-plain">${finEsc(plain)}${extra}</p></div>`);
+    if (r.kind === 'basel') {
+        for (const [k, label] of [['cet1_ratio', '보통주자본비율 (CET1)'], ['tier1_ratio', '기본자본비율 (Tier 1)'], ['total_ratio', '총자본비율']]) {
+            const m = (r.minimums || {})[k] || {};
+            card(label, pecrPct(last[k]), `최저 ${pecrPct(m.minimum)} · 완충자본 포함 ${pecrPct(m.with_conservation_buffer)}`,
+                Number.isFinite(last[k]) && Number.isFinite(last.rwa) ? ` · 완충 포함 기준 대비 여력 ${coNum((last[k] - m.with_conservation_buffer) * last.rwa)}` : '');
+        }
+    } else {
+        const ratio = last[spec.ratio];
+        const floor = (r.thresholds || [])[0];
+        card(spec.title, pecrPct(ratio), `${finEsc(last.period_end)} 기준${r.transitional_applied ? ' · 경과조치 후' : ''}`,
+            floor ? ` · ${finEsc(floor.label)} 기준 ${pecrPct(floor.ratio)}` : '');
+        const pre = r.pre_transitional;
+        if (pre && Number.isFinite(pre.ratio)) {
+            card('경과조치 전 지급여력비율', pecrPct(pre.ratio), `${finEsc(pre.period_end)} 각주 공시. 경과조치(요구자본 인식 유예)를 빼면 이만큼입니다.`,
+                Number.isFinite(pre.required) ? ` · 요구자본 ${coNum(pre.required)}` : '');
+        }
+        if (r.kind === 'kics' && Number.isFinite(last.available) && Number.isFinite(last.required)) {
+            card('100% 기준 자본 여력', coNum(last.available - last.required),
+                `가용자본 − 요구자본. 요구자본이 ${pecrPct(ratio - 1)} 늘어나도 100%를 지킵니다.`);
+        }
+        if (r.kind === 'ncr' && Number.isFinite(last.ncr_capital) && Number.isFinite(last.total_risk)) {
+            card('잉여자본 (A − B)', coNum(last.ncr_capital - last.total_risk), '영업용순자본에서 총위험액을 뺀 값입니다.');
+        }
+        if (r.kind === 'credit_finance' && floor && Number.isFinite(last.adjusted_assets)) {
+            card('경영지도비율 대비 여력', coNum((ratio - floor.ratio) * last.adjusted_assets), `조정총자산 × (현재 비율 − ${pecrPct(floor.ratio)}).`);
+        }
+    }
+    for (const [k, label] of spec.amounts) if (Number.isFinite(last[k])) card(label, coNum(last[k]), `${last.period_end} 기준`);
+    const ratioKeys = r.kind === 'basel' ? [['cet1_ratio', 'CET1'], ['tier1_ratio', 'Tier 1'], ['total_ratio', '총자본']] : [[spec.ratio, '비율']];
+    const REPORT = { FY: '사업', H1: '반기', Q1: '1분기', Q3: '3분기' };
+    const thresholds = r.kind === 'basel'
+        ? '바젤 III 최저: CET1 4.5% · Tier 1 6% · 총자본 8%, 자본보전완충 2.5%p 포함 7% · 8.5% · 10.5%. D-SIB·경기대응완충은 은행별로 더해집니다.'
+        : (r.thresholds || []).map((t) => `${t.label} ${pecrPct(t.ratio)} 미만`).join(' · ');
+    return `
+        <section class="pecr-section">
+            <h3>규제 자본 — ${finEsc(spec.title)}</h3>
+            <div class="fin-cards">${cards.join('')}</div>
+            <div class="co-table-wrap"><table class="co-table pecr-table">
+                <thead><tr><th>기준일</th>${ratioKeys.map(([, l]) => `<th>${l}</th>`).join('')}${spec.amounts.filter(([k]) => series.some((p) => Number.isFinite(p[k]))).map(([, l]) => `<th>${finEsc(l)}</th>`).join('')}<th>보고서</th></tr></thead>
+                <tbody>${series.slice().reverse().map((p) => `<tr><td>${finEsc(p.period_end)}</td>
+                    ${ratioKeys.map(([k]) => `<td>${pecrPct(p[k])}</td>`).join('')}
+                    ${spec.amounts.filter(([k]) => series.some((q) => Number.isFinite(q[k]))).map(([k]) => `<td>${coNum(p[k])}</td>`).join('')}
+                    <td><a href="https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${finEsc(p.receipt || '')}" target="_blank" rel="noopener">${REPORT[p.report] || ''}보고서</a></td></tr>`).join('')}</tbody>
+            </table></div>
+            <p class="fin-note">${finEsc(spec.plain)} 규제 기준: ${finEsc(thresholds)}.
+                출처: 각 보고서 "재무건전성" 표 (${r.scope === 'CFS' ? '연결 기준' : r.scope === 'OFS' ? '별도 기준' : '기준 표기 없음'}). 추정하지 않은 공시값입니다.</p>
+        </section>`;
+};
+
 // --- LBO what-if (browser-side, user inputs) ----------------------------------
 const PECR_LBO = { entry: null, lev: null, rate: 6, growth: 3, conv: null, years: 5, exit: null };
 
@@ -344,7 +418,7 @@ const pecrViewHtml = (data, view) => {
     const lens = (snap.pe_cr?.cr_pe_screen?.lens_order || {})[view === 'cr' ? 'cr' : 'pe'] || [];
     if (view === 'cr') {
         return pecrHead(snap) + (financial
-            ? pecrFunding(snap) + pecrSection(snap, 'capital_structure', { hideEmpty: true }) + pecrSection(snap, 'cash_flow', { hideEmpty: true })
+            ? pecrRegulatory(snap) + pecrFunding(snap) + pecrSection(snap, 'capital_structure', { hideEmpty: true }) + pecrSection(snap, 'cash_flow', { hideEmpty: true })
               + '<p class="fin-note">금융회사는 산업기업용 CR 지표(EBITDA, 순차입금, 이자보상배율 등)를 적용하지 않습니다. 업권별 지표는 기본 탭에 있습니다.</p>'
             : pecrSignals(snap) + lens.map((id) => pecrSection(snap, id)).join('') + pecrFunding(snap));
     }

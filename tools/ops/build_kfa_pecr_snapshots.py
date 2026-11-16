@@ -66,7 +66,14 @@ DEFAULT_TARGETS = [
     ('00159616', '034020', '두산에너빌리티'),  # 기계
     ('00819268', None, '연합자산관리'),        # 금융: NPL
     ('00416593', None, '대신에프앤아이'),      # 금융: NPL
-    ('00688996', '105560', 'KB금융'),          # 금융: 은행지주
+    ('00688996', '105560', 'KB금융'),          # 금융: 은행지주 (Basel)
+    ('00382199', '055550', '신한지주'),        # 금융: 은행지주 (Basel)
+    ('00168933', None, 'DB생명보험'),          # 보험 (K-ICS), 비상장
+    ('00126256', '032830', '삼성생명'),        # 보험 (K-ICS)
+    ('00159102', '005830', 'DB손해보험'),      # 보험 (K-ICS)
+    ('00296290', '039490', '키움증권'),        # 증권 (NCR)
+    ('00222374', None, '현대카드'),            # 카드 (조정자기자본비율), 비상장
+    ('00208514', None, '현대캐피탈'),          # 캐피탈 (조정자기자본비율), 비상장
 ]
 
 FUNDING_ENDPOINTS = {
@@ -357,6 +364,71 @@ def market_packet(dart: Dart, corp: str, stock: str, fy_receipt: str, today: dt.
     return market, note
 
 
+REPORT_NAME = re.compile(r'(사업보고서|반기보고서|분기보고서)\s*\((\d{4})\.(\d{2})\)')
+REPORT_KIND = {('사업보고서', '12'): 'FY', ('반기보고서', '06'): 'H1', ('분기보고서', '03'): 'Q1', ('분기보고서', '09'): 'Q3'}
+MONTH_END = {'03': '03-31', '06': '06-30', '09': '09-30', '12': '12-31'}
+
+
+def periodic_reports(dart: Dart, corp: str, year: int) -> list[dict]:
+    """The FY `year` 사업보고서 and every later 분기/반기보고서, newest first.
+    `receipts` lists every filing of that report, newest first: a [기재정정]
+    filing may carry only the corrected sections (KB금융 FY2025's 2026-06
+    correction has no BIS table), so callers fall back to older receipts."""
+    lst = dart.get('list.json', corp_code=corp, bgn_de=f'{year + 1}0101', pblntf_ty='A', page_count=100)
+    best = {}
+    for row in lst.get('list') or []:
+        m = REPORT_NAME.search(row.get('report_nm') or '')
+        if not m:
+            continue
+        kind = REPORT_KIND.get((m.group(1), m.group(3)))
+        period_end = f'{m.group(2)}-{MONTH_END[m.group(3)]}'
+        if not kind or (kind == 'FY' and int(m.group(2)) != year) or period_end < f'{year}-12-31':
+            continue
+        key = (kind, period_end)
+        best.setdefault(key, {'kind': kind, 'period_end': period_end, 'receipts': []})['receipts'].append(row['rcept_no'])
+    for r in best.values():
+        r['receipts'].sort(reverse=True)
+    return sorted(best.values(), key=lambda r: r['period_end'], reverse=True)
+
+
+def report_body(dart: Dart, receipt: str) -> str | None:
+    blob = dart.get_bytes('document.xml', rcept_no=receipt)
+    if not blob:
+        return None
+    import io
+    import zipfile
+    with zipfile.ZipFile(io.BytesIO(blob)) as z:
+        name = f'{receipt}.xml'
+        if name not in z.namelist():
+            return None
+        return z.read(name).decode('utf-8', errors='ignore')
+
+
+def regulatory_series(dart: Dart, corp: str, year: int, company: dict, fs: str):
+    """K-ICS / Basel / NCR / 조정자기자본비율 from the report bodies."""
+    from dart_kfa.entity_policy import classify_entity  # noqa: E402
+    from dart_kfa.regulatory_capital import regulatory_from_reports, regulatory_kind  # noqa: E402
+    name = company.get('corp_name') or ''
+    policy = classify_entity({'corp_code': corp, 'induty_code': company.get('induty_code'), 'corp_name': name})
+    kind, subtype = regulatory_kind(policy.get('entity_class'), name)
+    if not kind:
+        return None, 'not_regulated_capital_filer'
+    from dart_kfa.regulatory_capital import extract  # noqa: E402
+    reports = []
+    for r in periodic_reports(dart, corp, year):
+        for receipt in r['receipts']:
+            doc = report_body(dart, receipt)
+            if doc and extract(doc, kind, period_end=r['period_end'], receipt=receipt, subtype=subtype):
+                reports.append({'kind': r['kind'], 'period_end': r['period_end'], 'receipt': receipt, 'doc': doc})
+                break
+    if not reports:
+        return None, f'{kind}:no_report_body'
+    res = regulatory_from_reports(reports, kind=kind, subtype=subtype)
+    if not res:
+        return None, f'{kind}:table_not_found'
+    return res, f'{kind}:{len(res["series"])}_periods'
+
+
 def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     company = dart.get('company.json', corp_code=corp)
     if company.get('status') != '000':
@@ -427,6 +499,7 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     if prior_packs:
         payload['screen_inputs'] = {'annual_reviewed_disclosures': prior_packs}
     result = build(payload, 'annual')
+    regulatory, regulatory_note = regulatory_series(dart, corp, year, company, fs)
     receipts = {b: (r['response']['list'][0].get('rcept_no') if r['response']['list'] else None) for b, r in filings.items()}
     return {
         'schema': 'kfa_pecr_snapshot/1',
@@ -443,6 +516,8 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
                                  'xbrl_note_keys': sorted(r['key'] for r in (current_xbrl or {}).get('rows', [])),
                                  'prior_years_with_xbrl_notes': sorted(prior_packs)},
         'pe_cr': result,
+        'regulatory': regulatory,
+        'regulatory_input': regulatory_note,
     }
 
 
@@ -470,7 +545,8 @@ def main() -> int:
         index[corp] = {'entity': snap['entity'], 'stock_code': stock or (snap.get('stock_code')), 'fiscal_year': snap['fiscal_year'],
                        'fs_div': snap['fs_div'], 'industry': snap['pe_cr'].get('industry'),
                        'financial': snap['pe_cr'].get('industry') == 'financial'}
-        print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]} market={snap["market_input"]}', file=sys.stderr)
+        print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]} '
+              f'market={snap["market_input"]} regulatory={snap["regulatory_input"]}', file=sys.stderr)
     idx_path = OUT_DIR / 'index_v1.json'
     prev = json.loads(idx_path.read_text())['index'] if idx_path.exists() else {}
     prev.update(index)
