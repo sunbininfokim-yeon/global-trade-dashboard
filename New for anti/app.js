@@ -2020,7 +2020,7 @@ const seaIceSeasonChart = (doc, w = 300, h = 150) => {
     const ticks = mStart.map((d, i) => `<span style="position:absolute;left:${(x(d) / w * 100).toFixed(1)}%;font-size:9px;color:#64748b;">${months[i]}</span>`).join('');
     const line = (key, color, dash, width) => (yrs[key] ? `<path d="${path(yrs[key])}" fill="none" stroke="${color}"
         stroke-width="${width}" ${dash ? `stroke-dasharray="${dash}"` : ''} vector-effect="non-scaling-stroke"/>` : '');
-    const nsr = `<rect x="${x(213)}" y="0" width="${x(304) - x(213)}" height="${h}" fill="rgba(251,191,36,0.07)"/>`;
+    const nsr = `<rect x="${x(213)}" y="0" width="${x(304) - x(213)}" height="${h}" fill="rgba(251,191,36,0.13)"/>`;
     return `<div style="position:relative;margin-top:10px;">
         <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:${h}px;display:block;">
             ${nsr}
