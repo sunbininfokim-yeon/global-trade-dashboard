@@ -179,7 +179,7 @@ def route_fraction(fr):
     return {d: max(fr[k][d] for k in fr) for d in sorted(common)}
 
 
-def season(route, year, upto=None):
+def season(route, year, upto=None, thr=None):
     """(opening date, closing date or None if still open, days) for a year."""
     d, end = date(year, 6, 1), date(year, 12, 31)
     if upto:
@@ -187,7 +187,7 @@ def season(route, year, upto=None):
     runs, start, last = [], None, None
     while d <= end:
         x = route.get(d)
-        if x is not None and x <= OPEN:
+        if x is not None and x <= (OPEN if thr is None else thr):
             if start is None or (last and (d - last).days > GAP + 1):
                 if start is not None:
                     runs.append((start, last))
@@ -361,6 +361,12 @@ def build(seas, today=None):
     last10 = [done[y]["days"] > 0 for y in sorted(done)[-10:]]
     out["opened_last10"] = f"최근 {len(last10)}년 중 {sum(last10)}년 열림"
 
+    sens = {}
+    for thr in (0.15, 0.3, 0.5):
+        sens[str(thr)] = {y: season(route, y, last if y == last.year else None, thr)[2]
+                          for y in range(first_year, last.year + 1)}
+        sens[str(thr) + "_seas"] = {k: [season(fr[k], y, None, thr)[2] for y in range(2005, last.year)] for k in fr}
+
     # Season-length trend over all finished seasons.
     ys = sorted(days_tab)
     slope = float(np.polyfit(ys, [days_tab[y] for y in ys], 1)[0]) if len(ys) > 10 else None
@@ -388,6 +394,7 @@ def build(seas, today=None):
                   "first10": f"{ys[0]}-{ys[min(9, len(ys) - 1)]}" if ys else None,
                   "last10": f"{ys[-10]}-{ys[-1]}" if len(ys) >= 10 else None},
         "outlook": out,
+        "sensitivity_days": sens,
         "years": {str(y): series(y) for y in (last.year, last.year - 1, 2012, 2020) if any(d.year == y for d in route)},
     }
 
@@ -420,6 +427,8 @@ def main():
     for r in doc["seasons"][-12:]:
         print(r["year"], r["open"], r["close"], r["days"], {k: v["days"] for k, v in r["seas"].items()})
     print("추세", doc["trend"])
+    for thr, v in doc["sensitivity_days"].items():
+        print("SENS", thr, v if "seas" in thr else " ".join(f"{y}:{n}" for y, n in v.items()))
     print("전망", json.dumps(o, ensure_ascii=False))
 
 
