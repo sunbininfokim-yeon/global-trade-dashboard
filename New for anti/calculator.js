@@ -361,10 +361,10 @@ const loadCompany = async (out, inst) => {
 // whichever view the payload's own view_presets describe. No card copy comes
 // from the engine, so the Korean label/plain-text for each metric key lives
 // here, same as CO_LEVELS does for the SEC calculator.
-const KFA_VIEW_LABELS = { basic: '기본', investor: '투자자', cr: 'CR(구조조정)', pe: 'PE·LBO', deal: '딜·밸류에이션' };
+const KFA_VIEW_LABELS = { basic: '기본', metrics: '투자지표', investor: '투자자', cr: 'CR(구조조정)', pe: 'PE·LBO', deal: '딜·밸류에이션' };
 // Views drawn by calculator-pecr.js from the PE/CR engine snapshot instead of
 // from view_presets card keys.
-const KFA_PECR_VIEWS = new Set(['cr', 'pe', 'deal']);
+const KFA_PECR_VIEWS = new Set(['metrics', 'cr', 'pe', 'deal']);
 
 const KFA_CARD_META = {
     revenue: { label: '매출', unit: 'money', plain: '한 해 동안 벌어들인 전체 매출입니다.' },
@@ -754,6 +754,7 @@ const loadKfaCompany = async (out, inst, code, corpCode = null) => {
     const financial = !!data.entity_policy?.is_financial_entity || data.pecr?.pe_cr?.industry === 'financial';
     const basic = (data.view_presets?.views || {}).basic || { cards: [], models: [] };
     const views = { basic };
+    if (data.pecr?.investor_metrics) views.metrics = { cards: [], models: [] };   // 성장·ROIC·Z/F·주주환원·희석
     if (!financial) Object.assign(views, { cr: { cards: [], models: [] }, pe: { cards: [], models: [] }, deal: { cards: [], models: [] } });
     else if (data.pecr) {
         views.cr = { cards: [], models: [] };

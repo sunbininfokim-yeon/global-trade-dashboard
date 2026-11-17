@@ -497,6 +497,67 @@ def regulatory_series(dart: Dart, corp: str, year: int, company: dict, fs: str):
     return res, f'{kind}:{len(res["series"])}_periods'
 
 
+def investor_packet(dart: Dart, corp: str, year: int, fs: str, fy_rows: list, prior: list,
+                    result: dict, bases: dict, xbrl_packs: list) -> tuple[dict | None, str]:
+    """Growth / ROIC / Z / F-score, shareholder returns, CB dilution and the EV
+    bridge (dart_kfa/investor_metrics.py) from data this run already fetched
+    plus three structured endpoints and the latest periodic report body."""
+    from dart_kfa.investor_metrics import dilution_from_report, investor_metrics, lease_from_instance  # noqa: E402
+    from dart_kfa.xbrl_notes import instance_from_zip, parse_instance  # noqa: E402
+    fy_reports = {year: fy_rows}
+    for p in prior:
+        fy_reports[int(p['fiscal_year_end'][:4])] = p['filings']['FY']['response']['list']
+    financial = result.get('industry') == 'financial'
+    alot = dart.get('alotMatter.json', corp_code=corp, bsns_year=str(year), reprt_code=REPRT['FY'])
+    tess = dart.get('tesstkAcqsDspsSttus.json', corp_code=corp, bsns_year=str(year), reprt_code=REPRT['FY'])
+    shares = dart.get('stockTotqySttus.json', corp_code=corp, bsns_year=str(year), reprt_code=REPRT['FY'])
+    issued = next((num(r.get('istc_totqy')) for r in shares.get('list') or [] if _se(r) in COMMON_LABELS), None)
+    # Outstanding convertibles: newest periodic report whose body has the section.
+    # Q1/Q3 reports may omit the capital section; walk back to H1 / FY.
+    dilution, dil_note = None, 'no_periodic_report'
+    for r in periodic_reports(dart, corp, year):
+        for receipt in r['receipts'][:2]:
+            doc = report_body(dart, receipt)
+            if not doc:
+                continue
+            got = dilution_from_report(doc, receipt=receipt, period_end=r['period_end'])
+            dil_note = f"{r['kind']}:{r['period_end']}:{got['status']}"
+            if got['status'] != 'undetermined':
+                dilution = got
+                break
+        if dilution:
+            break
+    cards = result.get('cards') or {}
+    nd = cards.get('net_debt') or {}
+    ndr = cards.get('net_debt_reported') or {}
+    lease_in = nd.get('value') is not None or any(str(i.get('input', '')).startswith('lease_') for i in ndr.get('inputs') or [])
+    xbrl_lease = xbrl_lease_basis = None
+    if not lease_in and fy_rows:
+        blob = dart.get_bytes('fnlttXbrl.xml', rcept_no=fy_rows[0].get('rcept_no'), reprt_code=REPRT['FY'])
+        if blob:
+            try:
+                ctx, facts = parse_instance(instance_from_zip(blob))
+                xbrl_lease, xbrl_lease_basis = lease_from_instance(ctx, facts, fs_div=fs, instant=f'{year}-12-31')
+            except Exception as exc:  # noqa: BLE001 -- the bridge then shows the lease as unknown
+                print(f'  xbrl lease {corp}: {type(exc).__name__}: {exc}', file=sys.stderr)
+    fyb = bases.get('fy') or {}
+    overrides = {}
+    for pack in xbrl_packs:
+        for row in (pack or {}).get('rows') or []:
+            if row['key'] in ('receivables',) and row.get('period_start') is None:
+                overrides.setdefault(int(row['period_end'][:4]), {})['receivables'] = row['amount'] * row.get('scale', 1)
+    out = investor_metrics(
+        fy_reports, fiscal_year=year, financial=financial,
+        dividends_rows=alot.get('list') if alot.get('status') == '000' else None,
+        treasury_rows=tess.get('list') if tess.get('status') == '000' else None,
+        dilution=dilution, issued_common=issued, lease_in_net_debt=lease_in, xbrl_lease=xbrl_lease,
+        xbrl_lease_basis=xbrl_lease_basis, ebitda=fyb.get('ebitda'), ebitda_card=fyb.get('ebitda_card'),
+        balance_overrides=overrides)
+    out['inputs'] = {'fy_reports': sorted(fy_reports), 'dividends': alot.get('status'), 'treasury': tess.get('status'),
+                     'dilution': dil_note, 'issued_common_source': 'stockTotqySttus FY istc_totqy' if issued else None}
+    return out, f"years={out['years'][0] if out['years'] else '-'}..{year} dilution={dil_note}"
+
+
 def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     company = dart.get('company.json', corp_code=corp)
     if company.get('status') != '000':
@@ -569,6 +630,11 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     result = build(payload, 'annual')
     regulatory, regulatory_note = regulatory_series(dart, corp, year, company, fs)
     bases = valuation_bases(dart, corp, year, fs, fy_rows, result.get('cards') or {})
+    try:
+        investor, investor_note = investor_packet(dart, corp, year, fs, fy_rows, prior, result, bases,
+                                                   [current_xbrl, *prior_packs.values()])
+    except Exception as exc:  # noqa: BLE001 -- the PE/CR snapshot still publishes
+        investor, investor_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
     receipts = {b: (r['response']['list'][0].get('rcept_no') if r['response']['list'] else None) for b, r in filings.items()}
     return {
         'schema': 'kfa_pecr_snapshot/1',
@@ -587,6 +653,8 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
         'pe_cr': result,
         'regulatory': regulatory,
         'valuation_bases': bases,
+        'investor_metrics': investor,
+        'investor_input': investor_note,
         'regulatory_input': regulatory_note,
     }
 
@@ -616,7 +684,8 @@ def main() -> int:
                        'fs_div': snap['fs_div'], 'industry': snap['pe_cr'].get('industry'),
                        'financial': snap['pe_cr'].get('industry') == 'financial'}
         print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]} '
-              f'market={snap["market_input"]} regulatory={snap["regulatory_input"]}', file=sys.stderr)
+              f'market={snap["market_input"]} regulatory={snap["regulatory_input"]} '
+              f'investor={snap["investor_input"]}', file=sys.stderr)
     idx_path = OUT_DIR / 'index_v1.json'
     prev = json.loads(idx_path.read_text())['index'] if idx_path.exists() else {}
     prev.update(index)
