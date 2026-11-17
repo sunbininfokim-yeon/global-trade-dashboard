@@ -57,3 +57,12 @@ test('researched input overrides derived fields and shows candidates and turnout
     assert.match(html, /감세/);
     assert.doesNotMatch(html, /선거 일정판에서 옮긴 기록/);
 });
+
+test('a past "next election" is shown as held, not upcoming', () => {
+    const office = { key: 'legislature', system_id: 'x-house', title_ko: '하원', term_years: 2, records: [],
+        next: null, next_held: { date: '2026-11-03' }, next_due: { year: 2028 } };
+    const html = electionRecordsHtml({ iso3: 'XXX', election_records: { offices: [office] } });
+    assert.match(html, /2026년 11월 3일 치러짐 · 결과 수집 전 \(그다음 2028년 무렵\)/);
+    const stale = { ...office, next: { date: '2000-01-01' }, next_held: null };
+    assert.match(electionRecordsHtml({ iso3: 'XXX', election_records: { offices: [stale] } }), /2000년 1월 1일 치러짐/);
+});

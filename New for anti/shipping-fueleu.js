@@ -5,9 +5,10 @@
 // port of tools/fueleu/engine.py, held to the Python output by
 // tests/fueleu/engine.test.mjs.
 //
-// The OPX series and the MRV estimate are shown for a limited time chosen by
-// the user (redistribution terms unconfirmed). After data.display_until the tab
-// keeps the regulation-only parts and drops both.
+// The OPX series and the MRV estimate were first shown for a limited time chosen
+// by the user (redistribution terms unconfirmed); since 2026-11-17 there is no end
+// (display_until null). If display_until is set again, after it the tab keeps the
+// regulation-only parts and drops both.
 (() => {
   // ------------------------------------------------------------------ engine
   // Line-for-line port of tools/fueleu/engine.py. Change both together.
@@ -512,7 +513,7 @@
       return;
     }
     const today = new Date().toISOString().slice(0, 10);
-    const live = today <= data.display_until && !!data.prices;
+    const live = (!data.display_until || today <= data.display_until) && !!data.prices;
     const series = data.prices?.series || {};
     const latestKey = Object.keys(series).sort().at(-1);
     const latest = live && latestKey ? series[latestKey].at(-1) : null;

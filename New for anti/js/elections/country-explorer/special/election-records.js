@@ -101,7 +101,13 @@ const recordBody = (rec) => {
         ${sources(rec.sources)}`;
 };
 
-const nextLine = (office) => {
+// 빌드 뒤에 날짜가 지나간 일정도 화면에서 한 번 더 거른다 (빌드는 고정 기준일로 돈다).
+const todayIso = () => new Date().toISOString().slice(0, 10);
+const heldLine = (held, office) => `${day(held.date)} 치러짐 · 결과 수집 전${office.next_due?.year ? ` (그다음 ${office.next_due.year}년 무렵)` : ''}`;
+
+const nextLine = (office, today = todayIso()) => {
+    if (office.next?.date && office.next.date < today) return heldLine(office.next, office);
+    if (!office.next && office.next_held?.date) return heldLine(office.next_held, office);
     if (office.next?.date) return `${day(office.next.date)}${office.next.date_status === 'tentative' ? ' (잠정)' : ''}${office.next.label_ko ? ` · ${office.next.label_ko}` : ''}`;
     if (office.next) return `날짜 미정${office.next.label_ko ? ` · ${office.next.label_ko}` : ''}`;
     if (office.next_due?.year) return `${office.next_due.year}년 무렵 (임기 기준)`;

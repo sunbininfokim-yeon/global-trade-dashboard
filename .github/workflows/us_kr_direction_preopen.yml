@@ -7,7 +7,7 @@ name: US KR direction preopen
 # GitHub's own schedule is not enough for that window. market_microstructure
 # _daily's 06:13 KST cron has landed at 09:24-11:53 KST (2026-10-27..11-04),
 # i.e. after the cutoff every time. The on-time trigger is the Cloudflare
-# Worker cron (wrangler.jsonc, 21:25 and 22:05 UTC every day), which calls
+# Worker cron (wrangler.jsonc, 21:25 / 22:05 / 23:05 UTC every day), which calls
 # workflow_dispatch with GH_DISPATCH_TOKEN (a GitHub Actions secret that
 # deploy.yml copies to the Worker). The schedule below is a fallback only.
 #
@@ -23,11 +23,18 @@ name: US KR direction preopen
 
 on:
   schedule:
-    # 06:25 KST every day = 21:25 UTC.
-    - cron: '25 21 * * *'
-    # Separate GitHub fallback slots while Cloudflare dispatch is unavailable.
-    - cron: '43 21 * * *'
-    - cron: '17 22 * * *'
+    # GitHub's own schedule lands 3.0-4.7 h late here (measured 2026-11-06..16:
+    # 21:25-22:17 UTC slots ran at 10:04-12:41 KST, after the cutoff every day).
+    # So it is fired ~3.5 h early, every 30 min from 02:50 to 04:50 KST, to land
+    # roughly 06:00-08:30 KST. The gate skips a run that lands before the US
+    # close or after a forecast exists, so the extra slots cost one short job.
+    # The Cloudflare Worker (06:25 / 07:05 / 08:05 KST) is the on-time trigger
+    # once GH_DISPATCH_TOKEN can dispatch (needs Actions: Read and write).
+    - cron: '50 17 * * *'
+    - cron: '20 18 * * *'
+    - cron: '50 18 * * *'
+    - cron: '20 19 * * *'
+    - cron: '50 19 * * *'
   workflow_dispatch:
     inputs:
       target:
@@ -261,4 +268,59 @@ jobs:
           git add -- "$SHADOW_ARCHIVE"
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'chore: record US KR hypothesis shadow forecasts'
+          bash tools/ops/git_push_retry.sh
+
+  # v2 shadow (2026-11-17, Claude): v1 minus options and momentum, plus EWY's
+  # US-hours move and the overnight KRW move. Research only, beside v1: it
+  # never reads or changes the public card or v1's records. Inputs come from
+  # Yahoo alone, so it needs no KRX checkout. First forecast is write-once
+  # under data/forecasts/us_kr_v2_shadow; the forward workflow scores it
+  # beside v1's first forecast for the same target.
+  v2_shadow:
+    if: github.ref == 'refs/heads/main' && !inputs.dispatch_check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      MM: New for anti/scripts/market_microstructure
+      V2_MODEL: New for anti/scripts/market_microstructure/models/shadow/us_kr_v2_20261116.json
+      V2_ARCHIVE: data/forecasts/us_kr_v2_shadow
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: New for anti/scripts/market_microstructure/requirements-us-kr-preopen.txt
+      - name: Install frozen runtime
+        run: pip install -r "$MM/requirements-us-kr-preopen.txt"
+      - name: Check v2 shadow contract
+        run: python -m unittest discover -s "$MM/tests" -p test_us_kr_v2_shadow.py
+      - name: Resolve v2 target
+        id: v2_plan
+        env:
+          REQUESTED_TARGET: ${{ inputs.target }}
+        run: python "$MM/us_kr_v2_shadow.py" plan --model "$V2_MODEL" --archive "$V2_ARCHIVE" --target "${REQUESTED_TARGET:-}"
+      - name: Record v2 shadow forecast
+        if: steps.v2_plan.outputs.run == 'true'
+        env:
+          TARGET: ${{ steps.v2_plan.outputs.target }}
+        run: |
+          code=0
+          python "$MM/us_kr_v2_shadow.py" predict --model "$V2_MODEL" --archive "$V2_ARCHIVE" --target "$TARGET" || code=$?
+          if [ "$code" -eq 2 ]; then
+            echo "::warning::$TARGET v2 shadow inputs unavailable; the next run retries."
+          elif [ "$code" -ne 0 ]; then
+            exit "$code"
+          fi
+      - name: Commit v2 shadow record
+        if: steps.v2_plan.outputs.run == 'true'
+        run: |
+          if [ ! -d "$V2_ARCHIVE" ]; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$V2_ARCHIVE"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: record US KR v2 shadow forecast'
           bash tools/ops/git_push_retry.sh
