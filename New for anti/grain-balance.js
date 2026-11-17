@@ -9,7 +9,7 @@
  * weather risks taken from the crop monitor's stage calls.
  */
 (() => {
-    const VIEWS = ['wheat', 'corn', 'soybeans', 'sugar', 'palm_oil', 'coffee', 'rice', 'cotton', 'canola', 'orange'];
+    const VIEWS = ['wheat', 'corn', 'soybeans', 'sugar', 'palm_oil', 'coffee', 'rice', 'cotton', 'canola', 'orange', 'orange_juice'];
     const MAX_WEATHER = 6;
     const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     // PSD thousands -> millions, in the crop's unit (coffee: 60-kg bags).
@@ -66,7 +66,21 @@
         if (vt) vt.innerHTML = `${mt(c.current.production_kt)} <span style="font-size:13px;">${pct(c.current.change_pct)}</span>`;
     }
 
-    const TAG = { supply: '공급', stocks: '재고', weather: '날씨', china: '중국' };
+    const TAG = { supply: '공급', stocks: '재고', weather: '날씨', china: '중국', revision: '수정' };
+    // Signed change in the crop's unit, for month-on-month revisions.
+    const dmt = (kt) => `${kt >= 0 ? '+' : '−'}${mt(Math.abs(kt))}`;
+
+    // USDA's outlook this month against last month's, same season.
+    function revisionHtml(rv) {
+        if (!rv) return '';
+        const month = (rv.vs_release.match(/(\d{1,2})월/) || [])[1] || '전';
+        const row = (label, x) => (x ? `<div class="gb-line"><span>${label}</span><span>${dmt(x.change_kt)} ${pct(x.change_pct)}</span></div>` : '');
+        const movers = (rv.producers || []).filter((m) => Math.abs(m.change_kt) >= 50)
+            .map((m) => `${esc(m.country_ko)} ${dmt(m.change_kt)}`).join(' · ');
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">USDA 전망 수정 (${esc(month)}월 발표 대비)</p>
+            ${row('세계 생산', rv.production)}${row('기말재고', rv.ending_stocks)}${row('세계 수출', rv.exports)}
+            ${movers ? `<div class="stock-note" style="margin-top:2px;">생산 수정: ${movers}</div>` : '<div class="stock-note" style="margin-top:2px;">주요 생산국 전망은 그대로</div>'}`;
+    }
     function riskHtml(r) {
         const why = r.kind === 'weather'
             ? `${esc(r.crop_ko)} ${esc(r.season)} · ${esc((r.reason || []).join(' / '))}${r.reference_only ? ' · 과거 판정이 실제 수확과 맞지 않아 참고만' : ''}`
@@ -87,7 +101,7 @@
             tight_only: '<span style="color:#86efac;">재고가 빠듯한 해에만 가격이 뚜렷이 올랐습니다 · 여유·평년은 차이 없음</span>',
         }[h.verdict] || '<span style="color:#94a3b8;">재고와 가격이 뚜렷이 맞지 않아 참고만</span>';
         return `<p class="trade-rank-group-head" style="margin-top:10px;">재고-가격 검증 (${esc(h.seasons[0])}~${esc(h.seasons[1])})</p>
-            <div class="stock-note">${basis} 5년 평균 대비 ±${pc.band_pct}%로 나눈 해별 국제가격(IMF) 변화: ${parts} · 상관 ${h.corr_gap_vs_change}</div>
+            <div class="stock-note">${basis} 5년 평균 대비 ±${pc.band_pct}%로 나눈 해별 ${pc.proxy_ko ? esc(pc.proxy_ko) : '국제가격'}(IMF) 변화: ${parts} · 상관 ${h.corr_gap_vs_change}</div>
             <div class="stock-note" style="margin-top:2px;">${verdict}</div>`;
     }
 
@@ -137,6 +151,7 @@
                 ${more}
                 <div class="stock-note">생육 중인 산지 날씨 판정: 불리 ${t.unfavorable ?? 0} · 보통 ${t.neutral ?? 0} · 유리 ${t.favorable ?? 0}</div>
             </details>` : '<div class="stock-note" style="margin-top:10px;">주요 리스크: 눈에 띄는 것 없음</div>'}
+            ${revisionHtml(c.revision)}
             ${priceCheckHtml(c.price_check)}
             ${igcHtml(c.igc)}
             ${chinaHtml(c.korea, '한국')}
@@ -159,7 +174,7 @@
         if (token !== generation || currentCommodity !== crop) return;
         const c = doc?.crops?.[crop];
         if (!c) return;
-        unit = { kbag60: '백만 포대(60kg)', kbale480: '백만 베일(480파운드)' }[c.unit] || '백만 t';
+        unit = { kbag60: '백만 포대(60kg)', kbale480: '백만 베일(480파운드)', kt65brix: '백만 t(65브릭스)' }[c.unit] || '백만 t';
         // A focused country rewrote the boxes for its own routes; leave them.
         if (typeof tradeFocusCountry === 'undefined' || !tradeFocusCountry) setStats(c);
         const card = host?.querySelector('.trade-focus-card');

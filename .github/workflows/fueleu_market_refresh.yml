@@ -2,9 +2,10 @@ name: FuelEU pool market refresh
 
 # 해운 › FuelEU 풀링 tab. OceanScore publishes one OPX commentary a month and
 # EMSA re-versions the MRV workbook every few weeks, so a weekly run catches
-# both without hammering either site. After display_until (2026-12-03) the
-# collectors are skipped and build_site_data.py writes the file without the
-# OPX series and MRV estimate -- that run is the takedown the user asked for.
+# both without hammering either site. If build_site_data.DISPLAY_UNTIL is set,
+# after that date the collectors are skipped and the file is written without the
+# OPX series and MRV estimate. It is None since 2026-11-17: the user decided to
+# keep publishing instead of the planned 2026-12-03 takedown.
 
 on:
   schedule:
@@ -56,7 +57,7 @@ jobs:
         id: window
         run: |
           until=$(python -c "import sys; sys.path.insert(0, 'tools/fueleu'); import build_site_data as b; print(b.DISPLAY_UNTIL)")
-          if [[ "$(date -u +%F)" > "$until" ]]; then echo "live=false" >> "$GITHUB_OUTPUT"; else echo "live=true" >> "$GITHUB_OUTPUT"; fi
+          if [[ "$until" != "None" && "$(date -u +%F)" > "$until" ]]; then echo "live=false" >> "$GITHUB_OUTPUT"; else echo "live=true" >> "$GITHUB_OUTPUT"; fi
       - name: Collect OPX commentary
         if: steps.window.outputs.live == 'true'
         run: python tools/fueleu/collect_pool_prices.py

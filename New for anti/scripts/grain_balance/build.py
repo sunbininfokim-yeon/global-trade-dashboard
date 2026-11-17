@@ -17,10 +17,15 @@ number someone else published or the crop monitor already computed:
   supply    producers with 3%+ of world output that USDA has down 5% or
             more on last season
   stocks    world ending stocks to use below its 5-season average
+  revision  USDA cut its world production outlook 1%+ or its ending stocks
+            outlook 3%+ from last month's release for the same season
 
 Writes
   scripts/grain_balance/psd_world.csv     the PSD slice (committed)
   scripts/grain_balance/prices.csv        IMF monthly prices (committed)
+  scripts/grain_balance/psd_releases.json headline numbers per monthly
+                                          release, for the month-on-month
+                                          revision (PSD keeps only the latest)
   public/data/grain_balance_v1.json
 """
 
@@ -41,6 +46,10 @@ DATA = os.path.normpath(os.path.join(HERE, "..", "..", "public", "data"))
 SLICE = os.path.join(HERE, "psd_world.csv")
 PRICES = os.path.join(HERE, "prices.csv")
 OUT = os.path.join(DATA, "grain_balance_v1.json")
+RELEASES = os.path.join(HERE, "psd_releases.json")
+KEEP_RELEASES = 13
+REV_PROD_PCT = -1.0     # world production outlook cut this much vs last month
+REV_STOCKS_PCT = -3.0   # world ending stocks outlook cut this much vs last month
 # Every PSD commodity in one file (oranges and cotton live outside the
 # grains/oilseeds files).
 ZIPS = [
@@ -62,7 +71,11 @@ ATTR_ALIASES = {"Total Sugar  Production": "Production", "Total Sugar Production
 PRICE_IDS = {"wheat": ("PWHEAMTUSDM", 6), "corn": ("PMAIZMTUSDM", 9), "soybeans": ("PSOYBUSDM", 9),
              "sugar": ("PSUGAISAUSDM", 10), "palm_oil": ("PPOILUSDM", 10),
              "coffee": ("PCOFFOTMUSDM", 10), "rice": ("PRICENPQUSDM", 1),
-             "cotton": ("PCOTTINDUSDM", 8)}
+             "cotton": ("PCOTTINDUSDM", 8),
+             # No free world rapeseed (seed) price; rapeseed oil tracks it
+             # and the card says so.
+             "canola": ("PROILUSDM", 7)}
+PRICE_PROXY_KO = {"canola": "유채씨 대신 유채유 국제가격"}
 FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
 BAND_PCT = 10.0   # stocks-to-use vs its 5-season average, same fixed band as the palm check
 
@@ -78,9 +91,12 @@ CROPS = {
     "cotton": ("Cotton", "면화", {"cotton"}),
     "canola": ("Oilseed, Rapeseed", "유채", {"canola"}),
     "orange": ("Oranges, Fresh", "오렌지", {"orange"}),
+    "orange_juice": ("Orange Juice", "오렌지주스", set()),
 }
 # PSD units: 1000 t, except coffee in 1000 60-kg bags.
-UNITS = {"coffee": "kbag60", "cotton": "kbale480"}
+UNITS = {"coffee": "kbag60", "cotton": "kbale480", "orange_juice": "kt65brix"}
+# PSD reports orange juice in tonnes (65 degrees Brix), not thousands.
+SCALE = {"Orange Juice": 0.001}
 # China's stocks are held back from trade for grains; elsewhere the world
 # figure is the headline.
 EX_CHINA = {"wheat", "corn", "soybeans", "rice", "cotton"}
@@ -133,6 +149,9 @@ def fetch():
 def normalize(df):
     df = df.copy()
     df["Attribute_Description"] = df["Attribute_Description"].replace(ATTR_ALIASES)
+    for commodity, k in SCALE.items():
+        m = df.Commodity_Description == commodity
+        df.loc[m, "Value"] = df.loc[m, "Value"] * k
     return df
 
 
@@ -508,12 +527,84 @@ def price_check(key, g, prices):
     if not out:
         return None
     return {"price": f"IMF {sid} (FRED), marketing-year average from month {start}",
+            "proxy_ko": PRICE_PROXY_KO.get(key),
             "band_pct": BAND_PCT, "headline": "ex_china" if "ex_china" in out else "world", **out}
 
 
 def release_of(df):
     last = df.sort_values(["Calendar_Year", "Month"]).iloc[-1]
     return f"{int(last.Calendar_Year)}년 {int(last.Month)}월 USDA WASDE"
+
+
+def release_key(release):
+    m = re.match(r"(\d{4})년 (\d{1,2})월", release)
+    return f"{int(m.group(1))}-{int(m.group(2)):02d}"
+
+
+def _snapshot(c):
+    cur = c["current"]
+    return {"season": cur["season"], "production_kt": cur["production_kt"],
+            "ending_stocks_kt": cur["ending_stocks_kt"], "exports_kt": cur["exports_kt"],
+            "producers": {p["country"]: p["production_kt"] for p in c["producers"]}}
+
+
+def add_revisions(crops, release):
+    """Month-on-month change in USDA's outlook for the current season.
+
+    PSD's download holds only the latest release, so each build stores its
+    headline numbers in psd_releases.json and compares with the newest
+    earlier release stored there. Weekly runs inside one month overwrite
+    that month's entry and compare with the same earlier one.
+    """
+    try:
+        with open(RELEASES, encoding="utf-8") as f:
+            hist = json.load(f)
+    except (OSError, ValueError):
+        hist = {"releases": []}
+    key = release_key(release)
+    rel = [r for r in hist.get("releases", []) if r["key"] != key]
+    rel.append({"key": key, "release": release,
+                "crops": {k: _snapshot(c) for k, c in crops.items()}})
+    rel = sorted(rel, key=lambda r: r["key"])[-KEEP_RELEASES:]
+    with open(RELEASES, "w", encoding="utf-8") as f:
+        json.dump({"releases": rel}, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    older = [r for r in rel if r["key"] < key]
+    if not older:
+        log("revision: no earlier release stored")
+        return
+    base = older[-1]
+    for k, c in crops.items():
+        old = base["crops"].get(k)
+        if not old or old["season"] != c["current"]["season"]:
+            continue
+        rev = {"vs_release": base["release"]}
+        for field in ("production_kt", "ending_stocks_kt", "exports_kt"):
+            new_v, old_v = c["current"].get(field), old.get(field)
+            if new_v is None or old_v is None:
+                continue
+            rev[field[:-3]] = {"change_kt": new_v - old_v,
+                               "change_pct": round((new_v / old_v - 1) * 100, 1) if old_v else None}
+        movers = []
+        for p in c["producers"]:
+            o = old["producers"].get(p["country"])
+            if o is None or o == p["production_kt"]:
+                continue
+            movers.append({"country_ko": p["country_ko"], "change_kt": p["production_kt"] - o,
+                           "change_pct": round((p["production_kt"] / o - 1) * 100, 1) if o else None})
+        rev["producers"] = sorted(movers, key=lambda m: -abs(m["change_kt"]))[:4]
+        c["revision"] = rev
+        month = re.search(r"(\d{1,2})월", base["release"]).group(1)
+        flags = []
+        prod = rev.get("production", {}).get("change_pct")
+        if prod is not None and prod <= REV_PROD_PCT:
+            flags.append(f"USDA 세계 생산 전망 {month}월보다 {prod:+.1f}% 하향")
+        stocks = rev.get("ending_stocks", {}).get("change_pct")
+        if stocks is not None and stocks <= REV_STOCKS_PCT:
+            flags.append(f"USDA 세계 기말재고 전망 {month}월보다 {stocks:+.1f}% 하향")
+        c["risks"] = [{"kind": "revision", "text_ko": t} for t in flags] + c["risks"]
+        log(f"{k} revision vs {base['key']}: production {prod}%, stocks {stocks}%, "
+            + ", ".join(f"{m['country_ko']} {m['change_kt']:+,}" for m in rev["producers"]))
 
 
 def main(argv):
@@ -562,6 +653,7 @@ def main(argv):
         log(f"{key}: {c['prev']['season']} {c['prev']['production_kt']:,} -> "
             f"{c['current']['season']} {c['current']['production_kt']:,} kt, "
             f"{len(c['risks'])} risks")
+    add_revisions(crops, release)
     igc = igc_summary()
     if igc:
         for key, c in crops.items():

@@ -364,6 +364,74 @@ def market_packet(dart: Dart, corp: str, stock: str, fy_receipt: str, today: dt.
     return market, note
 
 
+# --- Valuation denominators ----------------------------------------------------
+# The market multiples are 시가총액 ÷ 분모. The engine snapshot keeps the
+# denominators; tools/ops/fetch_kfa_market.py keeps the daily 시가총액; the
+# calculator divides. Flows come as FY and as LTM (trailing four quarters from
+# the newest later report: FY + 당기 누적 − 전기 동기 누적, all three from
+# filings of the same basis); balances as of the newest report.
+VB_FLOWS = {
+    'net_income_parent': ['ifrs-full_ProfitLossAttributableToOwnersOfParent'],
+    'net_income': ['ifrs-full_ProfitLoss'],
+    'revenue': ['ifrs-full_Revenue'],
+    'operating_income': ['dart_OperatingIncomeLoss'],
+}
+VB_BALANCES = {
+    'parent_equity': ['ifrs-full_EquityAttributableToOwnersOfParent'],
+    'equity': ['ifrs-full_Equity'],
+}
+
+
+def _vb_row(rows: list, ids: list, sjs: tuple) -> dict | None:
+    for sj in sjs:
+        for r in rows:
+            if r.get('sj_div') == sj and r.get('account_id') in ids:
+                return r
+    return None
+
+
+def valuation_bases(dart: Dart, corp: str, year: int, fs: str, fy_rows: list, cards: dict) -> dict:
+    out = {'fy': {'period_end': f'{year}-12-31', 'receipt': fy_rows[0].get('rcept_no') if fy_rows else None}}
+    for key, ids in VB_FLOWS.items():
+        r = _vb_row(fy_rows, ids, ('IS', 'CIS'))
+        out['fy'][key] = num(r.get('thstrm_amount')) if r else None
+    for key, ids in VB_BALANCES.items():
+        r = _vb_row(fy_rows, ids, ('BS',))
+        out['fy'][key] = num(r.get('thstrm_amount')) if r else None
+    # Engine cards that already are FY denominators (strict first, else reported basis).
+    def card(*keys):
+        for k in keys:
+            v = (cards.get(k) or {}).get('value')
+            if v is not None:
+                return v, k
+        return None, None
+    for name, keys in {'ebitda': ('ebitda', 'ebitda_cf'), 'net_debt': ('net_debt', 'net_debt_reported'),
+                       'fcf': ('fcf',), 'cfo': ('cfo',)}.items():
+        v, k = card(*keys)
+        out['fy'][name] = v
+        out['fy'][name + '_card'] = k
+    # LTM from the newest later report.
+    for bucket, label in (('Q3', '09-30'), ('H1', '06-30'), ('Q1', '03-31')):
+        r = report(dart, corp, year + 1, bucket, fs)
+        rows = r['response']['list'] if r['response']['status'] == '000' else []
+        if not rows:
+            continue
+        ltm = {'period_end': f'{year + 1}-{label}', 'report': bucket, 'receipt': rows[0].get('rcept_no')}
+        for key, ids in VB_FLOWS.items():
+            row = _vb_row(rows, ids, ('IS', 'CIS'))
+            fy = out['fy'].get(key)
+            cur = num(row.get('thstrm_add_amount') or row.get('thstrm_amount')) if row else None
+            prior = num(row.get('frmtrm_add_amount') or row.get('frmtrm_q_amount')) if row else None
+            ltm[key] = fy + cur - prior if None not in (fy, cur, prior) else None
+        for key, ids in VB_BALANCES.items():
+            row = _vb_row(rows, ids, ('BS',))
+            ltm[key] = num(row.get('thstrm_amount')) if row else None
+        if any(ltm.get(k) is not None for k in VB_FLOWS):
+            out['ltm'] = ltm
+            break
+    return out
+
+
 REPORT_NAME = re.compile(r'(사업보고서|반기보고서|분기보고서)\s*\((\d{4})\.(\d{2})\)')
 REPORT_KIND = {('사업보고서', '12'): 'FY', ('반기보고서', '06'): 'H1', ('분기보고서', '03'): 'Q1', ('분기보고서', '09'): 'Q3'}
 MONTH_END = {'03': '03-31', '06': '06-30', '09': '09-30', '12': '12-31'}
@@ -500,6 +568,7 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
         payload['screen_inputs'] = {'annual_reviewed_disclosures': prior_packs}
     result = build(payload, 'annual')
     regulatory, regulatory_note = regulatory_series(dart, corp, year, company, fs)
+    bases = valuation_bases(dart, corp, year, fs, fy_rows, result.get('cards') or {})
     receipts = {b: (r['response']['list'][0].get('rcept_no') if r['response']['list'] else None) for b, r in filings.items()}
     return {
         'schema': 'kfa_pecr_snapshot/1',
@@ -517,6 +586,7 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
                                  'prior_years_with_xbrl_notes': sorted(prior_packs)},
         'pe_cr': result,
         'regulatory': regulatory,
+        'valuation_bases': bases,
         'regulatory_input': regulatory_note,
     }
 
