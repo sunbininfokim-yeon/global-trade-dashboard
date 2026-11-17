@@ -130,6 +130,12 @@ def parse_workbook(blob):
         if not cand:
             raise SystemExit(f"{key}: extent 시트 없음 ({names})")
         series = parse_sheet(wb[cand[0]].iter_rows(values_only=True))
+        if not series:
+            for i, row in enumerate(wb[cand[0]].iter_rows(values_only=True)):
+                print("  row", i, list(row)[:12])
+                if i >= 6:
+                    break
+            raise SystemExit(f"{key}: 시트 형식을 읽지 못함")
         print(f"{key}: sheet {cand[0]!r}, {len(series)} days, {min(series)}..{max(series)}")
         seas[key] = series
     return seas

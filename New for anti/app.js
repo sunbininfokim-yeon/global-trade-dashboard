@@ -1949,11 +1949,84 @@ let seaIceDoc = null;
 let seaIcePromise = null;
 const loadSeaIce = () => {
     if (seaIcePromise) return seaIcePromise;
-    seaIcePromise = fetch('/public/data/sea_ice_v1.json', { cache: 'no-cache' })
+    const route = fetch('/public/data/sea_route_v1.json', { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { seaRouteDoc = d; })
+        .catch(() => null);
+    seaIcePromise = Promise.all([fetch('/public/data/sea_ice_v1.json', { cache: 'no-cache' })
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => { seaIceDoc = d; return d; })
-        .catch(() => null);
+        .catch(() => null), route]).then(([d]) => d);
     return seaIcePromise;
+};
+// Northern Sea Route open season (scripts/sea_route.py, NSIDC regional extent).
+let seaRouteDoc = null;
+const mdKo = (iso) => (iso ? `${Number(iso.slice(5, 7))}월 ${Number(iso.slice(8, 10))}일` : '');
+const SEA_ROUTE_DOY0 = 182;   // 7월 1일
+const SEA_ROUTE_DOY1 = 335;   // 12월 1일
+const doyOf = (iso) => {
+    const d = new Date(`${iso}T00:00:00Z`);
+    return Math.round((d - Date.UTC(d.getUTCFullYear(), 0, 1)) / 86400000) + 1;
+};
+/** One vertical bar per year from the opening to the closing day. */
+const seaRouteSeasonBars = (doc, h = 130) => {
+    const rows = (doc.seasons || []).filter((r) => r.year >= 1979);
+    if (!rows.length) return '';
+    const span = SEA_ROUTE_DOY1 - SEA_ROUTE_DOY0;
+    const y = (n) => ((Math.min(SEA_ROUTE_DOY1, Math.max(SEA_ROUTE_DOY0, n)) - SEA_ROUTE_DOY0) / span) * h;
+    const w = 100 / rows.length;
+    const last = doyOf(doc.latest_date);
+    const bars = rows.map((r, i) => {
+        const left = `left:${(i * w).toFixed(2)}%;width:calc(${w.toFixed(2)}% - 1px);`;
+        if (!r.open) {
+            return `<span title="${r.year}: 열리지 않음" style="position:absolute;${left}top:${h - 3}px;height:3px;background:rgba(148,163,184,.35);"></span>`;
+        }
+        const a = doyOf(r.open);
+        const b = r.close ? doyOf(r.close) : last;
+        const tip = `${r.year}: ${r.open.slice(5)} ~ ${r.close ? r.close.slice(5) : '열려 있음'} (${r.days}일)`;
+        return `<span title="${tip}" style="position:absolute;${left}top:${y(a).toFixed(1)}px;height:${Math.max(2, y(b) - y(a)).toFixed(1)}px;
+            background:${r.close ? (r.year >= 2007 ? 'rgba(251,191,36,.85)' : 'rgba(251,191,36,.5)') : '#fde68a'};border-radius:1px;"></span>`;
+    }).join('');
+    const ticks = [[182, '7월'], [213, '8월'], [244, '9월'], [274, '10월'], [305, '11월']].map(([n, t]) => `
+        <div style="position:absolute;left:0;right:0;top:${y(n).toFixed(1)}px;border-top:1px dashed rgba(148,163,184,.18);">
+            <span style="position:absolute;left:-30px;top:-6px;font-size:10px;color:#94a3b8;">${t}</span></div>`).join('');
+    return `<div style="position:relative;height:${h}px;margin:10px 0 0 30px;">${ticks}${bars}</div>
+        <div class="climate-sub" style="display:flex;justify-content:space-between;margin-left:30px;"><span>${rows[0].year}</span><span>${rows[rows.length - 1].year}</span></div>`;
+};
+
+const renderSeaRouteCard = () => {
+    const doc = seaRouteDoc;
+    if (!doc?.seasons?.length) return '';
+    const o = doc.outlook || {};
+    const pct = (v) => `${Math.round(v * 100)}%`;
+    const seaChips = (doc.seas || []).map((s) => {
+        const f = doc.latest_fraction?.[s.id];
+        const open = f != null && f <= doc.rule.open_fraction;
+        return `<span class="oa-chip" style="${open ? 'color:#86efac;' : ''}">${s.name_ko} 얼음 ${f != null ? pct(f) : '-'}</span>`;
+    }).join('');
+    const statusKo = o.status === 'open' ? `<b style="color:#86efac;">열려 있음</b> (${mdKo(o.open_observed)} 열림)`
+        : '<b>닫힘</b>';
+    const rng = (x) => (x ? `68% ${x.range_68_ko[0]}~${x.range_68_ko[1]}` : '');
+    const thin = (x) => (x && x.n_test_years < 8 ? ` <span style="color:#fbbf24;">(검증 ${x.n_test_years}년뿐, 참고용)</span>` : '');
+    const line = (label, x) => (x ? `<div class="climate-table-row" style="font-size:12px;">
+            <span style="flex:1;">${label}</span><span style="text-align:right;"><b>${x.date_ko}</b> <span class="climate-sub">${rng(x)}</span>${thin(x)}</span></div>` : '');
+    const d = o.days;
+    const t = doc.trend || {};
+    return `<div class="climate-card">
+        <h3>북극항로(북동항로) 열리는 기간 <span class="src-tag">매일 자동 계산</span></h3>
+        <div class="climate-sub">지금 항로: ${statusKo} · ${doc.latest_date} 기준</div>
+        <div class="ocean-affects" style="margin-top:4px;">${seaChips}</div>
+        <div class="climate-sub" style="margin-top:8px;font-weight:600;color:#e2e8f0;">${o.target_year}년 시즌 전망</div>
+        ${o.status === 'open' ? `<div class="climate-table-row" style="font-size:12px;"><span style="flex:1;">열림 (관측)</span><span><b>${mdKo(o.open_observed)}</b></span></div>` : line('열림', o.open)}
+        ${line('닫힘', o.close)}
+        ${d ? `<div class="climate-table-row" style="font-size:12px;"><span style="flex:1;">열린 기간</span>
+            <span style="text-align:right;"><b>${Math.round(d.point)}일</b> <span class="climate-sub">68% ${Math.round(d.range_68[0])}~${Math.round(d.range_68[1])}일 · 95% ${Math.round(d.range_95[0])}~${Math.round(d.range_95[1])}일</span></span></div>` : ''}
+        <div class="climate-sub" style="margin-top:4px;">방법: <b>${d?.method || '추세'}</b> · 범위는 2001년 이후 같은 날짜 전진 검증 오차 · ${o.opened_last10 || ''}</div>
+        ${seaRouteSeasonBars(doc)}
+        <div class="climate-sub" style="margin-top:4px;">막대 = 해마다 네 바다가 동시에 열린 기간 (회색 줄 = 안 열린 해).
+            ${t.days_per_decade != null ? `열린 기간 추세 ${t.days_per_decade > 0 ? '+' : ''}${t.days_per_decade}일 / 10년 · ${t.first10} 평균 ${t.first10_mean_days}일 → ${t.last10} 평균 ${t.last10_mean_days}일.` : ''}</div>
+        <div class="climate-sub" style="margin-top:6px;">${doc.rule?.note_ko || ''}</div>
+    </div>`;
 };
 
 const seaIceHitLayer = () => new ScatterplotLayer({
@@ -1994,6 +2067,9 @@ const renderSeaIceCard = () => {
             ${seaIceDoc.record_min ? ` · 역대 최저 ${seaIceDoc.record_min.min}백만 km² (${seaIceDoc.record_min.year}년 ${Number(seaIceDoc.record_min.date.slice(5, 7))}월)` : ''}</div>
         ${seaIceDoc.outlook?.point != null ? `<div class="climate-sub" style="margin-top:4px;">${seaIceDoc.outlook.target} 전망 <b>${seaIceDoc.outlook.point.toFixed(2)}</b>
             (68% ${seaIceDoc.outlook.range_68[0].toFixed(2)}~${seaIceDoc.outlook.range_68[1].toFixed(2)})</div>` : ''}
+        ${seaRouteDoc?.outlook?.days ? `<div class="climate-sub" style="margin-top:2px;">북극항로 ${seaRouteDoc.outlook.target_year}년 시즌:
+            ${seaRouteDoc.outlook.status === 'open' ? `열려 있음 (${mdKo(seaRouteDoc.outlook.open_observed)}~)` : seaRouteDoc.outlook.open ? `${seaRouteDoc.outlook.open.date_ko} 열림` : ''}
+            ${seaRouteDoc.outlook.close ? `~ ${seaRouteDoc.outlook.close.date_ko} 닫힘` : ''}, 약 ${Math.round(seaRouteDoc.outlook.days.point)}일</div>` : ''}
         <div class="climate-sub" style="margin-top:4px;color:#7dd3fc;">누르거나 지도의 그린란드 위 원을 누르면 연중 추이·9월 최소치가 열립니다 →</div>
     </div>`;
 };
@@ -2107,6 +2183,7 @@ const renderSeaIcePanel = () => {
             ${seaIceSeasonChart(doc)}
         </div>
         ${renderSeaIceOutlook(doc.outlook)}
+        ${renderSeaRouteCard()}
         <div class="climate-card">
             <h3>9월 최소 면적 (해마다)</h3>
             ${seaIceMinimaBars(doc)}
