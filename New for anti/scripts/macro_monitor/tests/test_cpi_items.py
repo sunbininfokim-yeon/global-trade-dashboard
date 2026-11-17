@@ -66,17 +66,23 @@ class Movers(unittest.TestCase):
         return out
 
     def test_ranked_by_own_mom_top_and_bottom_three(self):
-        mv = ci.movers(TOY, self.stored([1.0, -2.0, 0.5, 3.0, -0.1, 0.0]))
+        mv = ci.movers(TOY, self.stored([1.0, -2.0, 0.5, 3.0, -0.1, 0.0]), top=3)
         self.assertEqual(mv["reference_period"], "2026-09")
         self.assertEqual([r["id"] for r in mv["up"]], ["i3", "i0", "i2"])
         self.assertEqual([r["id"] for r in mv["down"]], ["i1", "i4", "i5"])
         self.assertEqual(mv["basis"], "item_mom_percent_change_unweighted")
         self.assertEqual(mv["items_ranked"], 6)
 
+    def test_yoy_ranking_and_default_top_five(self):
+        mv = ci.movers(TOY, self.stored([1.0, -2.0, 0.5, 3.0, -0.1, 0.0]), top=3)
+        self.assertEqual([r["id"] for r in mv["yoy_up"]], ["i3", "i0", "i2"])      # flat base: YoY = the move
+        self.assertEqual([r["id"] for r in mv["yoy_down"]], ["i1", "i4", "i5"])
+        self.assertEqual(len(ci.movers(TOY, self.stored([1.0, -2.0, 0.5, 3.0, -0.1, 0.0]))["up"]), 3)  # 6 items: 3 a side
+
     def test_a_late_month_with_few_items_does_not_move_the_panel(self):
         st = self.stored([1.0, -2.0, 0.5, 3.0, -0.1, 0.0])
         st["i0"].append(["2026-10-01", 120.0])                             # one early item for October
-        self.assertEqual(ci.movers(TOY, st)["reference_period"], "2026-09")
+        self.assertEqual(ci.movers(TOY, st, top=3)["reference_period"], "2026-09")
 
     def test_falls_back_to_the_last_month_most_items_share(self):
         mv = ci.movers(TOY, self.stored([1.0, 2.0, None, None, None, None]))
@@ -84,7 +90,7 @@ class Movers(unittest.TestCase):
 
     def test_too_few_items_gives_nothing(self):
         st = {k: v for k, v in self.stored([1.0, 2.0, 0, 0, 0, 0]).items() if k in ("i0", "i1")}
-        self.assertIsNone(ci.movers(TOY, st))
+        self.assertIsNone(ci.movers(TOY, st, top=3))
 
 
 class CollectAndAttach(unittest.TestCase):

@@ -1,0 +1,78 @@
+name: Refresh Arctic sea ice
+
+# NSIDC Sea Ice Index (일 단위, 하루 늦게 갱신) → sea_ice_v1.json.
+# 작황 모니터 맨 위 해빙 카드와 그린란드 위 해빙 창이 읽는다.
+# PR 에서는 결과를 PR 브랜치에 커밋한다.
+
+on:
+  schedule:
+    - cron: '25 3 * * *'      # 매일 12:25 KST
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/build_sea_ice.py'
+      - 'New for anti/scripts/sea_ice_forecast.py'
+      - 'New for anti/scripts/sea_route.py'
+      - '.github/workflows/sea_ice_refresh.yml'
+
+concurrency:
+  group: sea-ice-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy openpyxl
+
+      - name: Fetch NSIDC daily extent
+        working-directory: "New for anti/scripts"
+        run: python3 build_sea_ice.py   # 해빙 + 9월 전망 엔진(sea_ice_forecast.py)
+
+      - name: Northern Sea Route season (NSIDC regional)
+        working-directory: "New for anti/scripts"
+        continue-on-error: ${{ github.event_name != 'pull_request' }}   # 항로가 실패해도 해빙은 올린다
+        run: python3 sea_route.py
+
+      - name: Commit to the pull request branch
+        if: github.event_name == 'pull_request'
+        run: |
+          f="New for anti/public/data/sea_ice_v1.json"
+          g="New for anti/public/data/sea_route_v1.json"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$f"; [ -f "$g" ] && git add "$g"
+          git commit -m "chore: Arctic sea ice (PR run)" || exit 0
+          for i in 1 2 3; do
+            git push origin "HEAD:$GITHUB_HEAD_REF" && exit 0
+            echo "push rejected, rebasing and retrying ($i/3)"
+            git pull --rebase --autostash origin "$GITHUB_HEAD_REF"
+          done
+          git push origin "HEAD:$GITHUB_HEAD_REF"
+
+      - name: Commit to main
+        if: github.event_name != 'pull_request'
+        run: |
+          f="New for anti/public/data/sea_ice_v1.json"
+          g="New for anti/public/data/sea_route_v1.json"
+          if ! git diff -- "$f" "$g" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then exit 0; fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$f"; [ -f "$g" ] && git add "$g"
+          git commit -m "chore: refresh Arctic sea ice (NSIDC)" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push

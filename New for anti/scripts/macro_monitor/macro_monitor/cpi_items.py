@@ -352,7 +352,7 @@ def latest_month(rates: dict[str, dict[str, dict[str, float]]], min_items: int) 
     return max(ok) if ok else None
 
 
-def movers(country: Country, stored: dict[str, Any], *, top: int = 3) -> dict[str, Any] | None:
+def movers(country: Country, stored: dict[str, Any], *, top: int = 5) -> dict[str, Any] | None:
     rates = item_rates(country, stored)
     month = latest_month(rates, max(3, (len(country.items) * 2 + 2) // 3))
     if not month:
@@ -366,8 +366,10 @@ def movers(country: Country, stored: dict[str, Any], *, top: int = 3) -> dict[st
         rows.append({"id": it.id, "label_ko": labels[it.id], "mom_pct": round(r["mom"], 3),
                      "yoy_pct": None if r.get("yoy") is None else round(r["yoy"], 3)})
     rows.sort(key=lambda r: r["mom_pct"], reverse=True)
-    if len(rows) < 2 * top:
+    top = min(top, len(rows) // 2)              # a short list (UK 14, Canada 12) still splits cleanly
+    if top < 3:
         return None
+    by_yoy = sorted((r for r in rows if r["yoy_pct"] is not None), key=lambda r: r["yoy_pct"], reverse=True)
     return {
         "reference_period": month[:7],
         "basis": "item_mom_percent_change_unweighted",
@@ -378,6 +380,9 @@ def movers(country: Country, stored: dict[str, Any], *, top: int = 3) -> dict[st
                     "가중치를 곱한 헤드라인 기여도가 아니고, 계절조정 전 지수라 제철 품목이 상위에 올 수 있습니다."),
         "up": rows[:top],
         "down": rows[-top:][::-1],
+        # The same items ranked by the change on a year earlier (2026-11 사용자 지시: 상승·하락 TOP5).
+        "yoy_up": by_yoy[:top],
+        "yoy_down": by_yoy[-top:][::-1],
     }
 
 
