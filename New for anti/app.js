@@ -1940,6 +1940,196 @@ const renderOceanRegionPanel = (region) => {
     if (rp) rp.style.display = 'flex';
 };
 
+/* ---------------- Arctic sea ice (NSIDC Sea Ice Index) ---------------- */
+const SEA_ICE_ID = 'arctic_sea_ice';
+// Hit target sits on Greenland: the map has no pole in view at world zoom,
+// and Greenland is the landmark people already associate with Arctic ice.
+const SEA_ICE_ANCHOR = [-41, 74];
+let seaIceDoc = null;
+let seaIcePromise = null;
+const loadSeaIce = () => {
+    if (seaIcePromise) return seaIcePromise;
+    seaIcePromise = fetch('/public/data/sea_ice_v1.json', { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { seaIceDoc = d; return d; })
+        .catch(() => null);
+    return seaIcePromise;
+};
+
+const seaIceHitLayer = () => new ScatterplotLayer({
+    id: 'climate-arctic-hit',
+    data: seaIceDoc?.latest ? [{ id: SEA_ICE_ID, position: SEA_ICE_ANCHOR }] : [],
+    pickable: true,
+    stroked: true,
+    filled: true,
+    radiusUnits: 'pixels',
+    radiusMinPixels: 18,
+    radiusMaxPixels: 30,
+    getRadius: 24,
+    lineWidthMinPixels: 1.5,
+    getPosition: (d) => d.position,
+    getFillColor: () => (selectedOceanRegion === SEA_ICE_ID ? [186, 230, 253, 90] : [186, 230, 253, 40]),
+    getLineColor: [224, 242, 254, 210],
+    autoHighlight: true,
+    highlightColor: [186, 230, 253, 110],
+    updateTriggers: { getFillColor: [selectedOceanRegion] },
+});
+
+const fmtMkm2 = (v) => `${v.toFixed(2)}백만 km²`;
+
+/** Left-panel card: today's extent against the same day since 1978. */
+const renderSeaIceCard = () => {
+    const L = seaIceDoc?.latest;
+    if (!L) return '';
+    const neg = L.anomaly < 0;
+    const hot = L.rank_low <= 3;
+    return `<div class="climate-card climate-click" data-ocean-open="${SEA_ICE_ID}" role="button" tabindex="0" style="cursor:pointer;">
+        <h3>북극 해빙 면적 <span class="src-tag">NSIDC · ${L.date}</span></h3>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div class="climate-big ${neg ? 'pos' : 'neg'}" style="font-size:22px;">${fmtMkm2(L.extent)}</div>
+            <span class="climate-status-pill ${neg ? 'red' : 'blue'}">평년 대비 ${L.anomaly_pct > 0 ? '+' : ''}${L.anomaly_pct}%</span>
+        </div>
+        <div class="climate-sub" style="${hot ? 'color:#fca5a5;font-weight:600;' : ''}">${L.rank_ko}</div>
+        <div class="climate-sub" style="margin-top:4px;">평년(${seaIceDoc.baseline}) ${fmtMkm2(L.clim)}
+            ${seaIceDoc.record_min ? ` · 역대 최저 ${seaIceDoc.record_min.min}백만 km² (${seaIceDoc.record_min.year}년 ${Number(seaIceDoc.record_min.date.slice(5, 7))}월)` : ''}</div>
+        ${seaIceDoc.outlook?.point != null ? `<div class="climate-sub" style="margin-top:4px;">${seaIceDoc.outlook.target} 전망 <b>${seaIceDoc.outlook.point.toFixed(2)}</b>
+            (68% ${seaIceDoc.outlook.range_68[0].toFixed(2)}~${seaIceDoc.outlook.range_68[1].toFixed(2)})</div>` : ''}
+        <div class="climate-sub" style="margin-top:4px;color:#7dd3fc;">누르거나 지도의 그린란드 위 원을 누르면 연중 추이·9월 최소치가 열립니다 →</div>
+    </div>`;
+};
+
+/** Seasonal cycle: baseline mean +-2 sd band, 2012 (record low), last year, this year. */
+const seaIceSeasonChart = (doc, w = 300, h = 150) => {
+    const clim = doc.clim_by_doy || [];
+    const sd = doc.clim_sd_by_doy || [];
+    const yrs = doc.years || {};
+    const thisY = doc.latest.date.slice(0, 4);
+    const lastY = String(Number(thisY) - 1);
+    const all = [...clim.filter((v) => v != null), ...Object.values(yrs).flat().map((p) => p[1])];
+    const hi = Math.max(...all, ...clim.map((c, i) => (c != null && sd[i] != null ? c + 2 * sd[i] : 0))) + 0.3;
+    const lo = Math.max(0, Math.min(...all) - 0.5);
+    const x = (d) => ((d - 1) / 364) * w;
+    const y = (v) => h - ((v - lo) / (hi - lo)) * h;
+    const path = (pts) => pts.map((p, i) => `${i ? 'L' : 'M'}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join('');
+    const up = clim.map((c, i) => (c != null && sd[i] != null ? [i + 1, c + 2 * sd[i]] : null)).filter(Boolean);
+    const dn = clim.map((c, i) => (c != null && sd[i] != null ? [i + 1, c - 2 * sd[i]] : null)).filter(Boolean).reverse();
+    const band = up.length ? `${path(up)}L${dn.map((p) => `${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join('L')}Z` : '';
+    const mean = path(clim.map((c, i) => (c != null ? [i + 1, c] : null)).filter(Boolean));
+    const months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+    const mStart = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
+    const ticks = mStart.map((d, i) => `<span style="position:absolute;left:${(x(d) / w * 100).toFixed(1)}%;font-size:9px;color:#64748b;">${months[i]}</span>`).join('');
+    const line = (key, color, dash, width) => (yrs[key] ? `<path d="${path(yrs[key])}" fill="none" stroke="${color}"
+        stroke-width="${width}" ${dash ? `stroke-dasharray="${dash}"` : ''} vector-effect="non-scaling-stroke"/>` : '');
+    const nsr = `<rect x="${x(213)}" y="0" width="${x(304) - x(213)}" height="${h}" fill="rgba(251,191,36,0.13)"/>`;
+    return `<div style="position:relative;margin-top:10px;">
+        <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:${h}px;display:block;">
+            ${nsr}
+            ${band ? `<path d="${band}" fill="rgba(148,163,184,0.18)" stroke="none"/>` : ''}
+            <path d="${mean}" fill="none" stroke="rgba(148,163,184,0.8)" stroke-width="1" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/>
+            ${line('2012', '#fca5a5', '2 2', 1.2)}
+            ${thisY !== lastY ? line(lastY, 'rgba(125,211,252,0.45)', '', 1.2) : ''}
+            ${line(thisY, '#7dd3fc', '', 2)}
+        </svg>
+        <div style="position:relative;height:12px;">${ticks}</div>
+        <div class="climate-sub" style="margin-top:4px;font-size:10px;">
+            <span style="color:#7dd3fc;">━ ${thisY}</span> · <span style="color:rgba(125,211,252,.6);">━ ${lastY}</span> ·
+            <span style="color:#fca5a5;">┅ 2012(역대 최저)</span> · <span style="color:#94a3b8;">┅ 평년, 회색 띠 = 평년 ±2σ</span> ·
+            <span style="color:#fbbf24;">노란 구간 = 북극항로 통상 운항기(8~10월)</span></div>
+    </div>`;
+};
+
+/** Annual minimum (September) for every year, record low marked. */
+const seaIceMinimaBars = (doc, h = 90) => {
+    const m = doc.annual_min || [];
+    if (!m.length) return '';
+    const hi = Math.max(...m.map((x) => x.min)) + 0.3;
+    const rec = doc.record_min?.min;
+    const bars = m.map((x, i) => {
+        const w = 100 / m.length;
+        const bh = (x.min / hi) * h;
+        const isRec = x.min === rec;
+        return `<span title="${x.year}: ${x.min}" style="position:absolute;left:${(i * w).toFixed(2)}%;width:calc(${w.toFixed(2)}% - 1px);
+            bottom:0;height:${bh.toFixed(1)}px;background:${isRec ? '#f87171' : x.year >= 2007 ? 'rgba(125,211,252,.85)' : 'rgba(125,211,252,.45)'};"></span>`;
+    }).join('');
+    const ry = rec != null ? h - (rec / hi) * h : null;
+    return `<div style="position:relative;height:${h}px;margin-top:10px;">
+        ${bars}
+        ${ry != null ? `<div style="position:absolute;left:0;right:0;top:${ry.toFixed(1)}px;border-top:1px dotted #f87171;">
+            <span style="position:absolute;right:0;top:-13px;font-size:10px;color:#fca5a5;background:rgba(15,23,42,.8);padding:0 3px;">최저 ${rec} (${doc.record_min.year})</span></div>` : ''}
+    </div>
+    <div class="climate-sub" style="display:flex;justify-content:space-between;"><span>${m[0].year}</span><span>${m[m.length - 1].year}</span></div>`;
+};
+
+/** September outlook card (sea_ice_forecast.py, recomputed daily). */
+const renderSeaIceOutlook = (o) => {
+    if (!o || o.point == null) return '';
+    const f2 = (v) => v.toFixed(2);
+    const usedModel = o.method !== '추세';
+    const rows = (o.skill_by_issue_month || []).map((r) => `
+        <div class="climate-table-row" style="font-size:11px;">
+            <span style="flex:1;">${r.issue} 발행</span>
+            <span style="width:30%;text-align:right;">오차 ±${f2(r.mae_model)}</span>
+            <span style="width:30%;text-align:right;color:${r.skill >= 0.1 ? '#86efac' : '#94a3b8'};">추세 대비 ${r.skill >= 0 ? '+' : ''}${Math.round(r.skill * 100)}%</span>
+        </div>`).join('');
+    return `<div class="climate-card">
+        <h3>${o.target} 전망 <span class="src-tag">매일 자동 계산</span></h3>
+        <div class="climate-big" style="font-size:22px;">${f2(o.point)}백만 km²</div>
+        <div class="climate-sub">68% 범위 ${f2(o.range_68[0])}~${f2(o.range_68[1])} · 95% 범위 ${f2(o.range_95[0])}~${f2(o.range_95[1])}</div>
+        <div class="climate-sub" style="margin-top:4px;">방법: <b>${o.method}</b>${usedModel ? '' : ' (현재 면적·부피를 더해도 과거 검증에서 추세보다 10% 이상 낫지 않아 추세만 씀)'}
+            · ${o.issued} 자료 기준 · 범위는 2001년 이후 같은 날짜 전진 검증 오차(${o.n_test_years}년)</div>
+        ${o.record_september ? `<div class="climate-sub" style="margin-top:2px;">참고: 9월 평균 역대 최저 ${f2(o.record_september)}백만 km²</div>` : ''}
+        <details class="climate-fold" style="margin-top:6px;">
+            <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">발행 시점별 과거 성적 ▾</summary>
+            ${rows}
+            <div class="climate-sub" style="margin-top:4px;">6~8월에 발행할수록 정확해집니다. 봄 이전은 "봄 예측 장벽"으로 추세 수준에 머무는 것이 학계 공통 결과입니다
+                (Bushuk et al. 2023, SIO 2008-2022 검증).</div>
+        </details>
+        <div class="climate-sub" style="margin-top:6px;">근거: 추세 기준선(SIO), 현재 면적 지속성(Petty et al. 2017), 얼음 부피 PIOMAS(두께 기억, Day et al. 2014)${o.volume_used ? '' : ' -- 이번 계산에서는 PIOMAS를 받지 못해 제외'}.</div>
+    </div>`;
+};
+
+const renderSeaIcePanel = () => {
+    const doc = seaIceDoc;
+    if (!climateRightContentEl || !doc?.latest) return;
+    const L = doc.latest;
+    const t = doc.september_trend;
+    if (climateRightTitleEl) climateRightTitleEl.textContent = '북극 해빙';
+    if (climateRightDescEl) climateRightDescEl.textContent = `해빙 면적 · NSIDC Sea Ice Index · ${L.date}`;
+    const lows = (doc.lowest_minima || []).map((x) => `${x.year} ${x.min}`).join(' · ');
+    climateRightContentEl.innerHTML = `
+        <div class="climate-card">
+            <div class="climate-nav-row" style="margin:0 0 8px;">
+                <span class="climate-back climate-click" data-ocean-close="1" role="button" tabindex="0">← 닫기</span>
+            </div>
+            <div class="climate-big ${L.anomaly < 0 ? 'pos' : 'neg'}">${fmtMkm2(L.extent)}</div>
+            <div class="climate-sub">평년(${doc.baseline}) ${fmtMkm2(L.clim)} 대비 ${L.anomaly > 0 ? '+' : ''}${L.anomaly.toFixed(2)} (${L.anomaly_pct > 0 ? '+' : ''}${L.anomaly_pct}%)</div>
+            <div class="climate-sub" style="margin-top:4px;${L.rank_low <= 3 ? 'color:#fca5a5;font-weight:600;' : ''}">${L.rank_ko}</div>
+            ${seaIceSeasonChart(doc)}
+        </div>
+        ${renderSeaIceOutlook(doc.outlook)}
+        <div class="climate-card">
+            <h3>9월 최소 면적 (해마다)</h3>
+            ${seaIceMinimaBars(doc)}
+            ${t ? `<div class="climate-sub" style="margin-top:4px;">추세 ${t.per_decade_mkm2 > 0 ? '+' : ''}${t.per_decade_mkm2}백만 km² / 10년
+                (1980년대 수준 대비 ${t.per_decade_pct_of_1980s}% / 10년)</div>` : ''}
+            ${lows ? `<div class="climate-sub" style="margin-top:2px;">가장 작았던 해: ${lows}</div>` : ''}
+        </div>
+        <div class="climate-card">
+            <h3>왜 보는가</h3>
+            <div class="climate-sub">북극항로(북동항로·북서항로)는 해빙이 가장 적은 8~10월에 열립니다. 해빙이 적은 해일수록
+                운항 가능 기간이 길어지고, 아시아-유럽 항로가 수에즈 대비 약 30~40% 짧아집니다.
+                해빙이 적은 가을·겨울에는 동아시아·유럽 한파가 잦아진다는 연구가 있으나 학계 논쟁이 있어 참고로만 봅니다.</div>
+            <div class="ocean-affects">
+                <span class="oa-chip">북극항로 운항 기간</span><span class="oa-chip">LNG(야말)·원유 수송</span><span class="oa-chip">겨울 한파 (논쟁)</span>
+            </div>
+            <div class="climate-sub" style="margin-top:6px;">${doc.note_ko || ''}</div>
+        </div>
+        <p style="font-size:10px;color:#64748b;">${doc.source} · 위성 수동 마이크로파 · 하루 늦게 갱신</p>`;
+    if (climateRightPanelEl) climateRightPanelEl.classList.remove('hidden');
+    const rp = document.getElementById('right-pane');
+    if (rp) rp.style.display = 'flex';
+};
+
 /** SST grid cells, shared by the climate world and country maps. */
 const sstWashLayer = (_unused, id = 'climate-sst') => {
     const pts = sstDoc?.points || [];
@@ -2271,7 +2461,7 @@ const handleClimateDeckClick = (info) => {
     if (climateLevel === 'world') {
         // Ocean region first: its hit target sits over water, so a pick there is
         // unambiguous and should not fall through to the country layer.
-        if (info?.layer?.id === 'climate-ocean-hits' && info.object?.id) {
+        if ((info?.layer?.id === 'climate-ocean-hits' || info?.layer?.id === 'climate-arctic-hit') && info.object?.id) {
             mark();
             selectedOceanRegion = info.object.id;
             showClimateWorld();
@@ -4136,6 +4326,7 @@ const renderSstAlertCard = () => {
 const renderClimateWorldLeft = async () => {
     const g = await loadClimateGlobal();
     await loadSstRegions();
+    await loadSeaIce();
     await loadCityWx();
     const enso = g?.enso || {};
     const iod = g?.iod || {};
@@ -4157,6 +4348,7 @@ const renderClimateWorldLeft = async () => {
     forecastCountryTitle.textContent = '전역 기후 모니터';
     forecastContentEl.innerHTML = `
         <div class="climate-scroll">
+            ${renderSeaIceCard()}
             ${renderSstAlertCard()}
             <div class="climate-card">
                 <h3>ENSO · Niño 3.4 <span class="src-tag">${enso.source || 'NOAA CPC'}</span></h3>
@@ -4310,7 +4502,10 @@ const showClimateWorld = async () => {
         right: !!selectedOceanRegion,
         map: true,
     });
-    if (selectedOceanRegion) {
+    if (selectedOceanRegion === SEA_ICE_ID) {
+        await loadSeaIce();
+        renderSeaIcePanel();
+    } else if (selectedOceanRegion) {
         const r = (sstRegionsDoc?.regions || []).find((x) => x.id === selectedOceanRegion);
         if (r) renderOceanRegionPanel(r);
     }
@@ -4321,6 +4516,7 @@ const showClimateWorld = async () => {
     await loadClimateGlobal();
     await loadSst();
     await loadSstRegions();
+    await loadSeaIce();
 
     const labels = Object.entries(CLIMATE_COUNTRIES).map(([name, cfg]) => {
         const coords = cfg.regions[0]?.coordinates;
@@ -4394,6 +4590,7 @@ const showClimateWorld = async () => {
             // Invisible until hovered or selected; the grid already carries the
             // colour, so a second painted circle would only repeat it.
             oceanHitLayer(),
+            seaIceHitLayer(),
             new ScatterplotLayer({
                 id: 'climate-country-pins',
                 data: labels,
