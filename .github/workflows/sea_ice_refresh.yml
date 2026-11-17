@@ -12,6 +12,7 @@ on:
     paths:
       - 'New for anti/scripts/build_sea_ice.py'
       - 'New for anti/scripts/sea_ice_forecast.py'
+      - 'New for anti/scripts/sea_route.py'
       - '.github/workflows/sea_ice_refresh.yml'
 
 concurrency:
@@ -32,19 +33,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install numpy
+      - run: pip install numpy openpyxl
 
       - name: Fetch NSIDC daily extent
         working-directory: "New for anti/scripts"
         run: python3 build_sea_ice.py   # 해빙 + 9월 전망 엔진(sea_ice_forecast.py)
 
+      - name: Northern Sea Route season (NSIDC regional)
+        working-directory: "New for anti/scripts"
+        continue-on-error: ${{ github.event_name != 'pull_request' }}   # 항로가 실패해도 해빙은 올린다
+        run: python3 sea_route.py
+
       - name: Commit to the pull request branch
         if: github.event_name == 'pull_request'
         run: |
           f="New for anti/public/data/sea_ice_v1.json"
+          g="New for anti/public/data/sea_route_v1.json"
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$f"
+          git add "$f"; [ -f "$g" ] && git add "$g"
           git commit -m "chore: Arctic sea ice (PR run)" || exit 0
           for i in 1 2 3; do
             git push origin "HEAD:$GITHUB_HEAD_REF" && exit 0
@@ -57,10 +64,11 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           f="New for anti/public/data/sea_ice_v1.json"
-          if ! git diff -- "$f" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then exit 0; fi
+          g="New for anti/public/data/sea_route_v1.json"
+          if ! git diff -- "$f" "$g" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then exit 0; fi
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$f"
+          git add "$f"; [ -f "$g" ] && git add "$g"
           git commit -m "chore: refresh Arctic sea ice (NSIDC)" || exit 0
           for i in 1 2 3; do
             git push && exit 0
