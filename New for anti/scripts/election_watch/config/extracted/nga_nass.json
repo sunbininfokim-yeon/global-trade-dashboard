@@ -1,0 +1,86 @@
+{
+  "summary": {
+    "coverage": "partial",
+    "missing": [
+      "full_senate_party_totals",
+      "full_house_party_totals"
+    ],
+    "note_ko": "의원 API가 돌려준 행만 세었다. 상원 74행, 하원 246행이다. 응답은 이것이 109석·360석 전체라고 말하지 않는다. 전체 의석 구성으로 넣지 않았다."
+  },
+  "roster_api": {
+    "senate_query": "chamber=1",
+    "senate_records_total": 74,
+    "senate_by_party": {
+      "PDP": 27,
+      "LP": 5,
+      "APC": 37,
+      "APGA": 2,
+      "SDP": 2,
+      "ADP": 1
+    },
+    "house_query": "chamber=2",
+    "house_records_total": 246,
+    "house_by_party": {
+      "APC": 136,
+      "PDP": 81,
+      "NNPP": 9,
+      "SDP": 1,
+      "APGA": 2,
+      "YPP": 2,
+      "LP": 14,
+      "blank": 1
+    },
+    "house_blank_party_row": {
+      "state": "Kano",
+      "constituency": "Dawakin Kudu/Warawa",
+      "name": null,
+      "id": "562",
+      "note_ko": "API 이름 칸은 공백이었다."
+    }
+  },
+  "floor_leadership": [
+    {
+      "office": "speaker",
+      "name": "Hon. ABBAS TAJUDEEN",
+      "constituency": "Zaria Federal Constituency",
+      "source_url": "https://nass.gov.ng/mps/members"
+    },
+    {
+      "office": "deputy_speaker",
+      "name": "Hon. BENJAMIN KALU",
+      "constituency": "Bende Federal Constituency",
+      "source_url": "https://nass.gov.ng/mps/members"
+    },
+    {
+      "office": "senate_majority_leader",
+      "name": "Sen. MICHAEL BAMIDELE",
+      "source_url": "https://nass.gov.ng/nass/"
+    },
+    {
+      "office": "house_majority_leader",
+      "name": "Hon. JULIUS IHONVBERE",
+      "source_url": "https://nass.gov.ng/nass/"
+    }
+  ],
+  "listed_without_office": [
+    {
+      "name": "Sen. Godswill Akpabio",
+      "source_url": "https://nass.gov.ng/nass/"
+    },
+    {
+      "name": "Sen. Ibrahim Jibrin",
+      "source_url": "https://nass.gov.ng/nass/"
+    }
+  ],
+  "source": {
+    "id": "nass_members_api",
+    "urls": [
+      "https://nass.gov.ng/mps/get_legislators/?chamber=1&draw=1&length=5000&start=0",
+      "https://nass.gov.ng/mps/get_legislators/?chamber=2&draw=1&length=5000&start=0",
+      "https://nass.gov.ng/mps/members",
+      "https://nass.gov.ng/nass/"
+    ],
+    "fetched_on": "2026-11-17",
+    "grade": "official_api_partial"
+  }
+}
