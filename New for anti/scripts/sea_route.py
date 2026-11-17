@@ -76,9 +76,11 @@ def fetch(url):
 
 
 # ---------------------------------------------------------------- parsing
+MONTHS = {n: i for i, n in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"), 1)}
+
 def parse_sheet(rows):
     """Rows of a 'month, day, 1978, 1979, ...' sheet -> {date: km2}."""
-    out, years, mcol, dcol = {}, None, None, None
+    out, years, mcol, dcol, m = {}, None, None, None, None
     for row in rows:
         cells = list(row)
         if years is None:
@@ -96,16 +98,17 @@ def parse_sheet(rows):
                 mcol = 0 if mcol is None else mcol
                 dcol = 1 if dcol is None else dcol
             continue
+        # NSIDC writes the month as a name ("January"), only on its first day
+        mc = cells[mcol] if mcol < len(cells) else None
+        if mc not in (None, ""):
+            ms = str(mc).strip().lower()[:3]
+            m = MONTHS.get(ms) or (int(float(ms)) if ms.replace(".", "").isdigit() else None)
         try:
-            m, d = int(cells[mcol]), int(cells[dcol])
+            d = int(cells[dcol])
         except (TypeError, ValueError, IndexError):
-            # NSIDC fills the month only on the first day of each month
-            try:
-                d = int(cells[dcol])
-                m = last_m
-            except (TypeError, ValueError, IndexError, NameError):
-                continue
-        last_m = m
+            continue
+        if not m:
+            continue
         for j, y in years.items():
             if j >= len(cells) or cells[j] in (None, ""):
                 continue
