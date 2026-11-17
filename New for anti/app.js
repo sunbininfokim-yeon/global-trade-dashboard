@@ -2023,6 +2023,16 @@ const renderSeaRouteCard = () => {
         ${d ? `<div class="climate-table-row" style="font-size:12px;"><span style="flex:1;">열린 기간</span>
             <span style="text-align:right;"><b>${Math.round(d.point)}일</b> <span class="climate-sub">68% ${Math.round(d.range_68[0])}~${Math.round(d.range_68[1])}일 · 95% ${Math.round(d.range_95[0])}~${Math.round(d.range_95[1])}일</span></span></div>` : ''}
         <div class="climate-sub" style="margin-top:4px;">방법: <b>${d?.method || '추세'}</b> · 범위는 2001년 이후 같은 날짜 전진 검증 오차 · ${o.opened_last10 || ''}</div>
+        ${(o.skill_by_issue_month || []).length ? `<details class="climate-fold" style="margin-top:6px;">
+            <summary class="climate-click" style="cursor:pointer;font-size:11px;color:#7dd3fc;list-style:none;">발행 시점별 과거 성적 ▾</summary>
+            ${o.skill_by_issue_month.map((r) => `<div class="climate-table-row" style="font-size:11px;">
+                <span style="flex:1;">${r.issue} 발행</span>
+                ${['open', 'close', 'days'].map((k) => (r[k] ? `<span style="width:25%;text-align:right;color:${r[k].skill >= 0.1 ? '#86efac' : '#94a3b8'};">
+                    ${{ open: '열림', close: '닫힘', days: '기간' }[k]} ±${Math.round(Math.min(r[k].mae_model, r[k].mae_trend))}일</span>` : '')).join('')}
+            </div>`).join('')}
+            <div class="climate-sub" style="margin-top:4px;">초록 = 그 시점의 얼음 상태를 넣으면 추세보다 10% 이상 정확해짐 (그때부터 엔진이 자동으로 바꿔 씀).
+                7월까지는 얼음이 아직 꽉 차 있어 추세 이상으로 맞히기 어렵습니다.</div>
+        </details>` : ''}
         ${seaRouteSeasonBars(doc)}
         <div class="climate-sub" style="margin-top:4px;">막대 = 해마다 네 바다가 동시에 열린 기간 (회색 줄 = 안 열린 해).
             ${t.days_per_decade != null ? `열린 기간 추세 ${t.days_per_decade > 0 ? '+' : ''}${t.days_per_decade}일 / 10년 · ${t.first10} 평균 ${t.first10_mean_days}일 → ${t.last10} 평균 ${t.last10_mean_days}일.` : ''}</div>
