@@ -755,7 +755,10 @@ const loadKfaCompany = async (out, inst, code, corpCode = null) => {
     const basic = (data.view_presets?.views || {}).basic || { cards: [], models: [] };
     const views = { basic };
     if (!financial) Object.assign(views, { cr: { cards: [], models: [] }, pe: { cards: [], models: [] }, deal: { cards: [], models: [] } });
-    else if (data.pecr) views.cr = { cards: [], models: [] };
+    else if (data.pecr) {
+        views.cr = { cards: [], models: [] };
+        if (data.pecr.stock_code) views.deal = { cards: [], models: [] };   // PER·PBR on the daily 시가총액
+    }
     data.view_presets = { ...(data.view_presets || {}), default_view: 'basic', views };
 
     if (liveOnly) {
