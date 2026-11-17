@@ -361,7 +361,97 @@ const pecrLoad = async (corpCode) => {
     if (!corpCode) return null;
     const idx = await pecrIndex();
     if (!idx[corpCode]) return null;
-    return loadFirstJson(finDataPaths(`kfa_pecr/${corpCode}_v1.json`));
+    const [snap] = await Promise.all([loadFirstJson(finDataPaths(`kfa_pecr/${corpCode}_v1.json`)), pecrMarket()]);
+    return snap;
+};
+
+// --- Market multiples: 시가총액(Naver, daily) ÷ 분모(DART, engine snapshot) ------
+// tools/ops/fetch_kfa_market.py writes the daily close and 시가총액 for every
+// snapshot company; the snapshot's valuation_bases hold the denominators.
+// Dividing here keeps PER/PBR/EV current without rerunning the engine.
+let PECR_MARKET = null;
+const pecrMarket = async () => {
+    if (PECR_MARKET) return PECR_MARKET;
+    const doc = await loadFirstJson(finDataPaths('kfa_market_v1.json')).catch(() => null);
+    PECR_MARKET = doc || { quotes: {} };
+    return PECR_MARKET;
+};
+
+const pecrLive = (snap) => {
+    const q = snap?.stock_code && PECR_MARKET?.quotes?.[snap.stock_code];
+    const vb = snap?.valuation_bases;
+    if (!q || !vb) return null;
+    const fy = vb.fy || {};
+    const ltm = vb.ltm || null;
+    const pick = (o, ...ks) => { for (const k of ks) if (o && Number.isFinite(o[k])) return o[k]; return null; };
+    const prefExpected = /preferred/.test(snap.market_input || '');
+    const prefCap = q.preferred ? q.preferred.market_cap : 0;
+    const equity = q.market_cap + prefCap;
+    const latest = ltm && Number.isFinite(pick(ltm, 'parent_equity', 'equity')) ? ltm : fy;
+    const parentEq = pick(latest, 'parent_equity', 'equity');
+    const nci = Number.isFinite(latest.equity) && Number.isFinite(latest.parent_equity) ? latest.equity - latest.parent_equity : 0;
+    const niL = pick(ltm, 'net_income_parent', 'net_income');
+    const niF = pick(fy, 'net_income_parent', 'net_income');
+    const salesL = pick(ltm, 'revenue');
+    const salesF = pick(fy, 'revenue');
+    const financial = snap.pe_cr?.industry === 'financial';
+    const ev = !financial && Number.isFinite(fy.net_debt) ? equity + fy.net_debt + nci : null;
+    const div = (a, b) => (Number.isFinite(a) && Number.isFinite(b) && b > 0 ? a / b : null);
+    return {
+        q, fy, ltm, latest, equity, prefCap, prefMissing: prefExpected && !q.preferred, nci, ev, financial,
+        per_ltm: div(equity, niL), per_fy: div(equity, niF), niL, niF,
+        pbr: div(equity, parentEq), parentEq,
+        psr: div(equity, salesL ?? salesF), sales: salesL ?? salesF,
+        ev_to_ebitda: div(ev, fy.ebitda), ev_to_sales: div(ev, salesL ?? salesF),
+        p_fcf: div(equity, fy.fcf), fcf_yield: Number.isFinite(fy.fcf) && equity > 0 ? fy.fcf / equity : null,
+        loss_ltm: Number.isFinite(niL) && niL <= 0, loss_fy: Number.isFinite(niF) && niF <= 0,
+    };
+};
+
+const pecrMarketHtml = (snap) => {
+    const m = pecrLive(snap);
+    if (!m) {
+        return snap?.stock_code
+            ? '<p class="fin-note">이 종목의 일별 시세(kfa_market_v1.json)가 아직 없습니다. 아래 배수는 스냅샷 기준일 시세입니다.</p>' : '';
+    }
+    const { q } = m;
+    const at = (q.traded_at || '').slice(0, 10);
+    const ltmLabel = m.ltm ? `최근 4분기(~${m.ltm.period_end})` : null;
+    const fyLabel = `FY${String(m.fy.period_end || '').slice(0, 4)}`;
+    const capText = `${coNum(m.equity)}`;
+    const row = (label, value, formula, basis, plain) => `<tr><td><b>${finEsc(label)}</b><br><span class="fin-note">${finEsc(plain)}</span></td>
+        <td class="pecr-num">${value}</td><td>${formula}</td><td>${finEsc(basis)}</td></tr>`;
+    const x = (v, loss) => (loss ? '적자' : pecrFmt('x', v));
+    const rows = [
+        row('PER', x(m.per_ltm, m.loss_ltm), `${capText} ÷ 지배주주 순이익 ${coNum(m.niL)}`, ltmLabel || '—', '시가총액 ÷ 순이익. 몇 년 치 이익에 거래되는지.'),
+        row('PER (연간)', x(m.per_fy, m.loss_fy), `${capText} ÷ ${coNum(m.niF)}`, fyLabel, '직전 사업연도 순이익 기준.'),
+        row('PBR', pecrFmt('x', m.pbr), `${capText} ÷ 지배주주 자본 ${coNum(m.parentEq)}`, `${m.latest.period_end} 재무상태표`, '시가총액 ÷ 장부상 자본.'),
+    ];
+    if (!m.financial) {
+        rows.push(
+            row('PSR', pecrFmt('x', m.psr), `${capText} ÷ 매출 ${coNum(m.sales)}`, ltmLabel || fyLabel, '시가총액 ÷ 매출. 적자 기업 비교에 씁니다.'),
+            row('EV/EBITDA', pecrFmt('x', m.ev_to_ebitda), `EV ${coNum(m.ev)} ÷ EBITDA ${coNum(m.fy.ebitda)}`, fyLabel,
+                'EV = 시가총액 + 순차입금 + 비지배지분. 부채 구조가 달라도 비교됩니다.'),
+            row('EV/매출', pecrFmt('x', m.ev_to_sales), `EV ${coNum(m.ev)} ÷ 매출 ${coNum(m.sales)}`, ltmLabel || fyLabel, ''),
+            row('P/FCF', m.fy.fcf > 0 ? pecrFmt('x', m.p_fcf) : '음(−) FCF', `${capText} ÷ FCF ${coNum(m.fy.fcf)}`, fyLabel,
+                `잉여현금흐름 수익률 ${Number.isFinite(m.fcf_yield) ? (m.fcf_yield * 100).toFixed(1) + '%' : '—'}.`),
+        );
+    }
+    const ref = q.naver_reference || {};
+    const refTxt = [['per', 'PER'], ['pbr', 'PBR'], ['dividendYieldRatio', '배당수익률']]
+        .filter(([k]) => ref[k]).map(([k, l]) => `${l} ${ref[k].value}${k === 'dividendYieldRatio' ? '%' : '배'}${ref[k].period ? ` (${finEsc(ref[k].period)})` : ''}`).join(' · ');
+    const pref = q.preferred ? ` + 우선주 ${coNum(m.prefCap)} (${finEsc(q.preferred.name)} ${q.preferred.price.toLocaleString()}원)` : '';
+    return `
+        <section class="pecr-section"><h3>시장 배수 — 시가총액 ÷ 공시 분모</h3>
+            <p class="fin-note">시가총액 <b>${capText}</b> = 보통주 ${coNum(q.market_cap)} (${finEsc(q.name)} ${q.price.toLocaleString()}원, ${finEsc(at)} 종가)${pref}.
+                ${m.prefMissing ? '<b>우선주가 있으나 상장 시세가 없어 보통주만 반영했습니다.</b>' : ''}</p>
+            <div class="co-table-wrap"><table class="co-table pecr-table">
+                <thead><tr><th>지표</th><th>값</th><th>계산</th><th>분모 기준</th></tr></thead>
+                <tbody>${rows.join('')}</tbody></table></div>
+            <p class="fin-note">분자: Naver 금융 시가총액(상장주식수 × 종가, 자사주 포함), 매 영업일 장 마감 후 갱신. 분모: OpenDART 공시 재무제표
+                (${m.ltm ? `최근 4분기 = FY + 당기 누적 − 전기 동기 누적, ${finEsc(m.ltm.report)} 보고서` : '연간'}).${m.financial ? '' : ` EBITDA·순차입금·FCF는 엔진 카드(${finEsc(m.fy.ebitda_card || '—')}, ${finEsc(m.fy.net_debt_card || '—')}), 순차입금은 FY말 기준.`}
+                ${refTxt ? `대조용 Naver 표시값: ${refTxt}.` : ''}</p>
+        </section>`;
 };
 
 const PECR_PEER_COLS = [
@@ -369,11 +459,19 @@ const PECR_PEER_COLS = [
     ['net_debt_to_ebitda', '순차입/EBITDA', 'x'], ['interest_coverage', '이자보상', 'x'], ['roe', 'ROE', 'pct'],
 ];
 
+// Market multiples on the same day for every peer when the daily file has them.
+const PECR_LIVE_KEY = { per: 'per_ltm', pbr: 'pbr', ev_to_ebitda: 'ev_to_ebitda' };
+const pecrPeerValue = (snap, key) => {
+    const m = PECR_LIVE_KEY[key] && pecrLive(snap);
+    if (m) return { value: key === 'per' && m.loss_ltm ? null : m[PECR_LIVE_KEY[key]], basis: 'strict' };
+    return pecrCard(snap, key);
+};
+
 const pecrPeersHtml = (snap, peers) => {
     if (!peers) return '<p class="fin-note">피어를 불러오는 중…</p>';
     const rows = [snap, ...peers];
     const med = (key, fmt) => {
-        const v = peers.map((p) => pecrCard(p, key)?.value).filter(Number.isFinite).sort((a, b) => a - b);
+        const v = peers.map((p) => pecrPeerValue(p, key)?.value).filter(Number.isFinite).sort((a, b) => a - b);
         if (v.length < 2) return '—';
         const m = v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
         return pecrFmt(fmt, m);
@@ -382,12 +480,12 @@ const pecrPeersHtml = (snap, peers) => {
         <div class="co-table-wrap"><table class="co-table pecr-table">
             <thead><tr><th>기업</th>${PECR_PEER_COLS.map(([, l]) => `<th>${l}</th>`).join('')}</tr></thead>
             <tbody>${rows.map((s, i) => `<tr class="${i === 0 ? 'pecr-self' : ''}"><td>${finEsc((s.entity || '').replace(/\(주\)|주식회사/g, ''))}</td>
-                ${PECR_PEER_COLS.map(([k, , f]) => { const c = pecrCard(s, k); return `<td>${pecrFmt(f, c?.value)}${c?.basis === 'reported' && c.value != null ? '*' : ''}</td>`; }).join('')}</tr>`).join('')}
+                ${PECR_PEER_COLS.map(([k, , f]) => { const c = pecrPeerValue(s, k); return `<td>${pecrFmt(f, c?.value)}${c?.basis === 'reported' && c.value != null ? '*' : ''}</td>`; }).join('')}</tr>`).join('')}
                 ${peers.length >= 2 ? `<tr class="pecr-median"><td>피어 중앙값</td>${PECR_PEER_COLS.map(([k, , f]) => `<td>${med(k, f)}</td>`).join('')}</tr>` : ''}
             </tbody>
         </table></div>
         <p class="fin-note">${peers.length ? `같은 업종 분류(${finEsc(snap.pe_cr?.industry_profile?.label_ko || snap.pe_cr?.industry || '')})의 엔진 스냅샷 ${peers.length}개` : '같은 업종의 다른 스냅샷이 아직 없습니다'}.
-            * = 공시계정 기준. 시세는 각 회사의 스냅샷 기준일 값입니다.</p>`;
+            * = 공시계정 기준. PER·PBR·EV/EBITDA는 일별 시가총액이 있으면 같은 날 시세로 계산합니다(PER은 최근 4분기 이익).</p>`;
 };
 
 const pecrLoadPeers = async (snap) => {
@@ -403,8 +501,10 @@ const pecrLoadPeers = async (snap) => {
 const pecrHead = (snap) => {
     const p = snap.pe_cr || {};
     const mc = p.cards?.market_cap;
+    const live = snap.stock_code && PECR_MARKET?.quotes?.[snap.stock_code];
+    const mdate = live ? (live.traded_at || '').slice(0, 10) + ' (일별)' : mc?.market_date;
     return `<p class="fin-note pecr-head">엔진 스냅샷: FY${finEsc(snap.fiscal_year)} ${snap.fs_div === 'OFS' ? '별도' : '연결'} ·
-        업종 ${finEsc(p.industry_profile?.label_ko || p.industry || '')}${mc?.market_date ? ` · 시세 ${finEsc(mc.market_date)}` : ''} ·
+        업종 ${finEsc(p.industry_profile?.label_ko || p.industry || '')}${mdate ? ` · 시세 ${finEsc(mdate)}` : ''} ·
         생성 ${finEsc(snap.generated_at || '')}</p>`;
 };
 
@@ -427,12 +527,17 @@ const pecrViewHtml = (data, view) => {
             + pecrLbo(snap);
     }
     // deal
+    if (financial) {
+        return pecrHead(snap) + (pecrMarketHtml(snap) || '<p class="fin-note">비상장사라 시장 배수가 없습니다.</p>')
+            + '<p class="fin-note">금융회사는 EV·EBITDA 배수를 쓰지 않습니다(부채가 영업 자산). PER·PBR과 규제 자본(CR 탭)을 함께 봅니다.</p>';
+    }
     const c = (k) => pecrCard(snap, k)?.value;
     const ev = c('ev'), cap = c('market_cap'), nd = c('net_debt'), total = snap.pe_cr?.cards?.equity_market_value_total?.value;
     const pref = Number.isFinite(total) && Number.isFinite(cap) ? total - cap : null;
     const nci = Number.isFinite(ev) && Number.isFinite(total) && Number.isFinite(nd) ? ev - total - nd : null;
     return pecrHead(snap) + `
-        <section class="pecr-section"><h3>밸류에이션 배수</h3>
+        ${pecrMarketHtml(snap)}
+        <section class="pecr-section"><h3>밸류에이션 배수 — 스냅샷 기준일 시세</h3>
             <div class="fin-cards">${['market_cap', 'ev', 'ev_to_ebitda', 'ev_to_sales', 'per', 'pbr'].map((k) => pecrCardHtml(snap, k)).join('')}</div></section>
         ${Number.isFinite(ev) ? `<section class="pecr-section"><h3>EV 브릿지</h3>
             <div class="co-table-wrap"><table class="co-table pecr-table"><tbody>
