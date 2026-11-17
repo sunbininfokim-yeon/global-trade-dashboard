@@ -62,7 +62,11 @@ ATTR_ALIASES = {"Total Sugar  Production": "Production", "Total Sugar Production
 PRICE_IDS = {"wheat": ("PWHEAMTUSDM", 6), "corn": ("PMAIZMTUSDM", 9), "soybeans": ("PSOYBUSDM", 9),
              "sugar": ("PSUGAISAUSDM", 10), "palm_oil": ("PPOILUSDM", 10),
              "coffee": ("PCOFFOTMUSDM", 10), "rice": ("PRICENPQUSDM", 1),
-             "cotton": ("PCOTTINDUSDM", 8)}
+             "cotton": ("PCOTTINDUSDM", 8),
+             # No free world rapeseed (seed) price; rapeseed oil tracks it
+             # and the card says so.
+             "canola": ("PROILUSDM", 7)}
+PRICE_PROXY_KO = {"canola": "유채씨 대신 유채유 국제가격"}
 FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
 BAND_PCT = 10.0   # stocks-to-use vs its 5-season average, same fixed band as the palm check
 
@@ -78,9 +82,12 @@ CROPS = {
     "cotton": ("Cotton", "면화", {"cotton"}),
     "canola": ("Oilseed, Rapeseed", "유채", {"canola"}),
     "orange": ("Oranges, Fresh", "오렌지", {"orange"}),
+    "orange_juice": ("Orange Juice", "오렌지주스", set()),
 }
 # PSD units: 1000 t, except coffee in 1000 60-kg bags.
-UNITS = {"coffee": "kbag60", "cotton": "kbale480"}
+UNITS = {"coffee": "kbag60", "cotton": "kbale480", "orange_juice": "kt65brix"}
+# PSD reports orange juice in tonnes (65 degrees Brix), not thousands.
+SCALE = {"Orange Juice": 0.001}
 # China's stocks are held back from trade for grains; elsewhere the world
 # figure is the headline.
 EX_CHINA = {"wheat", "corn", "soybeans", "rice", "cotton"}
@@ -133,6 +140,9 @@ def fetch():
 def normalize(df):
     df = df.copy()
     df["Attribute_Description"] = df["Attribute_Description"].replace(ATTR_ALIASES)
+    for commodity, k in SCALE.items():
+        m = df.Commodity_Description == commodity
+        df.loc[m, "Value"] = df.loc[m, "Value"] * k
     return df
 
 
@@ -508,6 +518,7 @@ def price_check(key, g, prices):
     if not out:
         return None
     return {"price": f"IMF {sid} (FRED), marketing-year average from month {start}",
+            "proxy_ko": PRICE_PROXY_KO.get(key),
             "band_pct": BAND_PCT, "headline": "ex_china" if "ex_china" in out else "world", **out}
 
 
