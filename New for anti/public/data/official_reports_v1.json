@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-17T13:31:19.783467+00:00",
+  "generated_at": "2026-11-17T23:32:04.820881+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -17,8 +17,8 @@
   "stats": {
     "sources_ok": 10,
     "sources_failed": 0,
-    "raw_items": 175,
-    "scored": 175,
+    "raw_items": 176,
+    "scored": 176,
     "selected": 40,
     "indicators": 17
   },
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 27,
+      "count": 28,
       "error": null,
       "mode": "live"
     },
@@ -239,6 +239,20 @@
         "finance",
         "economy"
       ],
+      "title": "Philip R. Lane: The practice and science of monetary policy communication: the ECB experience",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261117~7f5d3b1a0e.en.pdf",
+      "published_at": "2026-11-17T18:30:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.64
+    },
+    {
+      "series_id": "EU_ECB_POLICY",
+      "label_ko": "ECB 정책",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
       "title": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
       "published_at": "2026-11-10T16:45:00+00:00",
@@ -312,20 +326,6 @@
       ],
       "title": "Market Operations by the Bank of Japan (Oct.)",
       "url": "http://www.boj.or.jp/en/statistics/boj/fm/ope/m_release/2026/ope2610.xlsx",
-      "published_at": "2026-11-08T23:50:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.306
-    },
-    {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Monetary Base and the Bank of Japan's Transactions (Oct.)",
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2610.pdf",
       "published_at": "2026-11-08T23:50:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
@@ -750,6 +750,41 @@
       "site_slot": null
     },
     {
+      "id": "8e2b25ad5b11facd",
+      "published_at": "2026-11-17T18:30:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261117~7f5d3b1a0e.en.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Philip R. Lane: The practice and science of monetary policy communication: the ECB experience",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Philip R. Lane: The practice and science of monetary policy communication: the ECB experience"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "4fe1c1d659136215",
       "published_at": "2026-11-10T16:45:00+00:00",
       "source": {
@@ -925,6 +960,41 @@
       "site_slot": null
     },
     {
+      "id": "20980bd0ea285e6a",
+      "published_at": "2026-11-17T15:20:56+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/11/quad-leaders-summit-joint-press-release/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Quad Leaders’ Summit Joint Press Release",
+        "original_lang": "en",
+        "ko": "[USA·외교] Quad Leaders’ Summit Joint Press Release"
+      },
+      "summary": "On November 17, 2026, — President Donald J. Trump of the United States, Prime Minister Anthony Albanese of Australia, Prime Minister Narendra Modi of India, and Prime Minister Takaichi Sanae of Japan — met for a Quad Leaders’ Summit in Manila. This year marks nearly a decade sinc",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "c2b91d329e8b42bd",
       "published_at": "2026-11-12T21:34:51+00:00",
       "source": {
@@ -1030,42 +1100,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "ticker"
-    },
-    {
-      "id": "0fab960b164cc650",
-      "published_at": "2026-11-09T19:03:35+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/11/icymi-president-trump-on-60-minutes-we-have-historically-good-numbers/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "ICYMI: President Trump on 60 Minutes: “We Have Historically Good Numbers”",
-        "original_lang": "en",
-        "ko": "[USA·경제] ICYMI: President Trump on 60 Minutes: “We Have Historically Good Numbers”"
-      },
-      "summary": "Last night, President Donald J. Trump sat down with 60 Minutes following the midterm elections and made a powerful case for his America First record. President Trump highlighted the booming Trump economy — 165,000 new jobs in October, record 401(k) balances, and hundreds of billi",
-      "scores": {
-        "significance": 2.392,
-        "final": 2.392
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "18dc90071eb347f0",
@@ -1694,41 +1728,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
-    },
-    {
-      "id": "aa3476eb0cb950e8",
-      "published_at": "2026-11-08T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2610.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Monetary Base and the Bank of Japan's Transactions (Oct.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Oct.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1834,17 +1833,6 @@
     {
       "title": "Minutes of the Money Market Committee meeting – September 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/september/money-markets-committee-minutes-september-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Bank of England announces the four animals that will feature on our next series of banknotes",
-      "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2273,6 +2261,41 @@
       "site_slot": null
     },
     {
+      "id": "8e2b25ad5b11facd",
+      "published_at": "2026-11-17T18:30:00+00:00",
+      "source": {
+        "id": "eu_ecb_press",
+        "name": "ECB",
+        "region": "eur",
+        "slant": null
+      },
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261117~7f5d3b1a0e.en.pdf",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "series_id": "EU_ECB_POLICY",
+      "title": {
+        "original": "Philip R. Lane: The practice and science of monetary policy communication: the ECB experience",
+        "original_lang": "en",
+        "ko": "[EUR·금융] Philip R. Lane: The practice and science of monetary policy communication: the ECB experience"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.64,
+        "final": 2.64
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:EU_ECB_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
       "id": "4fe1c1d659136215",
       "published_at": "2026-11-10T16:45:00+00:00",
       "source": {
@@ -2448,6 +2471,41 @@
       "site_slot": null
     },
     {
+      "id": "20980bd0ea285e6a",
+      "published_at": "2026-11-17T15:20:56+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/11/quad-leaders-summit-joint-press-release/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Quad Leaders’ Summit Joint Press Release",
+        "original_lang": "en",
+        "ko": "[USA·외교] Quad Leaders’ Summit Joint Press Release"
+      },
+      "summary": "On November 17, 2026, — President Donald J. Trump of the United States, Prime Minister Anthony Albanese of Australia, Prime Minister Narendra Modi of India, and Prime Minister Takaichi Sanae of Japan — met for a Quad Leaders’ Summit in Manila. This year marks nearly a decade sinc",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "c2b91d329e8b42bd",
       "published_at": "2026-11-12T21:34:51+00:00",
       "source": {
@@ -2553,42 +2611,6 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "ticker"
-    },
-    {
-      "id": "0fab960b164cc650",
-      "published_at": "2026-11-09T19:03:35+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/releases/2026/11/icymi-president-trump-on-60-minutes-we-have-historically-good-numbers/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "diplomacy",
-        "security"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "ICYMI: President Trump on 60 Minutes: “We Have Historically Good Numbers”",
-        "original_lang": "en",
-        "ko": "[USA·경제] ICYMI: President Trump on 60 Minutes: “We Have Historically Good Numbers”"
-      },
-      "summary": "Last night, President Donald J. Trump sat down with 60 Minutes following the midterm elections and made a powerful case for his America First record. President Trump highlighted the booming Trump economy — 165,000 new jobs in October, record 401(k) balances, and hundreds of billi",
-      "scores": {
-        "significance": 2.392,
-        "final": 2.392
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
     },
     {
       "id": "18dc90071eb347f0",
@@ -3204,41 +3226,6 @@
         "original": "Market Operations by the Bank of Japan (Oct.)",
         "original_lang": "en",
         "ko": "[JPN·경제] Market Operations by the Bank of Japan (Oct.)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.306,
-        "final": 2.306
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "aa3476eb0cb950e8",
-      "published_at": "2026-11-08T23:50:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/statistics/boj/other/mbt/mbt2610.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Monetary Base and the Bank of Japan's Transactions (Oct.)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Monetary Base and the Bank of Japan's Transactions (Oct.)"
       },
       "summary": "",
       "scores": {
