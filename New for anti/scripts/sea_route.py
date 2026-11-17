@@ -365,6 +365,17 @@ def build(seas, today=None):
             o["date_ko"] = doy_to_md(target, o["point"])
             o["range_68_ko"] = [doy_to_md(target, v) for v in o["range_68"]]
             o["range_95_ko"] = [doy_to_md(target, v) for v in o["range_95"]]
+    # Skill by issue date (lead 0): where the current ice starts to help.
+    by_month = []
+    for m in (4, 5, 6, 7, 8):
+        row = {"issue": f"{m}월 1일"}
+        for name, tab in (("days", days_tab), ("open", open_tab), ("close", close_tab)):
+            te, fe = backtest(route, tab, (m, 1), 0, False), backtest(route, tab, (m, 1), 0, True)
+            if te and fe:
+                row[name] = {"mae_trend": round(_mae(te), 1), "mae_model": round(_mae(fe), 1),
+                             "skill": round(1 - _mae(fe) / _mae(te), 3)}
+        by_month.append(row)
+    out["skill_by_issue_month"] = by_month
     n_closed = sum(1 for r in done.values() if r["days"] == 0)
     out["years_never_open"] = n_closed
     last10 = [done[y]["days"] > 0 for y in sorted(done)[-10:]]
@@ -438,7 +449,9 @@ def main():
     print("추세", doc["trend"])
     for thr, v in doc["sensitivity_days"].items():
         print("SENS", thr, v if "seas" in thr else " ".join(f"{y}:{n}" for y, n in v.items()))
-    print("전망", json.dumps(o, ensure_ascii=False))
+    print("전망", json.dumps({k: v for k, v in o.items() if k != "skill_by_issue_month"}, ensure_ascii=False))
+    for r in o["skill_by_issue_month"]:
+        print("SKILL", json.dumps(r, ensure_ascii=False))
 
 
 if __name__ == "__main__":
