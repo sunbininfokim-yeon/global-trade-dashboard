@@ -66,7 +66,21 @@
         if (vt) vt.innerHTML = `${mt(c.current.production_kt)} <span style="font-size:13px;">${pct(c.current.change_pct)}</span>`;
     }
 
-    const TAG = { supply: '공급', stocks: '재고', weather: '날씨', china: '중국' };
+    const TAG = { supply: '공급', stocks: '재고', weather: '날씨', china: '중국', revision: '수정' };
+    // Signed change in the crop's unit, for month-on-month revisions.
+    const dmt = (kt) => `${kt >= 0 ? '+' : '−'}${mt(Math.abs(kt))}`;
+
+    // USDA's outlook this month against last month's, same season.
+    function revisionHtml(rv) {
+        if (!rv) return '';
+        const month = (rv.vs_release.match(/(\d{1,2})월/) || [])[1] || '전';
+        const row = (label, x) => (x ? `<div class="gb-line"><span>${label}</span><span>${dmt(x.change_kt)} ${pct(x.change_pct)}</span></div>` : '');
+        const movers = (rv.producers || []).filter((m) => Math.abs(m.change_kt) >= 50)
+            .map((m) => `${esc(m.country_ko)} ${dmt(m.change_kt)}`).join(' · ');
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">USDA 전망 수정 (${esc(month)}월 발표 대비)</p>
+            ${row('세계 생산', rv.production)}${row('기말재고', rv.ending_stocks)}${row('세계 수출', rv.exports)}
+            ${movers ? `<div class="stock-note" style="margin-top:2px;">생산 수정: ${movers}</div>` : '<div class="stock-note" style="margin-top:2px;">주요 생산국 전망은 그대로</div>'}`;
+    }
     function riskHtml(r) {
         const why = r.kind === 'weather'
             ? `${esc(r.crop_ko)} ${esc(r.season)} · ${esc((r.reason || []).join(' / '))}${r.reference_only ? ' · 과거 판정이 실제 수확과 맞지 않아 참고만' : ''}`
@@ -137,6 +151,7 @@
                 ${more}
                 <div class="stock-note">생육 중인 산지 날씨 판정: 불리 ${t.unfavorable ?? 0} · 보통 ${t.neutral ?? 0} · 유리 ${t.favorable ?? 0}</div>
             </details>` : '<div class="stock-note" style="margin-top:10px;">주요 리스크: 눈에 띄는 것 없음</div>'}
+            ${revisionHtml(c.revision)}
             ${priceCheckHtml(c.price_check)}
             ${igcHtml(c.igc)}
             ${chinaHtml(c.korea, '한국')}
