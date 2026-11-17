@@ -2028,7 +2028,7 @@ const renderSeaRouteCard = () => {
             ${o.skill_by_issue_month.map((r) => `<div class="climate-table-row" style="font-size:11px;">
                 <span style="flex:1;">${r.issue} 발행</span>
                 ${['open', 'close', 'days'].map((k) => (r[k] ? `<span style="width:25%;text-align:right;color:${r[k].skill >= 0.1 ? '#86efac' : '#94a3b8'};">
-                    ${{ open: '열림', close: '닫힘', days: '기간' }[k]} ±${Math.round(Math.min(r[k].mae_model, r[k].mae_trend))}일</span>` : '')).join('')}
+                    ${{ open: '열림', close: '닫힘', days: '기간' }[k]} ±${Math.round(r[k].skill >= 0.1 ? r[k].mae_model : r[k].mae_trend)}일</span>` : '')).join('')}
             </div>`).join('')}
             <div class="climate-sub" style="margin-top:4px;">초록 = 그 시점의 얼음 상태를 넣으면 추세보다 10% 이상 정확해짐 (그때부터 엔진이 자동으로 바꿔 씀).
                 7월까지는 얼음이 아직 꽉 차 있어 추세 이상으로 맞히기 어렵습니다.</div>
