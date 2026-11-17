@@ -1,8 +1,8 @@
 {
   "schema": "election_records_input_v1",
   "country": "KOR",
-  "as_of": "2026-11-07",
-  "note_ko": "2025 대선 개표표, 2022 대선 전국 투표율, 2024 총선 전국 투표율, 2026 지방 광역단체장 당선 수만 넣었다. 2022 후보 득표와 2024 정당 의석 표는 이번 조회에서 열리지 않았다. 쟁점 공약집과 여론조사 원문도 열지 않았다.",
+  "as_of": "2026-11-16",
+  "note_ko": "2025 대선 개표표, 2022 대선 전국 합계 파일, 2024 총선 지역구·비례 개표 파일을 열었다. 2022 파일에는 득표율 칸이 없어 표에 적지 않았다. 2024 비례 의석 칸은 그 파일에 없다. 쟁점은 넣지 않았다.",
   "offices": [
     {
       "key": "executive",
@@ -10,6 +10,7 @@
       "elected_how": "direct",
       "incumbent": {
         "name": "이재명",
+        "name_ko": "이재명",
         "party": "더불어민주당",
         "since": null,
         "term_end": null,
@@ -31,11 +32,51 @@
           "turnout_pct": null,
           "winner_ko": "이재명 · 더불어민주당",
           "candidates": [
-            {"name": "이재명", "party": "더불어민주당", "votes": 17287513, "vote_pct": 49.42, "elected": true, "incumbent": false},
-            {"name": "김문수", "party": "국민의힘", "votes": 14395639, "vote_pct": 41.15, "elected": false, "incumbent": false},
-            {"name": "이준석", "party": "개혁신당", "votes": 2917523, "vote_pct": 8.34, "elected": false, "incumbent": false},
-            {"name": "권영국", "party": "민주노동당", "votes": 344150, "vote_pct": 0.98, "elected": false, "incumbent": false},
-            {"name": "송진호", "party": "무소속", "votes": 35791, "vote_pct": 0.10, "elected": false, "incumbent": false}
+            {
+              "name": "이재명",
+              "name_ko": "이재명",
+              "party": "더불어민주당",
+              "votes": 17287513,
+              "vote_pct": 49.42,
+              "elected": true,
+              "incumbent": false
+            },
+            {
+              "name": "김문수",
+              "name_ko": "김문수",
+              "party": "국민의힘",
+              "votes": 14395639,
+              "vote_pct": 41.15,
+              "elected": false,
+              "incumbent": false
+            },
+            {
+              "name": "이준석",
+              "name_ko": "이준석",
+              "party": "개혁신당",
+              "votes": 2917523,
+              "vote_pct": 8.34,
+              "elected": false,
+              "incumbent": false
+            },
+            {
+              "name": "권영국",
+              "name_ko": "권영국",
+              "party": "민주노동당",
+              "votes": 344150,
+              "vote_pct": 0.98,
+              "elected": false,
+              "incumbent": false
+            },
+            {
+              "name": "송진호",
+              "name_ko": "송진호",
+              "party": "무소속",
+              "votes": 35791,
+              "vote_pct": 0.10,
+              "elected": false,
+              "incumbent": false
+            }
           ],
           "summary_ko": "합계 행의 투표수 35,236,497, 유효 34,980,616, 무효 255,881. 득표율은 선관위가 소수 셋째 자리에서 버린 값이다. 그 합은 99.99다. 전국 투표율 %는 이 표에 없다.",
           "sources": [
@@ -49,12 +90,89 @@
           "label_ko": "제20대 대통령 선거",
           "status": "completed",
           "turnout_pct": 77.1,
-          "winner_ko": null,
-          "summary_ko": "역대 투표율 표가 제20대 대통령선거 전국 77.1%라고 적는다. 후보별 득표 표는 이번 조회에서 열리지 않아 비웠다.",
+          "winner_ko": "윤석열 · 국민의힘",
+          "summary_ko": "전국 합계에서 윤석열이 16,394,815표, 이재명이 16,147,738표다. 열두 후보의 합은 유효표 33,760,311과 같다.",
           "sources": [
+            "https://www.nec.go.kr/site/nec/ex/bbs/View.do?bcIdx=175508&cbIdx=1129",
             "http://info.nec.go.kr/m/main/main_previous_load.xhtml"
           ],
-          "verification": "official_partial"
+          "verification": "official",
+          "electorate": 44197692,
+          "candidates": [
+            {
+              "name": "윤석열",
+              "name_ko": "윤석열",
+              "party": "국민의힘",
+              "elected": true
+            },
+            {
+              "name": "이재명",
+              "name_ko": "이재명",
+              "party": "더불어민주당",
+              "elected": false
+            },
+            {
+              "name": "심상정",
+              "name_ko": "심상정",
+              "party": "정의당",
+              "elected": false
+            },
+            {
+              "name": "허경영",
+              "name_ko": "허경영",
+              "party": "국가혁명당",
+              "elected": false
+            },
+            {
+              "name": "김재연",
+              "name_ko": "김재연",
+              "party": "진보당",
+              "elected": false
+            },
+            {
+              "name": "조원진",
+              "name_ko": "조원진",
+              "party": "우리공화당",
+              "elected": false
+            },
+            {
+              "name": "오준호",
+              "name_ko": "오준호",
+              "party": "기본소득당",
+              "elected": false
+            },
+            {
+              "name": "김민찬",
+              "name_ko": "김민찬",
+              "party": "한류연합당",
+              "elected": false
+            },
+            {
+              "name": "이경희",
+              "name_ko": "이경희",
+              "party": "통일한국당",
+              "elected": false
+            },
+            {
+              "name": "이백윤",
+              "name_ko": "이백윤",
+              "party": "노동당",
+              "elected": false
+            },
+            {
+              "name": "김경재",
+              "name_ko": "김경재",
+              "party": "신자유민주연합",
+              "elected": false
+            },
+            {
+              "name": "옥은호",
+              "name_ko": "옥은호",
+              "party": "새누리당",
+              "elected": false
+            }
+          ],
+          "detail_ko": "선거인수 44,197,692, 투표수 34,067,853, 무효 307,542, 기권 10,129,839다. 윤석열 16,394,815, 이재명 16,147,738, 심상정 803,358, 허경영 281,481, 김재연 37,366, 조원진 25,972, 오준호 18,105, 김민찬 17,305, 이경희 11,708, 이백윤 9,176, 김경재 8,317, 옥은호 4,970. 이 파일에는 득표율 칸이 없다. 투표율 77.1%는 역대 투표율 표의 숫자이고, 이 합계로 다시 나누지 않았다."
         }
       ],
       "next": {
@@ -62,7 +180,9 @@
         "date_status": null,
         "label_ko": "공고된 다음 대선일 없음",
         "source": "http://info.nec.go.kr/m/main/main_previous_load.xhtml"
-      }
+      },
+      "coverage": "partial",
+      "coverage_note_ko": "이 파일에 있는 선거는 제21대 대통령 선거, 제20대 대통령 선거이다. 제20대는 전국 합계의 후보 득표까지 채웠다."
     },
     {
       "key": "legislature",
@@ -74,12 +194,41 @@
           "label_ko": "제22대 국회의원 선거",
           "status": "completed",
           "turnout_pct": 67.0,
-          "seats_total": null,
-          "summary_ko": "역대 투표율 표가 제22대 국회의원선거 전국 67.0%라고 적는다. 정당별 의석과 비례 득표 표는 이번 조회에서 열리지 않았다. 지역구와 비례를 합친 의석 정수는 만들지 않는다.",
+          "seats_total": 254,
+          "summary_ko": "지역구 합계 행에서 최다득표 후보의 정당을 세면 254석이다. 더불어민주당 161석, 국민의힘 90석이고 진보당·새로운미래·개혁신당이 각 1석이다.",
+          "detail_ko": "동점인 지역구는 없었다. 이 숫자는 지역구 254석이고 비례 의석이 아니다. 비례 전국 합계는 선거인수 44,280,011, 투표수 29,654,450, 유효 28,344,519, 무효 1,309,931, 기권 14,625,561이다. 더불어민주연합 7,567,459, 국민의미래 10,395,264, 녹색정의당 609,313, 새로운미래 483,827, 개혁신당 1,025,775, 자유통일당 642,433, 조국혁신당 6,874,278, 가가국민참여신당 10,242, 가가호호공명선거대한당 29,481, 반공정당코리아 7,820, 가락특권폐지당 4,707, 공화당 14,912, 국가혁명당 67,420, 국민대통합당 30,323, 금융개혁당 20,548, 기독당 36,117, 기후민생당 6,615, 내일로미래로 9,417, 노동당 25,937, 노인복지당 15,178, 대중민주당 7,663, 대한국민당 11,947, 대한민국당 8,527, 대한상공인당 3,783, 미래당 11,505, 새누리당 57,210, 소나무당 124,369, 신한반도당 1,580, 여성의당 28,942, 우리공화당 29,895, 자유민주당 39,977, 케이정치혁신연합당 3,451, 통일한국당 8,518, 한국농어민당 13,035, 한나라당 72,925, 한류연합당 3,894, 홍익당 13,326, 히시태그국민정책당 26,906. 정당 득표를 더하면 유효표와 같다. 비례 의석 칸은 이 파일에 없다. 투표율 67.0%는 역대 투표율 표의 숫자다.",
           "sources": [
+            "https://www.nec.go.kr/site/nec/ex/bbs/View.do?bcIdx=233922&cbIdx=1129",
             "http://info.nec.go.kr/m/main/main_previous_load.xhtml"
           ],
-          "verification": "official_partial"
+          "verification": "official",
+          "seats": [
+            {
+              "party": "더불어민주당",
+              "party_ko": "더불어민주당",
+              "seats": 161
+            },
+            {
+              "party": "국민의힘",
+              "party_ko": "국민의힘",
+              "seats": 90
+            },
+            {
+              "party": "진보당",
+              "party_ko": "진보당",
+              "seats": 1
+            },
+            {
+              "party": "새로운미래",
+              "party_ko": "새로운미래",
+              "seats": 1
+            },
+            {
+              "party": "개혁신당",
+              "party_ko": "개혁신당",
+              "seats": 1
+            }
+          ]
         }
       ],
       "next": {
@@ -87,7 +236,9 @@
         "date_status": null,
         "label_ko": "공고된 다음 총선일 없음",
         "source": "http://info.nec.go.kr/m/main/main_previous_load.xhtml"
-      }
+      },
+      "coverage": "partial",
+      "coverage_note_ko": "이 파일에 있는 선거는 제22대 국회의원 선거이다. 지역구 당선 254석과 비례 득표를 채웠고, 비례 의석은 개표 파일에 없다."
     },
     {
       "key": "local",
@@ -101,16 +252,29 @@
           "turnout_pct": null,
           "seats_total": 16,
           "seats": [
-            {"party": "더불어민주당", "party_ko": "더불어민주당", "seats": 12, "vote_pct": null},
-            {"party": "국민의힘", "party_ko": "국민의힘", "seats": 4, "vote_pct": null}
+            {
+              "party": "더불어민주당",
+              "party_ko": "더불어민주당",
+              "seats": 12,
+              "vote_pct": null
+            },
+            {
+              "party": "국민의힘",
+              "party_ko": "국민의힘",
+              "seats": 4,
+              "vote_pct": null
+            }
           ],
-          "summary_ko": "선관위 당선인명부에서 이미 읽은 광역단체장 16명의 정당을 센 것이다. 명부 페이지가 12와 4를 찍지는 않는다. 전남과 광주는 전남광주통합특별시 한 자리로 남아 있다. 투표율은 그 명부에 없다.",
+          "summary_ko": "선관위 당선인명부에서 이미 읽은 광역단체장 16명의 정당을 센 것이다. 명부 페이지가 12와 4를 찍지는 않는다.",
+          "detail_ko": "전남과 광주는 전남광주통합특별시 한 자리로 남아 있다. 투표율은 그 명부에 없다.",
           "sources": [
             "https://www.nec.go.kr/site/nec/ex/bbs/View.do?bcIdx=327938&cbIdx=1129"
           ],
           "verification": "official"
         }
-      ]
+      ],
+      "coverage": "partial",
+      "coverage_note_ko": "이 파일에 있는 선거는 제9회 전국동시지방선거 광역단체장이다."
     }
   ]
 }
