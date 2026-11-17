@@ -1,0 +1,70 @@
+name: ENSO analog yields
+
+# 과거 강한 엘니뇨 해의 국가별 단수 편차 표(enso_analogs_v1.json).
+# FAOSTAT 은 1년에 몇 번만 갱신되므로 월 1회면 충분하다. PR 에서는 결과를
+# PR 브랜치에 커밋해, 리뷰어가 보는 표가 그 브랜치 코드로 만든 것이 되게 한다.
+
+on:
+  schedule:
+    # 매월 2일 04:40 UTC
+    - cron: '40 4 2 * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/yield_model/enso_analogs/**'
+      - '.github/workflows/enso_analogs.yml'
+
+concurrency:
+  group: enso-analogs-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy
+
+      - name: Build analog table
+        working-directory: "New for anti/scripts/yield_model"
+        run: python3 -m enso_analogs.build
+
+      - name: Commit to the pull request branch
+        if: github.event_name == 'pull_request'
+        run: |
+          f="New for anti/public/data/enso_analogs_v1.json"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$f"
+          git commit -m "chore: ENSO analog yields (PR run)" || exit 0
+          for i in 1 2 3; do
+            git push origin "HEAD:$GITHUB_HEAD_REF" && exit 0
+            echo "push rejected, rebasing and retrying ($i/3)"
+            git pull --rebase --autostash origin "$GITHUB_HEAD_REF"
+          done
+          git push origin "HEAD:$GITHUB_HEAD_REF"
+
+      - name: Commit to main
+        if: github.event_name != 'pull_request'
+        run: |
+          f="New for anti/public/data/enso_analogs_v1.json"
+          if ! git diff -- "$f" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then exit 0; fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$f"
+          git commit -m "chore: refresh ENSO analog yields" || exit 0
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing and retrying ($i/3)"
+            git pull --rebase --autostash
+          done
+          git push

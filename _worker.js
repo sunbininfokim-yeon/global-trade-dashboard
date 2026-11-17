@@ -159,7 +159,9 @@ export default {
 // GH_DISPATCH_TOKEN: 이 저장소 Actions write 권한의 fine-grained PAT. GitHub
 // Actions secret 에 두면 deploy.yml 이 배포 때마다 Worker secret 으로 복사한다.
 // 없으면 GitHub cron 만 남는다.
-const PREOPEN_CRONS = ['25 21 * * *', '5 22 * * *'];
+// 08:05 KST 은 마감 직전 마지막 재시도 (2026-11-16 15007 이 07:54~08:05 에 들어와
+// 07:05 재시도를 놓쳤다).
+const PREOPEN_CRONS = ['25 21 * * *', '5 22 * * *', '5 23 * * *'];
 const PREOPEN_WORKFLOW_URL =
     'https://api.github.com/repos/sunbininfokim-yeon/global-trade-dashboard/actions/workflows/us_kr_direction_preopen.yml/dispatches';
 
@@ -880,6 +882,11 @@ const COMTRADE_TTL = {
     "1511": 1209600, // Palm oil: 14 days
     "4001": 1209600, // Natural rubber: 14 days
     "0901": 1209600, // Coffee: 14 days
+    "1006": 1209600, // Rice: 14 days
+    "5201": 1209600, // Raw cotton: 14 days
+    "1205": 1209600, // Rapeseed/canola: 14 days
+    "080510": 1209600, // Fresh oranges: 14 days
+    "200911,200912,200919": 1209600, // Orange juice (frozen, not frozen, other): 14 days
 
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
     // year, so a week of staleness costs nothing.
@@ -3436,6 +3443,11 @@ const FUTURES = {
     soybeans:  { symbol: "ZS=F",  unit: "부셸",      exchange: "CBOT" },
     sugar:     { symbol: "SB=F",  unit: "파운드",    exchange: "ICE" },
     coffee:    { symbol: "KC=F",  unit: "파운드",    exchange: "ICE" },
+    cotton:    { symbol: "CT=F",  unit: "파운드",    exchange: "ICE" },
+    rice:      { symbol: "ZR=F",  unit: "cwt(100파운드)", exchange: "CBOT" },
+    // Frozen concentrated orange juice: the only orange contract there is.
+    orange:    { symbol: "OJ=F",  unit: "파운드(주스)", exchange: "ICE" },
+    orange_juice: { symbol: "OJ=F", unit: "파운드", exchange: "ICE" },
     copper:    { symbol: "HG=F",  unit: "파운드",    exchange: "COMEX" },
     gold:      { symbol: "GC=F",  unit: "온스",      exchange: "COMEX" },
     silver:    { symbol: "SI=F",  unit: "온스",      exchange: "COMEX" },
@@ -3467,6 +3479,7 @@ const FUTURES_UNPRICED = {
     light_oils: "무료로 확인 가능한 실시간 시세가 없습니다 (납사·휘발유 모두 Platts·Argus 유료 평가가)",
     palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
     rubber: "기준 계약인 SGX SICOM TSR20·오사카거래소 RSS3 시세는 무료로 제공되지 않습니다",
+    canola: "ICE 카놀라 선물은 캐나다달러 표시라 이 카드(미국 달러)에는 싣지 않습니다",
 };
 
 async function handleFutures(request, env) {

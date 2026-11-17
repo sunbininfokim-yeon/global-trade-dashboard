@@ -1976,7 +1976,10 @@ const mmCpiPathPanel = (ind, movers) => {
 // carries no relative-importance weights, and calling an unweighted mover a
 // "contribution" would overstate how much it moved the index.
 const mmMoversView = (ind) => {
-    const mv = ind.movers || {};
+    const mv0 = ind.movers || {};
+    const hasYoy = (mv0.yoy_up || []).length > 0;
+    const basis = hasYoy && MM_CHART && MM_CHART.moverBasis === 'yoy' ? 'yoy' : 'mom';
+    const mv = basis === 'yoy' ? { ...mv0, up: mv0.yoy_up || [], down: mv0.yoy_down || [] } : mv0;
     const doc = mmCpiInlineStructure(ind) || MM_CPI_STRUCTURE;
     const relationIndex = doc ? mmCpiRelationshipIndex(doc) : null;
     const moverRows = [...(mv.up || []), ...(mv.down || [])];
@@ -1995,27 +1998,35 @@ const mmMoversView = (ind) => {
         <${tag} ${interactive ? 'type="button"' : ''} class="mm-mover mm-mover-${dir} ${selected ? 'is-selected' : ''}"
                 ${interactive ? `data-mm-cpi-item="${finEsc(r.id)}" aria-pressed="${selected}"` : ''}>
             <span class="mm-mover-name">${finEsc(r.label_ko)}</span>
-            <span class="mm-mover-mom">${r.mom_pct >= 0 ? '+' : ''}${r.mom_pct.toFixed(2)}%</span>
-            <span class="mm-mover-yoy">YoY ${r.yoy_pct === null ? '—' : `${r.yoy_pct >= 0 ? '+' : ''}${r.yoy_pct.toFixed(1)}%`}</span>
+            ${basis === 'yoy'
+                ? `<span class="mm-mover-mom">${r.yoy_pct >= 0 ? '+' : ''}${r.yoy_pct.toFixed(1)}%</span>
+            <span class="mm-mover-yoy">전월비 ${r.mom_pct >= 0 ? '+' : ''}${r.mom_pct.toFixed(2)}%</span>`
+                : `<span class="mm-mover-mom">${r.mom_pct >= 0 ? '+' : ''}${r.mom_pct.toFixed(2)}%</span>
+            <span class="mm-mover-yoy">YoY ${r.yoy_pct === null ? '—' : `${r.yoy_pct >= 0 ? '+' : ''}${r.yoy_pct.toFixed(1)}%`}</span>`}
             ${interactive ? `<span class="mm-mover-path-count">${relationCount === null ? '경로 확인' : `경로 ${relationCount}`}</span>` : ''}
         </${tag}>`;
     };
     if (!(mv.up || []).length && !(mv.down || []).length) {
         return `<p class="fin-note">${finEsc('항목별 변동 자료가 없습니다.')}</p>`;
     }
+    const n = Math.max((mv.up || []).length, (mv.down || []).length);
     return `
+    ${hasYoy ? `<div class="pf-mode mm-mover-basis">
+        <button type="button" class="pf-mode-btn ${basis === 'mom' ? 'on' : ''}" data-mm-mover-basis="mom">전월비 순</button>
+        <button type="button" class="pf-mode-btn ${basis === 'yoy' ? 'on' : ''}" data-mm-mover-basis="yoy">전년비 순</button>
+    </div>` : ''}
     <div class="mm-movers">
         <div class="mm-mover-col">
-            <h4 class="mm-mover-head">가장 오른 항목</h4>
+            <h4 class="mm-mover-head">가장 오른 항목 TOP${n}</h4>
             ${(mv.up || []).map((r) => row(r, 'up')).join('')}
         </div>
         <div class="mm-mover-col">
-            <h4 class="mm-mover-head">가장 내린 항목</h4>
+            <h4 class="mm-mover-head">가장 내린 항목 TOP${n}</h4>
             ${(mv.down || []).map((r) => row(r, 'down')).join('')}
         </div>
     </div>
     ${mmCpiPathPanel(ind, mv)}
-    <p class="fin-note">${finEsc(mv.reference_period || '')} 발표 기준. ${finEsc(mv.note_ko || '')}</p>`;
+    <p class="fin-note">${finEsc(mv.reference_period || '')} 발표 기준. ${finEsc(mv.note_ko || '')}${basis === 'yoy' ? ' (지금은 같은 항목을 전년 동월 대비로 정렬)' : ''}</p>`;
 };
 
 // US CPI contributions: which parts of the basket added how many percentage points, for any of the
@@ -2025,6 +2036,55 @@ const MM_CPI_GROUP_COLORS = ['#f59e0b', '#60a5fa', '#a78bfa', '#34d399', '#f472b
     '#fbbf24', '#818cf8', '#2dd4bf', '#e879f9'];
 
 const mmCpiName = (n) => n.name_ko || n.name;
+
+// 상승·하락 TOP5 from the contribution file: every leaf item (458 in Korea, the published US items),
+// ranked by its own price change or by how many points it added to the index. A tiny-weight item can
+// top the price list (fresh vegetables) without moving the index -- the contribution ranking is there
+// for that, and each row shows both.
+const mmCpiMoversView = (ind, mode) => {
+    const meta = ind.cpi_contrib || {};
+    const file = meta.file || 'public/data/us_cpi_contrib_v1.json';
+    const doc = MM_CPI_CONTRIB[file];
+    if (!doc) { mmCpiContribFetch(file); return '<p class="fin-note">품목 데이터를 불러오는 중입니다…</p>'; }
+    if (doc.error) return `<p class="fin-note">${finEsc(doc.error)}</p>`;
+    const basket = (doc.baskets || {})[meta.basket] || {};
+    const months = (doc.months || []).filter((m) => basket[m] && basket[m][mode]);
+    if (!months.length) return '<p class="fin-note">이 달의 품목 자료가 없습니다.</p>';
+    const month = months.includes(MM_CHART.cpiMonth) ? MM_CHART.cpiMonth : months[months.length - 1];
+    const nodes = doc.nodes || [];
+    const hasKids = new Set(nodes.map((n) => n.parent).filter((v) => v !== null && v !== undefined));
+    const top = (k) => { let x = k; while (nodes[x] && nodes[x].parent !== null && nodes[x].parent !== 0) x = nodes[x].parent; return x; };
+    const rows = basket[month][mode].rows || {};
+    const items = Object.entries(rows).map(([k, r]) => ({ k: Number(k), pct: r[0], pp: r[1], w: r[2] }))
+        .filter((x) => !hasKids.has(x.k) && Number.isFinite(x.pct) && x.w > 0);
+    const rank = MM_CHART.cpiRank === 'pp' ? 'pp' : 'pct';
+    const key = (x) => (rank === 'pp' ? x.pp : x.pct);
+    const sorted = items.slice().sort((a, b) => key(b) - key(a));
+    const N = 5;
+    const up = sorted.slice(0, N).filter((x) => key(x) > 0);
+    const down = sorted.slice(-N).reverse().filter((x) => key(x) < 0);
+    const modeKo = mode === 'mom' ? '전월비' : '전년비';
+    const sg = (v, d) => `${v > 0 ? '+' : ''}${v.toFixed(d)}`;
+    const name = (k) => nodes[k].name_ko || nodes[k].name;
+    const row = (x, dir) => `
+        <div class="mm-mover mm-mover-${dir}" title="${finEsc(nodes[x.k].name || '')}">
+            <span class="mm-mover-name">${finEsc(name(x.k))}<span class="mm-mover-group"> · ${finEsc(name(top(x.k)))}</span></span>
+            <span class="mm-mover-mom">${rank === 'pp' ? `${sg(x.pp, 3)}%p` : `${sg(x.pct, 1)}%`}</span>
+            <span class="mm-mover-yoy">${rank === 'pp' ? `${modeKo} ${sg(x.pct, 1)}%` : `기여 ${sg(x.pp, 3)}%p`} · 가중치 ${x.w.toFixed(2)}%</span>
+        </div>`;
+    return `
+    <div class="pf-mode mm-mover-basis">
+        <button type="button" class="pf-mode-btn ${rank === 'pct' ? 'on' : ''}" data-mm-cpi-rank="pct">${modeKo} 상승률 순</button>
+        <button type="button" class="pf-mode-btn ${rank === 'pp' ? 'on' : ''}" data-mm-cpi-rank="pp">기여도 순</button>
+    </div>
+    <div class="mm-movers">
+        <div class="mm-mover-col"><h4 class="mm-mover-head">가장 오른 품목 TOP${N}</h4>${up.map((x) => row(x, 'up')).join('') || '<p class="fin-note">없음</p>'}</div>
+        <div class="mm-mover-col"><h4 class="mm-mover-head">가장 내린 품목 TOP${N}</h4>${down.map((x) => row(x, 'down')).join('') || '<p class="fin-note">없음</p>'}</div>
+    </div>
+    <p class="fin-note">${finEsc(month)} · ${modeKo} · 세부 품목 ${items.length}개 중 순위${meta.basket === 'core' ? ' (근원 바스켓)' : ''}.
+        상승률 순은 가중치가 아주 작은 품목도 위로 올라올 수 있어, 지수를 실제로 얼마나 움직였는지는 '기여도 순'으로 보세요.
+        위 '${finEsc(modeKo)}' 버튼과 기여도 탭에서 고른 달을 따릅니다.</p>`;
+};
 
 const mmCpiContribView = (ind, mode) => {
     const meta = ind.cpi_contrib || {};
@@ -2246,6 +2306,7 @@ const mmViewsFor = (ind) => {
     // worse version of the same question, so it gives way.
     if (ind.cpi_contrib) {
         views.push({ id: 'cpi_contrib', label: '기여도' });
+        views.push({ id: 'cpi_movers', label: '상승·하락' });
     } else if (has((ind.movers || {}).up) || has((ind.movers || {}).down)) {
         views.push({ id: 'movers', label: '항목별' });
     }
@@ -2480,6 +2541,7 @@ const mmChartDrawer = () => {
     else if (view === 'qeqt') body = mmQeQtBars(ind.qe_qt_history, MM_CHART.window || '5y');
     else if (view === 'movers') body = mmMoversView(ind);
     else if (view === 'cpi_contrib') body = mmCpiContribView(ind, mode || 'yoy');
+    else if (view === 'cpi_movers') body = mmCpiMoversView(ind, mode || 'yoy');
     else if (view === 'auctions') body = mmAuctionsView(ind);
     else if (view === 'buybacks') body = mmBuybacksView(ind);
     else if (view === 'status') body = mmStatusView(ind);
@@ -4214,6 +4276,10 @@ const renderMacroMonitor = async () => {
             if (sr && MM_CHART) { MM_STOCK_RANGE = sr.getAttribute('data-mm-stock-range'); mmPaint(); return; }
             const vw = t.closest('[data-mm-view]');
             if (vw && MM_CHART) { MM_CHART.view = vw.getAttribute('data-mm-view'); mmPaint(); return; }
+            const mb = t.closest('[data-mm-mover-basis]');
+            if (mb && MM_CHART) { MM_CHART.moverBasis = mb.getAttribute('data-mm-mover-basis'); mmPaint(); return; }
+            const cr = t.closest('[data-mm-cpi-rank]');
+            if (cr && MM_CHART) { MM_CHART.cpiRank = cr.getAttribute('data-mm-cpi-rank'); mmPaint(); return; }
             const cm = t.closest('[data-mm-cpi-month]');
             if (cm && MM_CHART) { MM_CHART.cpiMonth = cm.getAttribute('data-mm-cpi-month'); mmPaint(); return; }
             const cn = t.closest('[data-mm-cpi-node]');

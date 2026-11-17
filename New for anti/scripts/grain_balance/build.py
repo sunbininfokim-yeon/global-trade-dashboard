@@ -1,6 +1,7 @@
 """
-World balance for wheat, corn, soybeans, sugar, palm oil and coffee (USDA
-PSD), and the main risks.
+World balance for wheat, corn, soybeans, sugar, palm oil, coffee, rice,
+cotton, rapeseed and oranges (USDA PSD), China's place in each, and the main
+risks.
 
 Usage: python3 scripts/grain_balance/build.py           # fetch PSD, write
        python3 scripts/grain_balance/build.py apply     # rebuild from the slice
@@ -16,10 +17,15 @@ number someone else published or the crop monitor already computed:
   supply    producers with 3%+ of world output that USDA has down 5% or
             more on last season
   stocks    world ending stocks to use below its 5-season average
+  revision  USDA cut its world production outlook 1%+ or its ending stocks
+            outlook 3%+ from last month's release for the same season
 
 Writes
   scripts/grain_balance/psd_world.csv     the PSD slice (committed)
   scripts/grain_balance/prices.csv        IMF monthly prices (committed)
+  scripts/grain_balance/psd_releases.json headline numbers per monthly
+                                          release, for the month-on-month
+                                          revision (PSD keeps only the latest)
   public/data/grain_balance_v1.json
 """
 
@@ -40,26 +46,36 @@ DATA = os.path.normpath(os.path.join(HERE, "..", "..", "public", "data"))
 SLICE = os.path.join(HERE, "psd_world.csv")
 PRICES = os.path.join(HERE, "prices.csv")
 OUT = os.path.join(DATA, "grain_balance_v1.json")
+RELEASES = os.path.join(HERE, "psd_releases.json")
+KEEP_RELEASES = 13
+REV_PROD_PCT = -1.0     # world production outlook cut this much vs last month
+REV_STOCKS_PCT = -3.0   # world ending stocks outlook cut this much vs last month
+# Every PSD commodity in one file (oranges and cotton live outside the
+# grains/oilseeds files).
 ZIPS = [
-    "https://apps.fas.usda.gov/psdonline/downloads/psd_grains_pulses_csv.zip",
-    "https://apps.fas.usda.gov/psdonline/downloads/psd_oilseeds_csv.zip",
-    "https://apps.fas.usda.gov/psdonline/downloads/psd_sugar_csv.zip",
-    "https://apps.fas.usda.gov/psdonline/downloads/psd_coffee_csv.zip",
+    "https://apps.fas.usda.gov/psdonline/downloads/psd_alldata_csv.zip",
 ]
 PSD_URL = "https://apps.fas.usda.gov/psdonline/app/index.html#/app/advQuery"
 IGC_URL = "https://www.igc.int/en/gmr_summary.aspx"
-IGC_WORD = {"wheat": "wheat", "corn": "maize", "soybeans": "soyabean"}
+IGC_WORD = {"wheat": "wheat", "corn": "maize", "soybeans": "soyabean", "rice": "rice"}
 UP = {"rose", "gained", "increased", "climbed", "advanced", "firmed", "rallied", "jumped"}
 DOWN = {"dropped", "slumped", "eased", "fell", "declined", "decreased", "lost", "retreated", "slipped"}
-ATTRS = ["Production", "Exports", "Ending Stocks", "Domestic Consumption"]
+ATTRS = ["Production", "Exports", "Imports", "Ending Stocks", "Domestic Consumption"]
 # PSD names some of these differently per commodity (sugar especially).
 ATTR_ALIASES = {"Total Sugar  Production": "Production", "Total Sugar Production": "Production",
-                "Human Dom. Consumption": "Domestic Consumption"}
+                "Human Dom. Consumption": "Domestic Consumption",
+                "Domestic Use": "Domestic Consumption",
+                "Fresh Dom. Consumption": "Domestic Consumption"}
 
 # IMF monthly world prices (via FRED) and the month each marketing year starts.
 PRICE_IDS = {"wheat": ("PWHEAMTUSDM", 6), "corn": ("PMAIZMTUSDM", 9), "soybeans": ("PSOYBUSDM", 9),
              "sugar": ("PSUGAISAUSDM", 10), "palm_oil": ("PPOILUSDM", 10),
-             "coffee": ("PCOFFOTMUSDM", 10)}
+             "coffee": ("PCOFFOTMUSDM", 10), "rice": ("PRICENPQUSDM", 1),
+             "cotton": ("PCOTTINDUSDM", 8),
+             # No free world rapeseed (seed) price; rapeseed oil tracks it
+             # and the card says so.
+             "canola": ("PROILUSDM", 7)}
+PRICE_PROXY_KO = {"canola": "유채씨 대신 유채유 국제가격"}
 FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
 BAND_PCT = 10.0   # stocks-to-use vs its 5-season average, same fixed band as the palm check
 
@@ -71,12 +87,19 @@ CROPS = {
     "sugar": ("Sugar, Centrifugal", "설탕", {"sugarcane"}),
     "palm_oil": ("Oil, Palm", "팜유", set()),
     "coffee": ("Coffee, Green", "커피", {"coffee"}),
+    "rice": ("Rice, Milled", "쌀", {"rice"}),
+    "cotton": ("Cotton", "면화", {"cotton"}),
+    "canola": ("Oilseed, Rapeseed", "유채", {"canola"}),
+    "orange": ("Oranges, Fresh", "오렌지", {"orange"}),
+    "orange_juice": ("Orange Juice", "오렌지주스", set()),
 }
 # PSD units: 1000 t, except coffee in 1000 60-kg bags.
-UNITS = {"coffee": "kbag60"}
+UNITS = {"coffee": "kbag60", "cotton": "kbale480", "orange_juice": "kt65brix"}
+# PSD reports orange juice in tonnes (65 degrees Brix), not thousands.
+SCALE = {"Orange Juice": 0.001}
 # China's stocks are held back from trade for grains; elsewhere the world
 # figure is the headline.
-EX_CHINA = {"wheat", "corn", "soybeans"}
+EX_CHINA = {"wheat", "corn", "soybeans", "rice", "cotton"}
 SUPPLY_DROP_PCT = -5.0
 SUPPLY_MIN_SHARE = 3.0   # % of world output; smaller producers are noise here
 TOP_PRODUCERS = 8
@@ -126,6 +149,9 @@ def fetch():
 def normalize(df):
     df = df.copy()
     df["Attribute_Description"] = df["Attribute_Description"].replace(ATTR_ALIASES)
+    for commodity, k in SCALE.items():
+        m = df.Commodity_Description == commodity
+        df.loc[m, "Value"] = df.loc[m, "Value"] * k
     return df
 
 
@@ -274,14 +300,47 @@ def igc_summary():
     return out
 
 
+def _num(frame, year, col):
+    if col not in frame or pd.isna(frame.loc[year, col]):
+        return None
+    return round(float(frame.loc[year, col]))
+
+
+def country_block(g, w, cur, prev, country="China"):
+    """One country's share of the world for this crop: what it grows, buys
+    and holds. China for every crop (its grain and cotton stocks are mostly
+    state reserves that do not come to market, which is why the stock checks
+    leave them out), and South Korea, the home market."""
+    c = g[g.Country_Name == country].pivot_table(
+        index="Market_Year", columns="Attribute_Description", values="Value", aggfunc="sum")
+    if c.empty or cur not in c.index:
+        return None
+    out = {}
+    for col, name in (("Production", "production"), ("Imports", "imports"),
+                      ("Ending Stocks", "ending_stocks"), ("Domestic Consumption", "consumption")):
+        if col not in c or pd.isna(c.loc[cur, col]):
+            continue
+        v = float(c.loc[cur, col])
+        world_v = float(w.loc[cur, col]) if col in w and not pd.isna(w.loc[cur, col]) else None
+        prev_v = float(c.loc[prev, col]) if prev in c.index and not pd.isna(c.loc[prev, col]) else None
+        out[name] = {"kt": round(v),
+                     "share_pct": round(v / world_v * 100, 1) if world_v else None,
+                     "change_pct": round((v / prev_v - 1) * 100, 1) if prev_v else None}
+    # Imports' share is of world imports, the market China buys from.
+    return out or None
+
+
 def crop_block(key, g, release):
     commodity, label, stage_crops = CROPS[key]
     w = world(g)
     w = w[w["Production"].notna()]
     cur = int(w.index.max())
     prev = cur - 1
-    stu = (w["Ending Stocks"] / w["Domestic Consumption"] * 100).round(1)
-    stu_avg = float(stu.loc[cur - 5:cur - 1].mean())
+    has_stocks = "Ending Stocks" in w and w["Ending Stocks"].loc[cur - 5:cur].notna().all() \
+        and w["Ending Stocks"].loc[cur] > 0
+    if has_stocks:
+        stu = (w["Ending Stocks"] / w["Domestic Consumption"] * 100).round(1)
+        stu_avg = float(stu.loc[cur - 5:cur - 1].mean())
     p_cur, p_prev = float(w.loc[cur, "Production"]), float(w.loc[prev, "Production"])
 
     by = g[(g.Country_Name != "World") & (g.Attribute_Description == "Production")
@@ -304,10 +363,19 @@ def crop_block(key, g, release):
             risks.append({"kind": "supply", "country_ko": p["country_ko"],
                           "text_ko": f"{p['country_ko']} 생산 {p['change_pct']:+.0f}% "
                                      f"(세계의 {p['share_pct']:.0f}%)"})
-    if stu.loc[cur] < stu_avg * 0.95:
+    if has_stocks and stu.loc[cur] < stu_avg * 0.95:
         risks.append({"kind": "stocks",
                       "text_ko": f"세계 기말재고율 {stu.loc[cur]:.1f}% · 5년 평균 {stu_avg:.1f}%보다 낮음"})
     wx, tally = palm_risks() if key == "palm_oil" else weather_risks(stage_crops)
+    china = country_block(g, w, cur, prev, "China")
+    korea = country_block(g, w, cur, prev, "Korea, South")
+    imp = (china or {}).get("imports")
+    if imp and imp["change_pct"] is not None and imp["share_pct"] and imp["share_pct"] >= 5 \
+            and abs(imp["change_pct"]) >= 15:
+        word = "급감" if imp["change_pct"] < 0 else "급증"
+        risks.append({"kind": "china",
+                      "text_ko": f"중국 수입 {word} {imp['change_pct']:+.0f}% "
+                                 f"(세계 수입의 {imp['share_pct']:.0f}%)"})
 
     return {
         "label_ko": label,
@@ -315,14 +383,16 @@ def crop_block(key, g, release):
         "release": release,
         "url": PSD_URL,
         "prev": {"season": season_label(prev), "production_kt": round(p_prev),
-                 "ending_stocks_kt": round(float(w.loc[prev, "Ending Stocks"])),
-                 "stocks_to_use_pct": float(stu.loc[prev])},
+                 "ending_stocks_kt": round(float(w.loc[prev, "Ending Stocks"])) if has_stocks else None,
+                 "stocks_to_use_pct": float(stu.loc[prev]) if has_stocks else None},
         "current": {"season": season_label(cur), "production_kt": round(p_cur),
                     "change_pct": round((p_cur / p_prev - 1) * 100, 1),
-                    "exports_kt": round(float(w.loc[cur, "Exports"])),
-                    "ending_stocks_kt": round(float(w.loc[cur, "Ending Stocks"])),
-                    "stocks_to_use_pct": float(stu.loc[cur]),
-                    "stocks_to_use_5y_avg_pct": round(stu_avg, 1)},
+                    "exports_kt": _num(w, cur, "Exports"),
+                    "ending_stocks_kt": round(float(w.loc[cur, "Ending Stocks"])) if has_stocks else None,
+                    "stocks_to_use_pct": float(stu.loc[cur]) if has_stocks else None,
+                    "stocks_to_use_5y_avg_pct": round(stu_avg, 1) if has_stocks else None},
+        "china": china,
+        "korea": korea,
         "producers": producers,
         "risks": risks + wx,
         "weather_tally": tally,
@@ -457,12 +527,84 @@ def price_check(key, g, prices):
     if not out:
         return None
     return {"price": f"IMF {sid} (FRED), marketing-year average from month {start}",
+            "proxy_ko": PRICE_PROXY_KO.get(key),
             "band_pct": BAND_PCT, "headline": "ex_china" if "ex_china" in out else "world", **out}
 
 
 def release_of(df):
     last = df.sort_values(["Calendar_Year", "Month"]).iloc[-1]
     return f"{int(last.Calendar_Year)}년 {int(last.Month)}월 USDA WASDE"
+
+
+def release_key(release):
+    m = re.match(r"(\d{4})년 (\d{1,2})월", release)
+    return f"{int(m.group(1))}-{int(m.group(2)):02d}"
+
+
+def _snapshot(c):
+    cur = c["current"]
+    return {"season": cur["season"], "production_kt": cur["production_kt"],
+            "ending_stocks_kt": cur["ending_stocks_kt"], "exports_kt": cur["exports_kt"],
+            "producers": {p["country"]: p["production_kt"] for p in c["producers"]}}
+
+
+def add_revisions(crops, release):
+    """Month-on-month change in USDA's outlook for the current season.
+
+    PSD's download holds only the latest release, so each build stores its
+    headline numbers in psd_releases.json and compares with the newest
+    earlier release stored there. Weekly runs inside one month overwrite
+    that month's entry and compare with the same earlier one.
+    """
+    try:
+        with open(RELEASES, encoding="utf-8") as f:
+            hist = json.load(f)
+    except (OSError, ValueError):
+        hist = {"releases": []}
+    key = release_key(release)
+    rel = [r for r in hist.get("releases", []) if r["key"] != key]
+    rel.append({"key": key, "release": release,
+                "crops": {k: _snapshot(c) for k, c in crops.items()}})
+    rel = sorted(rel, key=lambda r: r["key"])[-KEEP_RELEASES:]
+    with open(RELEASES, "w", encoding="utf-8") as f:
+        json.dump({"releases": rel}, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    older = [r for r in rel if r["key"] < key]
+    if not older:
+        log("revision: no earlier release stored")
+        return
+    base = older[-1]
+    for k, c in crops.items():
+        old = base["crops"].get(k)
+        if not old or old["season"] != c["current"]["season"]:
+            continue
+        rev = {"vs_release": base["release"]}
+        for field in ("production_kt", "ending_stocks_kt", "exports_kt"):
+            new_v, old_v = c["current"].get(field), old.get(field)
+            if new_v is None or old_v is None:
+                continue
+            rev[field[:-3]] = {"change_kt": new_v - old_v,
+                               "change_pct": round((new_v / old_v - 1) * 100, 1) if old_v else None}
+        movers = []
+        for p in c["producers"]:
+            o = old["producers"].get(p["country"])
+            if o is None or o == p["production_kt"]:
+                continue
+            movers.append({"country_ko": p["country_ko"], "change_kt": p["production_kt"] - o,
+                           "change_pct": round((p["production_kt"] / o - 1) * 100, 1) if o else None})
+        rev["producers"] = sorted(movers, key=lambda m: -abs(m["change_kt"]))[:4]
+        c["revision"] = rev
+        month = re.search(r"(\d{1,2})월", base["release"]).group(1)
+        flags = []
+        prod = rev.get("production", {}).get("change_pct")
+        if prod is not None and prod <= REV_PROD_PCT:
+            flags.append(f"USDA 세계 생산 전망 {month}월보다 {prod:+.1f}% 하향")
+        stocks = rev.get("ending_stocks", {}).get("change_pct")
+        if stocks is not None and stocks <= REV_STOCKS_PCT:
+            flags.append(f"USDA 세계 기말재고 전망 {month}월보다 {stocks:+.1f}% 하향")
+        c["risks"] = [{"kind": "revision", "text_ko": t} for t in flags] + c["risks"]
+        log(f"{k} revision vs {base['key']}: production {prod}%, stocks {stocks}%, "
+            + ", ".join(f"{m['country_ko']} {m['change_kt']:+,}" for m in rev["producers"]))
 
 
 def main(argv):
@@ -496,7 +638,7 @@ def main(argv):
             log(f"{key}: skipped ({exc!r}); attributes {sorted(g.Attribute_Description.unique())}")
             continue
         c = crops[key]
-        if prices is not None and (prices.crop == key).any():
+        if prices is not None and (prices.crop == key).any() and c["current"]["stocks_to_use_pct"] is not None:
             pc = price_check(key, g, prices)
             if pc:
                 c["price_check"] = pc
@@ -505,9 +647,13 @@ def main(argv):
                         log(f"{key} price check {b}: " + ", ".join(
                             f"{v} n={x['n']} {x['mean_change_pct']:+.1f}%" for v, x in pc[b]["classes"].items())
                             + f", corr {pc[b]['corr_gap_vs_change']}, {pc[b]['verdict']}")
+        if c.get("china"):
+            log(f"{key} China: " + ", ".join(f"{k} {v['kt']:,} ({v['share_pct']}%, {v['change_pct']}%)"
+                                             for k, v in c["china"].items()))
         log(f"{key}: {c['prev']['season']} {c['prev']['production_kt']:,} -> "
             f"{c['current']['season']} {c['current']['production_kt']:,} kt, "
             f"{len(c['risks'])} risks")
+    add_revisions(crops, release)
     igc = igc_summary()
     if igc:
         for key, c in crops.items():
