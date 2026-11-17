@@ -11,12 +11,21 @@ Fixed 2026-11-17, before any season was computed:
            percentile of every daily value on record), so 1 = ice-covered and
            0 = ice-free. Before 1988 the record is every other day; the gaps
            are filled linearly. A 5-day centred mean smooths single-day noise.
-  Open     a sea is open on a day when its fraction is at or below 15%. The
+  Open     a sea is open on a day when its fraction is at or below 50%. The
            route is open when all four seas are open the same day (the most
            closed sea decides). The season is the longest run of open days
            between 1 June and 31 December, joining runs separated by 5 days
            or less. Opening = its first day, closing = the day after its last.
            A year with no open day has a season of 0 days.
+           Revised 2026-11-17 after the first run: the threshold was 15%
+           (the ice-edge convention) applied to the whole sea. That opened the
+           route in only 2012, 2019 and 2020, while ships sail the route in
+           open water nearly every September since 2005 -- the route follows
+           the coastal shelf, which clears first, and never crosses the
+           northern parts of these seas that hold ice into September. Half
+           the sea ice-free is the line used now; the 15% and 30% seasons are
+           still computed and published as "sensitivity_days" so the choice
+           stays visible.
   Outlook  for the next season not yet finished: open days, opening date and
            closing date.
              baseline   linear trend over all earlier seasons (from 1979)
@@ -33,9 +42,9 @@ Fixed 2026-11-17, before any season was computed:
 
 What this is not: a navigation permit. Real transits also depend on ice
 class, Russian NSR administration permits, icebreaker escort, insurance and
-sanctions. The 15% line is the conventional ice-edge threshold, so "open"
-here means ice-free water along all four seas -- ships with ice class can go
-earlier and later.
+sanctions. The 50% line is not a route-path measure, so "open"
+here means at least half of each of the four seas is ice-free -- ships with
+ice class can go earlier and later.
 """
 from __future__ import annotations
 
@@ -60,7 +69,7 @@ SEAS = [("kara", "카라해", ("kara",)),
         ("laptev", "랍테프해", ("laptev",)),
         ("east_siberian", "동시베리아해", ("east-siberian", "east siberian", "e-siberian", "esiberian", "east_siberian")),
         ("chukchi", "추코트해", ("chukchi",))]
-OPEN = 0.15
+OPEN = 0.50
 SMOOTH = 5
 GAP = 5
 WINDOW = 30
@@ -382,8 +391,8 @@ def build(seas, today=None):
         "latest_date": last.isoformat(),
         "seas": [{"id": k, "name_ko": n, "full_extent_km2": round(full[k])} for k, n, _ in SEAS if k in fr],
         "rule": {"open_fraction": OPEN, "smooth_days": SMOOTH, "join_gap_days": GAP,
-                 "note_ko": ("네 바다(카라·랍테프·동시베리아·추코트) 각각의 해빙 면적이 그 바다가 꽉 얼었을 때의 15% "
-                             "이하로 떨어진 날을 '열림'으로 보고, 네 바다가 동시에 열린 가장 긴 기간을 항로 시즌으로 잡았습니다 "
+                 "note_ko": ("네 바다(카라·랍테프·동시베리아·추코트) 각각의 해빙 면적이 그 바다가 꽉 얼었을 때의 절반 "
+                             "이하로 떨어진 날을 '열림'으로 보고 (항로는 먼저 녹는 연안 대륙붕을 따라가므로 바다 전체가 녹을 필요는 없음), 네 바다가 동시에 열린 가장 긴 기간을 항로 시즌으로 잡았습니다 "
                              "(5일 평균, 5일 이하 틈은 이어 붙임). 빙급 선박·쇄빙선 호위·러시아 허가·제재는 반영하지 않았습니다.")},
         "latest_fraction": {k: round(fr[k][max(fr[k])], 3) for k in fr},
         "latest_route_fraction": round(route[last], 3),

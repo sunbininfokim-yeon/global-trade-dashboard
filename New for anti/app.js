@@ -2012,6 +2012,7 @@ const renderSeaRouteCard = () => {
             <span style="flex:1;">${label}</span><span style="text-align:right;"><b>${x.date_ko}</b> <span class="climate-sub">${rng(x)}</span>${thin(x)}</span></div>` : '');
     const d = o.days;
     const t = doc.trend || {};
+    const strict = Object.entries(doc.sensitivity_days?.['0.15'] || {}).filter(([, n]) => n > 0).map(([y]) => y);
     return `<div class="climate-card">
         <h3>북극항로(북동항로) 열리는 기간 <span class="src-tag">매일 자동 계산</span></h3>
         <div class="climate-sub">지금 항로: ${statusKo} · ${doc.latest_date} 기준</div>
@@ -2025,6 +2026,7 @@ const renderSeaRouteCard = () => {
         ${seaRouteSeasonBars(doc)}
         <div class="climate-sub" style="margin-top:4px;">막대 = 해마다 네 바다가 동시에 열린 기간 (회색 줄 = 안 열린 해).
             ${t.days_per_decade != null ? `열린 기간 추세 ${t.days_per_decade > 0 ? '+' : ''}${t.days_per_decade}일 / 10년 · ${t.first10} 평균 ${t.first10_mean_days}일 → ${t.last10} 평균 ${t.last10_mean_days}일.` : ''}</div>
+        ${strict.length ? `<div class="climate-sub" style="margin-top:4px;">더 엄격하게 바다 전체가 85% 이상 녹아야 열림으로 보면: ${strict.join('·')}년만 열렸습니다.</div>` : ''}
         <div class="climate-sub" style="margin-top:6px;">${doc.rule?.note_ko || ''}</div>
     </div>`;
 };
