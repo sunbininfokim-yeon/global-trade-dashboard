@@ -66,7 +66,14 @@ DEFAULT_TARGETS = [
     ('00159616', '034020', '두산에너빌리티'),  # 기계
     ('00819268', None, '연합자산관리'),        # 금융: NPL
     ('00416593', None, '대신에프앤아이'),      # 금융: NPL
-    ('00688996', '105560', 'KB금융'),          # 금융: 은행지주
+    ('00688996', '105560', 'KB금융'),          # 금융: 은행지주 (Basel)
+    ('00382199', '055550', '신한지주'),        # 금융: 은행지주 (Basel)
+    ('00168933', None, 'DB생명보험'),          # 보험 (K-ICS), 비상장
+    ('00126256', '032830', '삼성생명'),        # 보험 (K-ICS)
+    ('00159102', '005830', 'DB손해보험'),      # 보험 (K-ICS)
+    ('00296290', '039490', '키움증권'),        # 증권 (NCR)
+    ('00222374', None, '현대카드'),            # 카드 (조정자기자본비율), 비상장
+    ('00208514', None, '현대캐피탈'),          # 캐피탈 (조정자기자본비율), 비상장
 ]
 
 FUNDING_ENDPOINTS = {
@@ -82,6 +89,29 @@ class Dart:
     def __init__(self, key: str, cache: Path):
         self.key, self.cache = key, cache
         cache.mkdir(parents=True, exist_ok=True)
+
+    def get_bytes(self, path: str, **params) -> bytes | None:
+        """Binary endpoint (fnlttXbrl.xml zip), cached; None on an API error body."""
+        name = path.replace('.xml', '') + '_' + '_'.join(f'{k}={v}' for k, v in sorted(params.items())) + '.bin'
+        hit = self.cache / name
+        if hit.exists():
+            data = hit.read_bytes()
+            return data or None
+        q = urllib.parse.urlencode({'crtfc_key': self.key, **params})
+        for attempt in range(3):
+            try:
+                req = urllib.request.Request(f'{API}/{path}?{q}', headers={'User-Agent': 'global-trade-dashboard/1.0'})
+                with urllib.request.urlopen(req, timeout=90) as res:
+                    data = res.read()
+            except Exception as exc:
+                print(f'  retry {path}: {str(exc).replace(self.key, "<key>")}', file=sys.stderr)
+                time.sleep(3 * (attempt + 1))
+                continue
+            time.sleep(PAUSE)
+            ok = data[:2] == b'PK'           # a zip; errors come back as a small XML/JSON body
+            hit.write_bytes(data if ok else b'')
+            return data if ok else None
+        return None
 
     def get(self, path: str, **params) -> dict:
         name = path.replace('.json', '') + '_' + '_'.join(f'{k}={v}' for k, v in sorted(params.items())) + '.json'
@@ -229,6 +259,244 @@ def funding_packet(dart: Dart, corp: str, year: int, fy_rows: list, fs: str) -> 
             f'scale={scale}')
 
 
+def yahoo_close(code: str, day: str, cache: Path) -> float | None:
+    """Close on exactly `day` (KST trading date) for code.KS / code.KQ."""
+    hit = cache / f'yahoo_{code}_{day}.json'
+    if hit.exists():
+        return json.loads(hit.read_text()).get('close')
+    d = dt.date.fromisoformat(day)
+    p1 = int(dt.datetime(d.year, d.month, d.day, tzinfo=dt.timezone.utc).timestamp()) - 86400
+    close = None
+    for suffix in ('.KS', '.KQ'):
+        url = (f'https://query1.finance.yahoo.com/v8/finance/chart/{code}{suffix}'
+               f'?period1={p1}&period2={p1 + 3 * 86400}&interval=1d')
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=30) as res:
+                result = (json.loads(res.read()).get('chart') or {}).get('result') or []
+        except Exception:
+            continue
+        if not result:
+            continue
+        stamps = result[0].get('timestamp') or []
+        closes = ((result[0].get('indicators') or {}).get('quote') or [{}])[0].get('close') or []
+        kst = dt.timezone(dt.timedelta(hours=9))
+        for t, c in zip(stamps, closes):
+            if c and dt.datetime.fromtimestamp(t, kst).date().isoformat() == day:
+                close = float(c)
+        if close:
+            break
+        time.sleep(0.3)
+    hit.write_text(json.dumps({'close': close}))
+    return close
+
+
+COMMON_LABELS = {'보통주', '보통주식'}
+NON_CLASS_LABELS = {'합계', '총계', '계', '비고'}
+
+
+def _se(r) -> str:
+    return (r.get('se') or '').replace(' ', '')
+
+
+def share_rows(dart: Dart, corp: str, today: dt.date) -> tuple[list, str | None]:
+    """Newest stockTotqySttus that actually carries a common-share row.
+
+    Some Q3 filings come back with only 합계 "-" / 비고 (한화오션, 팬오션
+    FY2026 Q3), so walk back until one has the table."""
+    for year, code in ((today.year, '11014'), (today.year, '11012'), (today.year, '11013'), (today.year - 1, '11011')):
+        r = dart.get('stockTotqySttus.json', corp_code=corp, bsns_year=str(year), reprt_code=code)
+        rows = r.get('list') or []
+        if r.get('status') == '000' and any(_se(x) in COMMON_LABELS and num(x.get('distb_stock_co')) for x in rows):
+            return rows, rows[0].get('rcept_no')
+    return [], None
+
+
+def market_packet(dart: Dart, corp: str, stock: str, fy_receipt: str, today: dt.date) -> tuple[dict | None, str]:
+    """Point-in-time market input in the engine's `market` contract.
+
+    The share count and the price are taken on the *same* day -- the latest
+    periodic report's settlement date -- so the engine's 120-day /
+    corporate-action rule is met by construction rather than by asserting a
+    check nobody ran. The quote is therefore up to one quarter old; its date
+    travels with the card (market_date).
+    """
+    rows, receipt = share_rows(dart, corp, today)
+    if not rows:
+        return None, 'no_share_count_report'
+    commons = [r for r in rows if _se(r) in COMMON_LABELS]
+    if len(commons) != 1:
+        return None, 'no_single_common_share_row'
+    common = commons[0]
+    # Every other share class (우선주, 종류주식 ...) with outstanding shares.
+    others = [r for r in rows if _se(r) not in COMMON_LABELS | NON_CLASS_LABELS and num(r.get('distb_stock_co'))]
+    as_of = common.get('stlm_dt')
+    shares = num(common.get('distb_stock_co'))
+    if not as_of or not shares:
+        return None, 'common_share_count_missing'
+    price = yahoo_close(stock, as_of, dart.cache)
+    if not price:
+        return None, f'no_close_on_{as_of}'
+    src = f'https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt}'
+    cls = {'id': f'{stock}:common', 'price': price, 'price_date': as_of, 'price_source': 'Yahoo Finance chart API daily close',
+           'shares_out': int(shares), 'shares_date': as_of, 'shares_source': src, 'currency': 'KRW',
+           'share_basis': 'outstanding_excluding_treasury'}
+    market = {'is_listed': True, 'entity_id': corp, 'currency': 'KRW', 'as_of': as_of,
+              'fundamentals_available_date': f'{fy_receipt[:4]}-{fy_receipt[4:6]}-{fy_receipt[6:8]}',
+              'coverage': 'all_ordinary_share_classes', 'classes': [cls]}
+    note = f'as_of={as_of} common={int(shares)}@{price:,.0f}'
+    if not others:
+        # 주식의 총수 현황 shows no other class outstanding (absent, "-" or 0).
+        market['preferred_equity'] = {'value': 0, 'as_of': as_of, 'currency': 'KRW', 'source': src,
+                                      'basis': 'verified_no_preferred_outstanding'}
+    elif len(others) > 1 or _se(others[0]) != '우선주':
+        note += ' other_share_classes_unpriced'   # 종류주식 etc.: leave EV unavailable
+    else:
+        pref_shares = num(others[0].get('distb_stock_co'))
+        pcode = stock[:-1] + '5'   # KRX convention for the first preferred line (005930 -> 005935)
+        pprice = yahoo_close(pcode, as_of, dart.cache)
+        if pprice:
+            market['preferred_coverage'] = 'all_preferred_share_classes'
+            market['preferred_classes'] = [{**cls, 'id': f'{pcode}:preferred', 'price': pprice, 'shares_out': int(pref_shares)}]
+            note += f' preferred={int(pref_shares)}@{pprice:,.0f}'
+        else:
+            note += ' preferred_unpriced'
+    return market, note
+
+
+# --- Valuation denominators ----------------------------------------------------
+# The market multiples are 시가총액 ÷ 분모. The engine snapshot keeps the
+# denominators; tools/ops/fetch_kfa_market.py keeps the daily 시가총액; the
+# calculator divides. Flows come as FY and as LTM (trailing four quarters from
+# the newest later report: FY + 당기 누적 − 전기 동기 누적, all three from
+# filings of the same basis); balances as of the newest report.
+VB_FLOWS = {
+    'net_income_parent': ['ifrs-full_ProfitLossAttributableToOwnersOfParent'],
+    'net_income': ['ifrs-full_ProfitLoss'],
+    'revenue': ['ifrs-full_Revenue'],
+    'operating_income': ['dart_OperatingIncomeLoss'],
+}
+VB_BALANCES = {
+    'parent_equity': ['ifrs-full_EquityAttributableToOwnersOfParent'],
+    'equity': ['ifrs-full_Equity'],
+}
+
+
+def _vb_row(rows: list, ids: list, sjs: tuple) -> dict | None:
+    for sj in sjs:
+        for r in rows:
+            if r.get('sj_div') == sj and r.get('account_id') in ids:
+                return r
+    return None
+
+
+def valuation_bases(dart: Dart, corp: str, year: int, fs: str, fy_rows: list, cards: dict) -> dict:
+    out = {'fy': {'period_end': f'{year}-12-31', 'receipt': fy_rows[0].get('rcept_no') if fy_rows else None}}
+    for key, ids in VB_FLOWS.items():
+        r = _vb_row(fy_rows, ids, ('IS', 'CIS'))
+        out['fy'][key] = num(r.get('thstrm_amount')) if r else None
+    for key, ids in VB_BALANCES.items():
+        r = _vb_row(fy_rows, ids, ('BS',))
+        out['fy'][key] = num(r.get('thstrm_amount')) if r else None
+    # Engine cards that already are FY denominators (strict first, else reported basis).
+    def card(*keys):
+        for k in keys:
+            v = (cards.get(k) or {}).get('value')
+            if v is not None:
+                return v, k
+        return None, None
+    for name, keys in {'ebitda': ('ebitda', 'ebitda_cf'), 'net_debt': ('net_debt', 'net_debt_reported'),
+                       'fcf': ('fcf',), 'cfo': ('cfo',)}.items():
+        v, k = card(*keys)
+        out['fy'][name] = v
+        out['fy'][name + '_card'] = k
+    # LTM from the newest later report.
+    for bucket, label in (('Q3', '09-30'), ('H1', '06-30'), ('Q1', '03-31')):
+        r = report(dart, corp, year + 1, bucket, fs)
+        rows = r['response']['list'] if r['response']['status'] == '000' else []
+        if not rows:
+            continue
+        ltm = {'period_end': f'{year + 1}-{label}', 'report': bucket, 'receipt': rows[0].get('rcept_no')}
+        for key, ids in VB_FLOWS.items():
+            row = _vb_row(rows, ids, ('IS', 'CIS'))
+            fy = out['fy'].get(key)
+            cur = num(row.get('thstrm_add_amount') or row.get('thstrm_amount')) if row else None
+            prior = num(row.get('frmtrm_add_amount') or row.get('frmtrm_q_amount')) if row else None
+            ltm[key] = fy + cur - prior if None not in (fy, cur, prior) else None
+        for key, ids in VB_BALANCES.items():
+            row = _vb_row(rows, ids, ('BS',))
+            ltm[key] = num(row.get('thstrm_amount')) if row else None
+        if any(ltm.get(k) is not None for k in VB_FLOWS):
+            out['ltm'] = ltm
+            break
+    return out
+
+
+REPORT_NAME = re.compile(r'(사업보고서|반기보고서|분기보고서)\s*\((\d{4})\.(\d{2})\)')
+REPORT_KIND = {('사업보고서', '12'): 'FY', ('반기보고서', '06'): 'H1', ('분기보고서', '03'): 'Q1', ('분기보고서', '09'): 'Q3'}
+MONTH_END = {'03': '03-31', '06': '06-30', '09': '09-30', '12': '12-31'}
+
+
+def periodic_reports(dart: Dart, corp: str, year: int) -> list[dict]:
+    """The FY `year` 사업보고서 and every later 분기/반기보고서, newest first.
+    `receipts` lists every filing of that report, newest first: a [기재정정]
+    filing may carry only the corrected sections (KB금융 FY2025's 2026-06
+    correction has no BIS table), so callers fall back to older receipts."""
+    lst = dart.get('list.json', corp_code=corp, bgn_de=f'{year + 1}0101', pblntf_ty='A', page_count=100)
+    best = {}
+    for row in lst.get('list') or []:
+        m = REPORT_NAME.search(row.get('report_nm') or '')
+        if not m:
+            continue
+        kind = REPORT_KIND.get((m.group(1), m.group(3)))
+        period_end = f'{m.group(2)}-{MONTH_END[m.group(3)]}'
+        if not kind or (kind == 'FY' and int(m.group(2)) != year) or period_end < f'{year}-12-31':
+            continue
+        key = (kind, period_end)
+        best.setdefault(key, {'kind': kind, 'period_end': period_end, 'receipts': []})['receipts'].append(row['rcept_no'])
+    for r in best.values():
+        r['receipts'].sort(reverse=True)
+    return sorted(best.values(), key=lambda r: r['period_end'], reverse=True)
+
+
+def report_body(dart: Dart, receipt: str) -> str | None:
+    blob = dart.get_bytes('document.xml', rcept_no=receipt)
+    if not blob:
+        return None
+    import io
+    import zipfile
+    with zipfile.ZipFile(io.BytesIO(blob)) as z:
+        name = f'{receipt}.xml'
+        if name not in z.namelist():
+            return None
+        return z.read(name).decode('utf-8', errors='ignore')
+
+
+def regulatory_series(dart: Dart, corp: str, year: int, company: dict, fs: str):
+    """K-ICS / Basel / NCR / 조정자기자본비율 from the report bodies."""
+    from dart_kfa.entity_policy import classify_entity  # noqa: E402
+    from dart_kfa.regulatory_capital import regulatory_from_reports, regulatory_kind  # noqa: E402
+    name = company.get('corp_name') or ''
+    policy = classify_entity({'corp_code': corp, 'induty_code': company.get('induty_code'), 'corp_name': name})
+    kind, subtype = regulatory_kind(policy.get('entity_class'), name)
+    if not kind:
+        return None, 'not_regulated_capital_filer'
+    from dart_kfa.regulatory_capital import extract  # noqa: E402
+    reports = []
+    for r in periodic_reports(dart, corp, year):
+        for receipt in r['receipts']:
+            doc = report_body(dart, receipt)
+            if doc and extract(doc, kind, period_end=r['period_end'], receipt=receipt, subtype=subtype):
+                reports.append({'kind': r['kind'], 'period_end': r['period_end'], 'receipt': receipt, 'doc': doc})
+                break
+    if not reports:
+        return None, f'{kind}:no_report_body'
+    res = regulatory_from_reports(reports, kind=kind, subtype=subtype)
+    if not res:
+        return None, f'{kind}:table_not_found'
+    return res, f'{kind}:{len(res["series"])}_periods'
+
+
 def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     company = dart.get('company.json', corp_code=corp)
     if company.get('status') != '000':
@@ -249,6 +517,15 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     }
     if fund:
         payload['funding'] = fund
+    fy_rows = filings['FY']['response']['list']
+    if any(str(r.get('account_id', '')).startswith('ifrs-full_') for r in fy_rows):
+        payload['corp']['accounting_basis'] = 'K-IFRS'   # statements tagged in the IFRS taxonomy
+    stock = stock or payload['corp']['stock_code']
+    market_note = 'unlisted'
+    if stock:
+        market, market_note = market_packet(dart, corp, stock, fy_rows[0].get('rcept_no') or '', today)
+        if market:
+            payload['market'] = market
     # Reviewed note bundles (D&A, P&L interest, ...) are the engine's only
     # source for strict EBITDA -- it deliberately does not lift D&A from the
     # cash-flow add-backs on its own. Pass every bundle that matches this
@@ -256,11 +533,42 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     reviewed = [b for b in (json.loads(f.read_text()) for f in sorted((ENGINE / 'config' / 'pe_cr_reviewed').glob('*.json')))
                 if b.get('source') == 'DART' and b.get('entity_id') == corp and b.get('fs_div') == fs
                 and b.get('fiscal_year_end') == f'{year}-12-31']
-    if reviewed:
-        payload['reviewed_disclosures'] = reviewed[0] if len(reviewed) == 1 else reviewed
     sys.path.insert(0, str(ENGINE))
     from build_pe_cr import build  # noqa: E402  (engine lives outside this package)
+    from dart_kfa.xbrl_notes import instance_from_zip, merge_packs, note_bundle  # noqa: E402
+
+    # Note facts (D&A, P&L interest, interest income) from each FY's original
+    # XBRL. The current year's pack feeds strict EBITDA / ICR / EBIT; prior
+    # years' packs feed the 3-year 이자보상배율 test in the CR screen.
+    def xbrl_pack(fy: int, rows: list) -> dict | None:
+        receipt = rows[0].get('rcept_no') if rows else None
+        if not receipt:
+            return None
+        blob = dart.get_bytes('fnlttXbrl.xml', rcept_no=receipt, reprt_code=REPRT['FY'])
+        if not blob:
+            return None
+        try:
+            return note_bundle(instance_from_zip(blob), entity_id=corp, fs_div=fs,
+                               fiscal_year_end=f'{fy}-12-31', receipt=receipt)
+        except Exception as exc:
+            print(f'  xbrl {corp} FY{fy}: {type(exc).__name__}: {exc}', file=sys.stderr)
+            return None
+
+    current_xbrl = xbrl_pack(year, filings['FY']['response']['list'])
+    pack = merge_packs(reviewed[0] if reviewed else None, current_xbrl)
+    if pack:
+        payload['reviewed_disclosures'] = pack
+    prior_packs = {}
+    for p in prior:
+        fy = int(p['fiscal_year_end'][:4])
+        pp = xbrl_pack(fy, p['filings']['FY']['response']['list'])
+        if pp:
+            prior_packs[p['fiscal_year_end']] = pp
+    if prior_packs:
+        payload['screen_inputs'] = {'annual_reviewed_disclosures': prior_packs}
     result = build(payload, 'annual')
+    regulatory, regulatory_note = regulatory_series(dart, corp, year, company, fs)
+    bases = valuation_bases(dart, corp, year, fs, fy_rows, result.get('cards') or {})
     receipts = {b: (r['response']['list'][0].get('rcept_no') if r['response']['list'] else None) for b, r in filings.items()}
     return {
         'schema': 'kfa_pecr_snapshot/1',
@@ -272,8 +580,14 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
         'induty_code': company.get('induty_code'), 'fiscal_year': year, 'fs_div': fs,
         'receipts': receipts, 'prior_years': [p['fiscal_year_end'][:4] for p in prior],
         'funding_input': fund_note,
-        'reviewed_disclosures': len(reviewed),
+        'market_input': market_note,
+        'reviewed_disclosures': {'hand_reviewed': len(reviewed),
+                                 'xbrl_note_keys': sorted(r['key'] for r in (current_xbrl or {}).get('rows', [])),
+                                 'prior_years_with_xbrl_notes': sorted(prior_packs)},
         'pe_cr': result,
+        'regulatory': regulatory,
+        'valuation_bases': bases,
+        'regulatory_input': regulatory_note,
     }
 
 
@@ -298,8 +612,11 @@ def main() -> int:
             print(f'FAIL {label} {corp}: {failed[corp]}', file=sys.stderr)
             continue
         (OUT_DIR / f'{corp}_v1.json').write_text(json.dumps(snap, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n')
-        index[corp] = {'entity': snap['entity'], 'stock_code': stock, 'fiscal_year': snap['fiscal_year'], 'fs_div': snap['fs_div']}
-        print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]}', file=sys.stderr)
+        index[corp] = {'entity': snap['entity'], 'stock_code': stock or (snap.get('stock_code')), 'fiscal_year': snap['fiscal_year'],
+                       'fs_div': snap['fs_div'], 'industry': snap['pe_cr'].get('industry'),
+                       'financial': snap['pe_cr'].get('industry') == 'financial'}
+        print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]} '
+              f'market={snap["market_input"]} regulatory={snap["regulatory_input"]}', file=sys.stderr)
     idx_path = OUT_DIR / 'index_v1.json'
     prev = json.loads(idx_path.read_text())['index'] if idx_path.exists() else {}
     prev.update(index)

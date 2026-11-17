@@ -59,5 +59,29 @@ class ElectionRecordsTest(unittest.TestCase):
         self.assertTrue(any("date" in e for e in errors) and any("sources" in e for e in errors) and any("turnout" in e for e in errors))
 
 
+    def test_past_next_election_becomes_held(self):
+        office = {"term_years": 2, "records": [{"date": "2024-11-05"}],
+                  "next": {"election_id": "x", "date": "2026-11-03", "label_ko": "중간선거"}}
+        ber.settle_next(office, "2026-11-10")
+        self.assertIsNone(office["next"])
+        self.assertEqual(office["next_held"]["date"], "2026-11-03")
+        self.assertEqual(office["next_due"]["year"], 2028)
+        recorded = {"term_years": 4, "records": [{"date": "2026-11-03"}], "next": {"date": "2026-11-03"}}
+        ber.settle_next(recorded, "2026-11-01")
+        self.assertIsNone(recorded["next"])
+        self.assertNotIn("next_held", recorded)
+        future = {"term_years": 4, "records": [], "next": {"date": "2027-01-01"}}
+        ber.settle_next(future, "2026-11-10")
+        self.assertEqual(future["next"]["date"], "2027-01-01")
+
+    def test_sum_warnings(self):
+        doc = {"offices": [{"records": [
+            {"election_id": "a", "seats_total": 10, "seats": [{"seats": 4}, {"seats": 3}]},
+            {"election_id": "b", "candidates": [{"vote_pct": 60}, {"vote_pct": 50}]}]}]}
+        warnings = ber.data_warnings(doc)
+        self.assertEqual(len(warnings), 2)
+        self.assertIn("7 ≠ 정수 10", warnings[0])
+
+
 if __name__ == "__main__":
     unittest.main()

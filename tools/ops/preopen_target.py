@@ -12,6 +12,10 @@ exist, weekends and holidays included):
   Weekday -> today; Saturday/Sunday/holiday -> the next session.
 - A target that is today is skipped once it is 08:30 KST or later: the
   runner would refuse it as no longer pre-open.
+- An automatic run that starts before the source sessions have closed (the
+  KR close before the target, and the US session the runner requires) is
+  skipped instead of publishing `unavailable`. GitHub's own schedule is fired
+  hours early on purpose (it lands 3-5 h late), so early landings are normal.
 - A target whose public JSON already holds a pre-open forecast is skipped,
   so later runs never replace the first forecast. An `unavailable` result is
   retried.
@@ -38,7 +42,7 @@ def next_session(today, is_session):
     return None
 
 
-def resolve(now, requested, doc, is_session):
+def resolve(now, requested, doc, is_session, not_ready=None):
     """Return (target, run, valid, reason). `now` must be KST-aware."""
     today = now.date()
     if requested:
@@ -54,6 +58,10 @@ def resolve(now, requested, doc, is_session):
         return target, False, False, f"started {now:%H:%M} KST, after the {CUTOFF} cutoff"
     if doc and doc.get("target_date") == target and doc.get("status") == "research_preopen_forecast":
         return target, False, False, f"{target} already has a pre-open forecast"
+    if not requested and not_ready:
+        waiting = not_ready(target, now)
+        if waiting:
+            return target, False, False, f"waiting: {waiting}"
     return target, True, True, ""
 
 
@@ -61,11 +69,19 @@ def main():
     from option_direction_model import calendar
     from research_direction_diagnostics import ReviewedCalendar
 
+    from run_us_kr_preopen import timing
+
     cal = ReviewedCalendar(calendar())
+
+    def not_ready(target, now):
+        reasons = [r for r in timing(target, now)["reasons"] if "not closed" in r]
+        return "; ".join(reasons)
+
     path = Path(os.environ["PUBLIC_JSON"])
     doc = json.loads(path.read_text()) if path.exists() else None
     now = datetime.now(KST)
-    target, run, valid, why = resolve(now, os.environ.get("REQUESTED_TARGET", "").strip(), doc, cal.is_session)
+    target, run, valid, why = resolve(now, os.environ.get("REQUESTED_TARGET", "").strip(), doc, cal.is_session,
+                                      not_ready)
     out = os.environ.get("GITHUB_OUTPUT")
     if out:
         with open(out, "a") as f:

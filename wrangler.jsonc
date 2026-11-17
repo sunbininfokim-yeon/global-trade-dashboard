@@ -74,6 +74,8 @@
     // late, past the runner's 08:30 KST cutoff; Cloudflare's does not.
     // scheduled() tells them apart by event.cron -- keep these strings in
     // step with PREOPEN_CRONS in _worker.js.
-    "crons": ["0 * * * *", "25 21 * * *", "5 22 * * *"]
+    // 23:05 UTC = 08:05 KST: last retry for 15007 that lands just before the
+    // cutoff (2026-11-16 it arrived at 07:54-08:05, after the 07:05 retry).
+    "crons": ["0 * * * *", "25 21 * * *", "5 22 * * *", "5 23 * * *"]
   }
 }

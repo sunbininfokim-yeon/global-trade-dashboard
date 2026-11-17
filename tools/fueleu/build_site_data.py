@@ -3,10 +3,12 @@
 Reads source_data/pool_prices.json and source_data/mrv_supply_*.json (run the
 collectors first) and writes New for anti/public/data/fueleu_market_v1.json.
 
-The user chose to publish the OPX series and MRV estimate for one month as a
-personal project, although redistribution terms are unconfirmed. DISPLAY_UNTIL
-is enforced by the page itself: after that date the tab stops showing the
-price and supply data even if nobody removes the file.
+The user chose to publish the OPX series and MRV estimate as a personal project,
+although redistribution terms are unconfirmed. It began as a one-month window
+ending 2026-12-03; on 2026-11-17 the user decided to keep publishing, so
+DISPLAY_UNTIL is None (no end). Set it to a date again to bring the takedown
+back: the page and this build both stop at that date even if nobody removes
+the file.
 """
 import json
 from datetime import datetime, timezone
@@ -17,7 +19,7 @@ import engine
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "source_data"
 DEST = ROOT.parents[1] / "New for anti" / "public" / "data" / "fueleu_market_v1.json"
-DISPLAY_UNTIL = "2026-12-03"
+DISPLAY_UNTIL = None          # 2026-11-17 사용자 지시: 12/3 종료 없이 계속 게시
 SUPPLY_KEYS = ("ships", "avg_intensity", "energy_mj") + tuple(
     f"{k}_{y}" for y in (2025, 2030, 2035) for k in ("surplus", "deficit", "net", "surplus_ships"))
 
@@ -53,7 +55,7 @@ def supply():
 
 def main(today=None):
     today = today or datetime.now(timezone.utc).date().isoformat()
-    live = today <= DISPLAY_UNTIL
+    live = DISPLAY_UNTIL is None or today <= DISPLAY_UNTIL
     prices = json.loads((SRC / "pool_prices.json").read_text()) if live else None
     data = {
         "schema": "fueleu_market_v1",

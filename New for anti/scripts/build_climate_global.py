@@ -21,6 +21,7 @@ Usage:
 """
 
 import json
+import re
 import os
 import sys
 import urllib.request
@@ -31,6 +32,23 @@ OUT = os.path.abspath(os.path.join(HERE, "..", "public", "data", "climate_global
 
 ONI_URL = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
 DMI_URL = "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/dmi.had.long.data"
+# Pacific Decadal Oscillation, ERSST v5 (NOAA NCEI), monthly since 1854.
+PDO_URL = "https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/index/ersst.v5.pdo.dat"
+PDO_SINCE = 1900
+# Japan Meteorological Agency, COBE-SST analysis -- an SST record built
+# independently of NOAA's, so a second opinion rather than a copy.
+JMA_ROOT = "https://ds.data.jma.go.jp/tcc/tcc/products/elnino/index/sstindex"
+# key -> (path under JMA_ROOT, label, our OISST region it cross-checks)
+JMA_INDICES = {
+    "nino3": ("base_period_9120/Nino_3/anomaly", "NINO.3 (적도 동태평양)", None),
+    "nino12": ("base_period_9120/Nino_1+2/anomaly", "NINO.1+2 (페루 연안)", "nino12"),
+    "nino4": ("base_period_9120/Nino_4/anomaly", "NINO.4 (적도 중태평양)", None),
+    "nino_west": ("base_period_9120/Nino_West/anomaly", "NINO.WEST (서태평양)", "west_pacific"),
+    # Indian Ocean basin-wide; JMA publishes it against a sliding 30-year base.
+    "iobw": ("sliding_30year_period/IOBW/deviation", "IOBW (인도양 전체)", None),
+}
+# JMA's own DMI, an HTML table (kaiyou desk). Parsed tolerantly.
+JMA_DMI_URL = "https://www.data.jma.go.jp/kaiyou/data/db/climate/iod/dmi_mon.html"
 
 # NOAA's own thresholds: ±0.5 for an event, then weak / moderate / strong.
 def enso_state(oni):
@@ -140,6 +158,68 @@ def iod_history(rows, top=4):
     }
 
 
+def parse_pdo(text):
+    """NCEI's table: year then twelve monthly values, 99.99 for not yet out."""
+    out = []
+    for line in text.splitlines():
+        parts = line.split()
+        if len(parts) < 2 or not parts[0].isdigit() or len(parts[0]) != 4:
+            continue
+        year = int(parts[0])
+        for month, raw in enumerate(parts[1:13], start=1):
+            try:
+                v = float(raw)
+            except ValueError:
+                continue
+            if abs(v) > 90:
+                continue
+            out.append((f"{year}-{month:02d}", round(v, 2)))
+    return out
+
+
+def pdo_history(rows, top=4):
+    """Rank and past extremes on the side the PDO is on now.
+
+    The PDO swings for decades, so the reference that matters is how deep
+    past phases went: an episode is 12+ months running beyond +-0.5 on the
+    current sign, its extreme is the peak. The episode still running is left
+    out so the present is compared with history, not with itself.
+    """
+    latest = rows[-1][1]
+    sign = -1 if latest < 0 else 1
+    episodes, run = [], []
+    for row in rows + [("end", 0.0)]:
+        if row[1] * sign >= 0.5:
+            run.append(row)
+            continue
+        if len(run) >= 12:
+            episodes.append(run)
+        run = []
+    if episodes and episodes[-1][-1] == rows[-1]:
+        episodes = episodes[:-1]
+    peaks = []
+    for ep in episodes:
+        m, v = max(ep, key=lambda r: r[1] * sign)
+        peaks.append({"label": m[:4], "peak": v, "season": m})
+    peaks.sort(key=lambda p: -p["peak"] * sign)
+    beyond = sum(1 for r in rows[:-1] if r[1] * sign > latest * sign)
+    word = "낮음" if sign < 0 else "높음"
+    since = rows[0][0][:4]
+    return {
+        "since": int(since),
+        "rank": beyond + 1,
+        "rank_ko": (f"{since}년 이후 가장 {word}" if beyond == 0
+                    else f"{since}년 이후 {len(rows)}개월 중 {beyond + 1}번째로 {word}"),
+        "peak_word_ko": "최저" if sign < 0 else "최고",
+        "top_peaks": peaks[:top],
+        "thresholds": [
+            {"value": 0.5, "label_ko": "양의 PDO 기준"},
+            {"value": -0.5, "label_ko": "음의 PDO 기준"},
+            {"value": -1.5, "label_ko": "강한 음"},
+        ],
+    }
+
+
 def fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": "global-trade-dashboard"})
     with urllib.request.urlopen(req, timeout=60) as r:
@@ -242,13 +322,69 @@ def main():
             "note_ko": doc.get("iod", {}).get("note_ko", ""),
         }
 
+    # --- PDO --------------------------------------------------------------
+    try:
+        pdo_rows = [r for r in parse_pdo(fetch(PDO_URL)) if int(r[0][:4]) >= PDO_SINCE]
+    except OSError as e:
+        print(f"PDO 실패 — 기존 값 유지: {e}", file=sys.stderr)
+        pdo_rows = []
+    if pdo_rows:
+        m, v = pdo_rows[-1]
+        doc["pdo"] = {
+            "index": "Pacific Decadal Oscillation (ERSST v5)",
+            "source": "NOAA NCEI ERSST v5",
+            "source_url": PDO_URL,
+            "latest": v,
+            "as_of": m,
+            "state_ko": "양 (따뜻한 국면)" if v >= 0.5 else ("음 (차가운 국면)" if v <= -0.5 else "중립"),
+            "note_ko": ("음의 PDO는 미 남부 대평원 가뭄·겨울밀 작황 부진, 라니냐 영향 강화와 "
+                        "자주 겹칩니다. 수십 년 단위로 국면이 바뀝니다."),
+            "series": [{"label": f"{mm[2:4]}-{mm[5:]}", "pdo": vv} for mm, vv in pdo_rows[-12:]],
+            "history": pdo_history(pdo_rows),
+        }
+
+    # --- JMA cross-check ---------------------------------------------------
+    jma = {}
+    for key, (path, label, ours) in JMA_INDICES.items():
+        url = f"{JMA_ROOT}/{path}"
+        try:
+            rows = parse_pdo(fetch(url))   # same year x 12 layout
+        except OSError as e:
+            print(f"JMA {path} 실패: {e}", file=sys.stderr)
+            continue
+        if rows:
+            m, v = rows[-1]
+            jma[key] = {"label_ko": label, "latest": v, "as_of": m, "oisst_region": ours,
+                        "series": [{"label": f"{mm[2:4]}-{mm[5:]}", "value": vv} for mm, vv in rows[-12:]],
+                        "source_url": url}
+    try:
+        html = fetch(JMA_DMI_URL)
+        text = re.sub(r"<[^>]+>", " ", html)
+        text = re.sub(r"[ \t]*\n[ \t]*(?=-?\d)", " ", text)       # cells split over lines
+        rows = parse_pdo("\n".join(re.findall(r"(?:19|20)\d\d(?:\s+-?\d+\.\d+){1,12}", text)))
+        # A misread table would publish nonsense next to NOAA's number; only
+        # keep it if it looks like a monthly DMI record.
+        if len(rows) >= 120 and all(abs(x) < 3 for _, x in rows):
+            m, v = rows[-1]
+            jma["dmi"] = {"label_ko": "DMI (인도양 쌍극자)", "latest": v, "as_of": m, "oisst_region": None,
+                          "series": [{"label": f"{mm[2:4]}-{mm[5:]}", "value": vv} for mm, vv in rows[-12:]],
+                          "source_url": JMA_DMI_URL}
+    except OSError as e:
+        print(f"JMA DMI 실패: {e}", file=sys.stderr)
+    if jma:
+        doc["jma"] = {"source": "JMA COBE-SST (일본 기상청)", "baseline": "1991-2020", "indices": jma}
+
     doc["generated_at"] = datetime.now(timezone.utc).isoformat()
     doc["note"] = (
-        "ENSO·IOD 는 NOAA 원본에서 실시간 갱신됩니다 (build_climate_global.py). "
+        "ENSO·IOD·PDO 는 NOAA 원본에서 실시간 갱신됩니다 (build_climate_global.py). "
         "도시 기온·대륙 편차 등 나머지 항목은 아직 seed 이며 갱신 예정입니다."
     )
 
+    for k, j in (doc.get("jma") or {}).get("indices", {}).items():
+        print(f"JMA {k:10} {j['as_of']}  {j['latest']:+.2f}")
     print(f"ONI {doc['enso']['season']}  {doc['enso']['latest_c']:+.2f}  {doc['enso']['state_ko']}")
+    if doc.get("pdo"):
+        print(f"PDO {doc['pdo']['as_of']}  {doc['pdo']['latest']:+.2f}  {doc['pdo']['state_ko']}")
     if dmi_rows:
         print(f"DMI {doc['iod']['as_of']}  {doc['iod']['latest']:+.2f}  {doc['iod']['state_ko']}")
     if check:
