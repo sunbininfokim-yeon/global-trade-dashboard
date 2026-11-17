@@ -258,6 +258,7 @@ def build_board(
     year = year or int(seed.get("year") or datetime.now(timezone.utc).year)
     polls_doc = load_extracted("governance_polls.json") or {}
     usa_congress = load_extracted("usa_congress.json") or {}
+    usa_house_120 = load_extracted("usa_house_leadership_120th.json") or {}
     usa_committees = load_extracted("usa_committees.json") or {}
     usa_officers = load_extracted("usa_congress_officers.json") or {}
     usa_gov = load_extracted("usa_governors.json") or {}
@@ -407,6 +408,9 @@ def build_board(
                 "members": usa_congress.get("members"),
                 "source": (usa_congress.get("source") or {}),
             }
+            if usa_house_120:
+                # 120th conference choices and candidacies. The seated floor_leadership stays the 119th.
+                row["legislature_live"]["incoming_house_leadership"] = usa_house_120
             row["subnational_live"] = {
                 "governors_summary": usa_gov.get("summary"),
                 "governors": usa_gov.get("governors"),
@@ -436,6 +440,7 @@ def build_board(
                     "swing_seats": usa_congress.get("swing_seats", []),
                     "context_coverage": usa_congress.get("context_coverage"),
                     "floor_leadership": usa_congress.get("floor_leadership"),
+                    **({"incoming_house_leadership": usa_house_120} if usa_house_120 else {}),
                     "house_members": [
                         member
                         for member in (usa_congress.get("members") or [])
