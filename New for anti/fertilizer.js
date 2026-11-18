@@ -13,6 +13,13 @@
     let pending;
     let generation = 0;
 
+    if (!document.querySelector('style[data-fertilizer-style]')) {
+        const css = document.createElement('style');
+        css.dataset.fertilizerStyle = '1';
+        css.textContent = `[data-fertilizer] .gb-line { display:flex; justify-content:space-between; gap:8px; font-size:13px; color:#e2e8f0; padding:5px 0; border-top:1px solid rgba(255,255,255,0.06); }`;
+        document.head.appendChild(css);
+    }
+
     function load() {
         pending ||= fetch('/public/data/fertilizer_prices_v1.json', { cache: 'no-cache' })
             .then((r) => (r.ok ? r.json() : null)).catch(() => null);

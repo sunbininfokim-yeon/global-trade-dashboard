@@ -30,8 +30,8 @@ CSV = os.path.join(HERE, "prices.csv")
 OUT = os.path.join(DATA, "fertilizer_prices_v1.json")
 
 PAGE = "https://www.worldbank.org/en/research/commodity-markets"
-FALLBACK = ("https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-"
-            "0050012025/related/CMO-Historical-Data-Monthly.xlsx")
+FALLBACK = ("https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-"
+            "0050012026/related/CMO-Historical-Data-Monthly.xlsx")
 UA = {"User-Agent": "Mozilla/5.0 (compatible; fertilizer-prices/1.0)"}
 
 # Column in the "Monthly Prices" sheet (matched on its leading words) -> key.
