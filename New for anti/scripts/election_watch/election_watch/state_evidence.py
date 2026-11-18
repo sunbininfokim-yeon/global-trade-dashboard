@@ -95,6 +95,7 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
             for review in (identity_reviews or {}).get('races', {}).get(rid, []):
                 if review['candidate_name'] == candidate['name'] and review['party'] == candidate['party']:
                     require(date.fromisoformat(review['reviewed_on']) <= date.fromisoformat(reviewed_as_of), 'future finance identity review')
+                    unreviewed_names = []
                     if office == 'house':
                         require(review.get('office') == 'house' and re.fullmatch(r'H[0-9A-Z]{8}', review['candidate_id'])
                                 and review['candidate_id'] == candidate.get('reported_fec_id')
@@ -109,9 +110,13 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
                                       and date.fromisoformat(p['reviewed_on']) <= date.fromisoformat(reviewed_as_of)
                                       and {'race_id': rid, **review} in p.get('verified_candidates', [])]
                         finance_rows = [c for c in asset.get('candidates', []) if c['candidate_id'] == review['candidate_id']]
+                        # 같은 FEC 후보 ID·같은 정당에서 신고 이름 표기가 늘어나는 것은 신원 변경이 아니다
+                        # (재수집마다 'BARRETT, THOMAS' 같은 축약이 붙는다). 검토된 표기가 하나라도 빠지거나
+                        # 정당이 바뀌면 여전히 멈춘다. 새 표기는 숨기지 않고 증거에 따로 남긴다.
                         require(len(finance_rows) == 1 and candidate['party'] in finance_rows[0]['reported_parties']
-                                and sorted(review['finance_reported_names']) == sorted(finance_rows[0]['reported_names']),
+                                and set(review['finance_reported_names']) <= set(finance_rows[0]['reported_names']),
                                 'House finance source identity changed')
+                        unreviewed_names = sorted(set(finance_rows[0]['reported_names']) - set(review['finance_reported_names']))
                     else:
                         require(re.fullmatch(r'S[0-9A-Z]{8}', review['candidate_id']) is not None and office == 'senate', 'invalid Senate identity')
                         provenance = [p for p in federal_rosters.get('source_snapshots', [])
@@ -120,6 +125,8 @@ def build_state(state, group, plan, catalog, federal_rosters, governors, polls, 
                     require(len(provenance) == 1, 'identity source snapshot mismatch')
                     candidate['finance_candidate_id'] = review['candidate_id']
                     candidate['finance_identity_evidence'] = deepcopy(review)
+                    if office == 'house' and unreviewed_names:
+                        candidate['finance_identity_evidence']['unreviewed_reported_names'] = unreviewed_names
             candidate['finance'] = candidate_finance(candidate, asset, office)
             candidate['finance_identity_hold'] = next((deepcopy(h) for h in (identity_reviews or {}).get('held_candidates', [])
                 if h['race_id'] == rid and h['name'] == candidate['name']), None)
