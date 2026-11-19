@@ -31,6 +31,8 @@ from datetime import date, datetime, timedelta, timezone
 import numpy as np
 import pandas as pd
 
+from . import ledger as L
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 YIELD_MODEL = os.path.dirname(HERE)
 DATA = os.path.abspath(os.path.join(YIELD_MODEL, "..", "..", "public", "data"))
@@ -606,8 +608,38 @@ def build(today=None):
     return out
 
 
+def keep_ledger(out, today=None):
+    """Freeze finished seasons, score those whose yield is now in, and put the
+    live record beside the calls."""
+    today = today or date.today()
+    book = L.load()
+    added = L.freeze(book, out["regions"], today)
+    points = load_points()
+
+    def residual_for(region, crop):
+        labels = label_series(region, crop, (points.get(region) or {}).get("folder"))
+        return None if labels is None else trend_residuals(labels)
+
+    scored = L.score(book, residual_for)
+    L.save(book)
+    out["live_record"] = L.summary(book)
+    for region, entries in out["regions"].items():
+        for e in entries:
+            rec = L.entry_record(book, region, e["crop"])
+            if rec:
+                e["live_record"] = rec
+            held = book["entries"].get(f"{region}|{e['crop']}|{e.get('harvest_year')}")
+            if held and "residual_pct" not in held:
+                e["live_pending"] = {"verdict_ko": held["verdict_ko"], "frozen_on": held["frozen_on"]}
+    s = out["live_record"]
+    log(f"ledger: +{len(added)} frozen, +{len(scored)} scored; {s['frozen']} held, {s['scored']} scored, "
+        f"unfavourable {s['unfavorable']['hits']}/{s['unfavorable']['n']}, "
+        f"favourable {s['favorable']['hits']}/{s['favorable']['n']}")
+
+
 def main():
     out = build()
+    keep_ledger(out)
     with open(OUT, "w", encoding="utf-8") as handle:
         json.dump(out, handle, ensure_ascii=False, indent=1)
         handle.write("\n")
