@@ -13,6 +13,7 @@ on:
       - 'New for anti/scripts/build_sea_ice.py'
       - 'New for anti/scripts/sea_ice_forecast.py'
       - 'New for anti/scripts/sea_route.py'
+      - 'New for anti/scripts/nsr_route_ice.py'
       - '.github/workflows/sea_ice_refresh.yml'
 
 concurrency:
@@ -23,7 +24,7 @@ jobs:
   refresh:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 120
     permissions:
       contents: write
     steps:
@@ -33,11 +34,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install numpy openpyxl
+      - run: pip install numpy openpyxl pillow
 
       - name: Fetch NSIDC daily extent
         working-directory: "New for anti/scripts"
         run: python3 build_sea_ice.py   # 해빙 + 9월 전망 엔진(sea_ice_forecast.py)
+
+      - name: Ice on the Northern Sea Route line (NSIDC daily concentration grid)
+        working-directory: "New for anti/scripts"
+        continue-on-error: ${{ github.event_name != 'pull_request' }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then python3 nsr_route_ice.py --probe; fi
+          if [ ! -f data/nsr_route_ice/2000.csv ]; then
+            python3 nsr_route_ice.py --years 1978-$(date -u +%Y)    # 처음 한 번: 1978년부터 채움
+          else
+            python3 nsr_route_ice.py                               # 매일: 최근 45일 중 빈 날만
+          fi
 
       - name: Northern Sea Route season (NSIDC regional)
         working-directory: "New for anti/scripts"
@@ -51,7 +63,7 @@ jobs:
           g="New for anti/public/data/sea_route_v1.json"
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$f"; [ -f "$g" ] && git add "$g"
+          git add "$f"; [ -f "$g" ] && git add "$g"; git add "New for anti/scripts/data/nsr_route_ice" 2>/dev/null || true
           git commit -m "chore: Arctic sea ice (PR run)" || exit 0
           for i in 1 2 3; do
             git push origin "HEAD:$GITHUB_HEAD_REF" && exit 0
@@ -65,10 +77,10 @@ jobs:
         run: |
           f="New for anti/public/data/sea_ice_v1.json"
           g="New for anti/public/data/sea_route_v1.json"
-          if ! git diff -- "$f" "$g" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then exit 0; fi
+          if ! git status --porcelain -- "New for anti/scripts/data/nsr_route_ice" | grep -q . && ! git diff -- "$f" "$g" | grep -E '^[+-]' | grep -v '^[+-][+-]' | grep -qv 'generated_at'; then exit 0; fi
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$f"; [ -f "$g" ] && git add "$g"
+          git add "$f"; [ -f "$g" ] && git add "$g"; git add "New for anti/scripts/data/nsr_route_ice" 2>/dev/null || true
           git commit -m "chore: refresh Arctic sea ice (NSIDC)" || exit 0
           for i in 1 2 3; do
             git push && exit 0
