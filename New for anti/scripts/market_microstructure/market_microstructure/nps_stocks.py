@@ -155,7 +155,8 @@ def build_nps_stocks(*, top: list[dict[str, Any]], previous: dict[str, Any] | No
         year_end[year] = {"url": url, "n_holdings": len(rows), "total_eok": round(total), "tickers": matched}
 
     prev_reports = {t: v.get("reports") or [] for t, v in (prev.get("by_ticker") or {}).items()}
-    dart_ok = 0
+    dart_ok = dart_rows = 0
+    reporters: dict[str, int] = {}
     by_ticker: dict[str, Any] = {}
     for t in top:
         code = t["ticker"]
@@ -163,8 +164,12 @@ def build_nps_stocks(*, top: list[dict[str, Any]], previous: dict[str, Any] | No
         corp = (corp_index.get(code) or [None])[0]
         if fetch_dart and corp:
             try:
-                reports = nps_reports(fetch_dart(corp))
+                raw = fetch_dart(corp)
+                reports = nps_reports(raw)
                 dart_ok += 1
+                dart_rows += len(raw)
+                for r in raw[:50]:
+                    reporters[str(r.get("repror") or "")] = reporters.get(str(r.get("repror") or ""), 0) + 1
             except Exception as e:  # noqa: BLE001
                 errors.append(f"DART {code}: {type(e).__name__}: {e}")
         points = [{"date": f"{y}-12-31", "kind": "year_end", "stake_pct": v["tickers"][code]["stake_pct"],
@@ -182,11 +187,19 @@ def build_nps_stocks(*, top: list[dict[str, Any]], previous: dict[str, Any] | No
                            "reports": reports, "latest": last, "est_value_jo_now": est}
     if fetch_dart and dart_ok == 0 and top:
         errors.append("DART: no company answered")
+    n_nps = sum(len(v["reports"]) for v in by_ticker.values())
+    if fetch_dart and dart_ok and n_nps == 0:
+        # The NPS holds 5%+ of most large caps, so zero filings means the
+        # filter or the payload changed, not that there is nothing to show.
+        common = sorted(reporters.items(), key=lambda kv: -kv[1])[:8]
+        errors.append(f"DART: {dart_ok} companies, {dart_rows} filings, none by {NPS_FILER}; "
+                      f"top filers: {common}")
     return {
         "quality": "observed" if by_ticker else "missing",
         "year_end": year_end,
         "by_ticker": by_ticker,
         "dart_checked": dart_ok,
+        "dart_filings_seen": dart_rows,
         "errors": errors,
         "method_ko": ("연말 전 종목 목록(국민연금, 이름으로 코스피 상장목록과 맞춤)과 DART 5% 대량보유 보고(보고자 국민연금공단)를 "
                       "날짜순으로 이은 것. 두 공시 사이의 매매는 공개되지 않습니다. '지금 추정 평가액'은 마지막 공시 지분율 × 오늘 시가총액."),
