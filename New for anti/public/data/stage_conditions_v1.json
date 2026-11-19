@@ -1,7 +1,7 @@
 {
  "schema_version": 1,
- "generated_at": "2026-11-17T02:34:36.970543+00:00",
- "weather_through": "2026-11-13",
+ "generated_at": "2026-11-18T05:52:19.392394+00:00",
+ "weather_through": "2026-11-15",
  "method_ko": "단계별 기상(NASA POWER, 산지 대표 지점)을 직전 30개 시즌의 같은 구간과 비교해 유리·불리·중립으로 판정한다. 진행 중인 단계는 같은 일수끼리 비교한다. 예측치에는 반영하지 않는다.",
  "rules_ko": {
   "sow": "강수·토양수분 부족이면 불리, 강수 +1.5σ 이상이면 과습으로 불리, 넉넉하면 유리",
@@ -11,6 +11,7 @@
   "mature": "비가 많으면 불리, 건조하면 유리",
   "harvest": "비가 많으면 불리, 건조하면 유리",
   "dormant": "혹한일(최저 -15°C 이하)이 평년보다 많으면 불리",
+  "soil": "최근 약 4개월 자료의 토양수분은 NASA POWER 준실시간 원천(GEOS)이라 과거 기록(MERRA-2)보다 낮게 나와 판정에서 뺀다(참고 표시만)",
   "overall": "개화·비대 단계 가중 2배, 성숙·수확 단계는 표시만(수량보다 품질·수확 진도에 영향), 합계 -2 이하 불리 · +2 이상 유리"
  },
  "regions": {
@@ -28,8 +29,8 @@
       "start": "2026-09-01",
       "end": "2026-10-31",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "파종기 건조 · 토양수분 0.38 (평년 0.51)",
+      "status": "favorable",
+      "reason_ko": "파종 수분 충분 · 강수량 193mm (평년 126mm)",
       "metrics": {
        "precip": {
         "value": 193.11,
@@ -49,7 +50,8 @@
        "soil": {
         "value": 0.38,
         "normal": 0.51,
-        "z": -4.03
+        "z": -4.03,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -58,7 +60,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "유리"
      },
      {
       "kind": "veg",
@@ -66,18 +68,18 @@
       "start": "2026-09-20",
       "end": "2026-11-30",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.34 (평년 0.51)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 171.41,
-        "normal": 99.27,
-        "z": 1.22
+        "value": 172.8,
+        "normal": 100.7,
+        "z": 1.23
        },
        "dry_spell": {
-        "value": 10.0,
-        "normal": 19.2,
-        "z": -1.08
+        "value": 11.0,
+        "normal": 19.8,
+        "z": -0.99
        },
        "heat_days": {
         "value": 5.0,
@@ -87,7 +89,8 @@
        "soil": {
         "value": 0.34,
         "normal": 0.51,
-        "z": -5.34
+        "z": -5.41,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -95,8 +98,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.76,
-      "status_ko": "불리"
+      "observed_share": 0.79,
+      "status_ko": "중립"
      },
      {
       "kind": "dormant",
@@ -145,11 +148,11 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -2.0,
-     "reason_ko": "불리: 파종, 출아·분얼 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
-     "history_check": "unmatched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 1.0,
+     "reason_ko": "유리: 파종",
+     "history_check": null,
      "judged_stages": 2,
      "total_stages": 7
     },
@@ -362,7 +365,8 @@
        "soil": {
         "value": 0.4,
         "normal": 0.42,
-        "z": -0.92
+        "z": -0.92,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -400,7 +404,8 @@
        "soil": {
         "value": 0.4,
         "normal": 0.41,
-        "z": -0.58
+        "z": -0.58,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -592,7 +597,8 @@
        "soil": {
         "value": 0.58,
         "normal": 0.6,
-        "z": -0.26
+        "z": -0.26,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -630,7 +636,8 @@
        "soil": {
         "value": 0.59,
         "normal": 0.56,
-        "z": 0.44
+        "z": 0.44,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -668,7 +675,8 @@
        "soil": {
         "value": 0.62,
         "normal": 0.56,
-        "z": 0.92
+        "z": 0.92,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -690,13 +698,13 @@
       "metrics": {
        "precip": {
         "value": 148.06,
-        "normal": 118.68,
-        "z": 0.73
+        "normal": 120.02,
+        "z": 0.71
        },
        "dry_spell": {
         "value": 17.0,
-        "normal": 13.73,
-        "z": 0.64
+        "normal": 14.07,
+        "z": 0.56
        },
        "heat_days": {
         "value": 0.0,
@@ -706,7 +714,8 @@
        "soil": {
         "value": 0.62,
         "normal": 0.58,
-        "z": 0.66
+        "z": 0.64,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -714,7 +723,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.89,
+      "observed_share": 0.92,
       "status_ko": "중립"
      }
     ],
@@ -896,7 +905,8 @@
        "soil": {
         "value": 0.59,
         "normal": 0.6,
-        "z": -0.08
+        "z": -0.08,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -934,7 +944,8 @@
        "soil": {
         "value": 0.6,
         "normal": 0.56,
-        "z": 0.57
+        "z": 0.57,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -972,7 +983,8 @@
        "soil": {
         "value": 0.62,
         "normal": 0.56,
-        "z": 0.96
+        "z": 0.96,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1010,7 +1022,8 @@
        "soil": {
         "value": 0.63,
         "normal": 0.57,
-        "z": 0.83
+        "z": 0.83,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1202,7 +1215,8 @@
        "soil": {
         "value": 0.34,
         "normal": 0.36,
-        "z": -0.81
+        "z": -0.81,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1240,7 +1254,8 @@
        "soil": {
         "value": 0.34,
         "normal": 0.36,
-        "z": -1.11
+        "z": -1.11,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1278,7 +1293,8 @@
        "soil": {
         "value": 0.35,
         "normal": 0.37,
-        "z": -0.65
+        "z": -0.65,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1296,17 +1312,17 @@
       "end": "2026-12-15",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 178mm (평년 84mm)",
+      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 188mm (평년 88mm)",
       "metrics": {
        "precip": {
-        "value": 178.02,
-        "normal": 83.59,
-        "z": 1.78
+        "value": 187.55,
+        "normal": 88.41,
+        "z": 1.65
        },
        "dry_spell": {
         "value": 12.0,
-        "normal": 22.37,
-        "z": -1.15
+        "normal": 22.97,
+        "z": -1.18
        },
        "heat_days": {
         "value": 0.0,
@@ -1316,7 +1332,8 @@
        "soil": {
         "value": 0.39,
         "normal": 0.37,
-        "z": 0.56
+        "z": 0.58,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1324,7 +1341,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.65,
+      "observed_share": 0.67,
       "status_ko": "불리"
      }
     ],
@@ -1411,13 +1428,13 @@
       "start": "2026-09-15",
       "end": "2026-11-30",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "파종기 건조 · 토양수분 0.53 (평년 0.64)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 199.47,
-        "normal": 265.85,
-        "z": -0.95
+        "value": 212.84,
+        "normal": 277.08,
+        "z": -0.9
        },
        "dry_spell": {
         "value": 7.0,
@@ -1425,14 +1442,15 @@
         "z": -0.35
        },
        "heat_days": {
-        "value": 50.0,
-        "normal": 28.13,
-        "z": 1.9
+        "value": 51.0,
+        "normal": 28.33,
+        "z": 1.91
        },
        "soil": {
         "value": 0.53,
-        "normal": 0.64,
-        "z": -7.0
+        "normal": 0.65,
+        "z": -7.01,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1440,8 +1458,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.78,
-      "status_ko": "불리"
+      "observed_share": 0.81,
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -1450,27 +1468,28 @@
       "end": "2026-12-10",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.52 (평년 0.65) · 고온 고온일 40일 (평년 20일)",
+      "reason_ko": "고온 · 고온일 41일 (평년 20일)",
       "metrics": {
        "precip": {
-        "value": 186.49,
-        "normal": 243.52,
-        "z": -0.86
+        "value": 199.86,
+        "normal": 254.74,
+        "z": -0.81
        },
        "dry_spell": {
         "value": 7.0,
-        "normal": 6.63,
-        "z": 0.1
+        "normal": 6.7,
+        "z": 0.08
        },
        "heat_days": {
-        "value": 40.0,
-        "normal": 19.93,
+        "value": 41.0,
+        "normal": 20.13,
         "z": 1.83
        },
        "soil": {
         "value": 0.52,
         "normal": 0.65,
-        "z": -7.22
+        "z": -7.23,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1478,7 +1497,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.65,
+      "observed_share": 0.68,
       "status_ko": "불리"
      },
      {
@@ -1486,9 +1505,12 @@
       "name_ko": "개화·꼬투리 형성",
       "start": "2026-11-15",
       "end": "2027-01-10",
-      "state": "upcoming",
-      "status": "upcoming",
-      "status_ko": "예정"
+      "state": "in_progress",
+      "status": "neutral",
+      "reason_ko": "기상 자료 부족",
+      "metrics": {},
+      "observed_share": 0.02,
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -1510,12 +1532,12 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -2.0,
-     "reason_ko": "불리: 파종, 출아·영양생장 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
-     "history_check": "unmatched",
-     "judged_stages": 2,
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": -1.0,
+     "reason_ko": "불리: 출아·영양생장",
+     "history_check": null,
+     "judged_stages": 3,
      "total_stages": 5
     },
     "history": {
@@ -1768,7 +1790,8 @@
        "soil": {
         "value": 0.61,
         "normal": 0.63,
-        "z": -0.99
+        "z": -0.99,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1870,17 +1893,17 @@
       "end": "2026-12-10",
       "state": "in_progress",
       "status": "favorable",
-      "reason_ko": "파종 수분 충분 · 강수량 591mm (평년 376mm)",
+      "reason_ko": "파종 수분 충분 · 강수량 598mm (평년 386mm)",
       "metrics": {
        "precip": {
-        "value": 590.71,
-        "normal": 375.89,
-        "z": 1.45
+        "value": 598.34,
+        "normal": 385.51,
+        "z": 1.38
        },
        "dry_spell": {
         "value": 5.0,
-        "normal": 7.1,
-        "z": -0.78
+        "normal": 7.3,
+        "z": -0.9
        },
        "heat_days": {
         "value": 0.0,
@@ -1890,7 +1913,8 @@
        "soil": {
         "value": 0.82,
         "normal": 0.8,
-        "z": 0.32
+        "z": 0.33,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1898,7 +1922,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.67,
+      "observed_share": 0.7,
       "status_ko": "유리"
      },
      {
@@ -1911,14 +1935,14 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 476.37,
-        "normal": 311.96,
-        "z": 1.19
+        "value": 484.0,
+        "normal": 321.58,
+        "z": 1.12
        },
        "dry_spell": {
         "value": 4.0,
-        "normal": 6.33,
-        "z": -1.05
+        "normal": 6.6,
+        "z": -1.25
        },
        "heat_days": {
         "value": 0.0,
@@ -1928,7 +1952,8 @@
        "soil": {
         "value": 0.83,
         "normal": 0.8,
-        "z": 0.41
+        "z": 0.41,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -1936,7 +1961,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.48,
+      "observed_share": 0.5,
       "status_ko": "중립"
      },
      {
@@ -2074,7 +2099,8 @@
        "soil": {
         "value": 0.78,
         "normal": 0.79,
-        "z": -0.15
+        "z": -0.15,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -2095,14 +2121,14 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 691.89,
-        "normal": 452.17,
-        "z": 1.43
+        "value": 699.52,
+        "normal": 461.79,
+        "z": 1.38
        },
        "dry_spell": {
         "value": 5.0,
-        "normal": 8.03,
-        "z": -1.08
+        "normal": 8.17,
+        "z": -1.18
        },
        "heat_days": {
         "value": 0.0,
@@ -2112,7 +2138,8 @@
        "soil": {
         "value": 0.81,
         "normal": 0.79,
-        "z": 0.18
+        "z": 0.19,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -2120,7 +2147,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.76,
+      "observed_share": 0.78,
       "status_ko": "중립"
      },
      {
@@ -2275,8 +2302,8 @@
       "start": "2026-05-01",
       "end": "2026-08-10",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.71 (평년 0.78)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 471.74,
@@ -2296,7 +2323,8 @@
        "soil": {
         "value": 0.71,
         "normal": 0.78,
-        "z": -1.2
+        "z": -1.2,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -2305,7 +2333,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -2334,7 +2362,8 @@
        "soil": {
         "value": 0.75,
         "normal": 0.79,
-        "z": -0.68
+        "z": -0.68,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -2372,7 +2401,8 @@
        "soil": {
         "value": 0.76,
         "normal": 0.79,
-        "z": -0.39
+        "z": -0.39,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -2390,27 +2420,28 @@
       "end": "2026-11-30",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 635mm (평년 400mm)",
+      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 642mm (평년 409mm)",
       "metrics": {
        "precip": {
-        "value": 634.59,
-        "normal": 399.64,
-        "z": 1.56
+        "value": 642.22,
+        "normal": 409.26,
+        "z": 1.49
        },
        "dry_spell": {
         "value": 5.0,
-        "normal": 7.43,
-        "z": -0.85
+        "normal": 7.57,
+        "z": -0.92
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.2,
+        "normal": 1.27,
         "z": -0.38
        },
        "soil": {
         "value": 0.81,
         "normal": 0.8,
-        "z": 0.27
+        "z": 0.28,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -2418,15 +2449,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.78,
+      "observed_share": 0.81,
       "status_ko": "불리"
      }
     ],
     "overall": {
      "verdict": "neutral",
      "verdict_ko": "중립",
-     "score": 0.0,
-     "reason_ko": "불리: 파종, 출아·분얼·마디신장 · 유리: 등숙 · 수확 불리(품질·수확 진도, 판정 제외)",
+     "score": 1.0,
+     "reason_ko": "불리: 파종 · 유리: 등숙 · 수확 불리(품질·수확 진도, 판정 제외)",
      "history_check": null,
      "judged_stages": 5,
      "total_stages": 5
@@ -2511,28 +2542,29 @@
       "start": "2026-10-15",
       "end": "2026-12-20",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "파종기 건조 · 토양수분 0.29 (평년 0.41)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 63.39,
-        "normal": 107.95,
-        "z": -0.8
+        "value": 77.96,
+        "normal": 119.12,
+        "z": -0.69
        },
        "dry_spell": {
         "value": 9.0,
-        "normal": 9.1,
-        "z": -0.02
+        "normal": 9.17,
+        "z": -0.03
        },
        "heat_days": {
-        "value": 25.0,
-        "normal": 10.2,
-        "z": 1.82
+        "value": 26.0,
+        "normal": 10.57,
+        "z": 1.8
        },
        "soil": {
         "value": 0.29,
-        "normal": 0.41,
-        "z": -4.13
+        "normal": 0.42,
+        "z": -4.23,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -2540,8 +2572,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.45,
-      "status_ko": "불리"
+      "observed_share": 0.48,
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -2550,27 +2582,28 @@
       "end": "2027-01-10",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.29 (평년 0.42) · 고온 고온일 18일 (평년 6일)",
+      "reason_ko": "고온 · 고온일 19일 (평년 6일)",
       "metrics": {
        "precip": {
-        "value": 39.76,
-        "normal": 79.72,
-        "z": -0.85
+        "value": 54.33,
+        "normal": 90.89,
+        "z": -0.71
        },
        "dry_spell": {
         "value": 9.0,
-        "normal": 6.27,
-        "z": 0.61
+        "normal": 6.53,
+        "z": 0.52
        },
        "heat_days": {
-        "value": 18.0,
-        "normal": 5.53,
-        "z": 2.16
+        "value": 19.0,
+        "normal": 5.9,
+        "z": 2.08
        },
        "soil": {
         "value": 0.29,
         "normal": 0.42,
-        "z": -3.82
+        "z": -3.92,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -2578,7 +2611,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.26,
+      "observed_share": 0.28,
       "status_ko": "불리"
      },
      {
@@ -2610,11 +2643,11 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -2.0,
-     "reason_ko": "불리: 파종, 출아·영양생장 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
-     "history_check": "unmatched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": -1.0,
+     "reason_ko": "불리: 출아·영양생장",
+     "history_check": null,
      "judged_stages": 2,
      "total_stages": 5
     },
@@ -2906,7 +2939,8 @@
        "soil": {
         "value": 0.38,
         "normal": 0.39,
-        "z": -0.63
+        "z": -0.63,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -3086,9 +3120,9 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 379.16,
-        "normal": 396.52,
-        "z": -0.18
+        "value": 381.35,
+        "normal": 408.53,
+        "z": -0.27
        },
        "dry_spell": {
         "value": 21.0,
@@ -3097,13 +3131,14 @@
        },
        "heat_days": {
         "value": 1.0,
-        "normal": 3.73,
+        "normal": 3.8,
         "z": -0.61
        },
        "soil": {
         "value": 0.61,
         "normal": 0.66,
-        "z": -1.76
+        "z": -1.8,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -3111,7 +3146,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.93,
+      "observed_share": 0.94,
       "status_ko": "중립"
      }
     ],
@@ -3187,8 +3222,8 @@
       "start": "2026-09-01",
       "end": "2026-10-31",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.59 (평년 0.64)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 181.37,
@@ -3208,7 +3243,8 @@
        "soil": {
         "value": 0.59,
         "normal": 0.64,
-        "z": -1.72
+        "z": -1.72,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -3217,7 +3253,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -3225,28 +3261,29 @@
       "start": "2026-10-15",
       "end": "2027-01-15",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.55 (평년 0.67)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 101.02,
-        "normal": 128.11,
-        "z": -0.59
+        "value": 103.21,
+        "normal": 140.12,
+        "z": -0.78
        },
        "dry_spell": {
         "value": 4.0,
-        "normal": 5.47,
-        "z": -0.69
+        "normal": 5.57,
+        "z": -0.75
        },
        "heat_days": {
         "value": 7.0,
-        "normal": 5.97,
-        "z": 0.2
+        "normal": 6.13,
+        "z": 0.17
        },
        "soil": {
         "value": 0.55,
-        "normal": 0.67,
-        "z": -3.22
+        "normal": 0.68,
+        "z": -3.33,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -3254,8 +3291,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.32,
-      "status_ko": "불리"
+      "observed_share": 0.34,
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -3295,11 +3332,11 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -3.0,
-     "reason_ko": "불리: 개화, 착과·과실 팽창 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
-     "history_check": "unmatched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준",
+     "history_check": null,
      "judged_stages": 2,
      "total_stages": 6
     },
@@ -3460,9 +3497,9 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 353.18,
-        "normal": 338.7,
-        "z": 0.16
+        "value": 355.37,
+        "normal": 350.71,
+        "z": 0.05
        },
        "dry_spell": {
         "value": 20.0,
@@ -3471,13 +3508,14 @@
        },
        "heat_days": {
         "value": 1.0,
-        "normal": 3.73,
+        "normal": 3.8,
         "z": -0.61
        },
        "soil": {
-        "value": 0.61,
+        "value": 0.6,
         "normal": 0.65,
-        "z": -1.75
+        "z": -1.81,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -3485,7 +3523,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.71,
+      "observed_share": 0.72,
       "status_ko": "중립"
      }
     ],
@@ -3571,27 +3609,28 @@
       "end": "2026-12-15",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "파종기 건조 · 토양수분 0.49 (평년 0.58)",
+      "reason_ko": "파종기 건조 · 강수량 62mm (평년 124mm)",
       "metrics": {
        "precip": {
-        "value": 54.81,
-        "normal": 118.37,
-        "z": -1.06
+        "value": 62.33,
+        "normal": 124.46,
+        "z": -1.05
        },
        "dry_spell": {
         "value": 7.0,
-        "normal": 7.47,
-        "z": -0.2
+        "normal": 7.5,
+        "z": -0.21
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 0.47,
-        "z": -0.43
+        "normal": 0.57,
+        "z": -0.49
        },
        "soil": {
         "value": 0.49,
         "normal": 0.58,
-        "z": -1.63
+        "z": -1.64,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -3599,7 +3638,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.48,
+      "observed_share": 0.52,
       "status_ko": "불리"
      },
      {
@@ -3609,27 +3648,28 @@
       "end": "2027-01-10",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.48 (평년 0.58)",
+      "reason_ko": "생육기 수분 부족 · 강수량 33mm (평년 90mm)",
       "metrics": {
        "precip": {
-        "value": 25.88,
-        "normal": 83.71,
-        "z": -1.13
+        "value": 33.4,
+        "normal": 89.8,
+        "z": -1.14
        },
        "dry_spell": {
         "value": 6.0,
-        "normal": 7.0,
-        "z": -0.53
+        "normal": 7.13,
+        "z": -0.59
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 0.4,
-        "z": -0.37
+        "normal": 0.5,
+        "z": -0.43
        },
        "soil": {
         "value": 0.48,
         "normal": 0.58,
-        "z": -1.69
+        "z": -1.7,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -3637,7 +3677,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.26,
+      "observed_share": 0.28,
       "status_ko": "불리"
      },
      {
@@ -3746,208 +3786,66 @@
    {
     "crop": "soy",
     "label_ko": "대두",
-    "season": "2025/26",
-    "harvest_year": 2026,
+    "season": "2026/27",
+    "harvest_year": 2027,
     "heat_threshold_c": 35.0,
     "stages": [
      {
       "kind": "sow",
       "name_ko": "파종",
-      "start": "2025-11-15",
-      "end": "2026-01-15",
-      "state": "done",
+      "start": "2026-11-15",
+      "end": "2027-01-15",
+      "state": "in_progress",
       "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 225.6,
-        "normal": 232.0,
-        "z": -0.1
-       },
-       "dry_spell": {
-        "value": 8.0,
-        "normal": 7.67,
-        "z": 0.14
-       },
-       "heat_days": {
-        "value": 39.0,
-        "normal": 35.5,
-        "z": 0.44
-       },
-       "soil": {
-        "value": 0.45,
-        "normal": 0.46,
-        "z": -0.45
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
+      "reason_ko": "기상 자료 부족",
+      "metrics": {},
+      "observed_share": 0.02,
       "status_ko": "중립"
      },
      {
       "kind": "veg",
       "name_ko": "출아·영양생장",
-      "start": "2025-11-25",
-      "end": "2026-02-05",
-      "state": "done",
-      "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 342.71,
-        "normal": 288.26,
-        "z": 0.81
-       },
-       "dry_spell": {
-        "value": 6.0,
-        "normal": 8.47,
-        "z": -1.02
-       },
-       "heat_days": {
-        "value": 45.0,
-        "normal": 43.23,
-        "z": 0.22
-       },
-       "soil": {
-        "value": 0.47,
-        "normal": 0.46,
-        "z": 0.27
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "중립"
+      "start": "2026-11-25",
+      "end": "2027-02-05",
+      "state": "upcoming",
+      "status": "upcoming",
+      "status_ko": "예정"
      },
      {
       "kind": "repro",
       "name_ko": "개화·꼬투리 형성",
-      "start": "2026-01-20",
-      "end": "2026-03-05",
-      "state": "done",
-      "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 154.03,
-        "normal": 178.49,
-        "z": -0.47
-       },
-       "dry_spell": {
-        "value": 6.0,
-        "normal": 8.13,
-        "z": -0.68
-       },
-       "heat_days": {
-        "value": 30.0,
-        "normal": 23.7,
-        "z": 0.78
-       },
-       "soil": {
-        "value": 0.47,
-        "normal": 0.47,
-        "z": -0.01
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "중립"
+      "start": "2027-01-20",
+      "end": "2027-03-05",
+      "state": "upcoming",
+      "status": "upcoming",
+      "status_ko": "예정"
      },
      {
       "kind": "fill",
       "name_ko": "종실 비대",
-      "start": "2026-02-15",
-      "end": "2026-03-31",
-      "state": "done",
-      "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 165.29,
-        "normal": 177.06,
-        "z": -0.2
-       },
-       "dry_spell": {
-        "value": 5.0,
-        "normal": 8.23,
-        "z": -1.05
-       },
-       "heat_days": {
-        "value": 21.0,
-        "normal": 16.0,
-        "z": 0.62
-       },
-       "soil": {
-        "value": 0.48,
-        "normal": 0.48,
-        "z": -0.07
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "중립"
+      "start": "2027-02-15",
+      "end": "2027-03-31",
+      "state": "upcoming",
+      "status": "upcoming",
+      "status_ko": "예정"
      },
      {
       "kind": "harvest",
       "name_ko": "수확",
-      "start": "2026-04-01",
-      "end": "2026-06-15",
-      "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 323mm (평년 118mm)",
-      "metrics": {
-       "precip": {
-        "value": 322.93,
-        "normal": 118.1,
-        "z": 4.27
-       },
-       "dry_spell": {
-        "value": 15.0,
-        "normal": 20.47,
-        "z": -0.57
-       },
-       "heat_days": {
-        "value": 4.0,
-        "normal": 2.8,
-        "z": 0.26
-       },
-       "soil": {
-        "value": 0.52,
-        "normal": 0.47,
-        "z": 1.04
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "불리"
+      "start": "2027-04-01",
+      "end": "2027-06-15",
+      "state": "upcoming",
+      "status": "upcoming",
+      "status_ko": "예정"
      }
     ],
     "overall": {
      "verdict": "neutral",
      "verdict_ko": "중립",
      "score": 0.0,
-     "reason_ko": "판정 단계 모두 평년 수준 · 수확 불리(품질·수확 진도, 판정 제외)",
+     "reason_ko": "판정 단계 모두 평년 수준",
      "history_check": null,
-     "judged_stages": 5,
+     "judged_stages": 1,
      "total_stages": 5
     },
     "history": {
@@ -4029,28 +3927,29 @@
       "start": "2026-09-15",
       "end": "2026-12-31",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "파종기 건조 · 토양수분 0.42 (평년 0.48)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 131.42,
-        "normal": 164.32,
-        "z": -0.48
+        "value": 139.27,
+        "normal": 171.33,
+        "z": -0.49
        },
        "dry_spell": {
         "value": 12.0,
-        "normal": 13.8,
-        "z": -0.28
+        "normal": 13.87,
+        "z": -0.29
        },
        "heat_days": {
         "value": 2.0,
-        "normal": 2.23,
-        "z": -0.13
+        "normal": 2.57,
+        "z": -0.27
        },
        "soil": {
         "value": 0.42,
-        "normal": 0.48,
-        "z": -1.63
+        "normal": 0.49,
+        "z": -1.68,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4058,8 +3957,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.56,
-      "status_ko": "불리"
+      "observed_share": 0.57,
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -4067,28 +3966,29 @@
       "start": "2026-10-01",
       "end": "2027-01-10",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.41 (평년 0.49)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 101.1,
-        "normal": 140.58,
-        "z": -0.57
+        "value": 108.95,
+        "normal": 147.59,
+        "z": -0.58
        },
        "dry_spell": {
         "value": 12.0,
-        "normal": 10.4,
-        "z": 0.35
+        "normal": 10.47,
+        "z": 0.34
        },
        "heat_days": {
         "value": 2.0,
-        "normal": 2.13,
-        "z": -0.07
+        "normal": 2.47,
+        "z": -0.23
        },
        "soil": {
-        "value": 0.41,
+        "value": 0.4,
         "normal": 0.49,
-        "z": -2.13
+        "z": -2.17,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4096,8 +3996,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.43,
-      "status_ko": "불리"
+      "observed_share": 0.45,
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -4128,11 +4028,11 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -2.0,
-     "reason_ko": "불리: 파종, 출아·영양생장 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
-     "history_check": "unmatched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준",
+     "history_check": null,
      "judged_stages": 2,
      "total_stages": 5
     },
@@ -4215,8 +4115,8 @@
       "start": "2026-05-15",
       "end": "2026-07-31",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "파종 수분 충분 · 토양수분 0.60 (평년 0.53)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 79.87,
@@ -4236,7 +4136,8 @@
        "soil": {
         "value": 0.6,
         "normal": 0.53,
-        "z": 2.08
+        "z": 2.08,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4245,7 +4146,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -4253,8 +4154,8 @@
       "start": "2026-06-01",
       "end": "2026-09-15",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.60 (평년 0.53)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 116.24,
@@ -4274,7 +4175,8 @@
        "soil": {
         "value": 0.6,
         "normal": 0.53,
-        "z": 1.78
+        "z": 1.78,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4283,7 +4185,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -4291,8 +4193,8 @@
       "start": "2026-09-10",
       "end": "2026-10-31",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.60 (평년 0.53)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 113.36,
@@ -4312,7 +4214,8 @@
        "soil": {
         "value": 0.6,
         "normal": 0.53,
-        "z": 1.39
+        "z": 1.39,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4321,7 +4224,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -4333,24 +4236,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 56.58,
-        "normal": 100.57,
-        "z": -0.85
+        "value": 58.64,
+        "normal": 108.58,
+        "z": -0.96
        },
        "dry_spell": {
         "value": 6.0,
-        "normal": 8.47,
-        "z": -0.56
+        "normal": 8.5,
+        "z": -0.57
        },
        "heat_days": {
         "value": 1.0,
-        "normal": 0.5,
-        "z": 0.44
+        "normal": 0.53,
+        "z": 0.39
        },
        "soil": {
         "value": 0.61,
         "normal": 0.52,
-        "z": 1.46
+        "z": 1.47,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4358,7 +4262,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.67,
+      "observed_share": 0.71,
       "status_ko": "중립"
      },
      {
@@ -4366,18 +4270,21 @@
       "name_ko": "수확",
       "start": "2026-11-15",
       "end": "2027-01-15",
-      "state": "upcoming",
-      "status": "upcoming",
-      "status_ko": "예정"
+      "state": "in_progress",
+      "status": "neutral",
+      "reason_ko": "기상 자료 부족",
+      "metrics": {},
+      "observed_share": 0.02,
+      "status_ko": "중립"
      }
     ],
     "overall": {
-     "verdict": "favorable",
-     "verdict_ko": "유리",
-     "score": 4.0,
-     "reason_ko": "유리: 파종, 출아·분얼·마디신장, 출수·개화 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
-     "history_check": "unmatched",
-     "judged_stages": 4,
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준",
+     "history_check": null,
+     "judged_stages": 5,
      "total_stages": 5
     },
     "history": {
@@ -4459,28 +4366,29 @@
       "start": "2026-10-01",
       "end": "2026-12-15",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "파종기 건조 · 토양수분 0.38 (평년 0.48)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 133.08,
-        "normal": 153.37,
-        "z": -0.33
+        "value": 135.94,
+        "normal": 162.98,
+        "z": -0.46
        },
        "dry_spell": {
         "value": 9.0,
-        "normal": 8.97,
-        "z": 0.01
+        "normal": 9.13,
+        "z": -0.05
        },
        "heat_days": {
         "value": 4.0,
-        "normal": 7.03,
-        "z": -0.67
+        "normal": 7.43,
+        "z": -0.76
        },
        "soil": {
-        "value": 0.38,
+        "value": 0.37,
         "normal": 0.48,
-        "z": -2.74
+        "z": -2.87,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4488,8 +4396,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.58,
-      "status_ko": "불리"
+      "observed_share": 0.61,
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -4497,28 +4405,29 @@
       "start": "2026-10-20",
       "end": "2027-01-10",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.37 (평년 0.49)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 65.78,
-        "normal": 103.84,
-        "z": -0.79
+        "value": 68.64,
+        "normal": 113.45,
+        "z": -0.89
        },
        "dry_spell": {
         "value": 8.0,
-        "normal": 6.8,
-        "z": 0.54
+        "normal": 7.13,
+        "z": 0.38
        },
        "heat_days": {
         "value": 4.0,
-        "normal": 4.03,
-        "z": -0.01
+        "normal": 4.43,
+        "z": -0.16
        },
        "soil": {
         "value": 0.37,
         "normal": 0.49,
-        "z": -2.71
+        "z": -2.86,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4526,8 +4435,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.3,
-      "status_ko": "불리"
+      "observed_share": 0.33,
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -4558,11 +4467,11 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -2.0,
-     "reason_ko": "불리: 파종, 출아·꽃봉오리",
-     "history_check": "matched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준",
+     "history_check": null,
      "judged_stages": 2,
      "total_stages": 5
     },
@@ -4720,14 +4629,14 @@
       "name_ko": "수확·압착",
       "start": "2026-05-15",
       "end": "2026-11-15",
-      "state": "in_progress",
+      "state": "done",
       "status": "unfavorable",
-      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 847mm (평년 144mm)",
+      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 864mm (평년 149mm)",
       "metrics": {
        "precip": {
-        "value": 846.99,
-        "normal": 143.93,
-        "z": 11.9
+        "value": 863.9,
+        "normal": 149.41,
+        "z": 11.7
        },
        "dry_spell": {
         "value": 25.0,
@@ -4736,13 +4645,14 @@
        },
        "heat_days": {
         "value": 3.0,
-        "normal": 9.97,
-        "z": -1.55
+        "normal": 10.37,
+        "z": -1.54
        },
        "soil": {
         "value": 0.6,
         "normal": 0.53,
-        "z": 6.15
+        "z": 6.06,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4750,7 +4660,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.99,
+      "observed_share": 1.0,
       "status_ko": "불리"
      }
     ],
@@ -4781,8 +4691,8 @@
       "start": "2026-09-15",
       "end": "2026-10-31",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "파종 수분 충분 · 토양수분 0.46 (평년 0.42)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 49.22,
@@ -4802,7 +4712,8 @@
        "soil": {
         "value": 0.46,
         "normal": 0.42,
-        "z": 1.75
+        "z": 1.75,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4811,7 +4722,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -4819,18 +4730,18 @@
       "start": "2026-10-01",
       "end": "2026-11-30",
       "state": "in_progress",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.49 (평년 0.43)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 40.52,
-        "normal": 68.27,
-        "z": -0.74
+        "value": 51.45,
+        "normal": 72.21,
+        "z": -0.54
        },
        "dry_spell": {
         "value": 19.0,
-        "normal": 14.23,
-        "z": 0.86
+        "normal": 14.63,
+        "z": 0.8
        },
        "heat_days": {
         "value": 0.0,
@@ -4840,7 +4751,8 @@
        "soil": {
         "value": 0.49,
         "normal": 0.43,
-        "z": 2.06
+        "z": 2.07,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -4848,8 +4760,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.72,
-      "status_ko": "유리"
+      "observed_share": 0.75,
+      "status_ko": "중립"
      },
      {
       "kind": "dormant",
@@ -4898,11 +4810,11 @@
      }
     ],
     "overall": {
-     "verdict": "favorable",
-     "verdict_ko": "유리",
-     "score": 2.0,
-     "reason_ko": "유리: 파종, 출아·분얼",
-     "history_check": "matched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준",
+     "history_check": null,
      "judged_stages": 2,
      "total_stages": 7
     },
@@ -4992,7 +4904,8 @@
        "soil": {
         "value": 0.44,
         "normal": 0.43,
-        "z": 0.37
+        "z": 0.37,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5030,7 +4943,8 @@
        "soil": {
         "value": 0.48,
         "normal": 0.46,
-        "z": 0.39
+        "z": 0.39,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5046,9 +4960,12 @@
       "name_ko": "월동(휴면)",
       "start": "2026-11-15",
       "end": "2027-03-20",
-      "state": "upcoming",
-      "status": "upcoming",
-      "status_ko": "예정"
+      "state": "in_progress",
+      "status": "neutral",
+      "reason_ko": "기상 자료 부족",
+      "metrics": {},
+      "observed_share": 0.01,
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -5093,7 +5010,7 @@
      "score": 0.0,
      "reason_ko": "판정 단계 모두 평년 수준",
      "history_check": null,
-     "judged_stages": 2,
+     "judged_stages": 3,
      "total_stages": 7
     },
     "history": {
@@ -5182,7 +5099,8 @@
        "soil": {
         "value": 0.37,
         "normal": 0.37,
-        "z": -0.24
+        "z": -0.24,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5220,7 +5138,8 @@
        "soil": {
         "value": 0.41,
         "normal": 0.39,
-        "z": 0.76
+        "z": 0.76,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5238,9 +5157,36 @@
       "end": "2027-03-25",
       "state": "in_progress",
       "status": "neutral",
-      "reason_ko": "기상 자료 부족",
-      "metrics": {},
-      "observed_share": 0.03,
+      "reason_ko": "평년 수준",
+      "metrics": {
+       "precip": {
+        "value": 8.47,
+        "normal": 6.9,
+        "z": 0.25
+       },
+       "dry_spell": {
+        "value": 2.0,
+        "normal": 3.87,
+        "z": -1.03
+       },
+       "heat_days": {
+        "value": 0.0,
+        "normal": 0.0,
+        "z": 0.0
+       },
+       "soil": {
+        "value": 0.43,
+        "normal": 0.41,
+        "z": 0.77,
+        "reference_only": true
+       },
+       "winterkill_days": {
+        "value": 0.0,
+        "normal": 0.03,
+        "z": -0.18
+       }
+      },
+      "observed_share": 0.04,
       "status_ko": "중립"
      },
      {
@@ -5375,7 +5321,8 @@
        "soil": {
         "value": 0.39,
         "normal": 0.41,
-        "z": -0.69
+        "z": -0.69,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5392,18 +5339,18 @@
       "start": "2026-09-05",
       "end": "2026-11-30",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.38 (평년 0.42)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 61.47,
-        "normal": 89.7,
-        "z": -0.76
+        "value": 62.97,
+        "normal": 92.52,
+        "z": -0.79
        },
        "dry_spell": {
         "value": 23.0,
-        "normal": 18.93,
-        "z": 0.55
+        "normal": 19.1,
+        "z": 0.53
        },
        "heat_days": {
         "value": 1.0,
@@ -5412,8 +5359,9 @@
        },
        "soil": {
         "value": 0.38,
-        "normal": 0.42,
-        "z": -1.07
+        "normal": 0.43,
+        "z": -1.1,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5421,8 +5369,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.8,
-      "status_ko": "불리"
+      "observed_share": 0.83,
+      "status_ko": "중립"
      },
      {
       "kind": "dormant",
@@ -5473,8 +5421,8 @@
     "overall": {
      "verdict": "neutral",
      "verdict_ko": "중립",
-     "score": -1.0,
-     "reason_ko": "불리: 출아·분얼",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준",
      "history_check": null,
      "judged_stages": 2,
      "total_stages": 7
@@ -5620,8 +5568,8 @@
       "start": "2026-06-25",
       "end": "2026-07-25",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.53 (평년 0.42)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 77.04,
@@ -5641,7 +5589,8 @@
        "soil": {
         "value": 0.53,
         "normal": 0.42,
-        "z": 3.34
+        "z": 3.34,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5650,7 +5599,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -5658,8 +5607,8 @@
       "start": "2026-07-15",
       "end": "2026-08-25",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.47 (평년 0.40)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 62.2,
@@ -5679,7 +5628,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.4,
-        "z": 2.34
+        "z": 2.34,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5688,7 +5638,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -5717,7 +5667,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.4,
-        "z": 2.41
+        "z": 2.41,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5730,11 +5681,11 @@
      }
     ],
     "overall": {
-     "verdict": "favorable",
-     "verdict_ko": "유리",
-     "score": 4.0,
-     "reason_ko": "불리: 파종 · 유리: 출아·영양생장, 개화, 종실 충실 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
-     "history_check": "unmatched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 0.0,
+     "reason_ko": "불리: 파종 · 유리: 출아·영양생장",
+     "history_check": null,
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -5900,7 +5851,8 @@
        "soil": {
         "value": 0.46,
         "normal": 0.45,
-        "z": 0.08
+        "z": 0.08,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5938,7 +5890,8 @@
        "soil": {
         "value": 0.44,
         "normal": 0.42,
-        "z": 0.46
+        "z": 0.46,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -5976,7 +5929,8 @@
        "soil": {
         "value": 0.43,
         "normal": 0.43,
-        "z": -0.08
+        "z": -0.08,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6159,7 +6113,8 @@
        "soil": {
         "value": 0.45,
         "normal": 0.46,
-        "z": -0.1
+        "z": -0.1,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6197,7 +6152,8 @@
        "soil": {
         "value": 0.44,
         "normal": 0.45,
-        "z": -0.6
+        "z": -0.6,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6235,7 +6191,8 @@
        "soil": {
         "value": 0.43,
         "normal": 0.46,
-        "z": -2.35
+        "z": -2.35,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6411,7 +6368,8 @@
        "soil": {
         "value": 0.59,
         "normal": 0.59,
-        "z": -0.28
+        "z": -0.28,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6449,7 +6407,8 @@
        "soil": {
         "value": 0.58,
         "normal": 0.58,
-        "z": -0.64
+        "z": -0.64,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6487,7 +6446,8 @@
        "soil": {
         "value": 0.52,
         "normal": 0.6,
-        "z": -5.17
+        "z": -5.17,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6573,28 +6533,29 @@
       "start": "2026-10-25",
       "end": "2026-12-10",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "파종기 건조 · 토양수분 0.34 (평년 0.40)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 0.08,
-        "normal": 1.69,
-        "z": -0.66
+        "value": 0.1,
+        "normal": 2.16,
+        "z": -0.8
        },
        "dry_spell": {
-        "value": 20.0,
-        "normal": 17.57,
-        "z": 0.63
+        "value": 22.0,
+        "normal": 18.83,
+        "z": 0.74
        },
        "heat_days": {
         "value": 17.0,
-        "normal": 4.1,
-        "z": 2.62
+        "normal": 4.13,
+        "z": 2.58
        },
        "soil": {
         "value": 0.34,
         "normal": 0.4,
-        "z": -1.13
+        "z": -1.13,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6602,8 +6563,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.43,
-      "status_ko": "불리"
+      "observed_share": 0.47,
+      "status_ko": "중립"
      },
      {
       "kind": "veg",
@@ -6612,27 +6573,28 @@
       "end": "2027-01-31",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.34 (평년 0.39) · 고온 고온일 7일 (평년 0일)",
+      "reason_ko": "고온 · 고온일 7일 (평년 0일)",
       "metrics": {
        "precip": {
-        "value": 0.0,
-        "normal": 1.12,
-        "z": -0.59
+        "value": 0.02,
+        "normal": 1.6,
+        "z": -0.72
        },
        "dry_spell": {
-        "value": 9.0,
-        "normal": 8.3,
-        "z": 0.5
+        "value": 11.0,
+        "normal": 9.9,
+        "z": 0.66
        },
        "heat_days": {
         "value": 7.0,
-        "normal": 0.47,
-        "z": 5.91
+        "normal": 0.5,
+        "z": 5.57
        },
        "soil": {
         "value": 0.34,
         "normal": 0.39,
-        "z": -1.08
+        "z": -1.09,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6640,7 +6602,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.1,
+      "observed_share": 0.12,
       "status_ko": "불리"
      },
      {
@@ -6672,11 +6634,11 @@
      }
     ],
     "overall": {
-     "verdict": "unfavorable",
-     "verdict_ko": "불리",
-     "score": -2.0,
-     "reason_ko": "불리: 파종, 출아·분얼·마디신장 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
-     "history_check": "unmatched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": -1.0,
+     "reason_ko": "불리: 출아·분얼·마디신장",
+     "history_check": null,
      "judged_stages": 2,
      "total_stages": 5
     },
@@ -6776,7 +6738,8 @@
        "soil": {
         "value": 0.75,
         "normal": 0.72,
-        "z": 0.45
+        "z": 0.45,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6814,7 +6777,8 @@
        "soil": {
         "value": 0.81,
         "normal": 0.81,
-        "z": 0.09
+        "z": 0.09,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6852,7 +6816,8 @@
        "soil": {
         "value": 0.91,
         "normal": 0.91,
-        "z": 0.05
+        "z": 0.05,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6890,7 +6855,8 @@
        "soil": {
         "value": 0.93,
         "normal": 0.9,
-        "z": 0.44
+        "z": 0.44,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -6928,7 +6894,8 @@
        "soil": {
         "value": 0.78,
         "normal": 0.77,
-        "z": 0.11
+        "z": 0.11,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7045,7 +7012,8 @@
        "soil": {
         "value": 0.68,
         "normal": 0.69,
-        "z": -0.24
+        "z": -0.24,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7083,7 +7051,8 @@
        "soil": {
         "value": 0.77,
         "normal": 0.76,
-        "z": 0.09
+        "z": 0.09,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7121,7 +7090,8 @@
        "soil": {
         "value": 0.75,
         "normal": 0.82,
-        "z": -0.98
+        "z": -0.98,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7139,17 +7109,17 @@
       "end": "2026-11-30",
       "state": "in_progress",
       "status": "favorable",
-      "reason_ko": "건조한 수확기 · 강수량 8mm (평년 64mm)",
+      "reason_ko": "건조한 수확기 · 강수량 8mm (평년 65mm)",
       "metrics": {
        "precip": {
         "value": 7.53,
-        "normal": 63.84,
-        "z": -1.21
+        "normal": 64.96,
+        "z": -1.22
        },
        "dry_spell": {
         "value": 28.0,
-        "normal": 23.37,
-        "z": 0.58
+        "normal": 24.5,
+        "z": 0.41
        },
        "heat_days": {
         "value": 0.0,
@@ -7157,9 +7127,10 @@
         "z": -0.18
        },
        "soil": {
-        "value": 0.7,
-        "normal": 0.75,
-        "z": -0.63
+        "value": 0.69,
+        "normal": 0.74,
+        "z": -0.65,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7167,7 +7138,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.72,
+      "observed_share": 0.75,
       "status_ko": "유리"
      },
      {
@@ -7181,13 +7152,13 @@
       "metrics": {
        "precip": {
         "value": 6.72,
-        "normal": 28.21,
-        "z": -0.66
+        "normal": 29.33,
+        "z": -0.67
        },
        "dry_spell": {
-        "value": 15.0,
-        "normal": 21.23,
-        "z": -0.84
+        "value": 17.0,
+        "normal": 22.57,
+        "z": -0.7
        },
        "heat_days": {
         "value": 0.0,
@@ -7195,9 +7166,10 @@
         "z": -0.18
        },
        "soil": {
-        "value": 0.67,
+        "value": 0.66,
         "normal": 0.72,
-        "z": -0.68
+        "z": -0.69,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7205,7 +7177,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.24,
+      "observed_share": 0.26,
       "status_ko": "중립"
      }
     ],
@@ -7347,7 +7319,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.53,
-        "z": -0.57
+        "z": -0.57,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7364,8 +7337,8 @@
       "start": "2026-08-15",
       "end": "2026-09-30",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.52 (평년 0.57)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 46.67,
@@ -7385,7 +7358,8 @@
        "soil": {
         "value": 0.52,
         "normal": 0.57,
-        "z": -1.16
+        "z": -1.16,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7394,7 +7368,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -7423,7 +7397,8 @@
        "soil": {
         "value": 0.39,
         "normal": 0.51,
-        "z": -3.85
+        "z": -3.85,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7444,24 +7419,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 5.44,
-        "normal": 22.0,
-        "z": -0.99
+        "value": 8.41,
+        "normal": 23.15,
+        "z": -0.82
        },
        "dry_spell": {
         "value": 30.0,
-        "normal": 15.53,
-        "z": 2.26
+        "normal": 16.17,
+        "z": 2.19
        },
        "heat_days": {
         "value": 2.0,
-        "normal": 5.2,
-        "z": -0.94
+        "normal": 6.07,
+        "z": -1.11
        },
        "soil": {
         "value": 0.3,
         "normal": 0.47,
-        "z": -7.06
+        "z": -7.21,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7469,15 +7445,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.38,
+      "observed_share": 0.41,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 출수·개화, 등숙",
+     "score": -2.0,
+     "reason_ko": "불리: 등숙",
      "history_check": "matched",
      "judged_stages": 5,
      "total_stages": 5
@@ -7597,8 +7573,8 @@
       "start": "2026-05-10",
       "end": "2026-08-31",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.50 (평년 0.46)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 232.29,
@@ -7618,7 +7594,8 @@
        "soil": {
         "value": 0.5,
         "normal": 0.46,
-        "z": 1.18
+        "z": 1.18,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7627,7 +7604,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -7656,7 +7633,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.48,
-        "z": -0.25
+        "z": -0.25,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7673,8 +7651,8 @@
       "start": "2026-09-20",
       "end": "2026-11-10",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.34 (평년 0.45)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 51.31,
@@ -7694,7 +7672,8 @@
        "soil": {
         "value": 0.34,
         "normal": 0.45,
-        "z": -2.78
+        "z": -2.78,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7703,7 +7682,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -7715,24 +7694,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 18.94,
-        "normal": 19.2,
-        "z": -0.01
+        "value": 19.66,
+        "normal": 19.68,
+        "z": -0.0
        },
        "dry_spell": {
-        "value": 12.0,
-        "normal": 11.7,
-        "z": 0.06
+        "value": 14.0,
+        "normal": 12.57,
+        "z": 0.24
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.93,
+        "normal": 2.23,
         "z": -0.92
        },
        "soil": {
         "value": 0.3,
         "normal": 0.43,
-        "z": -3.37
+        "z": -3.39,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7740,15 +7720,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.29,
+      "observed_share": 0.32,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 파종, 출수·개화, 등숙 · 유리: 출아·분얼·마디신장 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
+     "score": -3.0,
+     "reason_ko": "불리: 파종, 출수·개화 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
      "history_check": "unmatched",
      "judged_stages": 5,
      "total_stages": 5
@@ -7868,8 +7848,8 @@
       "start": "2026-05-10",
       "end": "2026-09-10",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.71 (평년 0.65)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 255.4,
@@ -7889,7 +7869,8 @@
        "soil": {
         "value": 0.71,
         "normal": 0.65,
-        "z": 1.97
+        "z": 1.97,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7898,7 +7879,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -7927,7 +7908,8 @@
        "soil": {
         "value": 0.65,
         "normal": 0.66,
-        "z": -0.15
+        "z": -0.15,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7944,28 +7926,29 @@
       "start": "2026-10-01",
       "end": "2026-11-20",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.54 (평년 0.62)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 73.89,
-        "normal": 62.02,
-        "z": 0.28
+        "value": 75.59,
+        "normal": 64.48,
+        "z": 0.26
        },
        "dry_spell": {
         "value": 8.0,
-        "normal": 14.03,
-        "z": -0.82
+        "normal": 14.17,
+        "z": -0.84
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.93,
-        "z": -0.69
+        "normal": 2.17,
+        "z": -0.72
        },
        "soil": {
-        "value": 0.54,
+        "value": 0.53,
         "normal": 0.62,
-        "z": -1.65
+        "z": -1.66,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -7973,8 +7956,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.86,
-      "status_ko": "불리"
+      "observed_share": 0.9,
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -7986,24 +7969,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 7.68,
-        "normal": 20.81,
-        "z": -0.75
+        "value": 9.38,
+        "normal": 23.27,
+        "z": -0.79
        },
        "dry_spell": {
         "value": 8.0,
-        "normal": 7.87,
-        "z": 0.05
+        "normal": 8.53,
+        "z": -0.17
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.0,
-        "z": -0.5
+        "normal": 1.23,
+        "z": -0.53
        },
        "soil": {
         "value": 0.52,
         "normal": 0.6,
-        "z": -1.56
+        "z": -1.56,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8011,15 +7995,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.17,
+      "observed_share": 0.2,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 파종, 출수·개화, 등숙 · 유리: 출아·분얼·마디신장",
+     "score": -3.0,
+     "reason_ko": "불리: 파종, 출수·개화",
      "history_check": "matched",
      "judged_stages": 5,
      "total_stages": 5
@@ -8198,7 +8182,8 @@
        "soil": {
         "value": 0.41,
         "normal": 0.4,
-        "z": 0.56
+        "z": 0.56,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8236,7 +8221,8 @@
        "soil": {
         "value": 0.37,
         "normal": 0.38,
-        "z": -0.76
+        "z": -0.76,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8274,7 +8260,8 @@
        "soil": {
         "value": 0.42,
         "normal": 0.39,
-        "z": 1.58
+        "z": 1.58,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8472,7 +8459,8 @@
        "soil": {
         "value": 0.38,
         "normal": 0.38,
-        "z": 0.25
+        "z": 0.25,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8510,7 +8498,8 @@
        "soil": {
         "value": 0.36,
         "normal": 0.37,
-        "z": -0.18
+        "z": -0.18,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8548,7 +8537,8 @@
        "soil": {
         "value": 0.41,
         "normal": 0.38,
-        "z": 1.74
+        "z": 1.74,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8726,7 +8716,7 @@
       "end": "2026-07-31",
       "state": "done",
       "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.77 (평년 0.59)",
+      "reason_ko": "수분 넉넉·고온 없음 · 강수량 175mm (평년 106mm)",
       "metrics": {
        "precip": {
         "value": 175.31,
@@ -8746,7 +8736,8 @@
        "soil": {
         "value": 0.77,
         "normal": 0.59,
-        "z": 3.11
+        "z": 3.11,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8763,8 +8754,8 @@
       "start": "2026-07-20",
       "end": "2026-08-25",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.70 (평년 0.57)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 56.62,
@@ -8784,7 +8775,8 @@
        "soil": {
         "value": 0.7,
         "normal": 0.57,
-        "z": 2.59
+        "z": 2.59,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8793,7 +8785,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -8822,7 +8814,8 @@
        "soil": {
         "value": 0.61,
         "normal": 0.55,
-        "z": 1.44
+        "z": 1.44,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -8837,8 +8830,8 @@
     "overall": {
      "verdict": "favorable",
      "verdict_ko": "유리",
-     "score": 5.0,
-     "reason_ko": "유리: 출아·로제트·추대, 개화, 꼬투리 충실 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
+     "score": 3.0,
+     "reason_ko": "유리: 출아·로제트·추대, 개화 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
      "history_check": "unmatched",
      "judged_stages": 5,
      "total_stages": 5
@@ -9000,7 +8993,7 @@
       "end": "2026-07-31",
       "state": "done",
       "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.77 (평년 0.59)",
+      "reason_ko": "수분 넉넉·고온 없음 · 강수량 175mm (평년 106mm)",
       "metrics": {
        "precip": {
         "value": 175.31,
@@ -9020,7 +9013,8 @@
        "soil": {
         "value": 0.77,
         "normal": 0.59,
-        "z": 3.11
+        "z": 3.11,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9037,8 +9031,8 @@
       "start": "2026-07-20",
       "end": "2026-08-25",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.70 (평년 0.57)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 56.62,
@@ -9058,7 +9052,8 @@
        "soil": {
         "value": 0.7,
         "normal": 0.57,
-        "z": 2.59
+        "z": 2.59,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9067,7 +9062,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -9096,7 +9091,8 @@
        "soil": {
         "value": 0.61,
         "normal": 0.55,
-        "z": 1.44
+        "z": 1.44,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9111,8 +9107,8 @@
     "overall": {
      "verdict": "favorable",
      "verdict_ko": "유리",
-     "score": 5.0,
-     "reason_ko": "유리: 출아·로제트·추대, 개화, 꼬투리 충실 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
+     "score": 3.0,
+     "reason_ko": "유리: 출아·로제트·추대, 개화 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
      "history_check": "unmatched",
      "judged_stages": 5,
      "total_stages": 5
@@ -9294,7 +9290,8 @@
        "soil": {
         "value": 0.52,
         "normal": 0.52,
-        "z": 0.09
+        "z": 0.09,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9332,7 +9329,8 @@
        "soil": {
         "value": 0.48,
         "normal": 0.49,
-        "z": -0.24
+        "z": -0.24,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9370,7 +9368,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.49,
-        "z": 0.82
+        "z": 0.82,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9568,7 +9567,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.51,
-        "z": -1.11
+        "z": -1.11,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9606,7 +9606,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.5,
-        "z": -0.95
+        "z": -0.95,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9627,14 +9628,14 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 94.65,
-        "normal": 76.67,
-        "z": 0.53
+        "value": 95.95,
+        "normal": 79.65,
+        "z": 0.48
        },
        "dry_spell": {
         "value": 18.0,
-        "normal": 7.83,
-        "z": 3.15
+        "normal": 7.9,
+        "z": 3.11
        },
        "heat_days": {
         "value": 0.0,
@@ -9644,7 +9645,8 @@
        "soil": {
         "value": 0.26,
         "normal": 0.55,
-        "z": -5.14
+        "z": -5.12,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9652,7 +9654,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.72,
+      "observed_share": 0.75,
       "status_ko": "중립"
      }
     ],
@@ -9842,7 +9844,8 @@
        "soil": {
         "value": 0.42,
         "normal": 0.4,
-        "z": 1.0
+        "z": 1.0,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9880,7 +9883,8 @@
        "soil": {
         "value": 0.37,
         "normal": 0.39,
-        "z": -0.64
+        "z": -0.64,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -9918,7 +9922,8 @@
        "soil": {
         "value": 0.4,
         "normal": 0.39,
-        "z": 0.76
+        "z": 0.76,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10115,7 +10120,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.51,
-        "z": -1.11
+        "z": -1.11,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10153,7 +10159,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.5,
-        "z": -0.95
+        "z": -0.95,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10174,14 +10181,14 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 94.65,
-        "normal": 76.67,
-        "z": 0.53
+        "value": 95.95,
+        "normal": 79.65,
+        "z": 0.48
        },
        "dry_spell": {
         "value": 18.0,
-        "normal": 7.83,
-        "z": 3.15
+        "normal": 7.9,
+        "z": 3.11
        },
        "heat_days": {
         "value": 0.0,
@@ -10191,7 +10198,8 @@
        "soil": {
         "value": 0.26,
         "normal": 0.55,
-        "z": -5.14
+        "z": -5.12,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10199,7 +10207,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.72,
+      "observed_share": 0.75,
       "status_ko": "중립"
      }
     ],
@@ -10389,7 +10397,8 @@
        "soil": {
         "value": 0.5,
         "normal": 0.5,
-        "z": -0.04
+        "z": -0.04,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10427,7 +10436,8 @@
        "soil": {
         "value": 0.48,
         "normal": 0.49,
-        "z": -0.28
+        "z": -0.28,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10465,7 +10475,8 @@
        "soil": {
         "value": 0.54,
         "normal": 0.5,
-        "z": 1.63
+        "z": 1.63,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10563,7 +10574,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.53,
-        "z": -0.57
+        "z": -0.57,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10580,8 +10592,8 @@
       "start": "2026-08-15",
       "end": "2026-09-30",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.52 (평년 0.57)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 46.67,
@@ -10601,7 +10613,8 @@
        "soil": {
         "value": 0.52,
         "normal": 0.57,
-        "z": -1.16
+        "z": -1.16,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10610,7 +10623,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -10639,7 +10652,8 @@
        "soil": {
         "value": 0.39,
         "normal": 0.51,
-        "z": -3.85
+        "z": -3.85,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10660,24 +10674,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 5.44,
-        "normal": 22.0,
-        "z": -0.99
+        "value": 8.41,
+        "normal": 23.15,
+        "z": -0.82
        },
        "dry_spell": {
         "value": 30.0,
-        "normal": 15.53,
-        "z": 2.26
+        "normal": 16.17,
+        "z": 2.19
        },
        "heat_days": {
         "value": 2.0,
-        "normal": 5.2,
-        "z": -0.94
+        "normal": 6.07,
+        "z": -1.11
        },
        "soil": {
         "value": 0.3,
         "normal": 0.47,
-        "z": -7.06
+        "z": -7.21,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10685,15 +10700,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.38,
+      "observed_share": 0.41,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 출수·개화, 등숙",
+     "score": -2.0,
+     "reason_ko": "불리: 등숙",
      "history_check": "matched",
      "judged_stages": 5,
      "total_stages": 5
@@ -10834,7 +10849,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.53,
-        "z": -0.57
+        "z": -0.57,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10851,8 +10867,8 @@
       "start": "2026-08-15",
       "end": "2026-09-30",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.52 (평년 0.57)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 46.67,
@@ -10872,7 +10888,8 @@
        "soil": {
         "value": 0.52,
         "normal": 0.57,
-        "z": -1.16
+        "z": -1.16,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10881,7 +10898,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -10910,7 +10927,8 @@
        "soil": {
         "value": 0.39,
         "normal": 0.51,
-        "z": -3.85
+        "z": -3.85,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10931,24 +10949,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 5.44,
-        "normal": 22.0,
-        "z": -0.99
+        "value": 8.41,
+        "normal": 23.15,
+        "z": -0.82
        },
        "dry_spell": {
         "value": 30.0,
-        "normal": 15.53,
-        "z": 2.26
+        "normal": 16.17,
+        "z": 2.19
        },
        "heat_days": {
         "value": 2.0,
-        "normal": 5.2,
-        "z": -0.94
+        "normal": 6.07,
+        "z": -1.11
        },
        "soil": {
         "value": 0.3,
         "normal": 0.47,
-        "z": -7.06
+        "z": -7.21,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -10956,15 +10975,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.38,
+      "observed_share": 0.41,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 출수·개화, 등숙",
+     "score": -2.0,
+     "reason_ko": "불리: 등숙",
      "history_check": "matched",
      "judged_stages": 5,
      "total_stages": 5
@@ -11084,8 +11103,8 @@
       "start": "2026-05-10",
       "end": "2026-08-31",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.50 (평년 0.46)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 232.29,
@@ -11105,7 +11124,8 @@
        "soil": {
         "value": 0.5,
         "normal": 0.46,
-        "z": 1.18
+        "z": 1.18,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11114,7 +11134,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -11143,7 +11163,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.48,
-        "z": -0.25
+        "z": -0.25,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11160,8 +11181,8 @@
       "start": "2026-09-20",
       "end": "2026-11-10",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.34 (평년 0.45)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 51.31,
@@ -11181,7 +11202,8 @@
        "soil": {
         "value": 0.34,
         "normal": 0.45,
-        "z": -2.78
+        "z": -2.78,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11190,7 +11212,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -11202,24 +11224,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 18.94,
-        "normal": 19.2,
-        "z": -0.01
+        "value": 19.66,
+        "normal": 19.68,
+        "z": -0.0
        },
        "dry_spell": {
-        "value": 12.0,
-        "normal": 11.7,
-        "z": 0.06
+        "value": 14.0,
+        "normal": 12.57,
+        "z": 0.24
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.93,
+        "normal": 2.23,
         "z": -0.92
        },
        "soil": {
         "value": 0.3,
         "normal": 0.43,
-        "z": -3.37
+        "z": -3.39,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11227,15 +11250,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.29,
+      "observed_share": 0.32,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 파종, 출수·개화, 등숙 · 유리: 출아·분얼·마디신장 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
+     "score": -3.0,
+     "reason_ko": "불리: 파종, 출수·개화 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
      "history_check": "unmatched",
      "judged_stages": 5,
      "total_stages": 5
@@ -11355,8 +11378,8 @@
       "start": "2026-05-10",
       "end": "2026-08-31",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.50 (평년 0.46)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 232.29,
@@ -11376,7 +11399,8 @@
        "soil": {
         "value": 0.5,
         "normal": 0.46,
-        "z": 1.18
+        "z": 1.18,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11385,7 +11409,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -11414,7 +11438,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.48,
-        "z": -0.25
+        "z": -0.25,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11431,8 +11456,8 @@
       "start": "2026-09-20",
       "end": "2026-11-10",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.34 (평년 0.45)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 51.31,
@@ -11452,7 +11477,8 @@
        "soil": {
         "value": 0.34,
         "normal": 0.45,
-        "z": -2.78
+        "z": -2.78,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11461,7 +11487,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -11473,24 +11499,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 18.94,
-        "normal": 19.2,
-        "z": -0.01
+        "value": 19.66,
+        "normal": 19.68,
+        "z": -0.0
        },
        "dry_spell": {
-        "value": 12.0,
-        "normal": 11.7,
-        "z": 0.06
+        "value": 14.0,
+        "normal": 12.57,
+        "z": 0.24
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.93,
+        "normal": 2.23,
         "z": -0.92
        },
        "soil": {
         "value": 0.3,
         "normal": 0.43,
-        "z": -3.37
+        "z": -3.39,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11498,15 +11525,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.29,
+      "observed_share": 0.32,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 파종, 출수·개화, 등숙 · 유리: 출아·분얼·마디신장 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
+     "score": -3.0,
+     "reason_ko": "불리: 파종, 출수·개화 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
      "history_check": "unmatched",
      "judged_stages": 5,
      "total_stages": 5
@@ -11626,8 +11653,8 @@
       "start": "2026-05-10",
       "end": "2026-09-10",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.71 (평년 0.65)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 255.4,
@@ -11647,7 +11674,8 @@
        "soil": {
         "value": 0.71,
         "normal": 0.65,
-        "z": 1.97
+        "z": 1.97,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11656,7 +11684,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -11685,7 +11713,8 @@
        "soil": {
         "value": 0.65,
         "normal": 0.66,
-        "z": -0.15
+        "z": -0.15,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11702,28 +11731,29 @@
       "start": "2026-10-01",
       "end": "2026-11-20",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.54 (평년 0.62)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 73.89,
-        "normal": 62.02,
-        "z": 0.28
+        "value": 75.59,
+        "normal": 64.48,
+        "z": 0.26
        },
        "dry_spell": {
         "value": 8.0,
-        "normal": 14.03,
-        "z": -0.82
+        "normal": 14.17,
+        "z": -0.84
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.93,
-        "z": -0.69
+        "normal": 2.17,
+        "z": -0.72
        },
        "soil": {
-        "value": 0.54,
+        "value": 0.53,
         "normal": 0.62,
-        "z": -1.65
+        "z": -1.66,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11731,8 +11761,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.86,
-      "status_ko": "불리"
+      "observed_share": 0.9,
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -11744,24 +11774,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 7.68,
-        "normal": 20.81,
-        "z": -0.75
+        "value": 9.38,
+        "normal": 23.27,
+        "z": -0.79
        },
        "dry_spell": {
         "value": 8.0,
-        "normal": 7.87,
-        "z": 0.05
+        "normal": 8.53,
+        "z": -0.17
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.0,
-        "z": -0.5
+        "normal": 1.23,
+        "z": -0.53
        },
        "soil": {
         "value": 0.52,
         "normal": 0.6,
-        "z": -1.56
+        "z": -1.56,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11769,15 +11800,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.17,
+      "observed_share": 0.2,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 파종, 출수·개화, 등숙 · 유리: 출아·분얼·마디신장",
+     "score": -3.0,
+     "reason_ko": "불리: 파종, 출수·개화",
      "history_check": "matched",
      "judged_stages": 5,
      "total_stages": 5
@@ -11897,8 +11928,8 @@
       "start": "2026-05-10",
       "end": "2026-09-10",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.71 (평년 0.65)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 255.4,
@@ -11918,7 +11949,8 @@
        "soil": {
         "value": 0.71,
         "normal": 0.65,
-        "z": 1.97
+        "z": 1.97,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11927,7 +11959,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "repro",
@@ -11956,7 +11988,8 @@
        "soil": {
         "value": 0.65,
         "normal": 0.66,
-        "z": -0.15
+        "z": -0.15,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -11973,28 +12006,29 @@
       "start": "2026-10-01",
       "end": "2026-11-20",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.54 (평년 0.62)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 73.89,
-        "normal": 62.02,
-        "z": 0.28
+        "value": 75.59,
+        "normal": 64.48,
+        "z": 0.26
        },
        "dry_spell": {
         "value": 8.0,
-        "normal": 14.03,
-        "z": -0.82
+        "normal": 14.17,
+        "z": -0.84
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.93,
-        "z": -0.69
+        "normal": 2.17,
+        "z": -0.72
        },
        "soil": {
-        "value": 0.54,
+        "value": 0.53,
         "normal": 0.62,
-        "z": -1.65
+        "z": -1.66,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12002,8 +12036,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.86,
-      "status_ko": "불리"
+      "observed_share": 0.9,
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -12015,24 +12049,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 7.68,
-        "normal": 20.81,
-        "z": -0.75
+        "value": 9.38,
+        "normal": 23.27,
+        "z": -0.79
        },
        "dry_spell": {
         "value": 8.0,
-        "normal": 7.87,
-        "z": 0.05
+        "normal": 8.53,
+        "z": -0.17
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.0,
-        "z": -0.5
+        "normal": 1.23,
+        "z": -0.53
        },
        "soil": {
         "value": 0.52,
         "normal": 0.6,
-        "z": -1.56
+        "z": -1.56,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12040,15 +12075,15 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.17,
+      "observed_share": 0.2,
       "status_ko": "중립"
      }
     ],
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 파종, 출수·개화, 등숙 · 유리: 출아·분얼·마디신장",
+     "score": -3.0,
+     "reason_ko": "불리: 파종, 출수·개화",
      "history_check": "matched",
      "judged_stages": 5,
      "total_stages": 5
@@ -12151,7 +12186,8 @@
        "soil": {
         "value": 0.55,
         "normal": 0.58,
-        "z": -0.6
+        "z": -0.6,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12189,7 +12225,8 @@
        "soil": {
         "value": 0.58,
         "normal": 0.61,
-        "z": -0.57
+        "z": -0.57,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12227,7 +12264,8 @@
        "soil": {
         "value": 0.78,
         "normal": 0.73,
-        "z": 0.74
+        "z": 0.74,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12243,29 +12281,30 @@
       "name_ko": "등숙",
       "start": "2026-10-01",
       "end": "2026-11-15",
-      "state": "in_progress",
+      "state": "done",
       "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.86 (평년 0.75)",
+      "reason_ko": "수분 넉넉·고온 없음 · 강수량 297mm (평년 211mm)",
       "metrics": {
        "precip": {
-        "value": 285.37,
-        "normal": 208.5,
-        "z": 1.24
+        "value": 297.01,
+        "normal": 210.76,
+        "z": 1.39
        },
        "dry_spell": {
         "value": 3.0,
-        "normal": 10.47,
-        "z": -1.22
+        "normal": 11.1,
+        "z": -1.24
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 0.27,
+        "normal": 0.33,
         "z": -0.18
        },
        "soil": {
         "value": 0.86,
         "normal": 0.75,
-        "z": 1.48
+        "z": 1.49,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12273,7 +12312,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.96,
+      "observed_share": 1.0,
       "status_ko": "유리"
      },
      {
@@ -12283,27 +12322,28 @@
       "end": "2026-12-31",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 81mm (평년 25mm)",
+      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 92mm (평년 28mm)",
       "metrics": {
        "precip": {
-        "value": 80.77,
-        "normal": 25.48,
-        "z": 1.88
+        "value": 92.41,
+        "normal": 27.75,
+        "z": 2.2
        },
        "dry_spell": {
         "value": 3.0,
-        "normal": 7.73,
-        "z": -1.26
+        "normal": 8.47,
+        "z": -1.28
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 0.27,
+        "normal": 0.33,
         "z": -0.18
        },
        "soil": {
         "value": 0.83,
         "normal": 0.71,
-        "z": 1.46
+        "z": 1.48,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12311,7 +12351,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.21,
+      "observed_share": 0.25,
       "status_ko": "불리"
      }
     ],
@@ -12734,7 +12774,8 @@
        "soil": {
         "value": 0.69,
         "normal": 0.7,
-        "z": -0.35
+        "z": -0.35,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12752,16 +12793,16 @@
       "end": "2026-12-15",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 55mm (평년 17mm)",
+      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 65mm (평년 19mm)",
       "metrics": {
        "precip": {
-        "value": 55.32,
-        "normal": 17.01,
-        "z": 1.55
+        "value": 64.98,
+        "normal": 18.51,
+        "z": 1.89
        },
        "dry_spell": {
         "value": 3.0,
-        "normal": 8.63,
+        "normal": 9.33,
         "z": -1.5
        },
        "heat_days": {
@@ -12771,8 +12812,9 @@
        },
        "soil": {
         "value": 0.8,
-        "normal": 0.74,
-        "z": 0.83
+        "normal": 0.73,
+        "z": 0.83,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12780,7 +12822,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.29,
+      "observed_share": 0.33,
       "status_ko": "불리"
      },
      {
@@ -12917,8 +12959,8 @@
       "start": "2026-05-01",
       "end": "2026-09-30",
       "state": "done",
-      "status": "unfavorable",
-      "reason_ko": "생육기 수분 부족 · 토양수분 0.64 (평년 0.71)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 994.77,
@@ -12938,7 +12980,8 @@
        "soil": {
         "value": 0.64,
         "normal": 0.71,
-        "z": -1.17
+        "z": -1.17,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12947,7 +12990,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "불리"
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -12959,13 +13002,13 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 666.37,
-        "normal": 633.52,
+        "value": 668.38,
+        "normal": 634.86,
         "z": 0.26
        },
        "dry_spell": {
         "value": 5.0,
-        "normal": 17.63,
+        "normal": 18.43,
         "z": -1.35
        },
        "heat_days": {
@@ -12976,7 +13019,8 @@
        "soil": {
         "value": 0.77,
         "normal": 0.81,
-        "z": -0.76
+        "z": -0.72,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -12984,7 +13028,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.69,
+      "observed_share": 0.7,
       "status_ko": "중립"
      },
      {
@@ -13000,8 +13044,8 @@
     "overall": {
      "verdict": "neutral",
      "verdict_ko": "중립",
-     "score": -1.0,
-     "reason_ko": "불리: 잎·줄기 생장",
+     "score": 0.0,
+     "reason_ko": "판정 단계 모두 평년 수준",
      "history_check": null,
      "judged_stages": 3,
      "total_stages": 4
@@ -13014,199 +13058,57 @@
    {
     "crop": "rice",
     "label_ko": "벼(동춘작)",
-    "season": "2025/26",
-    "harvest_year": 2026,
+    "season": "2026/27",
+    "harvest_year": 2027,
     "heat_threshold_c": 35.0,
     "stages": [
      {
       "kind": "sow",
       "name_ko": "파종",
-      "start": "2025-11-15",
-      "end": "2026-01-10",
-      "state": "done",
+      "start": "2026-11-15",
+      "end": "2027-01-10",
+      "state": "in_progress",
       "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 114.06,
-        "normal": 111.43,
-        "z": 0.04
-       },
-       "dry_spell": {
-        "value": 11.0,
-        "normal": 16.1,
-        "z": -0.62
-       },
-       "heat_days": {
-        "value": 0.0,
-        "normal": 0.03,
-        "z": -0.18
-       },
-       "soil": {
-        "value": 0.86,
-        "normal": 0.79,
-        "z": 0.75
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
+      "reason_ko": "기상 자료 부족",
+      "metrics": {},
+      "observed_share": 0.02,
       "status_ko": "중립"
      },
      {
       "kind": "veg",
       "name_ko": "분얼·생장",
-      "start": "2025-12-01",
-      "end": "2026-02-10",
-      "state": "done",
-      "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 74.58,
-        "normal": 70.33,
-        "z": 0.07
-       },
-       "dry_spell": {
-        "value": 28.0,
-        "normal": 29.37,
-        "z": -0.1
-       },
-       "heat_days": {
-        "value": 0.0,
-        "normal": 4.83,
-        "z": -0.7
-       },
-       "soil": {
-        "value": 0.74,
-        "normal": 0.7,
-        "z": 0.48
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "중립"
+      "start": "2026-12-01",
+      "end": "2027-02-10",
+      "state": "upcoming",
+      "status": "upcoming",
+      "status_ko": "예정"
      },
      {
       "kind": "repro",
       "name_ko": "출수·개화",
-      "start": "2026-01-20",
-      "end": "2026-02-28",
-      "state": "done",
-      "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 18.82,
-        "normal": 17.59,
-        "z": 0.06
-       },
-       "dry_spell": {
-        "value": 15.0,
-        "normal": 27.67,
-        "z": -1.14
-       },
-       "heat_days": {
-        "value": 10.0,
-        "normal": 14.37,
-        "z": -0.38
-       },
-       "soil": {
-        "value": 0.58,
-        "normal": 0.58,
-        "z": 0.08
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "중립"
+      "start": "2027-01-20",
+      "end": "2027-02-28",
+      "state": "upcoming",
+      "status": "upcoming",
+      "status_ko": "예정"
      },
      {
       "kind": "fill",
       "name_ko": "등숙",
-      "start": "2026-02-10",
-      "end": "2026-03-20",
-      "state": "done",
-      "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 18.86,
-        "normal": 17.66,
-        "z": 0.07
-       },
-       "dry_spell": {
-        "value": 14.0,
-        "normal": 26.77,
-        "z": -1.16
-       },
-       "heat_days": {
-        "value": 30.0,
-        "normal": 27.2,
-        "z": 0.28
-       },
-       "soil": {
-        "value": 0.54,
-        "normal": 0.54,
-        "z": -0.04
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "중립"
+      "start": "2027-02-10",
+      "end": "2027-03-20",
+      "state": "upcoming",
+      "status": "upcoming",
+      "status_ko": "예정"
      },
      {
       "kind": "harvest",
       "name_ko": "수확",
-      "start": "2026-02-20",
-      "end": "2026-04-10",
-      "state": "done",
-      "status": "neutral",
-      "reason_ko": "평년 수준",
-      "metrics": {
-       "precip": {
-        "value": 13.53,
-        "normal": 46.86,
-        "z": -0.54
-       },
-       "dry_spell": {
-        "value": 35.0,
-        "normal": 27.93,
-        "z": 0.5
-       },
-       "heat_days": {
-        "value": 47.0,
-        "normal": 38.33,
-        "z": 0.8
-       },
-       "soil": {
-        "value": 0.52,
-        "normal": 0.53,
-        "z": -0.35
-       },
-       "winterkill_days": {
-        "value": 0.0,
-        "normal": 0.0,
-        "z": 0.0
-       }
-      },
-      "observed_share": 1.0,
-      "status_ko": "중립"
+      "start": "2027-02-20",
+      "end": "2027-04-10",
+      "state": "upcoming",
+      "status": "upcoming",
+      "status_ko": "예정"
      }
     ],
     "overall": {
@@ -13215,7 +13117,7 @@
      "score": 0.0,
      "reason_ko": "판정 단계 모두 평년 수준",
      "history_check": null,
-     "judged_stages": 5,
+     "judged_stages": 1,
      "total_stages": 5
     },
     "history": {
@@ -13352,7 +13254,8 @@
        "soil": {
         "value": 0.65,
         "normal": 0.57,
-        "z": 0.74
+        "z": 0.74,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13390,7 +13293,8 @@
        "soil": {
         "value": 0.85,
         "normal": 0.66,
-        "z": 1.09
+        "z": 1.09,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13411,14 +13315,14 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 176.88,
-        "normal": 156.02,
-        "z": 0.21
+        "value": 190.26,
+        "normal": 165.23,
+        "z": 0.24
        },
        "dry_spell": {
         "value": 4.0,
-        "normal": 5.17,
-        "z": -0.41
+        "normal": 5.23,
+        "z": -0.43
        },
        "heat_days": {
         "value": 0.0,
@@ -13428,7 +13332,8 @@
        "soil": {
         "value": 0.86,
         "normal": 0.66,
-        "z": 1.17
+        "z": 1.17,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13436,7 +13341,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.32,
+      "observed_share": 0.34,
       "status_ko": "중립"
      }
     ],
@@ -13532,24 +13437,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 75.31,
-        "normal": 98.52,
-        "z": -0.32
+        "value": 78.11,
+        "normal": 106.78,
+        "z": -0.38
        },
        "dry_spell": {
         "value": 9.0,
-        "normal": 9.3,
-        "z": -0.04
+        "normal": 9.37,
+        "z": -0.05
        },
        "heat_days": {
-        "value": 24.0,
-        "normal": 13.97,
-        "z": 0.95
+        "value": 26.0,
+        "normal": 14.5,
+        "z": 1.03
        },
        "soil": {
         "value": 0.33,
         "normal": 0.43,
-        "z": -0.95
+        "z": -0.96,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13557,7 +13463,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.32,
+      "observed_share": 0.34,
       "status_ko": "중립"
      },
      {
@@ -13567,27 +13473,28 @@
       "end": "2027-02-15",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "고온 · 고온일 11일 (평년 4일)",
+      "reason_ko": "고온 · 고온일 13일 (평년 5일)",
       "metrics": {
        "precip": {
-        "value": 35.52,
-        "normal": 55.0,
-        "z": -0.44
+        "value": 38.32,
+        "normal": 63.26,
+        "z": -0.52
        },
        "dry_spell": {
         "value": 2.0,
-        "normal": 3.83,
-        "z": -0.59
+        "normal": 4.07,
+        "z": -0.69
        },
        "heat_days": {
-        "value": 11.0,
-        "normal": 4.43,
-        "z": 1.36
+        "value": 13.0,
+        "normal": 4.97,
+        "z": 1.47
        },
        "soil": {
         "value": 0.35,
         "normal": 0.45,
-        "z": -0.96
+        "z": -0.97,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13595,7 +13502,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.12,
+      "observed_share": 0.14,
       "status_ko": "불리"
      },
      {
@@ -13734,7 +13641,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.6,
-        "z": -0.74
+        "z": -0.74,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13751,13 +13659,13 @@
       "start": "2026-10-01",
       "end": "2027-03-31",
       "state": "in_progress",
-      "status": "unfavorable",
-      "reason_ko": "토양수분 부족 · 토양수분 0.46 (평년 0.60)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 143.57,
-        "normal": 256.69,
-        "z": -0.84
+        "value": 158.5,
+        "normal": 270.88,
+        "z": -0.82
        },
        "dry_spell": {
         "value": 8.0,
@@ -13766,13 +13674,14 @@
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.2,
+        "normal": 1.23,
         "z": -0.51
        },
        "soil": {
         "value": 0.46,
-        "normal": 0.6,
-        "z": -1.12
+        "normal": 0.61,
+        "z": -1.14,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13780,8 +13689,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.24,
-      "status_ko": "불리"
+      "observed_share": 0.25,
+      "status_ko": "중립"
      },
      {
       "kind": "harvest",
@@ -13796,8 +13705,8 @@
     "overall": {
      "verdict": "unfavorable",
      "verdict_ko": "불리",
-     "score": -4.0,
-     "reason_ko": "불리: 개화, 열매 발달 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
+     "score": -2.0,
+     "reason_ko": "불리: 개화 · 과거에 같은 판정이 실제 수확량과 맞지 않아 참고만",
      "history_check": "unmatched",
      "judged_stages": 2,
      "total_stages": 3
@@ -13919,7 +13828,7 @@
       "end": "2026-09-30",
       "state": "done",
       "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.90 (평년 0.70)",
+      "reason_ko": "수분 넉넉·고온 없음 · 강수량 1068mm (평년 530mm)",
       "metrics": {
        "precip": {
         "value": 1068.49,
@@ -13939,7 +13848,8 @@
        "soil": {
         "value": 0.9,
         "normal": 0.7,
-        "z": 2.57
+        "z": 2.57,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13957,27 +13867,28 @@
       "end": "2027-03-31",
       "state": "in_progress",
       "status": "favorable",
-      "reason_ko": "건조한 수확기 · 강수량 134mm (평년 282mm)",
+      "reason_ko": "건조한 수확기 · 강수량 138mm (평년 288mm)",
       "metrics": {
        "precip": {
-        "value": 134.21,
-        "normal": 282.1,
+        "value": 138.12,
+        "normal": 288.27,
         "z": -1.43
        },
        "dry_spell": {
         "value": 3.0,
-        "normal": 2.33,
-        "z": 0.25
+        "normal": 2.7,
+        "z": 0.11
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 0.4,
-        "z": -0.29
+        "normal": 0.43,
+        "z": -0.3
        },
        "soil": {
         "value": 0.76,
         "normal": 0.74,
-        "z": 0.18
+        "z": 0.14,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -13985,7 +13896,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.24,
+      "observed_share": 0.25,
       "status_ko": "유리"
      }
     ],
@@ -14075,7 +13986,8 @@
        "soil": {
         "value": 0.62,
         "normal": 0.65,
-        "z": -0.28
+        "z": -0.28,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14096,24 +14008,25 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 264.23,
-        "normal": 219.36,
-        "z": 0.67
+        "value": 267.66,
+        "normal": 227.05,
+        "z": 0.59
        },
        "dry_spell": {
         "value": 2.0,
-        "normal": 2.8,
-        "z": -0.31
+        "normal": 3.0,
+        "z": -0.36
        },
        "heat_days": {
         "value": 0.0,
-        "normal": 1.4,
+        "normal": 1.5,
         "z": -0.27
        },
        "soil": {
         "value": 0.59,
         "normal": 0.65,
-        "z": -0.74
+        "z": -0.74,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14121,7 +14034,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.24,
+      "observed_share": 0.25,
       "status_ko": "중립"
      }
     ],
@@ -14211,7 +14124,8 @@
        "soil": {
         "value": 0.78,
         "normal": 0.86,
-        "z": -0.95
+        "z": -0.95,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14249,7 +14163,8 @@
        "soil": {
         "value": 0.76,
         "normal": 0.91,
-        "z": -1.7
+        "z": -1.7,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14270,14 +14185,14 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 121.37,
-        "normal": 117.94,
-        "z": 0.04
+        "value": 121.74,
+        "normal": 123.45,
+        "z": -0.02
        },
        "dry_spell": {
         "value": 9.0,
-        "normal": 8.53,
-        "z": 0.08
+        "normal": 8.73,
+        "z": 0.05
        },
        "heat_days": {
         "value": 0.0,
@@ -14287,7 +14202,8 @@
        "soil": {
         "value": 0.65,
         "normal": 0.87,
-        "z": -2.44
+        "z": -2.42,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14295,7 +14211,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.28,
+      "observed_share": 0.29,
       "status_ko": "중립"
      }
     ],
@@ -14477,7 +14393,8 @@
        "soil": {
         "value": 0.48,
         "normal": 0.51,
-        "z": -0.47
+        "z": -0.47,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14498,14 +14415,14 @@
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 289.32,
-        "normal": 229.56,
-        "z": 0.65
+        "value": 302.67,
+        "normal": 239.05,
+        "z": 0.64
        },
        "dry_spell": {
         "value": 1.0,
-        "normal": 3.07,
-        "z": -1.12
+        "normal": 3.13,
+        "z": -1.21
        },
        "heat_days": {
         "value": 0.0,
@@ -14514,8 +14431,9 @@
        },
        "soil": {
         "value": 0.51,
-        "normal": 0.54,
-        "z": -0.62
+        "normal": 0.55,
+        "z": -0.61,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14523,7 +14441,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.36,
+      "observed_share": 0.37,
       "status_ko": "중립"
      }
     ],
@@ -14616,7 +14534,7 @@
       "end": "2026-10-25",
       "state": "done",
       "status": "favorable",
-      "reason_ko": "파종 수분 충분 · 토양수분 0.43 (평년 0.40)",
+      "reason_ko": "파종 수분 충분 · 강수량 100mm (평년 63mm)",
       "metrics": {
        "precip": {
         "value": 99.94,
@@ -14636,7 +14554,8 @@
        "soil": {
         "value": 0.43,
         "normal": 0.4,
-        "z": 1.42
+        "z": 1.42,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14653,18 +14572,18 @@
       "start": "2026-09-25",
       "end": "2026-11-30",
       "state": "in_progress",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉 · 토양수분 0.45 (평년 0.41)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 73.04,
-        "normal": 62.69,
-        "z": 0.27
+        "value": 73.22,
+        "normal": 65.12,
+        "z": 0.2
        },
        "dry_spell": {
         "value": 18.0,
-        "normal": 15.57,
-        "z": 0.48
+        "normal": 15.93,
+        "z": 0.39
        },
        "heat_days": {
         "value": 0.0,
@@ -14674,7 +14593,8 @@
        "soil": {
         "value": 0.45,
         "normal": 0.41,
-        "z": 1.69
+        "z": 1.71,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14682,8 +14602,8 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.75,
-      "status_ko": "유리"
+      "observed_share": 0.78,
+      "status_ko": "중립"
      },
      {
       "kind": "dormant",
@@ -14732,11 +14652,11 @@
      }
     ],
     "overall": {
-     "verdict": "favorable",
-     "verdict_ko": "유리",
-     "score": 2.0,
-     "reason_ko": "유리: 파종, 출아·분얼",
-     "history_check": "matched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 1.0,
+     "reason_ko": "유리: 파종",
+     "history_check": null,
      "judged_stages": 2,
      "total_stages": 7
     },
@@ -14912,7 +14832,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.49,
-        "z": -0.37
+        "z": -0.37,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14950,7 +14871,8 @@
        "soil": {
         "value": 0.42,
         "normal": 0.45,
-        "z": -0.88
+        "z": -0.88,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -14988,7 +14910,8 @@
        "soil": {
         "value": 0.45,
         "normal": 0.46,
-        "z": -0.31
+        "z": -0.31,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15006,17 +14929,17 @@
       "end": "2026-11-30",
       "state": "in_progress",
       "status": "unfavorable",
-      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 152mm (평년 88mm)",
+      "reason_ko": "수확기 비 많음(품질·지연) · 강수량 152mm (평년 90mm)",
       "metrics": {
        "precip": {
-        "value": 152.02,
-        "normal": 87.75,
-        "z": 1.84
+        "value": 152.09,
+        "normal": 89.62,
+        "z": 1.79
        },
        "dry_spell": {
         "value": 18.0,
-        "normal": 14.3,
-        "z": 0.6
+        "normal": 14.63,
+        "z": 0.53
        },
        "heat_days": {
         "value": 0.0,
@@ -15026,7 +14949,8 @@
        "soil": {
         "value": 0.5,
         "normal": 0.49,
-        "z": 0.25
+        "z": 0.26,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15034,7 +14958,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.76,
+      "observed_share": 0.79,
       "status_ko": "불리"
      }
     ],
@@ -15218,7 +15142,8 @@
        "soil": {
         "value": 0.48,
         "normal": 0.47,
-        "z": 0.47
+        "z": 0.47,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15256,7 +15181,8 @@
        "soil": {
         "value": 0.45,
         "normal": 0.44,
-        "z": 0.56
+        "z": 0.56,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15294,7 +15220,8 @@
        "soil": {
         "value": 0.45,
         "normal": 0.44,
-        "z": 0.3
+        "z": 0.3,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15486,7 +15413,8 @@
        "soil": {
         "value": 0.56,
         "normal": 0.53,
-        "z": 1.05
+        "z": 1.05,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15524,7 +15452,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.52,
-        "z": -0.35
+        "z": -0.35,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15562,7 +15491,8 @@
        "soil": {
         "value": 0.5,
         "normal": 0.53,
-        "z": -1.25
+        "z": -1.25,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15792,7 +15722,8 @@
        "soil": {
         "value": 0.54,
         "normal": 0.55,
-        "z": -0.42
+        "z": -0.42,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -15830,7 +15761,8 @@
        "soil": {
         "value": 0.53,
         "normal": 0.54,
-        "z": -0.38
+        "z": -0.38,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16022,7 +15954,8 @@
        "soil": {
         "value": 0.54,
         "normal": 0.54,
-        "z": -0.05
+        "z": -0.05,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16060,7 +15993,8 @@
        "soil": {
         "value": 0.53,
         "normal": 0.52,
-        "z": 0.33
+        "z": 0.33,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16098,7 +16032,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.53,
-        "z": -0.52
+        "z": -0.52,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16290,7 +16225,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.54,
-        "z": -0.95
+        "z": -0.95,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16328,7 +16264,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.53,
-        "z": -0.61
+        "z": -0.61,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16366,7 +16303,8 @@
        "soil": {
         "value": 0.5,
         "normal": 0.52,
-        "z": -0.88
+        "z": -0.88,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16537,8 +16475,8 @@
       "start": "2026-07-01",
       "end": "2026-07-31",
       "state": "done",
-      "status": "favorable",
-      "reason_ko": "수분 넉넉·고온 없음 · 토양수분 0.44 (평년 0.41)",
+      "status": "neutral",
+      "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
         "value": 45.27,
@@ -16558,7 +16496,8 @@
        "soil": {
         "value": 0.44,
         "normal": 0.41,
-        "z": 1.03
+        "z": 1.03,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16567,7 +16506,7 @@
        }
       },
       "observed_share": 1.0,
-      "status_ko": "유리"
+      "status_ko": "중립"
      },
      {
       "kind": "fill",
@@ -16596,7 +16535,8 @@
        "soil": {
         "value": 0.4,
         "normal": 0.39,
-        "z": 0.29
+        "z": 0.29,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16634,7 +16574,8 @@
        "soil": {
         "value": 0.43,
         "normal": 0.4,
-        "z": 0.9
+        "z": 0.9,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16647,11 +16588,11 @@
      }
     ],
     "overall": {
-     "verdict": "favorable",
-     "verdict_ko": "유리",
-     "score": 2.0,
-     "reason_ko": "불리: 파종 · 유리: 출아·영양생장, 출사·수분",
-     "history_check": "matched",
+     "verdict": "neutral",
+     "verdict_ko": "중립",
+     "score": 0.0,
+     "reason_ko": "불리: 파종 · 유리: 출아·영양생장",
+     "history_check": null,
      "judged_stages": 5,
      "total_stages": 5
     },
@@ -16826,7 +16767,8 @@
        "soil": {
         "value": 0.58,
         "normal": 0.54,
-        "z": 0.69
+        "z": 0.69,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16864,7 +16806,8 @@
        "soil": {
         "value": 0.49,
         "normal": 0.49,
-        "z": -0.1
+        "z": -0.1,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16880,19 +16823,19 @@
       "name_ko": "수확",
       "start": "2026-09-15",
       "end": "2026-11-15",
-      "state": "in_progress",
+      "state": "done",
       "status": "neutral",
       "reason_ko": "평년 수준",
       "metrics": {
        "precip": {
-        "value": 92.86,
-        "normal": 108.89,
-        "z": -0.35
+        "value": 94.14,
+        "normal": 111.32,
+        "z": -0.38
        },
        "dry_spell": {
         "value": 16.0,
-        "normal": 14.47,
-        "z": 0.31
+        "normal": 14.73,
+        "z": 0.24
        },
        "heat_days": {
         "value": 0.0,
@@ -16902,7 +16845,8 @@
        "soil": {
         "value": 0.51,
         "normal": 0.53,
-        "z": -0.4
+        "z": -0.41,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -16910,7 +16854,7 @@
         "z": 0.0
        }
       },
-      "observed_share": 0.97,
+      "observed_share": 1.0,
       "status_ko": "중립"
      }
     ],
@@ -17094,7 +17038,8 @@
        "soil": {
         "value": 0.62,
         "normal": 0.61,
-        "z": 0.22
+        "z": 0.22,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -17132,7 +17077,8 @@
        "soil": {
         "value": 0.65,
         "normal": 0.62,
-        "z": 0.56
+        "z": 0.56,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -17170,7 +17116,8 @@
        "soil": {
         "value": 0.61,
         "normal": 0.62,
-        "z": -0.22
+        "z": -0.22,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -17362,7 +17309,8 @@
        "soil": {
         "value": 0.54,
         "normal": 0.52,
-        "z": 0.42
+        "z": 0.42,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -17400,7 +17348,8 @@
        "soil": {
         "value": 0.48,
         "normal": 0.48,
-        "z": -0.07
+        "z": -0.07,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,
@@ -17438,7 +17387,8 @@
        "soil": {
         "value": 0.47,
         "normal": 0.49,
-        "z": -0.7
+        "z": -0.7,
+        "reference_only": true
        },
        "winterkill_days": {
         "value": 0.0,

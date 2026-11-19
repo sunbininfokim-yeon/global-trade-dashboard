@@ -76,6 +76,31 @@ class StageConditionTests(unittest.TestCase):
         self.assertEqual(placed[1][0], date(2025, 5, 1))
         self.assertEqual(B.harvest_year(stages, placed), 2026)
 
+    def test_soil_in_near_real_time_tail_is_reference_only(self):
+        # POWER's GEOS tail reads soil far below MERRA-2 while rain is
+        # normal (Great Plains, Nov 2026: soil -5.3 sigma, rain +1.2).
+        frame = daily(end="2026-07-15")
+        tail = frame.date >= "2026-06-01"
+        frame.loc[tail, "soil"] = 0.4
+        crop = {"crop": "soy", "label_ko": "대두", "stages": SOY}
+        entry = B.crop_entry("x", crop, frame, date(2026, 7, 15), None)
+        sow, veg = entry["stages"][0], entry["stages"][1]
+        self.assertTrue(sow["metrics"]["soil"]["reference_only"])
+        self.assertLess(sow["metrics"]["soil"]["z"], -3)
+        self.assertNotEqual(sow["status"], "unfavorable")
+        self.assertNotEqual(veg["status"], "unfavorable")
+
+    def test_old_soil_drought_still_counts(self):
+        frame = daily(end="2026-12-31")
+        old = frame.date.between("2026-06-25", "2026-08-10")
+        frame.loc[old, "soil"] = 0.4
+        _, rows = B.stage_table(frame, SOY, 2026, 35.0, date(2026, 12, 31))
+        status, _, metrics = B.judge("veg", rows[1]["current"], rows[1]["past"],
+                                     soil_ok=not rows[1]["soil_nrt"])
+        self.assertFalse(rows[1]["soil_nrt"])
+        self.assertEqual(status, "unfavorable")
+        self.assertNotIn("reference_only", metrics["soil"])
+
 
 class VerdictCheckTests(unittest.TestCase):
     def hist(self, unf, neu, fav, n=(6, 14, 7)):

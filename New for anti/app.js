@@ -1133,14 +1133,16 @@ const renderYieldForecast = async (regionName) => {
         </div>`;
     }
 
-    const enso = fc.enso.oni_growing_season;
+    // Before the growing-season ONI exists, show the latest reading (Brazil).
+    const ensoLatest = fc.enso.oni_growing_season == null ? fc.enso.oni_latest : null;
+    const enso = fc.enso.oni_growing_season ?? ensoLatest?.oni ?? null;
     forecastCountryTitle.textContent = `${region.label_ko} 작황 예측 (${fc.season})`;
     forecastContentEl.innerHTML = `
         ${climateNavBackHtml(region.label_ko || '')}
         <div class="forecast-box">
             <div class="forecast-item">
                 <span class="forecast-label">엘니뇨/라니냐 (ONI)</span>
-                <span class="forecast-val">${enso === null ? 'N/A' : enso.toFixed(2)} · ${fc.enso.state}</span>
+                <span class="forecast-val">${enso === null ? 'N/A' : enso.toFixed(2)} · ${fc.enso.state}${ensoLatest ? ` (최근 ${ensoLatest.season})` : ''}</span>
             </div>
             <div class="forecast-item">
                 <span class="forecast-label">대상 지역</span>
@@ -3654,7 +3656,8 @@ const renderIndiaYieldForecast = async (regionName) => {
                 </div>
                 <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-top:6px;">
                     <span>엘니뇨/라니냐 (ONI)</span>
-                    <span>${enso.oni_growing_season == null ? 'N/A' : enso.oni_growing_season.toFixed(2)} · ${enso.state || 'N/A'}</span>
+                    <span>${enso.oni_growing_season != null ? enso.oni_growing_season.toFixed(2)
+                        : enso.oni_latest ? `${enso.oni_latest.oni.toFixed(2)} (최근 ${enso.oni_latest.season})` : 'N/A'} · ${enso.state || 'N/A'}</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-top:2px;">
                     <span>인도양 쌍극자 (IOD)</span>
@@ -6521,6 +6524,7 @@ const setView = (target) => {
         topExporterEl.textContent = data.topExporter;
         // Wheat/corn/soy: world production in the boxes instead (grain-balance.js).
         window.GrainBalance?.render();
+        window.FertilizerPrices?.render();
         updateCommodityFavStar(target, data.title);
 
         // Ranking first (it explains the map), news below it.
