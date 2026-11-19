@@ -57,6 +57,8 @@ class KoreaSourcesTest(unittest.TestCase):
         self.assertEqual(b["basis"], "mirror")
         self.assertEqual(b["period"], {"from": "202511", "to": "202610"})
         self.assertEqual(b["partners"][0]["share_pct"], 60.0)
+        # Canada sent nothing in the window, so the US change is against 530/860.
+        self.assertEqual(b["partners"][0]["change_pp"], -1.6)
 
     def test_missing_crop(self):
         self.assertIsNone(K.block("wheat", {}, {}, {}))

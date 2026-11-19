@@ -302,7 +302,10 @@ def block(crop, imports, stage, names):
             covered += share
             bad = sum(1 for r in live if r["verdict"] == "unfavorable" and not r["reference_only"])
             exposed += share * bad / len(live)
-        prior = annual.get(p, 0) / annual_total * 100 if annual_total else None
+        # Exporter reports cover only the exporters asked (Russia reports
+        # nothing): compare against Korea's annual shares over that same set.
+        base = sum(t for q, t in annual.items() if q in rows) if basis == "mirror" else annual_total
+        prior = annual.get(p, 0) / base * 100 if base else None
         partners.append({"code": p, "country_ko": PARTNER_KO.get(p, str(p)),
                          "tonnes": round(t), "share_pct": round(share, 1),
                          "change_pp": None if period is None or prior is None else round(share - prior, 1),
