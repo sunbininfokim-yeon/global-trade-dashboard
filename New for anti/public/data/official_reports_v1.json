@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-19T13:19:29.042644+00:00",
+  "generated_at": "2026-11-19T23:05:07.654773+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,10 +15,10 @@
     }
   },
   "stats": {
-    "sources_ok": 9,
-    "sources_failed": 1,
-    "raw_items": 171,
-    "scored": 171,
+    "sources_ok": 10,
+    "sources_failed": 0,
+    "raw_items": 178,
+    "scored": 178,
     "selected": 40,
     "indicators": 14
   },
@@ -47,7 +47,7 @@
     {
       "source_id": "us_eia",
       "ok": true,
-      "count": 29,
+      "count": 30,
       "error": null,
       "mode": "live"
     },
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 6,
+      "error": null,
       "mode": "live"
     }
   ],
@@ -953,6 +953,41 @@
       "site_slot": null
     },
     {
+      "id": "ef21c70756b85689",
+      "published_at": "2026-11-19T13:53:04+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/11/u-s-russia-china-heads-of-state-declaration-toward-peace/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "U.S.-Russia-China Heads of State Declaration toward Peace",
+        "original_lang": "en",
+        "ko": "[USA·외교] U.S.-Russia-China Heads of State Declaration toward Peace"
+      },
+      "summary": "Donald J. Trump, President of the United States of America, Vladimir Putin, President of the Russian Federation, and Xi Jinping, State Chairman of the People’s Republic of China, met in Shenzhen on November 19, 2026. The U.S. and Russian heads of state expressed appreciation to C",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "44d2971b7ccf288c",
       "published_at": "2026-11-18T15:43:23+00:00",
       "source": {
@@ -1651,44 +1686,31 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
-    },
+    }
+  ],
+  "pending_review": [
     {
-      "id": "f79897500058f3bb",
-      "published_at": "2026-10-02T20:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
+      "title": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
-      "category": "official_report",
-      "commodities": [],
+      "country": "USA",
       "domains": [
         "economy",
         "finance"
       ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O"
-      },
-      "summary": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
+      "significance": 2.322,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "USDA Announces Agribusiness Trade Missions for 2027",
+      "url": "https://www.fas.usda.gov/newsroom/usda-announces-agribusiness-trade-missions-2027",
+      "country": "USA",
+      "domains": [
+        "economy",
+        "agriculture"
       ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    }
-  ],
-  "pending_review": [
+      "significance": 2.236,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
     {
       "title": "Isabel Schnabel: Navigating stormy waters: reflections on monetary policy",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261105_1~5e97d9d5a0.en.html",
@@ -1742,28 +1764,6 @@
         "finance"
       ],
       "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "David Roberts CV and questionnaire for the Treasury Select Committee",
-      "url": "https://www.bankofengland.co.uk/news/2026/october/david-roberts-tsc-reappointment",
-      "country": "GBR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "significance": 2.024,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Minutes of the Meeting of the Court of Directors held on 17 September 2026",
-      "url": "https://www.bankofengland.co.uk/minutes/2026/september/court-minutes-17-september-2026",
-      "country": "GBR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     }
   ],
@@ -2431,6 +2431,41 @@
       "site_slot": null
     },
     {
+      "id": "ef21c70756b85689",
+      "published_at": "2026-11-19T13:53:04+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/11/u-s-russia-china-heads-of-state-declaration-toward-peace/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "diplomacy",
+        "economy",
+        "security"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "U.S.-Russia-China Heads of State Declaration toward Peace",
+        "original_lang": "en",
+        "ko": "[USA·외교] U.S.-Russia-China Heads of State Declaration toward Peace"
+      },
+      "summary": "Donald J. Trump, President of the United States of America, Vladimir Putin, President of the Russian Federation, and Xi Jinping, State Chairman of the People’s Republic of China, met in Shenzhen on November 19, 2026. The U.S. and Russian heads of state expressed appreciation to C",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
       "id": "44d2971b7ccf288c",
       "published_at": "2026-11-18T15:43:23+00:00",
       "source": {
@@ -3118,41 +3153,6 @@
         "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
       },
       "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
-      "scores": {
-        "significance": 2.322,
-        "final": 2.322
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
-      "id": "f79897500058f3bb",
-      "published_at": "2026-10-02T20:00:00+00:00",
-      "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
-        "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O"
-      },
-      "summary": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
       "scores": {
         "significance": 2.322,
         "final": 2.322
