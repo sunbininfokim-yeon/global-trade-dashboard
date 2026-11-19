@@ -93,3 +93,15 @@ class MichiganPrimaryTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'changed House finance identity'):build_state('MI','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)
         inputs,ids=self.state_inputs();c=next(c for c in inputs[5]['races']['USA:MI:house:01']['candidates'] if c['candidate_id']=='H6MI01226');c['reported_parties']=['DEM']
         with self.assertRaisesRegex(ValueError,'House finance source identity changed'):build_state('MI','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)
+
+    def test_added_fec_spelling_links_but_a_dropped_one_still_requires_review(self):
+        inputs,ids=self.state_inputs();c=next(c for c in inputs[5]['races']['USA:MI:house:01']['candidates'] if c['candidate_id']=='H6MI01226')
+        c['reported_names']=[*c['reported_names'],'BERGMAN, JACK']
+        state=build_state('MI','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)
+        row=next(r for r in state['races'] if r['race_id']=='USA:MI:house:01')
+        cand=next(x for x in row['candidates'] if x['name']=='Jack Bergman')
+        self.assertEqual(cand['finance_candidate_id'],'H6MI01226')
+        self.assertEqual(cand['finance_identity_evidence']['unreviewed_reported_names'],['BERGMAN, JACK'])
+        inputs,ids=self.state_inputs();c=next(c for c in inputs[5]['races']['USA:MI:house:01']['candidates'] if c['candidate_id']=='H6MI01226')
+        c['reported_names']=c['reported_names'][1:]
+        with self.assertRaisesRegex(ValueError,'House finance source identity changed'):build_state('MI','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)
