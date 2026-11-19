@@ -887,6 +887,8 @@ const COMTRADE_TTL = {
     "1205": 1209600, // Rapeseed/canola: 14 days
     "080510": 1209600, // Fresh oranges: 14 days
     "200911,200912,200919": 1209600, // Orange juice (frozen, not frozen, other): 14 days
+    "310210": 1209600, // Urea: 14 days
+    "310420": 1209600, // Potassium chloride: 14 days
 
     // Battery and steel-chain minerals. Annual Comtrade data that moves once a
     // year, so a week of staleness costs nothing.
@@ -3480,6 +3482,8 @@ const FUTURES_UNPRICED = {
     palm_oil: "기준 계약인 Bursa Malaysia 원유 팜유 선물(FCPO) 시세는 무료로 제공되지 않습니다",
     rubber: "기준 계약인 SGX SICOM TSR20·오사카거래소 RSS3 시세는 무료로 제공되지 않습니다",
     canola: "ICE 카놀라 선물은 캐나다달러 표시라 이 카드(미국 달러)에는 싣지 않습니다",
+    urea: "요소 선물(CME 등) 시세는 무료로 제공되지 않습니다 · 아래 세계은행 월간 가격 참고",
+    potash: "칼륨 선물 시세는 무료로 제공되지 않습니다 · 아래 세계은행 월간 가격 참고",
 };
 
 async function handleFutures(request, env) {
