@@ -129,7 +129,11 @@ def fetch_monthly(cached, today=None):
         except (urllib.error.URLError, TimeoutError, ValueError) as exc:
             log(f"{ym}: {exc}")
             continue
-        for crop, rows in _rows(body).items():
+        got = _rows(body)
+        if not got:
+            # Not yet released, or the service answered without data: say which.
+            log(f"{ym}: no rows (count {body.get('count')}, error {body.get('error') or '-'})")
+        for crop, rows in got.items():
             out.setdefault(crop, {})[ym] = rows
         time.sleep(PAUSE_S)
     # Keep two years of months, enough for a 12-month window and its year-ago.
