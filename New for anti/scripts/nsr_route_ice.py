@@ -120,11 +120,14 @@ def fetch(url, tries=3):
 
 def read_tif(blob):
     """(array of concentration in %, NaN where not ocean, grid dict)."""
-    from PIL import Image
-    im = Image.open(io.BytesIO(blob))
-    arr = np.array(im)
-    tags = im.tag_v2
+    import tifffile
     grid = dict(GRID)
+    with tifffile.TiffFile(io.BytesIO(blob)) as tf:
+        page = tf.pages[0]
+        arr = page.asarray()
+        if arr.ndim == 3:                       # palette/RGB files: take the first band
+            arr = arr[..., 0] if arr.shape[-1] <= 4 else arr[0]
+        tags = {t.code: t.value for t in page.tags.values()}
     try:
         tp, sc = tags.get(33922), tags.get(33550)
         if tp and sc:
@@ -226,8 +229,11 @@ def probe():
     cells = leg_cells()
     print({k: len(v) for k, v in cells.items()})
     print("listing", BASE, re.findall(r'href="([^"]+)"', fetch(BASE).decode())[:8])
+    m = f"{BASE}2020/09_Sep/"
+    print("month listing", m, re.findall(r'href="([^"]+)"', fetch(m).decode())[:6])
     for d in (date(2020, 9, 15), date(2014, 9, 15), date(2025, 3, 1), date(1985, 9, 14)):
         blob = fetch(url_for(d, version(d)))
+        print(d, url_for(d, version(d)), blob[:12] if blob else None)
         if blob is None:
             print(d, "없음", url_for(d, version(d)))
             continue
