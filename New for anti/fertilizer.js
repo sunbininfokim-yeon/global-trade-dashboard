@@ -37,6 +37,26 @@
             <div class="stock-note" style="display:flex;justify-content:space-between;"><span>${esc(month(series[0].month))}</span><span>최저 ${usd(lo)} · 최고 ${usd(hi)}</span><span>${esc(month(series[series.length - 1].month))}</span></div>`;
     }
 
+    // Urea per tonne of corn over the winter buying window, and whether that
+    // has moved the US corn/soy split in the past.
+    function ratioHtml(a) {
+        if (!a) return '';
+        const bt = a.backtest;
+        const vs = a.avg_10y ? ` <span class="stock-note">10년 평균 ${a.avg_10y}</span>` : '';
+        const prev = a.prev_urea_per_corn ? ` <span class="stock-note">전년 ${a.prev_urea_per_corn}</span>` : '';
+        let verdict = '';
+        if (bt) {
+            const msg = `요소/옥수수 가격비가 10% 오를 때 미국 옥수수 면적 비중 ${bt.coef_share_pp_per_10pct >= 0 ? '+' : ''}${bt.coef_share_pp_per_10pct}%p (t ${bt.t}, ${esc(bt.years)})`;
+            verdict = bt.passed
+                ? `<div class="gb-line"><span>과거 검증</span><span style="color:#86efac;">통과</span></div><div class="stock-note">${msg}</div>`
+                : `<div class="gb-line"><span>과거 검증</span><span style="color:#94a3b8;">미통과 · 참고만</span></div><div class="stock-note">${msg} · 기준: ${esc(bt.rule_ko)}</div>`;
+        }
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">${a.planting_year}년 파종 비료 부담 (요소 1t = 옥수수 몇 t)</p>
+            <div class="gb-line"><span>${esc(a.window_ko)} 평균${a.months_in < 6 ? ` <span class="stock-note">${a.months_in}개월치</span>` : ''}</span><span><b>${a.urea_per_corn}</b>${prev}${vs}</span></div>
+            ${a.pct_rank == null ? '' : `<div class="gb-line"><span>1980년 이후 순위</span><span>상위 ${100 - a.pct_rank}%</span></div>`}
+            ${verdict}`;
+    }
+
     function cardHtml(doc, lead) {
         const s = doc.series[lead];
         const others = Object.entries(doc.series).filter(([k]) => k !== lead)
@@ -47,6 +67,7 @@
             <div class="gb-line"><span>전월 대비 · 전년 대비</span><span>${pct(s.mom_pct)} · ${pct(s.yoy_pct)}</span></div>
             <div class="gb-line"><span>5년 평균</span><span>${usd(s.avg_5y_usd_t)} <span class="stock-note">대비 ${s.vs_5y_pct >= 0 ? '+' : ''}${s.vs_5y_pct}%${rank}</span></span></div>
             ${spark(s.series || [], (s.yoy_pct ?? 0) >= 0)}
+            ${lead === 'urea' ? ratioHtml(doc.affordability) : ''}
             ${others ? `<p class="trade-rank-group-head" style="margin-top:10px;">다른 비료 (전년 대비)</p>${others}` : ''}
             <div class="stock-note" style="margin-top:6px;">거래소 선물 시세는 무료로 제공되지 않아 월간 기준가를 씁니다 · 출처: <a href="${esc(doc.url)}" target="_blank" rel="noopener" style="color:#7dd3fc;">세계은행 Pink Sheet</a></div>`;
     }

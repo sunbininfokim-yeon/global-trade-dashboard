@@ -24,6 +24,8 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
+import affordability
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.normpath(os.path.join(HERE, "..", "..", "public", "data"))
 CSV = os.path.join(HERE, "prices.csv")
@@ -41,6 +43,9 @@ SERIES = {
     "dap": ("DAP", "인산이암모늄(DAP)"),
     "tsp": ("TSP", "중과석(TSP)"),
 }
+# Crop prices kept beside them for the nitrogen affordability check
+# (affordability.py); they get no card of their own.
+CROPS = {"maize": "Maize", "soybeans": "Soybeans"}
 # Trade view -> the series its card leads with.
 VIEWS = {"urea": "urea", "potash": "potash"}
 
@@ -83,7 +88,7 @@ def fetch():
         raise RuntimeError("no Urea column in Monthly Prices")
     names = [str(v).strip() for v in raw.iloc[head].tolist()]
     cols = {}
-    for key, (word, _) in SERIES.items():
+    for key, word in [(k, w) for k, (w, _) in SERIES.items()] + list(CROPS.items()):
         hit = [j for j, n in enumerate(names) if n.lower().startswith(word.lower())]
         if hit:
             cols[key] = hit[0]
@@ -99,7 +104,7 @@ def fetch():
         for key, j in cols.items():
             rec[key] = pd.to_numeric(raw.iat[i, j], errors="coerce")
         rows.append(rec)
-    df = pd.DataFrame(rows).dropna(how="all", subset=list(cols))
+    df = pd.DataFrame(rows).dropna(how="all", subset=[k for k in cols if k in SERIES])
     log(f"{len(df)} months, {df.month.min()} .. {df.month.max()}, columns "
         + ", ".join(f"{k}={names[j]!r}" for k, j in cols.items()))
     return df
@@ -158,6 +163,13 @@ def main(argv):
         "views": VIEWS,
         "series": series,
     }
+    try:
+        ratio = affordability.build(df, offline=argv[:1] == ["apply"])
+    except Exception as exc:  # noqa: BLE001 - the price card stands without it
+        log(f"affordability skipped ({exc!r})")
+        ratio = None
+    if ratio:
+        payload["affordability"] = ratio
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=1, ensure_ascii=False)
         f.write("\n")
