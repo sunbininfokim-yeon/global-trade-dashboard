@@ -32,6 +32,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install pandas
+      - name: Korea supplier tests
+        working-directory: New for anti/scripts/grain_balance
+        run: python3 -m unittest -v test_korea_sources
       - name: Build world grain balance
         run: python3 "New for anti/scripts/grain_balance/build.py"
 

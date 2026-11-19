@@ -1,0 +1,188 @@
+"""Where Korea buys its wheat, corn and soybeans, and how those fields look.
+
+UN Comtrade annual imports by partner (reporter Korea 410, HS 1001/1005/1201,
+public preview API -- no key; reachable from Actions, not from the dev
+container). The tonnage shares are joined with the stage-condition calls of
+the regions that grow that crop in each supplier country, so the grain card
+can say which share of Korea's supply comes from fields now judged
+unfavourable.
+
+Only stdlib. The last good pull is kept in korea_imports.json; a failed pull
+reuses it.
+"""
+
+import json
+import os
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import date
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+CACHE = os.path.join(HERE, "korea_imports.json")
+URL = "https://comtradeapi.un.org/public/v1/preview/C/A/HS"
+HS = {"wheat": "1001", "corn": "1005", "soybeans": "1201"}
+MIN_SHARE = 1.0          # % of Korea's tonnage; smaller suppliers are not listed
+TOP = 6
+
+PARTNER_KO = {
+    842: "미국", 76: "브라질", 32: "아르헨티나", 36: "호주", 124: "캐나다",
+    804: "우크라이나", 643: "러시아", 398: "카자흐스탄", 710: "남아공",
+    600: "파라과이", 858: "우루과이", 642: "루마니아", 100: "불가리아",
+    348: "헝가리", 703: "슬로바키아", 499: "몬테네그로", 688: "세르비아",
+    356: "인도", 156: "중국", 764: "태국", 704: "베트남", 360: "인도네시아",
+    484: "멕시코", 251: "프랑스", 250: "프랑스", 276: "독일", 616: "폴란드",
+    68: "볼리비아", 792: "튀르키예", 608: "필리핀", 392: "일본",
+}
+
+# Supplier -> the stage_conditions regions (and crop keys) growing what Korea
+# buys from it. Equal weights inside a country: the monitor has no per-region
+# export share, which the card says.
+REGIONS = {
+    "wheat": {
+        842: [("great_plains", "winter_wheat"), ("northern_plains", "spring_wheat")],
+        36: [("wa_wheat", "wheat"), ("sa_wheat", "wheat"), ("vic_wheat", "wheat")],
+        124: [("sad_sk_wheat_palliser", "spring_wheat")],
+        804: [("ukraine_winter_wheat", "winter_wheat")],
+        643: [("southern_winter_wheat", "winter_wheat"), ("cbe_winter_wheat", "winter_wheat"),
+              ("volga_winter_wheat", "winter_wheat")],
+        398: [("kazakhstan_wheat_north", "spring_wheat"), ("kazakhstan_wheat_akmola", "spring_wheat")],
+        32: [("pampas_trigo", "wheat")],
+    },
+    "corn": {
+        842: [("corn_belt", "corn")],
+        76: [("mato_grosso_soja", "corn_safrinha"), ("parana_soja", "corn")],
+        32: [("pampas_maiz", "corn")],
+        804: [("ukraine_corn", "corn")],
+        643: [("russia_corn_south", "corn"), ("russia_corn_cbe", "corn")],
+        124: [("sad_on_corn_southern", "corn"), ("sad_on_corn_western", "corn")],
+    },
+    "soybeans": {
+        842: [("corn_belt", "soybeans")],
+        76: [("mato_grosso_soja", "soy"), ("parana_soja", "soy"), ("matopiba_soja", "soy")],
+        32: [("pampas_soja", "soy")],
+        124: [("sad_mb_soy_redriver", "soy")],
+        643: [("russia_soy_amur", "soy"), ("russia_soy_cbe", "soy")],
+    },
+}
+
+
+def log(msg):
+    print(f"[korea-sources] {msg}", flush=True)
+
+
+def _get(year):
+    params = dict(reporterCode="410", period=str(year), cmdCode=",".join(HS.values()),
+                  flowCode="M", partner2Code="0", customsCode="C00", motCode="0")
+    req = urllib.request.Request(f"{URL}?{urllib.parse.urlencode(params)}",
+                                 headers={"Accept": "application/json",
+                                          "User-Agent": "global-trade-dashboard"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        return json.load(r)
+
+
+def fetch(today=None):
+    """{crop: {"year": Y, "rows": {partner: tonnes}}}, newest complete year."""
+    today = today or date.today()
+    out = {}
+    for year in range(today.year - 1, today.year - 4, -1):
+        try:
+            body = _get(year)
+        except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+            log(f"{year}: {exc}")
+            continue
+        per = {}
+        for r in body.get("data") or []:
+            if str(r.get("reporterCode")) != "410" or r.get("flowCode") != "M":
+                continue
+            crop = next((k for k, v in HS.items() if r.get("cmdCode") == v), None)
+            p = int(r.get("partnerCode") or 0)
+            kg = r.get("netWgt") or 0
+            if crop and p != 0 and kg:
+                per.setdefault(crop, {})
+                per[crop][p] = per[crop].get(p, 0) + kg / 1000
+        for crop, rows in per.items():
+            if crop not in out and sum(rows.values()) > 0:
+                out[crop] = {"year": year, "rows": {str(k): round(v) for k, v in rows.items()}}
+        if len(out) == len(HS):
+            break
+    return out
+
+
+def load_or_fetch(offline=False):
+    cached = {}
+    if os.path.exists(CACHE):
+        with open(CACHE, encoding="utf-8") as f:
+            cached = json.load(f)
+    if offline:
+        return cached
+    fresh = fetch()
+    if not fresh:
+        log("Comtrade unavailable; using cached shares")
+        return cached
+    merged = {**cached, **fresh}
+    merged["fetched"] = date.today().isoformat()
+    with open(CACHE, "w", encoding="utf-8") as f:
+        json.dump(merged, f, indent=1, ensure_ascii=False, sort_keys=True)
+        f.write("\n")
+    for crop in HS:
+        if crop in fresh:
+            log(f"{crop} {fresh[crop]['year']}: {sum(fresh[crop]['rows'].values()):,.0f} t "
+                f"from {len(fresh[crop]['rows'])} partners")
+    return merged
+
+
+def _calls(stage):
+    """(region key, crop) -> the current season's call, or None once harvested."""
+    out = {}
+    for key, entries in (stage.get("regions") or {}).items():
+        for e in entries:
+            live = any(s.get("state") in ("in_progress", "upcoming") for s in e.get("stages", []))
+            ov = e.get("overall") or {}
+            out[(key, e.get("crop"))] = {
+                "verdict": ov.get("verdict"), "verdict_ko": ov.get("verdict_ko"),
+                "reference_only": ov.get("history_check") == "unmatched",
+                "season": e.get("season"), "live": live,
+            }
+    return out
+
+
+def block(crop, imports, stage, names):
+    """The card section for one crop, or None."""
+    src = imports.get(crop)
+    if not src or not src.get("rows"):
+        return None
+    rows = {int(k): v for k, v in src["rows"].items()}
+    total = sum(rows.values())
+    calls = _calls(stage)
+    partners, exposed, covered = [], 0.0, 0.0
+    for p, t in sorted(rows.items(), key=lambda kv: -kv[1]):
+        share = t / total * 100
+        if share < MIN_SHARE or len(partners) >= TOP:
+            continue
+        regions = []
+        for key, c in REGIONS.get(crop, {}).get(p, []):
+            call = calls.get((key, c))
+            if not call:
+                continue
+            regions.append({"key": key, "region_ko": names.get(key, ("", key))[1],
+                            "season": call["season"], "verdict": call["verdict"],
+                            "verdict_ko": call["verdict_ko"],
+                            "reference_only": call["reference_only"],
+                            "harvested": not call["live"]})
+        # Only growing seasons with a record that matched past harvests count.
+        live = [r for r in regions if not r["harvested"]]
+        if live:
+            covered += share
+            bad = sum(1 for r in live if r["verdict"] == "unfavorable" and not r["reference_only"])
+            exposed += share * bad / len(live)
+        partners.append({"code": p, "country_ko": PARTNER_KO.get(p, str(p)),
+                         "tonnes": round(t), "share_pct": round(share, 1), "regions": regions})
+    return {
+        "year": src["year"],
+        "total_kt": round(total / 1000),
+        "partners": partners,
+        "exposed_pct": round(exposed, 1),
+        "covered_pct": round(covered, 1),
+        "source_ko": f"UN Comtrade 한국 수입 {src['year']}년 (HS {HS[crop]}, 순중량)",
+    }
