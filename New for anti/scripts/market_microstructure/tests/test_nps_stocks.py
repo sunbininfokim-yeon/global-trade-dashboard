@@ -53,11 +53,11 @@ class Dart(unittest.TestCase):
     def test_only_nps_filings(self):
         got = ns.nps_reports([
             {"repror": "국민연금공단", "rcept_dt": "20261110", "stkrt": "8.01", "stkrt_irds": "-1.02", "stkqy": "1,000", "rcept_no": "2"},
+            {"repror": "국민연금공단", "rcept_dt": "2026-03-10", "stkrt": "7.5", "rcept_no": "1"},
             {"repror": "블랙록", "rcept_dt": "20261111", "stkrt": "5.0", "rcept_no": "3"}])
-        self.assertEqual(len(got), 1)
-        self.assertEqual(got[0]["date"], "2026-11-10")
-        self.assertEqual(got[0]["stake_pct"], 8.01)
-        self.assertEqual(got[0]["chg_pp"], -1.02)
+        self.assertEqual([g["date"] for g in got], ["2026-03-10", "2026-11-10"])   # both date formats
+        self.assertEqual(got[1]["stake_pct"], 8.01)
+        self.assertEqual(got[1]["chg_pp"], -1.02)
 
 
 class Build(unittest.TestCase):

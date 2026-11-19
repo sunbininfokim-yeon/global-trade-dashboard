@@ -94,7 +94,7 @@ def nps_reports(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for r in rows or []:
         if NPS_FILER not in str(r.get("repror") or ""):
             continue
-        d = str(r.get("rcept_dt") or "")
+        d = re.sub(r"\D", "", str(r.get("rcept_dt") or ""))     # majorstock sends YYYY-MM-DD
         pct = _num(r.get("stkrt"))
         if len(d) != 8 or pct is None:
             continue
