@@ -64,6 +64,9 @@ jobs:
       - name: Investor × price levels (real data; marcap + high-vol in top100)
         env:
           KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
+          # OpenDART key for 국민연금 5% 대량보유 reports (kospi_holders_v1.json
+          # nps_stocks); ~100 majorstock calls a day, free quota 20,000.
+          DART_API_KEY: ${{ secrets.DART_API }}
         run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
 
       - name: Validate UI data contract
@@ -77,6 +80,11 @@ jobs:
           git add \
             "New for anti/public/data/investor_price_levels_v1.json" \
             "New for anti/scripts/market_microstructure/INVESTOR_PRICE_LEVELS.md"
+          # 코스피 보유 구조 + 국민연금 여력, written by the same run from the
+          # same listing call (absent when that block failed; reported below).
+          if [ -f "New for anti/public/data/kospi_holders_v1.json" ]; then
+            git add "New for anti/public/data/kospi_holders_v1.json"
+          fi
           git commit -m "chore: refresh investor price levels" || exit 0
           # Other scheduled jobs commit to main too; a bare push loses the
           # day's snapshot to a non-fast-forward rejection.
@@ -94,13 +102,21 @@ jobs:
         env:
           KRX_CHECKOUT: ${{ steps.krx_checkout.outcome }}
         run: |
-          if [ "$KRX_CHECKOUT" != "failure" ]; then
-            echo "No continue-on-error step failed."
-            exit 0
+          failed=0
+          if [ "$KRX_CHECKOUT" = "failure" ]; then
+            {
+              echo "### Steps that failed but did not stop the run"
+              echo "- Checkout krx-month-paste (the index view used the Naver fallback or carried days forward)"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=Not refreshed::Checkout krx-month-paste failed (continue-on-error); the KRX 12008 export was not read"
+            failed=1
           fi
-          {
-            echo "### Steps that failed but did not stop the run"
-            echo "- Checkout krx-month-paste (the index view used the Naver fallback or carried days forward)"
-          } >> "$GITHUB_STEP_SUMMARY"
-          echo "::error title=Not refreshed::Checkout krx-month-paste failed (continue-on-error); the KRX 12008 export was not read"
-          exit 1
+          # build_investor_price_levels.py leaves this marker when the holders
+          # block (foreign ownership / NPS) failed but the levels file was written.
+          if [ -f kospi_holders_failed.txt ]; then
+            echo "- 코스피 보유 구조 · 국민연금 (kospi_holders_v1.json) not refreshed; see the build step log" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=Not refreshed::kospi_holders_v1.json was not refreshed; see the build step log"
+            failed=1
+          fi
+          [ "$failed" = 0 ] && echo "No continue-on-error step failed."
+          exit "$failed"

@@ -24,6 +24,8 @@ const MS_FILES = {
     board: 'derivatives_board_v1.json',
     brief: 'ai_casino_brief_v1.json',
     levels: 'investor_price_levels_v1.json',
+    // 외국인 보유율(시총 상위 100 합산) + 국민연금 국내주식 비중·여력 (build_investor_price_levels.py).
+    holders: 'kospi_holders_v1.json',
     micro: 'market_microstructure_v1.json',
     overseas: 'overseas_letf_board_v1.json',
     // The micro snapshot carries a thin, older copy of deposit_credit: no
@@ -592,8 +594,9 @@ const msBinDays = (pts, step) => {
     const map = new Map();
     pts.forEach((d) => {
         const b = Math.floor((d.close - base) / step);
-        const cur = map.get(b) || { n_days: 0, retail: 0, foreign: 0, inst: 0 };
+        const cur = map.get(b) || { n_days: 0, retail: 0, foreign: 0, inst: 0, fh_sum: 0, fh_n: 0 };
         cur.n_days += 1;
+        if (Number.isFinite(d._fh)) { cur.fh_sum += d._fh; cur.fh_n += 1; }
         cur.retail += d._retail || 0;
         cur.foreign += d._foreign || 0;
         cur.inst += d._inst || 0;
@@ -601,6 +604,7 @@ const msBinDays = (pts, step) => {
     });
     return [...map.entries()].map(([b, v]) => ({
         price_lo: base + b * step, price_hi: base + (b + 1) * step, ...v,
+        foreign_hold: v.fh_n ? v.fh_sum / v.fh_n : null,
     })).sort((a, b) => a.price_lo - b.price_lo).filter((r) => r.price_lo <= hi);
 };
 
@@ -1083,8 +1087,10 @@ const msLevelsCompute = (D) => {
 
     // Everything is normalised to 억원 so the index (already 억) and a single
     // ticker (raw 원) can be read on one axis without a unit toggle.
+    const fhIndex = new Map((((D.holders || {}).foreign_ownership || {}).history || []).map((h) => [h.date, h.foreign_pct]));
     const allDays = (src.days || []).filter((d) => Number.isFinite(d.close)).map((d) => ({
         date: d.date, close: d.close,
+        _fh: isIndex ? fhIndex.get(d.date) : d.foreign_hold_pct,
         _retail: isIndex ? d.retail_net_eok : (d.retail_net_krw || 0) / 1e8,
         _foreign: isIndex ? d.foreign_net_eok : (d.foreign_net_krw || 0) / 1e8,
         _inst: isIndex ? d.institution_net_eok : (d.institution_net_krw || 0) / 1e8,
@@ -1098,6 +1104,7 @@ const msLevelsCompute = (D) => {
     const bins = msBinDays(pts, step);
 
     const rows = bins.filter((b) => b.n_days > 0).map((b) => ({
+        foreign_hold: b.foreign_hold,
         label: `${msNum(b.price_lo)} ~ ${msNum(b.price_hi)}`,
         sub: `${b.n_days}일`,
         series: [
@@ -1126,6 +1133,176 @@ const msUniverseTickers = (lv, tickers) => {
     // A name chosen earlier stays visible even if the other universe lacks it.
     if (MS_TICKER && tickers[MS_TICKER] && !list.includes(MS_TICKER)) list.push(MS_TICKER);
     return list.length ? list : Object.keys(tickers).slice(0, 10);
+};
+
+// --- 코스피 보유 구조 · 국민연금 여력 ----------------------------------------
+// Two time series that answer "who owns the market, and who is left to buy
+// it if it falls": the foreigners' cap-weighted holding ratio (daily, observed)
+// and the NPS domestic-equity weight (published month/year ends as dots, a
+// daily line that carries the last one with the KOSPI, ACWI and the won).
+let MS_NPS_VIEW = 'path';
+const MS_NPS_LINE_COLORS = { upper_published: '#c0392b', taa_upper: '#e67e22', target: '#2f9e44', taa_lower: '#e67e22', lower_published: '#c0392b' };
+
+// One stock's NPS stake over time: year-end lists and 5% filings in date order.
+const msNpsStockChart = (b) => {
+    const pts = (b && b.points) || [];
+    if (pts.length < 2) return '';
+    return msMultiChart(pts.map((x) => x.date), [
+        { label: '국민연금 지분율', color: '#2c7be5', values: pts.map((x) => x.stake_pct) },
+        { label: '연말 목록', color: '#f2c94c', values: pts.map((x) => x.kind === 'year_end' ? x.stake_pct : null), dots: true },
+        { label: 'DART 5% 보고', color: '#e8590c', values: pts.map((x) => x.kind === 'dart_5pct' ? x.stake_pct : null), dots: true },
+    ], { zero: false, unit: '%', digits: 2, signed: false, label: '국민연금 지분율', legend: true });
+};
+
+const MS_SCHED_KIND = { rule: '정기', deadline: '법정 기한', estimate: '추정', unknown: '미정' };
+
+const msScheduleBlock = (H) => {
+    const cal = H.schedule || [];
+    if (!cal.length) return '';
+    const when = (x) => x.next ? (x.kind === 'estimate' ? `${finEsc(x.next)} 무렵` : finEsc(x.next)) : '미정';
+    return `<h4 class="ms-sub-h">다음 공시</h4>
+        ${msTable(['자료', '다음', '구분', '근거'], cal.map((x) => [finEsc(x.label_ko), when(x),
+            finEsc(MS_SCHED_KIND[x.kind] || x.kind || ''), `<span class="co-hint">${finEsc(x.basis_ko || '')}</span>`]))}`;
+};
+
+const msNpsStocksBlock = (H) => {
+    const S = H.nps_stocks || {};
+    const rows = Object.entries(S.by_ticker || {}).map(([code, b]) => ({ code, ...b }))
+        .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+    if (!rows.length) return `<p class="fin-note">${msMissing('국민연금 종목별 지분 없음')}</p>`;
+    const years = Object.keys(S.year_end || {}).sort();
+    const ly = years[years.length - 1], py = years[years.length - 2];
+    const yv = (y, code) => (((S.year_end || {})[y] || {}).tickers || {})[code];
+    const pp = (v) => Number.isFinite(v) ? `<span class="${v >= 0 ? 'fin-up' : 'fin-down'}">${v >= 0 ? '+' : ''}${v.toFixed(2)}%p</span>` : '—';
+    const line = (r) => {
+        const a = yv(ly, r.code), b = yv(py, r.code);
+        const L = r.latest || {};
+        return [
+            `${finEsc(r.label_ko)} <span class="co-hint">${finEsc(r.code)}</span>`,
+            a && Number.isFinite(a.stake_pct) ? `${a.stake_pct.toFixed(2)}%` : '—',
+            a && b ? pp(a.stake_pct - b.stake_pct) : '—',
+            L.kind === 'dart_5pct' ? `${L.stake_pct.toFixed(2)}% <span class="co-hint">${finEsc(L.date)} 5% 보고</span>` : '<span class="co-hint">연말 목록이 최신</span>',
+            Number.isFinite(r.est_value_jo_now) ? `${r.est_value_jo_now.toFixed(2)}조` : '—',
+        ];
+    };
+    const head = ['종목', `${ly}년 말 지분율`, `${py}→${ly}`, '최근 5% 보고', '지금 추정 평가액'];
+    return `
+        <h4 class="ms-sub-h">국민연금 종목별 지분 — 코스피 시가총액 상위 ${rows.length}종목</h4>
+        ${msTable(head, rows.slice(0, 15).map(line))}
+        ${rows.length > 15 ? `<details class="mm-limits"><summary>나머지 ${rows.length - 15}종목</summary>${msTable(head, rows.slice(15).map(line))}</details>` : ''}
+        <p class="fin-note">${finEsc(S.method_ko || '')}
+            연말 목록 ${years.map((y) => `${y}(${msNum(((S.year_end || {})[y] || {}).n_holdings)}종목)`).join(' · ')}.
+            종목 버튼(위 가격대별)을 고르면 그 종목의 지분율 추이가 그래프로 나옵니다.
+            ${S.stale_reason ? `<span class="ms-warn">오늘 갱신 실패 — 이전 값입니다 (${finEsc(S.stale_reason)}).</span>` : ''}</p>`;
+};
+
+const msHoldersSection = (D) => {
+    const H = D.holders;
+    if (!H) return '';
+    const fo = H.foreign_ownership || {};
+    const fl = fo.latest || {};
+    const fh = fo.history || [];
+    const levelsDays = (((D.levels || {}).kospi_index_levels || {}).days || []);
+    const kospiAt = new Map(levelsDays.map((d) => [d.date, d.close]));
+    const pp = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${v.toFixed(2)}%p` : '—';
+    const foreignBlock = fo.quality === 'observed' && fh.length > 1 ? `
+        <div class="fin-cards">
+            ${msCard('외국인 보유율', `${fl.foreign_pct.toFixed(2)}%`, `${finEsc(fl.date || '')} · 보유액 ${msNum(fl.foreign_jo, 1)}조 / 시총 ${msNum(fl.cap_jo, 1)}조`, null)}
+            ${msCard('1개월 변화', pp((fo.chg_pp || {})['1m']), '21거래일 전 대비', null)}
+            ${msCard('3개월 변화', pp((fo.chg_pp || {})['3m']), '63거래일 전 대비', null)}
+            ${msCard('대상', `${fl.n || '—'}종목`, `코스피 시총의 ${msNum(fo.coverage_pct, 1)}%`, null)}
+        </div>
+        ${msMultiChart(fh.map((h) => h.date), [
+            { label: '외국인 보유율', color: '#d9480f', values: fh.map((h) => h.foreign_pct) },
+            { label: '코스피', color: '#888', values: fh.map((h) => kospiAt.get(h.date)), tipOnly: true, unit: 'pt', digits: 2 },
+        ], { zero: false, unit: '%', digits: 2, signed: false, label: '코스피 외국인 보유율', legend: true })}
+        <details class="mm-limits">
+            <summary>종목별 외국인 보유율 (시총 상위 20)</summary>
+            ${msTable(['종목', '보유율', `${finEsc(((fo.by_ticker || [])[0] || {}).since || '')} 이후`, '시총'],
+                (fo.by_ticker || []).slice(0, 20).map((t) => [
+                    `${finEsc(t.label_ko)} <span class="co-hint">${finEsc(t.ticker)}</span>`,
+                    `${t.foreign_pct.toFixed(2)}%`,
+                    `<span class="${t.chg_pp >= 0 ? 'fin-up' : 'fin-down'}">${pp(t.chg_pp)}</span>`,
+                    `${msNum(t.cap_jo, 1)}조`]))}
+        </details>
+        <p class="fin-note">${finEsc(fo.method_ko || '')} 범위: ${finEsc(fo.scope_ko || '')}.
+            ${fo.stale_reason ? `<span class="ms-warn">오늘 갱신 실패 — 이전 값입니다 (${finEsc(fo.stale_reason)}).</span>` : ''}</p>`
+        : `<p class="fin-note">${msMissing('외국인 보유율 없음')}</p>`;
+
+    const N = H.nps || {};
+    let npsBlock = `<p class="fin-note">${msMissing('국민연금 자료 없음')}</p>`;
+    if (N.quality === 'estimated' && N.now) {
+        const now = N.now, sc = N.scenarios || {}, lines = sc.lines || [];
+        const snap = N.snapshot || {};
+        const target = lines.find((l) => l.id === 'target') || {};
+        const cross = Object.fromEntries((sc.crossings || []).map((c) => [c.id, c]));
+        const path = N.path || [];
+        const obs = N.observed || [];
+        const hl = lines.map((l) => ({ v: l.pct, label: l.label_ko.split(' (')[0], color: MS_NPS_LINE_COLORS[l.id], solid: l.id === 'target' }));
+        // Published points sit at the last trading day of their month on the daily axis.
+        const obsAt = new Map();
+        obs.forEach((o) => { const last = path.filter((p) => p.date.slice(0, 7) === o.month).pop(); if (last) obsAt.set(last.date, o.weight_pct); });
+        const chartPath = path.length > 1 ? msMultiChart(path.map((p) => p.date), [
+            { label: '추정 비중 (일별)', color: '#2c7be5', values: path.map((p) => p.weight_pct) },
+            { label: '공시 비중 (월말·연말)', color: '#f2c94c', values: path.map((p) => obsAt.get(p.date)), dots: true },
+            { label: '코스피', color: '#888', values: path.map((p) => p.kospi), tipOnly: true, unit: 'pt', digits: 2 },
+            { label: '국내주식 추정액', color: '#888', values: path.map((p) => p.domestic_equity_jo), tipOnly: true, unit: '조', digits: 1 },
+        ], { zero: false, unit: '%', digits: 2, signed: false, hlines: hl, label: '국민연금 국내주식 비중', legend: true }) : '';
+        const yearly = obs.filter((o) => o.kind === 'year_end').slice(-10);
+        const chartYears = yearly.length > 1 ? msMultiChart(obs.slice(-11).map((o) => o.month), [
+            { label: '국내주식 비중 (공시)', color: '#2c7be5', values: obs.slice(-11).map((o) => o.weight_pct) },
+        ], { bars: true, zero: true, unit: '%', digits: 1, signed: false, label: '국민연금 국내주식 비중 연말 추이' }) : '';
+        const amt = (v) => Number.isFinite(v) ? (v > 0 ? `<span class="fin-up">${v.toFixed(1)}조 매수</span>` : `<span class="fin-down">${(-v).toFixed(1)}조 초과</span>`) : '—';
+        npsBlock = `
+        <div class="fin-cards">
+            ${msCard('국내주식 비중 (추정)', `${now.weight_pct.toFixed(1)}%`, `코스피 ${msNum(now.kospi_now.close, 0)} (${finEsc(now.as_of)}) · ${msNum(now.domestic_equity_jo, 1)}조 / ${msNum(now.total_jo, 1)}조`, null)}
+            ${msCard('최근 공시', `${(snap.assets?.domestic_equity?.pct ?? 0).toFixed(1)}%`, `${finEsc(snap.month || '')} 말 · ${msNum(snap.assets?.domestic_equity?.jo, 1)}조 (코스피 ${msNum(now.kospi_ref.close, 0)})`, null)}
+            ${msCard('목표 20.8%까지', amt((sc.rows || [])[0]?.to_line_jo?.target), cross.target ? `목표선 = 코스피 ${msNum(cross.target.kospi, 0)}` : '', null)}
+            ${msCard('공개 상단 25.8%까지', amt((sc.rows || [])[0]?.to_line_jo?.upper_published), '최대 재량 매수 여력 (확대된 상단은 비공개)', null)}
+            ${msCard('공개 하단 15.8% 이탈', cross.lower_published ? `코스피 ${msNum(cross.lower_published.kospi, 0)}` : '—', cross.lower_published ? `지금보다 ${cross.lower_published.move_pct.toFixed(1)}% · 여기부터 의무 매수` : '', null)}
+            ${msCard('코스피 시총 대비', `${Number.isFinite(N.share_of_kospi_cap_pct) ? N.share_of_kospi_cap_pct.toFixed(1) : '—'}%`, '국내주식 추정액 ÷ 코스피 시총 (코스닥 포함 금액이라 다소 큼)', null)}
+        </div>
+        <div class="co-struct-toggle">
+            <button class="mm-view-btn ${MS_NPS_VIEW === 'path' ? 'on' : ''}" data-ms-nps-view="path">일별 추정 (${finEsc((path[0] || {}).date || '')}~)</button>
+            <button class="mm-view-btn ${MS_NPS_VIEW === 'years' ? 'on' : ''}" data-ms-nps-view="years">연말 공시 추이</button>
+        </div>
+        ${MS_NPS_VIEW === 'years' ? chartYears : chartPath}
+        ${MS_NPS_VIEW === 'path' ? `<p class="fin-note">파란 선은 마지막 공시 시점을 시장 움직임으로 이어 붙인 추정입니다. 새 공시(노란 점)가 나오면 선이 그 값으로 옮겨 가고,
+            그 차이가 그 사이 국민연금이 실제로 사고판 결과입니다. 점선은 목표 ±2%p(전술)와 ±5%p(전략+전술, 공개된 마지막 기준)입니다.</p>` : ''}
+        <h4 class="ms-sub-h">코스피가 더 떨어지면 — 국민연금이 목표·하단까지 사야 하는 금액</h4>
+        ${msTable(['코스피', '변화', '국내주식 비중', '목표 20.8%까지', '전술 하단 18.8%까지', '공개 하단 15.8%까지', '공개 상단 25.8%까지'],
+            (sc.rows || []).map((r) => [
+                msNum(r.kospi, 0), r.shock_pct ? `${r.shock_pct}%` : '현재', `${r.weight_pct.toFixed(1)}%`,
+                amt(r.to_line_jo.target), amt(r.to_line_jo.taa_lower), amt(r.to_line_jo.lower_published), amt(r.to_line_jo.upper_published)]))}
+        <p class="fin-note">각 선까지의 금액 = 그 비중 × 기금 전체 − 국내주식 (다른 자산을 팔아 국내주식을 사므로 전체 규모는 그대로).
+            '초과'는 그 선보다 이미 많이 들고 있다는 뜻입니다. 의무 리밸런싱은 하단을 벗어날 때만 생기고,
+            그 위에서 목표 쪽으로 사는 것은 재량입니다.
+            선을 넘는 코스피: ${(sc.crossings || []).map((c) => `${finEsc(c.label_ko.split(' (')[0])} ${msNum(c.kospi, 0)}`).join(' · ')}.</p>
+        <details class="mm-limits">
+            <summary>국민연금 운용 기준과 이 추정의 한계</summary>
+            ${(N.policy_ko || []).map((x) => `<div class="mm-limit"><p>${finEsc(x)}</p></div>`).join('')}
+            <div class="mm-limit"><p>${finEsc(N.method_ko || '')}</p></div>
+            <div class="mm-limit"><p>출처: ${(N.source || []).filter((u) => /^https:\/\//.test(u)).map((u, i) => `<a href="${finEsc(u)}" target="_blank" rel="noopener noreferrer">${i === 0 ? '국민연금 포트폴리오 현황' : `보도 ${i}`}</a>`).join(' · ')}</p></div>
+        </details>`;
+    }
+
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>코스피 보유 구조 <span class="ms-q">${finEsc(fo.quality || '')}</span></h2>
+        <p class="fin-lead">위 가격대별 수급이 <em>얼마를 샀는지</em>라면, 이건 <em>지금 얼마를 들고 있는지</em>입니다.
+            매일 공개되는 보유 비율은 외국인뿐이라 외국인을 그리고, 큰손 하나인 국민연금은 아래에 따로 붙였습니다.</p>
+        ${foreignBlock}
+    </section>
+    <section class="fin-block fin-block-wide">
+        <h2>국민연금 국내주식 — 떨어지면 얼마나 더 사 줄 수 있나 <span class="ms-q">${finEsc(N.quality || '')}</span></h2>
+        <p class="fin-lead">2026년 국내주식 목표는 <strong>20.8%</strong>(5/28 기금위, 14.9%에서 상향).
+            공개된 허용범위는 목표 ±5%p(15.8~25.8%)지만, 연말까지 넓힌 실제 범위는 공개되지 않았습니다.</p>
+        ${npsBlock}
+        ${msNpsStocksBlock(H)}
+        ${msScheduleBlock(H)}
+    </section>
+    ${(H.cannot_do_ko || []).length ? `<details class="mm-limits"><summary>이 데이터로 할 수 없는 것 (보유 구조)</summary>
+        ${H.cannot_do_ko.map((x) => `<div class="mm-limit"><p>${finEsc(x)}</p></div>`).join('')}</details>` : ''}`;
 };
 
 const msLevelsTab = (D) => {
@@ -1184,7 +1361,27 @@ const msLevelsTab = (D) => {
         ${isIndex && src.scope_ko ? `<p class="fin-note ms-warn">${finEsc(src.scope_ko)}</p>` : ''}
         ${isIndex ? msStaleNote('코스피 시장 투자자별 수급', src.flow_date_end || src.date_end) : ''}
         ${isIndex && src.quality !== 'observed' ? `<p class="fin-note">${msMissing('코스피 시장 수급이 비어 있습니다')} — 위 종목 버튼은 종목별 수급으로 따로 그려집니다.</p>` : ''}
+        ${(() => {
+            const f = pts.filter((d) => Number.isFinite(d._fh));
+            if (f.length < 2) return '';
+            const a = f[0]._fh, b = f[f.length - 1]._fh;
+            return `<p class="fin-note">외국인 보유율 ${isIndex ? '(시총 상위 100 합산)' : ''} ${b.toFixed(2)}%
+                — 표시 구간 처음 ${a.toFixed(2)}% 대비 <span class="${b - a >= 0 ? 'fin-up' : 'fin-down'}">${b - a >= 0 ? '+' : ''}${(b - a).toFixed(2)}%p</span>.
+                가격대별 평균 보유율은 상세 표에 있습니다.</p>`;
+        })()}
+        ${(() => {
+            if (isIndex) return '';
+            const nb = (((D.holders || {}).nps_stocks || {}).by_ticker || {})[MS_TICKER];
+            if (!nb) return '';
+            const L = nb.latest || {};
+            return `<h4 class="ms-sub-h">${finEsc(nb.label_ko)} — 국민연금 지분율</h4>
+                ${msNpsStockChart(nb)}
+                <p class="fin-note">마지막 공시 ${finEsc(L.date || '')} ${Number.isFinite(L.stake_pct) ? L.stake_pct.toFixed(2) + '%' : ''}
+                    (${L.kind === 'dart_5pct' ? 'DART 5% 보고' : '연말 목록'})${Number.isFinite(nb.est_value_jo_now) ? ` · 그 지분율로 지금 평가액 약 ${nb.est_value_jo_now.toFixed(2)}조` : ''}.
+                    공시와 공시 사이의 매매는 공개되지 않습니다.</p>`;
+        })()}
     </section>
+    ${msHoldersSection(D)}
 
     <section class="fin-block fin-block-wide">
         <h2>종가일 수급</h2>
@@ -1440,7 +1637,8 @@ const msPick15007 = (D) => {
 // y-axis, zero line always in view, gaps where the source has none.
 const msMultiChart = (dates, series, opts = {}) => {
     const n = dates.length;
-    const ys = series.flatMap((s) => s.values).filter(Number.isFinite);
+    const ys = series.filter((s) => !s.tipOnly).flatMap((s) => s.values)
+        .concat((opts.hlines || []).map((h) => h.v)).filter(Number.isFinite);
     if (n < 2 || ys.length < 2) return '<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>';
     // Flows are signed, so zero stays on the axis; a price or OI level does
     // not need it (opts.zero === false) and would flatten against it.
@@ -1480,7 +1678,15 @@ const msMultiChart = (dates, series, opts = {}) => {
         }
     } else {
         const sx = (i) => x0 + (i / Math.max(n - 1, 1)) * (x1 - x0);
-        marks = series.map((s) => {
+        marks = (opts.hlines || []).map((h) => `
+            <line x1="${x0}" y1="${sy(h.v).toFixed(1)}" x2="${x1}" y2="${sy(h.v).toFixed(1)}" stroke="${finEsc(h.color || '#888')}"
+                stroke-dasharray="${h.solid ? '' : '4 3'}" stroke-width="1" vector-effect="non-scaling-stroke"/>
+            <text x="${x1 - 4}" y="${(sy(h.v) - 3).toFixed(1)}" class="mm-tick" text-anchor="end" fill="${finEsc(h.color || '#888')}">${finEsc(h.label || '')}</text>`).join('');
+        marks += series.filter((s) => !s.tipOnly).map((s) => {
+            if (s.dots) {
+                return s.values.map((v, i) => Number.isFinite(v)
+                    ? `<circle cx="${sx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="4" fill="${finEsc(s.color)}" stroke="#fff" stroke-width="1"/>` : '').join('');
+            }
             let d = '', pen = false;
             s.values.forEach((v, i) => {
                 if (!Number.isFinite(v)) { pen = false; return; }
@@ -1493,6 +1699,7 @@ const msMultiChart = (dates, series, opts = {}) => {
     const xAt = [0, Math.floor((n - 1) / 2), n - 1];
     const payload = { dates, n, bars: !!opts.bars, unit: opts.unit || '', digits: opts.digits ?? 0, signed: opts.signed !== false, abs: !!opts.abs,
         series: series.map((s) => ({ label: s.label, color: s.color, values: s.values.map((v) => Number.isFinite(v) ? v : null),
+            ...(s.unit !== undefined ? { unit: s.unit, digits: s.digits ?? 0 } : {}),
             ...(Array.isArray(s.daily) ? { daily: s.daily.map((v) => Number.isFinite(v) ? v : null) } : {}) })) };
     return `
     <div class="mm-chart-box ms-mc-box" data-ms-mc='${finEsc(JSON.stringify(payload))}'>
@@ -1510,7 +1717,7 @@ const msMultiChart = (dates, series, opts = {}) => {
             <line class="mm-cross" x1="0" y1="${MM_T}" x2="0" y2="${MM_H - MM_B}" style="display:none"/>
         </svg>
         <div class="mm-tip-box" style="display:none"></div>
-        ${series.length > 1 || opts.legend ? `<div class="mm-ma-legend">${series.map((s) => `<span class="mm-ma-key"><i style="background:${finEsc(s.color)}"></i>${finEsc(s.label)}</span>`).join('')}</div>` : ''}
+        ${series.length > 1 || opts.legend ? `<div class="mm-ma-legend">${series.filter((s) => !s.tipOnly).map((s) => `<span class="mm-ma-key"><i style="background:${finEsc(s.color)}"></i>${finEsc(s.label)}</span>`).join('')}</div>` : ''}
     </div>`;
 };
 
@@ -1537,7 +1744,9 @@ const msWireMultiCharts = (host) => {
                 ? `${P.signed && v >= 0 ? '+' : ''}${(P.abs ? Math.abs(v) : v).toLocaleString('ko-KR', { minimumFractionDigits: P.digits, maximumFractionDigits: P.digits })}${P.unit}`
                 : '관측 없음';
             tip.innerHTML = `<span class="mm-tip-date">${finEsc(P.dates[i] || '')}</span>`
-                + P.series.map((s) => `<span class="ms-mc-tip-row"><i style="background:${finEsc(s.color)}"></i>${finEsc(s.label)} <b>${fmt(s.values[i])}</b>${
+                + P.series.map((s) => `<span class="ms-mc-tip-row"><i style="background:${finEsc(s.color)}"></i>${finEsc(s.label)} <b>${
+                    s.unit !== undefined ? (Number.isFinite(s.values[i]) ? `${s.values[i].toLocaleString('ko-KR', { minimumFractionDigits: s.digits, maximumFractionDigits: s.digits })}${s.unit}` : '—')
+                        : fmt(s.values[i])}</b>${
                     s.daily ? `<em>당일 ${fmt(s.daily[i])}</em>` : ''}</span>`).join('');
             tip.style.display = '';
             tip.style.left = `${Math.min(Math.max(px / MM_W * 100, 12), 82)}%`;
@@ -2281,12 +2490,13 @@ const msModalFor = (key, D) => {
             html: msDivergingBars(rows, {
                 legend: [{ key: 'retail', name: '개인' }, { key: 'foreign', name: '외국인' }, { key: 'inst', name: '기관' }],
             })
-            + msTable(['가격대', '거래일', '개인', '외국인', '기관', '합계'],
+            + msTable(['가격대', '거래일', '개인', '외국인', '기관', '합계', '외국인 보유율(평균)'],
                 rows.map((r) => {
                     const [rt, fg, it] = r.series.map((s) => s.value);
                     const sum = rt + fg + it;
                     const cell = (v) => `<span class="${v >= 0 ? 'fin-up' : 'fin-down'}">${msEok(v)}</span>`;
-                    return [finEsc(r.label), finEsc(r.sub), cell(rt), cell(fg), cell(it), cell(sum)];
+                    return [finEsc(r.label), finEsc(r.sub), cell(rt), cell(fg), cell(it), cell(sum),
+                        Number.isFinite(r.foreign_hold) ? `${r.foreign_hold.toFixed(2)}%` : '—'];
                 }))
             + `<p class="fin-note">표시 구간 ${finEsc(pts[0]?.date || '')} ~ ${finEsc(pts[pts.length - 1]?.date || '')} · 단위 억원.
                일별 순매수를 종가 레벨에 귀속해 합산한 값이며, 체결 단위 매집도가 아닙니다.
@@ -2471,6 +2681,7 @@ const renderMicrostructure = async (host) => {
             if (MS_MODAL_KEY === 'price_level_detail') MS_MODAL = msModalFor(MS_MODAL_KEY, D);
             paint();
         });
+        on('[data-ms-nps-view]', (b) => { MS_NPS_VIEW = b.dataset.msNpsView || 'path'; paint(); });
         on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
         on('[data-ms-credit]', () => { MS_CREDIT_ON = !MS_CREDIT_ON; paint(); });
         // The three balance cards jump to the same-date overlay rather than
