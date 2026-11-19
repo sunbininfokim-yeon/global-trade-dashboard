@@ -202,9 +202,33 @@ def write_kospi_holders(pub: Path, *, foreign_days: int = 60) -> bool:
     try:
         listing = _kospi_common_listing(minimum_n=100)
         close = lambda sym: fdr.DataReader(sym, start)["Close"]  # noqa: E731
+        import requests
+
+        from market_microstructure import nps_stocks as ns
+
+        def get(url: str) -> requests.Response:
+            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
+            r.raise_for_status()
+            return r
+
+        try:
+            links = ns.parse_holdings_links(get(ns.NPS_EQUITY_PAGE).text)
+            if not links:
+                errors.append("NPS holdings: no year-end file links on the page")
+        except Exception as e:  # noqa: BLE001
+            links = None
+            errors.append(f"NPS holdings page: {type(e).__name__}: {e}")
+        dart_key = next((os.environ[k].strip() for k in ("DART_API_KEY", "DART_API", "OPENDART_API_KEY")
+                         if (os.environ.get(k) or "").strip()), None)
+        if not dart_key:
+            errors.append("DART key not set (DART_API_KEY); 5% reports kept from the previous file")
+        corp_file = ROOT / "../../public/data/dart_corp_codes_v1.json"
+        corp_index = json.loads(corp_file.read_text(encoding="utf-8")).get("index", {}) if corp_file.is_file() else {}
         rep = kh.build_report(
             listing=listing, fetch_trend=lambda c: fetch_naver_investor_trend(c, page_size=foreign_days),
             previous=previous, nps_snapshot=snap, year_ends=year_ends,
+            holdings_links=links, fetch_file=lambda u: get(u).content, corp_index=corp_index,
+            fetch_dart=(lambda c: ns.fetch_dart_majorstock(c, dart_key)) if dart_key else None,
             kospi=close("KS11"), acwi=close("ACWI"), usdkrw=close("USD/KRW"))
     except Exception as e:  # noqa: BLE001
         print(f"ERROR: kospi holders: {type(e).__name__}: {e}", file=sys.stderr)

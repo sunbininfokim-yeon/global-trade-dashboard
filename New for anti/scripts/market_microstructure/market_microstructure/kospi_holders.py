@@ -369,6 +369,11 @@ def build_foreign_ownership(listing: pd.DataFrame, *, top_n: int = 100,
 def build_report(*, listing: pd.DataFrame, fetch_trend: Callable[[str], list[dict[str, Any]]],
                  previous: dict[str, Any] | None, nps_snapshot: dict[str, Any] | None,
                  year_ends: list[dict[str, Any]] | None = None,
+                 holdings_links: dict[str, str] | None = None,
+                 fetch_file: Callable[[str], bytes] | None = None,
+                 corp_index: dict[str, list[str]] | None = None,
+                 fetch_dart: Callable[[str], list[dict[str, Any]]] | None = None,
+                 today: Any = None,
                  kospi: pd.Series, acwi: pd.Series, usdkrw: pd.Series) -> dict[str, Any]:
     prev = previous or {}
     errors: list[str] = []
@@ -385,7 +390,16 @@ def build_report(*, listing: pd.DataFrame, fetch_trend: Callable[[str], list[dic
     for ye in year_ends or []:
         history.setdefault(ye["month"], ye)        # a published month end beats a derived year end
     if nps_snapshot:
-        history[nps_snapshot["month"]] = {**nps_snapshot, "kind": "month_end"}
+        # first_seen: the day this job first saw the month on the site. NPS
+        # publishes no release date, so these days are what the next-release
+        # estimate in the schedule is built from. Months already stored before
+        # this field existed have none (their real first day is unknown).
+        known = history.get(nps_snapshot["month"]) or {}
+        first_seen = known.get("first_seen") if known.get("kind") == "month_end" else None
+        if not known or known.get("kind") != "month_end":
+            first_seen = str(today or datetime.now(timezone.utc).date())
+        history[nps_snapshot["month"]] = {**nps_snapshot, "kind": "month_end",
+                                          **({"first_seen": first_seen} if first_seen else {})}
     hist = [history[m] for m in sorted(history)]
     nps: dict[str, Any] = {"quality": "missing", "history": hist}
     if hist:
@@ -424,8 +438,24 @@ def build_report(*, listing: pd.DataFrame, fetch_trend: Callable[[str], list[dic
         except Exception as e:  # noqa: BLE001
             errors.append(f"nps: {type(e).__name__}: {e}")
             nps["error"] = f"{type(e).__name__}: {e}"
+    from . import nps_stocks as ns
+
+    top = [{"ticker": str(r.Code).zfill(6), "label_ko": str(r.Name), "marcap": float(r.Marcap), "rank": i + 1}
+           for i, r in enumerate(listing.sort_values("Marcap", ascending=False).head(100).itertuples())]
+    try:
+        stocks = ns.build_nps_stocks(top=top, previous=prev.get("nps_stocks"), holdings_links=holdings_links,
+                                     fetch_file=fetch_file, corp_index=corp_index or {}, fetch_dart=fetch_dart)
+        errors += stocks.pop("errors")
+    except Exception as e:  # noqa: BLE001
+        stocks = {**(prev.get("nps_stocks") or {"quality": "missing"}), "stale_reason": f"{type(e).__name__}: {e}"}
+        errors.append(f"nps_stocks: {type(e).__name__}: {e}")
+    from datetime import date as _date
+    day = _date.fromisoformat(str(today)) if today else datetime.now(timezone.utc).date()
+    cal = ns.schedule(day, nps_history=hist, year_end_years=list((stocks.get("year_end") or {}).keys()))
     return {
         "schema_version": "kospi-holders-v1",
+        "nps_stocks": stocks,
+        "schedule": cal,
         "as_of": datetime.now(timezone.utc).date().isoformat(),
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "foreign_ownership": fo,

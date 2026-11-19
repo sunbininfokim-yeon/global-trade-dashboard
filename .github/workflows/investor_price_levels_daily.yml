@@ -64,6 +64,9 @@ jobs:
       - name: Investor × price levels (real data; marcap + high-vol in top100)
         env:
           KRX_MONTH_PASTE_DIR: ${{ github.workspace }}/krx-month-paste
+          # OpenDART key for 국민연금 5% 대량보유 reports (kospi_holders_v1.json
+          # nps_stocks); ~100 majorstock calls a day, free quota 20,000.
+          DART_API_KEY: ${{ secrets.DART_API }}
         run: python build_investor_price_levels.py --live --universe both --top 10 --pool 100 --print-stats
 
       - name: Validate UI data contract

@@ -1143,6 +1143,59 @@ const msUniverseTickers = (lv, tickers) => {
 let MS_NPS_VIEW = 'path';
 const MS_NPS_LINE_COLORS = { upper_published: '#c0392b', taa_upper: '#e67e22', target: '#2f9e44', taa_lower: '#e67e22', lower_published: '#c0392b' };
 
+// One stock's NPS stake over time: year-end lists and 5% filings in date order.
+const msNpsStockChart = (b) => {
+    const pts = (b && b.points) || [];
+    if (pts.length < 2) return '';
+    return msMultiChart(pts.map((x) => x.date), [
+        { label: '국민연금 지분율', color: '#2c7be5', values: pts.map((x) => x.stake_pct) },
+        { label: '연말 목록', color: '#f2c94c', values: pts.map((x) => x.kind === 'year_end' ? x.stake_pct : null), dots: true },
+        { label: 'DART 5% 보고', color: '#e8590c', values: pts.map((x) => x.kind === 'dart_5pct' ? x.stake_pct : null), dots: true },
+    ], { zero: false, unit: '%', digits: 2, signed: false, label: '국민연금 지분율', legend: true });
+};
+
+const MS_SCHED_KIND = { rule: '정기', deadline: '법정 기한', estimate: '추정', unknown: '미정' };
+
+const msScheduleBlock = (H) => {
+    const cal = H.schedule || [];
+    if (!cal.length) return '';
+    const when = (x) => x.next ? (x.kind === 'estimate' ? `${finEsc(x.next)} 무렵` : finEsc(x.next)) : '미정';
+    return `<h4 class="ms-sub-h">다음 공시</h4>
+        ${msTable(['자료', '다음', '구분', '근거'], cal.map((x) => [finEsc(x.label_ko), when(x),
+            finEsc(MS_SCHED_KIND[x.kind] || x.kind || ''), `<span class="co-hint">${finEsc(x.basis_ko || '')}</span>`]))}`;
+};
+
+const msNpsStocksBlock = (H) => {
+    const S = H.nps_stocks || {};
+    const rows = Object.entries(S.by_ticker || {}).map(([code, b]) => ({ code, ...b }))
+        .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+    if (!rows.length) return `<p class="fin-note">${msMissing('국민연금 종목별 지분 없음')}</p>`;
+    const years = Object.keys(S.year_end || {}).sort();
+    const ly = years[years.length - 1], py = years[years.length - 2];
+    const yv = (y, code) => (((S.year_end || {})[y] || {}).tickers || {})[code];
+    const pp = (v) => Number.isFinite(v) ? `<span class="${v >= 0 ? 'fin-up' : 'fin-down'}">${v >= 0 ? '+' : ''}${v.toFixed(2)}%p</span>` : '—';
+    const line = (r) => {
+        const a = yv(ly, r.code), b = yv(py, r.code);
+        const L = r.latest || {};
+        return [
+            `${finEsc(r.label_ko)} <span class="co-hint">${finEsc(r.code)}</span>`,
+            a && Number.isFinite(a.stake_pct) ? `${a.stake_pct.toFixed(2)}%` : '—',
+            a && b ? pp(a.stake_pct - b.stake_pct) : '—',
+            L.kind === 'dart_5pct' ? `${L.stake_pct.toFixed(2)}% <span class="co-hint">${finEsc(L.date)} 5% 보고</span>` : '<span class="co-hint">연말 목록이 최신</span>',
+            Number.isFinite(r.est_value_jo_now) ? `${r.est_value_jo_now.toFixed(2)}조` : '—',
+        ];
+    };
+    const head = ['종목', `${ly}년 말 지분율`, `${py}→${ly}`, '최근 5% 보고', '지금 추정 평가액'];
+    return `
+        <h4 class="ms-sub-h">국민연금 종목별 지분 — 코스피 시가총액 상위 ${rows.length}종목</h4>
+        ${msTable(head, rows.slice(0, 15).map(line))}
+        ${rows.length > 15 ? `<details class="mm-limits"><summary>나머지 ${rows.length - 15}종목</summary>${msTable(head, rows.slice(15).map(line))}</details>` : ''}
+        <p class="fin-note">${finEsc(S.method_ko || '')}
+            연말 목록 ${years.map((y) => `${y}(${msNum(((S.year_end || {})[y] || {}).n_holdings)}종목)`).join(' · ')}.
+            종목 버튼(위 가격대별)을 고르면 그 종목의 지분율 추이가 그래프로 나옵니다.
+            ${S.stale_reason ? `<span class="ms-warn">오늘 갱신 실패 — 이전 값입니다 (${finEsc(S.stale_reason)}).</span>` : ''}</p>`;
+};
+
 const msHoldersSection = (D) => {
     const H = D.holders;
     if (!H) return '';
@@ -1245,6 +1298,8 @@ const msHoldersSection = (D) => {
         <p class="fin-lead">2026년 국내주식 목표는 <strong>20.8%</strong>(5/28 기금위, 14.9%에서 상향).
             공개된 허용범위는 목표 ±5%p(15.8~25.8%)지만, 연말까지 넓힌 실제 범위는 공개되지 않았습니다.</p>
         ${npsBlock}
+        ${msNpsStocksBlock(H)}
+        ${msScheduleBlock(H)}
     </section>
     ${(H.cannot_do_ko || []).length ? `<details class="mm-limits"><summary>이 데이터로 할 수 없는 것 (보유 구조)</summary>
         ${H.cannot_do_ko.map((x) => `<div class="mm-limit"><p>${finEsc(x)}</p></div>`).join('')}</details>` : ''}`;
@@ -1313,6 +1368,17 @@ const msLevelsTab = (D) => {
             return `<p class="fin-note">외국인 보유율 ${isIndex ? '(시총 상위 100 합산)' : ''} ${b.toFixed(2)}%
                 — 표시 구간 처음 ${a.toFixed(2)}% 대비 <span class="${b - a >= 0 ? 'fin-up' : 'fin-down'}">${b - a >= 0 ? '+' : ''}${(b - a).toFixed(2)}%p</span>.
                 가격대별 평균 보유율은 상세 표에 있습니다.</p>`;
+        })()}
+        ${(() => {
+            if (isIndex) return '';
+            const nb = (((D.holders || {}).nps_stocks || {}).by_ticker || {})[MS_TICKER];
+            if (!nb) return '';
+            const L = nb.latest || {};
+            return `<h4 class="ms-sub-h">${finEsc(nb.label_ko)} — 국민연금 지분율</h4>
+                ${msNpsStockChart(nb)}
+                <p class="fin-note">마지막 공시 ${finEsc(L.date || '')} ${Number.isFinite(L.stake_pct) ? L.stake_pct.toFixed(2) + '%' : ''}
+                    (${L.kind === 'dart_5pct' ? 'DART 5% 보고' : '연말 목록'})${Number.isFinite(nb.est_value_jo_now) ? ` · 그 지분율로 지금 평가액 약 ${nb.est_value_jo_now.toFixed(2)}조` : ''}.
+                    공시와 공시 사이의 매매는 공개되지 않습니다.</p>`;
         })()}
     </section>
     ${msHoldersSection(D)}
