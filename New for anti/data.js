@@ -586,6 +586,17 @@
         },
         // Orange juice: frozen (200911), not frozen under Brix 20 (200912)
         // and other (200919), summed. Brazil ships most of it as FCOJ/NFC.
+        // Urea (310210) and potassium chloride (310420): the two fertilizers
+        // with a free monthly benchmark price (World Bank). Narrow lines, so
+        // a row that does not name its line is not counted.
+        urea: {
+            hsCode: "310210", strictHs: true,
+            colorScheme: { source: [168, 85, 247], target: [216, 180, 254] }
+        },
+        potash: {
+            hsCode: "310420", strictHs: true,
+            colorScheme: { source: [236, 72, 153], target: [249, 168, 212] }
+        },
         orange_juice: {
             hsCode: "200911,200912,200919",
             colorScheme: { source: [234, 88, 12], target: [253, 186, 116] }
@@ -1322,6 +1333,22 @@
             topExporter: "남아공 / 이집트",
             arcs: [],  // Lazy loaded from UN Comtrade API (HS 080510)
             news: defaultNews("Oranges")
+        },
+        urea: {
+            title: "비료: 요소 (Urea)",
+            desc: "질소비료 요소(HS 310210) 수출입 무역 흐름 · 국제가격은 세계은행 월간",
+            totalVolume: "…",
+            topExporter: "러시아 / 카타르 / 중국",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 310210)
+            news: defaultNews("Urea fertilizer")
+        },
+        potash: {
+            title: "비료: 칼륨 (Potash)",
+            desc: "칼륨비료 염화칼륨(HS 310420) 수출입 무역 흐름 · 국제가격은 세계은행 월간",
+            totalVolume: "…",
+            topExporter: "캐나다 / 러시아 / 벨라루스",
+            arcs: [],  // Lazy loaded from UN Comtrade API (HS 310420)
+            news: defaultNews("Potash")
         },
         orange_juice: {
             title: "농산물: 오렌지주스 (Orange Juice)",

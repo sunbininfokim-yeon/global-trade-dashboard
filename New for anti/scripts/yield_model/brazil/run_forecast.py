@@ -106,6 +106,16 @@ def main():
             r["range_95"] = [v * k for v in r["range_95"]]
 
         label, value = enso_label(r["features"].get("oni_season"))
+        # Before the growing-season ONI exists the card used to say
+        # "unknown" in the middle of a strong El Nino. Say what the latest
+        # ONI reads instead (as Argentina does with its sowing Nino 3.4); the
+        # model input stays the historical fill, so this is a label only.
+        basis, latest = "oni_growing_season", None
+        if value is None and oni is not None and len(oni):
+            row = oni.iloc[-1]
+            latest = {"season": f"{row['season']} {int(row['year'])}", "oni": float(row["anom"])}
+            label, _ = enso_label(latest["oni"])
+            basis = "oni_latest"
 
         # IBGE finalises PAM municipal data slowly -- typically well over a
         # year after harvest -- so the "last actual" season is routinely one
@@ -142,7 +152,11 @@ def main():
             "last_actual": r["last_actual"],
             # MODIS NDVI correction (None when off or not yet observable).
             "ndvi": nd,
-            "enso": {"state": label, "oni_growing_season": value},
+            "enso": {"state": label, "state_basis": basis, "oni_growing_season": value,
+                     "oni_latest": latest,
+                     # Pre-season fill weighted by Nino3.4 at sowing
+                     # (enso_analog.py); None where off or once the window is in.
+                     "analog_fill": r.get("enso_analog")},
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
                            "scored on the most recent folds"),
