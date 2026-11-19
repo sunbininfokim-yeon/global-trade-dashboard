@@ -51,10 +51,18 @@
                 ? `<div class="gb-line"><span>과거 검증</span><span style="color:#86efac;">통과</span></div><div class="stock-note">${msg}</div>`
                 : `<div class="gb-line"><span>과거 검증</span><span style="color:#94a3b8;">미통과 · 참고만</span></div><div class="stock-note">${msg} · 기준: ${esc(bt.rule_ko)}</div>`;
         }
+        // The soy/corn price ratio is the driver that did pass; show its pull too.
+        let soy = '';
+        if (bt && a.soy_per_corn && a.prev_soy_per_corn) {
+            const pp = bt.soy_corn_coef_per_10pct * Math.log(a.soy_per_corn / a.prev_soy_per_corn) / Math.log(1.1);
+            soy = `<div class="gb-line"><span>대두/옥수수 가격비 <span class="stock-note">전년 ${a.prev_soy_per_corn}</span></span><span><b>${a.soy_per_corn}</b></span></div>
+            <div class="stock-note">면적을 실제로 움직인 건 이 비율입니다 (10% 오를 때 옥수수 비중 ${bt.soy_corn_coef_per_10pct}%p, t ${bt.soy_corn_t}). 지금 비율이면 옥수수 비중 ${pp >= 0 ? '+' : ''}${pp.toFixed(1)}%p 쪽입니다.</div>`;
+        }
         return `<p class="trade-rank-group-head" style="margin-top:10px;">${a.planting_year}년 파종 비료 부담 (요소 1t = 옥수수 몇 t)</p>
             <div class="gb-line"><span>${esc(a.window_ko)} 평균${a.months_in < 6 ? ` <span class="stock-note">${a.months_in}개월치</span>` : ''}</span><span><b>${a.urea_per_corn}</b>${prev}${vs}</span></div>
             ${a.pct_rank == null ? '' : `<div class="gb-line"><span>1980년 이후 순위</span><span>상위 ${100 - a.pct_rank}%</span></div>`}
-            ${verdict}`;
+            ${verdict}
+            ${soy}`;
     }
 
     function cardHtml(doc, lead) {

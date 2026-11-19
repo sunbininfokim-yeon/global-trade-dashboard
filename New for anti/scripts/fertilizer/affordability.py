@@ -140,6 +140,7 @@ def build(prices, offline=False):
         "urea_per_corn": round(float(cur.urea_corn), 2),
         "soy_per_corn": None if pd.isna(cur.soy_corn) else round(float(cur.soy_corn), 2),
         "prev_urea_per_corn": round(float(win.loc[cur_year - 1].urea_corn), 2) if cur_year - 1 in win.index else None,
+        "prev_soy_per_corn": round(float(win.loc[cur_year - 1].soy_corn), 2) if cur_year - 1 in win.index else None,
         "avg_10y": round(float(hist.iloc[-10:].mean()), 2) if len(hist) >= 10 else None,
         "pct_rank": rank,
         "latest": {"month": last.month, "urea_usd_t": round(float(last.urea), 1),
