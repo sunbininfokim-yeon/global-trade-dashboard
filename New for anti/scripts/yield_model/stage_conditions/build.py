@@ -58,6 +58,8 @@ MIN_SEASONS = 10
 # that ends inside the tail is judged without soil; the value stays in the
 # metrics, marked reference_only.
 SOIL_NRT_DAYS = 120
+# Days a harvested season stays on show before the next one takes its place.
+ROLL_AFTER_DAYS = 30
 DRY_MM = 1.0
 WINTERKILL_C = -15.0
 # Maturity and harvest weather changes quality and harvest pace more than the
@@ -213,6 +215,12 @@ def current_anchor(stages, today):
     for anchor in (latest - 1, latest):
         if place(stages, anchor)[-1][1] >= today:
             return anchor
+    # Every started season is harvested. Keep the last one on show for a
+    # month after harvest, then move to the next season (all stages
+    # "upcoming") -- Brazil's safrinha corn and Matopiba cotton otherwise
+    # showed a crop harvested in August until the next sowing in January.
+    if place(stages, latest)[-1][1] + timedelta(days=ROLL_AFTER_DAYS) < today:
+        return latest + 1
     return latest
 
 

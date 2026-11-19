@@ -153,7 +153,10 @@ def main():
             # MODIS NDVI correction (None when off or not yet observable).
             "ndvi": nd,
             "enso": {"state": label, "state_basis": basis, "oni_growing_season": value,
-                     "oni_latest": latest},
+                     "oni_latest": latest,
+                     # Pre-season fill weighted by Nino3.4 at sowing
+                     # (enso_analog.py); None where off or once the window is in.
+                     "analog_fill": r.get("enso_analog")},
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
                            "scored on the most recent folds"),
