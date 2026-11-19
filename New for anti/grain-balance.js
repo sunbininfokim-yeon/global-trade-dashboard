@@ -142,12 +142,13 @@
             const color = r.harvested || r.reference_only ? '#94a3b8' : (VERDICT_COLOR[r.verdict] || '#94a3b8');
             return `<span class="stock-note" style="color:${color};">${esc(r.region_ko)} ${esc(label)}</span>`;
         };
-        const rows = k.partners.map((p) => `<div class="gb-line" style="flex-wrap:wrap;"><span>${esc(p.country_ko)} <span class="stock-note">${p.share_pct}%</span></span>
+        const chg = (v) => (v == null || Math.abs(v) < 0.5 ? '' : ` <span style="font-size:11px;color:${v > 0 ? '#86efac' : '#fdba74'};">${v > 0 ? '▲' : '▼'}${Math.abs(v)}%p</span>`);
+        const rows = k.partners.map((p) => `<div class="gb-line" style="flex-wrap:wrap;"><span>${esc(p.country_ko)} <span class="stock-note">${p.share_pct}%</span>${chg(p.change_pp)}</span>
             <span style="text-align:right;">${p.regions.length ? p.regions.map(chip).join(' · ') : '<span class="stock-note">산지 판정 없음</span>'}</span></div>`).join('');
         const head = k.covered_pct > 0
             ? `생육 중인 산지 판정이 있는 수입선 ${k.covered_pct}% 중 <b style="color:${k.exposed_pct > 0 ? '#fdba74' : '#86efac'};">${k.exposed_pct}%</b>가 불리 판정 산지`
             : '지금 생육 중인 수입선 산지가 없습니다';
-        return `<p class="trade-rank-group-head" style="margin-top:10px;">한국 수입선 리스크 (${k.year}년 수입 ${mt(k.total_kt)})</p>
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">한국 수입선 리스크 (${esc(k.label_ko || `${k.year}년`)} 수입 ${mt(k.total_kt)})</p>
             <div style="font-size:13px;color:#e2e8f0;padding:4px 0;">${head}</div>
             ${rows}
             <div class="stock-note" style="margin-top:4px;">${esc(k.source_ko)} · 한 나라 안의 산지는 같은 비중으로 봅니다 · 과거 기록과 맞지 않은 판정(참고)은 비중에서 뺍니다</div>`;

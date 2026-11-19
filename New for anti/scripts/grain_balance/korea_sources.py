@@ -16,12 +16,16 @@ import os
 import urllib.error
 import urllib.parse
 import urllib.request
+import time
 from datetime import date
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "korea_imports.json")
 URL = "https://comtradeapi.un.org/public/v1/preview/C/A/HS"
 HS = {"wheat": "1001", "corn": "1005", "soybeans": "1201"}
+LOOKBACK_MONTHS = 15     # months asked for (Korea reports within ~2 months)
+REFETCH_MONTHS = 4       # the newest months are pulled again for revisions
+PAUSE_S = 6              # between preview calls (public rate limit)
 MIN_SHARE = 1.0          # % of Korea's tonnage; smaller suppliers are not listed
 TOP = 6
 
@@ -71,14 +75,67 @@ def log(msg):
     print(f"[korea-sources] {msg}", flush=True)
 
 
-def _get(year):
-    params = dict(reporterCode="410", period=str(year), cmdCode=",".join(HS.values()),
+def _get(period, freq="A"):
+    params = dict(reporterCode="410", period=str(period), cmdCode=",".join(HS.values()),
                   flowCode="M", partner2Code="0", customsCode="C00", motCode="0")
-    req = urllib.request.Request(f"{URL}?{urllib.parse.urlencode(params)}",
-                                 headers={"Accept": "application/json",
-                                          "User-Agent": "global-trade-dashboard"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return json.load(r)
+    url = (URL if freq == "A" else URL.replace("/C/A/", "/C/M/")) + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"Accept": "application/json",
+                                               "User-Agent": "global-trade-dashboard"})
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return json.load(r)
+        except urllib.error.HTTPError as e:
+            if e.code != 429 or attempt == 3:
+                raise
+            time.sleep(20 * (attempt + 1))
+    return {}
+
+
+def _rows(body):
+    """{crop: {partner: tonnes}} from one Comtrade response."""
+    per = {}
+    for r in body.get("data") or []:
+        if str(r.get("reporterCode")) != "410" or r.get("flowCode") != "M":
+            continue
+        crop = next((k for k, v in HS.items() if r.get("cmdCode") == v), None)
+        p = int(r.get("partnerCode") or 0)
+        kg = r.get("netWgt") or 0
+        if crop and p != 0 and kg:
+            per.setdefault(crop, {})
+            per[crop][str(p)] = round(per[crop].get(str(p), 0) + kg / 1000)
+    return per
+
+
+def fetch_monthly(cached, today=None):
+    """{crop: {YYYYMM: {partner: tonnes}}}. Months already held and older
+    than REFETCH_MONTHS are kept; the recent ones are pulled again since
+    Korea revises its first reports."""
+    today = today or date.today()
+    out = {c: dict(v) for c, v in (cached or {}).items()}
+    y, m = today.year, today.month
+    months = []
+    for _ in range(LOOKBACK_MONTHS):
+        m -= 1
+        if m == 0:
+            y, m = y - 1, 12
+        months.append(f"{y}{m:02d}")
+    for i, ym in enumerate(months):
+        held = any(ym in out.get(c, {}) for c in HS)
+        if held and i >= REFETCH_MONTHS:
+            continue
+        try:
+            body = _get(ym, "M")
+        except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+            log(f"{ym}: {exc}")
+            continue
+        for crop, rows in _rows(body).items():
+            out.setdefault(crop, {})[ym] = rows
+        time.sleep(PAUSE_S)
+    # Keep two years of months, enough for a 12-month window and its year-ago.
+    for c in out:
+        out[c] = dict(sorted(out[c].items())[-24:])
+    return out
 
 
 def fetch(today=None):
@@ -91,19 +148,9 @@ def fetch(today=None):
         except (urllib.error.URLError, TimeoutError, ValueError) as exc:
             log(f"{year}: {exc}")
             continue
-        per = {}
-        for r in body.get("data") or []:
-            if str(r.get("reporterCode")) != "410" or r.get("flowCode") != "M":
-                continue
-            crop = next((k for k, v in HS.items() if r.get("cmdCode") == v), None)
-            p = int(r.get("partnerCode") or 0)
-            kg = r.get("netWgt") or 0
-            if crop and p != 0 and kg:
-                per.setdefault(crop, {})
-                per[crop][p] = per[crop].get(p, 0) + kg / 1000
-        for crop, rows in per.items():
+        for crop, rows in _rows(body).items():
             if crop not in out and sum(rows.values()) > 0:
-                out[crop] = {"year": year, "rows": {str(k): round(v) for k, v in rows.items()}}
+                out[crop] = {"year": year, "rows": rows}
         if len(out) == len(HS):
             break
     return out
@@ -117,14 +164,18 @@ def load_or_fetch(offline=False):
     if offline:
         return cached
     fresh = fetch()
-    if not fresh:
+    monthly = fetch_monthly(cached.get("monthly"))
+    if not fresh and monthly == cached.get("monthly"):
         log("Comtrade unavailable; using cached shares")
         return cached
-    merged = {**cached, **fresh}
+    merged = {**cached, **fresh, "monthly": monthly}
     merged["fetched"] = date.today().isoformat()
     with open(CACHE, "w", encoding="utf-8") as f:
         json.dump(merged, f, indent=1, ensure_ascii=False, sort_keys=True)
         f.write("\n")
+    for crop, months in monthly.items():
+        if months:
+            log(f"{crop} monthly: {min(months)}..{max(months)} ({len(months)} months)")
     for crop in HS:
         if crop in fresh:
             log(f"{crop} {fresh[crop]['year']}: {sum(fresh[crop]['rows'].values()):,.0f} t "
@@ -152,7 +203,13 @@ def block(crop, imports, stage, names):
     src = imports.get(crop)
     if not src or not src.get("rows"):
         return None
-    rows = {int(k): v for k, v in src["rows"].items()}
+    annual = {int(k): v for k, v in src["rows"].items()}
+    annual_total = sum(annual.values())
+    window = last_12_months((imports.get("monthly") or {}).get(crop) or {})
+    if window:
+        rows, period = window
+    else:
+        rows, period = annual, None
     total = sum(rows.values())
     calls = _calls(stage)
     partners, exposed, covered = [], 0.0, 0.0
@@ -176,13 +233,47 @@ def block(crop, imports, stage, names):
             covered += share
             bad = sum(1 for r in live if r["verdict"] == "unfavorable" and not r["reference_only"])
             exposed += share * bad / len(live)
+        prior = annual.get(p, 0) / annual_total * 100 if annual_total else None
         partners.append({"code": p, "country_ko": PARTNER_KO.get(p, str(p)),
-                         "tonnes": round(t), "share_pct": round(share, 1), "regions": regions})
+                         "tonnes": round(t), "share_pct": round(share, 1),
+                         "change_pp": None if period is None or prior is None else round(share - prior, 1),
+                         "regions": regions})
+    if period:
+        label, src_ko = f"최근 12개월({period[0][:4]}.{period[0][4:]}~{period[1][:4]}.{period[1][4:]})", \
+            f"UN Comtrade 한국 월간 수입 {period[0][:4]}.{period[0][4:]}~{period[1][:4]}.{period[1][4:]} (HS {HS[crop]}, 순중량) · 변화는 {src['year']}년 연간 대비"
+    else:
+        label, src_ko = f"{src['year']}년", f"UN Comtrade 한국 수입 {src['year']}년 (HS {HS[crop]}, 순중량)"
     return {
         "year": src["year"],
+        "period": None if period is None else {"from": period[0], "to": period[1]},
+        "label_ko": label,
         "total_kt": round(total / 1000),
         "partners": partners,
         "exposed_pct": round(exposed, 1),
         "covered_pct": round(covered, 1),
-        "source_ko": f"UN Comtrade 한국 수입 {src['year']}년 (HS {HS[crop]}, 순중량)",
+        "source_ko": src_ko,
     }
+
+
+def last_12_months(months):
+    """(partner tonnes summed, (first, last)) over the newest 12 consecutive
+    months, or None when the run is shorter."""
+    keys = sorted(k for k, v in months.items() if v)
+    if len(keys) < 12:
+        return None
+    run = [keys[-1]]
+    for k in reversed(keys[:-1]):
+        y, m = int(run[-1][:4]), int(run[-1][4:])
+        y, m = (y - 1, 12) if m == 1 else (y, m - 1)
+        if k != f"{y}{m:02d}":
+            break
+        run.append(k)
+        if len(run) == 12:
+            break
+    if len(run) < 12:
+        return None
+    total = {}
+    for k in run:
+        for p, t in months[k].items():
+            total[int(p)] = total.get(int(p), 0) + t
+    return total, (run[-1], run[0])
