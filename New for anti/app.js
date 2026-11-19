@@ -2071,15 +2071,34 @@ const renderSeaRouteLineCard = (doc) => {
             <span style="flex:1.2;">실제 ${mdKo(v.first_entry)} ~ ${v.last_exit ? mdKo(v.last_exit) : '?'} (${v.n}회)</span>
             <span style="flex:1.6;" class="climate-sub">Arc7 ${c7?.open ? `${mdKo(c7.open)}~${mdKo(c7.close)}` : '-'} · Arc4 ${c4?.open ? `${mdKo(c4.open)}~${mdKo(c4.close)}` : '-'} · 일반 ${ow?.open ? `${mdKo(ow.open)}~${mdKo(ow.close)}` : '안 열림'}</span></div>`;
     }).join('');
+    const evs = (L.events || []).map((e) => `<div style="margin-top:4px;padding:6px 8px;border-radius:6px;font-size:12px;
+            background:${e.kind === 'open' ? 'rgba(34,197,94,.14)' : 'rgba(248,113,113,.14)'};color:${e.kind === 'open' ? '#86efac' : '#fca5a5'};">
+            ${e.kind === 'open' ? '🟢 열림' : '🔴 닫힘'} · ${e.label_ko.split(' (')[0]} · ${mdKo(e.date)}${e.days_ago ? ` (${e.days_ago}일 전)` : ' (오늘)'}</div>`).join('');
+    const nowChips = (L.classes || []).map((c) => {
+        const open = L.status_now?.[c.id] === 'open';
+        return `<span class="oa-chip" style="${open ? 'color:#86efac;border-color:rgba(134,239,172,.5);' : ''}">${c.label_ko.split(' (')[0]} ${open ? '열림' : '닫힘'}</span>`;
+    }).join('');
+    const C = L.compare;
+    const cmp = C ? `<div class="climate-sub" style="margin-top:10px;font-weight:600;color:#e2e8f0;">${C.from_ko}→${C.to_ko} 항로 비교</div>
+        ${C.routes.map((r) => `<div class="climate-table-row" style="font-size:12px;">
+            <span style="flex:1;">${r.id === 'nsr' ? `<b style="color:#fbbf24;">${r.name_ko}</b>` : r.name_ko}</span>
+            <span style="width:30%;text-align:right;">${r.nm.toLocaleString()}해리</span>
+            <span style="width:22%;text-align:right;"><b>${r.days}일</b></span></div>`).join('')}
+        <div class="climate-sub" style="margin-top:4px;">북극항로가 수에즈보다 거리 ${C.saving_vs_suez_pct}%·약 ${Math.round(C.saving_vs_suez_days)}일 짧고, 희망봉 우회보다 약 ${Math.round(C.saving_vs_cape_days)}일 짧습니다.
+            ${target ? ` ${target}년 일반 선박 기준 이 이점을 쓸 수 있는 기간은 약 ${Math.round(L.classes?.[0]?.outlook?.days?.point ?? 0)}일입니다.` : ''}</div>
+        <div class="climate-sub" style="margin-top:2px;">${C.note_ko}</div>` : '';
     return `<div class="climate-card">
         <h3>북극항로(북동항로) 열리는 기간 <span class="src-tag">항로선 위 얼음 · 매일 자동 계산</span></h3>
-        <div class="climate-sub">지금 항로 구간별 얼음 (${L.latest_date})</div>
+        <div class="ocean-affects" style="margin-top:2px;">${nowChips}</div>
+        ${evs}
+        <div class="climate-sub" style="margin-top:6px;">지금 항로 구간별 얼음 (${L.latest_date})</div>
         <div class="ocean-affects" style="margin-top:4px;">${legChips}</div>
         <div class="climate-sub" style="margin-top:8px;font-weight:600;color:#e2e8f0;">${target}년 시즌 전망 (68% 범위)</div>
         <div class="climate-table-row" style="font-size:10px;color:#94a3b8;"><span style="flex:1.4;">선급</span><span style="flex:1;text-align:right;">열림</span><span style="flex:1;text-align:right;">닫힘</span><span style="flex:.7;text-align:right;">기간</span></div>
         ${rows}
         <div class="climate-sub" style="margin-top:4px;">방법: <b>${methods.join(', ') || '추세'}</b> · 범위는 2001년 이후 같은 날짜 전진 검증 오차 · "평소" = 최근 10년 평균 일수</div>
         ${seaRouteClassBars(L)}
+        ${cmp}
         ${val ? `<div class="climate-sub" style="margin-top:8px;font-weight:600;color:#e2e8f0;">실제 운항 기록과 비교</div>${val}
             <div class="climate-sub" style="margin-top:2px;">실제 통과는 빙급선과 쇄빙선 호위를 포함하므로 Arc7 시즌과 비교하는 게 맞습니다.</div>` : ''}
         <details class="climate-fold" style="margin-top:6px;">
@@ -2182,7 +2201,9 @@ const renderSeaIceCard = () => {
             const pick = (id) => seaRouteDoc.route_line.classes.find((c) => c.id === id)?.outlook;
             const fmt = (o) => (o?.status === 'open' ? `열려 있음~${o.close?.date_ko || ''}` : o?.open ? `${o.open.date_ko}~${o.close?.date_ko || ''}` : '-');
             const ow = pick('open_water'), a7 = pick('arc7');
-            return `<div class="climate-sub" style="margin-top:2px;">북극항로 ${ow?.target_year}년: 일반 선박 ${fmt(ow)} · Arc7 ${fmt(a7)}</div>`;
+            const ev = (seaRouteDoc.route_line.events || [])[0];
+            const evTxt = ev ? `<b style="color:${ev.kind === 'open' ? '#86efac' : '#fca5a5'};">${ev.label_ko.split(' (')[0]} ${ev.kind === 'open' ? '열림' : '닫힘'} (${mdKo(ev.date)})</b> · ` : '';
+            return `<div class="climate-sub" style="margin-top:2px;">북극항로 ${evTxt}${ow?.target_year}년: 일반 선박 ${fmt(ow)} · Arc7 ${fmt(a7)}</div>`;
         })() : seaRouteDoc?.outlook?.days ? `<div class="climate-sub" style="margin-top:2px;">북극항로 ${seaRouteDoc.outlook.target_year}년 시즌:
             ${seaRouteDoc.outlook.status === 'open' ? `열려 있음 (${mdKo(seaRouteDoc.outlook.open_observed)}~)` : seaRouteDoc.outlook.open ? `${seaRouteDoc.outlook.open.date_ko} 열림` : ''}
             ${seaRouteDoc.outlook.close ? `~ ${seaRouteDoc.outlook.close.date_ko} 닫힘` : ''}, 약 ${Math.round(seaRouteDoc.outlook.days.point)}일</div>` : ''}

@@ -61,6 +61,70 @@ TRANSITS = [
 ]
 
 
+# ---------------------------------------------------------------- distance
+# Busan -> Rotterdam, great-circle legs between waypoints (nautical miles).
+WP_PACIFIC = [(129.1, 35.0), (130.0, 37.5), (138.5, 42.5), (141.6, 45.6), (150.0, 47.0),
+              (162.5, 52.0), (172.5, 60.0), (-169.5, 66.2)]                    # La Perouse, Bering Strait
+WP_NSR = [(-169.5, 66.2), (-172.0, 67.5), (-176.0, 69.0), (180.0, 69.9), (176.0, 70.0), (172.0, 70.3),
+          (165.0, 71.0), (157.0, 72.0), (150.0, 73.0), (144.5, 74.2), (141.0, 74.6), (138.5, 74.7),
+          (135.0, 74.4), (128.0, 75.0), (120.0, 76.0), (112.0, 77.0), (107.0, 77.6), (104.5, 77.9),
+          (101.5, 77.7), (98.0, 76.8), (90.0, 76.0), (80.0, 75.0), (72.0, 73.5), (65.0, 72.0), (59.0, 70.5)]
+WP_ATLANTIC = [(59.0, 70.5), (50.0, 70.5), (33.0, 71.3), (25.8, 71.5), (15.0, 69.5), (5.0, 62.5), (4.0, 52.0)]
+WP_SUEZ = [(129.1, 35.0), (125.5, 30.5), (121.0, 22.0), (110.0, 10.0), (104.5, 1.3), (98.5, 5.5), (80.5, 5.9),
+           (60.0, 13.0), (43.4, 12.6), (38.5, 20.0), (32.55, 29.9), (32.3, 31.3), (20.0, 34.0), (11.0, 37.3),
+           (-5.6, 35.95), (-9.5, 37.0), (-9.6, 43.0), (-5.0, 48.5), (2.0, 51.0), (4.0, 52.0)]
+WP_CAPE = [(129.1, 35.0), (125.5, 30.5), (121.0, 22.0), (110.0, 10.0), (104.5, 1.3), (98.5, 5.5), (80.5, 5.9),
+           (60.0, -10.0), (35.0, -33.0), (18.5, -35.0), (10.0, -25.0), (-5.0, 0.0), (-18.0, 15.0),
+           (-14.0, 30.0), (-9.6, 43.0), (-5.0, 48.5), (2.0, 51.0), (4.0, 52.0)]
+SPEED_KN = 14.0
+NSR_CROSSING_DAYS = 8.0      # CHNL 2020: average transit of the NSR water area about 8 days
+SUEZ_CANAL_DAYS = 1.0        # canal transit incl. convoy wait
+
+
+def _nm(w):
+    import math
+    tot = 0.0
+    for (lo1, la1), (lo2, la2) in zip(w, w[1:]):
+        p1, p2, dl = math.radians(la1), math.radians(la2), math.radians(lo2 - lo1)
+        tot += 3440.065 * math.acos(min(1.0, math.sin(p1) * math.sin(p2) + math.cos(p1) * math.cos(p2) * math.cos(dl)))
+    return tot
+
+
+def route_compare():
+    open_sea = _nm(WP_PACIFIC) + _nm(WP_ATLANTIC)
+    nsr_nm = open_sea + _nm(WP_NSR)
+    suez_nm, cape_nm = _nm(WP_SUEZ), _nm(WP_CAPE)
+    nsr_days = open_sea / SPEED_KN / 24 + NSR_CROSSING_DAYS
+    suez_days = suez_nm / SPEED_KN / 24 + SUEZ_CANAL_DAYS
+    cape_days = cape_nm / SPEED_KN / 24
+    r = lambda x: round(x)
+    return {"from_ko": "부산", "to_ko": "로테르담", "speed_kn": SPEED_KN,
+            "routes": [
+                {"id": "nsr", "name_ko": "북극항로", "nm": r(nsr_nm), "days": round(nsr_days, 1)},
+                {"id": "suez", "name_ko": "수에즈 운하", "nm": r(suez_nm), "days": round(suez_days, 1)},
+                {"id": "cape", "name_ko": "희망봉 우회", "nm": r(cape_nm), "days": round(cape_days, 1)}],
+            "saving_vs_suez_pct": round(100 * (1 - nsr_nm / suez_nm)),
+            "saving_vs_suez_days": round(suez_days - nsr_days, 1),
+            "saving_vs_cape_days": round(cape_days - nsr_days, 1),
+            "note_ko": (f"대권 항로 거리(해리), 평균 {SPEED_KN:.0f}노트 가정. 북극항로 구간(카라해 관문~베링 해협)은 "
+                        f"CHNL 2020년 평균 통과 {NSR_CROSSING_DAYS:.0f}일, 수에즈 운하 통과·대기 {SUEZ_CANAL_DAYS:.0f}일을 더함. "
+                        "쇄빙선 호위료·빙급선 용선료·보험료·러시아 허가와 제재는 반영하지 않음.")}
+
+
+def events(classes, last, within=14):
+    """Opening or closing seen in the last `within` days, per class."""
+    out = []
+    for c in classes:
+        r = c["seasons"][-1] if c["seasons"] else None
+        if not r or r["year"] != last.year:
+            continue
+        for kind, iso in (("open", r["open"]), ("close", r["close"])):
+            if iso and 0 <= (last - date.fromisoformat(iso)).days <= within:
+                out.append({"class": c["id"], "label_ko": c["label_ko"], "kind": kind, "date": iso,
+                            "days_ago": (last - date.fromisoformat(iso)).days})
+    return out
+
+
 def load():
     """{date: {leg: concentration %}} from the yearly CSVs."""
     out = {}
@@ -313,7 +377,13 @@ def build(volume=None, today=None):
                 row[c["id"]] = {"open": s["open"], "close": s["close"]}
         val.append(row)
     last_raw = raw[max(raw)]
+    status_now = {c["id"]: ("open" if c["seasons"] and c["seasons"][-1]["year"] == last.year
+                            and c["seasons"][-1]["open"] and not c["seasons"][-1]["close"] else "closed")
+                  for c in classes}
     return {
+        "status_now": status_now,
+        "events": events(classes, last),
+        "compare": route_compare(),
         "latest_date": last.isoformat(),
         "latest_legs": [{"id": k, "name_ko": n, "concentration": last_raw.get(k)} for k, n in LEGS],
         "latest_worst": round(series[last], 3),
