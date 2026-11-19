@@ -26,6 +26,9 @@ HS = {"wheat": "1001", "corn": "1005", "soybeans": "1201"}
 LOOKBACK_MONTHS = 15     # months asked for (Korea reports within ~2 months)
 REFETCH_MONTHS = 4       # the newest months are pulled again for revisions
 PAUSE_S = 6              # between preview calls (public rate limit)
+# Exporters asked for their shipments to Korea when Korea's own months lag.
+MIRROR_FROM = [842, 36, 124, 76, 32, 804, 643, 398, 710, 600, 100, 642]
+MIRROR_NEED_SHARE = 10.0
 MIN_SHARE = 1.0          # % of Korea's tonnage; smaller suppliers are not listed
 TOP = 6
 
@@ -75,9 +78,11 @@ def log(msg):
     print(f"[korea-sources] {msg}", flush=True)
 
 
-def _get(period, freq="A"):
-    params = dict(reporterCode="410", period=str(period), cmdCode=",".join(HS.values()),
-                  flowCode="M", partner2Code="0", customsCode="C00", motCode="0")
+def _get(period, freq="A", reporter="410", flow="M", partner=None):
+    params = dict(reporterCode=reporter, period=str(period), cmdCode=",".join(HS.values()),
+                  flowCode=flow, partner2Code="0", customsCode="C00", motCode="0")
+    if partner:
+        params["partnerCode"] = partner
     url = (URL if freq == "A" else URL.replace("/C/A/", "/C/M/")) + "?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"Accept": "application/json",
                                                "User-Agent": "global-trade-dashboard"})
@@ -142,6 +147,56 @@ def fetch_monthly(cached, today=None):
     return out
 
 
+def _months_back(today, n):
+    y, m = today.year, today.month
+    out = []
+    for _ in range(n):
+        m -= 1
+        if m == 0:
+            y, m = y - 1, 12
+        out.append(f"{y}{m:02d}")
+    return out
+
+
+def fetch_mirror(cached, today=None):
+    """Exporters' own reports of shipments to Korea, for the months Korea's
+    reports have not reached Comtrade yet. {crop: {YYYYMM: {exporter: t}}}
+    plus {"_reporters": {YYYYMM: [exporters that reported anything]}}."""
+    today = today or date.today()
+    out = {k: dict(v) for k, v in (cached or {}).items()}
+    out.setdefault("_reporters", {})
+    for i, ym in enumerate(_months_back(today, LOOKBACK_MONTHS)):
+        if ym in out["_reporters"] and i >= REFETCH_MONTHS:
+            continue
+        try:
+            body = _get(ym, "M", reporter=",".join(str(r) for r in MIRROR_FROM), flow="X", partner="410")
+        except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+            log(f"mirror {ym}: {exc}")
+            continue
+        reporters, per = set(), {}
+        for r in body.get("data") or []:
+            if str(r.get("partnerCode")) != "410" or r.get("flowCode") != "X":
+                continue
+            crop = next((k for k, v in HS.items() if r.get("cmdCode") == v), None)
+            rep = str(r.get("reporterCode"))
+            kg = r.get("netWgt") or 0
+            if crop and kg:
+                reporters.add(rep)
+                per.setdefault(crop, {})
+                per[crop][rep] = round(per[crop].get(rep, 0) + kg / 1000)
+        if not reporters:
+            log(f"mirror {ym}: no rows (count {body.get('count')}, error {body.get('error') or '-'})")
+            time.sleep(PAUSE_S)
+            continue
+        out["_reporters"][ym] = sorted(reporters, key=int)
+        for crop, rows in per.items():
+            out.setdefault(crop, {})[ym] = rows
+        time.sleep(PAUSE_S)
+    for c in out:
+        out[c] = dict(sorted(out[c].items())[-24:])
+    return out
+
+
 def fetch(today=None):
     """{crop: {"year": Y, "rows": {partner: tonnes}}}, newest complete year."""
     today = today or date.today()
@@ -169,10 +224,11 @@ def load_or_fetch(offline=False):
         return cached
     fresh = fetch()
     monthly = fetch_monthly(cached.get("monthly"))
-    if not fresh and monthly == cached.get("monthly"):
+    mirror = fetch_mirror(cached.get("mirror"))
+    if not fresh and monthly == cached.get("monthly") and mirror == cached.get("mirror"):
         log("Comtrade unavailable; using cached shares")
         return cached
-    merged = {**cached, **fresh, "monthly": monthly}
+    merged = {**cached, **fresh, "monthly": monthly, "mirror": mirror}
     merged["fetched"] = date.today().isoformat()
     with open(CACHE, "w", encoding="utf-8") as f:
         json.dump(merged, f, indent=1, ensure_ascii=False, sort_keys=True)
@@ -180,6 +236,8 @@ def load_or_fetch(offline=False):
     for crop, months in monthly.items():
         if months:
             log(f"{crop} monthly: {min(months)}..{max(months)} ({len(months)} months)")
+    for ym, reps in sorted(mirror.get("_reporters", {}).items()):
+        log(f"mirror {ym}: reported by {','.join(PARTNER_KO.get(int(r), r) for r in reps)}")
     for crop in HS:
         if crop in fresh:
             log(f"{crop} {fresh[crop]['year']}: {sum(fresh[crop]['rows'].values()):,.0f} t "
@@ -209,7 +267,14 @@ def block(crop, imports, stage, names):
         return None
     annual = {int(k): v for k, v in src["rows"].items()}
     annual_total = sum(annual.values())
+    basis = "annual"
     window = last_12_months((imports.get("monthly") or {}).get(crop) or {})
+    if window:
+        basis = "korea"
+    else:
+        window = mirror_window(imports.get("mirror") or {}, crop, annual)
+        if window:
+            basis = "mirror"
     if window:
         rows, period = window
     else:
@@ -243,13 +308,18 @@ def block(crop, imports, stage, names):
                          "change_pp": None if period is None or prior is None else round(share - prior, 1),
                          "regions": regions})
     if period:
-        label, src_ko = f"최근 12개월({period[0][:4]}.{period[0][4:]}~{period[1][:4]}.{period[1][4:]})", \
-            f"UN Comtrade 한국 월간 수입 {period[0][:4]}.{period[0][4:]}~{period[1][:4]}.{period[1][4:]} (HS {HS[crop]}, 순중량) · 변화는 {src['year']}년 연간 대비"
+        span = f"{period[0][:4]}.{period[0][4:]}~{period[1][:4]}.{period[1][4:]}"
+        label = f"최근 12개월({span})"
+        src_ko = (f"UN Comtrade 한국 월간 수입 {span} (HS {HS[crop]}, 순중량) · 변화는 {src['year']}년 연간 대비"
+                  if basis == "korea" else
+                  f"UN Comtrade 수출국 신고(한국행 수출) {span} (HS {HS[crop]}, 순중량, 한국 월간 신고가 아직 없음) · "
+                  f"변화는 {src['year']}년 한국 연간 수입 대비 · 주요 수출국 {len(MIRROR_FROM)}곳만 집계")
     else:
         label, src_ko = f"{src['year']}년", f"UN Comtrade 한국 수입 {src['year']}년 (HS {HS[crop]}, 순중량)"
     return {
         "year": src["year"],
         "period": None if period is None else {"from": period[0], "to": period[1]},
+        "basis": basis,
         "label_ko": label,
         "total_kt": round(total / 1000),
         "partners": partners,
@@ -281,3 +351,16 @@ def last_12_months(months):
         for p, t in months[k].items():
             total[int(p)] = total.get(int(p), 0) + t
     return total, (run[-1], run[0])
+
+
+def mirror_window(mirror, crop, annual):
+    """12 consecutive months of exporter reports in which every supplier with
+    >= MIRROR_NEED_SHARE % of Korea's last annual tonnage reported something
+    (a supplier missing would read as a share collapse)."""
+    reps = mirror.get("_reporters") or {}
+    months = mirror.get(crop) or {}
+    total = sum(annual.values()) or 1
+    need = {str(p) for p, t in annual.items() if t / total * 100 >= MIRROR_NEED_SHARE
+            and int(p) in MIRROR_FROM}
+    ok = {ym: months.get(ym, {}) for ym, r in reps.items() if need <= set(r)}
+    return last_12_months(ok)

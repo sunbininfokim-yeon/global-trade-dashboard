@@ -44,6 +44,20 @@ class KoreaSourcesTest(unittest.TestCase):
         self.assertIsNone(b["period"])
         self.assertIsNone(b["partners"][0]["change_pp"])
 
+    def test_mirror_used_when_korea_months_lag(self):
+        months = [f"2025{m:02d}" for m in range(11, 13)] + [f"2026{m:02d}" for m in range(1, 11)]
+        mirror = {"_reporters": {ym: ["36", "842"] for ym in months},
+                  "wheat": {ym: {"842": 60, "36": 40} for ym in months}}
+        # A month the US did not report would read as the US vanishing: skip it.
+        mirror["_reporters"]["202510"] = ["36"]
+        mirror["wheat"]["202510"] = {"36": 100}
+        imports = {"wheat": {"year": 2025, "rows": {"842": 530, "36": 330, "124": 50}}, "mirror": mirror,
+                   "monthly": {"wheat": {"202512": {"842": 1}}}}
+        b = K.block("wheat", imports, {"regions": {}}, {})
+        self.assertEqual(b["basis"], "mirror")
+        self.assertEqual(b["period"], {"from": "202511", "to": "202610"})
+        self.assertEqual(b["partners"][0]["share_pct"], 60.0)
+
     def test_missing_crop(self):
         self.assertIsNone(K.block("wheat", {}, {}, {}))
 
