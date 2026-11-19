@@ -207,9 +207,19 @@ def write_kospi_holders(pub: Path, *, foreign_days: int = 60) -> bool:
         from market_microstructure import nps_stocks as ns
 
         def get(url: str) -> requests.Response:
-            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
-            r.raise_for_status()
-            return r
+            # fund.nps.or.kr dropped a TLS handshake once on a runner
+            # (SSLEOFError, 2026-11-19); two more tries, a few seconds apart.
+            import time
+            for attempt in range(3):
+                try:
+                    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
+                    r.raise_for_status()
+                    return r
+                except (requests.ConnectionError, requests.Timeout):
+                    if attempt == 2:
+                        raise
+                    time.sleep(5 * (attempt + 1))
+            raise AssertionError("unreachable")
 
         try:
             links = ns.parse_holdings_links(get(ns.NPS_EQUITY_PAGE).text)
