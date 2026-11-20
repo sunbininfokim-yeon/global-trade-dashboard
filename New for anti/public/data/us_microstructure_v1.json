@@ -1,50 +1,43 @@
 {
   "schema_version": "us-microstructure-v1",
-  "as_of": "2026-11-19",
-  "fetched_at": "2026-11-19T02:33:29.613282+00:00",
+  "as_of": "2026-11-20",
+  "fetched_at": "2026-11-20T02:18:43.483071+00:00",
   "source_priority_used": [
     "cboe_vol_indices",
     "finra_short",
-    "cboe_spot",
-    "yahoo_spot_options_fallback",
-    "cboe_options"
+    "yahoo_spot_options_fallback"
   ],
   "vol_indices": {
-    "fetched_at": "2026-11-19T02:33:14.547938+00:00",
+    "fetched_at": "2026-11-20T02:18:30.489687+00:00",
     "indices": {
       "VIX": {
-        "as_of": "11/18/2026",
-        "close": 24.56,
-        "prev_close": 25.46,
-        "day_return": -0.03535,
+        "as_of": "11/19/2026",
+        "close": 28.44,
+        "prev_close": 24.56,
+        "day_return": 0.15798,
         "source": "Cboe VIX_History.csv",
         "quality": "observed"
       },
       "VVIX": {
-        "as_of": "11/18/2026",
-        "close": 118.37,
-        "prev_close": 121.28,
-        "day_return": -0.023994,
+        "as_of": "11/19/2026",
+        "close": 127.1,
+        "prev_close": 118.37,
+        "day_return": 0.073752,
         "source": "Cboe VVIX_History.csv",
         "quality": "observed"
       },
       "SKEW": {
-        "as_of": "11/18/2026",
-        "close": 142.84,
-        "prev_close": 145.11,
-        "day_return": -0.015643,
+        "as_of": "11/19/2026",
+        "close": 140.86,
+        "prev_close": 142.84,
+        "day_return": -0.013862,
         "source": "Cboe SKEW_History.csv",
-        "quality": "observed"
-      },
-      "VIX_quote": {
-        "price": 24.56,
-        "change_pct": -3.6645,
-        "timestamp": "2026-11-19 02:32:16",
-        "source": "Cboe delayed_quotes/_VIX",
         "quality": "observed"
       }
     },
-    "errors": [],
+    "errors": [
+      "VIX_quote:HTTP Error 403: Forbidden"
+    ],
     "source": "cboe_cdn"
   },
   "names": [
@@ -60,18 +53,18 @@
         "avg_daily_volume": 25306210,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 717.1,
-        "prev_close": 712.42,
-        "day_return": 0.006569,
+        "price": 690.44,
+        "prev_close": 705.27,
+        "day_return": -0.021027,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": 0.86,
@@ -82,21 +75,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 26,
-        "call_volume": 618731.0,
-        "put_volume": 404948.0,
-        "call_oi": 2004538.0,
-        "put_oi": 1761508.0,
-        "put_call_volume": 0.6545,
-        "put_call_oi": 0.8788,
-        "atm_call_iv": 0.8756,
-        "total_volume": 1023679.0,
-        "n_contracts": 11296,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 23,
+        "call_volume": 302581.0,
+        "put_volume": 246422.0,
+        "call_oi": 299942.0,
+        "put_oi": 252872.0,
+        "put_call_volume": 0.8144,
+        "put_call_oi": 0.8431,
+        "atm_call_iv": 1.186894,
+        "total_volume": 549003.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:05:01"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -111,18 +102,18 @@
         "avg_daily_volume": 99940095,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 152.3,
-        "prev_close": 155.46,
-        "day_return": -0.020327,
+        "price": 145.98,
+        "prev_close": 150.96,
+        "day_return": -0.032989,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": 2.71,
@@ -133,21 +124,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 25,
-        "call_volume": 4052019.0,
-        "put_volume": 2295237.0,
-        "call_oi": 10808501.0,
-        "put_oi": 9161109.0,
-        "put_call_volume": 0.5664,
-        "put_call_oi": 0.8476,
-        "atm_call_iv": 0.8832,
-        "total_volume": 6347256.0,
-        "n_contracts": 4404,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 22,
+        "call_volume": 1234331.0,
+        "put_volume": 1215221.0,
+        "call_oi": 1598662.0,
+        "put_oi": 885374.0,
+        "put_call_volume": 0.9845,
+        "put_call_oi": 0.5538,
+        "atm_call_iv": 0.866212,
+        "total_volume": 2449552.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:15:52"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -162,18 +151,18 @@
         "avg_daily_volume": 20801617,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 536.8651,
-        "prev_close": 503.41,
-        "day_return": 0.066457,
+        "price": 489.19,
+        "prev_close": 530.14,
+        "day_return": -0.077244,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": 1.91,
@@ -184,21 +173,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 23,
-        "call_volume": 460804.0,
-        "put_volume": 371870.0,
-        "call_oi": 1818517.0,
-        "put_oi": 1927781.0,
-        "put_call_volume": 0.807,
-        "put_call_oi": 1.0601,
-        "atm_call_iv": 0.6976,
-        "total_volume": 832674.0,
-        "n_contracts": 6586,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 20,
+        "call_volume": 378389.0,
+        "put_volume": 323544.0,
+        "call_oi": 272361.0,
+        "put_oi": 239656.0,
+        "put_call_volume": 0.8551,
+        "put_call_oi": 0.8799,
+        "atm_call_iv": 1.340335,
+        "total_volume": 701933.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:45:59"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -213,18 +200,18 @@
         "avg_daily_volume": 47155663,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 271.75,
-        "prev_close": 257.89,
-        "day_return": 0.053744,
+        "price": 257.37,
+        "prev_close": 267.74,
+        "day_return": -0.038732,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": 2.3,
@@ -235,21 +222,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 24,
-        "call_volume": 726229.0,
-        "put_volume": 348585.0,
-        "call_oi": 2739988.0,
-        "put_oi": 2108538.0,
-        "put_call_volume": 0.48,
-        "put_call_oi": 0.7695,
-        "atm_call_iv": 0.9683,
-        "total_volume": 1074814.0,
-        "n_contracts": 2440,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 21,
+        "call_volume": 222948.0,
+        "put_volume": 192436.0,
+        "call_oi": 505274.0,
+        "put_oi": 294102.0,
+        "put_call_volume": 0.8631,
+        "put_call_oi": 0.5821,
+        "atm_call_iv": 0.621098,
+        "total_volume": 415384.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:50:58"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -264,18 +249,18 @@
         "avg_daily_volume": 22292201,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 514.0,
-        "prev_close": 506.24,
-        "day_return": 0.015329,
+        "price": 498.3,
+        "prev_close": 507.31,
+        "day_return": -0.01776,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": 2.78,
@@ -286,21 +271,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 23,
-        "call_volume": 328047.0,
-        "put_volume": 175217.0,
-        "call_oi": 2429601.0,
-        "put_oi": 1473085.0,
-        "put_call_volume": 0.5341,
-        "put_call_oi": 0.6063,
-        "atm_call_iv": 0.6792,
-        "total_volume": 503264.0,
-        "n_contracts": 3950,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 20,
+        "call_volume": 118413.0,
+        "put_volume": 82686.0,
+        "call_oi": 329861.0,
+        "put_oi": 262269.0,
+        "put_call_volume": 0.6983,
+        "put_call_oi": 0.7951,
+        "atm_call_iv": 0.523686,
+        "total_volume": 201099.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:04:58"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -315,18 +298,18 @@
         "avg_daily_volume": 41361703,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 286.91,
-        "prev_close": 280.2,
-        "day_return": 0.023947,
+        "price": 272.66,
+        "prev_close": 282.44,
+        "day_return": -0.034627,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": 2.67,
@@ -337,21 +320,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 24,
-        "call_volume": 237339.0,
-        "put_volume": 134017.0,
-        "call_oi": 2603263.0,
-        "put_oi": 1732095.0,
-        "put_call_volume": 0.5647,
-        "put_call_oi": 0.6654,
-        "atm_call_iv": 0.976,
-        "total_volume": 371356.0,
-        "n_contracts": 4766,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 21,
+        "call_volume": 155120.0,
+        "put_volume": 194847.0,
+        "call_oi": 535195.0,
+        "put_oi": 170838.0,
+        "put_call_volume": 1.2561,
+        "put_call_oi": 0.3192,
+        "atm_call_iv": 0.604984,
+        "total_volume": 349967.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:49:48"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -366,18 +347,18 @@
         "avg_daily_volume": 27812646,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 621.6114,
-        "prev_close": 618.87,
-        "day_return": 0.00443,
+        "price": 596.22,
+        "prev_close": 616.38,
+        "day_return": -0.032707,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": 3.42,
@@ -388,21 +369,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 24,
-        "call_volume": 261122.0,
-        "put_volume": 136371.0,
-        "call_oi": 1976189.0,
-        "put_oi": 1056316.0,
-        "put_call_volume": 0.5223,
-        "put_call_oi": 0.5345,
-        "atm_call_iv": 0.5304,
-        "total_volume": 397493.0,
-        "n_contracts": 6978,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 21,
+        "call_volume": 158964.0,
+        "put_volume": 96081.0,
+        "call_oi": 421477.0,
+        "put_oi": 174158.0,
+        "put_call_volume": 0.6044,
+        "put_call_oi": 0.4132,
+        "atm_call_iv": 0.669437,
+        "total_volume": 255045.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:05:03"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -417,18 +396,18 @@
         "avg_daily_volume": 12307460,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 367.21,
-        "prev_close": 359.69,
-        "day_return": 0.020907,
+        "price": 352.09,
+        "prev_close": 362.62,
+        "day_return": -0.029039,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": 2.78,
@@ -441,19 +420,17 @@
       "options": {
         "nearest_expiry": "2026-11-20",
         "n_expiries_listed": 18,
-        "call_volume": 64484.0,
-        "put_volume": 58865.0,
-        "call_oi": 1041921.0,
-        "put_oi": 978501.0,
-        "put_call_volume": 0.9129,
-        "put_call_oi": 0.9391,
-        "atm_call_iv": 0.6873,
-        "total_volume": 123349.0,
-        "n_contracts": 2330,
+        "call_volume": 21018.0,
+        "put_volume": 25629.0,
+        "call_oi": 134936.0,
+        "put_oi": 117583.0,
+        "put_call_volume": 1.2194,
+        "put_call_oi": 0.8714,
+        "atm_call_iv": 0.883546,
+        "total_volume": 46647.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 02:04:43"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -468,18 +445,18 @@
         "avg_daily_volume": 113729472,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 52.0553,
-        "prev_close": 49.07,
-        "day_return": 0.060838,
+        "price": 45.3,
+        "prev_close": 49.26,
+        "day_return": -0.08039,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": null,
@@ -492,19 +469,17 @@
       "options": {
         "nearest_expiry": "2026-11-20",
         "n_expiries_listed": 12,
-        "call_volume": 200601.0,
-        "put_volume": 136380.0,
-        "call_oi": 1085935.0,
-        "put_oi": 1166061.0,
-        "put_call_volume": 0.6799,
-        "put_call_oi": 1.0738,
-        "atm_call_iv": 2.3339,
-        "total_volume": 336981.0,
-        "n_contracts": 3040,
+        "call_volume": 156100.0,
+        "put_volume": 141401.0,
+        "call_oi": 268851.0,
+        "put_oi": 247564.0,
+        "put_call_volume": 0.9058,
+        "put_call_oi": 0.9208,
+        "atm_call_iv": 3.050784,
+        "total_volume": 297501.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:04:59"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -519,18 +494,18 @@
         "avg_daily_volume": 10106009,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 467.0,
-        "prev_close": 460.1,
-        "day_return": 0.014997,
+        "price": 447.48,
+        "prev_close": 459.54,
+        "day_return": -0.026244,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": null,
@@ -541,21 +516,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 25,
-        "call_volume": 93314.0,
-        "put_volume": 149533.0,
-        "call_oi": 1008002.0,
-        "put_oi": 1389652.0,
-        "put_call_volume": 1.6025,
-        "put_call_oi": 1.3786,
-        "atm_call_iv": 1.5293,
-        "total_volume": 242847.0,
-        "n_contracts": 7188,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 22,
+        "call_volume": 27251.0,
+        "put_volume": 122579.0,
+        "call_oi": 318014.0,
+        "put_oi": 399362.0,
+        "put_call_volume": 4.4981,
+        "put_call_oi": 1.2558,
+        "atm_call_iv": 0.926759,
+        "total_volume": 149830.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:05:10"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -570,18 +543,18 @@
         "avg_daily_volume": 41730911,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 7.06,
-        "prev_close": 6.48,
-        "day_return": 0.089506,
+        "price": 6.35,
+        "prev_close": 6.67,
+        "day_return": -0.047976,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": null,
@@ -594,19 +567,17 @@
       "options": {
         "nearest_expiry": "2026-11-20",
         "n_expiries_listed": 14,
-        "call_volume": 9797.0,
-        "put_volume": 4375.0,
-        "call_oi": 266758.0,
-        "put_oi": 168441.0,
-        "put_call_volume": 0.4466,
-        "put_call_oi": 0.6314,
-        "atm_call_iv": 2.2894,
-        "total_volume": 14172.0,
-        "n_contracts": 2158,
+        "call_volume": 3689.0,
+        "put_volume": 11063.0,
+        "call_oi": 40568.0,
+        "put_oi": 33876.0,
+        "put_call_volume": 2.9989,
+        "put_call_oi": 0.835,
+        "atm_call_iv": 2.953128,
+        "total_volume": 14752.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 00:48:44"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -621,18 +592,18 @@
         "avg_daily_volume": 16306567,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 139.38,
-        "prev_close": 135.32,
-        "day_return": 0.030003,
+        "price": 134.59,
+        "prev_close": 136.73,
+        "day_return": -0.015651,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": null,
@@ -645,19 +616,17 @@
       "options": {
         "nearest_expiry": "2026-11-20",
         "n_expiries_listed": 14,
-        "call_volume": 44170.0,
-        "put_volume": 12829.0,
-        "call_oi": 849859.0,
-        "put_oi": 599630.0,
-        "put_call_volume": 0.2904,
-        "put_call_oi": 0.7056,
-        "atm_call_iv": 0.8165,
-        "total_volume": 56999.0,
-        "n_contracts": 2152,
+        "call_volume": 8193.0,
+        "put_volume": 23851.0,
+        "call_oi": 179452.0,
+        "put_oi": 103793.0,
+        "put_call_volume": 2.9111,
+        "put_call_oi": 0.5784,
+        "atm_call_iv": 1.151371,
+        "total_volume": 32044.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:05:09"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -672,18 +641,18 @@
         "avg_daily_volume": 42372409,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 735.61,
-        "prev_close": 732.44,
-        "day_return": 0.004328,
+        "price": 715.87,
+        "prev_close": 730.2,
+        "day_return": -0.019625,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": null,
@@ -694,21 +663,19 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 32,
-        "call_volume": 6057387.0,
-        "put_volume": 6889809.0,
-        "call_oi": 6726540.0,
-        "put_oi": 12042551.0,
-        "put_call_volume": 1.1374,
-        "put_call_oi": 1.7903,
-        "atm_call_iv": 0.6058,
-        "total_volume": 12947196.0,
-        "n_contracts": 12446,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 28,
+        "call_volume": 1139150.0,
+        "put_volume": 1535439.0,
+        "call_oi": 1035201.0,
+        "put_oi": 2849035.0,
+        "put_call_volume": 1.3479,
+        "put_call_oi": 2.7522,
+        "atm_call_iv": 0.363532,
+        "total_volume": 2674589.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:05:07"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     },
     {
@@ -723,18 +690,18 @@
         "avg_daily_volume": 43385160,
         "quality": "observed",
         "source": "FINRA consolidatedShortInterest",
-        "history_n": 26
+        "history_n": 25
       },
       "spot": {
-        "price": 668.43,
-        "prev_close": 656.95,
-        "day_return": 0.017475,
+        "price": 645.04,
+        "prev_close": 659.51,
+        "day_return": -0.021941,
         "premarket_price": null,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "premarket_gap_formula": "(Yahoo premarket price / Cboe previous close) - 1",
+        "premarket_gap_formula": "(Yahoo premarket price / Yahoo previous close) - 1",
         "quality": "observed",
-        "source": "Cboe delayed_quotes (+ Yahoo premarket if any)"
+        "source": "Yahoo quote"
       },
       "yahoo_short_supplement": {
         "short_ratio": null,
@@ -745,24 +712,51 @@
         "quality": "estimated"
       },
       "options": {
-        "nearest_expiry": "2026-11-18",
-        "n_expiries_listed": 29,
-        "call_volume": 3884337.0,
-        "put_volume": 3917169.0,
-        "call_oi": 7202958.0,
-        "put_oi": 7691654.0,
-        "put_call_volume": 1.0085,
-        "put_call_oi": 1.0678,
-        "atm_call_iv": 0.9195,
-        "total_volume": 7801506.0,
-        "n_contracts": 10328,
+        "nearest_expiry": "2026-11-20",
+        "n_expiries_listed": 25,
+        "call_volume": 984747.0,
+        "put_volume": 1114957.0,
+        "call_oi": 1248032.0,
+        "put_oi": 1088046.0,
+        "put_call_volume": 1.1322,
+        "put_call_oi": 0.8718,
+        "atm_call_iv": 0.521245,
+        "total_volume": 2099704.0,
         "quality": "observed",
-        "source": "Cboe delayed_quotes/options (CDN)",
-        "note_ko": "지연 공개 체인. Open-Close/고객분류 아님.",
-        "timestamp": "2026-11-19 01:05:10"
+        "source": "Yahoo option_chain (delayed; OPRA redistributor)",
+        "note_ko": "공식 OPRA 피드 재배포. Cboe EOD 유료 대체 가능 시 교체."
       }
     }
   ],
-  "errors": [],
+  "errors": [
+    "cboe_spot:MU:HTTP Error 403: Forbidden",
+    "cboe_opt:MU:HTTP Error 403: Forbidden",
+    "cboe_spot:NVDA:HTTP Error 403: Forbidden",
+    "cboe_opt:NVDA:HTTP Error 403: Forbidden",
+    "cboe_spot:AMD:HTTP Error 403: Forbidden",
+    "cboe_opt:AMD:HTTP Error 403: Forbidden",
+    "cboe_spot:AMZN:HTTP Error 403: Forbidden",
+    "cboe_opt:AMZN:HTTP Error 403: Forbidden",
+    "cboe_spot:MSFT:HTTP Error 403: Forbidden",
+    "cboe_opt:MSFT:HTTP Error 403: Forbidden",
+    "cboe_spot:GOOGL:HTTP Error 403: Forbidden",
+    "cboe_opt:GOOGL:HTTP Error 403: Forbidden",
+    "cboe_spot:META:HTTP Error 403: Forbidden",
+    "cboe_opt:META:HTTP Error 403: Forbidden",
+    "cboe_spot:TSM:HTTP Error 403: Forbidden",
+    "cboe_opt:TSM:HTTP Error 403: Forbidden",
+    "cboe_spot:SOXL:HTTP Error 403: Forbidden",
+    "cboe_opt:SOXL:HTTP Error 403: Forbidden",
+    "cboe_spot:SMH:HTTP Error 403: Forbidden",
+    "cboe_opt:SMH:HTTP Error 403: Forbidden",
+    "cboe_spot:KORU:HTTP Error 403: Forbidden",
+    "cboe_opt:KORU:HTTP Error 403: Forbidden",
+    "cboe_spot:EWY:HTTP Error 403: Forbidden",
+    "cboe_opt:EWY:HTTP Error 403: Forbidden",
+    "cboe_spot:SPY:HTTP Error 403: Forbidden",
+    "cboe_opt:SPY:HTTP Error 403: Forbidden",
+    "cboe_spot:QQQ:HTTP Error 403: Forbidden",
+    "cboe_opt:QQQ:HTTP Error 403: Forbidden"
+  ],
   "disclaimer_ko": "공개·지연 데이터. 투자 권유 아님. 주체 특정 아님."
 }
