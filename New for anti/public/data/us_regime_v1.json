@@ -1,6 +1,6 @@
 {
   "schema_version": "us-regime-v1",
-  "as_of": "2026-11-19",
+  "as_of": "2026-11-21",
   "names": [
     {
       "symbol": "MU",
@@ -16,16 +16,16 @@
       "primary_channel": "quiet",
       "stress_level": "quiet",
       "inputs": {
-        "day_return": 0.006569,
+        "day_return": -0.13894,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "put_call_volume": 0.6545,
-        "put_call_oi": 0.8788,
-        "atm_call_iv": 0.8756,
+        "put_call_volume": 0.9481,
+        "put_call_oi": 0.7917,
+        "atm_call_iv": 1.078618,
         "atm_call_iv_change": null,
         "short_chg_pct": 3.778,
         "days_to_cover": 1.0,
-        "options_total_volume": 1023679.0
+        "options_total_volume": 178189.0
       }
     },
     {
@@ -42,73 +42,48 @@
       "primary_channel": "quiet",
       "stress_level": "quiet",
       "inputs": {
-        "day_return": -0.020327,
+        "day_return": -0.140088,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "put_call_volume": 0.5664,
-        "put_call_oi": 0.8476,
-        "atm_call_iv": 0.8832,
+        "put_call_volume": 0.916,
+        "put_call_oi": 0.4633,
+        "atm_call_iv": 1.128422,
         "atm_call_iv_change": null,
         "short_chg_pct": -7.308,
         "days_to_cover": 2.8,
-        "options_total_volume": 6347256.0
+        "options_total_volume": 915067.0
       }
     },
     {
       "symbol": "AMD",
       "regimes": [
-        "quiet"
+        "downside_put_bid",
+        "gap_down_stress"
       ],
       "channel_scores": {
-        "downside": 0.0,
+        "downside": 3.156,
         "upside": 0.0,
         "vol_up": 0.0,
         "vol_down": 0.0
       },
-      "primary_channel": "quiet",
-      "stress_level": "quiet",
+      "primary_channel": "downside",
+      "stress_level": "high",
       "inputs": {
-        "day_return": 0.066457,
+        "day_return": -0.132464,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "put_call_volume": 0.807,
-        "put_call_oi": 1.0601,
-        "atm_call_iv": 0.6976,
+        "put_call_volume": 1.3251,
+        "put_call_oi": 0.9047,
+        "atm_call_iv": 1.200321,
         "atm_call_iv_change": null,
         "short_chg_pct": 1.276,
         "days_to_cover": 1.86,
-        "options_total_volume": 832674.0
+        "options_total_volume": 115045.0
       }
     },
     {
       "symbol": "AMZN",
       "regimes": [
-        "upside_call_bid"
-      ],
-      "channel_scores": {
-        "downside": 0.0,
-        "upside": 1.22,
-        "vol_up": 0.0,
-        "vol_down": 0.0
-      },
-      "primary_channel": "upside",
-      "stress_level": "watch",
-      "inputs": {
-        "day_return": 0.053744,
-        "premarket_gap": null,
-        "premarket_gap_quality": "missing",
-        "put_call_volume": 0.48,
-        "put_call_oi": 0.7695,
-        "atm_call_iv": 0.9683,
-        "atm_call_iv_change": null,
-        "short_chg_pct": 0.749,
-        "days_to_cover": 2.0,
-        "options_total_volume": 1074814.0
-      }
-    },
-    {
-      "symbol": "MSFT",
-      "regimes": [
         "quiet"
       ],
       "channel_scores": {
@@ -120,43 +95,69 @@
       "primary_channel": "quiet",
       "stress_level": "quiet",
       "inputs": {
-        "day_return": 0.015329,
+        "day_return": -0.040992,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "put_call_volume": 0.5341,
-        "put_call_oi": 0.6063,
-        "atm_call_iv": 0.6792,
+        "put_call_volume": 0.9604,
+        "put_call_oi": 0.7396,
+        "atm_call_iv": 0.543462,
+        "atm_call_iv_change": null,
+        "short_chg_pct": 0.749,
+        "days_to_cover": 2.0,
+        "options_total_volume": 76068.0
+      }
+    },
+    {
+      "symbol": "MSFT",
+      "regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "channel_scores": {
+        "downside": 3.066,
+        "upside": 0.0,
+        "vol_up": 0.0,
+        "vol_down": 0.0
+      },
+      "primary_channel": "downside",
+      "stress_level": "high",
+      "inputs": {
+        "day_return": -0.027654,
+        "premarket_gap": null,
+        "premarket_gap_quality": "missing",
+        "put_call_volume": 1.2524,
+        "put_call_oi": 1.2114,
+        "atm_call_iv": 0.509771,
         "atm_call_iv_change": null,
         "short_chg_pct": -7.207,
         "days_to_cover": 2.73,
-        "options_total_volume": 503264.0
+        "options_total_volume": 36079.0
       }
     },
     {
       "symbol": "GOOGL",
       "regimes": [
-        "upside_call_bid",
-        "short_cover_squeeze"
+        "quiet"
       ],
       "channel_scores": {
-        "downside": 0.0,
-        "upside": 2.035,
+        "downside": 0.625,
+        "upside": 0.0,
         "vol_up": 0.0,
         "vol_down": 0.0
       },
-      "primary_channel": "upside",
-      "stress_level": "high",
+      "primary_channel": "downside",
+      "stress_level": "quiet",
       "inputs": {
-        "day_return": 0.023947,
+        "day_return": -0.02703,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "put_call_volume": 0.5647,
-        "put_call_oi": 0.6654,
-        "atm_call_iv": 0.976,
+        "put_call_volume": 0.4035,
+        "put_call_oi": 0.5263,
+        "atm_call_iv": 0.581791,
         "atm_call_iv_change": null,
         "short_chg_pct": 11.711,
         "days_to_cover": 2.12,
-        "options_total_volume": 371356.0
+        "options_total_volume": 98154.0
       }
     },
     {
@@ -165,24 +166,24 @@
         "quiet"
       ],
       "channel_scores": {
-        "downside": 0.0,
+        "downside": 0.625,
         "upside": 0.0,
         "vol_up": 0.0,
         "vol_down": 0.0
       },
-      "primary_channel": "quiet",
+      "primary_channel": "downside",
       "stress_level": "quiet",
       "inputs": {
-        "day_return": 0.00443,
+        "day_return": -0.059341,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "put_call_volume": 0.5223,
-        "put_call_oi": 0.5345,
-        "atm_call_iv": 0.5304,
+        "put_call_volume": 1.0481,
+        "put_call_oi": 1.0498,
+        "atm_call_iv": 0.601933,
         "atm_call_iv_change": null,
         "short_chg_pct": 165.619,
         "days_to_cover": 2.71,
-        "options_total_volume": 397493.0
+        "options_total_volume": 52850.0
       }
     },
     {
@@ -191,158 +192,28 @@
         "quiet"
       ],
       "channel_scores": {
-        "downside": 0.0,
+        "downside": 0.625,
         "upside": 0.0,
         "vol_up": 0.0,
         "vol_down": 0.0
       },
-      "primary_channel": "quiet",
+      "primary_channel": "downside",
       "stress_level": "quiet",
       "inputs": {
-        "day_return": 0.020907,
+        "day_return": -0.094805,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "put_call_volume": 0.9129,
-        "put_call_oi": 0.9391,
-        "atm_call_iv": 0.6873,
+        "put_call_volume": 0.7687,
+        "put_call_oi": 0.6202,
+        "atm_call_iv": 0.864625,
         "atm_call_iv_change": null,
         "short_chg_pct": 9.858,
         "days_to_cover": 2.62,
-        "options_total_volume": 123349.0
+        "options_total_volume": 51235.0
       }
     },
     {
       "symbol": "SOXL",
-      "regimes": [
-        "upside_call_bid"
-      ],
-      "channel_scores": {
-        "downside": 0.0,
-        "upside": 1.32,
-        "vol_up": 0.0,
-        "vol_down": 0.0
-      },
-      "primary_channel": "upside",
-      "stress_level": "watch",
-      "inputs": {
-        "day_return": 0.060838,
-        "premarket_gap": null,
-        "premarket_gap_quality": "missing",
-        "put_call_volume": 0.6799,
-        "put_call_oi": 1.0738,
-        "atm_call_iv": 2.3339,
-        "atm_call_iv_change": null,
-        "short_chg_pct": -28.809,
-        "days_to_cover": 1.0,
-        "options_total_volume": 336981.0
-      }
-    },
-    {
-      "symbol": "SMH",
-      "regimes": [
-        "downside_put_bid"
-      ],
-      "channel_scores": {
-        "downside": 1.875,
-        "upside": 0.0,
-        "vol_up": 0.0,
-        "vol_down": 0.0
-      },
-      "primary_channel": "downside",
-      "stress_level": "watch",
-      "inputs": {
-        "day_return": 0.014997,
-        "premarket_gap": null,
-        "premarket_gap_quality": "missing",
-        "put_call_volume": 1.6025,
-        "put_call_oi": 1.3786,
-        "atm_call_iv": 1.5293,
-        "atm_call_iv_change": null,
-        "short_chg_pct": -3.919,
-        "days_to_cover": 1.27,
-        "options_total_volume": 242847.0
-      }
-    },
-    {
-      "symbol": "KORU",
-      "regimes": [
-        "upside_call_bid"
-      ],
-      "channel_scores": {
-        "downside": 0.0,
-        "upside": 1.253,
-        "vol_up": 0.0,
-        "vol_down": 0.0
-      },
-      "primary_channel": "upside",
-      "stress_level": "watch",
-      "inputs": {
-        "day_return": 0.089506,
-        "premarket_gap": null,
-        "premarket_gap_quality": "missing",
-        "put_call_volume": 0.4466,
-        "put_call_oi": 0.6314,
-        "atm_call_iv": 2.2894,
-        "atm_call_iv_change": null,
-        "short_chg_pct": 0.79,
-        "days_to_cover": 1.0,
-        "options_total_volume": 14172.0
-      }
-    },
-    {
-      "symbol": "EWY",
-      "regimes": [
-        "upside_call_bid"
-      ],
-      "channel_scores": {
-        "downside": 0.0,
-        "upside": 1.71,
-        "vol_up": 0.0,
-        "vol_down": 0.0
-      },
-      "primary_channel": "upside",
-      "stress_level": "watch",
-      "inputs": {
-        "day_return": 0.030003,
-        "premarket_gap": null,
-        "premarket_gap_quality": "missing",
-        "put_call_volume": 0.2904,
-        "put_call_oi": 0.7056,
-        "atm_call_iv": 0.8165,
-        "atm_call_iv_change": null,
-        "short_chg_pct": -39.004,
-        "days_to_cover": 1.0,
-        "options_total_volume": 56999.0
-      }
-    },
-    {
-      "symbol": "SPY",
-      "regimes": [
-        "downside_put_bid"
-      ],
-      "channel_scores": {
-        "downside": 1.422,
-        "upside": 0.0,
-        "vol_up": 0.0,
-        "vol_down": 0.0
-      },
-      "primary_channel": "downside",
-      "stress_level": "watch",
-      "inputs": {
-        "day_return": 0.004328,
-        "premarket_gap": null,
-        "premarket_gap_quality": "missing",
-        "put_call_volume": 1.1374,
-        "put_call_oi": 1.7903,
-        "atm_call_iv": 0.6058,
-        "atm_call_iv_change": null,
-        "short_chg_pct": 10.51,
-        "days_to_cover": 2.43,
-        "options_total_volume": 12947196.0
-      }
-    },
-    {
-      "symbol": "QQQ",
       "regimes": [
         "quiet"
       ],
@@ -355,16 +226,149 @@
       "primary_channel": "quiet",
       "stress_level": "quiet",
       "inputs": {
-        "day_return": 0.017475,
+        "day_return": -0.318322,
         "premarket_gap": null,
         "premarket_gap_quality": "missing",
-        "put_call_volume": 1.0085,
-        "put_call_oi": 1.0678,
-        "atm_call_iv": 0.9195,
+        "put_call_volume": 0.5701,
+        "put_call_oi": 0.5792,
+        "atm_call_iv": 3.265627,
+        "atm_call_iv_change": null,
+        "short_chg_pct": -28.809,
+        "days_to_cover": 1.0,
+        "options_total_volume": 216923.0
+      }
+    },
+    {
+      "symbol": "SMH",
+      "regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "channel_scores": {
+        "downside": 3.375,
+        "upside": 0.0,
+        "vol_up": 0.0,
+        "vol_down": 0.0
+      },
+      "primary_channel": "downside",
+      "stress_level": "high",
+      "inputs": {
+        "day_return": -0.105971,
+        "premarket_gap": null,
+        "premarket_gap_quality": "missing",
+        "put_call_volume": 6.1518,
+        "put_call_oi": 1.5399,
+        "atm_call_iv": 1.047124,
+        "atm_call_iv_change": null,
+        "short_chg_pct": -3.919,
+        "days_to_cover": 1.27,
+        "options_total_volume": 86966.0
+      }
+    },
+    {
+      "symbol": "KORU",
+      "regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "channel_scores": {
+        "downside": 3.375,
+        "upside": 0.0,
+        "vol_up": 0.0,
+        "vol_down": 0.0
+      },
+      "primary_channel": "downside",
+      "stress_level": "high",
+      "inputs": {
+        "day_return": -0.250394,
+        "premarket_gap": null,
+        "premarket_gap_quality": "missing",
+        "put_call_volume": 2.5871,
+        "put_call_oi": 1.1601,
+        "atm_call_iv": 1.996094,
+        "atm_call_iv_change": null,
+        "short_chg_pct": 0.79,
+        "days_to_cover": 1.0,
+        "options_total_volume": 8114.0
+      }
+    },
+    {
+      "symbol": "EWY",
+      "regimes": [
+        "quiet"
+      ],
+      "channel_scores": {
+        "downside": 0.0,
+        "upside": 0.0,
+        "vol_up": 0.0,
+        "vol_down": 0.0
+      },
+      "primary_channel": "quiet",
+      "stress_level": "quiet",
+      "inputs": {
+        "day_return": -0.084182,
+        "premarket_gap": null,
+        "premarket_gap_quality": "missing",
+        "put_call_volume": 0.7197,
+        "put_call_oi": 0.8898,
+        "atm_call_iv": 0.84131,
+        "atm_call_iv_change": null,
+        "short_chg_pct": -39.004,
+        "days_to_cover": 1.0,
+        "options_total_volume": 17795.0
+      }
+    },
+    {
+      "symbol": "SPY",
+      "regimes": [
+        "quiet"
+      ],
+      "channel_scores": {
+        "downside": 0.625,
+        "upside": 0.0,
+        "vol_up": 0.0,
+        "vol_down": 0.0
+      },
+      "primary_channel": "downside",
+      "stress_level": "quiet",
+      "inputs": {
+        "day_return": -0.036403,
+        "premarket_gap": null,
+        "premarket_gap_quality": "missing",
+        "put_call_volume": 1.0482,
+        "put_call_oi": 0.7392,
+        "atm_call_iv": 0.407782,
+        "atm_call_iv_change": null,
+        "short_chg_pct": 10.51,
+        "days_to_cover": 2.43,
+        "options_total_volume": 1691615.0
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "regimes": [
+        "downside_put_bid",
+        "gap_down_stress"
+      ],
+      "channel_scores": {
+        "downside": 2.976,
+        "upside": 0.0,
+        "vol_up": 0.0,
+        "vol_down": 0.0
+      },
+      "primary_channel": "downside",
+      "stress_level": "high",
+      "inputs": {
+        "day_return": -0.056725,
+        "premarket_gap": null,
+        "premarket_gap_quality": "missing",
+        "put_call_volume": 1.1807,
+        "put_call_oi": 1.1786,
+        "atm_call_iv": 0.567753,
         "atm_call_iv_change": null,
         "short_chg_pct": 0.967,
         "days_to_cover": 1.91,
-        "options_total_volume": 7801506.0
+        "options_total_volume": 971892.0
       }
     }
   ]

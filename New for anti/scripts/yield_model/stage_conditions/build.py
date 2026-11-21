@@ -31,6 +31,8 @@ from datetime import date, datetime, timedelta, timezone
 import numpy as np
 import pandas as pd
 
+from . import ledger as L
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 YIELD_MODEL = os.path.dirname(HERE)
 DATA = os.path.abspath(os.path.join(YIELD_MODEL, "..", "..", "public", "data"))
@@ -48,6 +50,18 @@ Z = 1.0             # |z| that counts as a signal: a one-sigma anomaly
 WET_SOW_Z = 1.5     # sowing rain this far above normal is waterlogging / delay
 NORMAL_SEASONS = 30
 MIN_SEASONS = 10
+# NASA POWER's daily record is MERRA-2 with GEOS FP-IT appended for the last
+# months until MERRA-2 catches up ("typically updated every several months").
+# Root-zone wetness (GWETROOT) comes out of a different land model in that
+# tail and sits well below MERRA-2's level: in November 2026 soil read -3 to
+# -7 sigma in Mato Grosso, Western Australia and Ontario while rain there was
+# within one sigma, and the Great Plains read soil -5.3 sigma on +1.2 sigma
+# of rain. Rain and temperature in the tail agree with the record. So a window
+# that ends inside the tail is judged without soil; the value stays in the
+# metrics, marked reference_only.
+SOIL_NRT_DAYS = 120
+# Days a harvested season stays on show before the next one takes its place.
+ROLL_AFTER_DAYS = 30
 DRY_MM = 1.0
 WINTERKILL_C = -15.0
 # Maturity and harvest weather changes quality and harvest pace more than the
@@ -203,6 +217,12 @@ def current_anchor(stages, today):
     for anchor in (latest - 1, latest):
         if place(stages, anchor)[-1][1] >= today:
             return anchor
+    # Every started season is harvested. Keep the last one on show for a
+    # month after harvest, then move to the next season (all stages
+    # "upcoming") -- Brazil's safrinha corn and Matopiba cotton otherwise
+    # showed a crop harvested in August until the next sowing in January.
+    if place(stages, latest)[-1][1] + timedelta(days=ROLL_AFTER_DAYS) < today:
+        return latest + 1
     return latest
 
 
@@ -247,6 +267,7 @@ def window_metrics(daily, start, end, heat_c):
 def stage_table(daily, stages, anchor, heat_c, today, history=NORMAL_SEASONS):
     """Per stage: metrics for ``anchor`` and for each earlier season (same cut)."""
     placed = place(stages, anchor)
+    last_day = daily.date.max().date() if len(daily) else today
     rows = []
     for index, stage in enumerate(stages):
         start, end = placed[index]
@@ -255,6 +276,7 @@ def stage_table(daily, stages, anchor, heat_c, today, history=NORMAL_SEASONS):
             continue
         cut = min(end, today)
         span = (cut - start).days
+        soil_nrt = cut > last_day - timedelta(days=SOIL_NRT_DAYS)
         current = window_metrics(daily, start, cut, heat_c)
         past = []
         for back in range(1, history + 1):
@@ -266,7 +288,7 @@ def stage_table(daily, stages, anchor, heat_c, today, history=NORMAL_SEASONS):
             "state": "done" if end <= today else "in_progress",
             "start": start, "end": end,
             "observed_share": round(min(1.0, (span + 1) / ((end - start).days + 1)), 2),
-            "current": current, "past": past,
+            "current": current, "past": past, "soil_nrt": soil_nrt,
         })
     return placed, rows
 
@@ -297,8 +319,12 @@ def _say(key, value, normal):
     return f"{name} {value:.0f}{unit} (평년 {normal:.0f}{unit})"
 
 
-def judge(kind, current, past):
-    """(status, reason_ko, metrics) for one stage window."""
+def judge(kind, current, past, soil_ok=True):
+    """(status, reason_ko, metrics) for one stage window.
+
+    ``soil_ok`` False: the window ends in POWER's near-real-time tail, where
+    soil wetness is biased (see SOIL_NRT_DAYS); the rules then ignore it.
+    """
     if current is None or len(past) < MIN_SEASONS:
         return "neutral", "기상 자료 부족", {}
     z, normal = {}, {}
@@ -306,6 +332,11 @@ def judge(kind, current, past):
         z[key], normal[key] = _z(current[key], past, key)
     metrics = {k: {"value": round(current[k], 2), "normal": round(normal[k], 2),
                    "z": round(z[k], 2)} for k in z if z[k] is not None}
+    if not soil_ok and "soil" in metrics:
+        metrics["soil"]["reference_only"] = True
+        z["soil"] = 0.0
+    if z["soil"] is None:
+        z["soil"] = 0.0
     bad, good = [], []
 
     def hot():
@@ -362,7 +393,8 @@ def score_season(stages, rows):
         if row["state"] == "upcoming":
             calls.append({"state": "upcoming", "status": "upcoming"})
             continue
-        status, reason, metrics = judge(stage["kind"], row["current"], row["past"])
+        status, reason, metrics = judge(stage["kind"], row["current"], row["past"],
+                                        soil_ok=not row.get("soil_nrt"))
         weight = WEIGHTS.get(stage["kind"], 1.0)
         score += weight * {"favorable": 1, "unfavorable": -1}.get(status, 0)
         calls.append({"state": row["state"], "status": status, "reason_ko": reason,
@@ -546,6 +578,7 @@ def build(today=None):
                "mature": "비가 많으면 불리, 건조하면 유리",
                "harvest": "비가 많으면 불리, 건조하면 유리",
                "dormant": "혹한일(최저 -15°C 이하)이 평년보다 많으면 불리",
+               "soil": "최근 약 4개월 자료의 토양수분은 NASA POWER 준실시간 원천(GEOS)이라 과거 기록(MERRA-2)보다 낮게 나와 판정에서 뺀다(참고 표시만)",
                "overall": "개화·비대 단계 가중 2배, 성숙·수확 단계는 표시만(수량보다 품질·수확 진도에 영향), 합계 -2 이하 불리 · +2 이상 유리",
            },
            "regions": {}, "skipped": {}}
@@ -575,8 +608,38 @@ def build(today=None):
     return out
 
 
+def keep_ledger(out, today=None):
+    """Freeze finished seasons, score those whose yield is now in, and put the
+    live record beside the calls."""
+    today = today or date.today()
+    book = L.load()
+    added = L.freeze(book, out["regions"], today)
+    points = load_points()
+
+    def residual_for(region, crop):
+        labels = label_series(region, crop, (points.get(region) or {}).get("folder"))
+        return None if labels is None else trend_residuals(labels)
+
+    scored = L.score(book, residual_for)
+    L.save(book)
+    out["live_record"] = L.summary(book)
+    for region, entries in out["regions"].items():
+        for e in entries:
+            rec = L.entry_record(book, region, e["crop"])
+            if rec:
+                e["live_record"] = rec
+            held = book["entries"].get(f"{region}|{e['crop']}|{e.get('harvest_year')}")
+            if held and "residual_pct" not in held:
+                e["live_pending"] = {"verdict_ko": held["verdict_ko"], "frozen_on": held["frozen_on"]}
+    s = out["live_record"]
+    log(f"ledger: +{len(added)} frozen, +{len(scored)} scored; {s['frozen']} held, {s['scored']} scored, "
+        f"unfavourable {s['unfavorable']['hits']}/{s['unfavorable']['n']}, "
+        f"favourable {s['favorable']['hits']}/{s['favorable']['n']}")
+
+
 def main():
     out = build()
+    keep_ledger(out)
     with open(OUT, "w", encoding="utf-8") as handle:
         json.dump(out, handle, ensure_ascii=False, indent=1)
         handle.write("\n")

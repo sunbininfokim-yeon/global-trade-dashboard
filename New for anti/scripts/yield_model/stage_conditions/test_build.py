@@ -68,6 +68,18 @@ class StageConditionTests(unittest.TestCase):
         self.assertLess(abs(repro["current"]["precip"] - np.mean([p["precip"] for p in repro["past"]])),
                         3 * np.std([p["precip"] for p in repro["past"]]))
 
+    def test_harvested_season_rolls_to_next_after_a_month(self):
+        safrinha = [{"kind": "sow", "name_ko": "파종", "start": "01-20", "end": "03-10"},
+                    {"kind": "fill", "name_ko": "비대", "start": "04-25", "end": "06-15"},
+                    {"kind": "harvest", "name_ko": "수확", "start": "06-01", "end": "08-31"}]
+        self.assertEqual(B.current_anchor(safrinha, date(2026, 9, 15)), 2026)
+        self.assertEqual(B.current_anchor(safrinha, date(2026, 11, 18)), 2027)
+        self.assertEqual(B.current_anchor(safrinha, date(2027, 2, 1)), 2027)
+        crop = {"crop": "corn_safrinha", "label_ko": "옥수수", "stages": safrinha}
+        entry = B.crop_entry("x", crop, daily(end="2026-11-18"), date(2026, 11, 18), None)
+        self.assertEqual(entry["season"], "2027")
+        self.assertTrue(all(s["status"] == "upcoming" for s in entry["stages"]))
+
     def test_cane_crush_labelled_by_its_main_year(self):
         stages = [{"kind": "sow", "start": "10-15", "end": "02-28"},
                   {"kind": "veg", "start": "05-01", "end": "10-31"},
@@ -75,6 +87,31 @@ class StageConditionTests(unittest.TestCase):
         placed = B.place(stages, 2024)
         self.assertEqual(placed[1][0], date(2025, 5, 1))
         self.assertEqual(B.harvest_year(stages, placed), 2026)
+
+    def test_soil_in_near_real_time_tail_is_reference_only(self):
+        # POWER's GEOS tail reads soil far below MERRA-2 while rain is
+        # normal (Great Plains, Nov 2026: soil -5.3 sigma, rain +1.2).
+        frame = daily(end="2026-07-15")
+        tail = frame.date >= "2026-06-01"
+        frame.loc[tail, "soil"] = 0.4
+        crop = {"crop": "soy", "label_ko": "대두", "stages": SOY}
+        entry = B.crop_entry("x", crop, frame, date(2026, 7, 15), None)
+        sow, veg = entry["stages"][0], entry["stages"][1]
+        self.assertTrue(sow["metrics"]["soil"]["reference_only"])
+        self.assertLess(sow["metrics"]["soil"]["z"], -3)
+        self.assertNotEqual(sow["status"], "unfavorable")
+        self.assertNotEqual(veg["status"], "unfavorable")
+
+    def test_old_soil_drought_still_counts(self):
+        frame = daily(end="2026-12-31")
+        old = frame.date.between("2026-06-25", "2026-08-10")
+        frame.loc[old, "soil"] = 0.4
+        _, rows = B.stage_table(frame, SOY, 2026, 35.0, date(2026, 12, 31))
+        status, _, metrics = B.judge("veg", rows[1]["current"], rows[1]["past"],
+                                     soil_ok=not rows[1]["soil_nrt"])
+        self.assertFalse(rows[1]["soil_nrt"])
+        self.assertEqual(status, "unfavorable")
+        self.assertNotIn("reference_only", metrics["soil"])
 
 
 class VerdictCheckTests(unittest.TestCase):

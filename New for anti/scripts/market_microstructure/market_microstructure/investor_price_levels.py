@@ -28,6 +28,15 @@ def parse_signed_qty(s: Any) -> int | None:
     return int(t)
 
 
+def _parse_pct(s: Any) -> float | None:
+    """'46.00%' -> 46.0 (foreigners' share of listed shares, not the limit-usage rate)."""
+    try:
+        v = float(str(s).replace("%", "").replace(",", "").strip())
+    except (TypeError, ValueError):
+        return None
+    return v if 0 <= v <= 100 else None
+
+
 def parse_close_krw(s: Any) -> float | None:
     if s is None:
         return None
@@ -115,6 +124,7 @@ def trend_to_frame(rows: list[dict[str, Any]]) -> pd.DataFrame:
                 "foreign_net_shares": parse_signed_qty(row.get("foreignerPureBuyQuant")),
                 "institution_net_shares": parse_signed_qty(row.get("organPureBuyQuant")),
                 "volume": parse_signed_qty(row.get("accumulatedTradingVolume")),
+                "foreign_hold_pct": _parse_pct(row.get("foreignerHoldRatio")),
             }
         )
     if not recs:
@@ -327,6 +337,8 @@ def build_ticker_levels(
                 "retail_net_krw": int(round(retail * close)),
                 "foreign_net_krw": int(round(foreign * close)),
                 "institution_net_krw": None if inst is None else int(round(inst * close)),
+                "foreign_hold_pct": (float(row["foreign_hold_pct"])
+                                     if pd.notna(row.get("foreign_hold_pct")) else None),
             }
         )
 
@@ -395,12 +407,22 @@ class KospiUniverseError(RuntimeError):
     """The requested KOSPI ranking could not be observed completely."""
 
 
+# One listing call per run: the CLI turns this on so the holders block reuses
+# the listing the universe was ranked from instead of hitting data.krx.co.kr a
+# second time (it blocks by IP). Off by default so each call stays a fresh read.
+_LISTING_CACHE: dict[str, pd.DataFrame] | None = None
+
+
 def _kospi_common_listing(*, minimum_n: int) -> pd.DataFrame:
     """Fetch and validate the ordinary-share listing; never invent a universe."""
     import FinanceDataReader as fdr
 
     try:
-        kospi = fdr.StockListing("KOSPI")
+        kospi = _LISTING_CACHE.get("KOSPI") if _LISTING_CACHE is not None else None
+        if kospi is None:
+            kospi = fdr.StockListing("KOSPI")
+            if _LISTING_CACHE is not None and kospi is not None and not kospi.empty:
+                _LISTING_CACHE["KOSPI"] = kospi
     except Exception as exc:  # noqa: BLE001
         raise KospiUniverseError(f"KOSPI listing failed: {type(exc).__name__}: {exc}") from exc
     if kospi is None or kospi.empty:
