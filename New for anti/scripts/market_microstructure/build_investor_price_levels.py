@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -26,6 +27,17 @@ from market_microstructure.investor_price_levels import (  # noqa: E402
 
 
 def main() -> int:
+    """One listing fetch per run, shared by the levels universe and the holders block."""
+    from market_microstructure import investor_price_levels as ipl
+
+    ipl._LISTING_CACHE = {}
+    try:
+        return _main()
+    finally:
+        ipl._LISTING_CACHE = None
+
+
+def _main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--live", action="store_true")
     p.add_argument("--index-only", action="store_true",
@@ -59,6 +71,11 @@ def main() -> int:
         "KRX 12008 export when present (default: $KRX_MONTH_PASTE_DIR, else Naver mobile JSON)",
     )
     p.add_argument("--print-stats", action="store_true")
+    p.add_argument("--holders-only", action="store_true",
+                   help="Refresh only kospi_holders_v1.json (foreign ownership + NPS room)")
+    p.add_argument("--foreign-days", type=int, default=60,
+                   help="Naver rows per ticker for foreign ownership; earlier days are kept from "
+                   "the previous file, so a longer value is only needed once to backfill")
     args = p.parse_args()
 
     if not args.live:
@@ -90,6 +107,9 @@ def main() -> int:
         except (json.JSONDecodeError, OSError, AttributeError):
             previous_report = None
             previous_index_levels = None
+
+    if args.holders_only:
+        return 0 if write_kospi_holders(ROOT / "../../public/data", foreign_days=args.foreign_days) else 1
 
     if args.index_only:
         if not isinstance(previous_report, dict) or not previous_report.get("tickers"):
@@ -138,10 +158,102 @@ def main() -> int:
     md = markdown_investor_price_levels(rep)
     (ROOT / "INVESTOR_PRICE_LEVELS.md").write_text(md + "\n", encoding="utf-8")
     print(f"Wrote {out} (observed tickers={ok_n})")
+    # The holders file is a side product: a failure there must not stop the
+    # levels snapshot from being committed, so it leaves a marker that the
+    # workflow's last step turns into a red run after the commit.
+    if not pairs and not write_kospi_holders(pub, foreign_days=args.foreign_days):
+        (ROOT / "kospi_holders_failed.txt").write_text("see build log\n", encoding="utf-8")
     print(f"Wrote {ROOT / 'INVESTOR_PRICE_LEVELS.md'}")
     if args.print_stats:
         print(md)
     return 0 if not rep.get("errors") else 1
+
+
+def write_kospi_holders(pub: Path, *, foreign_days: int = 60) -> bool:
+    """코스피 보유 구조 + 국민연금 여력 (kospi_holders_v1.json). Never blocks the levels file."""
+    import FinanceDataReader as fdr
+
+    from market_microstructure import kospi_holders as kh
+    from market_microstructure.investor_price_levels import (
+        _kospi_common_listing, fetch_naver_investor_trend)
+
+    path = pub / "kospi_holders_v1.json"
+    previous = None
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            previous = None
+    errors: list[str] = []
+    try:
+        snap = kh.fetch_nps_portfolio()
+    except Exception as e:  # noqa: BLE001
+        snap = None
+        errors.append(f"nps portfolio: {type(e).__name__}: {e}")
+    try:
+        year_ends = kh.fetch_nps_year_ends(current_year=(snap or {}).get("month", "0000")[:4])
+    except Exception as e:  # noqa: BLE001
+        year_ends = None
+        errors.append(f"nps yearly: {type(e).__name__}: {e}")
+    # Market series from the December before the latest snapshot's year: the
+    # daily path starts at that year end.
+    year = int(((snap or {}).get("month") or f"{datetime.now().year}")[:4])
+    start = f"{year - 1}-12-01"
+    try:
+        listing = _kospi_common_listing(minimum_n=100)
+        close = lambda sym: fdr.DataReader(sym, start)["Close"]  # noqa: E731
+        import requests
+
+        from market_microstructure import nps_stocks as ns
+
+        def get(url: str) -> requests.Response:
+            # fund.nps.or.kr dropped a TLS handshake once on a runner
+            # (SSLEOFError, 2026-11-19); two more tries, a few seconds apart.
+            import time
+            for attempt in range(3):
+                try:
+                    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
+                    r.raise_for_status()
+                    return r
+                except (requests.ConnectionError, requests.Timeout):
+                    if attempt == 2:
+                        raise
+                    time.sleep(5 * (attempt + 1))
+            raise AssertionError("unreachable")
+
+        try:
+            links = ns.parse_holdings_links(get(ns.NPS_EQUITY_PAGE).text)
+            if not links:
+                errors.append("NPS holdings: no year-end file links on the page")
+        except Exception as e:  # noqa: BLE001
+            links = None
+            errors.append(f"NPS holdings page: {type(e).__name__}: {e}")
+        dart_key = next((os.environ[k].strip() for k in ("DART_API_KEY", "DART_API", "OPENDART_API_KEY")
+                         if (os.environ.get(k) or "").strip()), None)
+        if not dart_key:
+            errors.append("DART key not set (DART_API_KEY); 5% reports kept from the previous file")
+        corp_file = ROOT / "../../public/data/dart_corp_codes_v1.json"
+        corp_index = json.loads(corp_file.read_text(encoding="utf-8")).get("index", {}) if corp_file.is_file() else {}
+        rep = kh.build_report(
+            listing=listing, fetch_trend=lambda c: fetch_naver_investor_trend(c, page_size=foreign_days),
+            previous=previous, nps_snapshot=snap, year_ends=year_ends,
+            holdings_links=links, fetch_file=lambda u: get(u).content, corp_index=corp_index,
+            fetch_dart=(lambda c: ns.fetch_dart_majorstock(c, dart_key)) if dart_key else None,
+            kospi=close("KS11"), acwi=close("ACWI"), usdkrw=close("USD/KRW"))
+    except Exception as e:  # noqa: BLE001
+        print(f"ERROR: kospi holders: {type(e).__name__}: {e}", file=sys.stderr)
+        return False
+    rep["errors"] = errors + rep["errors"]
+    if rep["foreign_ownership"].get("quality") != "observed" and rep["nps"].get("quality") == "missing":
+        print("ERROR: kospi holders: nothing observed; existing file kept", file=sys.stderr)
+        return False
+    path.write_text(json.dumps(rep, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    fo, nps = rep["foreign_ownership"], rep["nps"]
+    print(f"Wrote {path}: foreign {(fo.get('latest') or {}).get('foreign_pct')}% "
+          f"({len(fo.get('history') or [])} days) · NPS {(nps.get('now') or {}).get('weight_pct')}%")
+    for e in rep["errors"]:
+        print(f"WARN: {e}", file=sys.stderr)
+    return not rep["errors"]
 
 
 if __name__ == "__main__":
