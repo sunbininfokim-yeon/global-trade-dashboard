@@ -440,6 +440,38 @@ def main():
     doc = build(parse_workbook(blob))
     doc["source"] = "NSIDC Sea Ice Index (G02135) regional daily extent"
     doc["source_url"] = src
+    # Ice on the route line, by ship class (sea_route_line.py).
+    import sea_route_line
+    volume = {}
+    try:
+        import build_sea_ice
+        import sea_ice_forecast
+        for u in build_sea_ice.PIOMAS_URLS:
+            try:
+                volume = sea_ice_forecast.parse_piomas_monthly(fetch(u).decode("utf-8", "replace"))
+            except OSError as e:
+                print(f"PIOMAS {u}: {e}", file=sys.stderr)
+                continue
+            if len(volume) >= 300:
+                break
+    except ImportError as e:
+        print(f"PIOMAS 생략: {e}", file=sys.stderr)
+    line = sea_route_line.build(volume if len(volume) >= 300 else None)
+    if line:
+        doc["route_line"] = line
+        for c in line["classes"]:
+            o = c["outlook"]
+            print("LINE", c["id"], o["target_year"], o["status"], o["opened_last10"], "avg", o["last10_mean_days"],
+                  "| open", (o["open"] or {}).get("date_ko"), (o["open"] or {}).get("method"),
+                  "| close", (o["close"] or {}).get("date_ko"), "| days", (o["days"] or {}).get("point"))
+            for r in c["seasons"][-8:]:
+                print("   ", r["year"], r["open"], r["close"], r["days"])
+            for r in o["skill_by_issue_month"]:
+                print("    SKILL", json.dumps(r, ensure_ascii=False))
+        for v in line["validation"]:
+            print("VALID", json.dumps(v, ensure_ascii=False))
+    else:
+        print("항로선 자료 없음 -- route_line 생략")
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(doc, f, ensure_ascii=False, indent=1)
     o = doc["outlook"]
