@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-11-18T05:58:09+00:00",
+ "generated_at": "2026-11-19T13:17:28+00:00",
  "source_ko": "세계은행 원자재 가격(Pink Sheet) 월간, 미국 달러/톤",
  "url": "https://www.worldbank.org/en/research/commodity-markets",
  "views": {
@@ -631,6 +631,116 @@
      "usd_t": 692.0
     }
    ]
+  }
+ },
+ "affordability": {
+  "planting_year": 2027,
+  "window_ko": "2026년 9월~2027년 2월",
+  "months_in": 2,
+  "urea_per_corn": 1.78,
+  "soy_per_corn": 2.23,
+  "prev_urea_per_corn": 2.09,
+  "prev_soy_per_corn": 2.12,
+  "avg_10y": 1.75,
+  "pct_rank": 83,
+  "latest": {
+   "month": "2026-10",
+   "urea_usd_t": 420.0,
+   "maize_usd_t": 226.5,
+   "ratio": 1.85
+  },
+  "history": [
+   {
+    "year": 2007,
+    "urea_per_corn": 1.58
+   },
+   {
+    "year": 2008,
+    "urea_per_corn": 1.93
+   },
+   {
+    "year": 2009,
+    "urea_per_corn": 2.15
+   },
+   {
+    "year": 2010,
+    "urea_per_corn": 1.57
+   },
+   {
+    "year": 2011,
+    "urea_per_corn": 1.4
+   },
+   {
+    "year": 2012,
+    "urea_per_corn": 1.6
+   },
+   {
+    "year": 2013,
+    "urea_per_corn": 1.22
+   },
+   {
+    "year": 2014,
+    "urea_per_corn": 1.56
+   },
+   {
+    "year": 2015,
+    "urea_per_corn": 1.82
+   },
+   {
+    "year": 2016,
+    "urea_per_corn": 1.5
+   },
+   {
+    "year": 2017,
+    "urea_per_corn": 1.32
+   },
+   {
+    "year": 2018,
+    "urea_per_corn": 1.56
+   },
+   {
+    "year": 2019,
+    "urea_per_corn": 1.67
+   },
+   {
+    "year": 2020,
+    "urea_per_corn": 1.35
+   },
+   {
+    "year": 2021,
+    "urea_per_corn": 1.31
+   },
+   {
+    "year": 2022,
+    "urea_per_corn": 2.88
+   },
+   {
+    "year": 2023,
+    "urea_per_corn": 1.71
+   },
+   {
+    "year": 2024,
+    "urea_per_corn": 1.76
+   },
+   {
+    "year": 2025,
+    "urea_per_corn": 1.84
+   },
+   {
+    "year": 2026,
+    "urea_per_corn": 2.09
+   }
+  ],
+  "backtest": {
+   "years": "1981-2026",
+   "n": 46,
+   "coef_share_pp_per_10pct": -0.16,
+   "t": -1.58,
+   "soy_corn_coef_per_10pct": -0.99,
+   "soy_corn_t": -4.52,
+   "leave_one_out_sign_held": true,
+   "passed": false,
+   "rule_ko": "요소/옥수수 계수 음수, |t| ≥ 2, 한 해씩 빼도 부호 유지 (콩/옥수수 가격비 통제)"
   }
  }
 }
