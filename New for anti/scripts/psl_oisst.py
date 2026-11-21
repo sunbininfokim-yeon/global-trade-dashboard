@@ -49,19 +49,27 @@ def lon_of(j):
     return 0.125 + 0.25 * j
 
 
-def _get(url, timeout=240, tries=3):
+def _get(url, timeout=240, tries=5):
     req = urllib.request.Request(url, headers={"User-Agent": "global-trade-dashboard"})
     for attempt in range(tries):
+        wait = 5 * (attempt + 1)
         try:
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return r.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as e:
             if e.code == 404 or attempt == tries - 1:
                 raise
+            # PSL rate-limits (429; the 2026-11-13 weekly run died on the
+            # first request). Honour Retry-After, else back off a minute.
+            if e.code == 429:
+                try:
+                    wait = max(60, int(e.headers.get("Retry-After", "60")))
+                except ValueError:
+                    wait = 60
         except urllib.error.URLError:
             if attempt == tries - 1:
                 raise
-        time.sleep(5 * (attempt + 1))
+        time.sleep(min(wait, 300))
 
 
 def time_length(year):
