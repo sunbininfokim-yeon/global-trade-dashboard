@@ -102,6 +102,13 @@ jobs:
         with:
           name: us-budget-validated
           path: ${{ runner.temp }}/us-budget
+      # publish_budget.py imports annual.py, which needs openpyxl; this job
+      # runs on a fresh runner, so install the same pinned deps as collect.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r 'New for anti/scripts/us_budget/requirements.txt'
       - name: Publish validated data or failure receipt
         env:
           COLLECTION_OUTCOME: ${{ needs.collect.outputs.outcome }}
