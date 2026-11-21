@@ -32,7 +32,7 @@ jobs:
 
       - name: Test
         working-directory: "New for anti/scripts/yield_model"
-        run: python -m unittest stage_conditions.test_build
+        run: python -m unittest stage_conditions.test_build stage_conditions.test_ledger
 
       - name: Build stage conditions
         # No API keys: NASA POWER is open.
@@ -43,7 +43,8 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "New for anti/public/data/stage_conditions_v1.json"
+          git add "New for anti/public/data/stage_conditions_v1.json" \
+                  "New for anti/scripts/yield_model/stage_conditions/ledger.json"
           git commit -m "chore: refresh stage weather conditions" || exit 0
           for i in 1 2 3; do
             git push && exit 0
