@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-11-20T20:04:49.057519+00:00",
+  "generated_at": "2026-11-21T01:27:23.890074+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,20 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 33,
-    "sources_failed": 5,
-    "raw_items": 762,
-    "scored_items": 65,
+    "sources_ok": 34,
+    "sources_failed": 4,
+    "raw_items": 802,
+    "scored_items": 68,
     "selected_items": 24,
     "region_histogram": {
-      "commodity_specialist": 8,
-      "india": 6,
+      "commodity_specialist": 9,
+      "india": 4,
+      "russia": 3,
       "japan": 2,
       "turkey": 1,
-      "china": 2,
-      "russia": 2,
       "mena": 2,
-      "west": 1
+      "china": 1,
+      "west": 1,
+      "taiwan": 1
     },
     "min_importance": 0.35
   },
@@ -95,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 181,
+      "elapsed_ms": 226,
       "error": null,
       "mode": "live"
     },
@@ -103,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 215,
+      "elapsed_ms": 400,
       "error": null,
       "mode": "live"
     },
@@ -111,7 +112,7 @@
       "source_id": "arab_news",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 47,
+      "elapsed_ms": 45,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -119,7 +120,7 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1038,
+      "elapsed_ms": 1134,
       "error": null,
       "mode": "live"
     },
@@ -127,7 +128,7 @@
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 184,
+      "elapsed_ms": 61,
       "error": null,
       "mode": "live"
     },
@@ -135,7 +136,7 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2421,
+      "elapsed_ms": 2358,
       "error": null,
       "mode": "live"
     },
@@ -143,7 +144,7 @@
       "source_id": "daily_sabah",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 669,
+      "elapsed_ms": 806,
       "error": null,
       "mode": "live"
     },
@@ -151,7 +152,7 @@
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 492,
+      "elapsed_ms": 398,
       "error": null,
       "mode": "live"
     },
@@ -159,124 +160,12 @@
       "source_id": "the_hindu",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 76,
+      "elapsed_ms": 71,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "indian_express_world",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 48,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
-      "mode": "live"
-    },
-    {
-      "source_id": "et_commodities",
-      "ok": true,
-      "count": 0,
-      "elapsed_ms": 1042,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "business_standard_markets",
-      "ok": true,
-      "count": 35,
-      "elapsed_ms": 235,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "ndtv_world",
-      "ok": true,
-      "count": 20,
-      "elapsed_ms": 109,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "xinhua_world",
-      "ok": true,
-      "count": 20,
-      "elapsed_ms": 1255,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "china_daily_world",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 483,
-      "error": "HTTPError: HTTP Error 404: Not Found",
-      "mode": "live"
-    },
-    {
-      "source_id": "cgtn_world",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 288,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "scmp",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 494,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "nhk_business",
-      "ok": true,
-      "count": 40,
-      "elapsed_ms": 255,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "nhk_top",
-      "ok": true,
-      "count": 7,
-      "elapsed_ms": 57,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "japan_times",
-      "ok": true,
-      "count": 30,
-      "elapsed_ms": 220,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "nikkei_asia",
-      "ok": true,
-      "count": 0,
-      "elapsed_ms": 185,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "cna",
-      "ok": true,
-      "count": 20,
-      "elapsed_ms": 92,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "taipei_times",
-      "ok": true,
-      "count": 0,
-      "elapsed_ms": 75,
-      "error": null,
-      "mode": "live"
-    },
-    {
-      "source_id": "ltn",
       "ok": true,
       "count": 40,
       "elapsed_ms": 84,
@@ -284,10 +173,122 @@
       "mode": "live"
     },
     {
+      "source_id": "et_commodities",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 795,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "business_standard_markets",
+      "ok": true,
+      "count": 35,
+      "elapsed_ms": 169,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ndtv_world",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 384,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "xinhua_world",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 1243,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "china_daily_world",
+      "ok": false,
+      "count": 0,
+      "elapsed_ms": 669,
+      "error": "HTTPError: HTTP Error 404: Not Found",
+      "mode": "live"
+    },
+    {
+      "source_id": "cgtn_world",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 791,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "scmp",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 416,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "nhk_business",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 377,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "nhk_top",
+      "ok": true,
+      "count": 7,
+      "elapsed_ms": 64,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "japan_times",
+      "ok": true,
+      "count": 30,
+      "elapsed_ms": 188,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "nikkei_asia",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 53,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "cna",
+      "ok": true,
+      "count": 20,
+      "elapsed_ms": 373,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "taipei_times",
+      "ok": true,
+      "count": 0,
+      "elapsed_ms": 38,
+      "error": null,
+      "mode": "live"
+    },
+    {
+      "source_id": "ltn",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 39,
+      "error": null,
+      "mode": "live"
+    },
+    {
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 141,
+      "elapsed_ms": 124,
       "error": null,
       "mode": "live"
     },
@@ -295,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1051,
+      "elapsed_ms": 929,
       "error": null,
       "mode": "live"
     },
@@ -303,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 770,
+      "elapsed_ms": 1050,
       "error": null,
       "mode": "live"
     },
@@ -311,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 1313,
+      "elapsed_ms": 972,
       "error": null,
       "mode": "live"
     },
@@ -319,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 2595,
+      "elapsed_ms": 5031,
       "error": null,
       "mode": "live"
     },
@@ -327,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 504,
+      "elapsed_ms": 363,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -335,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 411,
+      "elapsed_ms": 483,
       "error": null,
       "mode": "live"
     },
@@ -343,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 193,
+      "elapsed_ms": 82,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -351,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 86,
+      "elapsed_ms": 400,
       "error": null,
       "mode": "live"
     },
@@ -359,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 87,
+      "elapsed_ms": 135,
       "error": null,
       "mode": "live"
     },
@@ -367,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 473,
+      "elapsed_ms": 887,
       "error": null,
       "mode": "live"
     },
@@ -375,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 306,
+      "elapsed_ms": 174,
       "error": null,
       "mode": "live"
     },
@@ -383,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 138,
+      "elapsed_ms": 661,
       "error": null,
       "mode": "live"
     },
@@ -391,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 531,
+      "elapsed_ms": 351,
       "error": null,
       "mode": "live"
     }
@@ -423,9 +424,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.883,
-        "importance": 5.942,
-        "final": 6.878
+        "freshness": 0.761,
+        "importance": 5.118,
+        "final": 5.924
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -459,7 +460,7 @@
       "title": {
         "original": "Tankers Are Being Hit Daily. So Why Is Oil Falling?",
         "original_lang": "en",
-        "ko": "매일 유조선이 공격당하고 있습니다. 그렇다면 왜 유가는 하락하고 있을까요?"
+        "ko": "유조선이 매일 공격을 받고 있습니다. 그렇다면 왜 유가가 하락하고 있을까요?"
       },
       "summary": "Brent tumbled 5% to $91 this week, as recovering Gulf oil flows outweigh tanker attacks, Houthi threats and escalating geopolitical tensions. Friday, November 20, 2026 Oil prices are set to post a 5% weekly drop as sentiment is still swayed by ample Middle Eastern barrels flowing",
       "scores": {
@@ -467,9 +468,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.923,
-        "importance": 5.307,
-        "final": 6.143
+        "freshness": 0.795,
+        "importance": 4.571,
+        "final": 5.291
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -509,9 +510,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.93,
-        "importance": 4.643,
-        "final": 5.27
+        "freshness": 0.801,
+        "importance": 3.999,
+        "final": 4.539
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -528,47 +529,88 @@
       "country_hint": "IND"
     },
     {
-      "id": "ab4731bc220f2c7c",
-      "published_at": "2026-11-20T12:30:00+00:00",
+      "id": "d838b333b30e6014",
+      "published_at": "2026-11-20T22:00:59+00:00",
       "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Latest-Energy-News/World-News/Iran-Steps-Up-Hormuz-Tanker-Attacks-as-Oil-Prices-Slide.html",
+      "url": "https://www.hellenicshippingnews.com/tanker-market-arabian-gulf-crude-oil-exports-down-27-6-this-year/",
       "category": "commodity",
       "commodities": [
         "oil",
         "shipping"
       ],
       "title": {
-        "original": "Iran Steps Up Hormuz Tanker Attacks as Oil Prices Slide",
+        "original": "Tanker Market: Arabian Gulf Crude Oil Exports Down 27.6% This Year",
         "original_lang": "en",
-        "ko": "유가 하락에 따라 이란, 호르무즈 해협 유조선 공격 강화"
+        "ko": "탱커 시장: 올해 페르시아만 원유 수출 27.6% 감소"
       },
-      "summary": "Iran has intensified attacks on tankers in the Strait of Hormuz in recent weeks, just as crude oil flows from the Persian Gulf recover and oil prices fall amid expectations of oversupply within months. The number of attacks soared in October to the highest level since the Iran wa",
+      "summary": "The war in Iran has dealt a significant blow to the Gulf oil export markets, with crude oil loading significantly lower over the 10-month period (Jan.-Oct.). In its latest weekly report, shipbroker Banchero Costa said that “in Jan-Dec 2025, global crude oil loadings went up by +1",
       "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
+        "commodity": 3.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.81,
-        "importance": 4.457,
-        "final": 5.159
+        "freshness": 0.909,
+        "importance": 3.455,
+        "final": 3.999
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
         "category:commodity",
         "tier:A*1.00/g1",
         "commodity:oil:2",
-        "commodity:shipping:2",
-        "diplomacy:1"
+        "commodity:shipping:1",
+        "bridge:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "USA"
+    },
+    {
+      "id": "52547e557e3bd3b9",
+      "published_at": "2026-11-20T20:45:00+00:00",
+      "source": {
+        "id": "tass_en",
+        "name": "TASS",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://tass.com/world/2222757",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "Rubio calls meeting of Russia, China, and US leaders foundation for further negotiations",
+        "original_lang": "en",
+        "ko": "루비오 의원, 러시아·중국·미국 정상 회담을 향후 협상 기반으로 평가"
+      },
+      "summary": "The US Secretary of State pointed out that this meeting has set the tone and created a platform upon which the hard work of diplomacy and trade negotiations can occur to the benefit of the American people and the world",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 1.0,
+        "election": 1.2,
+        "region_weight": 1.25,
+        "freshness": 0.878,
+        "importance": 3.281,
+        "final": 3.65
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "diplomacy:1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "CHN",
+      "election_type": "cabinet_reshuffle"
     },
     {
       "id": "8cd8ed5100a874c0",
@@ -587,7 +629,7 @@
       "title": {
         "original": "Tanker rates bounce amid heightened Hormuz hostilities",
         "original_lang": "en",
-        "ko": "호르무즈 해협에서의 군사적 긴장 고조로 유조선 운임이 급등했습니다."
+        "ko": "호르무즈 해협에서의 적대 행위 격화로 유조선 운임이 급등했습니다."
       },
       "summary": "IEA sees no return to pre-war confidence in the Strait of Hormuz as a safe, reliable energy corridor.",
       "scores": {
@@ -595,9 +637,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.755,
-        "importance": 3.097,
-        "final": 3.585
+        "freshness": 0.651,
+        "importance": 2.668,
+        "final": 3.088
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -628,7 +670,7 @@
       "title": {
         "original": "Tanker Catches Fire After Projectile Strike Near Strait Of Hormuz: Report",
         "original_lang": "en",
-        "ko": "호르무즈 해협 인근에서 미사일 공격을 받은 유조선 화재 발생: 보도"
+        "ko": "호르무즈 해협 인근에서 미사일 공격을 받은 유조선에 화재 발생: 보도"
       },
       "summary": "Shipping through the Strait of Hormuz has been disrupted since Iran war erupted (Representational)",
       "scores": {
@@ -636,9 +678,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.961,
-        "importance": 3.074,
-        "final": 3.489
+        "freshness": 0.827,
+        "importance": 2.648,
+        "final": 3.005
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -651,6 +693,47 @@
       "country_tier": "A",
       "info_grade": "1",
       "country_hint": "IND"
+    },
+    {
+      "id": "2003e5790682c52e",
+      "published_at": "2026-11-21T00:00:00+00:00",
+      "source": {
+        "id": "oilprice",
+        "name": "OilPrice.com",
+        "region": "commodity_specialist",
+        "slant": null
+      },
+      "url": "https://oilprice.com/Energy/Energy-General/Oil-Prices-Caught-Between-a-Looming-Glut-and-Middle-East-Turmoil.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Oil Prices Caught Between a Looming Glut and Middle East Turmoil",
+        "original_lang": "en",
+        "ko": "공급 과잉과 중동 불안 사이에서 널뛰기하는 유가"
+      },
+      "summary": "Oil prices have traded in a narrow range over the past few sessions as forecasts of a coming surplus collide with continued attacks and stalled diplomacy in the Middle East. A run of agency reports this month has pushed expectations toward oversupply and weighed on crude. Brent c",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.35,
+        "freshness": 0.961,
+        "importance": 2.421,
+        "final": 2.802
+      },
+      "rank_reasons": [
+        "region:commodity_specialist*1.35",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:3",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "USA"
     },
     {
       "id": "fcdb94b99b5e0725",
@@ -669,7 +752,7 @@
       "title": {
         "original": "Brent seen at $75-85 in 2027 as oil surplus builds: Mirae Asset Sharekhan",
         "original_lang": "en",
-        "ko": "석유 과잉 공급이 증가함에 따라 2027년 브렌트유 가격은 75~85달러로 전망: Mirae Asset Sharekhan"
+        "ko": "석유 공급 과잉이 심화됨에 따라 2027년 브렌트유 가격은 75~85달러로 전망: Mirae Asset Sharekhan"
       },
       "summary": "Gulf crude exports excluding Iran ran about 2.0 mb/d below October, while refined-product exports climbed to about 65 per cent of pre-war levels.",
       "scores": {
@@ -677,9 +760,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.718,
-        "importance": 2.477,
-        "final": 2.811
+        "freshness": 0.618,
+        "importance": 2.133,
+        "final": 2.421
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -717,9 +800,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.78,
-        "importance": 2.3,
-        "final": 2.559
+        "freshness": 0.672,
+        "importance": 1.981,
+        "final": 2.204
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -759,9 +842,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.957,
-        "importance": 2.114,
-        "final": 2.447
+        "freshness": 0.824,
+        "importance": 1.82,
+        "final": 2.107
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -776,40 +859,41 @@
       "country_hint": "JPN"
     },
     {
-      "id": "d661d4135e22da11",
-      "published_at": "2026-11-20T12:30:00+00:00",
+      "id": "4f94c51f88bc56a3",
+      "published_at": "2026-11-20T22:00:57+00:00",
       "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Energy/Energy-General/WTI-Crude-Sinks-More-Than-5-as-Global-Oil-Glut-Fears-Grow.html",
+      "url": "https://www.hellenicshippingnews.com/baltic-dry-index-eases-for-2nd-day/",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "shipping",
+        "coal"
       ],
       "title": {
-        "original": "WTI Crude Sinks More Than 5% as Global Oil Glut Fears Grow",
+        "original": "Baltic Dry Index Eases For 2nd Day",
         "original_lang": "en",
-        "ko": "국제 석유 공급 과잉 우려가 커지면서 WTI 원유 가격이 5% 이상 하락"
+        "ko": "발틱 건화물 운임 지수, 이틀 연속 하락"
       },
-      "summary": "The oil market spent the week weighing an increase in global supply against the risk of further disruptions in the Middle East. More crude is reaching buyers from the region, while U.S. inventories are building. Attacks on tankers and energy infrastructure remain a threat, but th",
+      "summary": "The Baltic Exchange’s dry bulk freight index, which tracks rates for ships carrying dry bulk commodities, was down for a second session on Friday, falling by 0.1% to 2,898 points. The capesize index, which typically transports 150,000-ton cargoes, including iron ore and coal, dec",
       "scores": {
         "commodity": 3.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.81,
-        "importance": 1.614,
-        "final": 1.868
+        "freshness": 0.909,
+        "importance": 1.505,
+        "final": 1.743
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:3",
-        "bridge:2"
+        "commodity:coal:1",
+        "commodity:shipping:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -842,9 +926,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.764,
-        "importance": 1.572,
-        "final": 1.784
+        "freshness": 0.658,
+        "importance": 1.354,
+        "final": 1.537
       },
       "rank_reasons": [
         "region:turkey*1.30",
@@ -859,6 +943,47 @@
       "country_tier": "B",
       "info_grade": "2",
       "country_hint": "TUR"
+    },
+    {
+      "id": "6558c0a6c46acebd",
+      "published_at": "2026-11-20T23:09:36+00:00",
+      "source": {
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://russiatoday.ru/world/news/1711862-zaharova-diplomaty-moldaviya?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "category": "commodity",
+      "commodities": [
+        "rice"
+      ],
+      "title": {
+        "original": "МИД: Кишинёв может поэкспериментировать с работой дипломатов в России",
+        "original_lang": "ru",
+        "ko": "러시아 외무부: 키시나우는 러시아에서 외교관들의 업무에 대해 실험해 볼 수 있다"
+      },
+      "summary": "Кишинёв может «поэкспериментировать», если он устал от присутствия молдавских дипломатов в России. Читать далее",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 2.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.938,
+        "importance": 1.329,
+        "final": 1.478
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:rice:1",
+        "diplomacy:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "15861771310a75a3",
@@ -886,9 +1011,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.626,
-        "importance": 1.489,
-        "final": 1.69
+        "freshness": 0.54,
+        "importance": 1.282,
+        "final": 1.455
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -904,45 +1029,45 @@
       "country_hint": "IND"
     },
     {
-      "id": "94bb67d1e9fa4951",
-      "published_at": "2026-11-20T09:04:05+00:00",
+      "id": "129f4ad6bb5edfbe",
+      "published_at": "2026-11-20T21:28:44+00:00",
       "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
         "slant": null
       },
-      "url": "https://www.scmp.com/plus/economy/china-economy/article/3375227/china-us-russia-talks-economy-concerns-auto-guangzhou",
+      "url": "https://russiatoday.ru/world/news/1711849-rossiya-posol-shveciya?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "rice"
       ],
       "title": {
-        "original": "China-US-Russia talks, economy concerns, Auto Guangzhou",
-        "original_lang": "en",
-        "ko": "중국-미국-러시아 회담, 경제 우려, 광저우 모터쇼"
+        "original": "Посол Беляев напомнил МИД Швеции о рисках пребывания дипмиссий в Киеве",
+        "original_lang": "ru",
+        "ko": "벨랴예프 대사가 스웨덴 외무부에 키예프에 외교 대표부를 두는 것의 위험성을 상기시켰습니다."
       },
-      "summary": "An unprecedented trilateral meeting between the leaders of China, the United States and Russia produced a pledge “to increase the production and supply of refined petroleum products for the benefit of all nations”. Turning that into a reality is likely to prove a challenge. The p",
+      "summary": "Москва неоднократно предупреждала о рисках пребывания иностранных дипмиссий в Киеве. Об этом в ходе беседы в МИД Швеции напомнил посол России в королевстве Сергей Беляев. Читать далее",
       "scores": {
-        "commodity": 3.0,
-        "diplomacy": 0.0,
+        "commodity": 1.0,
+        "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.737,
-        "importance": 1.344,
-        "final": 1.495
+        "freshness": 0.896,
+        "importance": 1.268,
+        "final": 1.411
       },
       "rank_reasons": [
-        "region:china*1.25",
+        "region:russia*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:3",
-        "bridge:1"
+        "commodity:rice:1",
+        "diplomacy:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "USA"
+      "country_hint": "RUS"
     },
     {
       "id": "d59bb1501cf08468",
@@ -969,9 +1094,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.833,
-        "importance": 1.25,
-        "final": 1.447
+        "freshness": 0.718,
+        "importance": 1.076,
+        "final": 1.246
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -986,119 +1111,39 @@
       "country_hint": "IND"
     },
     {
-      "id": "bbd99f9548299a97",
-      "published_at": "2026-11-20T16:25:00+00:00",
+      "id": "4cf6ea645e6fce50",
+      "published_at": "2026-11-20T22:00:55+00:00",
       "source": {
-        "id": "interfax_ru",
-        "name": "Interfax",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://www.interfax.ru/world/1130510",
-      "category": "election",
-      "commodities": [],
-      "title": {
-        "original": "Новый глава скупщины Сербии приглашен на саммит ЕС - Западные Балканы",
-        "original_lang": "ru",
-        "ko": "세르비아 의회 신임 의장, EU-서부 발칸 반도 정상회의에 초청"
-      },
-      "summary": "Глава Европейского совета Антониу Кошта пригласил избранного председателя скупщины (парламента) Сербии Александра Чупича на саммит ЕС - Западные Балканы, который состоится 25 ноября в Брюсселе, сообщает в пятницу сербский телерадиоканал РТС.\"В случае, если это приглашение будет п",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 1.0,
-        "region_weight": 1.25,
-        "freshness": 0.903,
-        "importance": 1.295,
-        "final": 1.441
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:election",
-        "tier:A*1.00/g2",
-        "diplomacy:1",
-        "election:general:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "2",
-      "country_hint": "RUS",
-      "election_type": "general"
-    },
-    {
-      "id": "d376928f5b848f11",
-      "published_at": "2026-11-20T17:16:55+00:00",
-      "source": {
-        "id": "tass_en",
-        "name": "TASS",
-        "region": "russia",
-        "slant": null
-      },
-      "url": "https://tass.com/economy/2222669",
-      "category": "diplomacy",
-      "commodities": [],
-      "title": {
-        "original": "Jet fuel situation in Russia normal — Deputy PM",
-        "original_lang": "en",
-        "ko": "러시아의 항공유 상황은 정상적 — 부총리"
-      },
-      "summary": "The Energy Ministry will decide on the renewal of the export ban, Andrey Nikitin said",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.925,
-        "importance": 1.157,
-        "final": 1.287
-      },
-      "rank_reasons": [
-        "region:russia*1.25",
-        "category:diplomacy",
-        "tier:A*1.00/g1",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "baecabfa2d2356dc",
-      "published_at": "2026-11-20T12:30:00+00:00",
-      "source": {
-        "id": "oilprice",
-        "name": "OilPrice.com",
+        "id": "hellenic_shipping",
+        "name": "Hellenic Shipping News",
         "region": "commodity_specialist",
         "slant": null
       },
-      "url": "https://oilprice.com/Energy/Energy-General/Iraqs-Oil-Crackdown-Sparks-New-Showdown-With-Kurdistan.html",
+      "url": "https://www.hellenicshippingnews.com/xeneta-weekly-ocean-container-shipping-market-update-mediterranean-spot-rates-move-in-mysterious-ways-as-red-sea-return-stalls/",
       "category": "commodity",
       "commodities": [
-        "oil"
+        "shipping"
       ],
       "title": {
-        "original": "Iraq's Oil Crackdown Sparks New Showdown With Kurdistan",
+        "original": "Xeneta Weekly Ocean Container Shipping Market Update: Mediterranean spot rates move in mysterious ways as Red Sea return stalls",
         "original_lang": "en",
-        "ko": "이라크의 석유 단속이 쿠르드 자치정부와의 새로운 대립을 촉발하다"
+        "ko": "Xeneta 주간 해상 컨테이너 운송 시장 업데이트: 홍해 항로 재개 지연으로 지중해 스팟 요금이 예측 불가능하게 변동"
       },
-      "summary": "Iraq’s federal government is using its oil-smuggling case against the pro-Iranian militia Kata’ib Hezbollah south of Baghdad to force the Kurdistan Regional Government in the north to hand over more oil and open its fields to federal inspectors. South of Baghdad, the Iraqi PM has",
+      "summary": "The Xeneta Weekly Ocean Container Shipping Market Update provides data and intelligence including the latest freight rate and capacity movements across global trades with supporting insight from Peter Sand, Xeneta Chief Analyst. Peter Sand, Xeneta Chief Analyst: “Offered capacity",
       "scores": {
         "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.81,
-        "importance": 1.031,
-        "final": 1.193
+        "freshness": 0.909,
+        "importance": 1.004,
+        "final": 1.162
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "bridge:1"
+        "commodity:shipping:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -1120,7 +1165,7 @@
       "title": {
         "original": "食料品の消費税減税 ねらいは カギを握る片山財務相に聞く",
         "original_lang": "ja",
-        "ko": "식료품 소비세 감면 목표는 열쇠를 쥔 가타야마 재무상에게 듣는다"
+        "ko": "식료품 소비세 감면 목표는 핵심을 쥐고 있는 가타야마 재무상에게 듣는다"
       },
       "summary": "暮らしに関わる食料品の消費税減税。カギを握る片山財務大臣が閣議決定後、NHKのインタビューに応じました。財源は確保できるのか。足元の財務省内に反対論はないのか。ニュースウオッチ9の広内キャスターが直撃しました。",
       "scores": {
@@ -1146,126 +1191,44 @@
       "election_type": "cabinet_reshuffle"
     },
     {
-      "id": "5b3b23ecbd5e7eb5",
-      "published_at": "2026-11-20T13:54:39+00:00",
+      "id": "51b487fff8a29833",
+      "published_at": "2026-11-21T00:00:06+00:00",
       "source": {
-        "id": "business_standard_markets",
-        "name": "Business Standard Markets",
-        "region": "india",
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
         "slant": null
       },
-      "url": "https://www.business-standard.com/markets/news/markets-gain-2-6-on-fpi-inflows-rupee-rally-and-cooling-crude-oil-prices-126112000973_1.html",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Markets gain 2.6% on FPI inflows, rupee rally and cooling crude oil prices",
-        "original_lang": "en",
-        "ko": "FPI 유입, 루피화 강세 및 원유 가격 하락으로 시장 2.6% 상승"
-      },
-      "summary": "The NSE Nifty 50 ended at 25,800.60, up 1.12 per cent on Friday and 2.61 per cent for the week. The Sensex gained 2.85 per cent over the week, and 1.08 per cent on Friday, closing at 83,919.71",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.843,
-        "importance": 0.93,
-        "final": 1.056
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "95bb0dc70ebf88f7",
-      "published_at": "2026-11-20T17:43:23+00:00",
-      "source": {
-        "id": "the_hindu",
-        "name": "The Hindu",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.thehindu.com/news/national/one-indian-seafarer-of-lpg-ship-still-missing/article71725616.ece",
+      "url": "https://www.aljazeera.com/news/liveblog/2026/11/21/iran-war-live-saudi-led-coalition-repels-houthi-missiles?traffic_source=rss",
       "category": "commodity",
       "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "One Indian seafarer of LPG ship still missing",
+        "original": "Iran war live: Saudi-led coalition downs Houthi missiles",
         "original_lang": "en",
-        "ko": "LPG 선박의 인도인 선원 1명 여전히 실종 상태"
+        "ko": "이란 전쟁 실시간 보도: 사우디아라비아 주도 연합군, 후티 반군의 미사일 격추"
       },
-      "summary": "The missing seafarer is from Aruppukottai in Tamil Nadu, who was serving as third officer on board the vessel, which was attacked a second time in the Strait of Hormuz",
+      "summary": "Saudi Arabia issues a flurry of emergency alerts for Riyadh, as the Saudi coalition says it intercepted three missiles.",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.937,
-        "importance": 0.922,
-        "final": 1.046
+        "region_weight": 1.4,
+        "freshness": 0.961,
+        "importance": 0.795,
+        "final": 0.939
       },
       "rank_reasons": [
-        "region:india*1.30",
+        "region:mena*1.40",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "tier:B*0.72/g1",
+        "commodity:shipping:1"
       ],
       "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "IND"
-    },
-    {
-      "id": "96157cfef05a176c",
-      "published_at": "2026-11-20T09:12:25+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/week-asia/politics/article/3375228/philippine-military-rejects-trumps-request-macarthur-style-gold-baton",
-      "category": "commodity",
-      "commodities": [
-        "gold"
-      ],
-      "title": {
-        "original": "Philippine military rejects Trump’s request for MacArthur-style gold baton",
-        "original_lang": "en",
-        "ko": "필리핀 군, 트럼프 대통령의 매카더식 지휘봉 요청 거절"
-      },
-      "summary": "The Philippine military has clarified that a gold baton awarded to the late American general Douglas MacArthur is no longer part of its honours system, dampening a demand for a similar accolade from US President Donald Trump. Addressing a state lunch gathering at the presidential",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.74,
-        "importance": 0.728,
-        "final": 0.81
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gold:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "CHN"
+      "country_tier": "B",
+      "info_grade": "1",
+      "country_hint": "SAU"
     },
     {
       "id": "2bf16b07de785d57",
@@ -1292,9 +1255,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.4,
-        "freshness": 0.909,
-        "importance": 0.644,
-        "final": 0.76
+        "freshness": 0.783,
+        "importance": 0.555,
+        "final": 0.654
       },
       "rank_reasons": [
         "region:mena*1.40",
@@ -1309,84 +1272,128 @@
       "country_hint": "SAU"
     },
     {
-      "id": "1b8e0996e3107935",
-      "published_at": "2026-11-20T05:00:26+00:00",
+      "id": "3784489f48a9073f",
+      "published_at": "2026-11-18T02:25:38+00:00",
+      "source": {
+        "id": "cgtn_world",
+        "name": "CGTN",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://news.cgtn.com/news/2026-11-18/US-Iran-tensions-persist-as-Houthis-claim-Saudi-oil-attacks-1Sai32DXqYU/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
+      "category": "commodity",
+      "commodities": [
+        "oil",
+        "shipping"
+      ],
+      "title": {
+        "original": "US-Iran tensions persist as Houthis claim Saudi oil attacks",
+        "original_lang": "en",
+        "ko": "미-이란 갈등이 지속되는 가운데, 후티 반군이 사우디아라비아 석유 시설 공격을 주장하다"
+      },
+      "summary": "Tensions across the Middle East remain high, with US strikes on Iran, continued diplomatic efforts to end the conflict, and escalating hostilities between Saudi Arabia and Yemen's Houthi movement.",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.35,
+        "importance": 0.538,
+        "final": 0.598
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:1",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
+    },
+    {
+      "id": "988bccda6960fc18",
+      "published_at": "2026-11-13T19:45:14+00:00",
       "source": {
         "id": "ft_commodities",
         "name": "FT Commodities",
         "region": "west",
         "slant": null
       },
-      "url": "https://www.ft.com/content/562e278e-1e12-49d2-b7f7-91a289ffd660?syn-25a6b1a6=1",
+      "url": "https://www.ft.com/content/20b68fe2-9d60-4c0c-b714-1f3e03015823?syn-25a6b1a6=1",
       "category": "commodity",
       "commodities": [
         "oil"
       ],
       "title": {
-        "original": "Oil loses grip on bond markets as inflation ‘virus’ spreads",
+        "original": "Global oil markets swing to surplus as Gulf shipments rebound",
         "original_lang": "en",
-        "ko": "인플레이션 '바이러스'가 확산되면서 유가가 채권 시장에 미치는 영향력이 약화"
+        "ko": "걸프 지역의 석유 수출이 회복되면서 세계 석유 시장에 공급 과잉이 발생하다"
       },
-      "summary": "Tight correlation between crude prices and borrowing costs has broken down",
+      "summary": "IEA analysts warn it will take months to rebuild stockpiles depleted by US-Iran war",
       "scores": {
-        "commodity": 2.0,
-        "diplomacy": 0.0,
+        "commodity": 1.0,
+        "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.658,
-        "importance": 0.727,
-        "final": 0.579
+        "freshness": 0.35,
+        "importance": 0.717,
+        "final": 0.572
       },
       "rank_reasons": [
         "region:west*0.55",
         "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:2"
+        "tier:A*1.00/g1",
+        "commodity:oil:1",
+        "diplomacy:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
-      "info_grade": "3",
+      "info_grade": "1",
       "country_hint": "USA"
     },
     {
-      "id": "cba9539beb321536",
-      "published_at": "2026-11-20T15:00:00+00:00",
+      "id": "70619559bf5d370b",
+      "published_at": "2026-11-21T01:00:00+00:00",
       "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
+        "id": "ltn",
+        "name": "Liberty Times",
+        "region": "taiwan",
+        "slant": "pan_green"
       },
-      "url": "https://www.aljazeera.com/video/fault-lines/2026/11/20/blood-gold-the-mundurukus-fight-for-survival-in-the-brazilian-amazon?traffic_source=rss",
+      "url": "https://3c.ltn.com.tw/news/68363",
       "category": "commodity",
       "commodities": [
-        "gold"
+        "silver"
       ],
       "title": {
-        "original": "Blood Gold: The Munduruku’s fight for survival in the Brazilian Amazon",
-        "original_lang": "en",
-        "ko": "피의 금: 브라질 아마존에서 생존을 위한 문두루쿠족의 투쟁"
+        "original": "網銀遭盜轉怕手機中毒？iPhone、安卓安全檢查教學一次看",
+        "original_lang": "zh-TW",
+        "ko": "인터넷 뱅킹에서 돈이 도난당할까 봐 걱정되시나요? 아이폰, 안드로이드 보안 점검 방법을 한 번에 알아보세요."
       },
-      "summary": "Fault Lines investigates how illegal gold mining poisons and threatens Indigenous communities in the Brazilian Amazon.",
+      "summary": "近期台灣接連傳出網路銀行及銀行App異常轉帳事件，引發民眾對帳戶安全的擔憂。除了銀行系統的資安問題，手機是否遭惡意程式入侵，也成為外界關注焦點。雖然相關案件的原因仍有待釐清，但民眾不妨趁機檢查自己的手機，不論iPhone或Android，都能透過幾個簡單步驟，查看是否有可疑App或異常設定。…",
       "scores": {
         "commodity": 1.0,
         "diplomacy": 0.0,
         "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.869,
-        "importance": 0.345,
-        "final": 0.407
+        "region_weight": 1.25,
+        "freshness": 0.988,
+        "importance": 0.393,
+        "final": 0.437
       },
       "rank_reasons": [
-        "region:mena*1.40",
+        "region:taiwan*1.25",
         "category:commodity",
         "tier:B*0.72/g3",
-        "commodity:gold:1"
+        "commodity:silver:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
       "info_grade": "3",
-      "country_hint": "SAU"
+      "country_hint": "TWN"
     }
   ]
 }
