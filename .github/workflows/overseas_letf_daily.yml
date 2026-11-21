@@ -26,7 +26,8 @@ concurrency:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    # ubuntu-latest moved to 26.04 (2026-11), which Playwright 1.58.2 cannot install chromium on.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

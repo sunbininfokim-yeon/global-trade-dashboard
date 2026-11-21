@@ -30,7 +30,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install pandas openpyxl
+      - run: pip install pandas numpy openpyxl
+      - name: Affordability tests
+        working-directory: New for anti/scripts/fertilizer
+        run: python3 -m unittest -v test_affordability
       - name: Build fertilizer prices
         run: python3 "New for anti/scripts/fertilizer/prices.py"
 
