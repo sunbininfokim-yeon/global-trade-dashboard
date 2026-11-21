@@ -41,6 +41,8 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
+import korea_sources
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.normpath(os.path.join(HERE, "..", "..", "public", "data"))
 SLICE = os.path.join(HERE, "psd_world.csv")
@@ -607,6 +609,25 @@ def add_revisions(crops, release):
             + ", ".join(f"{m['country_ko']} {m['change_kt']:+,}" for m in rev["producers"]))
 
 
+def add_korea_sources(crops, offline=False):
+    """Korea's suppliers per crop, each with its growing regions' calls."""
+    try:
+        imports = korea_sources.load_or_fetch(offline=offline)
+        with open(os.path.join(DATA, "stage_conditions_v1.json"), encoding="utf-8") as f:
+            stage = json.load(f)
+    except (OSError, ValueError) as exc:
+        log(f"Korea sources skipped ({exc})")
+        return
+    names = region_names()
+    for key, c in crops.items():
+        b = korea_sources.block(key, imports, stage, names)
+        if b:
+            c["korea_sources"] = b
+            log(f"{key} Korea sources {b['year']}: " + ", ".join(
+                f"{p['country_ko']} {p['share_pct']}%" for p in b["partners"])
+                + f"; unfavourable fields {b['exposed_pct']}% of {b['covered_pct']}% covered")
+
+
 def main(argv):
     if argv[:1] == ["apply"]:
         df = pd.read_csv(SLICE)
@@ -654,6 +675,7 @@ def main(argv):
             f"{c['current']['season']} {c['current']['production_kt']:,} kt, "
             f"{len(c['risks'])} risks")
     add_revisions(crops, release)
+    add_korea_sources(crops, offline=argv[:1] == ["apply"])
     igc = igc_summary()
     if igc:
         for key, c in crops.items():
