@@ -5656,8 +5656,23 @@ const renderStageConditionSummary = (sc) => {
             ${rows}
             ${upcoming ? `<div class="climate-sub">남은 단계 ${upcoming}개는 아직 시작 전</div>` : ''}
             ${sc.history_ko ? `<div class="climate-sub" style="margin-top:4px;">과거 검증: ${sc.history_ko}</div>` : ''}
+            ${stageLiveRecordHtml(sc)}
             <div class="climate-sub">판정은 참고용이며 예측치에는 반영하지 않습니다.</div>
         </div>`;
+};
+
+// Published calls, frozen when the season ends and scored once the official
+// yield is in (stage_conditions/ledger.py) -- unlike the history check, these
+// were made before anyone knew the harvest.
+const stageLiveRecordHtml = (sc) => {
+    const rows = (sc.live_record || []).slice(0, 3).map((r) => {
+        const res = `${r.residual_pct >= 0 ? '+' : ''}${r.residual_pct}%`;
+        const mark = r.hit == null ? '' : (r.hit ? ' <span style="color:#86efac;">적중</span>' : ' <span style="color:#fdba74;">빗나감</span>');
+        return `${r.harvest_year} ${r.verdict_ko}${r.history_check === 'unmatched' ? '(참고)' : ''} → 추세 대비 ${res}${mark}`;
+    });
+    const pending = sc.live_pending ? `${sc.season} ${sc.live_pending.verdict_ko} 판정은 ${sc.live_pending.frozen_on} 기록, 공식 수확량이 나오면 채점` : '';
+    if (!rows.length && !pending) return '';
+    return `<div class="climate-sub" style="margin-top:4px;">실시간 채점: ${[pending, ...rows].filter(Boolean).join(' · ')}</div>`;
 };
 
 // Before the critical window is observed, the number leans on past seasons

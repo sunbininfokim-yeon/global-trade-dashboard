@@ -68,6 +68,18 @@ class StageConditionTests(unittest.TestCase):
         self.assertLess(abs(repro["current"]["precip"] - np.mean([p["precip"] for p in repro["past"]])),
                         3 * np.std([p["precip"] for p in repro["past"]]))
 
+    def test_harvested_season_rolls_to_next_after_a_month(self):
+        safrinha = [{"kind": "sow", "name_ko": "파종", "start": "01-20", "end": "03-10"},
+                    {"kind": "fill", "name_ko": "비대", "start": "04-25", "end": "06-15"},
+                    {"kind": "harvest", "name_ko": "수확", "start": "06-01", "end": "08-31"}]
+        self.assertEqual(B.current_anchor(safrinha, date(2026, 9, 15)), 2026)
+        self.assertEqual(B.current_anchor(safrinha, date(2026, 11, 18)), 2027)
+        self.assertEqual(B.current_anchor(safrinha, date(2027, 2, 1)), 2027)
+        crop = {"crop": "corn_safrinha", "label_ko": "옥수수", "stages": safrinha}
+        entry = B.crop_entry("x", crop, daily(end="2026-11-18"), date(2026, 11, 18), None)
+        self.assertEqual(entry["season"], "2027")
+        self.assertTrue(all(s["status"] == "upcoming" for s in entry["stages"]))
+
     def test_cane_crush_labelled_by_its_main_year(self):
         stages = [{"kind": "sow", "start": "10-15", "end": "02-28"},
                   {"kind": "veg", "start": "05-01", "end": "10-31"},
