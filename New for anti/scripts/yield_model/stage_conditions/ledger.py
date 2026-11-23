@@ -85,6 +85,29 @@ def score(ledger, residual_for):
     return scored
 
 
+def score_provisional(ledger, national_for, today):
+    """Early read for calls still waiting on the official yield: USDA's
+    national estimate vs its own trend. Recomputed every run (USDA revises)
+    and dropped once the final score is in. national_for(region, crop, year)
+    returns (log residual, info) or (None, None)."""
+    marked = []
+    for key, row in ledger["entries"].items():
+        if "residual_pct" in row:
+            row.pop("provisional", None)
+            continue
+        res, info = national_for(row["region"], row["crop"], row["harvest_year"])
+        if res is None:
+            row.pop("provisional", None)
+            continue
+        r = round(res * 100, 1)
+        row["provisional"] = {
+            **info, "residual_pct": r, "as_of": today.isoformat(),
+            "hit": (r < 0 if row["verdict"] == "unfavorable"
+                    else r > 0 if row["verdict"] == "favorable" else None)}
+        marked.append(key)
+    return marked
+
+
 def summary(ledger):
     rows = list(ledger["entries"].values())
     done = [r for r in rows if "residual_pct" in r]
@@ -99,6 +122,10 @@ def summary(ledger):
     neutral = [r["residual_pct"] for r in done if r["verdict"] == "neutral"]
     out["neutral"] = {"n": len(neutral),
                       "mean_residual_pct": round(sum(neutral) / len(neutral), 1) if neutral else None}
+    prov = [r for r in rows if "residual_pct" not in r and r.get("provisional")
+            and r["verdict"] in ("unfavorable", "favorable")]
+    out["provisional"] = {"n": len(prov), "hits": sum(1 for r in prov if r["provisional"]["hit"]),
+                          "basis_ko": "USDA 국가 단수 추정(월간 수정) 대비, 공식 수확량 전 잠정"}
     out["recent"] = sorted(done, key=lambda r: (r["harvest_year"], r["region"]), reverse=True)[:RECENT]
     return out
 
