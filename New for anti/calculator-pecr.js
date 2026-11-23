@@ -497,6 +497,41 @@ const pecrLoadPeers = async (snap) => {
     return loaded.filter(Boolean);
 };
 
+// --- 업권 지표 (snapshot.financial_kpis; dart_kfa/financial_kpis.py) ---------
+const FIN_KIND = { basel: '은행(지주)', kics: '보험', ncr: '증권', credit_finance: '카드·캐피탈' };
+const FIN_LABEL = {
+    roe: ['ROE', 'pct'], roa: ['ROA', 'pct'], leverage: ['레버리지', 'x'],
+    net_interest_income: ['순이자이익', 'money'], net_fee_income: ['순수수료이익', 'money'], nii_to_assets: ['순이자이익 ÷ 총자산', 'pct2'],
+    cost_income: ['비용효율(CIR)', 'pct'], credit_cost: ['대손비용률', 'pct2'], loans_to_deposits: ['대출 ÷ 예수부채', 'pct'],
+    loan_growth: ['대출 성장률', 'pct'], insurance_revenue: ['보험수익', 'money'], insurance_result: ['보험서비스결과', 'money'],
+    insurance_margin: ['보험손익률', 'pct'], investment_result: ['투자손익', 'money'], insurance_share_of_profit: ['보험손익 비중', 'pct'],
+    operating_revenue: ['영업수익', 'money'], credit_cost_to_revenue: ['대손비용 ÷ 영업수익', 'pct'],
+    credit_cost_to_assets: ['대손비용 ÷ 총자산', 'pct2'], funding_cost: ['이자비용 ÷ 총자산', 'pct2'],
+};
+const finFmt = (fmt, v) => (!Number.isFinite(v) ? '—' : fmt === 'money' ? coNum(v) : fmt === 'x' ? `${v.toFixed(1)}배`
+    : `${(v * 100).toFixed(fmt === 'pct2' ? 2 : 1)}%`);
+const financialKpisHtml = (snap) => {
+    const f = snap.financial_kpis;
+    if (!f) return '';
+    const comp = Object.entries(f.computed || {}).filter(([k]) => FIN_LABEL[k]);
+    const rep = Object.entries(f.reported || {});
+    return `<section class="pecr-section"><h3>업권 지표 — ${finEsc(FIN_KIND[f.kind] || f.kind)}</h3>
+        ${rep.length ? `<div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>공시 지표</th><th>값</th><th>추이</th><th>출처 표</th></tr></thead><tbody>
+            ${rep.map(([, v]) => `<tr><td><b>${finEsc(v.label)}</b>${v.subsidiary ? ' <span class="pecr-badge">주요 종속회사</span>' : ''}</td>
+                <td class="pecr-num">${(v.value * 100).toFixed(2)}%</td>
+                <td>${(v.series || []).map(([p, x]) => `${finEsc(p)} ${(x * 100).toFixed(2)}%`).join(' · ')}</td>
+                <td class="fin-note">${finEsc(v.source)}</td></tr>`).join('')}
+            </tbody></table></div>
+            <p class="fin-note">${finEsc(f.reported_period_end || '')} 정기보고서(접수 ${finEsc(f.reported_receipt || '—')})의 표에서 그대로 읽은 값입니다. 외화 단위 표(해외 법인)는 제외했고,
+                "주요 종속회사" 표시는 지주회사 연결이 아니라 핵심 자회사(예: 은행) 기준입니다.</p>` : ''}
+        <div class="fin-cards">${comp.map(([k, v]) => `<div class="fin-card pecr-card"><span class="fin-card-title">${finEsc(FIN_LABEL[k][0])}</span>
+            <span class="fin-card-value">${finFmt(FIN_LABEL[k][1], v.value)}</span><p class="fin-card-plain">${finEsc(v.basis || '')}</p></div>`).join('')}</div>
+        <p class="fin-note">카드 아래 값은 FY${finEsc(f.fiscal_year || '')} 연결 재무제표 본문으로 계산했습니다. "대용"이라고 쓴 값은 감독기준 산식과 분모가 달라 공시 지표와 차이가 납니다.
+            ${f.kind === 'kics' ? '보험계약마진(CSM) 잔액은 회사마다 공시 양식이 달라 아직 자동 추출하지 않습니다.' : ''}</p>
+    </section>`;
+};
+
 // --- 사업부문·제품·지역 (snapshot.segments; dart_kfa/segments.py) ---------------
 const SEG_CHECK = { segment_total: '보고서의 부문 합계 행', income_statement: '손익계산서 매출(조정 항목 반영)' };
 const segPct = (v, sign = false) => (Number.isFinite(v) ? `${sign && v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%` : '—');
@@ -711,7 +746,7 @@ const invMetricsView = (snap) => {
     const inv = snap.investor_metrics;
     if (!inv) return '<p class="fin-note">이 스냅샷에는 투자지표가 아직 없습니다. 다음 엔진 재생성 때 채워집니다.</p>';
     const live = pecrLive(snap);
-    return segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
+    return financialKpisHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
         + `<p class="fin-note">재무제표: OpenDART 사업보고서 FY${(inv.years || [])[0] || ''}~FY${inv.fiscal_year} ${snap.fs_div === 'OFS' ? '별도' : '연결'}.
             배당: 사업보고서 배당에 관한 사항. 자기주식: 자기주식 취득 및 처분 현황. 시세가 필요한 값(PEG, 시가 Z, 수익률)은 일별 시가총액으로 계산합니다.</p>`;
 };

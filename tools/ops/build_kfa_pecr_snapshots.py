@@ -514,6 +514,28 @@ def segments_packet(dart: Dart, year: int, fs: str, fy_rows: list) -> tuple[dict
     return (res if res['breakdowns'] else None), kinds
 
 
+def financial_packet(dart: Dart, corp: str, year: int, company: dict, fy_rows: list) -> tuple[dict | None, str]:
+    """업권 지표 (dart_kfa/financial_kpis.py): face-statement ratios + reported
+    asset-quality / margin tables from the newest periodic report."""
+    from dart_kfa.entity_policy import classify_entity  # noqa: E402
+    from dart_kfa.financial_kpis import financial_kpis, reported_ratios  # noqa: E402
+    from dart_kfa.regulatory_capital import regulatory_kind  # noqa: E402
+    name = company.get('corp_name') or ''
+    policy = classify_entity({'corp_code': corp, 'induty_code': company.get('induty_code'), 'corp_name': name})
+    kind, _ = regulatory_kind(policy.get('entity_class'), name)
+    if not kind:
+        return None, 'not_regulated_financial'
+    doc = receipt = period_end = None
+    for r in periodic_reports(dart, corp, year)[:3]:
+        body = report_body(dart, r['receipts'][0])
+        if body and reported_ratios(body, kind):
+            doc, receipt, period_end = body, r['receipts'][0], r['period_end']
+            break
+    res = financial_kpis(fy_rows, kind=kind, doc=doc, receipt=receipt, period_end=period_end)
+    res['fiscal_year'] = year
+    return res, f"{kind}:reported={','.join(sorted(res['reported'])) or 'none'}"
+
+
 def backlog_packet(dart: Dart, corp: str, year: int, bases: dict) -> tuple[dict | None, str]:
     """수주잔고 from the newest periodic report that has a parseable table."""
     from dart_kfa.order_backlog import backlog_from_report  # noqa: E402
@@ -678,6 +700,10 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     except Exception as exc:  # noqa: BLE001
         segments, segments_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
     try:
+        fin_kpis, fin_note = financial_packet(dart, corp, year, company, fy_rows)
+    except Exception as exc:  # noqa: BLE001
+        fin_kpis, fin_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
+    try:
         backlog, backlog_note = backlog_packet(dart, corp, year, bases)
     except Exception as exc:  # noqa: BLE001
         backlog, backlog_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
@@ -709,6 +735,8 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
         'segments_input': segments_note,
         'order_backlog': backlog,
         'order_backlog_input': backlog_note,
+        'financial_kpis': fin_kpis,
+        'financial_kpis_input': fin_note,
         'investor_input': investor_note,
         'regulatory_input': regulatory_note,
     }
@@ -740,7 +768,7 @@ def main() -> int:
                        'financial': snap['pe_cr'].get('industry') == 'financial'}
         print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]} '
               f'market={snap["market_input"]} regulatory={snap["regulatory_input"]} '
-              f'investor={snap["investor_input"]} segments={snap["segments_input"]} backlog={snap["order_backlog_input"]}', file=sys.stderr)
+              f'investor={snap["investor_input"]} segments={snap["segments_input"]} backlog={snap["order_backlog_input"]} fin={snap["financial_kpis_input"]}', file=sys.stderr)
     idx_path = OUT_DIR / 'index_v1.json'
     prev = json.loads(idx_path.read_text())['index'] if idx_path.exists() else {}
     prev.update(index)
