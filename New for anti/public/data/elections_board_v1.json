@@ -9865,6 +9865,144 @@
           "note": "DEMO_KEY pagination; house.gov + Wikipedia Senate leaders (senate.gov 403 here)",
           "house_members": "https://clerk.house.gov/xml/lists/MemberData.xml",
           "house_vacancies": "https://clerk.house.gov/Members/ViewVacancies"
+        },
+        "incoming_house_leadership": {
+          "schema": "usa_house_leadership_news_v1",
+          "as_of": "2026-11-17",
+          "congress": "120th",
+          "convenes": "2027-01-03",
+          "status": "party_meetings_only",
+          "note_ko": "119대 재임 지도부는 바꾸지 않는다. 아래는 2026-11-17에 연 보도다. 의장은 2027-01-03 하원 전체 호명 투표 전이다. 의석 수는 넣지 않았다.",
+          "house_republican_conference": {
+            "date": "2026-11-10",
+            "method_ko": "비공개 비밀투표",
+            "posts": [
+              {
+                "office": "minority_leader",
+                "office_ko": "소수당 원내대표",
+                "name": "Jim Jordan",
+                "state": "Ohio",
+                "votes": 106,
+                "opponents": [
+                  {
+                    "name": "Steve Scalise",
+                    "state": "Louisiana",
+                    "votes": 73
+                  }
+                ],
+                "verification": "media_two",
+                "note_ko": "106 대 73은 회의장 취재원이 CBS와 롤콜에 전한 표다. 하원 사무처 개표가 아니다."
+              },
+              {
+                "office": "minority_whip",
+                "office_ko": "소수당 원내총무",
+                "name": "Tom Emmer",
+                "state": "Minnesota",
+                "votes": null,
+                "opponents": [
+                  {
+                    "name": "August Pfluger",
+                    "state": "Texas",
+                    "votes": null
+                  }
+                ],
+                "verification": "media_two",
+                "note_ko": "두 보도 모두 에머가 이겼다고 적고 표차는 적지 않는다."
+              },
+              {
+                "office": "conference_chair",
+                "office_ko": "컨퍼런스 의장",
+                "name": "Lisa McClain",
+                "state": "Michigan",
+                "votes": null,
+                "opponents": [
+                  {
+                    "name": "Erin Houchin",
+                    "state": "Indiana",
+                    "votes": null
+                  },
+                  {
+                    "name": "Greg Steube",
+                    "state": "Florida",
+                    "votes": null
+                  }
+                ],
+                "verification": "media",
+                "note_ko": "상대 이름은 롤콜에만 있다."
+              },
+              {
+                "office": "campaign_chair",
+                "office_ko": "하원 선거대책위원장",
+                "body": "National Republican Congressional Committee",
+                "name": "Brian Jack",
+                "state": "Georgia",
+                "votes": null,
+                "opponents": [
+                  {
+                    "name": "Rudy Yakym",
+                    "state": "Indiana",
+                    "votes": null
+                  }
+                ],
+                "verification": "media",
+                "note_ko": "원내 직이 아니다. 롤콜만 적는다."
+              }
+            ],
+            "did_not_run": [
+              {
+                "name": "Mike Johnson",
+                "note_ko": "롤콜은 존슨이 120대 지도부에 나가지 않았다고 적는다. CBS는 그가 1월 초까지 의장이고 1월에 의원 선서를 한다고 말한 것을 전한다."
+              }
+            ]
+          },
+          "house_democratic_caucus": {
+            "status": "not_held",
+            "reported_dates": [
+              "2026-11-18",
+              "2026-11-19"
+            ],
+            "verification": "media",
+            "note_ko": "블룸버그 거번먼트는 11월 4일 기사에서 선거일이 11월 18일과 19일이라고 두 취재원이 말했다고 적는다. 2026-11-17에는 결과가 없다.",
+            "announced": [
+              {
+                "name": "Katherine Clark",
+                "state": "Massachusetts",
+                "running_for": "majority_leader",
+                "running_for_ko": "다수당 원내대표",
+                "note_ko": "블룸버그는 제프리스가 기자회견에서 클라크가 다수당 원내대표에 나온다고 말했다고 적는다. 선출 결과가 아니다."
+              }
+            ],
+            "not_stored": [
+              "하킴 제프리스의 의장 당선은 아직 없다. 블룸버그의 '의장이 될 것으로 전망된다'는 기사 전망이라 결과 칸에 넣지 않았다.",
+              "피트 아길라의 다음 직은 연 기사 문장이 중간에서 끊겨 넣지 않았다."
+            ]
+          },
+          "speaker": {
+            "status": "not_elected",
+            "elected_by": "full_house_roll_call",
+            "date": "2027-01-03",
+            "note_ko": "정당 회의는 후보를 고른다. 의장은 새 의회 첫날 하원 전체가 뽑는다."
+          },
+          "sources": [
+            {
+              "org": "CBS News",
+              "url": "https://www.cbsnews.com/live-updates/congress-today-senate-house-leadership-elections/",
+              "published": "2026-11-11",
+              "grade": "media"
+            },
+            {
+              "org": "Roll Call",
+              "url": "https://rollcall.com/2026/11/10/new-minority-leader-for-house-gop-120th/",
+              "published": "2026-11-10",
+              "grade": "media"
+            },
+            {
+              "org": "Bloomberg Government",
+              "url": "https://news.bgov.com/bloomberg-government-news/house-democratic-leadership-elections-set-for-nov-18-and-19",
+              "published": "2026-11-04",
+              "grade": "media"
+            }
+          ]
         }
       },
       "subnational_live": {
@@ -76844,7 +76982,145 @@
               "stale": 0
             }
           },
-          "missing_fields": []
+          "missing_fields": [],
+          "incoming_house_leadership": {
+            "schema": "usa_house_leadership_news_v1",
+            "as_of": "2026-11-17",
+            "congress": "120th",
+            "convenes": "2027-01-03",
+            "status": "party_meetings_only",
+            "note_ko": "119대 재임 지도부는 바꾸지 않는다. 아래는 2026-11-17에 연 보도다. 의장은 2027-01-03 하원 전체 호명 투표 전이다. 의석 수는 넣지 않았다.",
+            "house_republican_conference": {
+              "date": "2026-11-10",
+              "method_ko": "비공개 비밀투표",
+              "posts": [
+                {
+                  "office": "minority_leader",
+                  "office_ko": "소수당 원내대표",
+                  "name": "Jim Jordan",
+                  "state": "Ohio",
+                  "votes": 106,
+                  "opponents": [
+                    {
+                      "name": "Steve Scalise",
+                      "state": "Louisiana",
+                      "votes": 73
+                    }
+                  ],
+                  "verification": "media_two",
+                  "note_ko": "106 대 73은 회의장 취재원이 CBS와 롤콜에 전한 표다. 하원 사무처 개표가 아니다."
+                },
+                {
+                  "office": "minority_whip",
+                  "office_ko": "소수당 원내총무",
+                  "name": "Tom Emmer",
+                  "state": "Minnesota",
+                  "votes": null,
+                  "opponents": [
+                    {
+                      "name": "August Pfluger",
+                      "state": "Texas",
+                      "votes": null
+                    }
+                  ],
+                  "verification": "media_two",
+                  "note_ko": "두 보도 모두 에머가 이겼다고 적고 표차는 적지 않는다."
+                },
+                {
+                  "office": "conference_chair",
+                  "office_ko": "컨퍼런스 의장",
+                  "name": "Lisa McClain",
+                  "state": "Michigan",
+                  "votes": null,
+                  "opponents": [
+                    {
+                      "name": "Erin Houchin",
+                      "state": "Indiana",
+                      "votes": null
+                    },
+                    {
+                      "name": "Greg Steube",
+                      "state": "Florida",
+                      "votes": null
+                    }
+                  ],
+                  "verification": "media",
+                  "note_ko": "상대 이름은 롤콜에만 있다."
+                },
+                {
+                  "office": "campaign_chair",
+                  "office_ko": "하원 선거대책위원장",
+                  "body": "National Republican Congressional Committee",
+                  "name": "Brian Jack",
+                  "state": "Georgia",
+                  "votes": null,
+                  "opponents": [
+                    {
+                      "name": "Rudy Yakym",
+                      "state": "Indiana",
+                      "votes": null
+                    }
+                  ],
+                  "verification": "media",
+                  "note_ko": "원내 직이 아니다. 롤콜만 적는다."
+                }
+              ],
+              "did_not_run": [
+                {
+                  "name": "Mike Johnson",
+                  "note_ko": "롤콜은 존슨이 120대 지도부에 나가지 않았다고 적는다. CBS는 그가 1월 초까지 의장이고 1월에 의원 선서를 한다고 말한 것을 전한다."
+                }
+              ]
+            },
+            "house_democratic_caucus": {
+              "status": "not_held",
+              "reported_dates": [
+                "2026-11-18",
+                "2026-11-19"
+              ],
+              "verification": "media",
+              "note_ko": "블룸버그 거번먼트는 11월 4일 기사에서 선거일이 11월 18일과 19일이라고 두 취재원이 말했다고 적는다. 2026-11-17에는 결과가 없다.",
+              "announced": [
+                {
+                  "name": "Katherine Clark",
+                  "state": "Massachusetts",
+                  "running_for": "majority_leader",
+                  "running_for_ko": "다수당 원내대표",
+                  "note_ko": "블룸버그는 제프리스가 기자회견에서 클라크가 다수당 원내대표에 나온다고 말했다고 적는다. 선출 결과가 아니다."
+                }
+              ],
+              "not_stored": [
+                "하킴 제프리스의 의장 당선은 아직 없다. 블룸버그의 '의장이 될 것으로 전망된다'는 기사 전망이라 결과 칸에 넣지 않았다.",
+                "피트 아길라의 다음 직은 연 기사 문장이 중간에서 끊겨 넣지 않았다."
+              ]
+            },
+            "speaker": {
+              "status": "not_elected",
+              "elected_by": "full_house_roll_call",
+              "date": "2027-01-03",
+              "note_ko": "정당 회의는 후보를 고른다. 의장은 새 의회 첫날 하원 전체가 뽑는다."
+            },
+            "sources": [
+              {
+                "org": "CBS News",
+                "url": "https://www.cbsnews.com/live-updates/congress-today-senate-house-leadership-elections/",
+                "published": "2026-11-11",
+                "grade": "media"
+              },
+              {
+                "org": "Roll Call",
+                "url": "https://rollcall.com/2026/11/10/new-minority-leader-for-house-gop-120th/",
+                "published": "2026-11-10",
+                "grade": "media"
+              },
+              {
+                "org": "Bloomberg Government",
+                "url": "https://news.bgov.com/bloomberg-government-news/house-democratic-leadership-elections-set-for-nov-18-and-19",
+                "published": "2026-11-04",
+                "grade": "media"
+              }
+            ]
+          }
         }
       },
       "governance_polls": [
