@@ -189,7 +189,14 @@ def _minutes_block(minutes_doc: dict, calendar_doc: dict, *, today: date) -> dic
                    "basis": "decision_plus_21_days_expected"}
     if latest is None and pending is None:
         return None
-    return {"latest": latest, "pending": pending}
+    compare = None
+    if len(rows) >= 2:
+        from macro_monitor.cb_collect.minutes_compare import compare as _cmp
+        side = lambda r: {"meeting_date": r["meeting_date"], "released_on": r.get("released_on"),  # noqa: E731
+                          "source_url": r.get("source_url"), "body": r.get("statements") or []}
+        # The FOMC file keeps only the quantified sentences (Most/Some/A few ...), so the word floor is lower.
+        compare = _cmp(side(rows[-2]), side(rows[-1]), lang="en", min_words=200)
+    return {"latest": latest, "pending": pending, "compare": compare}
 
 
 PREVIEW_IN = Path(__file__).resolve().parent / "config" / "fomc_preview_v1.json"

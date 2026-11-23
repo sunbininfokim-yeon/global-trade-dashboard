@@ -2944,6 +2944,44 @@ const mmFomcDecisionHtml = (policy, extra = {}) => {
 // "Some", "A few" ...). The sentences are shown verbatim, grouped by that
 // wording only -- no topic tagging, no scoring, no hawk/dove reading -- and the
 // wording is the Fed's, not ours (build_fomc_minutes.py).
+// 의사록 비교: the latest minutes against the previous ones -- which topics were mentioned more or
+// less (per 1,000 words, a fixed lexicon) and, where the minutes tag sentences by how many members
+// held a view, how those shares moved. A comparison of wording, not a hawk/dove score.
+const MM_MC_GROUP_KO = {
+    all: '전원·거의 전원', most: '대부분·과반', many: '많은', several: '여럿', some: '일부', few: '소수', unqualified: '수량 표현 없음',
+};
+const mmMinutesCompareHtml = (mc) => {
+    if (!mc || !Array.isArray(mc.topics) || !mc.topics.length) return '';
+    const P = mc.previous || {}, C = mc.current || {};
+    const sgn = (v) => (Math.abs(v) < 0.05 ? '0.0' : `${v > 0 ? '+' : ''}${v.toFixed(1)}`);
+    const max = Math.max(...mc.topics.map((t) => Math.max(t.prev_per_1k, t.cur_per_1k)), 1);
+    const bar = (v, cls) => `<span class="mm-mc-bar ${cls}" style="width:${(v / max * 100).toFixed(1)}%"></span>`;
+    const rows = mc.topics.map((t) => `
+        <div class="mm-mc-row">
+            <span class="mm-mc-name">${finEsc(t.label_ko)}</span>
+            <span class="mm-mc-bars">${bar(t.prev_per_1k, 'prev')}${bar(t.cur_per_1k, 'cur')}</span>
+            <span class="mm-mc-val">${t.prev_per_1k.toFixed(1)} → <b>${t.cur_per_1k.toFixed(1)}</b>
+                <em class="${t.change_per_1k > 0 ? 'fin-up' : t.change_per_1k < 0 ? 'fin-down' : ''}">${sgn(t.change_per_1k)}</em></span>
+        </div>`).join('');
+    const examples = mc.topics.filter((t) => t.new_sentence).map((t) => `
+        <p class="mm-cb-para"><b>${finEsc(t.label_ko)}</b> · ${finEsc(t.new_sentence)}</p>`).join('');
+    const groups = (mc.groups || []).length ? `
+        <p class="mm-quality-muted"><b>문장 수량 표현 비중</b> (직전 → 이번):
+            ${mc.groups.map((g) => `${finEsc(MM_MC_GROUP_KO[g.group] || g.group)} ${g.prev_share.toFixed(0)}% → <b>${g.cur_share.toFixed(0)}%</b>`).join(' · ')}</p>` : '';
+    return `
+        <details class="mm-quality-details mm-mc">
+            <summary>의사록 비교 · ${finEsc(P.meeting_date || '')} → ${finEsc(C.meeting_date || '')} (주제 언급 빈도)</summary>
+            <div class="mm-mc-legend"><span><i class="mm-mc-bar prev"></i>${finEsc(P.meeting_date || '직전')}</span>
+                <span><i class="mm-mc-bar cur"></i>${finEsc(C.meeting_date || '이번')}</span>
+                <span class="mm-quality-muted">${finEsc(mc.unit_ko || '')} · 많이 바뀐 순</span></div>
+            ${rows}
+            ${groups}
+            ${examples ? `<p class="mm-quality-muted"><b>많이 늘어난 주제 — 이번 의사록에만 있는 문장</b></p>${examples}` : ''}
+            <p class="mm-quality-muted">${finEsc(mc.note_ko || '')}
+                분량: 직전 ${(P.words || 0).toLocaleString('ko-KR')} → 이번 ${(C.words || 0).toLocaleString('ko-KR')}${mc.unit_ko && mc.unit_ko.includes('어절') ? '어절' : '단어'}.</p>
+        </details>`;
+};
+
 const mmFomcMinutesHtml = (policy) => {
     const block = policy.minutes;
     if (!block || (!block.latest && !block.pending)) return '';
@@ -3010,6 +3048,7 @@ const mmFomcMinutesHtml = (policy) => {
         ${head}
         ${next}
         ${highlights}
+        ${mmMinutesCompareHtml(block.compare)}
         ${body}
     </div>`;
 };
@@ -3369,6 +3408,7 @@ const mmCbMinutesHtml = (cb) => {
     <div class="mm-quality-card mm-quality-wide">
         <span class="mm-quality-label">${cb.iso3 === 'EMU' ? '회의 요약(Account)' : '의사록'}</span>
         ${head}
+        ${mmMinutesCompareHtml(cb.minutes_compare)}
         ${body}
     </div>`;
 };

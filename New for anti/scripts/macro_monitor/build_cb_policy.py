@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from macro_monitor.cb_collect.assemble import assemble_boe, assemble_bok, assemble_boj, assemble_ecb  # noqa: E402
+from macro_monitor.cb_collect.minutes_compare import compare, latest_two  # noqa: E402
 
 BOK_IN = ROOT / "config" / "bok_mpc_v1.json"
 BOJ_IN = ROOT / "config" / "boj_mpm_v1.json"
@@ -38,6 +39,8 @@ def main() -> int:
         block = fn(_load(path), today=today)
         if block:
             block["retrieved_at"] = _load(path).get("retrieved_at")
+            pair = latest_two(_load(path).get("meetings") or [], "account" if iso3 == "EMU" else "minutes")
+            block["minutes_compare"] = compare(*pair, lang="ko" if iso3 == "KOR" else "en") if pair else None
             banks[iso3] = block
     if not banks:
         print("no collected policy-board data; nothing written", file=sys.stderr)

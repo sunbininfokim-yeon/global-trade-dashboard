@@ -36,7 +36,7 @@ jobs:
         run: pip install pytest beautifulsoup4 pypdf pdfminer.six olefile
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_boj_mpm.py tests/test_bok_mpc.py tests/test_cb_minutes.py tests/test_cb_policy.py tests/test_boe_mpc.py tests/test_ecb_gc.py -v
+        run: python -m pytest tests/test_boj_mpm.py tests/test_bok_mpc.py tests/test_cb_minutes.py tests/test_cb_policy.py tests/test_boe_mpc.py tests/test_ecb_gc.py tests/test_minutes_compare.py -v
       - name: Collect BOJ statements
         working-directory: New for anti/scripts/macro_monitor
         # 읽지 못한 회의가 있으면 exit 1 이지만 이미 받은 회의는 그대로 남는다.
