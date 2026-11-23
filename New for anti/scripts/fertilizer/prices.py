@@ -25,6 +25,7 @@ from datetime import datetime, timezone
 import pandas as pd
 
 import affordability
+import korea_urea
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.normpath(os.path.join(HERE, "..", "..", "public", "data"))
@@ -170,6 +171,16 @@ def main(argv):
         ratio = None
     if ratio:
         payload["affordability"] = ratio
+    try:
+        ku = korea_urea.summarize(korea_urea.load(offline=argv[:1] == ["apply"]))
+    except Exception as exc:  # noqa: BLE001 - the price card stands without it
+        log(f"Korea urea skipped ({exc!r})")
+        ku = None
+    if ku:
+        payload["korea_urea"] = ku
+        log(f"Korea urea {ku['year']}: {ku['total_kt']} kt, China {ku['china_pct']}%, HHI {ku['hhi']}; "
+            + ", ".join(f"{p['country_ko']} {p['share_pct']}%" for p in ku["partners"])
+            + "; China share by year " + ", ".join(f"{t['year']} {t['china_pct']}%" for t in ku["trend"]))
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=1, ensure_ascii=False)
         f.write("\n")

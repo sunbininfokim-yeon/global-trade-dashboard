@@ -65,6 +65,22 @@
             ${soy}`;
     }
 
+    // Korea's urea suppliers and its reliance on China (the 2021 urea-solution
+    // shortage followed China's export inspections).
+    function koreaUreaHtml(k) {
+        if (!k || !k.partners?.length) return '';
+        const rows = k.partners.map((p) => `<div class="gb-line"><span>${esc(p.country_ko)}</span><span>${p.share_pct}% <span class="stock-note">${(p.tonnes / 1000).toLocaleString('ko-KR', { maximumFractionDigits: 0 })}천 t</span></span></div>`).join('');
+        const trend = (k.trend || []).map((t) => `${t.year} ${t.china_pct}%`).join(' → ');
+        const conc = k.hhi >= 2500 ? '편중 높음' : k.hhi >= 1500 ? '편중 보통' : '분산';
+        const ytd = k.china_ytd ? `<div class="gb-line"><span>${k.china_ytd.year}년 1~${Number(k.china_ytd.through.slice(4))}월 중국발 한국행 <span class="stock-note">중국 신고</span></span><span>${k.china_ytd.kt.toLocaleString('ko-KR')}천 t ${pct(k.china_ytd.change_pct)}</span></div>` : '';
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">한국 요소 수입선 (${k.year}년 ${k.total_kt.toLocaleString('ko-KR')}천 t)</p>
+            <div class="gb-line"><span>중국 비중</span><span><b style="color:${k.china_pct >= 50 ? '#fdba74' : '#e2e8f0'};">${k.china_pct}%</b> <span class="stock-note">수입국 집중도 ${conc} (HHI ${k.hhi})</span></span></div>
+            ${trend ? `<div class="stock-note">중국 비중 추이: ${esc(trend)}</div>` : ''}
+            ${rows}
+            ${ytd}
+            <div class="stock-note" style="margin-top:4px;">${esc(k.source_ko)}</div>`;
+    }
+
     function cardHtml(doc, lead) {
         const s = doc.series[lead];
         const others = Object.entries(doc.series).filter(([k]) => k !== lead)
@@ -76,6 +92,7 @@
             <div class="gb-line"><span>5년 평균</span><span>${usd(s.avg_5y_usd_t)} <span class="stock-note">대비 ${s.vs_5y_pct >= 0 ? '+' : ''}${s.vs_5y_pct}%${rank}</span></span></div>
             ${spark(s.series || [], (s.yoy_pct ?? 0) >= 0)}
             ${lead === 'urea' ? ratioHtml(doc.affordability) : ''}
+            ${lead === 'urea' ? koreaUreaHtml(doc.korea_urea) : ''}
             ${others ? `<p class="trade-rank-group-head" style="margin-top:10px;">다른 비료 (전년 대비)</p>${others}` : ''}
             <div class="stock-note" style="margin-top:6px;">거래소 선물 시세는 무료로 제공되지 않아 월간 기준가를 씁니다 · 출처: <a href="${esc(doc.url)}" target="_blank" rel="noopener" style="color:#7dd3fc;">세계은행 Pink Sheet</a></div>`;
     }
