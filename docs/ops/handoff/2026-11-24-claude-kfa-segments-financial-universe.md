@@ -18,7 +18,8 @@
 
 automotive(C30), electrical_battery(C28), chemicals(C20,C22), steel_metals(C24,C25),
 pharma_bio(C21,M701), refining_energy(C19), food_beverage(C10–12), telecom(J61),
-utilities(D35,E36), airlines(H51), games(J5821), media_entertainment(J59,J60,R90).
+utilities(D35,E36), airlines(H51), games(J5821), media_entertainment(J59,J60,R90), aerospace_defense(C313,C252), holding.
+`pe_cr_industry.py` 한 줄 변경: 비금융 지주(64992)는 general 대신 holding 키트(없으면 general). 테스트 1줄 추가.
 focus 는 기존 카드 키만 사용. 이전에는 이들이 manufacturing 또는 general 로 떨어졌다.
 
 ## 전 종목 스냅샷

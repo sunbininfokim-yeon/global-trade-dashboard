@@ -55,6 +55,7 @@ class ReportedBasisCards(unittest.TestCase):
     def test_holding_company_kit_is_not_financial(self):
         out = build_pe_cr(bundle(values=BASE), corp={"induty_code": "64992", "corp_name": "에이치디한국조선해양(주)"})
         self.assertNotEqual(out["industry"], "financial")
+        self.assertEqual(out["industry"], "holding")
         self.assertEqual(out["cards"]["ebitda_cf"]["value"], 185)
         fin = build_pe_cr(bundle(values=BASE), corp={"induty_code": "64992", "corp_name": "한국금융지주"})
         self.assertEqual(fin["industry"], "financial")
