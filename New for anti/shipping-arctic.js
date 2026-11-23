@@ -202,18 +202,124 @@
         </div>`;
     };
 
+    const MONTHS = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
+    const monthTicks = (x, w) => MONTHS.map((d, i) => `<span style="position:absolute;left:${(x(d) / w * 100).toFixed(1)}%;font-size:10px;color:#64748b;">${i + 1}월</span>`).join('');
+    const svgPath = (pts, x, y) => pts.map((p, i) => `${i ? 'L' : 'M'}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join('');
+    const bandPath = (clim, sd, x, y, lo, hi) => {
+        const up = clim.map((c, i) => (c != null && sd[i] != null ? [i + 1, Math.min(hi, c + 2 * sd[i])] : null)).filter(Boolean);
+        const dn = clim.map((c, i) => (c != null && sd[i] != null ? [i + 1, Math.max(lo, c - 2 * sd[i])] : null)).filter(Boolean).reverse();
+        return up.length ? `${svgPath(up, x, y)}L${dn.map((p) => `${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join('L')}Z` : '';
+    };
+
+    /** Worst-leg ice on the route through the year, with ship-class lines. */
+    const routeIceChart = (L, w = 600, h = 220) => {
+        const yrs = L.years || {};
+        const clim = L.clim_by_doy || [];
+        const sd = L.clim_sd_by_doy || [];
+        const thisY = L.latest_date.slice(0, 4);
+        const lastY = String(Number(thisY) - 1);
+        const x = (d) => ((d - 1) / 364) * w;
+        const y = (v) => h - v * h;                      // fraction 0..1
+        const line = (key, color, dash, width) => (yrs[key] ? `<path d="${svgPath(yrs[key], x, y)}" fill="none" stroke="${color}"
+            stroke-width="${width}" ${dash ? `stroke-dasharray="${dash}"` : ''} vector-effect="non-scaling-stroke"/>` : '');
+        const mean = svgPath(clim.map((c, i) => (c != null ? [i + 1, c] : null)).filter(Boolean), x, y);
+        const band = bandPath(clim, sd, x, y, 0, 1);
+        const cls = (L.classes || []).map((c) => ({ id: c.id, thr: c.max_concentration, label: c.label_ko.split(' (')[0] }));
+        const thrLines = cls.map((c) => `<line x1="0" x2="${w}" y1="${y(c.thr)}" y2="${y(c.thr)}" stroke="${ROUTE_CLASS_COLOR[c.id]}"
+            stroke-width="1" stroke-dasharray="5 4" vector-effect="non-scaling-stroke" opacity="0.9"/>`).join('');
+        const thrTags = cls.map((c) => `<span style="position:absolute;right:4px;top:${(y(c.thr) / h * 100).toFixed(1)}%;transform:translateY(-110%);
+            font-size:10px;color:${ROUTE_CLASS_COLOR[c.id] === 'rgba(148,163,184,.55)' ? '#cbd5e1' : ROUTE_CLASS_COLOR[c.id]};background:rgba(15,23,42,.75);padding:0 4px;border-radius:3px;">
+            ${c.label} 기준 ${Math.round(c.thr * 100)}%</span>`).join('');
+        const ow = (L.classes || []).find((c) => c.id === 'open_water');
+        const cur = ow?.seasons?.find((r) => String(r.year) === thisY);
+        const season = cur?.open ? `<rect x="${x(doyOf(cur.open))}" y="0" width="${Math.max(1, x(cur.close ? doyOf(cur.close) : doyOf(L.latest_date)) - x(doyOf(cur.open)))}"
+            height="${h}" fill="rgba(251,191,36,0.13)"/>` : '';
+        const yTicks = [0, 0.5, 1].map((v) => `<span style="position:absolute;left:-34px;top:${(y(v) / h * 100).toFixed(1)}%;transform:translateY(-50%);font-size:10px;color:#64748b;">${Math.round(v * 100)}%</span>`).join('');
+        return `<div style="position:relative;margin:12px 0 0 34px;">
+            <div style="position:relative;">
+                <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:${h}px;display:block;">
+                    ${season}
+                    ${band ? `<path d="${band}" fill="rgba(148,163,184,0.18)" stroke="none"/>` : ''}
+                    ${mean ? `<path d="${mean}" fill="none" stroke="rgba(148,163,184,0.8)" stroke-width="1" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/>` : ''}
+                    ${thrLines}
+                    ${line('2020', '#fca5a5', '2 2', 1.2)}
+                    ${line(lastY, 'rgba(125,211,252,0.45)', '', 1.2)}
+                    ${line(thisY, '#7dd3fc', '', 2)}
+                </svg>
+                ${thrTags}${yTicks}
+            </div>
+            <div style="position:relative;height:14px;">${monthTicks(x, w)}</div>
+        </div>
+        <div class="climate-sub" style="margin-top:6px;font-size:11px;">
+            <span style="color:#7dd3fc;">━ ${thisY}</span> · <span style="color:rgba(125,211,252,.6);">━ ${lastY}</span> ·
+            <span style="color:#fca5a5;">┅ 2020(가장 길게 열린 해)</span> · <span style="color:#94a3b8;">┅ 평년(${L.clim_base || ''}), 회색 띠 = 평년 ±2σ</span> ·
+            <span style="color:#fbbf24;">노란 구간 = ${thisY}년 일반 선박 열림 기간</span></div>
+        <div class="climate-sub" style="font-size:11px;">세로축 = 항로 6개 구간 중 얼음이 가장 많은 구간의 해빙 농도. 선이 기준선 아래로 내려가면 그 선급이 지나갈 수 있습니다.</div>`;
+    };
+
+    /** Pan-Arctic extent: same chart as the crop monitor's sea ice panel. */
+    const extentChart = (doc, w = 600, h = 200) => {
+        const clim = doc.clim_by_doy || [];
+        const sd = doc.clim_sd_by_doy || [];
+        const yrs = doc.years || {};
+        const thisY = doc.latest.date.slice(0, 4);
+        const lastY = String(Number(thisY) - 1);
+        const all = [...clim.filter((v) => v != null), ...Object.values(yrs).flat().map((p) => p[1])];
+        const hi = Math.max(...all, ...clim.map((c, i) => (c != null && sd[i] != null ? c + 2 * sd[i] : 0))) + 0.3;
+        const lo = Math.max(0, Math.min(...all) - 0.5);
+        const x = (d) => ((d - 1) / 364) * w;
+        const y = (v) => h - ((v - lo) / (hi - lo)) * h;
+        const line = (key, color, dash, width) => (yrs[key] ? `<path d="${svgPath(yrs[key], x, y)}" fill="none" stroke="${color}"
+            stroke-width="${width}" ${dash ? `stroke-dasharray="${dash}"` : ''} vector-effect="non-scaling-stroke"/>` : '');
+        const band = bandPath(clim, sd, x, y, -1e9, 1e9);
+        const mean = svgPath(clim.map((c, i) => (c != null ? [i + 1, c] : null)).filter(Boolean), x, y);
+        const L = doc.latest;
+        return `<div class="climate-card">
+            <h3>북극 전체 해빙 면적 <span class="src-tag">NSIDC Sea Ice Index · ${L.date}</span></h3>
+            <div style="display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;">
+                <div class="climate-big ${L.anomaly < 0 ? 'pos' : 'neg'}" style="font-size:24px;">${L.extent.toFixed(2)}백만 km²</div>
+                <div class="climate-sub">평년(${doc.baseline}) ${L.clim?.toFixed(2)} 대비 ${L.anomaly_pct > 0 ? '+' : ''}${L.anomaly_pct}% · ${L.rank_ko}</div>
+            </div>
+            <div style="position:relative;margin-top:10px;">
+                <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:${h}px;display:block;">
+                    <rect x="${x(213)}" y="0" width="${x(304) - x(213)}" height="${h}" fill="rgba(251,191,36,0.13)"/>
+                    ${band ? `<path d="${band}" fill="rgba(148,163,184,0.18)" stroke="none"/>` : ''}
+                    <path d="${mean}" fill="none" stroke="rgba(148,163,184,0.8)" stroke-width="1" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/>
+                    ${line('2012', '#fca5a5', '2 2', 1.2)}
+                    ${line(lastY, 'rgba(125,211,252,0.45)', '', 1.2)}
+                    ${line(thisY, '#7dd3fc', '', 2)}
+                </svg>
+                <div style="position:relative;height:14px;">${monthTicks(x, w)}</div>
+            </div>
+            <div class="climate-sub" style="margin-top:4px;font-size:11px;">
+                <span style="color:#7dd3fc;">━ ${thisY}</span> · <span style="color:rgba(125,211,252,.6);">━ ${lastY}</span> ·
+                <span style="color:#fca5a5;">┅ 2012(역대 최저)</span> · <span style="color:#94a3b8;">┅ 평년, 회색 띠 = 평년 ±2σ</span> ·
+                <span style="color:#fbbf24;">노란 구간 = 북극항로 통상 운항기(8~10월)</span></div>
+        </div>`;
+    };
+
     const render = async (slot) => {
         slot.innerHTML = '<p class="shipping-note">북극항로 자료를 불러오는 중…</p>';
-        let doc = null;
-        try {
-            const r = await fetch('/public/data/sea_route_v1.json', { cache: 'no-cache' });
-            doc = r.ok ? await r.json() : null;
-        } catch (_) { doc = null; }
+        const get = (u) => fetch(u, { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        const [doc, ice] = await Promise.all([get('/public/data/sea_route_v1.json'), get('/public/data/sea_ice_v1.json')]);
         if (!doc) {
             slot.innerHTML = '<div class="shipping-error"><strong>북극항로 자료를 불러오지 못했습니다.</strong></div>';
             return;
         }
-        slot.innerHTML = `<div class="arctic-route-wrap">${renderSeaRouteCard(doc)}</div>`;
+        const L = doc.route_line;
+        const routeChart = L?.years && L?.clim_by_doy ? `<div class="climate-card">
+            <h3>항로 위 얼음 · 연중 추이 <span class="src-tag">NSIDC 일별 농도 · ${L.latest_date}</span></h3>
+            <div style="display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;">
+                <div class="climate-big" style="font-size:24px;">${Math.round(L.latest_worst * 100)}%</div>
+                <div class="climate-sub">가장 얼음이 많은 구간의 농도 (일반 선박 기준 15%, Arc4 50%, Arc7 80% 이하일 때 통과)</div>
+            </div>
+            ${routeIceChart(L)}
+        </div>` : '';
+        slot.innerHTML = `<div class="arctic-route-wrap">
+            ${routeChart}
+            ${renderSeaRouteCard(doc)}
+            ${ice?.latest ? extentChart(ice) : ''}
+        </div>`;
     };
 
     window.ShippingArctic = { render };
