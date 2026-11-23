@@ -7425,6 +7425,19 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
     margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--border);
 }
 .ms-dir-foot { font-size: 11px; color: rgba(148, 163, 184, 0.7); margin-top: 8px; }
+/* 예측 vs 실제 누적 (msDirectionHistorySection) */
+:root { --ms-hist-pred: #3b82f6; --ms-hist-act: #ef4444; }
+.ms-hist-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 760px) { .ms-hist-grid { grid-template-columns: 1fr; } }
+.ms-hist-svg { width: 100%; height: auto; display: block; }
+.ms-hist-svg text { font-size: 10px; fill: rgba(148, 163, 184, 0.8); }
+.ms-hist-svg .ms-hist-pred-t { fill: var(--ms-hist-pred); }
+.ms-hist-svg .ms-hist-act-t { fill: var(--ms-hist-act); }
+.ms-hist-zero { stroke: rgba(148, 163, 184, 0.45); stroke-dasharray: 3 3; }
+.ms-hist-score { font-size: 11px; color: rgba(203, 213, 225, 0.85); margin-top: 4px; }
+.ms-hist-key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 2px; vertical-align: -1px; }
+.ms-hist-key.is-pred { background: var(--ms-hist-pred); }
+.ms-hist-key.is-act { background: var(--ms-hist-act); }
 
 /* --- 국가별 인사 명단 (personnel-roster.js) ----------------------------------- */
 .pr-roster { font-size: 12px; color: #cbd5e1; }
