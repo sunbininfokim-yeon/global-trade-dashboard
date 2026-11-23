@@ -497,6 +497,132 @@ const pecrLoadPeers = async (snap) => {
     return loaded.filter(Boolean);
 };
 
+// --- 주석 항목 (snapshot.note_items; dart_kfa/note_items.py) ------------------
+const noteItemsHtml = (snap) => {
+    const n = snap.note_items;
+    if (!n) return '';
+    const v = (k) => n[k]?.value;
+    const pct = (x) => (Number.isFinite(x) ? `${(x * 100).toFixed(1)}%` : '—');
+    const cards = [
+        ['연구개발비 (비용)', coNum(v('rd_expensed')), Number.isFinite(v('rd_to_sales')) ? `자산화분 포함 매출 대비 ${pct(v('rd_to_sales'))}.` : '손익계산서에 비용으로 처리한 연구개발비.'],
+        ['개발비 자산화', coNum(v('rd_capitalised')), Number.isFinite(v('capitalisation_ratio'))
+            ? `연구개발 지출의 ${pct(v('capitalisation_ratio'))}를 비용 대신 자산으로 잡았습니다. 높을수록 영업이익이 실제 지출보다 좋아 보입니다.` : '자산화한 개발비 공시 없음.'],
+        ['주식보상비용', coNum(v('sbc')), Number.isFinite(v('sbc_to_sales')) ? `매출 대비 ${pct(v('sbc_to_sales'))}. 현금은 안 나가지만 주주 몫을 나눠 주는 비용입니다.` : '현금 지출 없는 비용 — 희석으로 돌아옵니다.'],
+        ['재고자산 평가손실', coNum(v('inventory_writedown')), Number.isFinite(v('inventory_writedown_reversal')) ? `평가손실 환입 ${coNum(v('inventory_writedown_reversal'))}.` : '재고 가치 하락으로 비용 처리한 금액.'],
+    ].filter(([, val]) => val !== '—');
+    const p = n.provisions;
+    return `<section class="pecr-section"><h3>주석 항목 — 연구개발·주식보상·충당부채 (FY${finEsc(String(n.fiscal_year_end || '').slice(0, 4))})</h3>
+        ${cards.length ? `<div class="fin-cards">${cards.map(([t, val, plain]) => `<div class="fin-card pecr-card"><span class="fin-card-title">${t}</span>
+            <span class="fin-card-value">${val}</span><p class="fin-card-plain">${plain}</p></div>`).join('')}</div>` : ''}
+        ${p && (p.classes || []).length ? `<div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>충당부채 종류</th><th>기말 잔액</th><th>비중</th></tr></thead><tbody>
+            ${p.classes.map((c) => `<tr><td>${finEsc(c.label)}</td><td class="pecr-num">${coNum(c.value)}</td>
+                <td class="pecr-num">${p.classes_sum ? pct(c.value / p.classes_sum) : '—'}</td></tr>`).join('')}
+            <tr class="pecr-median"><td>합계${Number.isFinite(p.total) && p.classes_sum && Math.abs(p.total - p.classes_sum) > 0.01 * p.total ? ` (주석 총계 ${coNum(p.total)})` : ''}</td>
+                <td class="pecr-num">${coNum(p.classes_sum)}</td><td></td></tr></tbody></table></div>
+            <p class="fin-note">판매보증·공사손실(손실부담계약)·소송 충당부채가 매출보다 빨리 늘면 품질·원가 문제의 신호입니다. 조정 EV의 "보수적" 줄에 이 합계가 들어갑니다.</p>` : ''}
+        <p class="fin-note">출처: FY 사업보고서 원본 XBRL 주석(접수 ${finEsc(n.receipt || '—')}). 이름이 회사마다 다른 태그는 접두어로 찾고, 맥락이 엇갈리는 값은 뺐습니다.</p>
+    </section>`;
+};
+
+// --- 업권 지표 (snapshot.financial_kpis; dart_kfa/financial_kpis.py) ---------
+const FIN_KIND = { basel: '은행(지주)', kics: '보험', ncr: '증권', credit_finance: '카드·캐피탈' };
+const FIN_LABEL = {
+    roe: ['ROE', 'pct'], roa: ['ROA', 'pct'], leverage: ['레버리지', 'x'],
+    net_interest_income: ['순이자이익', 'money'], net_fee_income: ['순수수료이익', 'money'], nii_to_assets: ['순이자이익 ÷ 총자산', 'pct2'],
+    cost_income: ['비용효율(CIR)', 'pct'], credit_cost: ['대손비용률', 'pct2'], loans_to_deposits: ['대출 ÷ 예수부채', 'pct'],
+    loan_growth: ['대출 성장률', 'pct'], insurance_revenue: ['보험수익', 'money'], insurance_result: ['보험서비스결과', 'money'],
+    insurance_margin: ['보험손익률', 'pct'], investment_result: ['투자손익', 'money'], insurance_share_of_profit: ['보험손익 비중', 'pct'],
+    operating_revenue: ['영업수익', 'money'], credit_cost_to_revenue: ['대손비용 ÷ 영업수익', 'pct'],
+    credit_cost_to_assets: ['대손비용 ÷ 총자산', 'pct2'], funding_cost: ['이자비용 ÷ 총자산', 'pct2'],
+};
+const finFmt = (fmt, v) => (!Number.isFinite(v) ? '—' : fmt === 'money' ? coNum(v) : fmt === 'x' ? `${v.toFixed(1)}배`
+    : `${(v * 100).toFixed(fmt === 'pct2' ? 2 : 1)}%`);
+const financialKpisHtml = (snap) => {
+    const f = snap.financial_kpis;
+    if (!f) return '';
+    const comp = Object.entries(f.computed || {}).filter(([k]) => FIN_LABEL[k]);
+    const rep = Object.entries(f.reported || {});
+    return `<section class="pecr-section"><h3>업권 지표 — ${finEsc(FIN_KIND[f.kind] || f.kind)}</h3>
+        ${rep.length ? `<div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>공시 지표</th><th>값</th><th>추이</th><th>출처 표</th></tr></thead><tbody>
+            ${rep.map(([, v]) => `<tr><td><b>${finEsc(v.label)}</b>${v.subsidiary ? ' <span class="pecr-badge">주요 종속회사</span>' : ''}</td>
+                <td class="pecr-num">${(v.value * 100).toFixed(2)}%</td>
+                <td>${(v.series || []).map(([p, x]) => `${finEsc(p)} ${(x * 100).toFixed(2)}%`).join(' · ')}</td>
+                <td class="fin-note">${finEsc(v.source)}</td></tr>`).join('')}
+            </tbody></table></div>
+            <p class="fin-note">${finEsc(f.reported_period_end || '')} 정기보고서(접수 ${finEsc(f.reported_receipt || '—')})의 표에서 그대로 읽은 값입니다. 외화 단위 표(해외 법인)는 제외했고,
+                "주요 종속회사" 표시는 지주회사 연결이 아니라 핵심 자회사(예: 은행) 기준입니다.</p>` : ''}
+        <div class="fin-cards">${comp.map(([k, v]) => `<div class="fin-card pecr-card"><span class="fin-card-title">${finEsc(FIN_LABEL[k][0])}</span>
+            <span class="fin-card-value">${finFmt(FIN_LABEL[k][1], v.value)}</span><p class="fin-card-plain">${finEsc(v.basis || '')}</p></div>`).join('')}</div>
+        <p class="fin-note">카드 아래 값은 FY${finEsc(f.fiscal_year || '')} 연결 재무제표 본문으로 계산했습니다. "대용"이라고 쓴 값은 감독기준 산식과 분모가 달라 공시 지표와 차이가 납니다.
+            ${f.kind === 'kics' ? '보험계약마진(CSM) 잔액은 회사마다 공시 양식이 달라 아직 자동 추출하지 않습니다.' : ''}</p>
+    </section>`;
+};
+
+// --- 사업부문·제품·지역 (snapshot.segments; dart_kfa/segments.py) ---------------
+const SEG_CHECK = { segment_total: '보고서의 부문 합계 행', income_statement: '손익계산서 매출(조정 항목 반영)' };
+const segPct = (v, sign = false) => (Number.isFinite(v) ? `${sign && v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%` : '—');
+const segTableHtml = (b, fy) => {
+    const op = b.has_operating_income;
+    const adj = Object.entries(b.reconciling_items || {}).filter(([, v]) => Number.isFinite(v) && v !== 0);
+    return `<div class="co-table-wrap"><table class="co-table pecr-table">
+        <thead><tr><th>${finEsc(b.label)}</th><th>매출 FY${fy}</th><th>비중</th><th>전년비</th>${op ? '<th>영업이익</th><th>이익률</th><th>이익 전년비</th>' : ''}</tr></thead>
+        <tbody>${b.rows.map((r) => `<tr><td>${finEsc(r.label)}</td><td class="pecr-num">${coNum(r.revenue)}</td><td class="pecr-num">${segPct(r.share)}</td>
+            <td class="pecr-num">${segPct(r.revenue_yoy, true)}</td>${op ? `<td class="pecr-num">${coNum(r.op)}</td><td class="pecr-num">${segPct(r.margin)}</td>
+            <td class="pecr-num">${segPct(r.op_yoy, true)}</td>` : ''}</tr>`).join('')}
+        ${adj.map(([k, v]) => `<tr class="pecr-median"><td>${finEsc(/Elimination|제거/.test(k) ? '부문간 거래 제거' : /Reconcil|조정/.test(k) ? '연결 조정' : k)}</td><td class="pecr-num">${coNum(v)}</td><td colspan="${op ? 5 : 2}"></td></tr>`).join('')}
+        </tbody></table></div>`;
+};
+const segmentsHtml = (snap) => {
+    const seg = snap.segments;
+    if (!seg || !(seg.breakdowns || []).length) return '';
+    const fy = String(seg.fiscal_year_end || '').slice(0, 4);
+    const ok = seg.breakdowns.filter((b) => b.reconciles);
+    const covered = new Set(ok.map((b) => b.kind));
+    const shown = [...ok.filter((b, i) => ok.findIndex((x) => x.kind === b.kind) === i),
+        // An unreconciled table is shown only if it covers 50-110% of sales (a partial
+        // product list); one that is off by more is mis-tagged and hidden.
+        ...seg.breakdowns.filter((b) => !b.reconciles && !covered.has(b.kind) && b.sum_revenue && b.face_revenue
+            && b.sum_revenue / b.face_revenue >= 0.5 && b.sum_revenue / b.face_revenue <= 1.1 && (covered.add(b.kind) || true))];
+    if (!shown.length) return '';
+    return `<section class="pecr-section"><h3>사업부문·제품·지역별 실적 — FY${finEsc(fy)}</h3>
+        ${shown.map((b) => `${segTableHtml(b, fy)}<p class="fin-note">${b.reconciles
+            ? `항목의 합이 ${finEsc(SEG_CHECK[b.reconciled_against] || '총매출')}과 맞습니다(±1.5%).`
+            : `<b class="pecr-flag">일부 항목만 공시 — 참고용.</b> 항목 합 ${coNum(b.sum_revenue)}, 손익계산서 매출 ${coNum(b.face_revenue)}의 ${Math.round(b.sum_revenue / b.face_revenue * 100)}%.`}</p>`).join('')}
+        <p class="fin-note">출처: FY${finEsc(fy)} 사업보고서 원본 XBRL의 영업부문·수익 구분 주석(접수 ${finEsc(seg.receipt || '—')}). 부문 매출은 부문간 거래 제거 전 금액일 수 있습니다.
+            제품별 단가·출하량(예: HBM 비중)은 공시되지 않습니다.</p></section>`;
+};
+
+const backlogHtml = (snap) => {
+    const b = snap.order_backlog;
+    if (!b) return '';
+    const rf = [['opening', '기초'], ['new_orders', '신규 수주'], ['contract_total', '수주 총액'], ['delivered', '매출 인식·납품'], ['backlog', '수주잔고']]
+        .filter(([k]) => Number.isFinite(b[k]));
+    const years = b.backlog_to_revenue;
+    return `<section class="pecr-section"><h3>수주잔고 — ${finEsc(b.period_end)} 기준</h3>
+        <div class="fin-cards">
+            <div class="fin-card pecr-card"><span class="fin-card-title">수주잔고</span><span class="fin-card-value">${coNum(b.backlog)}</span>
+                <p class="fin-card-plain">계약했지만 아직 매출로 잡지 않은 금액. 앞으로 들어올 매출의 바닥.</p></div>
+            ${Number.isFinite(years) && years >= 0.25 ? `<div class="fin-card pecr-card"><span class="fin-card-title">수주잔고 ÷ 매출</span>
+                <span class="fin-card-value">${years.toFixed(1)}년치</span>
+                <p class="fin-card-plain">지금 매출 속도(${finEsc(b.revenue_basis || '')})로 잔고를 소화하는 데 걸리는 기간.</p></div>` : ''}
+            ${Number.isFinite(b.book_to_bill) ? `<div class="fin-card pecr-card"><span class="fin-card-title">수주/매출 (Book-to-bill)</span>
+                <span class="fin-card-value">${b.book_to_bill.toFixed(2)}배</span>
+                <p class="fin-card-plain">올해 들어온 신규 수주 ÷ 같은 기간 매출 인식액. 1보다 크면 잔고가 늘고 있습니다.</p></div>` : ''}
+        </div>
+        <div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>항목</th>${rf.map(([, l]) => `<th>${l}</th>`).join('')}</tr></thead><tbody>
+            ${(b.items || []).map((i) => `<tr><td>${finEsc(i.item)}</td>${rf.map(([k]) => `<td class="pecr-num">${coNum(i[k])}</td>`).join('')}</tr>`).join('')}
+            <tr class="pecr-median"><td>합계</td>${rf.map(([k]) => `<td class="pecr-num">${coNum(b[k])}</td>`).join('')}</tr>
+        </tbody></table></div>
+        <p class="fin-note">${b.parts ? `회사별 표 합산: ${b.parts.map((p) => `${finEsc(p.part || '기타')} ${coNum(p.backlog)}`).join(' · ')}. ` : ''}
+            ${b.item_count > (b.items || []).length ? `상위 ${(b.items || []).length}개 항목만 표시(전체 ${b.item_count}개). ` : ''}
+            ${b.roll_forward_ok ? '합계 행이 기초 + 신규 − 매출 = 잔고(또는 총액 − 납품 = 잔고)로 맞는 것을 확인했습니다. ' : ''}
+            신규 수주는 연초부터 누적이며 환율 변동·계약 변경이 섞일 수 있습니다. 출처: ${finEsc(b.report || '')} 보고서 "매출 및 수주상황"(접수 ${finEsc(b.receipt || '—')}).</p>
+    </section>`;
+};
+
 // --- 투자지표 (investor_metrics in the snapshot; dart_kfa/investor_metrics.py) ---
 const INV_REASON = {
     'not_applicable:financial': '금융회사 미적용', turnaround: '흑자 전환', 'not_meaningful:base_nonpositive': '기준연도 적자',
@@ -648,7 +774,7 @@ const invMetricsView = (snap) => {
     const inv = snap.investor_metrics;
     if (!inv) return '<p class="fin-note">이 스냅샷에는 투자지표가 아직 없습니다. 다음 엔진 재생성 때 채워집니다.</p>';
     const live = pecrLive(snap);
-    return invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
+    return financialKpisHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + noteItemsHtml(snap) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
         + `<p class="fin-note">재무제표: OpenDART 사업보고서 FY${(inv.years || [])[0] || ''}~FY${inv.fiscal_year} ${snap.fs_div === 'OFS' ? '별도' : '연결'}.
             배당: 사업보고서 배당에 관한 사항. 자기주식: 자기주식 취득 및 처분 현황. 시세가 필요한 값(PEG, 시가 Z, 수익률)은 일별 시가총액으로 계산합니다.</p>`;
 };
@@ -703,7 +829,8 @@ const pecrViewHtml = (data, view) => {
     const snap = data.pecr;
     if (!snap) {
         return `<div class="fin-empty"><p class="fin-empty-title">이 기업은 아직 PE·CR 엔진 스냅샷이 없습니다</p>
-            <p>스냅샷은 OpenDART 원본 공시로 미리 계산해 둡니다(tools/ops/build_kfa_pecr_snapshots.py). 기본 탭의 지표는 그대로 볼 수 있습니다.</p></div>`;
+            <p>엔진 스냅샷은 OpenDART 원본 공시로 매일 새벽 미리 계산합니다. 대상은 코스피·코스닥 시가총액 상위 각 500개사이고, 새 정기보고서가 나온 회사부터 다시 만듭니다.
+               이 회사는 아직 대상이 아니거나 이번 주기에서 아직 처리되지 않았습니다. 기본 탭의 지표는 그대로 볼 수 있습니다.</p></div>`;
     }
     const financial = snap.pe_cr?.industry === 'financial';
     if (view === 'metrics') return pecrHead(snap) + invMetricsView(snap);

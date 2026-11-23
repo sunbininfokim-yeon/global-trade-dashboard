@@ -19,8 +19,8 @@ with its own 시가총액; the calculator adds the two for PER/PBR/EV.
 Naver's own PER/PBR/EPS/BPS (with the period they use) are kept as a
 cross-check -- they are not used in any ratio.
 
-No key, no paid source. Exits 1 if any company failed, after writing the
-rest (failed ones keep their previous entry, flagged stale).
+No key, no paid source. Exits 1 if more than 5 % of companies failed, after
+writing the rest (failed ones keep their previous entry, flagged stale).
 """
 from __future__ import annotations
 
@@ -145,7 +145,9 @@ def main() -> int:
     }
     OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n')
     print(f'wrote {OUT.relative_to(ROOT)}: {len(quotes)} quotes, {len(failed)} failed')
-    return 1 if failed else 0
+    # With hundreds of companies a suspended or delisted line always fails;
+    # fail the run only when it looks systemic (> 5 %).
+    return 1 if failed and len(failed) > 0.05 * max(len(quotes), 1) else 0
 
 
 if __name__ == '__main__':
