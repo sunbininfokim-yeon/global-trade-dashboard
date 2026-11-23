@@ -15,7 +15,9 @@ from research_stock_open_close_direction import TARGETS, path_labels
 from run_us_kr_preopen import atomic_json, timing
 from us_kr_comparison import DEFAULT_MODEL, validate as validate_comparison
 from us_kr_direction_engine import TICKERS, validate_model
+from us_kr_factors import DEFAULT_MODEL as FACTOR_MODEL, HEADS as FACTOR_HEADS
 from us_kr_publication import publication_evidence
+from us_kr_us_price_archive import SCHEMA as US_PRICE_SCHEMA, first_path as us_price_first_path
 
 BINS = [0, .4, .45, .5, .55, .6, 1]
 
@@ -182,6 +184,46 @@ def summarize(records):
     return output
 
 
+def read_us_price_first(path, model_id, day, now):
+    record = read(path)
+    generated = timestamp(record['generated_at'])
+    info = timing(day, generated)
+    factor = record['factor']
+    if (record['schema_version'] != US_PRICE_SCHEMA or record['target_date'] != day or generated > now
+            or info['reasons'] or record['forecast_cutoff_KST'] != info['cutoff']
+            or record['KR_source_date'] != info['source'] or record['US_source_date'] != info['us_source']
+            or factor['as_of'] != info['us_source'] or factor['expected_source_date'] != info['us_source']
+            or factor['status'] != 'available' or factor['generated_at'] != record['generated_at']
+            or factor['model_id'] != model_id):
+        raise ValueError('invalid US price factor first record timing or provenance')
+    cards = {c['ticker']: c for c in factor['cards']}
+    if len(factor['cards']) != len(TICKERS) or set(cards) != set(TICKERS):
+        raise ValueError('invalid US price factor first record coverage')
+    for card in cards.values():
+        if card['status'] != 'available' or set(card['scores']) != set(FACTOR_HEADS):
+            raise ValueError('invalid US price factor card')
+        for score in card['scores'].values():
+            valid_probability(score)
+            if score['information_state'] not in ('model_score_with_calibration', 'recent_base_rate_only'):
+                raise ValueError('invalid US price score information state')
+    return record['KR_source_date'], cards
+
+
+def score_us_price(rows):
+    result = metrics(rows)
+    up = [r for r in rows if r['y']]
+    down = [r for r in rows if not r['y']]
+    down_calls = [r for r in rows if r['p'] < .5]
+    result.update(
+        up_days=len(up), down_days=len(down),
+        up_recall=sum(r['p'] > .5 for r in up)/len(up) if up else None,
+        down_recall=sum(r['p'] < .5 for r in down)/len(down) if down else None,
+        missed_down_days=sum(r['p'] >= .5 for r in down),
+        down_precision=sum(not r['y'] for r in down_calls)/len(down_calls) if down_calls else None,
+    )
+    return result
+
+
 def evaluate(root, primary, comparison, prices, start, end, now=None):
     validate_model(primary)
     validate_comparison(comparison, primary)
@@ -200,12 +242,33 @@ def evaluate(root, primary, comparison, prices, start, end, now=None):
     if len(bars) != len(prices['candidates']):
         raise ValueError('duplicate price candidates')
     days = []; records = []; reasons = Counter()
+    us_model_id = read(FACTOR_MODEL)['factors']['us_price']['model_id']
+    us_records = []
     for day in sessions:
         cutoff = pd.Timestamp(day, tz='Asia/Seoul') + pd.Timedelta(hours=8, minutes=30)
         if now < cutoff:
             continue
         entry = {'target_date': day, 'matured': now >= base.session_close(day), 'issued': False,
                  'attempt_count': 0, 'tickers': {}}
+        us_path = us_price_first_path(root, day, us_model_id)
+        entry['US_price_first'] = 'not_recorded'
+        if us_path.is_file():
+            try:
+                us_source, us_cards = read_us_price_first(us_path, us_model_id, day, now)
+                entry['US_price_first'] = 'available'
+            except (OSError, ValueError, KeyError, TypeError):
+                entry['US_price_first'] = 'invalid'
+            else:
+                if entry['matured']:
+                    for ticker, card in us_cards.items():
+                        try:
+                            labels = actual_labels(bars[ticker], us_source, day)
+                        except (KeyError, ValueError, TypeError):
+                            continue
+                        for head, score in card['scores'].items():
+                            if labels[head] is not None:
+                                us_records.append({'ticker': ticker, 'head': head, 'p': score['probability'],
+                                                   'y': labels[head], 'information_state': score['information_state']})
         directory = Path(root) / day / primary['model_id'][:16]
         attempts = []
         for path in sorted((directory/'attempts').glob('*.json')):
@@ -278,6 +341,14 @@ def evaluate(root, primary, comparison, prices, start, end, now=None):
                          'matured_sessions': sum(d['matured'] for d in days),
                          'unissued_reasons': dict(reasons)},
             'all': summarize(records), 'last_20_matured_sessions': summarize([r for r in records if r['date'] in recent]),
+            'us_price_forward': {
+                'model_id': us_model_id,
+                'basis': 'immutable pre-open generation receipts; independent public availability not verified',
+                'record_counts': dict(Counter(d['US_price_first'] for d in days)),
+                'all': {ticker: {head: score_us_price([r for r in us_records
+                                                      if r['ticker'] == ticker and r['head'] == head])
+                                 for head in FACTOR_HEADS} for ticker in TICKERS},
+            },
             'publication_verified': {
                 'verified_sessions': len(published),
                 'verified_publication_rate': len(published)/len(days) if days else None,

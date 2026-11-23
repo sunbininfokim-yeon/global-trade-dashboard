@@ -16,6 +16,7 @@ import us_kr_comparison as comparison
 from option_direction_model import read, write
 from run_us_kr_preopen import archive_forecast, record_attempt, timing
 from us_kr_direction_engine import FEATURES, TICKERS
+from us_kr_us_price_archive import archive_us_price
 from research_stock_open_close_direction import TARGETS
 
 
@@ -95,6 +96,30 @@ class ForwardTests(unittest.TestCase):
             self.assertEqual(report['all']['KOSPI']['opening_up']['primary']['n'], 0)
             before = self.evaluate(root, now='2026-11-06T08:00:00+09:00')
             self.assertIsNone(before['issuance']['issuance_rate'])
+
+    def test_us_price_scores_on_a_day_with_no_primary_forecast(self):
+        with tempfile.TemporaryDirectory() as root:
+            day='2026-11-06'
+            stamp=day+'T07:00:00+09:00'
+            gate=timing(day,datetime.fromisoformat(stamp))
+            model=read(evaluation.FACTOR_MODEL)['factors']['us_price']['model_id']
+            score={'probability':.4,'information_state':'model_score_with_calibration'}
+            factor={'status':'available','model_id':model,'as_of':gate['us_source'],
+                    'expected_source_date':gate['us_source'],'generated_at':stamp,
+                    'cards':[{'ticker':ticker,'status':'available',
+                              'scores':dict.fromkeys(evaluation.FACTOR_HEADS,score)} for ticker in TICKERS]}
+            _,path=archive_us_price(root,day,gate['source'],gate['us_source'],gate['cutoff'],factor)
+            before=self.evaluate(root,now=day+'T10:00:00+09:00')
+            self.assertEqual(before['us_price_forward']['all']['KOSPI']['opening_up']['n'],0)
+            result=self.evaluate(root)
+            self.assertEqual(result['issuance']['issued_sessions'],0)
+            self.assertEqual(result['us_price_forward']['record_counts']['available'],1)
+            scores=result['us_price_forward']['all']['KOSPI']['opening_up']
+            self.assertEqual(scores['n'],1)
+            self.assertEqual(scores['up_recall'],0)
+            write(path,dict(read(path),generated_at=day+'T08:31:00+09:00'))
+            invalid=self.evaluate(root)
+            self.assertEqual(invalid['us_price_forward']['record_counts']['invalid'],1)
 
     def test_missing_or_carried_outcome_is_not_zero_filled(self):
         for mode in ['missing', 'carried_forward']:

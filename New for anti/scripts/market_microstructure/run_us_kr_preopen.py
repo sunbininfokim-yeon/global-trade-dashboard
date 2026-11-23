@@ -23,6 +23,7 @@ from research_us_lag1_direction import SYMBOLS, previous_us_session
 from us_kr_direction_engine import predict, validate_model, write_immutable
 from us_kr_comparison import DEFAULT_MODEL as COMPARISON_MODEL, predict as comparison_predict
 from us_kr_factors import DEFAULT_MODEL as FACTOR_MODEL, factor_payload
+from us_kr_us_price_archive import archive_us_price
 
 LABELS={'005930':'삼성전자','000660':'SK하이닉스','KOSPI':'KOSPI'}
 PROBABILITY_CONTRACT={
@@ -50,22 +51,35 @@ def timing(target,now,replay=False):
 
 def board_with_raw(board,raw_root,source):
     result=copy.deepcopy(board)
-    if raw_root is None:return result,{'status':'provided_board_only'}
-    previous=result['kr']['investor_nets']['detailed_15007']
-    products=previous.get('products',{})
-    present={s:{r['date'] for r in products.get('options_'+s,{}).get('series',[])
-                if components(r) is not None} for s in ['call','put']}
-    days=window(ReviewedCalendar(calendar()),source,60);merged=[];receipts={}
+    previous=result.get('kr',{}).get('investor_nets',{}).get('detailed_15007',{})
+    days=window(ReviewedCalendar(calendar()),source,60)
+    def observed(detailed):
+        products=detailed.get('products',{})
+        return {side:{r['date'] for r in products.get('options_'+side,{}).get('series',[])
+                      if components(r) is not None} for side in ['call','put']}
+    def missing_dates(detailed):
+        return {side:[day for day in days if day not in valid] for side,valid in observed(detailed).items()}
+    if raw_root is None:
+        return result,{'status':'provided_board_only','missing_sessions':missing_dates(previous)}
+    present=observed(previous);merged=[];receipts={};invalid={}
     for day in days:
         if day!=source and all(day in present[s] for s in present):continue
         folder=Path(raw_root)/day
         if missing_required_files(folder):continue
-        previous=merge_date_folder(folder,previous);merged.append(day)
-        receipts[day]={n:hashlib.sha256((folder/n).read_bytes()).hexdigest() for n in REQUIRED_FILES}
+        try:
+            hashes={n:hashlib.sha256((folder/n).read_bytes()).hexdigest() for n in REQUIRED_FILES}
+            previous=merge_date_folder(folder,previous)
+        except (OSError,ValueError,KeyError,TypeError) as exc:
+            invalid[day]=type(exc).__name__+': '+str(exc)
+            continue
+        merged.append(day)
+        receipts[day]=hashes
     result['kr']['investor_nets']['detailed_15007']=previous
     missing=missing_required_files(Path(raw_root)/source)
     status='expected_folder_incomplete' if missing else ('merged_expected_source_only' if merged==[source] else 'merged_expected_source_and_missing_history')
-    return result,{'status':status,'date':source,'missing':missing,'merged_dates':merged,'raw_sha256':receipts}
+    if source in invalid:status='expected_folder_invalid'
+    return result,{'status':status,'date':source,'missing':missing,'merged_dates':merged,'raw_sha256':receipts,
+                   'missing_sessions':missing_dates(previous),'invalid_raw_sessions':invalid}
 
 
 def collect_kr_prices(source,now):
@@ -185,13 +199,18 @@ def archive_forecast(forecast,root):
     return result,path
 
 
-def record_attempt(forecast,root):
+def record_attempt(forecast,root,source_report=None):
     """Keep failures as well as successes; replay never counts as a live attempt."""
     if forecast['status']=='retrospective_replay':return None
     receipt={k:copy.deepcopy(forecast.get(k)) for k in
              ['target_date','model_id','generated_at','status','reasons','input_errors','input_hashes']}
     receipt['schema_version']='us-kr-preopen-attempt-v1'
     receipt['comparison_status']=forecast.get('comparisons',{}).get('status','not_requested')
+    if source_report is not None:
+        raw=source_report.get('KRX_raw',{})
+        receipt['source_audit']={key:raw[key] for key in ('status','missing_sessions','invalid_raw_sessions')
+                                 if key in raw}
+        receipt['source_audit']['collection_errors']=source_report['errors']
     stamp=datetime.fromisoformat(forecast['generated_at']).astimezone(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     path=Path(root)/forecast['target_date']/forecast['model_id'][:16]/'attempts'/(stamp+'-'+digest(receipt)[:12]+'.json')
     write_immutable(path,receipt)
@@ -253,15 +272,24 @@ def run(args,now=None,clock=None):
     us=read(args.us) if args.us else {'symbols':{}}
     board=read(args.board);report={'target':args.target,'timing':timing_info,'started_at':started.isoformat(),'errors':[]}
     if not timing_info['reasons']:
+        # Collect US independently. A domestic-source error cannot suppress the US price factor.
+        if args.refresh_prices:
+            try:
+                us=collect_us_prices(args.target,started)
+            except Exception as e:
+                us={'symbols':{}}
+                report['errors'].append('US prices: '+type(e).__name__+': '+str(e))
         try:
             board,report['KRX_raw']=board_with_raw(board,args.krx_root,timing_info['source'])
-            if args.refresh_prices:
+        except Exception as e:
+            report['errors'].append('KRX 15007: '+type(e).__name__+': '+str(e))
+        if args.refresh_prices:
+            try:
                 new_stocks,new_kospi=collect_kr_prices(timing_info['source'],started)
                 report['provider_revisions']=provenance_revisions(stocks,new_stocks)+provenance_revisions(kospi,new_kospi)
                 stocks,kospi=new_stocks,new_kospi
-                us=collect_us_prices(args.target,started)
-        except Exception as e:
-            report['errors'].append(type(e).__name__+': '+str(e))
+            except Exception as e:
+                report['errors'].append('KR prices: '+type(e).__name__+': '+str(e))
     inputs=root/'inputs';inputs.mkdir(exist_ok=True)
     for name,value in [('board',board),('stocks',stocks),('kospi',kospi),('us',us)]:write(inputs/(name+'.json'),value)
     prices={'candidates':stocks['candidates']+kospi['candidates']}
@@ -277,7 +305,7 @@ def run(args,now=None,clock=None):
         except (OSError,ValueError,KeyError,TypeError) as e:
             forecast['comparisons']={'status':'unavailable','reason':type(e).__name__+': '+str(e)}
             print({'comparison_unavailable':forecast['comparisons']['reason']})
-    attempt=record_attempt(forecast,args.archive_dir) if not args.replay else None
+    attempt=record_attempt(forecast,args.archive_dir,report) if not args.replay else None
     forecast,archive=archive_forecast(forecast,args.archive_dir)
     write_immutable(root/'forecast.json',forecast)
     previous=read(args.public_output) if args.public_output and Path(args.public_output).exists() else None
@@ -289,6 +317,14 @@ def run(args,now=None,clock=None):
                 krx_root=args.krx_root,flow_root=getattr(args,'stock_flow_root',None),
                 clock=clock if now is None else None,
             )
+            if args.public_output and not args.replay:
+                archived,path=archive_us_price(args.archive_dir,args.target,forecast['KR_source_date'],
+                                               forecast['required_US_session'],forecast['forecast_cutoff_KST'],
+                                               factors['us_price'])
+                if archived is not None:
+                    factors['us_price']=archived['factor']
+                    report['us_price_first_record']=str(path)
+            report['factor_status']={name:block['status'] for name,block in factors.items()}
         except (OSError,ValueError,KeyError,TypeError) as exc:
             report['factor_error']=type(exc).__name__+': '+str(exc)
             print({'factor_unavailable':report['factor_error']})
