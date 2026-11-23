@@ -465,7 +465,9 @@ def assemble_boe(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
         "member_views": views,
         "opinions": None,
         "schedule": {"next_meeting_date": next_date, "next_meeting_days": [next_date] if next_date else None,
-                     "next_outlook_release": next_date if upcoming and upcoming.get("monetary_policy_report") else None},
+                     "next_outlook_release": next(
+                         (r["decision_date"] for r in rows
+                          if r["decision_date"] > today.isoformat() and r.get("monetary_policy_report")), None)},
         "releases": releases,
         "roster": {"asof": last["meeting_date"], "source": "의사록의 출석 위원 명단(재무부 대표·감독 참관인은 제외)",
                    "members": [{"name": p["name"], "role": p["role"]} for p in last["minutes"]["present"]]},
