@@ -497,6 +497,49 @@ def regulatory_series(dart: Dart, corp: str, year: int, company: dict, fs: str):
     return res, f'{kind}:{len(res["series"])}_periods'
 
 
+def segments_packet(dart: Dart, year: int, fs: str, fy_rows: list) -> tuple[dict | None, str]:
+    """사업부문 / 제품 / 지역 breakdowns from the FY XBRL (dart_kfa/segments.py)."""
+    from dart_kfa.segments import labels_from_zip, segment_breakdowns  # noqa: E402
+    from dart_kfa.xbrl_notes import instance_from_zip  # noqa: E402
+    receipt = fy_rows[0].get('rcept_no') if fy_rows else None
+    blob = dart.get_bytes('fnlttXbrl.xml', rcept_no=receipt, reprt_code=REPRT['FY']) if receipt else None
+    if not blob:
+        return None, 'no_xbrl'
+    face = next((num(r.get('thstrm_amount')) for sj in ('IS', 'CIS') for r in fy_rows
+                 if r.get('sj_div') == sj and r.get('account_id') == 'ifrs-full_Revenue'), None)
+    res = segment_breakdowns(instance_from_zip(blob), fs_div=fs, fiscal_year_end=f'{year}-12-31',
+                             labels=labels_from_zip(blob), face_revenue=face)
+    res['receipt'] = receipt
+    kinds = ','.join(f"{b['kind']}{'' if b['reconciles'] else '?'}" for b in res['breakdowns']) or 'none'
+    return (res if res['breakdowns'] else None), kinds
+
+
+def backlog_packet(dart: Dart, corp: str, year: int, bases: dict) -> tuple[dict | None, str]:
+    """수주잔고 from the newest periodic report that has a parseable table."""
+    from dart_kfa.order_backlog import backlog_from_report  # noqa: E402
+    last = 'no_periodic_report'
+    for r in periodic_reports(dart, corp, year)[:3]:
+        doc = report_body(dart, r['receipts'][0])
+        if not doc:
+            continue
+        got = backlog_from_report(doc, receipt=r['receipts'][0], period_end=r['period_end'])
+        last = f"{r['kind']}:{got['status']}"
+        if got['status'] == 'no_section':
+            return None, last
+        if got['status'] == 'parsed':
+            got['report'] = r['kind']
+            ltm = bases.get('ltm') or {}
+            fy = bases.get('fy') or {}
+            rev = ltm.get('revenue') if ltm.get('revenue') else fy.get('revenue')
+            if rev and rev > 0:
+                got['backlog_to_revenue'] = got['backlog'] / rev
+                got['revenue_basis'] = f"LTM ~{ltm['period_end']}" if ltm.get('revenue') else f"FY{year}"
+            if got.get('new_orders') is not None and got.get('delivered'):
+                got['book_to_bill'] = got['new_orders'] / got['delivered']
+            return got, f"{r['kind']}:{r['period_end']}"
+    return None, last
+
+
 def investor_packet(dart: Dart, corp: str, year: int, fs: str, fy_rows: list, prior: list,
                     result: dict, bases: dict, xbrl_packs: list) -> tuple[dict | None, str]:
     """Growth / ROIC / Z / F-score, shareholder returns, CB dilution and the EV
@@ -631,6 +674,14 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     regulatory, regulatory_note = regulatory_series(dart, corp, year, company, fs)
     bases = valuation_bases(dart, corp, year, fs, fy_rows, result.get('cards') or {})
     try:
+        segments, segments_note = segments_packet(dart, year, fs, fy_rows)
+    except Exception as exc:  # noqa: BLE001
+        segments, segments_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
+    try:
+        backlog, backlog_note = backlog_packet(dart, corp, year, bases)
+    except Exception as exc:  # noqa: BLE001
+        backlog, backlog_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
+    try:
         investor, investor_note = investor_packet(dart, corp, year, fs, fy_rows, prior, result, bases,
                                                    [current_xbrl, *prior_packs.values()])
     except Exception as exc:  # noqa: BLE001 -- the PE/CR snapshot still publishes
@@ -654,6 +705,10 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
         'regulatory': regulatory,
         'valuation_bases': bases,
         'investor_metrics': investor,
+        'segments': segments,
+        'segments_input': segments_note,
+        'order_backlog': backlog,
+        'order_backlog_input': backlog_note,
         'investor_input': investor_note,
         'regulatory_input': regulatory_note,
     }
@@ -685,7 +740,7 @@ def main() -> int:
                        'financial': snap['pe_cr'].get('industry') == 'financial'}
         print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]} '
               f'market={snap["market_input"]} regulatory={snap["regulatory_input"]} '
-              f'investor={snap["investor_input"]}', file=sys.stderr)
+              f'investor={snap["investor_input"]} segments={snap["segments_input"]} backlog={snap["order_backlog_input"]}', file=sys.stderr)
     idx_path = OUT_DIR / 'index_v1.json'
     prev = json.loads(idx_path.read_text())['index'] if idx_path.exists() else {}
     prev.update(index)
