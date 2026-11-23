@@ -126,6 +126,30 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'chore: score US KR v2 shadow forecasts'
           bash tools/ops/git_push_retry.sh
+      # Forecast-vs-actual history (2026-11-23 user request). Today's target is
+      # replayed with the frozen engine only when no 08:30 first record exists,
+      # and is labelled "replay"; live first records always win.
+      - name: Append forecast vs actual history
+        id: history
+        if: ${{ !cancelled() && github.ref == 'refs/heads/main' }}
+        continue-on-error: true
+        run: |
+          T=$(TZ=Asia/Seoul date +%F)
+          if ! ls data/forecasts/us_kr_direction/$T/*/first.json >/dev/null 2>&1; then
+            python "$MM/run_us_kr_preopen.py" --target "$T" --replay \
+              --model "$MM/models/shadow/us_kr_preopen_20261022_v1.json" --refresh-prices \
+              --run-dir "history-replays/$T" --archive-dir history-archive-unused || true
+          fi
+          OUT="New for anti/public/data/us_kr_direction_history.json"
+          (cd "$MM" && python build_us_kr_direction_history.py \
+            --archive "$GITHUB_WORKSPACE/data/forecasts/us_kr_direction" \
+            --replays "$GITHUB_WORKSPACE/history-replays" \
+            --model models/shadow/us_kr_preopen_20261022_v1.json \
+            --merge "$GITHUB_WORKSPACE/$OUT" --out "$GITHUB_WORKSPACE/$OUT")
+          git add -- "$OUT"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: append US KR direction forecast vs actual history'
+          bash tools/ops/git_push_retry.sh
       - name: Report incomplete outcomes or failure
         if: always()
         env:

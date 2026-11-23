@@ -597,7 +597,24 @@ const signalLoadDirection = async () => {
         const doc = await loadFirstJson(finDataPaths('us_kr_direction_v1.json'), { cache: 'no-cache' });
         const v = msDirectionView(doc);
         const kospi = v.state === 'missing' ? null : v.cards.find((c) => c.ticker === 'KOSPI');
-        if (!kospi) {
+        // Integrated forecast empty (usually a late KRX 15007 file): fall back
+        // to the US-price-only model, labelled as such, if it is today's and
+        // was made before 08:30 (msUsPriceView). Never mixed with the other.
+        const us = kospi ? null : msUsPriceView(doc);
+        const usKospi = us && us.state !== 'missing' ? us.cards.find((c) => c.ticker === 'KOSPI') : null;
+        const usSide = (s) => side(msFactorScore(s));
+        if (!kospi && usKospi) {
+            const open = usKospi.scores.opening_up, close = usKospi.scores.closing_up;
+            const pClose = (msFactorScore(close) || {}).probability;
+            signalFixedState.kospi = {
+                ...signalFixedState.kospi,
+                value: `시작 ${usSide(open)} · 마감 ${usSide(close)}`,
+                sub: `${msDayLabel(us.target)} KOSPI · 미국 주가 기준 · 미국 ${msDayLabel(us.usDay)} 마감`,
+                foot: '통합 전망 없음 · 미국 주가만 반영 · 08:30 전 확정',
+                tone: 'muted',
+                split: Number.isFinite(pClose) ? pClose : null
+            };
+        } else if (!kospi) {
             signalFixedState.kospi = {
                 ...signalFixedState.kospi,
                 value: '자료 없음',

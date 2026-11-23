@@ -35,6 +35,8 @@ const MS_FILES = {
     flow: 'krx_deriv_flow_v1.json',
     // US→KR preopen direction runner output (#868), research only.
     direction: 'us_kr_direction_v1.json',
+    // Forecast vs actual, one row per session (build_us_kr_direction_history.py).
+    directionHistory: 'us_kr_direction_history.json',
 };
 
 // --- 다음 거래일 방향 (참고) — #868 개장전 실행기 ----------------------------
@@ -137,6 +139,85 @@ const msDirectionSection = (D) => {
     </section>`;
 };
 
+// --- 예측 vs 실제 누적 (user request 2026-11-23) -------------------------------
+// Blue bar = how far the model leaned (up-probability minus 50%p, left axis);
+// red line = what the index/stock actually did vs the previous close (right
+// axis). Same side of zero = the call was right. Replay rows (the frozen engine
+// re-run later, not a pre-open forecast) are drawn faded and counted apart
+// from live ones so they never pass for a forward track record.
+const MS_HIST_NAME = { KOSPI: 'KOSPI', '005930': '삼성전자', '000660': 'SK하이닉스' };
+const msDirHistChart = (rows, ticker, head) => {
+    const key = head === 'opening_up' ? 'open_ret' : 'close_ret';
+    const pts = rows.map((r) => {
+        const p = ((r.v1 || {})[ticker] || {})[head];
+        const a = ((r.actual || {})[ticker] || {})[key];
+        return { t: r.target, kind: r.kind, p: Number.isFinite(p) ? p : null, a: Number.isFinite(a) ? a : null };
+    }).filter((x) => x.p !== null);
+    if (!pts.length) return '<p class="ms-dir-note">자료 없음</p>';
+    const W = 560, H = 170, L = 34, R = 40, T = 10, B = 22, iw = W - L - R, ih = H - T - B, mid = T + ih / 2;
+    const amax = Math.max(0.01, ...pts.map((x) => Math.abs(x.a || 0)));
+    const step = iw / pts.length, bw = Math.max(3, step * 0.6);
+    const yP = (p) => mid - (p - 0.5) * 2 * (ih / 2);
+    const yA = (a) => mid - (a / amax) * (ih / 2);
+    const x = (i) => L + step * (i + 0.5);
+    const bars = pts.map((d, i) => {
+        const y = yP(d.p);
+        return `<rect x="${(x(i) - bw / 2).toFixed(1)}" y="${Math.min(y, mid).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0.5, Math.abs(y - mid)).toFixed(1)}" fill="var(--ms-hist-pred)" opacity="${d.kind === 'live' ? 0.95 : 0.4}"><title>${msDayLabel(d.t)} 예측 상승 ${msPct0(d.p)}${d.kind === 'live' ? ' (08:30 전 기록)' : ' (재생)'}${d.a === null ? '' : ` · 실제 ${(d.a * 100).toFixed(2)}%`}</title></rect>`;
+    }).join('');
+    const withA = pts.map((d, i) => ({ ...d, i })).filter((d) => d.a !== null);
+    const line = withA.map((d, k) => `${k ? 'L' : 'M'}${x(d.i).toFixed(1)},${yA(d.a).toFixed(1)}`).join('');
+    const dots = withA.map((d) => `<circle cx="${x(d.i).toFixed(1)}" cy="${yA(d.a).toFixed(1)}" r="2.6" fill="var(--ms-hist-act)"><title>${msDayLabel(d.t)} 실제 ${(d.a * 100).toFixed(2)}%</title></circle>`).join('');
+    const labelEvery = Math.ceil(pts.length / 6);
+    const xl = pts.map((d, i) => (i % labelEvery === 0 || i === pts.length - 1)
+        ? `<text x="${x(i).toFixed(1)}" y="${H - 6}" text-anchor="middle">${d.t.slice(5).replace('-', '/')}</text>` : '').join('');
+    const pct = (v) => `${v > 0 ? '+' : ''}${(v * 100).toFixed(1)}%`;
+    return `<svg class="ms-hist-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${MS_HIST_NAME[ticker]} ${head === 'opening_up' ? '시가' : '종가'} 예측과 실제">
+        <line x1="${L}" x2="${W - R}" y1="${mid}" y2="${mid}" class="ms-hist-zero"/>
+        <text x="${L - 4}" y="${T + 8}" text-anchor="end" class="ms-hist-pred-t">100%</text>
+        <text x="${L - 4}" y="${mid + 3}" text-anchor="end">50%</text>
+        <text x="${L - 4}" y="${T + ih}" text-anchor="end" class="ms-hist-pred-t">0%</text>
+        <text x="${W - R + 4}" y="${T + 8}" class="ms-hist-act-t">${pct(amax)}</text>
+        <text x="${W - R + 4}" y="${T + ih}" class="ms-hist-act-t">${pct(-amax)}</text>
+        ${bars}<path d="${line}" fill="none" stroke="var(--ms-hist-act)" stroke-width="1.4"/>${dots}${xl}
+    </svg>`;
+};
+const msDirHistScore = (rows, ticker, head, src = 'v1') => {
+    const key = head === 'opening_up' ? 'open_ret' : 'close_ret';
+    const out = { live: [0, 0], replay: [0, 0] };
+    rows.forEach((r) => {
+        const p = ((r[src] || {})[ticker] || {})[head];
+        const a = ((r.actual || {})[ticker] || {})[key];
+        if (!Number.isFinite(p) || !Number.isFinite(a) || a === 0 || Math.round(p * 100) === 50) return;
+        const kind = src === 'v1' ? r.kind : (r.us_price_kind || 'replay');
+        const o = out[kind === 'live' ? 'live' : 'replay'];
+        o[1] += 1; if ((p > 0.5) === (a > 0)) o[0] += 1;
+    });
+    return out;
+};
+const msDirectionHistorySection = (D) => {
+    const h = D.directionHistory;
+    const rows = ((h && h.rows) || []).slice().sort((a, b) => (a.target < b.target ? -1 : 1));
+    if (!rows.length) return '';
+    const fmt = ([k, n]) => (n ? `${k}/${n} (${msPct0(k / n)})` : '—');
+    const cells = MS_DIRECTION_ORDER.map((tk) => ['opening_up', 'closing_up'].map((head) => {
+        const s = msDirHistScore(rows, tk, head), u = msDirHistScore(rows, tk, head, 'us_price');
+        const uAll = [u.live[0] + u.replay[0], u.live[1] + u.replay[1]];
+        return `<div class="ms-dir-card ms-hist-card">
+            <div class="ms-dir-head"><span class="ms-dir-title">${MS_HIST_NAME[tk]} · ${head === 'opening_up' ? '시작(시가)' : '마감(종가)'}</span></div>
+            ${msDirHistChart(rows, tk, head)}
+            <div class="ms-hist-score">방향 적중 · 08:30 전 기록 ${fmt(s.live)} · 재생 ${fmt(s.replay)}${uAll[1] ? ` · 미국 주가 모델 ${fmt(uAll)}` : ''}</div>
+        </div>`;
+    }).join('')).join('');
+    const live = rows.filter((r) => r.kind === 'live').length;
+    return `
+    <section class="fin-block fin-block-wide">
+        <div class="ms-dir-section-head"><h2>예측 vs 실제 · 누적</h2><span class="ms-dir-badge is-muted">08:30 전 기록 ${live}일 · 재생 ${rows.length - live}일</span></div>
+        <p class="fin-lead"><span class="ms-hist-key is-pred"></span>파랑 막대 = 통합 전망의 상승 확률(가운데 50%, 위로 갈수록 상승 쪽) · <span class="ms-hist-key is-act"></span>빨강 선 = 실제 등락률(전일 종가 대비). 둘이 0선의 같은 쪽이면 방향을 맞힌 날입니다. 흐린 막대는 같은 동결 엔진을 나중에 돌린 <b>재생</b>이라 사전 예측 성적이 아닙니다.</p>
+        <div class="ms-hist-grid">${cells}</div>
+        <div class="ms-dir-foot">${msDayLabel(rows[0].target)} ~ ${msDayLabel(rows[rows.length - 1].target)} · 모델 ${finEsc(String(h.model_id || '').slice(0, 7))} (학습 ~${finEsc(msDayLabel(h.trained_through))}, 그 이전은 학습 구간이라 제외) · 실제 = 네이버 일봉 · 보합(0%)과 50% 예측은 적중 계산에서 뺌</div>
+    </section>`;
+};
+
 // --- Input-specific forecasts (#961 `factors`) --------------------------------
 // User decision 2026-11-08: home shows the integrated forecast; each tab shows
 // one force on its own -- 파생 수급 = K200 option flow, 가격대별 체결 = foreign
@@ -156,11 +237,41 @@ const MS_FACTOR_TEXT = {
         lead: '전날 미국 장 마감(QQQ·SPY·SMH·MU·NVDA·AMD 수익률, VIX 수준·변화)만 넣은 별도 고정 모델입니다. 국내 가격·수급은 넣지 않았습니다.',
         observe: '' }
 };
+// The US price factor needs no KRX file, so it stands on its own when the
+// integrated forecast is empty (#1077, 2026-11-23: 15007 late, US ready).
+// Same freshness rule as msDirectionView, checked on the factor itself:
+// target session not passed, input is the expected US close, and the
+// factor was generated before the 08:30 KST cutoff. Anything else -> missing.
+const msUsPriceView = (doc, today = msKstToday()) => {
+    const f = ((doc || {}).factors || {}).us_price;
+    const base = { target: (doc || {}).target_date, usDay: f && f.as_of };
+    if (!doc || !f) return { ...base, state: 'missing', target: null, reason: '미국 주가 전망이 아직 없어요. 개장 전 실행이 한 번 돌면 생겨요.' };
+    if (!doc.target_date || doc.target_date < today) {
+        return { ...base, state: 'missing', target: null, lastTarget: doc.target_date,
+            reason: `${msDayLabel(doc.target_date)} 이후 새 미국 주가 전망이 없어요. 지난 값은 보여주지 않아요.` };
+    }
+    const cutoff = Date.parse(doc.forecast_cutoff_KST), made = Date.parse(f.generated_at);
+    const usDay = doc.US_source_date;
+    const fresh = f.status === 'available' && f.as_of && f.as_of === f.expected_source_date
+        && (!usDay || f.as_of === usDay) && Number.isFinite(cutoff) && Number.isFinite(made) && made <= cutoff;
+    const cards = fresh ? (f.cards || []).filter((c) => c && c.status === 'available' && c.scores) : [];
+    if (!cards.length) {
+        return { ...base, state: 'missing', target: null,
+            reason: `${msDayLabel(doc.target_date)} 미국 주가 전망은 08:30 전까지 미국 ${msDayLabel(f.expected_source_date || usDay)} 마감 자료로 만들지 못했어요.` };
+    }
+    return { ...base, state: doc.status === 'retrospective_replay' ? 'replay' : 'live', cards, generated: f.generated_at };
+};
+const msKstClock = (iso) => {
+    const t = Date.parse(iso);
+    return Number.isFinite(t) ? new Date(t + 9 * 3600e3).toISOString().slice(11, 16) : '';
+};
 const msFactorScore = (s) => (s && Number.isFinite(Number(s.up_probability)))
     ? { probability: Number(s.up_probability), information_state: s.information_state } : null;
 const msFactorSection = (D, key) => {
     const txt = MS_FACTOR_TEXT[key];
-    const v = msDirectionView(D.direction);
+    // us_price is judged on its own freshness; the other two still follow the
+    // integrated forecast (they read the same KRX inputs it does).
+    const v = key === 'us_price' ? msUsPriceView(D.direction) : msDirectionView(D.direction);
     const f = ((D.direction || {}).factors || {})[key];
     const val = (f && f.validation) || {};
     const skill = val.skill;
@@ -177,7 +288,7 @@ const msFactorSection = (D, key) => {
     } else {
         const muted = v.state === 'replay';
         const order = (t) => MS_DIRECTION_ORDER.indexOf(t);
-        body = `<div class="ms-dir-grid">${(f.cards || []).slice().sort((a, b) => order(a.ticker) - order(b.ticker)).map((c) => {
+        body = `<div class="ms-dir-grid">${((key === 'us_price' ? v.cards : f.cards) || []).slice().sort((a, b) => order(a.ticker) - order(b.ticker)).map((c) => {
             const name = ({ KOSPI: 'KOSPI', '005930': '삼성전자', '000660': 'SK하이닉스' })[c.ticker] || c.ticker;
             if (c.status !== 'available') return `<div class="ms-dir-card"><div class="ms-dir-head"><span class="ms-dir-title">${finEsc(name)}</span></div><p class="ms-dir-note">자료 없음 · 기준일 원자료가 아직 없어요.</p></div>`;
             return `<div class="ms-dir-card">
@@ -191,6 +302,7 @@ const msFactorSection = (D, key) => {
     const foot = f ? [v.target ? `대상 ${msDayLabel(v.target)}` : null,
         f.as_of ? `입력 기준일 ${msDayLabel(f.as_of)}` : (f.expected_source_date ? `입력 기준일 ${msDayLabel(f.expected_source_date)} 미도착` : null),
         period ? `검증 ${finEsc(period)} · ${Number(val.n || 0).toLocaleString()}건 · 적중 ${msPct0(val.hit || 0)} (기저 ${msPct0(val.base_rate || 0)})` : null,
+        v.generated ? `${msKstClock(v.generated)} KST 생성 (08:30 전)` : null,
         f.model_id ? `모델 ${finEsc(String(f.model_id).slice(0, 7))}` : null].filter(Boolean).join(' · ') : '';
     return `
     <section class="fin-block fin-block-wide">
@@ -2164,6 +2276,7 @@ const msDerivatives = (D) => {
     return `
     ${msFactorSection(D, 'options')}
     ${msDirectionSection(D)}
+    ${msDirectionHistorySection(D)}
 
     <section class="fin-block fin-block-wide">
         <h2>외국인 KOSPI200 파생 수급</h2>
