@@ -82,6 +82,8 @@ def fetch(today=None, months=15):
     with urllib.request.urlopen(req, timeout=120) as r:
         payload = json.load(r)
     got = parse(payload)
+    rows = (payload.get("data") or {}).get("list") if isinstance(payload.get("data"), dict) else payload.get("data")
+    log(f"{len(rows or [])} rows, months {sorted(got)}; first row {json.dumps((rows or [None])[0])[:300]}")
     if not got:
         log(f"no months parsed; response keys {list(payload)[:6]}, "
             f"sample {json.dumps(payload)[:400]}")
