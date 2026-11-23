@@ -69,10 +69,9 @@ def parse(body):
     return out
 
 
-def fetch(today=None, months=15):
-    today = today or date.today()
+def _post(start, end):
     body = {"flow": "export", "monthDetail": True,
-            "period": {"from": _months_ago(today, months), "to": _months_ago(today, 1)},
+            "period": {"from": start, "to": end},
             "filters": [{"filter": "heading", "values": list(HEADINGS)}],
             "details": ["country", "heading"], "metrics": ["metricKG"]}
     req = urllib.request.Request(URL, data=json.dumps(body).encode(), method="POST",
@@ -80,13 +79,21 @@ def fetch(today=None, months=15):
                                           "Accept": "application/json",
                                           "User-Agent": "global-trade-dashboard"})
     with urllib.request.urlopen(req, timeout=120) as r:
-        payload = json.load(r)
-    got = parse(payload)
-    rows = (payload.get("data") or {}).get("list") if isinstance(payload.get("data"), dict) else payload.get("data")
-    log(f"{len(rows or [])} rows, months {sorted(got)}; first row {json.dumps((rows or [None])[0])[:300]}")
-    if not got:
-        log(f"no months parsed; response keys {list(payload)[:6]}, "
-            f"sample {json.dumps(payload)[:400]}")
+        return json.load(r)
+
+
+def fetch(today=None, months=15):
+    """One request per calendar year: the API reads a period like
+    2025-08..2026-10 as months 08-10 of each year, not as a run of months."""
+    today = today or date.today()
+    start, end = _months_ago(today, months), _months_ago(today, 1)
+    got = {}
+    for year in range(int(start[:4]), int(end[:4]) + 1):
+        a = start if year == int(start[:4]) else f"{year}-01"
+        b = end if year == int(end[:4]) else f"{year}-12"
+        part = parse(_post(a, b))
+        log(f"{a}..{b}: months {sorted(part)}")
+        got.update(part)
     return got
 
 
