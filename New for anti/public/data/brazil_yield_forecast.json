@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T14:04:07.735019+00:00",
+  "generated_at": "2026-11-23T14:33:14.879715+00:00",
   "season": 2027,
   "country": "Brazil",
   "source_note": "Yields: IBGE SIDRA (PAM tables 1612/1613), state level. Weather: NASA POWER daily, production-weighted across each region's growing points, ET0 by FAO-56 Penman-Monteith. ENSO: NOAA CPC ONI.",
@@ -163,18 +163,18 @@
       ],
       "season": 2027,
       "unit": "kg/ha",
-      "point": 7793.9,
+      "point": 6317.0,
       "range_68": [
-        7123.9,
-        8463.9
+        5647.0,
+        6987.0
       ],
       "range_95": [
-        6480.7,
-        9107.1
+        5003.8,
+        7630.2
       ],
       "trend": 7793.9,
-      "weather_effect_pct": 0.0,
-      "point_basis": "trend",
+      "weather_effect_pct": -18.95,
+      "point_basis": "enso_analog",
       "model_weather_effect_pct": 0.49,
       "last_actual": {
         "year": 2025,
@@ -192,7 +192,36 @@
           "oni": 2.46
         },
         "analog_fill": null,
-        "direct": null
+        "direct": {
+          "shift_pct": -18.95,
+          "backtest_skill": 0.0945,
+          "backtest_skill_last10": 0.1303,
+          "beyond_record": true,
+          "nino34_sowing": 2.59,
+          "effective_seasons": 2.8,
+          "analogs": [
+            {
+              "year": 1998,
+              "weight": 0.426,
+              "departure_pct": -20.8
+            },
+            {
+              "year": 2016,
+              "weight": 0.389,
+              "departure_pct": -23.5
+            },
+            {
+              "year": 2024,
+              "weight": 0.129,
+              "departure_pct": -4.9
+            },
+            {
+              "year": 1988,
+              "weight": 0.05,
+              "departure_pct": 0.5
+            }
+          ]
+        }
       },
       "skill": {
         "method": "forward chaining, trend refit inside each fold, scored on the most recent folds",
@@ -248,7 +277,8 @@
         "critical_window_observed": 0.0,
         "season_complete": false,
         "notes": [
-          "6 of 7 features not yet observed, filled from 43 past seasons: ers_doy, time_window, silking_stress, vpd_peak_dry, precip_silking, oni_season"
+          "6 of 7 features not yet observed, filled from 43 past seasons: ers_doy, time_window, silking_stress, vpd_peak_dry, precip_silking, oni_season",
+          "trend shifted -18.9% by Nino3.4 at sowing (+2.59 C)"
         ],
         "inputs_out_of_range": []
       }
