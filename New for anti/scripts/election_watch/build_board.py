@@ -281,6 +281,13 @@ def build_board(
     extract_summary = load_extracted("summary.json") or {}
     learning_analysis = load_extracted("learning_analysis_v1.json") or {}
     factions_board = load_extracted("factions_board.json") or {}
+    ind_legislature = load_extracted("ind_legislature.json") or {}
+    twn_ly = load_extracted("twn_ly.json") or {}
+    zaf_assembly = load_extracted("zaf_assembly.json") or {}
+    idn_dpr = load_extracted("idn_dpr.json") or {}
+    tur_tbmm = load_extracted("tur_tbmm.json") or {}
+    nga_nass = load_extracted("nga_nass.json") or {}
+    sau_shura = load_extracted("sau_shura.json") or {}
 
     live_news: List[Dict[str, Any]] = []
     if ticker_path and Path(ticker_path).exists():
@@ -554,6 +561,17 @@ def build_board(
             kor_rp = load_extracted("race_progress_kor_v1.json")
             if kor_rp:
                 row["race_progress"] = kor_rp
+        for live_iso, live_doc in (
+            ("IND", ind_legislature),
+            ("TWN", twn_ly),
+            ("ZAF", zaf_assembly),
+            ("IDN", idn_dpr),
+            ("TUR", tur_tbmm),
+            ("NGA", nga_nass),
+            ("SAU", sau_shura),
+        ):
+            if iso3 == live_iso and live_doc:
+                row["legislature_live"] = live_doc
         # prime_minister (any country that has it in profile — KOR, FRA, …)
         if profile.get("prime_minister"):
             row["prime_minister"] = profile["prime_minister"]

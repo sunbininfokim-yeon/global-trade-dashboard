@@ -148,7 +148,18 @@ def generic_country_manifest(country: dict[str, Any]) -> dict[str, Any]:
     has_map = (PUBLIC / "admin1" / f"{iso3}.json").exists()
     has_subnational = bool(country.get("subnational_live"))
     has_events = bool(country.get("events"))
-    has_legislature = bool(country.get("legislature_live"))
+    legislature_live = country.get("legislature_live") or {}
+    has_legislature = bool(legislature_live)
+    legislature_partial = has_legislature and (legislature_live.get("summary") or {}).get("coverage") == "partial"
+    if legislature_partial:
+        legislature_status = "partial"
+        legislature_missing = list((legislature_live.get("summary") or {}).get("missing") or ["full_composition"])
+    elif has_legislature:
+        legislature_status = "ready"
+        legislature_missing = []
+    else:
+        legislature_status = "disabled"
+        legislature_missing = ["live_composition"]
     has_factions = bool(country.get("factions"))
     has_race = bool(country.get("race_progress"))
     has_executive = bool(country.get("executive_live"))
@@ -201,9 +212,9 @@ def generic_country_manifest(country: dict[str, Any]) -> dict[str, Any]:
                 display_mode=("full_executive_target" if tier == 1 else "executive_core") if has_executive else ("full_executive_target" if tier == 1 else "national_head_only"),
             ),
             "legislature": screen(
-                "ready" if has_legislature else "disabled",
+                legislature_status,
                 [f"countries[{iso3}].legislature_live"],
-                [] if has_legislature else ["live_composition"],
+                legislature_missing,
                 display_mode="full_available_national" if tier == 1 else "party_composition_and_ruling_opposition_ratio",
             ),
             "legislature_detail": screen(
