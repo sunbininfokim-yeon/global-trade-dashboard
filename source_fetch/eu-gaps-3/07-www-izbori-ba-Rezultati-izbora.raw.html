@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="bs" data-ng-app="homeIndex" xmlns:ng="http://angularjs.org" class="ng-app:homeIndex" id="ng-app" style="height:100%">
+<head>
+    <!--[if lt IE 9]>
+          <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6/html5shiv.min.js"></script>
+        <![endif]-->
+    <!--[if lte IE 8]>
+      <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+      </script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/json2/20150503/json2.min.js"></script>
+    <![endif]-->
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <title>Središnje izborno povjerenstvo BiH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <!--[if IE]><script type="text/javascript" src="/rezultati_izbora/Scripts/excanvas.js"></script><![endif]-->
+    <!-- HTML5 Support for IE -->
+    <!--[if lt IE 9]>        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.4.1/es5-shim.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.1/es6-shim.js"></script>
+    <![endif]-->
+
+    <!-- Google Web Font -->
+    
+    <!-- Stylesheets -->
+    <link href="/rezultati_izbora/Content/Template/style/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="/rezultati_izbora/Content/Template/style/font-awesome.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/rezultati_izbora/Content/Template/style/font-awesome-ie7.css">
+    <![endif]-->
+    <link href="/rezultati_izbora/Content/Template/style/ddlevelsmenu-base.css" rel="stylesheet">
+    <link href="/rezultati_izbora/Content/Template/style/ddlevelsmenu-topbar.css" rel="stylesheet">
+    <link href="/rezultati_izbora/Content/Template/style/style.css" rel="stylesheet">
+    <!-- Change the template color below. Supported colors blue,red and green. -->
+    <link href="/rezultati_izbora/Content/Template/style/blue.css" rel="stylesheet">
+    <link href="/rezultati_izbora/Content/Template/style/bootstrap-responsive.css" rel="stylesheet">
+    <link href="/rezultati_izbora/Content/Template/style/flexslider.css" rel="stylesheet">
+    <link href="/rezultati_izbora/Content/Template/style/prettyPhoto.css" rel="stylesheet">
+    <!-- Our Custom Styles -->
+    <link href="/rezultati_izbora/Content/Site.css" rel="stylesheet" />    
+    <script src="/rezultati_izbora/Scripts/jquery.min.js"></script>
+    <script src="/rezultati_izbora/js/customFunctions.js?3"></script>
+        <script src="/rezultati_izbora/Scripts/angular.min.js"></script>   
+        <script src="/rezultati_izbora/Scripts/angular-route.min.js"></script>
+    <!-- Favicon -->    
+    <link rel="shortcut icon" href="/rezultati_izbora/Content/Template/img/icon.ico">
+</head>
+
+<body style="height:96.5%; max-width: 100%; overflow-x:hidden">
+    <div id="loading" style="height:100%; width:100%; visibility:visible; position:fixed; z-index: 1030;">
+        <div style="top:45%; left:43%; position:absolute; height:30px" class="progress progress-striped active">
+            <div class="bar" style="width: 100%; height:2.2em">
+                <span style="padding-left:10px;padding-right:10px;font-size:2.0em; color:black">Učitavam</span>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" value="Središnje izborno povjerenstvo BiH" id="lblTitle"/>
+    <input type="hidden" value="" id="lblRace"/>
+    <div class="fixedbar">
+        <div class="container" style="height:100%">
+            <div class="row">
+                    <div class="pull-left" id="LogoIzbora_22" style="margin-right:0px; position:absolute">
+<div title="Početna" id="image" class="logoImage">
+    
+    <span id="yearFirst" style="position:relative;top: 18.5px;right: 16px;font-size:30px;font-family: arial;font-weight: bolder;color: #173784;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;"></span>
+    <span id="yearSecond" style="position:relative;top: 18.5px;right: 19px;font-size:30px;font-family: arial;font-weight: bolder;color: #FFC24E;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;"></span>        
+</div>
+
+<script>
+    $(document).ready(function () {
+        appendLogo('https://www.izbori.ba/api_2018', '32', '3');        
+    });
+    
+</script>
+                    </div>
+                    <div id="noResult" style="text-align:center; width:90%; display:none; position:absolute; top:15%; font-size:25px; color:#FFC24E; background-color:#173784; padding:10px">
+                        Za odabranu utrku nema rezultata         
+                    </div>
+                    <div>
+                        <div class="menuBarDiv">
+                            <div style="margin-bottom:4px;padding-left:20px;width:100%;">
+                                <span style=" color:#ededed; display:none;" id="electionName"></span>
+                            </div>
+                            <div>
+                                <div class="navi" style="width:110%">
+                                    <div>
+   
+<div id="ddtopmenubar" class="mattblackmenu" style="display:none;">
+    <ul id="idulddtopmenubar">
+    </ul>
+</div>   
+
+<script> 
+    $("#ddtopmenubar").css("display", "table");
+    appendMenu("https://www.izbori.ba/api_2018", '32', '3');
+
+</script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="langBarDiv">
+
+<div id="langBar">
+    <select class="languageDdl" id="selectedIdLanguage" onchange="languageChange(this)">
+        <option class="languageSelectDdl" value="1">Bosanski</option>
+        <option class="languageSelectDdl" value="2">Srpski</option>
+        <option class="languageSelectDdl" value="3">Hrvatski</option>
+        <option class="languageSelectDdl" value="4">Engleski</option>
+    </select>
+</div>
+<script>
+    function languageChange(sel) {
+        window.location.href = window.location.pathname + '?resId=32&langId=' + sel.value + window.location.hash;
+    };
+    $(document).ready(function () {
+        $('#selectedIdLanguage').val('3');
+    });
+    
+</script>
+                        </div>
+                    </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="borderDiv"></div>
+
+    <div class="main" style="min-height:90.5%; padding-left:20px; padding-right:20px">
+        <div class="container">
+            <div class="row">
+                    <div class="span12 hidden-desktop">
+                        <div class="navis">
+                            <div id="spanRaceName" class="span2">
+                                <h3> Izborna utrka : <span id="raceSpan" class="print"></span></h3>
+                            </div>
+                        </div>
+                    </div>
+                
+    <script src="/rezultati_izbora/js/home-index-race-1.min.js?20"></script>
+    <script src="/rezultati_izbora/js/home-index-race-2.min.js?20"></script>
+    <script src="/rezultati_izbora/js/home-index-race-4.min.js?30"></script>
+    <script src="/rezultati_izbora/js/home-index-race-5.min.js?20"></script>
+    <script src="/rezultati_izbora/js/home-index-race-6.min.js?20"></script>
+    <script src="/rezultati_izbora/js/home-index-race-7.min.js?20"></script>
+    <script src="/rezultati_izbora/js/home-index-race-8.min.js?20"></script>
+    <script src="/rezultati_izbora/js/home-index-race-9.min.js?20"></script>    
+           <script src="/rezultati_izbora/js/home-index.min.js?20"></script>    
+
+<input type="hidden" id="hiddenIdApiUrl" value="https://www.izbori.ba/api_2018" />
+<input type="hidden" id="hiddenIdLangId" value="3" />
+<input type="hidden" id="hiddenIdResId" value="32" />
+<input type="hidden" id="isFinalResult" value="false"/>
+<input type="hidden" id="setLastActiveElectionResult" value="value" />
+
+<div ng-view=""></div>
+<div>
+    <div id="homeIndex"></div>
+    <div id="results" style="margin-top:25px"></div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        getElections('32', '3', 'https://www.izbori.ba/api_2018', 'True')
+    });
+</script>
+    
+            </div>
+        </div>
+    </div>
+
+    <!-- Foot -->
+    <!-- Footer -->
+    <footer style="bottom:0; position:relative; margin-top:-1%">
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <!-- Copyright information -->
+                    <div class="fpadd" style="text-align:center; font-size:0.8em">
+                    
+    <span id="messageTxt"></span><br />
+
+                    Središnje izborno povjerenstvo BiH, Danijela Ozme 7, 71000 Sarajevo, Bosna i Hercegovina; Telefon: +387(0)33 251 300; E-mail: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5f3430312b3e342b1f36253d302d36713d3e">[email&#160;protected]</a></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </footer>
+    
+    <!-- JS -->
+
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/rezultati_izbora/scripts/easing.js"></script>
+    <script src="/rezultati_izbora/scripts/bootstrap.js"></script>
+    <script type="text/javascript" src="/rezultati_izbora/scripts/ddlevelsmenu.js"></script>
+    <script type="text/javascript" src="/rezultati_izbora/scripts/flexslider.js"></script>
+
+    <script type="text/javascript" src="/rezultati_izbora/scripts/jquery.prettyPhoto.js"></script>
+    <script type="text/javascript" src="/rezultati_izbora/scripts/custom.js"></script>
+    <script src="/rezultati_izbora/Scripts/vendor.graphs.js"></script>
+    <script src="/rezultati_izbora/Scripts/panzoom.js"></script>
+    <script src="/rezultati_izbora/Scripts/pointertouch.js"></script>
+    <script src="/rezultati_izbora/Scripts/jquery.easy-pie-chart.min.js"></script>
+    
+    
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-84992568-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-84992568-1');
+
+
+</script>
+
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"0af20417ead9498cb29be177c183c432","spa":2}' crossorigin="anonymous"></script>
+</body>
+
+</html>
