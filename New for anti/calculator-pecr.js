@@ -497,6 +497,34 @@ const pecrLoadPeers = async (snap) => {
     return loaded.filter(Boolean);
 };
 
+// --- 주석 항목 (snapshot.note_items; dart_kfa/note_items.py) ------------------
+const noteItemsHtml = (snap) => {
+    const n = snap.note_items;
+    if (!n) return '';
+    const v = (k) => n[k]?.value;
+    const pct = (x) => (Number.isFinite(x) ? `${(x * 100).toFixed(1)}%` : '—');
+    const cards = [
+        ['연구개발비 (비용)', coNum(v('rd_expensed')), Number.isFinite(v('rd_to_sales')) ? `자산화분 포함 매출 대비 ${pct(v('rd_to_sales'))}.` : '손익계산서에 비용으로 처리한 연구개발비.'],
+        ['개발비 자산화', coNum(v('rd_capitalised')), Number.isFinite(v('capitalisation_ratio'))
+            ? `연구개발 지출의 ${pct(v('capitalisation_ratio'))}를 비용 대신 자산으로 잡았습니다. 높을수록 영업이익이 실제 지출보다 좋아 보입니다.` : '자산화한 개발비 공시 없음.'],
+        ['주식보상비용', coNum(v('sbc')), Number.isFinite(v('sbc_to_sales')) ? `매출 대비 ${pct(v('sbc_to_sales'))}. 현금은 안 나가지만 주주 몫을 나눠 주는 비용입니다.` : '현금 지출 없는 비용 — 희석으로 돌아옵니다.'],
+        ['재고자산 평가손실', coNum(v('inventory_writedown')), Number.isFinite(v('inventory_writedown_reversal')) ? `평가손실 환입 ${coNum(v('inventory_writedown_reversal'))}.` : '재고 가치 하락으로 비용 처리한 금액.'],
+    ].filter(([, val]) => val !== '—');
+    const p = n.provisions;
+    return `<section class="pecr-section"><h3>주석 항목 — 연구개발·주식보상·충당부채 (FY${finEsc(String(n.fiscal_year_end || '').slice(0, 4))})</h3>
+        ${cards.length ? `<div class="fin-cards">${cards.map(([t, val, plain]) => `<div class="fin-card pecr-card"><span class="fin-card-title">${t}</span>
+            <span class="fin-card-value">${val}</span><p class="fin-card-plain">${plain}</p></div>`).join('')}</div>` : ''}
+        ${p && (p.classes || []).length ? `<div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>충당부채 종류</th><th>기말 잔액</th><th>비중</th></tr></thead><tbody>
+            ${p.classes.map((c) => `<tr><td>${finEsc(c.label)}</td><td class="pecr-num">${coNum(c.value)}</td>
+                <td class="pecr-num">${p.classes_sum ? pct(c.value / p.classes_sum) : '—'}</td></tr>`).join('')}
+            <tr class="pecr-median"><td>합계${Number.isFinite(p.total) && p.classes_sum && Math.abs(p.total - p.classes_sum) > 0.01 * p.total ? ` (주석 총계 ${coNum(p.total)})` : ''}</td>
+                <td class="pecr-num">${coNum(p.classes_sum)}</td><td></td></tr></tbody></table></div>
+            <p class="fin-note">판매보증·공사손실(손실부담계약)·소송 충당부채가 매출보다 빨리 늘면 품질·원가 문제의 신호입니다. 조정 EV의 "보수적" 줄에 이 합계가 들어갑니다.</p>` : ''}
+        <p class="fin-note">출처: FY 사업보고서 원본 XBRL 주석(접수 ${finEsc(n.receipt || '—')}). 이름이 회사마다 다른 태그는 접두어로 찾고, 맥락이 엇갈리는 값은 뺐습니다.</p>
+    </section>`;
+};
+
 // --- 업권 지표 (snapshot.financial_kpis; dart_kfa/financial_kpis.py) ---------
 const FIN_KIND = { basel: '은행(지주)', kics: '보험', ncr: '증권', credit_finance: '카드·캐피탈' };
 const FIN_LABEL = {
@@ -746,7 +774,7 @@ const invMetricsView = (snap) => {
     const inv = snap.investor_metrics;
     if (!inv) return '<p class="fin-note">이 스냅샷에는 투자지표가 아직 없습니다. 다음 엔진 재생성 때 채워집니다.</p>';
     const live = pecrLive(snap);
-    return financialKpisHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
+    return financialKpisHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + noteItemsHtml(snap) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
         + `<p class="fin-note">재무제표: OpenDART 사업보고서 FY${(inv.years || [])[0] || ''}~FY${inv.fiscal_year} ${snap.fs_div === 'OFS' ? '별도' : '연결'}.
             배당: 사업보고서 배당에 관한 사항. 자기주식: 자기주식 취득 및 처분 현황. 시세가 필요한 값(PEG, 시가 Z, 수익률)은 일별 시가총액으로 계산합니다.</p>`;
 };
@@ -801,7 +829,8 @@ const pecrViewHtml = (data, view) => {
     const snap = data.pecr;
     if (!snap) {
         return `<div class="fin-empty"><p class="fin-empty-title">이 기업은 아직 PE·CR 엔진 스냅샷이 없습니다</p>
-            <p>스냅샷은 OpenDART 원본 공시로 미리 계산해 둡니다(tools/ops/build_kfa_pecr_snapshots.py). 기본 탭의 지표는 그대로 볼 수 있습니다.</p></div>`;
+            <p>엔진 스냅샷은 OpenDART 원본 공시로 매일 새벽 미리 계산합니다. 대상은 코스피·코스닥 시가총액 상위 각 500개사이고, 새 정기보고서가 나온 회사부터 다시 만듭니다.
+               이 회사는 아직 대상이 아니거나 이번 주기에서 아직 처리되지 않았습니다. 기본 탭의 지표는 그대로 볼 수 있습니다.</p></div>`;
     }
     const financial = snap.pe_cr?.industry === 'financial';
     if (view === 'metrics') return pecrHead(snap) + invMetricsView(snap);

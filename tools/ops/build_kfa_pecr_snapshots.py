@@ -85,10 +85,19 @@ FUNDING_LABEL = {'corporate_bond': '회사채', 'commercial_paper': '기업어�
 REPRT = {'FY': '11011', 'Q1': '11013', 'H1': '11012', 'Q3': '11014'}
 
 
+class BudgetExhausted(RuntimeError):
+    """OpenDART daily quota (20,000 calls per key) or this run's --max-calls."""
+
+
 class Dart:
-    def __init__(self, key: str, cache: Path):
-        self.key, self.cache = key, cache
+    def __init__(self, key: str, cache: Path, max_calls: int | None = None):
+        self.key, self.cache, self.max_calls, self.calls = key, cache, max_calls, 0
         cache.mkdir(parents=True, exist_ok=True)
+
+    def _spend(self):
+        if self.max_calls is not None and self.calls >= self.max_calls:
+            raise BudgetExhausted(f'--max-calls {self.max_calls} reached')
+        self.calls += 1
 
     def get_bytes(self, path: str, **params) -> bytes | None:
         """Binary endpoint (fnlttXbrl.xml zip), cached; None on an API error body."""
@@ -99,6 +108,7 @@ class Dart:
             return data or None
         q = urllib.parse.urlencode({'crtfc_key': self.key, **params})
         for attempt in range(3):
+            self._spend()
             try:
                 req = urllib.request.Request(f'{API}/{path}?{q}', headers={'User-Agent': 'global-trade-dashboard/1.0'})
                 with urllib.request.urlopen(req, timeout=90) as res:
@@ -120,6 +130,7 @@ class Dart:
             return json.loads(hit.read_text())
         q = urllib.parse.urlencode({'crtfc_key': self.key, **params})
         for attempt in range(4):
+            self._spend()
             try:
                 req = urllib.request.Request(f'{API}/{path}?{q}', headers={'User-Agent': 'global-trade-dashboard/1.0'})
                 with urllib.request.urlopen(req, timeout=40) as res:
@@ -129,6 +140,8 @@ class Dart:
                 time.sleep(2 * (attempt + 1))
                 continue
             if data.get('status') == '020':
+                if attempt >= 1:
+                    raise BudgetExhausted('OpenDART 020: daily request limit')
                 time.sleep(5 * (attempt + 1))
                 continue
             time.sleep(PAUSE)
@@ -497,6 +510,26 @@ def regulatory_series(dart: Dart, corp: str, year: int, company: dict, fs: str):
     return res, f'{kind}:{len(res["series"])}_periods'
 
 
+def notes_packet(dart: Dart, year: int, fs: str, fy_rows: list) -> tuple[dict | None, str]:
+    """연구개발비·자산화, 주식보상, 재고평가손실, 충당부채 종류별 (dart_kfa/note_items.py)."""
+    from dart_kfa.note_items import note_items  # noqa: E402
+    from dart_kfa.segments import labels_from_zip  # noqa: E402
+    from dart_kfa.xbrl_notes import instance_from_zip  # noqa: E402
+    receipt = fy_rows[0].get('rcept_no') if fy_rows else None
+    blob = dart.get_bytes('fnlttXbrl.xml', rcept_no=receipt, reprt_code=REPRT['FY']) if receipt else None
+    if not blob:
+        return None, 'no_xbrl'
+    revenue = next((num(r.get('thstrm_amount')) for sj in ('IS', 'CIS') for r in fy_rows
+                    if r.get('sj_div') == sj and r.get('account_id') == 'ifrs-full_Revenue'), None)
+    res = note_items(instance_from_zip(blob), fs_div=fs, fiscal_year_end=f'{year}-12-31',
+                     labels=labels_from_zip(blob), revenue=revenue)
+    res['receipt'] = receipt
+    found = [k for k in ('rd_expensed', 'rd_capitalised', 'sbc', 'inventory_writedown') if (res.get(k) or {}).get('value') is not None]
+    if res.get('provisions'):
+        found.append('provisions')
+    return (res if found else None), ','.join(found) or 'none'
+
+
 def segments_packet(dart: Dart, year: int, fs: str, fy_rows: list) -> tuple[dict | None, str]:
     """사업부문 / 제품 / 지역 breakdowns from the FY XBRL (dart_kfa/segments.py)."""
     from dart_kfa.segments import labels_from_zip, segment_breakdowns  # noqa: E402
@@ -696,6 +729,10 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     regulatory, regulatory_note = regulatory_series(dart, corp, year, company, fs)
     bases = valuation_bases(dart, corp, year, fs, fy_rows, result.get('cards') or {})
     try:
+        notes, notes_note = notes_packet(dart, year, fs, fy_rows)
+    except Exception as exc:  # noqa: BLE001
+        notes, notes_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
+    try:
         segments, segments_note = segments_packet(dart, year, fs, fy_rows)
     except Exception as exc:  # noqa: BLE001
         segments, segments_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
@@ -732,6 +769,8 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
         'valuation_bases': bases,
         'investor_metrics': investor,
         'segments': segments,
+        'note_items': notes,
+        'note_items_input': notes_note,
         'segments_input': segments_note,
         'order_backlog': backlog,
         'order_backlog_input': backlog_note,
@@ -742,27 +781,115 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     }
 
 
+# Bump when the snapshot's content changes, so every company is rebuilt once.
+BUILDER_VERSION = '2026-11-24.2'
+NAVER_RANK = 'https://m.stock.naver.com/api/stocks/marketValue/{market}?page={page}&pageSize=100'
+EXTRA_TARGETS = ROOT / 'New for anti' / 'scripts' / 'dart' / 'config' / 'kfa_pecr_extra_targets.json'
+
+
+def universe(spec: str) -> list[str]:
+    """'KOSPI:200,KOSDAQ:150' -> the largest common stocks by 시가총액 (Naver ranking, no key)."""
+    codes = []
+    for part in filter(None, spec.split(',')):
+        market, _, n = part.partition(':')
+        want, page = int(n or 100), 1
+        got = []
+        while len(got) < want and page <= 40:
+            req = urllib.request.Request(NAVER_RANK.format(market=market.upper(), page=page),
+                                         headers={'User-Agent': 'Mozilla/5.0 (compatible; global-trade-dashboard/1.0)'})
+            with urllib.request.urlopen(req, timeout=30) as res:
+                rows = json.loads(res.read()).get('stocks') or []
+            if not rows:
+                break
+            got += [r['itemCode'] for r in rows if r.get('stockEndType') == 'stock' and re.fullmatch(r'\d{5}0', r.get('itemCode') or '')]
+            page += 1
+            time.sleep(0.2)
+        codes += got[:want]
+    return codes
+
+
+def corp_codes_by_stock(dart: Dart) -> dict:
+    """KRX code -> DART corp_code from OpenDART corpCode.xml (one zip)."""
+    import io
+    import xml.etree.ElementTree as ET
+    import zipfile
+    blob = dart.get_bytes('corpCode.xml')
+    if not blob:
+        raise RuntimeError('corpCode.xml unavailable')
+    with zipfile.ZipFile(io.BytesIO(blob)) as z:
+        root = ET.fromstring(z.read(z.namelist()[0]))
+    return {(e.findtext('stock_code') or '').strip(): e.findtext('corp_code')
+            for e in root.iter('list') if (e.findtext('stock_code') or '').strip()}
+
+
+def latest_periodic_receipt(dart: Dart, corp: str, today: dt.date) -> str | None:
+    lst = dart.get('list.json', corp_code=corp, bgn_de=(today - dt.timedelta(days=430)).strftime('%Y%m%d'),
+                   pblntf_ty='A', page_count=20)
+    rows = [r for r in lst.get('list') or [] if REPORT_NAME.search(r.get('report_nm') or '')]
+    return max((r['rcept_no'] for r in rows), default=None)
+
+
+def slim(snap: dict) -> dict:
+    """Drop per-card input provenance (~75 % of the file; the calculator never
+    reads it). The engine run is reproducible from the receipts kept."""
+    for card in ((snap.get('pe_cr') or {}).get('cards') or {}).values():
+        if isinstance(card, dict) and isinstance(card.get('inputs'), list):
+            card['input_count'] = len(card.pop('inputs'))
+    return snap
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('corp_codes', nargs='*', help='default: the validation set in DEFAULT_TARGETS')
     ap.add_argument('--cache', type=Path, default=Path(os.environ.get('TMPDIR', '/tmp')) / 'kfa_pecr_cache')
+    ap.add_argument('--universe', default='', help="add the largest listed companies, e.g. 'KOSPI:200,KOSDAQ:150'")
+    ap.add_argument('--max-calls', type=int, default=None, help='stop cleanly after this many OpenDART requests')
+    ap.add_argument('--skip-fresh', action='store_true',
+                    help='skip a company whose snapshot already has its newest periodic report and this builder version')
     args = ap.parse_args()
     key = os.environ.get('DART_API_KEY', '').strip()
     if not key:
         print('DART_API_KEY is not set', file=sys.stderr)
         return 2
-    targets = DEFAULT_TARGETS if not args.corp_codes else [(c, None, c) for c in args.corp_codes]
-    dart, today = Dart(key, args.cache), dt.date.today()
+    dart, today = Dart(key, args.cache, args.max_calls), dt.date.today()
+    targets = list(DEFAULT_TARGETS) if not args.corp_codes else [(c, None, c) for c in args.corp_codes]
+    if not args.corp_codes and EXTRA_TARGETS.exists():
+        targets += [(c, None, c) for c in json.loads(EXTRA_TARGETS.read_text()).get('corp_codes', [])]
+    if args.universe:
+        by_stock = corp_codes_by_stock(dart)
+        for code in universe(args.universe):
+            if by_stock.get(code):
+                targets.append((by_stock[code], code, code))
+    seen, ordered = set(), []
+    for t in targets:
+        if t[0] not in seen:
+            seen.add(t[0])
+            ordered.append(t)
+    # Companies with no snapshot first, so a short budget widens coverage.
+    ordered.sort(key=lambda t: (OUT_DIR / f'{t[0]}_v1.json').exists())
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    index, failed = {}, {}
-    for corp, stock, label in targets:
+    index, failed, skipped = {}, {}, 0
+    for corp, stock, label in ordered:
+        path = OUT_DIR / f'{corp}_v1.json'
         try:
+            if args.skip_fresh and path.exists():
+                old = json.loads(path.read_text())
+                newest = latest_periodic_receipt(dart, corp, today)
+                if old.get('builder_version') == BUILDER_VERSION and newest and newest == old.get('latest_periodic_receipt'):
+                    skipped += 1
+                    continue
             snap = build_one(dart, corp, stock, today)
+            snap['builder_version'] = BUILDER_VERSION
+            snap['latest_periodic_receipt'] = latest_periodic_receipt(dart, corp, today)
+            slim(snap)
+        except BudgetExhausted as exc:
+            print(f'STOP budget: {exc} after {dart.calls} calls', file=sys.stderr)
+            break
         except Exception as exc:  # one company must not stop the batch
             failed[corp] = f'{type(exc).__name__}: {str(exc).replace(key, "<key>")}'[:300]
             print(f'FAIL {label} {corp}: {failed[corp]}', file=sys.stderr)
             continue
-        (OUT_DIR / f'{corp}_v1.json').write_text(json.dumps(snap, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n')
+        path.write_text(json.dumps(snap, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n')
         index[corp] = {'entity': snap['entity'], 'stock_code': stock or (snap.get('stock_code')), 'fiscal_year': snap['fiscal_year'],
                        'fs_div': snap['fs_div'], 'industry': snap['pe_cr'].get('industry'),
                        'financial': snap['pe_cr'].get('industry') == 'financial'}
@@ -775,8 +902,10 @@ def main() -> int:
     idx_path.write_text(json.dumps({'schema': 'kfa_pecr_index/1', 'generated_at': today.isoformat(),
                                     'count': len(prev), 'index': dict(sorted(prev.items()))},
                                    ensure_ascii=False, indent=1) + '\n')
-    print(f'{len(index)} written, {len(failed)} failed', file=sys.stderr)
-    return 0 if not failed else 1
+    print(f'{len(index)} written, {skipped} fresh, {len(failed)} failed, {dart.calls} OpenDART calls', file=sys.stderr)
+    # A batch over hundreds of filers always has a few odd ones; fail the run only
+    # when nothing could be built.
+    return 0 if index or skipped or not failed else 1
 
 
 if __name__ == '__main__':
