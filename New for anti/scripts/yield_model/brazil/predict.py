@@ -172,6 +172,35 @@ def enso_fill(cfg, year, past_years, logs):
     }
 
 
+def direct_fill(cfg, year, history):
+    """Trend shift from past seasons with a similar Nino3.4 at sowing, or None."""
+    if cfg.key not in E.DIRECT_ON:
+        return None
+    try:
+        series = E.load_nino34()
+    except (OSError, ValueError, StopIteration):
+        return None
+    past = history.dropna(subset=["yield_kg_ha"])
+    past = past[past.year < year]
+    n34 = [E.sowing_nino34(series, int(y), cfg.crop) for y in past.year]
+    n34 = np.array([np.nan if v is None else v for v in n34], dtype=float)
+    now = E.sowing_nino34(series, year, cfg.crop)
+    shift, info = E.direct_adjust(past.year.values, past.yield_kg_ha.values, n34, now)
+    if shift is None:
+        return None
+    bt = {}
+    try:
+        with open(E.OUT, encoding="utf-8") as f:
+            bt = json.load(f)["direct"]["regions"].get(cfg.key, {})
+    except (OSError, KeyError, ValueError):
+        pass
+    return {"log": shift, "shift_pct": round(float((np.exp(shift) - 1) * 100), 2),
+            "backtest_skill": bt.get("skill_vs_trend"),
+            "backtest_skill_last10": bt.get("skill_vs_trend_last10"),
+            "beyond_record": bool(now > np.nanmax(n34) + BEYOND or now < np.nanmin(n34) - BEYOND),
+            **info}
+
+
 def predict_one(cfg, year, oni, predicted):
     model_path = os.path.join(MODELS, f"{cfg.key}.json")
     if not os.path.exists(model_path):
@@ -254,8 +283,19 @@ def predict_one(cfg, year, oni, predicted):
     # published number: its adjustment made past forecasts worse, not
     # better. The point falls back to the trend (sigma is already the trend's
     # own error) and the model's would-be adjustment is kept for reference.
+    basis = "model" if model["beats_trend"] else "trend"
+    direct = None
     if not model["beats_trend"]:
         weather_log = 0.0
+        # Where the ridge lost but the direct ENSO shift beat the same trend
+        # in its own forward-chaining test (enso_analog.DIRECT_ON), the
+        # published number moves by that shift instead.
+        direct = direct_fill(cfg, year, history)
+        if direct:
+            weather_log = direct["log"]
+            basis = "enso_analog"
+            notes = notes + [f"trend shifted {direct['shift_pct']:+.1f}% by Nino3.4 at sowing "
+                             f"({direct['nino34_sowing']:+.2f} C)"]
     # An observed input this far outside training is a data fault, not a
     # season: SP oranges published +2,681% on 2026-10-23. Fall back to the
     # trend and name the inputs, so the next run's log says which one.
@@ -264,6 +304,7 @@ def predict_one(cfg, year, oni, predicted):
             if abs(v) > MAX_INPUT_Z]
     if wild:
         weather_log = 0.0
+        basis, direct = "trend", None
         notes = notes + ["inputs outside training range, trend shown: " + ", ".join(wild)]
         log(f"{cfg.key} {year}: inputs outside training range -> trend: {', '.join(wild)}")
     point_kg = float(np.exp(trend_log + weather_log))
@@ -298,7 +339,8 @@ def predict_one(cfg, year, oni, predicted):
         "trend": trend_kg,
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
         "model_weather_effect_pct": model_effect_pct,
-        "point_basis": "model" if model["beats_trend"] and not wild else "trend",
+        "point_basis": basis,
+        "enso_direct": {k: v for k, v in direct.items() if k != "log"} if direct else None,
         "inputs_out_of_range": wild,
         "point": point_kg,
         "range_68": [point_kg - sigma, point_kg + sigma],

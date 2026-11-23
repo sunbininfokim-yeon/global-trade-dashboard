@@ -156,7 +156,10 @@ def main():
                      "oni_latest": latest,
                      # Pre-season fill weighted by Nino3.4 at sowing
                      # (enso_analog.py); None where off or once the window is in.
-                     "analog_fill": r.get("enso_analog")},
+                     "analog_fill": r.get("enso_analog"),
+                     # Trend shift by Nino3.4 at sowing that moves the point
+                     # where the ridge lost (enso_analog.DIRECT_ON).
+                     "direct": r.get("enso_direct")},
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
                            "scored on the most recent folds"),

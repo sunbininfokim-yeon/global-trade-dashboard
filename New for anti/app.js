@@ -3967,6 +3967,9 @@ const normalizeCrop = (entry, group, label, parent = {}, regionKey = null, cropK
         // Pre-season fill weighted by Niño3.4 at sowing (argentina/enso_analog.py,
         // south_africa/enso_preseason.py); null once the season is observed.
         ensoOutlook: entry.enso?.analog_fill || entry.enso_preseason || null,
+        // Trend shift by Niño3.4 at sowing, already folded into `point`
+        // (brazil/enso_analog.py DIRECT_ON); null where off.
+        ensoDirect: entry.enso?.direct || null,
         // MODIS NDVI correction already folded into `point` (argentina/,
         // brazil/, thailand/ ndvi_blend.py); null where off or not yet seen.
         ndvi: entry.ndvi || null,
@@ -5704,6 +5707,17 @@ const renderEnsoOutlook = (o) => {
         ${o.beyond_record ? ' · 관측 기록 밖 수온이라 표본이 적음' : ''}</div>`;
 };
 
+// Where the weather model lost to the trend, the point can still move by
+// how past seasons with a similar Niño3.4 at sowing came in.
+const renderEnsoDirect = (d) => {
+    const pct = num(d?.shift_pct);
+    if (pct === null) return '';
+    const sk = num(d.backtest_skill);
+    const sk10 = num(d.backtest_skill_last10);
+    return `<div class="climate-sub">엘니뇨 유사 연도 반영 ${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%
+        ${sk !== null ? ` · 과거 검증 오차 ${Math.round(sk * 100)}% 감소${sk10 !== null ? `(최근 10년 ${Math.round(sk10 * 100)}%)` : ''}` : ''}</div>`;
+};
+
 // The satellite correction moves the point on top of the weather effect, so
 // say by how much -- otherwise point and "기상 효과" disagree with no reason.
 const renderNdviCorrection = (n) => {
@@ -5758,6 +5772,7 @@ const renderClimateRegionOnRight = async (cfg, regionCfg, fc = null, points = nu
                     </div>
                     ${c.pct != null ? `<div class="climate-sub">기상 효과(추세 대비) ${c.pct >= 0 ? '+' : ''}${c.pct.toFixed(1)}%</div>` : ''}
                     ${renderNdviCorrection(c.ndvi)}
+                    ${renderEnsoDirect(c.ensoDirect)}
                     ${renderEnsoOutlook(c.ensoOutlook)}
                     ${c.reason ? `<div class="climate-sub">${c.reason}</div>` : ''}`}
                 ${c.weatherConditions
