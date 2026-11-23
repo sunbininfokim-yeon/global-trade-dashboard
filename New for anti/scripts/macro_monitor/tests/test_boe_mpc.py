@@ -287,15 +287,28 @@ class Collected(unittest.TestCase):
 @unittest.skipUnless(CONFIG.exists(), "collected file not present")
 class Assembled(unittest.TestCase):
     def test_block_shape(self):
-        b = assemble_boe(json.loads(CONFIG.read_text(encoding="utf-8")), today=date(2026, 9, 25))
+        # Expectations come from the collected file itself: the daily refresh
+        # adds meetings, and a test pinned to one meeting date turned the
+        # KR/JP policy-board refresh red as soon as the next meeting landed.
+        doc = json.loads(CONFIG.read_text(encoding="utf-8"))
+        meetings = sorted(m["meeting_date"] for m in doc["meetings"])
+        today = date.fromisoformat(meetings[-1]) + timedelta(days=3)
+        b = assemble_boe(doc, today=today)
         self.assertEqual(b["iso3"], "GBR")
-        self.assertEqual(b["decision"]["meeting_date"], "2026-09-17")
+        self.assertEqual(b["decision"]["meeting_date"], meetings[-1])
         self.assertEqual(b["votes"]["for_count"], len(b["votes"]["for"]))
-        self.assertEqual(b["schedule"]["next_meeting_date"], "2026-11-05")
-        self.assertEqual(b["schedule"]["next_outlook_release"], "2026-11-05")        # November is a Monetary Policy Report round
-        self.assertEqual(sum(len(g["members"]) for g in b["member_views"]["groups"]), 9)
+        upcoming = [r["decision_date"] for r in doc["calendar"]["rows"] if r["decision_date"] > today.isoformat()]
+        if upcoming:
+            self.assertEqual(b["schedule"]["next_meeting_date"], upcoming[0])
+            self.assertIn(b["schedule"]["next_outlook_release"], upcoming)        # an MPR round is one of the meetings
+        last = max(doc["meetings"], key=lambda m: m["meeting_date"])
+        if last.get("member_views"):                  # not every meeting's minutes carry them
+            self.assertEqual(sum(len(g["members"]) for g in b["member_views"]["groups"]), 9)
+        else:
+            self.assertIsNone(b["member_views"])
         o = b["outlook"]
-        self.assertEqual((o["kind"], o["meeting_date"], o["previous"]["meeting_date"]), ("projection_blocks", "2026-07-30", "2026-04-30"))
+        reports = sorted(r["meeting_date"] for r in doc["reports"])
+        self.assertEqual((o["kind"], o["meeting_date"], o["previous"]["meeting_date"]), ("projection_blocks", reports[-1], reports[-2]))
         cpi = o["summary"]["blocks"][0]["rows"][0]
         self.assertEqual((cpi["id"], cpi["label_ko"] is not None, cpi["definition_en"] is not None), ("cpi", True, True))
         json.dumps(b, allow_nan=False)

@@ -7,7 +7,9 @@ const {
 } = require('./lib/sync-utils');
 
 const RESOURCE = 'uscode.house.gov:titles';
-const DOWNLOAD_URL = 'https://uscode.house.gov/download/download.shtml';
+// The site moved its download page from /download/download.shtml (404 since
+// 2026-11-22) to /download.html; the release point text is unchanged.
+const DOWNLOAD_URL = 'https://uscode.house.gov/download.html';
 
 requireEnv('SUPABASE_URL');
 requireEnv('SUPABASE_SERVICE_ROLE_KEY');

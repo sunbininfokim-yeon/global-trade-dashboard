@@ -41,7 +41,7 @@ def discover_esri_release_page(fetcher: Any) -> str:
     (Pinning a vintage left the numbers on 2026 Q1 after the Q2 release was out.)"""
     from urllib.parse import urljoin
     top = fetcher(ESRI_SOKUHOU_TOP).decode("utf-8", errors="replace")
-    m = re.search(r'href="([^"]*/qe\d+_\d+/gdemenuea\.html)"', top)
+    m = re.search(r'href="([^"]*/qe\d+(?:_\d+)?/gdemenuea\.html)"', top)
     if not m:
         raise ValueError("ESRI: no release menu linked from the sokuhou top page")
     return urljoin(ESRI_SOKUHOU_TOP, m.group(1))
@@ -402,7 +402,7 @@ def build_snapshot(
     except Exception:  # noqa: BLE001 -- the BOJ gap still stands on its own
         cao_gap_url, cao_gap = None, []
     stamp = retrieved_at or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    vintage = re.search(r"/(qe\d+_\d+)/", release_page_url)
+    vintage = re.search(r"/(qe\d+(?:_\d+)?)/", release_page_url)
 
     latest_net = net_funding[-1]
     return {

@@ -193,7 +193,7 @@ class RunnerTests(unittest.TestCase):
     def test_collection_failure_blocks_successful_stale_inference(self):
         with tempfile.TemporaryDirectory() as td:
             args=self.args(Path(td))
-            with patch.object(runner,'validate_model'),patch.object(runner,'collect_kr_prices',side_effect=OSError('source offline')),patch.object(runner,'predict',return_value=self.forecast()):
+            with patch.object(runner,'validate_model'),patch.object(runner,'collect_kr_prices',side_effect=OSError('source offline')),patch.object(runner,'collect_us_prices',return_value={'symbols':{}}),patch.object(runner,'predict',return_value=self.forecast()):
                 code=runner.run(args,now=datetime.fromisoformat('2026-11-05T08:00:00+09:00'))
             self.assertEqual(code,2)
             out=json.loads((args.run_dir/'forecast.json').read_text());self.assertEqual(out['results'],{})
@@ -201,6 +201,30 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(len(attempts),1)
             self.assertEqual(json.loads(attempts[0].read_text())['status'],'unavailable')
             self.assertFalse(list(args.archive_dir.glob('*/'+'a'*16+'/first.json')))
+
+    def test_failed_domestic_fetch_still_publishes_and_freezes_the_us_price_factor(self):
+        with tempfile.TemporaryDirectory() as td:
+            args=self.args(Path(td))
+            args.factor_model=runner.FACTOR_MODEL
+            args.public_output=Path(td)/'us_kr_direction_v1.json'
+            generated='2026-11-05T08:00:00+09:00'
+            factor={'model_id':'b'*64,'status':'available','as_of':'2026-11-04','generated_at':generated}
+            with patch.object(runner,'validate_model'), patch.object(runner,'predict',return_value=self.forecast()), \
+                    patch.object(runner,'collect_kr_prices',side_effect=OSError('source offline')), \
+                    patch.object(runner,'collect_us_prices',return_value={'symbols':{'SPY':[]}}) as collect, \
+                    patch.object(runner,'factor_payload',return_value={'us_price':factor}) as infer:
+                code=runner.run(args,now=datetime.fromisoformat(generated))
+            self.assertEqual(code,2)
+            collect.assert_called_once()
+            self.assertEqual(infer.call_args.args[2],{'symbols':{'SPY':[]}})
+            payload=runner.read(args.public_output)
+            self.assertEqual(payload['cards'],[])
+            self.assertEqual(payload['factors']['us_price'],factor)
+            path=next(args.archive_dir.glob('*/us_price/*/first.json'))
+            updated,path_again=runner.archive_us_price(args.archive_dir,'2026-11-05','2026-11-04','2026-11-04',
+                                                       '2026-11-05T08:30:00+09:00',dict(factor,status='unavailable'))
+            self.assertEqual(path_again,path)
+            self.assertEqual(updated['factor'],factor)
 
     def test_attempt_receipt_preserves_refresh_time_and_replay_is_excluded(self):
         with tempfile.TemporaryDirectory() as td:
