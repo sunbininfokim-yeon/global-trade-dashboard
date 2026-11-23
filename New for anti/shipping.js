@@ -40,6 +40,11 @@
       title: 'Net Zero 시나리오',
       desc: 'IMO 2050 넷제로 전략의 중간 관문인 CII 감축 일정(2026–2030)에 대응해 감속·개조가 유효 선복량을 얼마나 잠식하는지 봅니다. 2050년까지의 전체 경로가 아니라 현재 확정된 감축 계수 구간만 다룹니다.'
     },
+    shipping_arctic: {
+      eyebrow: 'NORTHERN SEA ROUTE',
+      title: '북극항로',
+      desc: '항로선 위 6개 구간의 해빙 농도(NSIDC 일별 위성 자료)로 북극항로가 언제 열리고 닫히는지 선급별로 판정하고, 다음 시즌을 전망합니다. 부산→로테르담 거리·일수를 수에즈·희망봉 항로와 비교합니다. 매일 자동 갱신됩니다.'
+    },
     shipping_fueleu: {
       eyebrow: 'FUELEU MARITIME',
       title: 'FuelEU 풀링',
@@ -56,6 +61,7 @@
     ['shipping_fleet', '글로벌 선대'],
     ['shipping_routes', '항로 운항 선복량'],
     ['shipping_chokepoints', '초크포인트'],
+    ['shipping_arctic', '북극항로'],
     ['shipping_carbon', '탄소금융'],
     ['shipping_fueleu', 'FuelEU 풀링']
   ];
@@ -506,8 +512,8 @@
             <p class="shipping-hero-desc">${escapeHtml(meta.desc)}</p>
           </div>
           <div class="shipping-hero-meta">
-            <span>${target === 'shipping_carbon' ? '가상 고객·가상 가격 시나리오' : target === 'shipping_fueleu' ? 'Regulation (EU) 2023/1805 · 공개 자료' : `스냅샷 ${formatDate(data.generated_at)}`}</span>
-            ${source && !['shipping_chokepoints', 'shipping_carbon', 'shipping_fueleu'].includes(target) ? `<a class="shipping-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">UNCTAD 원문 ↗</a>` : ''}
+            <span>${target === 'shipping_arctic' ? 'NSIDC 해빙 · CHNL 운항 기록' : target === 'shipping_carbon' ? '가상 고객·가상 가격 시나리오' : target === 'shipping_fueleu' ? 'Regulation (EU) 2023/1805 · 공개 자료' : `스냅샷 ${formatDate(data.generated_at)}`}</span>
+            ${source && !['shipping_chokepoints', 'shipping_carbon', 'shipping_fueleu', 'shipping_arctic'].includes(target) ? `<a class="shipping-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">UNCTAD 원문 ↗</a>` : ''}
           </div>
         </header>
         <nav class="shipping-tabs" aria-label="해운 데이터 화면">${tabs}</nav>
@@ -2065,6 +2071,14 @@
     else slot.innerHTML = '<div class="shipping-error"><strong>탄소금융 모듈을 불러오지 못했습니다.</strong></div>';
   };
 
+  // The Northern Sea Route view lives in shipping-arctic.js; this only frames it.
+  const renderArctic = (data, root) => {
+    root.innerHTML = pageShell('shipping_arctic', '<div id="shipping-arctic-standalone"></div>', data);
+    const slot = root.querySelector('#shipping-arctic-standalone');
+    if (window.ShippingArctic) window.ShippingArctic.render(slot);
+    else slot.innerHTML = '<div class="shipping-error"><strong>북극항로 모듈을 불러오지 못했습니다.</strong></div>';
+  };
+
   const renderFuelEU = (data, root) => {
     root.innerHTML = pageShell('shipping_fueleu', '<div id="shipping-fueleu-standalone"></div>', data);
     const slot = root.querySelector('#shipping-fueleu-standalone');
@@ -2092,7 +2106,8 @@
     shipping_scenarios: renderScenarios,
     shipping_environment: renderEnvironment,
     shipping_carbon: renderCarbon,
-    shipping_fueleu: renderFuelEU
+    shipping_fueleu: renderFuelEU,
+    shipping_arctic: renderArctic
   };
 
   const render = async (target, host) => {
