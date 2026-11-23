@@ -64,5 +64,25 @@ class KoreaSourcesTest(unittest.TestCase):
         self.assertIsNone(K.block("wheat", {}, {}, {}))
 
 
+class ComexStatTest(unittest.TestCase):
+    def test_parse_and_merge(self):
+        import comexstat as C
+        body = {"data": {"list": [
+            {"year": "2026", "monthNumber": "07", "country": "South Korea", "headingCode": "1201", "metricKG": "60900000"},
+            {"year": "2026", "monthNumber": "07", "country": "North Korea", "headingCode": "1201", "metricKG": "5000"},
+            {"year": "2026", "monthNumber": "06", "country": "China", "headingCode": "1201", "metricKG": "9000000000"},
+        ]}}
+        got = C.parse(body)
+        self.assertEqual(got["202607"]["soybeans"], 60900)
+        self.assertEqual(got["202606"]["soybeans"], 0)
+        mirror = {"_reporters": {"202606": ["124", "842"], "202607": ["842"]},
+                  "soybeans": {"202606": {"842": 4306}}}
+        C.merge(mirror, {**got, "202605": {"soybeans": 1}})
+        self.assertIn("76", mirror["_reporters"]["202606"])
+        self.assertNotIn("76", mirror["soybeans"]["202606"])
+        self.assertEqual(mirror["soybeans"]["202607"]["76"], 60900)
+        self.assertNotIn("202605", mirror["_reporters"])
+
+
 if __name__ == "__main__":
     unittest.main()
