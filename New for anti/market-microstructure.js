@@ -181,10 +181,11 @@ const msDirHistChart = (rows, ticker, head) => {
         ${bars}<path d="${line}" fill="none" stroke="var(--ms-hist-act)" stroke-width="1.4"/>${dots}${xl}
     </svg>`;
 };
-const msDirHistScore = (rows, ticker, head, src = 'v1') => {
+const msDirHistScore = (rows, ticker, head, src = 'v1', model = null) => {
     const key = head === 'opening_up' ? 'open_ret' : 'close_ret';
     const out = { live: [0, 0], replay: [0, 0] };
     rows.forEach((r) => {
+        if (model && (r.model_id || '') !== model) return;
         const p = ((r[src] || {})[ticker] || {})[head];
         const a = ((r.actual || {})[ticker] || {})[key];
         if (!Number.isFinite(p) || !Number.isFinite(a) || a === 0 || Math.round(p * 100) === 50) return;
@@ -209,10 +210,32 @@ const msDirectionHistorySection = (D) => {
         </div>`;
     }).join('')).join('');
     const live = rows.filter((r) => r.kind === 'live').length;
+    // 정답률 표: 전 기간(모든 모델 버전) vs 최신 모델만. Latest = the model the
+    // file was last built with; rows keep their own model_id across updates.
+    const latest = h.model_id || '';
+    const models = [...new Set(rows.map((r) => r.model_id).filter(Boolean))];
+    const sum = (o) => [o.live[0] + o.replay[0], o.live[1] + o.replay[1]];
+    const pctCell = ([k, n]) => (n ? `<b>${msPct0(k / n)}</b> <span class="ms-hist-n">${k}/${n}</span>` : '—');
+    const tRows = MS_DIRECTION_ORDER.map((tk) => ['opening_up', 'closing_up'].map((head) => {
+        const all = msDirHistScore(rows, tk, head), cur = msDirHistScore(rows, tk, head, 'v1', latest);
+        const us = msDirHistScore(rows, tk, head, 'us_price');
+        return `<tr><td>${MS_HIST_NAME[tk]} · ${head === 'opening_up' ? '시가' : '종가'}</td>
+            <td>${pctCell(sum(all))}</td><td>${pctCell(sum(cur))}</td><td>${pctCell(cur.live)}</td><td>${pctCell(sum(us))}</td></tr>`;
+    }).join('')).join('');
+    const tot = (fn) => MS_DIRECTION_ORDER.flatMap((tk) => ['opening_up', 'closing_up'].map((hd) => sum(fn(tk, hd))))
+        .reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
+    const table = `<div class="fin-table-wrap"><table class="fin-table ms-hist-table">
+        <thead><tr><th>종목 · 구간</th><th>전 기간<br><small>모든 모델 ${models.length}개</small></th><th>최신 모델<br><small>${finEsc(latest.slice(0, 7))}</small></th><th>최신 모델 중<br><small>08:30 전 기록만</small></th><th>미국 주가 모델<br><small>참고</small></th></tr></thead>
+        <tbody>${tRows}<tr class="ms-hist-total"><td>합계</td><td>${pctCell(tot((tk, hd) => msDirHistScore(rows, tk, hd)))}</td><td>${pctCell(tot((tk, hd) => msDirHistScore(rows, tk, hd, 'v1', latest)))}</td>
+            <td>${pctCell(MS_DIRECTION_ORDER.flatMap((tk) => ['opening_up', 'closing_up'].map((hd) => msDirHistScore(rows, tk, hd, 'v1', latest).live)).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]))}</td>
+            <td>${pctCell(tot((tk, hd) => msDirHistScore(rows, tk, hd, 'us_price')))}</td></tr></tbody>
+    </table></div>
+    <p class="fin-note">정답 = 예측 방향(상승 확률 50% 초과/미만)과 실제 방향(전일 종가 대비)이 같은 날. 전 기간·최신 모델 칸은 08:30 전 기록과 재생을 합친 값이고, 재생은 사전 예측이 아니므로 실제 성적은 「08:30 전 기록만」 칸입니다. 모델이 바뀌면 이전 모델의 날짜는 전 기간에만 남습니다.</p>`;
     return `
     <section class="fin-block fin-block-wide">
         <div class="ms-dir-section-head"><h2>예측 vs 실제 · 누적</h2><span class="ms-dir-badge is-muted">08:30 전 기록 ${live}일 · 재생 ${rows.length - live}일</span></div>
         <p class="fin-lead"><span class="ms-hist-key is-pred"></span>파랑 막대 = 통합 전망의 상승 확률(가운데 50%, 위로 갈수록 상승 쪽) · <span class="ms-hist-key is-act"></span>빨강 선 = 실제 등락률(전일 종가 대비). 둘이 0선의 같은 쪽이면 방향을 맞힌 날입니다. 흐린 막대는 같은 동결 엔진을 나중에 돌린 <b>재생</b>이라 사전 예측 성적이 아닙니다.</p>
+        ${table}
         <div class="ms-hist-grid">${cells}</div>
         <div class="ms-dir-foot">${msDayLabel(rows[0].target)} ~ ${msDayLabel(rows[rows.length - 1].target)} · 모델 ${finEsc(String(h.model_id || '').slice(0, 7))} (학습 ~${finEsc(msDayLabel(h.trained_through))}, 그 이전은 학습 구간이라 제외) · 실제 = 네이버 일봉 · 보합(0%)과 50% 예측은 적중 계산에서 뺌</div>
     </section>`;
