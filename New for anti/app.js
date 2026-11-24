@@ -673,36 +673,53 @@ function initSignalPanel() {
         if (dot) jump(Number(dot.dataset.idx));
     });
 
-    // Drag the page name to step by hand: right reveals the page to its
-    // right (next), left reveals the page to its left (previous) -- the
-    // same order the dots already walk. Delegated on `stage` because the
-    // name node is rebuilt on every rotation (signalBuildPage), so a
-    // listener bound to the element itself would be gone after one flip.
+    // Drag to step by hand: right reveals the page to its right (next), left
+    // reveals the page to its left (previous) -- the same order the dots
+    // already walk. Starts from the name label OR any of the four slots
+    // ("밑에 4개 있는거 위에 클릭하고 ... 돌리면", 2026-11-24) -- originally
+    // name-label-only, which on a phone is a sliver of text easy to miss
+    // entirely. Delegated on `stage` because both are rebuilt on every
+    // rotation (signalBuildPage), so a listener bound to the elements
+    // themselves would be gone after one flip.
     const SIGNAL_SWIPE_PX = 32;
+    // A slot is also a tap target (openSlot, below) -- a drag has to move
+    // past a small jitter threshold before it claims the gesture, so an
+    // imprecise tap still opens the chart instead of silently doing nothing.
+    const SIGNAL_DRAG_CLAIM_PX = 6;
     let dragStartX = null;
+    let dragMoved = false;
+    let dragSwiped = false;
 
     const onSignalDragMove = (e) => {
+        if (dragStartX === null) return;
+        const x = e.clientX ?? e.touches?.[0]?.clientX;
+        if (x === undefined) return;
+        if (!dragMoved && Math.abs(x - dragStartX) > SIGNAL_DRAG_CLAIM_PX) dragMoved = true;
         // Dragging the name text would otherwise also select it or, on
-        // touch, scroll the page horizontally.
-        if (dragStartX !== null) e.preventDefault();
+        // touch, scroll the page horizontally -- only once the gesture is
+        // claimed as a drag, so a plain tap's pointermove noise doesn't
+        // block the page's own scroll/selection.
+        if (dragMoved) e.preventDefault();
     };
     const onSignalDragEnd = (e) => {
         if (dragStartX === null) return;
         const endX = e.clientX ?? e.changedTouches?.[0]?.clientX ?? dragStartX;
         const deltaX = endX - dragStartX;
         dragStartX = null;
+        dragMoved = false;
         window.removeEventListener('pointermove', onSignalDragMove);
         window.removeEventListener('pointerup', onSignalDragEnd);
         window.removeEventListener('pointercancel', onSignalDragEnd);
-        if (deltaX >= SIGNAL_SWIPE_PX) jump(signalIndex + 1);
-        else if (deltaX <= -SIGNAL_SWIPE_PX) jump(signalIndex - 1);
+        if (deltaX >= SIGNAL_SWIPE_PX) { dragSwiped = true; jump(signalIndex + 1); }
+        else if (deltaX <= -SIGNAL_SWIPE_PX) { dragSwiped = true; jump(signalIndex - 1); }
     };
     stage.addEventListener('pointerdown', (e) => {
-        if (!e.target.closest('.signal-page-name')) return;
+        if (!e.target.closest('.signal-page-name') && !e.target.closest('.signal-slot')) return;
         dragStartX = e.clientX;
-        // Bound to window, not the name element: the pointer regularly ends
-        // up outside a small text label mid-drag, and the element itself may
-        // be mid-flip-out by the time the gesture finishes.
+        // Bound to window, not the start element: the pointer regularly ends
+        // up outside a small text label (or past a slot's edge) mid-drag,
+        // and the element itself may be mid-flip-out by the time the
+        // gesture finishes.
         window.addEventListener('pointermove', onSignalDragMove, { passive: false });
         window.addEventListener('pointerup', onSignalDragEnd);
         window.addEventListener('pointercancel', onSignalDragEnd);
@@ -711,7 +728,12 @@ function initSignalPanel() {
     const openSlot = (slot) => {
         if (slot?.dataset.symbol) openChartModal(slot.dataset.label, slot.dataset.symbol, slot.dataset.ma === '1');
     };
-    stage.addEventListener('click', (e) => openSlot(e.target.closest('.signal-slot.is-clickable')));
+    stage.addEventListener('click', (e) => {
+        // A swipe that just landed shouldn't also pop the chart modal for
+        // whichever slot the pointer happened to release over.
+        if (dragSwiped) { dragSwiped = false; return; }
+        openSlot(e.target.closest('.signal-slot.is-clickable'));
+    });
     stage.addEventListener('keydown', (e) => {
         if (e.key !== 'Enter' && e.key !== ' ') return;
         const slot = e.target.closest('.signal-slot.is-clickable');
