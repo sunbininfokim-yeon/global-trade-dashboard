@@ -221,3 +221,20 @@ class PolicyTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class PrunePartsTest(unittest.TestCase):
+    def test_keeps_current_and_previous_generation_only(self):
+        import tempfile
+        from build_bilateral import prune_parts
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            (out / 'parts').mkdir()
+            names = {k: 'parts/' + k * 64 + '.json' for k in 'abc'}
+            for n in names.values():
+                (out / n).write_text('{}')
+            (out / 'parts' / 'notes.json').write_text('{}')  # not content-addressed
+            removed = prune_parts(out, {'entries': [{'path': names['a']}]}, {'entries': [{'path': names['b']}]})
+            self.assertEqual(removed, [names['c']])
+            self.assertTrue((out / names['b']).exists())
+            self.assertTrue((out / 'parts' / 'notes.json').exists())

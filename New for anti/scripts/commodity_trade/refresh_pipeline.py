@@ -109,6 +109,8 @@ def main():
     status['auth'] = {'comtrade_direct_key_present':bool(os.getenv('COMTRADE_API_KEY')),
                       'korea_direct_key_present':bool(os.getenv('KOREA_CUSTOMS_SERVICE_KEY')),
                       'gateway_configured':gateway}
+    committed_path = PUBLIC/'commodity_trade_bilateral_v1'/'index.json'
+    committed_bilateral = json.loads(committed_path.read_text()) if committed_path.exists() else {}
     try:
         if not args.skip_global and not args.resume_only:
             run_stage('global_sources', ['build_monthly.py'], status, 3600)
@@ -140,6 +142,12 @@ def main():
                 '--months','3','--max-requests','60','--interval','3','--checkpoint',str(checkpoint)],status)
         run_stage('coverage',['monthly_coverage.py'],status)
         valid = run_stage('release_gate',['validate_release.py'],status)
+        if valid and (PUBLIC/'commodity_trade_bilateral_v1'/'index.json').exists():
+            # Retire parts neither the new index nor the committed one lists.
+            from build_bilateral import prune_parts
+            bilateral = PUBLIC/'commodity_trade_bilateral_v1'
+            status['bilateral_parts_pruned'] = len(prune_parts(
+                bilateral, json.loads((bilateral/'index.json').read_text()), committed_bilateral))
         status['status'] = 'completed' if valid and all(s['status']=='completed' for s in status['stages']) else 'partial'
         # Completion of bounded execution is distinct from worldwide acquisition.
         required = [s for s in status['stages'] if s.get('required',True)]
