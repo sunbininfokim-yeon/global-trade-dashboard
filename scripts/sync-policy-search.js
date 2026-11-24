@@ -22,20 +22,48 @@ function failureReason(error) {
   return 'unexpected_error';
 }
 
-async function processJob(job, loader, embed = true) {
+async function processJob(job, loader, embed = true, {
+  get = supabaseGet,
+  rpc = supabaseRpc,
+  embedTexts = (inputs) => geminiEmbeddings(inputs, requireEnv('GEMINI_API_KEY'), MODEL),
+} = {}) {
   const document = await loader.document(job.source_type, job.source_id);
-  const existing = await supabaseGet('policy_search_passages', { select: 'passage_index,input_hash,embedding_model,embedded_at', document_id: `eq.${job.document_id}` });
-  const saved = await supabaseRpc('save_policy_search_document', { p_document: document, p_passages: document.passages, p_token: job.claim_token }, 'return=representation');
-  if (!saved) return { superseded: true, embedded: 0 };
-  const dirty = document.passages.filter(p => !existing.some(x => x.passage_index === p.passage_index && x.input_hash === p.input_hash && x.embedding_model === MODEL && x.embedded_at));
-  if (embed && dirty.length) {
-    const vectors = await geminiEmbeddings(dirty.map(p => p.input_text), requireEnv('GEMINI_API_KEY'), MODEL);
-    dirty.forEach((p, i) => { p.embedding = vectors[i]; p.embedding_model = MODEL; });
-    if (!await supabaseRpc('save_policy_search_document', { p_document: document, p_passages: document.passages, p_token: job.claim_token }, 'return=representation'))
-      return { superseded: true, embedded: dirty.length };
+  const existing = await get('policy_search_passages', {
+    select: 'passage_index,input_hash,embedding_model',
+    document_id: `eq.${job.document_id}`,
+    embedding: 'not.is.null',
+  });
+  const existingByIndex = new Map(existing.map(passage => [passage.passage_index, passage]));
+  const dirty = document.passages.filter(passage => {
+    const stored = existingByIndex.get(passage.passage_index);
+    return stored?.input_hash !== passage.input_hash || stored?.embedding_model !== MODEL;
+  });
+  const pendingEmbeddings = !embed && dirty.length > 0;
+  const result = {
+    embedded: 0,
+    text_status: document.text_status,
+    coverage: document.embedding_coverage,
+    pending_embeddings: pendingEmbeddings,
+  };
+
+  // 텍스트만 갱신하는 실행에서도 이미 검색되는 문서는 벡터와 함께 교체할 때까지 보존한다.
+  if (pendingEmbeddings && existing.length > 0) return { ...result, preserved_existing: true };
+
+  // 외부 호출이 실패하면 저장 RPC를 호출하지 않는다. 새 문단과 벡터는 한 번에 저장한다.
+  if (embed && dirty.length > 0) {
+    const vectors = await embedTexts(dirty.map(passage => passage.input_text));
+    dirty.forEach((passage, index) => {
+      passage.embedding = vectors[index];
+      passage.embedding_model = MODEL;
+    });
   }
-  // A text-only preview must remain queued for later embeddings.
-  return { embedded: embed ? dirty.length : 0, text_status: document.text_status, coverage: document.embedding_coverage, pending_embeddings: !embed && dirty.length > 0 };
+  const saved = await rpc('save_policy_search_document', {
+    p_document: document,
+    p_passages: document.passages,
+    p_token: job.claim_token,
+  }, 'return=representation');
+  if (!saved) return { superseded: true, embedded: 0 };
+  return { ...result, embedded: embed ? dirty.length : 0 };
 }
 async function seed(types, limit, after = '') {
   let enqueued = 0;
@@ -90,7 +118,16 @@ async function run() {
   const lock = path.join(root, 'RUNNING');
   try { acquireLock(lock, {pid:process.pid,started_at:new Date().toISOString()}); }
   catch (e) { if(e.message==='collector_already_running'){console.log('Search indexer already running; skipped.');process.exitCode=75;return;}throw e; }
-  const loader = sourceLoader({ cacheDir: root }); let completed = 0;
+  const loader = sourceLoader({ cacheDir: root });
+  const summary = {
+    attempted: 0,
+    completed: 0,
+    failed: 0,
+    superseded: 0,
+    text_only_pending: 0,
+    embedded_passages: 0,
+    stop_reason: 'batch_limit',
+  };
   const deadline=Date.now()+Math.max(1,Number(val('--max-minutes'))||60)*60000;
   try {
     if (!fs.existsSync(path.join(root, 'STOP')) && !(process.env.POLICY_COLLECTOR_STOP_FILE && fs.existsSync(process.env.POLICY_COLLECTOR_STOP_FILE))) {
@@ -98,32 +135,58 @@ async function run() {
       if (requeued) console.log(JSON.stringify({ missing_text_requeued:requeued }));
     }
     for (let i = 0; i < limit; i++) {
-      if (Date.now()>=deadline) break;
-      if (fs.existsSync(path.join(root, 'STOP')) || (process.env.POLICY_COLLECTOR_STOP_FILE && fs.existsSync(process.env.POLICY_COLLECTOR_STOP_FILE))) break;
+      if (Date.now() >= deadline) { summary.stop_reason = 'time_limit'; break; }
+      if (fs.existsSync(path.join(root, 'STOP')) || (process.env.POLICY_COLLECTOR_STOP_FILE && fs.existsSync(process.env.POLICY_COLLECTOR_STOP_FILE))) {
+        summary.stop_reason = 'stop_file';
+        break;
+      }
       if (i%25===0) {
         const status=await supabaseRpc('policy_search_status', {});
         const budget=Number(process.env.POLICY_SEARCH_DB_BUDGET_BYTES)||6*1024**3;
         if (!Number.isFinite(Number(status.database_bytes)) || Number(status.database_bytes)<=0) throw new Error('Database size check unavailable');
-        if (Number(status.database_bytes)>=budget) { console.warn('Search indexing paused: database storage budget reached.');process.exitCode=73;break; }
+        if (Number(status.database_bytes) >= budget) {
+          summary.stop_reason = 'storage_budget';
+          console.warn('Search indexing paused: database storage budget reached.');
+          process.exitCode = 73;
+          break;
+        }
       }
-      const job = (await supabaseRpc('claim_policy_search_job', {}, 'return=representation'))?.[0]; if (!job) break;
+      const job = (await supabaseRpc('claim_policy_search_job', {}, 'return=representation'))?.[0];
+      if (!job) { summary.stop_reason = 'no_claimable_jobs'; break; }
+      summary.attempted++;
       try {
         const result = await processJob(job, loader, !args.includes('--text-only'));
-        await supabaseRpc('finish_policy_search_job', { p_id: job.document_id, p_token: job.claim_token,
-          p_error: result.pending_embeddings ? 'Text indexed; embeddings pending' : null });
-        completed++; console.log(JSON.stringify({ document_id: job.document_id, ...result }));
+        summary.embedded_passages += result.embedded;
+        const finished = await supabaseRpc('finish_policy_search_job', { p_id: job.document_id, p_token: job.claim_token,
+          p_error: result.pending_embeddings ? 'Text-only run; embeddings pending' : null });
+        if (result.superseded || !finished) summary.superseded++;
+        else if (result.pending_embeddings) summary.text_only_pending++;
+        else summary.completed++;
+        console.log(JSON.stringify({ document_id: job.document_id, ...result, job_finished: Boolean(finished) }));
       } catch (e) {
         // Do not persist raw provider errors or URLs with credentials.
         const reason = failureReason(e);
         await supabaseRpc('finish_policy_search_job', { p_id: job.document_id, p_token: job.claim_token,
           p_error: `Index refresh failed: ${reason}` });
         console.error(`Index refresh failed for ${job.document_id}: ${reason}`);
+        summary.failed++;
         process.exitCode=2;
-        if (['http_403','http_429','missing_environment'].includes(reason) || isOptionalEmbeddingError(e)) break;
+        if (['http_403','http_429','missing_environment'].includes(reason) || isOptionalEmbeddingError(e)) {
+          summary.stop_reason = reason;
+          break;
+        }
       }
       await sleep(300);
     }
-    console.log(JSON.stringify({ completed }));
+    // 집계 일시 장애가 색인 결과를 바꾸지 않도록, 확인하지 못한 건수는 null로 남긴다.
+    let finalStatus;
+    try { finalStatus = await supabaseRpc('policy_search_status', {}); }
+    catch (error) { console.warn(`Search queue summary unavailable: ${failureReason(error)}`); }
+    console.log(JSON.stringify({
+      ...summary,
+      queue_pending: finalStatus?.pending ?? null,
+      queue_failed: finalStatus?.failed ?? null,
+    }));
   } finally { releaseLock(lock,process.pid); }
 }
 module.exports = { processJob, seed, run, failureReason, reconcileMissingText };
