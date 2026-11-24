@@ -5508,7 +5508,13 @@ const stageLiveRecordHtml = (sc) => {
         const mark = r.hit == null ? '' : (r.hit ? ' <span style="color:#86efac;">적중</span>' : ' <span style="color:#fdba74;">빗나감</span>');
         return `${r.harvest_year} ${r.verdict_ko}${r.history_check === 'unmatched' ? '(참고)' : ''} → 추세 대비 ${res}${mark}`;
     });
-    const pending = sc.live_pending ? `${sc.season} ${sc.live_pending.verdict_ko} 판정은 ${sc.live_pending.frozen_on} 기록, 공식 수확량이 나오면 채점` : '';
+    const pv = sc.live_pending?.provisional;
+    const pvRes = pv ? `${pv.residual_pct >= 0 ? '+' : ''}${pv.residual_pct}%` : '';
+    const pvMark = pv?.hit == null ? '' : (pv.hit ? ' 맞는 쪽' : ' 어긋나는 쪽');
+    const pending = sc.live_pending
+        ? `${sc.season} ${sc.live_pending.verdict_ko} 판정은 ${sc.live_pending.frozen_on} 기록, 공식 수확량이 나오면 채점`
+          + (pv ? ` (잠정: USDA ${pv.country_ko} 단수 추정 ${pv.market_year} 추세 대비 ${pvRes}${pvMark})` : '')
+        : '';
     if (!rows.length && !pending) return '';
     return `<div class="climate-sub" style="margin-top:4px;">실시간 채점: ${[pending, ...rows].filter(Boolean).join(' · ')}</div>`;
 };

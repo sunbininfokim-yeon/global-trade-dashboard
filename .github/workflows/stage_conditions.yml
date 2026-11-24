@@ -45,6 +45,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add "New for anti/public/data/stage_conditions_v1.json" \
                   "New for anti/scripts/yield_model/stage_conditions/ledger.json"
+          # USDA national yields for the provisional score; absent if PSD never answered.
+          f="New for anti/scripts/yield_model/stage_conditions/psd_yields.csv"
+          if [ -f "$f" ]; then git add "$f"; fi
           git commit -m "chore: refresh stage weather conditions" || exit 0
           for i in 1 2 3; do
             git push && exit 0
