@@ -37,6 +37,8 @@ const MS_FILES = {
     direction: 'us_kr_direction_v1.json',
     // Forecast vs actual, one row per session (build_us_kr_direction_history.py).
     directionHistory: 'us_kr_direction_history.json',
+    // BTC/ETH, 김치 프리미엄, stablecoins, perp OI/funding, Upbit turnover (scripts/crypto).
+    crypto: 'crypto_board_v1.json',
 };
 
 // --- 다음 거래일 방향 (참고) — #868 개장전 실행기 ----------------------------
@@ -349,6 +351,7 @@ const MS_TABS = [
     { id: 'levels', label: '가격대별 체결', blurb: '어느 가격에서 누가 샀는가 (Volume Profile)' },
     { id: 'uskr',   label: '해외-국내 선행', blurb: '미국 옵션 레짐이 한국으로 (Global Spillover)' },
     { id: 'derivatives', label: '파생 수급', blurb: '외국인 K200 선물·옵션 수급과 시장 전체 거래 활동' },
+    { id: 'crypto', label: '가상자산', blurb: 'BTC·ETH 가격, 김치 프리미엄, 스테이블코인 유동성, 선물 레버리지, 업비트 거래대금' },
 ];
 
 let MS_DATA = null;
@@ -2740,8 +2743,145 @@ const msModalFor = (key, D) => {
     return null;
 };
 
+
+// --- 가상자산 -------------------------------------------------------------------
+// Daily history from crypto_board_v1.json (scripts/crypto/build_crypto_board.py)
+// plus a live strip from the worker's /api/crypto-live (60 s KV cache). The live
+// numbers are only the top cards; every chart is the daily file, so a chart
+// never mixes an intraday print into a series of daily closes.
+const MS_CR_WINS = [['90', '3개월'], ['365', '1년'], ['1095', '3년'], ['all', '전체']];
+let MS_CR_WIN = '365';
+let MS_CR_COIN = 'BTC';
+let MS_CR_LIVE = null;
+let MS_CR_LIVE_AT = 0;
+let MS_CR_LIVE_BUSY = false;
+
+const msCrSeries = (D, key) => Object.entries((((D.crypto || {}).series || {})[key]) || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+const msCrWin = (rows) => (MS_CR_WIN === 'all' ? rows : rows.slice(-Number(MS_CR_WIN)));
+const msCrDate = (d) => `${d.slice(2, 4)}.${d.slice(5, 7)}.${d.slice(8, 10)}`;
+const msCrMa = (vals, n) => vals.map((_, i) => {
+    if (i + 1 < n) return null;
+    let s = 0;
+    for (let k = i - n + 1; k <= i; k += 1) { if (!Number.isFinite(vals[k])) return null; s += vals[k]; }
+    return s / n;
+});
+const msCrPct = (v, dg = 2) => (Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${v.toFixed(dg)}%` : '—');
+const msCrCls = (v) => (Number.isFinite(v) ? (v >= 0 ? 'ms-cr-up' : 'ms-cr-down') : '');
+
+const msCrFetchLive = async (repaint) => {
+    if (MS_CR_LIVE_BUSY || Date.now() - MS_CR_LIVE_AT < 55000) return;
+    MS_CR_LIVE_BUSY = true;
+    try {
+        const r = await fetch('/api/crypto-live', { cache: 'no-store' });
+        if (r.ok) { MS_CR_LIVE = await r.json(); MS_CR_LIVE_AT = Date.now(); }
+    } catch (_) { /* local static server: no worker -- the cards fall back to the daily file */ }
+    MS_CR_LIVE_BUSY = false;
+    if (MS_TAB === 'crypto') repaint();
+};
+
+const msCryptoLive = (D) => {
+    const L = MS_CR_LIVE;
+    const last = (k) => { const r = msCrSeries(D, k); return r.length ? r[r.length - 1] : null; };
+    const coin = (sym) => {
+        const live = L && L[sym.toLowerCase()];
+        const usd = live && Number.isFinite(live.usd) ? live.usd : (last(`${sym}_usd`) || [])[1];
+        const krw = live && Number.isFinite(live.krw) ? live.krw : (last(`${sym}_krw`) || [])[1];
+        const chg = live ? live.usd_change_pct : null;
+        return msCard(`${sym} 가격`, `$${mmFmt(usd, 0)}`,
+            `${Number.isFinite(krw) ? `${mmFmt(krw / 1e4, 0)}만원` : '—'} · <span class="${msCrCls(chg)}">${msCrPct(chg)}</span> (UTC 0시 대비)`);
+    };
+    const kp = L && L.btc && Number.isFinite(L.btc.kimchi_pct) ? L.btc.kimchi_pct : (last('BTC_kimchi_pct') || [])[1];
+    const kpRows = msCrSeries(D, 'BTC_kimchi_pct').slice(-365).map((r) => r[1]).sort((a, b) => a - b);
+    const kpRank = Number.isFinite(kp) && kpRows.length ? Math.round(kpRows.filter((v) => v <= kp).length / kpRows.length * 100) : null;
+    const fund = L && Number.isFinite(L.btc_funding_pct) ? L.btc_funding_pct : (last('btc_funding_pct') || [])[1];
+    const turn = L && Number.isFinite(L.upbit_turnover_24h_tn) ? L.upbit_turnover_24h_tn : (last('upbit_total_turnover_tn') || [])[1];
+    const stable = msCrSeries(D, 'stablecoin_bn');
+    const st = stable.length ? stable[stable.length - 1][1] : null;
+    const st30 = stable.length > 30 ? (st / stable[stable.length - 31][1] - 1) * 100 : null;
+    const asOf = L && L.as_of ? `실시간 ${new Date(L.as_of).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}` : '일별 종가 (실시간 연결 없음)';
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>지금</h2>
+        <p class="fin-lead">${finEsc(asOf)} · 업비트(원화)·OKX(달러) 시세, 1분 간격으로 갱신합니다.</p>
+        <div class="fin-cards">
+            ${coin('BTC')}
+            ${coin('ETH')}
+            ${msCard('김치 프리미엄 (BTC)', `<span class="${msCrCls(kp)}">${msCrPct(kp)}</span>`,
+                `업비트 원화가 / (달러가 × 원/달러) − 1${kpRank !== null ? ` · 최근 1년 중 상위 ${100 - kpRank}%` : ''}`)}
+            ${msCard('BTC 펀딩비 (연환산)', `<span class="${msCrCls(fund)}">${msCrPct(Number.isFinite(fund) ? fund * 1095 : null, 1)}</span>`,
+                `8시간 ${msCrPct(fund, 4)} · 양수 = 롱이 숏에 이자를 냄, 레버리지 롱 쏠림 (OKX 무기한)`)}
+            ${msCard('업비트 24시간 거래대금', Number.isFinite(turn) ? `${mmFmt(turn, 2)}조원` : '—', `원화마켓 전 종목${L && L.upbit_krw_markets ? ` ${L.upbit_krw_markets}개` : ''}`)}
+            ${msCard('스테이블코인 유통량', Number.isFinite(st) ? `$${mmFmt(st, 0)}B` : '—', `30일 ${msCrPct(st30, 1)} · 코인 시장의 달러 유동성`)}
+        </div>
+    </section>`;
+};
+
+const msCrypto = (D) => {
+    if (!D.crypto || !D.crypto.series) {
+        return `<section class="fin-block fin-block-wide"><p class="fin-note">가상자산 자료(<code>crypto_board_v1.json</code>)를 찾지 못했습니다. 일일 워크플로가 만듭니다.</p></section>`;
+    }
+    const notes = D.crypto.notes_ko || {};
+    const panel = (p) => `<div class="mm-chart-box">${mmPanelView({ compare_ko: '전일', ...p })}</div>`;
+    const sym = MS_CR_COIN;
+
+    const px = msCrWin(msCrSeries(D, `${sym}_usd`));
+    const allPx = msCrSeries(D, `${sym}_usd`).map((r) => r[1]);
+    const off = allPx.length - px.length;
+    const ma50 = msCrMa(allPx, 50).slice(off), ma200 = msCrMa(allPx, 200).slice(off);
+    const kim = msCrWin(msCrSeries(D, `${sym}_kimchi_pct`));
+    const stable = msCrWin(msCrSeries(D, 'stablecoin_bn'));
+    const oi = msCrWin(msCrSeries(D, 'btc_oi_bn'));
+    const fund = msCrWin(msCrSeries(D, 'btc_funding_pct'));
+    const turnB = Object.fromEntries(msCrSeries(D, 'BTC_upbit_turnover_tn'));
+    const turnE = Object.fromEntries(msCrSeries(D, 'ETH_upbit_turnover_tn'));
+    const turnDates = msCrWin(Object.keys(turnB).sort());
+    const total = Object.fromEntries(msCrSeries(D, 'upbit_total_turnover_tn'));
+    const dense = (n) => (n > 400 ? 'lines' : 'bars');
+
+    return `
+    ${msCryptoLive(D)}
+    <section class="fin-block fin-block-wide">
+        <div class="mm-tabs ms-flow-tabs" role="group" aria-label="코인과 기간">
+            ${['BTC', 'ETH'].map((c) => `<button class="mm-view-btn ${c === sym ? 'on' : ''}" data-ms-cr-coin="${c}">${c}</button>`).join('')}
+            <span style="width:12px"></span>
+            ${MS_CR_WINS.map(([id, ko]) => `<button class="mm-view-btn ${id === MS_CR_WIN ? 'on' : ''}" data-ms-cr-win="${id}">${finEsc(ko)}</button>`).join('')}
+        </div>
+        <h2>${sym} 가격과 이동평균</h2>
+        ${panel({ id: 'cr_px', label: `${sym} 가격`, type: 'lines', unit: '달러', dates: px.map((r) => msCrDate(r[0])),
+            series: [{ label: `${sym} (달러)`, values: px.map((r) => r[1]) }, { label: '50일선', values: ma50 }, { label: '200일선', values: ma200 }],
+            note_ko: `일별 종가(UTC 0시). 가격이 200일선 위면 장기 상승 추세로 봅니다. 출처: ${(D.crypto.sources || {})[`${sym}_usd`] || 'Yahoo'}.` })}
+        <h2>김치 프리미엄 (${sym})</h2>
+        ${panel({ id: 'cr_kimchi', label: '김치 프리미엄', type: dense(kim.length), unit: '%', dates: kim.map((r) => msCrDate(r[0])),
+            series: [{ label: '김치 프리미엄', values: kim.map((r) => r[1]) }],
+            note_ko: `${notes.kimchi || ''} 국내 개인 수요가 해외보다 뜨거우면 커지고, 2017년 말·2021년 봄처럼 과열기에는 10~50%까지 벌어졌습니다.` })}
+    </section>
+    <section class="fin-block fin-block-wide">
+        <h2>스테이블코인 유통량</h2>
+        ${panel({ id: 'cr_stable', label: '스테이블코인', type: 'lines', unit: '10억달러', dates: stable.map((r) => msCrDate(r[0])),
+            series: [{ label: '달러 스테이블코인 합계', values: stable.map((r) => r[1]) }], note_ko: notes.stable || '' })}
+        <h2>BTC 선물 레버리지</h2>
+        ${panel({ id: 'cr_oi', label: '미결제약정', type: dense(oi.length), unit: '10억달러', dates: oi.map((r) => msCrDate(r[0])),
+            series: [{ label: '미결제약정 (OKX)', values: oi.map((r) => r[1]) }], note_ko: notes.oi || '' })}
+        ${panel({ id: 'cr_funding', label: '펀딩비', type: dense(fund.length), unit: '%', dates: fund.map((r) => msCrDate(r[0])),
+            series: [{ label: '펀딩비 (연환산)', values: fund.map((r) => r[1] * 1095) }],
+            note_ko: `${notes.funding || ''} 차트는 8시간 값 × 3 × 365 = 연환산(%)입니다. 연 10%를 넘으면 레버리지 롱이 과열된 구간으로 봅니다.` })}
+        <p class="fin-note">OKX가 미결제약정 180일, 펀딩비 약 3개월만 제공해서, 그 이전은 비어 있고 매일 쌓입니다.</p>
+    </section>
+    <section class="fin-block fin-block-wide">
+        <h2>업비트 거래대금</h2>
+        ${panel({ id: 'cr_turn', label: '업비트 거래대금', type: turnDates.length > 400 ? 'lines' : 'stack', unit: '조원', dates: turnDates.map(msCrDate),
+            series: [{ label: 'BTC', values: turnDates.map((d) => turnB[d] ?? null) }, { label: 'ETH', values: turnDates.map((d) => turnE[d] ?? null) }],
+            line: Object.keys(total).length >= 2 ? { label: '원화마켓 전체(24시간)', values: turnDates.map((d) => total[d] ?? null) } : undefined,
+            note_ko: `BTC·ETH 원화 일 거래대금(조원, 업비트 일봉). ${notes.upbit || ''}` })}
+    </section>`;
+};
+
 const renderMicrostructure = async (host) => {
     host.innerHTML = `<div class="fin-wrap"><p class="fin-loading">시장 미시구조 자료를 받는 중…</p></div>`;
+    // /fin_derivatives/<tab> picks the tab (shared links, back/forward). A bare
+    // /fin_derivatives keeps whatever tab is set (msOpenTab from the home card).
+    const seg = (window.location.pathname.split('/')[2] || '').trim();
+    if (seg && MS_TABS.some((t) => t.id === seg)) MS_TAB = seg;
 
     if (!MS_DATA) {
         const keys = Object.keys(MS_FILES);
@@ -2764,6 +2904,14 @@ const renderMicrostructure = async (host) => {
         return;
     }
 
+    const syncUrl = (push) => {
+        if (!window.location.pathname.startsWith('/fin_derivatives')) return;
+        const want = `/fin_derivatives/${MS_TAB}`;
+        if (window.location.pathname === want) return;
+        window.history[push ? 'pushState' : 'replaceState']({ target: 'fin_derivatives' }, '', want + window.location.search);
+    };
+    syncUrl(false);
+
     const paint = () => {
         const tab = MS_TABS.find((x) => x.id === MS_TAB) || MS_TABS[0];
         host.innerHTML = `
@@ -2781,6 +2929,7 @@ const renderMicrostructure = async (host) => {
                 : MS_TAB === 'overseas' ? msOverseas(D)
                 : MS_TAB === 'levels' ? msLevelsTab(D)
                 : MS_TAB === 'derivatives' ? msDerivatives(D)
+                : MS_TAB === 'crypto' ? msCrypto(D)
                 : msUsKr(D)}
             ${MS_MODAL ? `
             <div class="ms-modal-back" data-ms-modal-close="1">
@@ -2795,7 +2944,9 @@ const renderMicrostructure = async (host) => {
         </div>`;
 
         const on = (sel, fn) => host.querySelectorAll(sel).forEach((b) => b.addEventListener('click', (e) => fn(b, e)));
-        on('[data-ms-tab]', (b) => { MS_TAB = b.dataset.msTab; MS_MODAL = null; paint(); });
+        on('[data-ms-tab]', (b) => { MS_TAB = b.dataset.msTab; MS_MODAL = null; syncUrl(true); paint(); });
+        on('[data-ms-cr-win]', (b) => { MS_CR_WIN = b.dataset.msCrWin; paint(); });
+        on('[data-ms-cr-coin]', (b) => { MS_CR_COIN = b.dataset.msCrCoin; paint(); });
         host.querySelector('[data-ms-overseas-group]')?.addEventListener('change', (e) => {
             MS_OVERSEAS_GROUP = e.target.value; MS_OVERSEAS_PRODUCT = null; paint();
         });
@@ -2849,6 +3000,12 @@ const renderMicrostructure = async (host) => {
         mmWireCharts(host);
         msWireMultiCharts(host);
         msWirePlcHover(host);
+        if (MS_TAB === 'crypto') {
+            msCrFetchLive(paint);
+            // Refresh the live strip while this tab stays on screen.
+            clearTimeout(window.__msCrTimer);
+            window.__msCrTimer = setTimeout(() => { if (MS_TAB === 'crypto' && host.isConnected) msCrFetchLive(paint); }, 60000);
+        }
     };
     paint();
 };
