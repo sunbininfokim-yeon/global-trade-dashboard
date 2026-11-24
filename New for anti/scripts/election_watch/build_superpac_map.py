@@ -243,7 +243,12 @@ def build(public=PUBLIC, cadence='daily', governor_rosters=None):
     # The map catalog is the sole commit point for all immutable map files.
     from validate_superpac_map import validate
     validate(public, catalog)
+    previous = json.loads((public / CATALOG).read_text(encoding='utf-8')) if (public / CATALOG).exists() else {}
     atomic_json(public / CATALOG, catalog)
+    # Retire map files neither this nor the previous catalog reaches. Other
+    # public JSON (live polls board) that points at race files keeps them.
+    from election_watch.asset_prune import prune
+    prune(public, 'usa_election_finance', [previous])
     return catalog
 
 

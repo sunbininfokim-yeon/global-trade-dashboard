@@ -1,0 +1,28 @@
+name: Static assets guard
+
+# Cloudflare Workers Free rejects a version with more than 20,000 static
+# files; on 2026-11-24 main had drifted past it and every deploy failed.
+# Counts the deploy bundle (.assetsignore applied) and checks that hashed
+# election assets keep at most one unreachable previous generation.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'New for anti/**'
+      - 'tools/ops/check_static_assets.py'
+      - '.github/workflows/static_assets_guard.yml'
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Static file count and election asset retention
+        run: python3 tools/ops/check_static_assets.py
+      - name: Asset prune unit tests
+        working-directory: New for anti/scripts/election_watch
+        run: python3 -m unittest discover -s tests -p 'test_election_asset_prune.py' -v

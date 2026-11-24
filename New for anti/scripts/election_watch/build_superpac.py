@@ -30,6 +30,7 @@ def publish(snapshot, public):
     cycle = snapshot['cycle']
     index_path = public / INDEX
     index = json.loads(index_path.read_text()) if index_path.exists() else {'schema': 'usa_superpac_index_v1', 'cycles': {}}
+    previous = json.loads(json.dumps(index))
     states = sorted(set(['US'] + [c['state'] for c in snapshot['candidates'] if c.get('state')] + [r['state'] for r in snapshot['spending']]))
     files = {}
     for state in states:
@@ -55,6 +56,9 @@ def publish(snapshot, public):
                  consumer_note_ko='수집 원본 단계입니다. 지도 UI는 consumer_index만 사용하세요.')
     # Index becomes visible only after every shard is durable. Failure leaves last good index intact.
     atomic_json(index_path, index)
+    # Shards neither this nor the previous index reaches are retired (asset cap).
+    from election_watch.asset_prune import prune
+    prune(public, 'usa_superpac', [previous])
 
 
 def main():
