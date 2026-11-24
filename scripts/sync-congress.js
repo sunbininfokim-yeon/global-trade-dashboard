@@ -55,6 +55,31 @@ async function apiGet(path, query = {}, optional = false) {
   }
 }
 
+async function loadBillActions(billPath, get = apiGet) {
+  const actionsPath = `${billPath}/actions`;
+  const actions = [];
+  let offset = 0;
+  while (true) {
+    const body = await get(actionsPath, { limit: 250, offset }, offset === 0);
+    if (!body && offset === 0) return actions;
+    if (!Array.isArray(body?.actions)) throw new Error(`Congress.gov ${actionsPath}: invalid action page`);
+    actions.push(...body.actions);
+    const next = body.pagination?.next;
+    if (!next) {
+      if (Number(body.pagination?.count) > actions.length) {
+        throw new Error(`Congress.gov ${actionsPath}: incomplete action history`);
+      }
+      return actions;
+    }
+    // 공식 응답이 알려 준 페이지 위치만 사용하고 요청 호스트와 경로는 고정한다.
+    const nextOffset = new URL(next, API_BASE).searchParams.get('offset');
+    if (!nextOffset || !/^[0-9]+$/.test(nextOffset) || Number(nextOffset) !== actions.length || actions.length <= offset) {
+      throw new Error(`Congress.gov ${actionsPath}: invalid action pagination`);
+    }
+    offset = Number(nextOffset);
+  }
+}
+
 function idOf(congress, type, number) { return `${congress}-${String(type).toLowerCase()}-${number}`; }
 function officialUrl(ref) { return PolicyEvidence.billUrl(ref.congress, ref.type, ref.number); }
 function asChamber(value) {
@@ -246,14 +271,13 @@ async function bundle(ref) {
   // lifecycle stage is based on evidence, not only the wording of the latest
   // one-line status. Index-only bills discard the timeline after classification
   // and persist only its newest action for monitoring, without text versions.
-  const [summaryBody, subjectBody, committeeBody, actionBody] = await Promise.all([
+  const [summaryBody, subjectBody, committeeBody, actions] = await Promise.all([
     apiGet(`${path}/summaries`, { limit: 250 }, true), apiGet(`${path}/subjects`, { limit: 250 }, true),
-    apiGet(`${path}/committees`, { limit: 250 }, true), apiGet(`${path}/actions`, { limit: 250 }, true),
+    apiGet(`${path}/committees`, { limit: 250 }, true), loadBillActions(path),
   ]);
   const summaries = asArray(summaryBody?.summaries);
   const latestSummary = [...summaries].sort((a, b) => String(a.updateDate || '').localeCompare(String(b.updateDate || ''))).at(-1);
   const basicLatestAction = detail.latestAction || ref.listItem?.latestAction || {};
-  const actions = asArray(actionBody?.actions);
   const lifecycle = PolicyEvidence.buildLifecycle({ bill_type: ref.type, origin_chamber: origin(ref.type),
     congress_url: officialUrl(ref), bill_actions: actions.length ? actions : [basicLatestAction] });
   const currentStage = lifecycle.current.stage;
@@ -360,9 +384,12 @@ async function saveBundle(data) {
   }
   let latestActionId = null;
   // Even an index-only record needs the newest official action for monitoring.
-  const historyActions = data.detailLevel === 'index'
-    ? [latestActionOf(data.actions, { actionDate: data.row.latest_action_date, text: data.row.latest_action_text })].filter(a => a?.text)
-    : data.actions;
+  const latestOfficialAction = latestActionOf(data.actions, { actionDate: data.row.latest_action_date, text: data.row.latest_action_text });
+  // 거부권 행사로 상세 저장 등급이 낮아져도 이전 통과 및 대통령 송부 근거는 보존한다.
+  const keepFullHistory = data.detailLevel !== 'index' || data.row.current_stage === 'vetoed';
+  const historyActions = keepFullHistory && data.actions.length
+    ? data.actions
+    : [latestOfficialAction].filter(action => action?.text);
   for (let index = 0; index < historyActions.length; index += 1) {
     const action = historyActions[index]; const actionText = firstNonEmpty(action.text, 'Action recorded'); const id = actionId(data.billId, action, index);
     const actionDate = parseTimestamp(`${parseDateOnly(action.actionDate) || '1900-01-01'}T${action.actionTime || '00:00:00'}Z`);
@@ -586,5 +613,5 @@ async function run() {
     throw error;
   }
 }
-module.exports = { stage, stageFromActions, actionChamber, lifecycleFromActions, prepareEmbedding };
+module.exports = { stage, stageFromActions, actionChamber, lifecycleFromActions, prepareEmbedding, loadBillActions };
 if (require.main === module) run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });
