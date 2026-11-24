@@ -51,15 +51,18 @@ def _text(raw: str) -> str:
 
 def find_gdp_release(get: Callable[[str], str]) -> str:
     """URL of the newest 'Preliminary Accounting Results of GDP' release on the English list pages."""
+    seen: list[str] = []
     for page in NBS_PAGES:
         try:
             raw = get(urljoin(NBS_LIST, page))
-        except Exception:  # noqa: BLE001 -- a missing later page just ends the walk
+        except Exception as exc:  # noqa: BLE001 -- a missing later page just ends the walk
+            seen.append(f"{page}: {exc}")
             break
+        seen.append(f"{page}: {len(raw)} chars")
         m = re.search(r'href="([^"]+)"[^>]*>\s*(?:\d+\.)?\s*Preliminary Accounting Results of GDP', raw)
         if m:
             return urljoin(urljoin(NBS_LIST, page), m.group(1))
-    raise ValueError("NBS: no 'Preliminary Accounting Results of GDP' release on the first list pages")
+    raise ValueError(f"NBS: no 'Preliminary Accounting Results of GDP' release on the first list pages ({'; '.join(seen)})")
 
 
 def parse_gdp_table(raw_html: str) -> list[tuple[str, float]]:
@@ -85,17 +88,20 @@ def fetch_gdp(get: Callable[[str], str]) -> tuple[list[tuple[str, float]], str]:
 def find_reserve_files(get: Callable[[str], str], years: int = 2) -> list[tuple[int, str]]:
     """[(year, page url)] of the newest `years` 'Official Reserve Assets (YYYY)' pages, newest first."""
     found: dict[int, str] = {}
+    seen: list[str] = []
     for page in SAFE_PAGES:
         try:
             raw = get(urljoin(SAFE_LIST, page))
-        except Exception:  # noqa: BLE001 -- a missing later page just ends the walk
+        except Exception as exc:  # noqa: BLE001 -- a missing later page just ends the walk
+            seen.append(f"{page}: {exc}")
             break
+        seen.append(f"{page}: {len(raw)} chars")
         for href, y in re.findall(r'href="([^"]+)"[^>]*>\s*Official Reserve Assets\s*[(（]\s*(20\d\d)\s*[)）]', raw):
             found.setdefault(int(y), urljoin(urljoin(SAFE_LIST, page), href))
         if len(found) >= years:
             break
     if not found:
-        raise ValueError("SAFE: no 'Official Reserve Assets (YYYY)' page on the first list pages")
+        raise ValueError(f"SAFE: no 'Official Reserve Assets (YYYY)' page on the first list pages ({'; '.join(seen)})")
     return sorted(found.items(), reverse=True)[:years]
 
 
@@ -163,6 +169,29 @@ def fetch_reserves(get: Callable[[str], str], get_bytes: Callable[[str], bytes],
         points.update(parse_reserves_xlsx(get_bytes(xlsx)))
         urls.append(page)
     return sorted(points.items()), urls
+
+
+def load_reserves_cache(path) -> tuple[list[tuple[str, float]], list[str], str] | None:
+    """The last SAFE read that succeeded: GitHub's runners do not always reach safe.gov.cn, and the
+    IMF step before this one rewrites the card every run, so without it a failed read would roll the
+    card back to the IMF's older months."""
+    import json
+    from pathlib import Path
+
+    f = Path(path)
+    if not f.exists():
+        return None
+    d = json.loads(f.read_text(encoding="utf-8"))
+    return [tuple(x) for x in d["points"]], d["source_urls"], d["fetched_at"]
+
+
+def save_reserves_cache(path, points: list[tuple[str, float]], urls: list[str], fetched_at: str) -> None:
+    import json
+    from pathlib import Path
+
+    Path(path).write_text(json.dumps({"schema": "cn_safe_reserves_cache_v1", "fetched_at": fetched_at,
+                                      "source_urls": urls, "points": [list(x) for x in points]},
+                                     ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
 
 def merge_history(card: dict[str, Any], safe: list[tuple[str, float]]) -> list[tuple[str, float]]:

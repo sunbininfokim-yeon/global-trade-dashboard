@@ -22,6 +22,7 @@ from macro_monitor import cn_official as cn  # noqa: E402
 from macro_monitor import us_public_series as ups  # noqa: E402
 
 PACK = ROOT.parent.parent / "public" / "data" / "macro_monitor_v1.json"
+SAFE_CACHE = ROOT / "config" / "cn_safe_reserves_cache_v1.json"
 
 
 def main() -> int:
@@ -46,12 +47,23 @@ def main() -> int:
         failed += 1
 
     try:
-        safe, urls = cn.fetch_reserves(cn.http_get, cn.http_get_bytes)
+        try:
+            safe, urls = cn.fetch_reserves(cn.http_get, cn.http_get_bytes)
+            cn.save_reserves_cache(SAFE_CACHE, safe, urls, retrieved)
+            fetched = retrieved
+        except Exception as exc:  # noqa: BLE001
+            cached = cn.load_reserves_cache(SAFE_CACHE)
+            if cached is None:
+                raise
+            print(f"FAILED fx_reserves read: {exc}", file=sys.stderr)
+            safe, urls, fetched = cached
+            print(f"CHN fx_reserves: using the SAFE months read at {fetched}")
+            failed += 1
         card = by_id.get("fx_reserves")
         if card is None:
             raise ValueError("no fx_reserves card on CHN")
         points = cn.merge_history(card, safe)
-        patch = cn.build_reserves_patch(points, urls, retrieved_at=retrieved)
+        patch = cn.build_reserves_patch(points, urls, retrieved_at=fetched)
         changed = ups.apply_patch(card, patch)
         if changed:
             touched.add("fx_reserves")
