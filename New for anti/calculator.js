@@ -271,6 +271,11 @@ const loadCompany = async (out, inst) => {
     const qrows = (data.quarterly || []).map(coDerive);
 
     let level = 'health';
+    // PE/CR + 투자지표 engine snapshot built from SEC companyfacts
+    // (tools/ops/build_kfa_sec_snapshots.py), keyed us_<TICKER>.
+    let engineView = null;
+    const usKey = `us_${sym.replace(/[.\s]/g, '-')}`;
+    const engine = { pecr: await pecrLoad(usKey).catch(() => null), pecrPeers: null };
     CO_DCF.growth = null;      // 새 기업이면 그 기업의 이력에서 다시 잡는다
     CO_STRUCT_OPEN = null;
     CO_OPEN_CARD = null;
@@ -292,11 +297,27 @@ const loadCompany = async (out, inst) => {
                     ${finEsc(L.label)}
                 </button>`).join('')}
         </div>
+        ${engine.pecr ? `<div class="pf-mode co-engine-views" role="tablist" aria-label="엔진 분석">
+            <span class="fin-note">엔진 분석</span>
+            ${[['metrics', '투자지표'], ['cr', 'CR(구조조정)'], ['pe', 'PE·LBO'], ['deal', '딜·밸류에이션']]
+                .filter(([v]) => !(engine.pecr.pe_cr?.industry === 'financial' && (v === 'pe')))
+                .map(([v, l]) => `<button type="button" class="pf-mode-btn ${engineView === v ? 'on' : ''}" data-engine-view="${v}">${l}</button>`).join('')}
+        </div>` : ''}
+        ${engineView ? pecrViewHtml(engine, engineView) : `
         <p class="fin-note co-blurb">${finEsc(CO_LEVELS.find((L) => L.id === level).blurb)}</p>
-        ${coRenderLevel(level, rows, data, qrows)}`;
+        ${coRenderLevel(level, rows, data, qrows)}`}`;
+
+        out.querySelectorAll('[data-engine-view]').forEach((b) => b.addEventListener('click', () => {
+            engineView = engineView === b.dataset.engineView ? null : b.dataset.engineView;
+            paint();
+        }));
+        if (engineView) {
+            KFA_VIEW = engineView;          // pecrBind loads deal-tab peers off KFA_VIEW
+            pecrBind(out, engine);
+        }
 
         out.querySelectorAll('[data-level]').forEach((b) => b.addEventListener('click', () => {
-            level = b.dataset.level; paint();
+            level = b.dataset.level; engineView = null; paint();
         }));
 
         out.querySelectorAll('[data-co-struct]').forEach((b) => b.addEventListener('click', () => {

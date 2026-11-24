@@ -91,13 +91,16 @@ class BudgetExhausted(RuntimeError):
 
 class Dart:
     def __init__(self, key: str, cache: Path, max_calls: int | None = None):
+        import threading
         self.key, self.cache, self.max_calls, self.calls = key, cache, max_calls, 0
+        self._lock = threading.Lock()
         cache.mkdir(parents=True, exist_ok=True)
 
     def _spend(self):
-        if self.max_calls is not None and self.calls >= self.max_calls:
-            raise BudgetExhausted(f'--max-calls {self.max_calls} reached')
-        self.calls += 1
+        with self._lock:
+            if self.max_calls is not None and self.calls >= self.max_calls:
+                raise BudgetExhausted(f'--max-calls {self.max_calls} reached')
+            self.calls += 1
 
     def get_bytes(self, path: str, **params) -> bytes | None:
         """Binary endpoint (fnlttXbrl.xml zip), cached; None on an API error body."""
@@ -846,6 +849,9 @@ def main() -> int:
     ap.add_argument('--max-calls', type=int, default=None, help='stop cleanly after this many OpenDART requests')
     ap.add_argument('--skip-fresh', action='store_true',
                     help='skip a company whose snapshot already has its newest periodic report and this builder version')
+    ap.add_argument('--workers', type=int, default=1, help='companies built in parallel (OpenDART latency bound)')
+    ap.add_argument('--max-minutes', type=float, default=None,
+                    help='start no new company after this many minutes, so a CI job always reaches its commit step')
     args = ap.parse_args()
     key = os.environ.get('DART_API_KEY', '').strip()
     if not key:
@@ -868,34 +874,53 @@ def main() -> int:
     # Companies with no snapshot first, so a short budget widens coverage.
     ordered.sort(key=lambda t: (OUT_DIR / f'{t[0]}_v1.json').exists())
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    index, failed, skipped = {}, {}, 0
-    for corp, stock, label in ordered:
+    index, failed = {}, {}
+    state = {'skipped': 0, 'stop': None}
+    deadline = time.monotonic() + args.max_minutes * 60 if args.max_minutes else None
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+    lock = threading.Lock()
+
+    def work(target):
+        corp, stock, label = target
+        if state['stop'] or (deadline and time.monotonic() > deadline):
+            state['stop'] = state['stop'] or f'--max-minutes {args.max_minutes} reached'
+            return
         path = OUT_DIR / f'{corp}_v1.json'
         try:
             if args.skip_fresh and path.exists():
                 old = json.loads(path.read_text())
                 newest = latest_periodic_receipt(dart, corp, today)
                 if old.get('builder_version') == BUILDER_VERSION and newest and newest == old.get('latest_periodic_receipt'):
-                    skipped += 1
-                    continue
+                    with lock:
+                        state['skipped'] += 1
+                    return
             snap = build_one(dart, corp, stock, today)
             snap['builder_version'] = BUILDER_VERSION
             snap['latest_periodic_receipt'] = latest_periodic_receipt(dart, corp, today)
             slim(snap)
         except BudgetExhausted as exc:
-            print(f'STOP budget: {exc} after {dart.calls} calls', file=sys.stderr)
-            break
+            state['stop'] = f'budget: {exc}'
+            return
         except Exception as exc:  # one company must not stop the batch
-            failed[corp] = f'{type(exc).__name__}: {str(exc).replace(key, "<key>")}'[:300]
-            print(f'FAIL {label} {corp}: {failed[corp]}', file=sys.stderr)
-            continue
+            with lock:
+                failed[corp] = f'{type(exc).__name__}: {str(exc).replace(key, "<key>")}'[:300]
+            print(f'FAIL {label} {corp}: {failed[corp]}', file=sys.stderr, flush=True)
+            return
         path.write_text(json.dumps(snap, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n')
-        index[corp] = {'entity': snap['entity'], 'stock_code': stock or (snap.get('stock_code')), 'fiscal_year': snap['fiscal_year'],
-                       'fs_div': snap['fs_div'], 'industry': snap['pe_cr'].get('industry'),
-                       'financial': snap['pe_cr'].get('industry') == 'financial'}
-        print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} funding={snap["funding_input"]} '
-              f'market={snap["market_input"]} regulatory={snap["regulatory_input"]} '
-              f'investor={snap["investor_input"]} segments={snap["segments_input"]} backlog={snap["order_backlog_input"]} fin={snap["financial_kpis_input"]}', file=sys.stderr)
+        with lock:
+            index[corp] = {'entity': snap['entity'], 'stock_code': stock or (snap.get('stock_code')), 'fiscal_year': snap['fiscal_year'],
+                           'fs_div': snap['fs_div'], 'industry': snap['pe_cr'].get('industry'),
+                           'financial': snap['pe_cr'].get('industry') == 'financial'}
+        print(f'ok   {label} {corp} FY{snap["fiscal_year"]} {snap["fs_div"]} {snap["pe_cr"].get("industry")} '
+              f'investor={snap["investor_input"]} segments={snap["segments_input"]} backlog={snap["order_backlog_input"]} '
+              f'fin={snap["financial_kpis_input"]}', file=sys.stderr, flush=True)
+
+    with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
+        list(pool.map(work, ordered))
+    if state['stop']:
+        print(f'STOP {state["stop"]} after {dart.calls} calls', file=sys.stderr)
+    skipped = state['skipped']
     idx_path = OUT_DIR / 'index_v1.json'
     prev = json.loads(idx_path.read_text())['index'] if idx_path.exists() else {}
     prev.update(index)

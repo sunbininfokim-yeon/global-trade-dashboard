@@ -38,3 +38,18 @@ focus 는 기존 카드 키만 사용. 이전에는 이들이 manufacturing 또�
 - 보험 CSM 잔액: XBRL 은 상품군별 태그만 있고 총계가 없으며 본문 표 양식이 회사마다 달라 미구현.
   `secrets.FISIS_API_KEY` 가 이미 있으므로 금융통계정보시스템으로 대체 가능성 검토할 것.
 - 비상장사는 universe 에 없음 → `config/kfa_pecr_extra_targets.json` 의 `corp_codes` 에 추가하면 매일 빌드.
+
+## 추가 (같은 날, PR 2): SEC 미국 + 배치 병렬화
+
+- `dart_kfa/sec_rows.py`: SEC companyfacts → DART 행 모양(US-GAAP → IFRS 계정 id 매핑, 10-K 1년 기간,
+  52/53주 회계연도, 재작성 우선), 총부채·비유동부채·EBIT(세전+이자) 파생행(`derived:` 라벨), 엔진 SEC 경로용
+  실제 회계기간, LTM(10-Q YTD), RPO 수주잔고·희석주식수·주식보상·R&D, SIC → 키트 매핑. 테스트 `tests/test_sec_rows.py`.
+- `tools/ops/build_kfa_sec_snapshots.py`: 엔진 SEC 경로(카드) + investor_metrics + financial_kpis(미국 은행) → `us_<TICKER>_v1.json`.
+  지주사 재편(ExxonMobil 2026: 새 CIK 는 10-Q 뿐)은 accession 접두어로 이전 CIK 를 찾아 facts 병합.
+  워크플로 `kfa_sec_snapshots_daily.yml`(NASDAQ·NYSE 상위 150개씩, 20:00 KST).
+- `financial_kpis.py`: 영업이익 행이 없으면 세전이익을 충당금 적립 전 이익 산식에 사용(미국 은행).
+- 화면: `calculator-pecr.js` 금액 표시를 스냅샷 통화(KRW/USD)로, 미국 계산기에 "엔진 분석" 탭 줄 추가(`calculator.js`).
+  피어 표는 같은 시장끼리만.
+- `fetch_kfa_market.py`: 미국 종목은 api.stock.naver.com (Reuters 코드) 시총·종가.
+- 한국 배치: 첫 수동 실행(2026-11-23)이 직렬 4분/사 속도로 340분 한도에 걸려 커밋 전 취소됨 →
+  `--workers 4`(스레드, 호출 카운터 락) + `--max-minutes 290`. 키트: construction 에 M721(엔지니어링, 삼성E&A).

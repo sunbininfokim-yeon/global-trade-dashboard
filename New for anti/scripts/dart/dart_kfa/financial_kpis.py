@@ -47,6 +47,7 @@ FACE = {
     "sga": ("IS", ["ifrs-full_SellingGeneralAndAdministrativeExpense", "ifrs-full_GeneralAndAdministrativeExpense"]),
     "op": ("IS", ["ifrs-full_ProfitLossFromOperatingActivities", "dart_OperatingIncomeLoss"]),
     "revenue": ("IS", ["ifrs-full_Revenue"]),
+    "pretax": ("IS", ["ifrs-full_ProfitLossBeforeTax"]),
     "insurance_revenue": ("IS", ["ifrs-full_InsuranceRevenue"]),
     "insurance_expense": ("IS", ["ifrs-full_InsuranceServiceExpensesFromInsuranceContractsIssued"]),
     "insurance_result": ("IS", ["ifrs-full_InsuranceServiceResult", "dart_InsuranceRevenueExpense"]),
@@ -109,8 +110,9 @@ def computed(rows: list, kind: str) -> dict:
         if fee is None and cur("fee_income") is not None and cur("fee_expense") is not None:
             fee = cur("fee_income") - cur("fee_expense")
         ppop, sga, loss = cur("ppop"), cur("sga"), cur("credit_loss")
-        if ppop is None and cur("op") is not None and loss is not None:
-            ppop = cur("op") + abs(loss)          # 신한: no 충당금 적립 전 이익 row
+        op = cur("op") if cur("op") is not None else cur("pretax")   # US banks report no operating income
+        if ppop is None and op is not None and loss is not None:
+            ppop = op + abs(loss)          # 신한: no 충당금 적립 전 이익 row
         out["net_interest_income"] = _m(nii, "순이자손익", unit="money")
         out["net_fee_income"] = _m(fee, "순수수료손익", unit="money")
         out["nii_to_assets"] = _m(_div(nii, _avg(v.get("assets"))),
