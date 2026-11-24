@@ -22,9 +22,9 @@ stitched from a pair -- a long-history file and a current file -- with the
 current file winning wherever the two overlap:
 
   North America   08-29-2025 ...            2013-01 .. 2025-08   (fallback)
-                  09-25-2026 ...            2024-01 .. 2026-09   (preferred)
+                  11-20-2026 ...            2024-01 .. 2026-11   (preferred)
   Worldwide       July-2025 ...             2013-01 .. 2025-07   (fallback)
-                  August-2026 ...           2024-01 .. 2026-08   (preferred)
+                  October-2026 ...          2024-01 .. 2026-10   (preferred)
 
 The previous preferred pair (14-Aug-2026 NAM, July-2026 WW) is superseded by
 the pair above -- same 2024-01 start, later end, and the NAM file's own
@@ -146,9 +146,9 @@ DEFAULT_OUT = ROOT.parent.parent / "public" / "data" / "rig_count_v1.json"
 # column than the 2025 one (an added `Rig Status`), which is why this is a
 # per-file constant rather than a shared schema.
 NAM_FALLBACK = ("08-29-2025 North America Rig Count Report.xlsx", "NAM Monthly", 11, 11)
-NAM_PREFERRED = ("09-25-2026 North_America Rig_Count Report.xlsx", "NAM Monthly", 11, 11)
+NAM_PREFERRED = ("11-20-2026 North_America Rig_Count Report.xlsx", "NAM Monthly", 11, 11)
 WW_FALLBACK = ("July-2025  WorldWide Rig Count Report.xlsx", "WW Monthly", 12, 7)
-WW_PREFERRED = ("August-2026  WorldWide Rig Count Report .xlsx", "WW Monthly", 12, 8)
+WW_PREFERRED = ("October-2026  WorldWide Rig Count Report.xlsx", "WW Monthly", 12, 8)
 
 # Baker Hughes country labels -> a plain English name app.js's resolveCountry()
 # resolves to a basemap country. Only entries that need it are listed; anything
