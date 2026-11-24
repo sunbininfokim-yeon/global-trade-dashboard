@@ -34,5 +34,54 @@ class Nbs(unittest.TestCase):
             cn.parse_gdp_table("<p>nothing</p>")
 
 
+SAFE_LIST = (
+    '<a href="/en/2021/0203/2045.html" target="_blank">Official Reserve Assets (2026)</a>'
+    '<a href="/en/2021/0203/1799.html" target="_blank">Data Template on International Reserves (2026)</a>'
+    '<a href="/en/2021/0203/2386.html" target="_blank">Official Reserve Assets (2025)</a>'
+    '<a href="/en/2021/0203/2385.html" target="_blank">Official Reserve Assets (2025)</a>'
+    '<a href="/en/2021/0203/2280.html" target="_blank">Official Reserve Assets (2024)</a>')
+
+
+def _xlsx(header, total):
+    import io
+    import openpyxl
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(["\xa0Official reserve assets"])
+    ws.append(["Item", *header])
+    ws.append(["1. Foreign currency reserves", "34000.00\xa0", "24600.00\xa0"])
+    ws.append(["\xa0\xa0\xa0\xa0合计", *total])
+    ws.append(["\xa0\xa0Total"])
+    wb.create_sheet("Sheet2")
+    buf = io.BytesIO()
+    wb.save(buf)
+    return buf.getvalue()
+
+
+class Safe(unittest.TestCase):
+    def test_newest_two_years_found(self):
+        got = cn.find_reserve_files(lambda u: SAFE_LIST if u.endswith("index.html") else "")
+        self.assertEqual(got, [(2026, "https://www.safe.gov.cn/en/2021/0203/2045.html"),
+                               (2025, "https://www.safe.gov.cn/en/2021/0203/2386.html")])
+
+    def test_usd_total_under_each_month_october_as_text_or_number(self):
+        # USD and SDR columns per month; the label sits over the USD one. 2026.1 as a number is October.
+        data = _xlsx([2026.09, None, "2026.10", None, 2026.11, None],
+                     ["37894.30\xa0", "27800.00\xa0", "37775.60\xa0", "27700.00\xa0", None, None])
+        self.assertEqual(cn.parse_reserves_xlsx(data), [("2026-09-01", 3789.43), ("2026-10-01", 3777.56)])
+        data = _xlsx([2017.09, None, 2017.1, None], ["32043.81", "22673.11", "32039.86", "22809.27"])
+        self.assertEqual(cn.parse_reserves_xlsx(data), [("2017-09-01", 3204.38), ("2017-10-01", 3203.99)])
+
+    def test_safe_months_replace_imf_and_older_months_stay(self):
+        card = {"history": {"10y": {"dates": ["2025-11-30", "2025-12-31"], "values": [3723.79, 3748.75]}}}
+        got = cn.merge_history(card, [("2025-12-01", 3744.31), ("2026-01-01", 3836.28)])
+        self.assertEqual(got, [("2025-11-01", 3723.79), ("2025-12-01", 3744.31), ("2026-01-01", 3836.28)])
+
+    def test_patch_reads_safe_and_last_month(self):
+        p = cn.build_reserves_patch([("2026-09-01", 3789.43), ("2026-10-01", 3777.56)],
+                                    ["https://www.safe.gov.cn/en/2021/0203/2045.html"], retrieved_at="2026-11-24T00:00:00Z")
+        self.assertEqual((p["display"], p["reference_period"], p["source"]), ("$3,778B", "2026-10", "safe:official_reserve_assets"))
+
+
 if __name__ == "__main__":
     unittest.main()
