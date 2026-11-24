@@ -9,7 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from shipping_capacity.official_cargo import (
-    EIA_URL, IMO_URL, collect_official_cargo, parse_eia, parse_imo_links,
+    EIA_URL, IMO_URL, collect_official_cargo, parse_eia, parse_imo_links, quarter_dates,
 )
 
 
@@ -93,6 +93,10 @@ class OfficialCargoTests(unittest.TestCase):
         self.assertEqual(failed["sources"]["eia"]["retrieved_at"], RETRIEVED)
         self.assertEqual(failed["sources"]["eia"]["last_attempt_at"], later.isoformat())
         self.assertEqual(failed["sources"]["eia"]["records"], good["sources"]["eia"]["records"])
+        failed_cards = failed["chokepoints"]["hormuz"]["cumulative_cards"]
+        self.assertEqual(failed_cards[0]["windows"], good["chokepoints"]["hormuz"]["cumulative_cards"][0]["windows"])
+        self.assertEqual(failed_cards[0]["source_status"], "cached_fallback")
+        self.assertEqual(failed_cards[0]["source_published_at"], "2026-08-12")
         self.assertEqual(good, before)
 
     def test_no_fetch_never_uses_seed_or_calls_network(self):
@@ -101,6 +105,7 @@ class OfficialCargoTests(unittest.TestCase):
         result = collect_official_cargo(now=NOW, fetcher=fail)
         self.assertEqual(result["status"], "unavailable")
         self.assertEqual(result["chokepoints"]["hormuz"]["reference_cards"], [])
+        self.assertEqual(result["chokepoints"]["hormuz"]["cumulative_cards"], [])
 
     def test_daily_crude_and_transit_probability_remain_unknown(self):
         result = collect_official_cargo(fetch=True, now=NOW, fetcher=fixture_fetcher)
@@ -158,6 +163,80 @@ class OfficialCargoTests(unittest.TestCase):
         result = collect_official_cargo(fetch=True, now=NOW, fetcher=fixture_fetcher)
         self.assertTrue(all(card["year_ago"] is None for card in result["chokepoints"]["hormuz"]["reference_cards"]))
 
+    def _cached_total_oil(self, *observations):
+        eia = parse_eia(fixture_html().replace("August 12", "October 1"), RETRIEVED)
+        eia["retrieved_at"] = RETRIEVED
+        source = next(row for row in eia["records"]["hormuz"] if row["cargo_category"] == "total_oil")
+        rows = []
+        for period, value, overrides in observations:
+            start, end = quarter_dates(period)
+            rows.append({**source, "period": period, "period_start": start, "period_end": end,
+                         "value": value, "status": "reported" if value is not None else "not_reported", **overrides})
+        eia["records"]["hormuz"] = rows
+        monitor = collect_official_cargo(previous={"sources": {"eia": eia}}, now=NOW)
+        return monitor["chokepoints"]["hormuz"]["cumulative_cards"][0]
+
+    def test_cumulative_ytd_does_not_compare_unequal_periods(self):
+        card = self._cached_total_oil(("1Q26", 1_000, {}), ("2Q26", 2_000, {}), ("2Q25", 4_000, {}))
+        ytd, matched = card["windows"]
+        self.assertEqual(card["unit"], "barrels")
+        self.assertEqual(card["source_status"], "cached_offline")
+        self.assertEqual((ytd["value"], ytd["prior_value"], ytd["change_pct"]), (272_000, None, None))
+        self.assertEqual(ytd["prior_missing_quarter_starts"], ["2025-01-01"])
+        self.assertEqual(ytd["comparison_status"], "prior_period_incomplete")
+        self.assertEqual((matched["period_start"], matched["prior_period_start"]), ("2026-04-01", "2025-04-01"))
+        self.assertEqual((matched["value"], matched["prior_value"], matched["change_pct"]), (182_000, 364_000, -50.0))
+
+    def test_cumulative_true_calendar_days_include_leap_day(self):
+        card = self._cached_total_oil(("1Q25", 100, {}), ("1Q24", 100, {}))
+        window, = card["windows"]
+        self.assertEqual(window["period_end"], "2025-03-31")
+        self.assertEqual((window["value"], window["prior_value"], window["change_pct"]), (9000, 9100, -1.1))
+
+    def test_cumulative_missing_current_is_not_partial_or_zero(self):
+        for gap in ([], [("2Q26", None, {})]):
+            with self.subTest(gap=gap):
+                card = self._cached_total_oil(("1Q26", 100, {}), *gap, ("3Q26", 100, {}),
+                                              ("2Q25", 100, {}), ("3Q25", 100, {}))
+                for window in card["windows"]:
+                    self.assertEqual(window["missing_quarter_starts"], ["2026-04-01"])
+                    self.assertEqual(window["comparison_status"], "current_period_incomplete")
+                    self.assertIsNone(window["value"])
+                    self.assertIsNone(window["change_pct"])
+                self.assertEqual(card["windows"][1]["period_start"], "2026-04-01")
+
+    def test_cumulative_preserves_zero_without_division_by_zero(self):
+        card = self._cached_total_oil(("1Q26", 0, {}), ("1Q25", 0, {}))
+        window, = card["windows"]
+        self.assertEqual((window["value"], window["prior_value"], window["change_pct"]), (0, 0, None))
+        self.assertEqual(window["comparison_status"], "prior_period_zero")
+        card = self._cached_total_oil(("1Q26", 0, {}), ("1Q25", 1, {}))
+        self.assertEqual(card["windows"][0]["change_pct"], -100.0)
+
+    def test_cumulative_never_mixes_scope_edition_frequency_or_unit(self):
+        for overrides in (
+            {"geography_scope": "suez_canal"}, {"source_published_at": "2026-05-01"},
+            {"frequency": "monthly"}, {"unit": "billion_cubic_feet_per_day"},
+            {"publisher": "IEA"}, {"period_end": "2025-03-01"}, {"chokepoint_id": "suez"},
+        ):
+            with self.subTest(overrides=overrides):
+                card = self._cached_total_oil(("1Q26", 100, {}), ("1Q25", 100, overrides))
+                window, = card["windows"]
+                self.assertIsNone(window["prior_value"])
+                self.assertIsNone(window["change_pct"])
+
+    def test_cumulative_duplicate_quarter_does_not_double_count(self):
+        card = self._cached_total_oil(("1Q26", 100, {}), ("1Q25", 100, {}), ("1Q2025", 100, {}))
+        self.assertIsNone(card["windows"][0]["prior_value"])
+
+    def test_cumulative_suez_lng_excludes_pipeline_and_keeps_gas_unit(self):
+        result = collect_official_cargo(fetch=True, now=NOW, fetcher=fixture_fetcher)
+        cards = {card["cargo_category"]: card for card in result["chokepoints"]["suez"]["cumulative_cards"]}
+        self.assertEqual(cards["lng"]["geography_scope"], "suez_canal")
+        self.assertEqual(cards["lng"]["unit"], "billion_cubic_feet")
+        self.assertEqual(cards["lng"]["windows"][0]["value"], 738.8)
+        self.assertEqual(cards["crude_condensate"]["geography_scope"], "suez_canal_and_sumed_pipeline")
+
     def test_wrong_source_redirect_links_are_not_accepted(self):
         with self.assertRaises(ValueError):
             parse_imo_links('<a href="https://unknown.example/test">Advisories</a>')
@@ -178,6 +257,9 @@ class OfficialCargoTests(unittest.TestCase):
         validator = Draft202012Validator(schema, format_checker=FormatChecker())
         result = collect_official_cargo(fetch=True, now=NOW, fetcher=fixture_fetcher)
         self.assertEqual(list(validator.iter_errors(result)), [])
+        wrong_cumulative = copy.deepcopy(result)
+        wrong_cumulative["chokepoints"]["hormuz"]["cumulative_cards"][0]["windows"][0]["change_pct"] = -80
+        self.assertTrue(list(validator.iter_errors(wrong_cumulative)))
         result["chokepoints"]["hormuz"]["daily_crude_barrels"]["value"] = 123
         self.assertTrue(list(validator.iter_errors(result)))
 

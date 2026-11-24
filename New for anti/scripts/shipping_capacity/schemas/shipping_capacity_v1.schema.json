@@ -77,6 +77,53 @@
               "reference_cards": {"type": "array", "items": {"type": "object", "required": ["value", "unit", "period_start", "period_end", "publisher", "geography_scope", "source_url", "warning_ko"]}},
               "supplementary_reference_cards": {"type": "array", "items": {"type": "object", "required": ["value", "unit", "period_start", "period_end", "publisher", "geography_scope", "source_url", "license", "attribution", "warning_ko"], "properties": {"publisher": {"const": "IEA"}, "frequency": {"const": "monthly"}, "cargo_category": {"const": "total_oil"}, "unit": {"const": "barrels_per_day"}, "value": {"type": "number", "minimum": 0}, "license": {"const": "CC BY 4.0"}}}},
               "reference_comparison_policy": {"const": "group_by_publisher_period_scope_and_commodity_never_mix_composition"},
+              "cumulative_cards": {
+                "type": "array",
+                "maxItems": 4,
+                "items": {
+                  "type": "object",
+                  "required": ["cargo_category", "label_ko", "geography_scope", "unit", "evidence_class", "method_id", "publisher", "source_url", "source_published_at", "source_status", "attribution", "warning_ko", "windows"],
+                  "properties": {
+                    "cargo_category": {"enum": ["total_oil", "crude_condensate", "petroleum_products", "lng"]},
+                    "geography_scope": {"enum": ["strait_of_hormuz", "strait_of_bab_el_mandeb", "suez_canal", "suez_canal_and_sumed_pipeline"]},
+                    "unit": {"enum": ["barrels", "billion_cubic_feet"]},
+                    "evidence_class": {"const": "derived_from_institution_estimates"},
+                    "method_id": {"const": "eia_quarterly_daily_mean_times_calendar_days"},
+                    "publisher": {"const": "EIA"},
+                    "source_url": {"type": "string", "format": "uri"},
+                    "source_published_at": {"type": "string", "format": "date"},
+                    "source_status": {"enum": ["fetched", "cached_fallback", "cached_offline", "not_fetched"]},
+                    "windows": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 2,
+                      "items": {
+                        "type": "object",
+                        "required": ["kind", "label_ko", "period_start", "period_end", "value", "prior_period_start", "prior_period_end", "prior_value", "missing_quarter_starts", "prior_missing_quarter_starts", "comparison_status", "change_pct"],
+                        "properties": {
+                          "kind": {"enum": ["year_to_date", "trailing_matched_quarters"]},
+                          "period_start": {"type": "string", "format": "date"},
+                          "period_end": {"type": "string", "format": "date"},
+                          "prior_period_start": {"type": "string", "format": "date"},
+                          "prior_period_end": {"type": "string", "format": "date"},
+                          "value": {"type": ["number", "null"], "minimum": 0},
+                          "prior_value": {"type": ["number", "null"], "minimum": 0},
+                          "change_pct": {"type": ["number", "null"], "minimum": -100},
+                          "missing_quarter_starts": {"type": "array", "items": {"type": "string", "format": "date"}},
+                          "prior_missing_quarter_starts": {"type": "array", "items": {"type": "string", "format": "date"}},
+                          "comparison_status": {"enum": ["comparable", "current_period_incomplete", "prior_period_incomplete", "prior_period_zero"]}
+                        },
+                        "if": {"properties": {"comparison_status": {"const": "comparable"}}},
+                        "then": {"properties": {"change_pct": {"type": "number"}, "value": {"type": "number"}, "prior_value": {"type": "number", "exclusiveMinimum": 0}, "missing_quarter_starts": {"maxItems": 0}, "prior_missing_quarter_starts": {"maxItems": 0}}},
+                        "else": {"properties": {"change_pct": {"type": "null"}}}
+                      }
+                    }
+                  },
+                  "if": {"properties": {"cargo_category": {"const": "lng"}}},
+                  "then": {"properties": {"unit": {"const": "billion_cubic_feet"}, "geography_scope": {"not": {"const": "suez_canal_and_sumed_pipeline"}}}},
+                  "else": {"properties": {"unit": {"const": "barrels"}, "geography_scope": {"not": {"const": "suez_canal"}}}}
+                }
+              },
               "reported_series": {
                 "type": "array",
                 "items": {

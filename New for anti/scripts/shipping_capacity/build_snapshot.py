@@ -699,6 +699,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "official_cargo_monitor.chokepoints.<id>.reference_cards[]",
                     "official_cargo_monitor.chokepoints.<id>.supplementary_reference_cards[]",
                     "official_cargo_monitor.chokepoints.<id>.reported_series[]",
+                    "official_cargo_monitor.chokepoints.<id>.cumulative_cards[].windows[]",
                     "official_cargo_monitor.chokepoints.<id>.transit_assessment",
                     "hormuz_reconstruction.headline",
                     "hormuz_reconstruction.mass_balance.terms[]",
