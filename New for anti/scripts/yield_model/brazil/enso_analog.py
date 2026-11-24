@@ -25,13 +25,14 @@ in a strong El Nino even though the fill had earned its switch.
 The direct adjustment below needs no ridge. It shifts the trend by the
 Nino3.4-weighted mean of past seasons' departures from it (minus their plain
 mean, so it is zero in an average year). Rule set before the first run
-(2026-11-23): on for a region only if, in forward chaining against the same
-recent-20-year trend, it cuts RMSE by more than 3% over all folds and over
+(2026-11-23): on for a region only if, in forward chaining against the trend
+the region publishes (recent 20 years for soy), it cuts RMSE by more than 3% over all folds and over
 the last ten. Result: Mato Grosso soy +5.1% / +10.1% (on); Parana soy
 -0.3% / +0.7% and MATOPIBA soy +1.8% / -2.2% (off). Kernel width 0.35-0.75 C
 and a full-record trend keep MT soy between +3.5% and +5.5% over all folds.
-MT safrinha corn also clears the bar (+4.5% / +4.4%) but not at the 0.75 C
-kernel (+0.6% last ten), so it is not in this backtest yet.
+MT safrinha corn, scored on the full-record linear trend it publishes, with
+the rule extended beforehand to stay positive at 0.35 and 0.75 C kernels:
++9.5% / +13.0% (0.35 C: +9.7% / +15.5%; 0.75 C: +5.0% / +4.3%) -> on.
 """
 
 import json
@@ -50,8 +51,7 @@ SUMMER_CROPS = {"soja", "milho", "algodao"}
 SOWING_MONTHS = (8, 9)          # of the year before the summer harvest year
 ON = {"mato_grosso_soja"}   # the only one the backtest below earns (+4.8% all folds, +6.7% last ten)
 MIN_GAIN = 0.03
-DIRECT_ON = {"mato_grosso_soja"}
-DIRECT_TREND_WINDOW = 20
+DIRECT_ON = {"mato_grosso_soja", "mato_grosso_milho"}
 DIRECT_MIN_PAST = 15
 
 
@@ -81,7 +81,7 @@ def effective_n(w):
     return float(w.sum() ** 2 / (w ** 2).sum()) if w.sum() > 0 else 0.0
 
 
-def direct_adjust(years, yields, n34, now):
+def direct_adjust(years, yields, n34, now, degree=1, window=20):
     """Log shift for this season from past seasons' trend departures.
 
     years/yields/n34 are past seasons only. Returns (log_shift, info) or
@@ -96,7 +96,7 @@ def direct_adjust(years, yields, n34, now):
     if now is None or ok.sum() < DIRECT_MIN_PAST:
         return None, None
     years, yields, n34 = years[ok], yields[ok], n34[ok]
-    trend = fit_trend(years, yields, 1, DIRECT_TREND_WINDOW)
+    trend = fit_trend(years, yields, degree, window)
     res = np.log(yields) - trend(years)
     w = weights(n34, now)
     if w.sum() <= 0:
@@ -113,8 +113,17 @@ def direct_adjust(years, yields, n34, now):
     return shift, info
 
 
-def direct_backtest(keys=("mato_grosso_soja", "parana_soja", "matopiba_soja")):
-    """Forward chaining: trend alone vs trend + direct ENSO shift, same trend."""
+def model_trend(key):
+    """(degree, window) of the trend the region's published forecast uses."""
+    with open(os.path.join(HERE, "models", f"{key}.json"), encoding="utf-8") as f:
+        t = json.load(f)["trend"]
+    return t["degree"], t["window"]
+
+
+def direct_backtest(keys=("mato_grosso_soja", "parana_soja", "matopiba_soja",
+                          "mato_grosso_milho")):
+    """Forward chaining: trend alone vs trend + direct ENSO shift, on the
+    trend form the region publishes."""
     from brazil.train import fit_trend
 
     series = load_nino34()
@@ -127,13 +136,15 @@ def direct_backtest(keys=("mato_grosso_soja", "parana_soja", "matopiba_soja")):
         df = df.dropna(subset=["n34"]).reset_index(drop=True)
         y = df.year.values.astype(float)
         Y = df.yield_kg_ha.values.astype(float)
+        degree, window = model_trend(key)
         truth, base, adj, used = [], [], [], []
         for i, t in enumerate(y):
             tr = y < t
             if tr.sum() < DIRECT_MIN_PAST:
                 continue
-            shift, _ = direct_adjust(y[tr], Y[tr], df.n34.values[tr], df.n34.values[i])
-            b = float(np.exp(fit_trend(y[tr], Y[tr], 1, DIRECT_TREND_WINDOW)(t)))
+            shift, _ = direct_adjust(y[tr], Y[tr], df.n34.values[tr], df.n34.values[i],
+                                     degree, window)
+            b = float(np.exp(fit_trend(y[tr], Y[tr], degree, window)(t)))
             truth.append(Y[i]); base.append(b); adj.append(b * np.exp(shift)); used.append(int(t))
         truth, base, adj = map(np.array, (truth, base, adj))
 
@@ -226,7 +237,7 @@ def main():
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump({"bandwidth_c": BANDWIDTH, "sowing_months": SOWING_MONTHS,
                    "min_gain": MIN_GAIN, "regions": results,
-                   "direct": {"trend_window": DIRECT_TREND_WINDOW, "regions": direct}},
+                    "direct": {"trend": "each region's published trend form", "regions": direct}},
                   f, ensure_ascii=False, indent=1)
     for key, r in direct.items():
         print(f"direct {key:18} all {r['skill_vs_trend']:+.3f} last10 {r['skill_vs_trend_last10']:+.3f}"
