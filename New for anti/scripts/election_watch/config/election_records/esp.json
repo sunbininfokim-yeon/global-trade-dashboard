@@ -1,7 +1,7 @@
 {
   "schema": "election_records_input_v1",
   "country": "ESP",
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-23",
   "note_ko": "총리는 의회가 뽑으므로 득표 기록은 비웠다. 대의원 의회는 2023년 7월 23일과 2019년 11월 10일, 상원은 같은 날의 직선 의석만 채웠다. 쟁점은 넣지 않았다.",
   "offices": [
     {
@@ -22,7 +22,23 @@
         ]
       },
       "note_ko": "구성 페이지는 15대 입법부 정부 구성에서 그를 총리로 적고 당은 적지 않는다. 같은 사이트 약력은 그가 스페인 사회노동당(PSOE) 사무총장이고 2018년 6월부터 총리라고 적는다. 날짜가 아니라 월만 있어 취임일은 비웠다.",
-      "records": []
+      "records": [],
+      "government": {
+        "parties": [
+          "PSOE(지역 명부 포함)",
+          "Sumar(지역 명부 포함)"
+        ],
+        "seats": 152,
+        "majority_line": 176,
+        "formed": "2023-11-20",
+        "formed_note_ko": "총리가 새 연정 내각을 발표한 날(모클로아 발표문).",
+        "seats_basis_ko": "2023 하원 선거 의석: PSOE 계열 6개 명부 121 + Sumar 계열 8개 명부 31. 소수 연정이며 투표 협력 정당 의석은 넣지 않았다.",
+        "as_of": "2026-11-23",
+        "sources": [
+          "https://www.lamoncloa.gob.es/lang/en/presidente/news/paginas/2023/20231120_new-government.aspx",
+          "https://www.boe.es/boe/dias/2023/09/01/pdfs/BOE-A-2023-18907.pdf"
+        ]
+      }
     },
     {
       "key": "legislature",
@@ -53,7 +69,8 @@
           "summary_ko": "인쇄된 전국 의석 칸의 합은 350이다. 의석이 가장 많은 명부는 PARTIDO POPULAR - PP 131석이다.",
           "detail_ko": "선거인·투표·유효표는 워크북이 전국 합계 칸을 비워 두어, 52개 선거구 칸을 더한 값이다. 선거인 37,469,458, 투표 24,952,447, 유효 24,688,087, 무효 264,360, 백지 200,673, 후보명부 24,487,414. 백지와 후보명부를 더하면 유효표와 같다. 투표율 칸은 비어 있다. 의석 백분율 칸도 없다. 표의 백분율은 그 명부 득표를 유효표로 나눈 값이다. 의석이 있거나 유효표의 1% 이상인 명부만 올렸다. 그 득표 합은 23,880,964이고, 후보명부 표 24,487,414와의 차 606,450는 의석이 없고 1% 미만인 명부다. 지역 명부는 합치지 않았다. 유기법 162조는 대의원 350명이라고 적는다.",
           "sources": [
-            "https://descargas.interior.gob.es/datasets/resultados_electorales/Elecciones-Congreso.xlsx"
+            "https://descargas.interior.gob.es/datasets/resultados_electorales/Elecciones-Congreso.xlsx",
+            "https://www.boe.es/boe/dias/2023/09/01/pdfs/BOE-A-2023-18907.pdf"
           ],
           "seats": [
             {
@@ -231,7 +248,9 @@
               "vote_pct": 0.21,
               "seats": 1
             }
-          ]
+          ],
+          "turnout_pct": 66.59,
+          "turnout_note_ko": "BOE-A-2023-18907 Cuadro I Total estatal: 선거인 37,469,458, 투표자 24,952,447(유효 24,688,087, 무효 264,360). 관보에 비율이 없어 투표자÷선거인으로 계산(66.5941%)했다."
         },
         {
           "election_id": "esp-2019-11-congreso",
@@ -244,7 +263,8 @@
           "summary_ko": "인쇄된 전국 의석 칸의 합은 350이다. 의석이 가장 많은 명부는 PARTIDO SOCIALISTA OBRERO ESPAÑOL - PSOE 94석이다.",
           "detail_ko": "선거인·투표·유효표는 워크북이 전국 합계 칸을 비워 두어, 52개 선거구 칸을 더한 값이다. 선거인 37,001,379, 투표 24,507,715, 유효 24,258,228, 무효 249,487, 백지 217,227, 후보명부 24,041,001. 백지와 후보명부를 더하면 유효표와 같다. 투표율 칸은 비어 있다. 의석 백분율 칸도 없다. 표의 백분율은 그 명부 득표를 유효표로 나눈 값이다. 의석이 있거나 유효표의 1% 이상인 명부만 올렸다. 그 득표 합은 23,417,153이고, 후보명부 표 24,041,001와의 차 623,848는 의석이 없고 1% 미만인 명부다. 지역 명부는 합치지 않았다. 유기법 162조는 대의원 350명이라고 적는다.",
           "sources": [
-            "https://descargas.interior.gob.es/datasets/resultados_electorales/Elecciones-Congreso.xlsx"
+            "https://descargas.interior.gob.es/datasets/resultados_electorales/Elecciones-Congreso.xlsx",
+            "https://boe.es/boe/dias/2019/12/02/pdfs/BOE-A-2019-17344.pdf"
           ],
           "seats": [
             {
@@ -478,7 +498,9 @@
               "vote_pct": 0.08,
               "seats": 1
             }
-          ]
+          ],
+          "turnout_pct": 66.23,
+          "turnout_note_ko": "BOE-A-2019-17344 Cuadro I Total estatal: 선거인 37,001,379, 투표자 24,507,715(유효 24,258,228, 무효 249,487). 관보에 비율이 인쇄돼 있지 않아 투표자÷선거인으로 계산(66.2346%)했다."
         }
       ]
     },

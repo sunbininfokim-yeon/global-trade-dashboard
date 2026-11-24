@@ -344,6 +344,12 @@ def settle_next(office: dict, today: str) -> None:
     nxt = office.get("next") or {}
     when = nxt.get("date")
     if not when:
+        # 날짜 없는 '다음 선거'(예: '공고된 날짜 없음')가 임기 추정을 가리지 않게 한다.
+        regular = [r for r in office.get("records") or [] if not r.get("by_election")]
+        if regular and office.get("term_years") and not office.get("next_due"):
+            office["next_due"] = {"year": int(regular[0]["date"][:4]) + int(office["term_years"]),
+                                  "basis": "last_election_plus_term",
+                                  "note_ko": "직전 정기 선거 연도 + 임기. 조기 선거·해산이 있으면 앞당겨진다."}
         return
     regular = [r for r in office.get("records") or [] if not r.get("by_election")]
     recorded = any(r.get("date", "") >= when for r in regular)

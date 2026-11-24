@@ -109,8 +109,9 @@ const nextLine = (office, today = todayIso()) => {
     if (office.next?.date && office.next.date < today) return heldLine(office.next, office);
     if (!office.next && office.next_held?.date) return heldLine(office.next_held, office);
     if (office.next?.date) return `${day(office.next.date)}${office.next.date_status === 'tentative' ? ' (잠정)' : ''}${office.next.label_ko ? ` · ${office.next.label_ko}` : ''}`;
-    if (office.next) return `날짜 미정${office.next.label_ko ? ` · ${office.next.label_ko}` : ''}`;
+    // 날짜 없는 '다음 선거' 행(예: '공고된 날짜 없음')보다 임기 기준 연도가 더 많은 것을 말한다.
     if (office.next_due?.year) return `${office.next_due.year}년 무렵 (임기 기준)`;
+    if (office.next) return `날짜 미정${office.next.label_ko ? ` · ${office.next.label_ko}` : ''}`;
     return null;
 };
 
