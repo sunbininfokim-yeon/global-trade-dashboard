@@ -1,7 +1,7 @@
 {
   "schema": "election_records_input_v1",
   "country": "CHE",
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-23",
   "note_ko": "국민의회 2019년과 2023년 의석을 채웠다. 연방평의회 7인의 이름은 연 페이지에 없고, 전주의회 의석 표는 수집하지 않았다.",
   "offices": [
     {
@@ -10,16 +10,12 @@
       "title_ko": "연방평의회",
       "elected_how": "by_legislature",
       "term_years": 4,
-      "coverage": "partial",
-      "coverage_note_ko": "선출 방식만 채웠다. 7인 명단 페이지는 403이었다.",
-      "note_ko": "의회 페이지는 연방평의회 구성원을 연합연방의회가 4년 임기로 뽑는다고 적는다. 연합연방의회는 국민의회와 전주의회 의원이 국민의회 회의장에 함께 모인 것이다. 전원 재선거는 국민의회 선거 뒤 겨울 회기다. 새로 뽑힌 사람은 이듬해 1월 1일에 취임한다. 유효 투표용지의 과반이면 당선이다. 어느 한 의원만의 결과로 적지 않았다. 연방수상실 페이지는 빅토르 로시가 연방수상실을 이끈다고 적는다. 취임일은 없고, 연방평의회 7인이 아니다.",
+      "coverage": "complete",
+      "coverage_note_ko": "7인 명단을 연방정부 페이지(admin.ch)에서 GitHub 수집으로 확인했다(2026-11-23).",
+      "note_ko": "의회 페이지는 연방평의회 구성원을 연합연방의회가 4년 임기로 뽑는다고 적는다. 연합연방의회는 국민의회와 전주의회 의원이 국민의회 회의장에 함께 모인 것이다. 전원 재선거는 국민의회 선거 뒤 겨울 회기다. 새로 뽑힌 사람은 이듬해 1월 1일에 취임한다. 유효 투표용지의 과반이면 당선이다. 어느 한 의원만의 결과로 적지 않았다. 연방수상실 페이지는 빅토르 로시가 연방수상실을 이끈다고 적는다. 취임일은 없고, 연방평의회 7인이 아니다. 2026-11-23 admin.ch 명단: 파르믈랭(SVP/VD, 2026 연방대통령), 카시스(FDP/TI), 켈러주터(FDP/SG), 뢰스티(SVP/BE), 바우메슈나이더(SP/JU), 얀스(SP/BS), 피스터(Mitte/ZG).",
       "unreachable_sources": [
         {
           "url": "https://www.admin.ch/gov/en/start/federal-council/members-of-the-federal-council.html",
-          "reason": "blocked"
-        },
-        {
-          "url": "https://www.admin.ch/de/bundesrat-mitglieder",
           "reason": "blocked"
         },
         {
@@ -29,9 +25,34 @@
       ],
       "sources": [
         "https://www.parlament.ch/de/%C3%BCber-das-parlament/parlamentsportraet/aufgaben-der-bundesversammlung/wahlen/wahl-mitglieder-bundesrat",
-        "https://www.bk.admin.ch/bk/de/home/politische-rechte/nationalratswahlen.html"
+        "https://www.bk.admin.ch/bk/de/home/politische-rechte/nationalratswahlen.html",
+        "https://www.admin.ch/de/bundesrat-mitglieder"
       ],
-      "records": []
+      "records": [],
+      "government": {
+        "parties": [
+          "SVP 2",
+          "FDP 2",
+          "SP 2",
+          "Mitte 1"
+        ],
+        "seats": 160,
+        "majority_line": 101,
+        "seats_basis_ko": "국민의회 2023 의석(SVP 62·SP 41·Mitte 29·FDP 28) 합. 연방평의회는 연정이 아니라 정당 비례(마법 공식) 구성이다.",
+        "as_of": "2026-11-23",
+        "sources": [
+          "https://www.admin.ch/de/bundesrat-mitglieder"
+        ]
+      },
+      "incumbent": {
+        "name": "Guy Parmelin",
+        "name_ko": "기 파르믈랭",
+        "party": "SVP",
+        "title_ko": "2026년 연방대통령(1년 순번)",
+        "sources": [
+          "https://www.admin.ch/de/bundesrat-mitglieder"
+        ]
+      }
     },
     {
       "key": "legislature",
@@ -63,7 +84,8 @@
             "https://www.bfs.admin.ch/asset/de/28845369",
             "https://dam-api.bfs.admin.ch/hub/api/dam/assets/28845369/appendix",
             "https://www.bk.admin.ch/bk/de/home/politische-rechte/nationalratswahlen.html",
-            "https://www.parlament.ch/de/organe/seiten/nationalrat.aspx"
+            "https://www.parlament.ch/de/organe/seiten/nationalrat.aspx",
+            "https://dam-api.bfs.admin.ch/hub/api/dam/assets/28845366/master"
           ],
           "seats": [
             {
@@ -132,7 +154,9 @@
               "seats": 2,
               "vote_pct": 0.5096495062
             }
-          ]
+          ],
+          "turnout_pct": 46.66,
+          "turnout_note_ko": "BFS 시계열 표(Nationalratswahlen Wahlbeteiligung, level_ch, 2023-11-16 26개 칸톤 완료)의 wahlbeteiligung 46.657368569을 소수 둘째 자리로 적었다."
         },
         {
           "election_id": "che-2019-nationalrat",
@@ -146,7 +170,8 @@
             "https://www.bfs.admin.ch/asset/de/28845369",
             "https://dam-api.bfs.admin.ch/hub/api/dam/assets/28845369/appendix",
             "https://www.bk.admin.ch/bk/de/home/politische-rechte/nationalratswahlen.html",
-            "https://www.parlament.ch/de/organe/seiten/nationalrat.aspx"
+            "https://www.parlament.ch/de/organe/seiten/nationalrat.aspx",
+            "https://dam-api.bfs.admin.ch/hub/api/dam/assets/28845366/master"
           ],
           "seats": [
             {
@@ -221,7 +246,9 @@
               "seats": 1,
               "vote_pct": 0.7506200264
             }
-          ]
+          ],
+          "turnout_pct": 45.11,
+          "turnout_note_ko": "BFS 시계열 표(Nationalratswahlen Wahlbeteiligung, level_ch, 2023-11-16 26개 칸톤 완료)의 wahlbeteiligung 45.109775796을 소수 둘째 자리로 적었다."
         }
       ]
     },

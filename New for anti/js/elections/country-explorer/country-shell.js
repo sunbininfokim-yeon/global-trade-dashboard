@@ -16,7 +16,7 @@ import { jpnFactions } from './special/jpn-factions.js';
 import { jpnSubnational } from './special/jpn-subnational.js';
 import { iranSections } from './special/iran.js';
 import { raceProgressContent } from './special/race-progress.js?v=2';
-import { electionRecordsHtml } from './special/election-records.js';
+import { electionRecordsHtml } from './special/election-records.js?v=2';
 import { israelAnalysisPlaceholder, mountIsraelAnalysis } from './special/israel-analysis.js?v=3';
 
 const RACE_PROGRESS_TAB = ['선거 진행 상황', 'race_progress'];
