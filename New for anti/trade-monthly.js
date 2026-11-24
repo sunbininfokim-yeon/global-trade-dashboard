@@ -676,9 +676,24 @@
         return docsPromise;
     };
 
+    // The deploy job folds parts/<hash>.json into shards/<first 3 hex>.json to stay under the
+    // Workers Free 20,000-file limit (tools/ops/pack_bilateral_parts.py). A part is read from its
+    // shard; where no shard exists (a local static server, or before the first packed deploy) the
+    // loose part file is fetched as before.
     const partCache = new Map();
+    const shardCache = new Map();
+    const loadShard = (key) => {
+        if (!shardCache.has(key)) shardCache.set(key, getJson(`commodity_trade_bilateral_v1/shards/${key}.json`));
+        return shardCache.get(key);
+    };
     const loadPart = (path) => {
-        if (!partCache.has(path)) partCache.set(path, getJson(`commodity_trade_bilateral_v1/${path}`));
+        if (!partCache.has(path)) {
+            const name = String(path).split('/').pop();
+            partCache.set(path, loadShard(name.slice(0, 3)).then((shard) =>
+                (shard && Object.prototype.hasOwnProperty.call(shard, name))
+                    ? shard[name]
+                    : getJson(`commodity_trade_bilateral_v1/${path}`)));
+        }
         return partCache.get(path);
     };
 
