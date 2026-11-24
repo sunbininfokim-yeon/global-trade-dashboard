@@ -1,0 +1,4736 @@
+{
+  "schema": "usa_state_election_evidence_v1",
+  "cycle": 2026,
+  "state": "MI",
+  "state_name": "Michigan",
+  "group": "A",
+  "checked_as_of": "2026-11-06",
+  "review_checked_as_of": "2026-11-06",
+  "status": "partial_observed",
+  "work_status": "baseline_join_checked",
+  "live_capture_receipt": {
+    "state": "MI",
+    "cycle": 2026,
+    "captured_at": "2026-10-30T04:04:09.509442+00:00",
+    "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-30",
+    "capture_kind": "provider_transport_only",
+    "provider_records": 107,
+    "serialized_provider_response_sha256": "e41cfcfbbee351cb0da1908dc3195a92401064d19262c2a0c6004e5a0af19918",
+    "new_provider_collection": false,
+    "preserved_full_capture_primary_receipts": [],
+    "preserved_full_capture_original_captured_at": "2026-10-18T16:22:20.155706+00:00",
+    "primary_supplement_receipts": [],
+    "provider_fetch": {
+      "via": "source_fetch.yml (GitHub Actions runner)",
+      "fetch_branch": "source-fetch/votehub-full-20261030-40999144298",
+      "fetched_at": "2026-10-30T03:46:38.238312+00:00",
+      "http_status": 200,
+      "raw_sha256": "3758903074d7cfd080f0509a6f6fb260b3870d4778b61d729a26b25cae87ec20"
+    }
+  },
+  "priority": {
+    "state_name": "Michigan",
+    "cook_competitive_races": 5,
+    "verified_company_facility_state": true
+  },
+  "office_coverage": {
+    "house": {
+      "scheduled_races": 13,
+      "non_election": false,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 13,
+      "candidate_id_links": 45
+    },
+    "senate": {
+      "scheduled_races": 1,
+      "non_election": false,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 1,
+      "candidate_id_links": 5
+    },
+    "governor": {
+      "scheduled_races": 1,
+      "non_election": false,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 0,
+      "candidate_id_links": 2
+    }
+  },
+  "races": [
+    {
+      "race_id": "USA:MI:house:01",
+      "state": "MI",
+      "office": "house",
+      "district": "01",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Callie Barr",
+          "party": "DEM",
+          "candidate_id": "H4MI01155",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Barr, Callie",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/20/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H4MI01155",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "BARR, CALLIE"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jack Bergman",
+          "party": "REP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Bergman, Jack",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "03/06/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI01226",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance_candidate_id": "H6MI01226",
+          "finance_identity_evidence": {
+            "candidate_name": "Jack Bergman",
+            "party": "REP",
+            "office": "house",
+            "candidate_id": "H6MI01226",
+            "reported_fec_id": "H6MI01226",
+            "agency_reported_name": "Bergman, Jack",
+            "official_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+            "roster_reported_name": "John W. \"Jack\" Bergman",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "6761718e0fd87e4c4697c0c26a70901d29955546173d069ae0cd02f946d3aa34",
+            "finance_reported_names": [
+              "BERGMAN, JACK REP.",
+              "BERGMAN, JOHN"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; individually_reviewed_legal_name_nickname_variant"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 740782,
+              "oppose_cents": 0,
+              "records": 8
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 35910,
+                "oppose_cents": 0,
+                "records": 2
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 704872,
+                "oppose_cents": 0,
+                "records": 6
+              }
+            },
+            "reported_names": [
+              "BERGMAN, JACK REP.",
+              "BERGMAN, JOHN"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Arnett Satterla",
+          "party": "LIB",
+          "candidate_id": "H6MI01283",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Satterla, Arnett",
+          "reported_party": "Libertarian Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/29/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI01283",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SATTERLA, ARNETT"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Doc Kovaly",
+          "party": "UST",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Kovaly, Doc",
+          "reported_party": "U.S. Taxpayers Party",
+          "agency_status": "listed_active",
+          "filed_on": "07/20/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI02257",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "LaVeta Davenport",
+          "party": "GRN",
+          "candidate_id": "H6MI01309",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Davenport, LaVeta",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "08/03/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI01309",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "DAVENPORT, LAVETA"
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Liz Hakola",
+          "party": "WCP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Hakola, Liz",
+          "reported_party": "Working Class Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/08/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H2MI01167",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Zebulon Featherly",
+          "party": "IND",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Featherly, Zebulon",
+          "reported_party": "No Party Affiliation",
+          "agency_status": "listed_active",
+          "filed_on": "07/16/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI01275",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:01",
+            "file": "usa_election_finance/2026/races/MI-house-01-7d6f3624186c26ff.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-01-7d6f3624186c26ff.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 740782,
+          "oppose_cents": 0,
+          "records": 8
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 7,
+        "parties": [
+          "DEM",
+          "GRN",
+          "IND",
+          "LIB",
+          "REP",
+          "UST",
+          "WCP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:02",
+      "state": "MI",
+      "office": "house",
+      "district": "02",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Ben Ambrose",
+          "party": "DEM",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Ambrose, Ben",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/21/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI02216",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance_candidate_id": "H6MI02216",
+          "finance_identity_evidence": {
+            "candidate_name": "Ben Ambrose",
+            "party": "DEM",
+            "office": "house",
+            "candidate_id": "H6MI02216",
+            "reported_fec_id": "H6MI02216",
+            "agency_reported_name": "Ambrose, Ben",
+            "official_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+            "roster_reported_name": "Benjamin \"Ben\" Ambrose",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "6761718e0fd87e4c4697c0c26a70901d29955546173d069ae0cd02f946d3aa34",
+            "finance_reported_names": [
+              "AMBROSE, BENJAMIN"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; individually_reviewed_legal_name_nickname_variant"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "AMBROSE, BENJAMIN"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "John Moolenaar",
+          "party": "REP",
+          "candidate_id": "H4MI04126",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Moolenaar, John",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "03/17/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H4MI04126",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 71296,
+              "oppose_cents": 0,
+              "records": 6
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 36861,
+                "oppose_cents": 0,
+                "records": 2
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 34435,
+                "oppose_cents": 0,
+                "records": 4
+              }
+            },
+            "reported_names": [
+              "MOOLENAAR, JOHN MR."
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Charlotte Magoon",
+          "party": "GRN",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Magoon, Charlotte",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/27/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI02265",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Richard Sills",
+          "party": "NLP",
+          "candidate_id": "H6MI02273",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Sills, Richard",
+          "reported_party": "Natural Law Party",
+          "agency_status": "listed_active",
+          "filed_on": "09/01/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI02273",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SILLS, RICHARD"
+            ],
+            "reported_parties": [
+              "NLP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:02",
+            "file": "usa_election_finance/2026/races/MI-house-02-ace74b732e479123.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-02-ace74b732e479123.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 71296,
+          "oppose_cents": 0,
+          "records": 6
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "GRN",
+          "NLP",
+          "REP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:03",
+      "state": "MI",
+      "office": "house",
+      "district": "03",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Hillary Scholten",
+          "party": "DEM",
+          "candidate_id": "H0MI03316",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Scholten, Hillary",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/20/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H0MI03316",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 14333,
+              "oppose_cents": 0,
+              "records": 3
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 14333,
+                "oppose_cents": 0,
+                "records": 3
+              }
+            },
+            "reported_names": [
+              "SCHOLTEN, HILLARY"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Terri DeBoer",
+          "party": "REP",
+          "candidate_id": "H6MI03198",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "DeBoer, Terri",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/20/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI03198",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "DEBOER, TERRI"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Joe Jock",
+          "party": "GRN",
+          "candidate_id": "H6MI03214",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Jock, Joe",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "08/03/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI03214",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "JOCK, JOE"
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:03",
+            "file": "usa_election_finance/2026/races/MI-house-03-2344ecd5b975dc46.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-03-2344ecd5b975dc46.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 14333,
+          "oppose_cents": 0,
+          "records": 3
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "GRN",
+          "REP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:04",
+      "state": "MI",
+      "office": "house",
+      "district": "04",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Sean McCann",
+          "party": "DEM",
+          "candidate_id": "H6MI04204",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "McCann, Sean",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/14/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI04204",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 32171,
+              "oppose_cents": 0,
+              "records": 5
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 24436,
+                "oppose_cents": 0,
+                "records": 2
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 7735,
+                "oppose_cents": 0,
+                "records": 3
+              }
+            },
+            "reported_names": [
+              "MCCANN, SEAN"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Bill Huizenga",
+          "party": "REP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Huizenga, Bill",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/20/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H0MI02094",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance_candidate_id": "H0MI02094",
+          "finance_identity_evidence": {
+            "candidate_name": "Bill Huizenga",
+            "party": "REP",
+            "office": "house",
+            "candidate_id": "H0MI02094",
+            "reported_fec_id": "H0MI02094",
+            "agency_reported_name": "Huizenga, Bill",
+            "official_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+            "roster_reported_name": "William P. \"Bill\" Huizenga",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "6761718e0fd87e4c4697c0c26a70901d29955546173d069ae0cd02f946d3aa34",
+            "finance_reported_names": [
+              "HUIZENGA, WILLIAM P",
+              "HUIZENGA, WILLIAM P."
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; individually_reviewed_legal_name_nickname_variant"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 51907552,
+              "oppose_cents": 112064940,
+              "records": 29
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 627921,
+                "oppose_cents": 47837730,
+                "records": 6
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 51279631,
+                "oppose_cents": 64227210,
+                "records": 23
+              }
+            },
+            "reported_names": [
+              "HUIZENGA, WILLIAM P",
+              "HUIZENGA, WILLIAM P."
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Shafina Che Barnett",
+          "party": "GRN",
+          "candidate_id": "H6MI04220",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Barnett, Shafina Che",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "08/03/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI04220",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "BARNETT, SHAFINA CHE"
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state",
+              "cook_toss_up_and_lean",
+              "korean_company_facility"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 2,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 2
+          },
+          "review_queue_ids": [
+            "us-202rag31cefeac",
+            "us-202pubb4a5637d"
+          ],
+          "finance_join": {
+            "race_id": "USA:MI:house:04",
+            "file": "usa_election_finance/2026/races/MI-house-04-b8b491a1fdc16aae.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-04-b8b491a1fdc16aae.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 51939723,
+          "oppose_cents": 112064940,
+          "records": 34
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_major_party_field",
+        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:05",
+      "state": "MI",
+      "office": "house",
+      "district": "05",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Christian Vukasovich",
+          "party": "DEM",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Vukasovich, Christian",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/08/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI05227",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Tim Walberg",
+          "party": "REP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Walberg, Tim",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/14/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H4MI07103",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance_candidate_id": "H4MI07103",
+          "finance_identity_evidence": {
+            "candidate_name": "Tim Walberg",
+            "party": "REP",
+            "office": "house",
+            "candidate_id": "H4MI07103",
+            "reported_fec_id": "H4MI07103",
+            "agency_reported_name": "Walberg, Tim",
+            "official_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+            "roster_reported_name": "Timothy L. \"Tim\" Walberg",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "6761718e0fd87e4c4697c0c26a70901d29955546173d069ae0cd02f946d3aa34",
+            "finance_reported_names": [
+              "WALBERG, TIMOTHY L REP"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; individually_reviewed_legal_name_nickname_variant"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 77764,
+              "oppose_cents": 0,
+              "records": 8
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 32941,
+                "oppose_cents": 0,
+                "records": 2
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 44823,
+                "oppose_cents": 0,
+                "records": 6
+              }
+            },
+            "reported_names": [
+              "WALBERG, TIMOTHY L REP"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Ronald A Muszynski",
+          "party": "LIB",
+          "candidate_id": "H6MI05235",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Muszynski, Ronald A",
+          "reported_party": "Libertarian Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/29/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI05235",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "MUSZYNSKI, RONALD A"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Sharon Marie Renier",
+          "party": "UST",
+          "candidate_id": "H4MI07137",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Renier, Sharon Marie",
+          "reported_party": "U.S. Taxpayers Party",
+          "agency_status": "listed_active",
+          "filed_on": "07/20/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H4MI07137",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "RENIER, SHARON MARIE"
+            ],
+            "reported_parties": [
+              "UST"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jim Bronke",
+          "party": "GRN",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Bronke, Jim",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "02/23/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H4MI05172",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:05",
+            "file": "usa_election_finance/2026/races/MI-house-05-f10c26cd1ecddab2.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-05-f10c26cd1ecddab2.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 77764,
+          "oppose_cents": 0,
+          "records": 8
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 5,
+        "parties": [
+          "DEM",
+          "GRN",
+          "LIB",
+          "REP",
+          "UST"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:06",
+      "state": "MI",
+      "office": "house",
+      "district": "06",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Debbie Dingell",
+          "party": "DEM",
+          "candidate_id": "H4MI12079",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Dingell, Debbie",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "12/19/2025",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H4MI12079",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "DINGELL, DEBBIE"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Heather Smiley",
+          "party": "REP",
+          "candidate_id": "H4MI06154",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Smiley, Heather",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/20/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H4MI06154",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SMILEY, HEATHER"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Timothy A. Teagan",
+          "party": "LIB",
+          "candidate_id": "H6MI06258",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Teagan, Timothy A.",
+          "reported_party": "Libertarian Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/29/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI06258",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "TEAGAN, TIMOTHY A."
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Mike Mickevicius",
+          "party": "UST",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Mickevicius, Mike",
+          "reported_party": "U.S. Taxpayers Party",
+          "agency_status": "listed_active",
+          "filed_on": "07/20/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI06241",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Clyde Shabazz",
+          "party": "GRN",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Shabazz, Clyde",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "02/23/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H8MI14084",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Linda Rayburn",
+          "party": "WCP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Rayburn, Linda",
+          "reported_party": "Working Class Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/08/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI06266",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:06",
+            "file": "usa_election_finance/2026/races/MI-house-06-5dd89ec775ebe9bf.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-06-5dd89ec775ebe9bf.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 6,
+        "parties": [
+          "DEM",
+          "GRN",
+          "LIB",
+          "REP",
+          "UST",
+          "WCP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:07",
+      "state": "MI",
+      "office": "house",
+      "district": "07",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "William Lawrence",
+          "party": "DEM",
+          "candidate_id": "H6MI07298",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Lawrence, William",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "10/28/2025",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI07298",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 40190423,
+              "oppose_cents": 4788400,
+              "records": 12
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 181923,
+                "oppose_cents": 0,
+                "records": 7
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 40008500,
+                "oppose_cents": 4788400,
+                "records": 5
+              }
+            },
+            "reported_names": [
+              "LAWRENCE, WILLIAM"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Tom Barrett",
+          "party": "REP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Barrett, Tom",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/20/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H2MI07123",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance_candidate_id": "H2MI07123",
+          "finance_identity_evidence": {
+            "candidate_name": "Tom Barrett",
+            "party": "REP",
+            "office": "house",
+            "candidate_id": "H2MI07123",
+            "reported_fec_id": "H2MI07123",
+            "agency_reported_name": "Barrett, Tom",
+            "official_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+            "roster_reported_name": "Thomas More \"Tom\" Barrett",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "6761718e0fd87e4c4697c0c26a70901d29955546173d069ae0cd02f946d3aa34",
+            "finance_reported_names": [
+              "BARRETT, THOMAS M.",
+              "BARRETT, THOMAS MORE"
+            ],
+            "reviewed_on": "2026-10-22",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; individually_reviewed_legal_name_nickname_variant; 2026-10-22 FEC filed the same candidate_id/party/race under middle-initial variant BARRETT, THOMAS M."
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 5860136,
+              "oppose_cents": 2672388,
+              "records": 11
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 661111,
+                "oppose_cents": 2531156,
+                "records": 4
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 5199025,
+                "oppose_cents": 141232,
+                "records": 7
+              }
+            },
+            "reported_names": [
+              "BARRETT, THOMAS M.",
+              "BARRETT, THOMAS MORE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Shane Dedrick",
+          "party": "GRN",
+          "candidate_id": "H6MI07306",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Dedrick, Shane",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/27/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI07306",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "DEDRICK, SHANE"
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state",
+              "cook_toss_up_and_lean"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 4,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "unregistered_primary_host": 1,
+            "pollster_not_selected": 3
+          },
+          "review_queue_ids": [
+            "us-202eme2c268367",
+            "us-202glo69af5ff3",
+            "us-202pub34b08a80",
+            "us-202pub328ef142"
+          ],
+          "finance_join": {
+            "race_id": "USA:MI:house:07",
+            "file": "usa_election_finance/2026/races/MI-house-07-2290eb6442f3cbdf.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-07-2290eb6442f3cbdf.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 51850559,
+          "oppose_cents": 106439488,
+          "records": 33
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_major_party_field",
+        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:08",
+      "state": "MI",
+      "office": "house",
+      "district": "08",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Kristen McDonald Rivet",
+          "party": "DEM",
+          "candidate_id": "H4MI08218",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "McDonald Rivet, Kristen",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/07/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H4MI08218",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 39333,
+              "oppose_cents": 0,
+              "records": 8
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 39333,
+                "oppose_cents": 0,
+                "records": 8
+              }
+            },
+            "reported_names": [
+              "MCDONALD RIVET, KRISTEN"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Thomas J. Smith",
+          "party": "REP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Smith, Thomas J.",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/21/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI08312",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance_candidate_id": "H6MI08312",
+          "finance_identity_evidence": {
+            "candidate_name": "Thomas J. Smith",
+            "party": "REP",
+            "office": "house",
+            "candidate_id": "H6MI08312",
+            "reported_fec_id": "H6MI08312",
+            "agency_reported_name": "Smith, Thomas J.",
+            "official_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+            "roster_reported_name": "Thomas James \"Tom\" Smith",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "6761718e0fd87e4c4697c0c26a70901d29955546173d069ae0cd02f946d3aa34",
+            "finance_reported_names": [
+              "SMITH, THOMAS JAMES MR"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; individually_reviewed_legal_name_nickname_variant"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SMITH, THOMAS JAMES MR"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "C. Mia Pettus",
+          "party": "LIB",
+          "candidate_id": "H6MI08320",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Pettus, C. Mia",
+          "reported_party": "Libertarian Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/29/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI08320",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "PETTUS, C. MIA"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jim Casha",
+          "party": "GRN",
+          "candidate_id": "H4MI08176",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Casha, Jim",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/27/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H4MI08176",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "CASHA, JIM"
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Kathy Goodwin",
+          "party": "WCP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Goodwin, Kathy",
+          "reported_party": "Working Class Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/08/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H8MI05124",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:08",
+            "file": "usa_election_finance/2026/races/MI-house-08-5b5b6d6e127b837f.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-08-5b5b6d6e127b837f.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 44666,
+          "oppose_cents": 0,
+          "records": 9
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_major_party_field",
+        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:09",
+      "state": "MI",
+      "office": "house",
+      "district": "09",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Ray Pooley",
+          "party": "DEM",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Pooley, Ray",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/15/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI09245",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance_candidate_id": "H6MI09245",
+          "finance_identity_evidence": {
+            "candidate_name": "Ray Pooley",
+            "party": "DEM",
+            "office": "house",
+            "candidate_id": "H6MI09245",
+            "reported_fec_id": "H6MI09245",
+            "agency_reported_name": "Pooley, Ray",
+            "official_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+            "roster_reported_name": "Steven Raymond \"Ray\" Pooley",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "6761718e0fd87e4c4697c0c26a70901d29955546173d069ae0cd02f946d3aa34",
+            "finance_reported_names": [
+              "POOLEY, STEVEN RAYMOND"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; individually_reviewed_legal_name_nickname_variant"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "POOLEY, STEVEN RAYMOND"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Lisa McClain",
+          "party": "REP",
+          "candidate_id": "H0MI10287",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "McClain, Lisa",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "03/18/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H0MI10287",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 87147,
+              "oppose_cents": 0,
+              "records": 8
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 38773,
+                "oppose_cents": 0,
+                "records": 2
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 48374,
+                "oppose_cents": 0,
+                "records": 6
+              }
+            },
+            "reported_names": [
+              "MCCLAIN, LISA"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Kevin Vayko",
+          "party": "LIB",
+          "candidate_id": "H4MI09133",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Vayko, Kevin",
+          "reported_party": "Libertarian Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/29/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H4MI09133",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "VAYKO, KEVIN"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "John Vlahos",
+          "party": "UST",
+          "candidate_id": "H6MI09278",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Vlahos, John",
+          "reported_party": "U.S. Taxpayers Party",
+          "agency_status": "listed_active",
+          "filed_on": "07/20/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI09278",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "VLAHOS, JOHN"
+            ],
+            "reported_parties": [
+              "UST"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Destiny Clayton",
+          "party": "GRN",
+          "candidate_id": "H6MI09260",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Clayton, Destiny",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/27/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI09260",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "CLAYTON, DESTINY"
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jim Walkowicz",
+          "party": "WCP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Walkowicz, Jim",
+          "reported_party": "Working Class Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/08/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H2MI09178",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:09",
+            "file": "usa_election_finance/2026/races/MI-house-09-5969c0b9acfbcbcd.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-09-5969c0b9acfbcbcd.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 87147,
+          "oppose_cents": 0,
+          "records": 8
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 6,
+        "parties": [
+          "DEM",
+          "GRN",
+          "LIB",
+          "REP",
+          "UST",
+          "WCP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:10",
+      "state": "MI",
+      "office": "house",
+      "district": "10",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Christina Bertrand Hines",
+          "party": "DEM",
+          "candidate_id": "H6MI10276",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Hines, Christina Bertrand",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "01/07/2026",
+          "filing_method": "Petitions",
+          "poll_name_aliases": [
+            "Christina Hines",
+            "Christina Hines",
+            "Christina Hines",
+            "Christina Hines"
+          ],
+          "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+          "reported_fec_id": "H6MI10276",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 2517289,
+              "oppose_cents": 0,
+              "records": 8
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 2517289,
+                "oppose_cents": 0,
+                "records": 8
+              },
+              "P2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              }
+            },
+            "reported_names": [
+              "HINES, CHRISTINA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Michael Bouchard",
+          "party": "REP",
+          "candidate_id": "H6MI10359",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Bouchard, Michael",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/21/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI10359",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 16288619,
+              "oppose_cents": 2478126,
+              "records": 19
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 614643,
+                "oppose_cents": 2478126,
+                "records": 7
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 15673976,
+                "oppose_cents": 0,
+                "records": 12
+              }
+            },
+            "reported_names": [
+              "BOUCHARD, MICHAEL"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Mike Saliba",
+          "party": "LIB",
+          "candidate_id": "H6MI10383",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Saliba, Mike",
+          "reported_party": "Libertarian Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/29/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI10383",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SALIBA, MIKE"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Kwabena Nkromo",
+          "party": "GRN",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Nkromo, Kwabena",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "08/03/2026",
+          "filing_method": "Convention",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Andrea L. Kirby",
+          "party": "WCP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Kirby, Andrea L.",
+          "reported_party": "Working Class Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/08/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H8MI09142",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state",
+              "cook_toss_up_and_lean"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 1,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 1
+          },
+          "review_queue_ids": [
+            "us-202glo6fc3cf65"
+          ],
+          "finance_join": {
+            "race_id": "USA:MI:house:10",
+            "file": "usa_election_finance/2026/races/MI-house-10-88f050372be17d37.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-10-88f050372be17d37.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 19313867,
+          "oppose_cents": 2478126,
+          "records": 43
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_major_party_field",
+        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:11",
+      "state": "MI",
+      "office": "house",
+      "district": "11",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Jeremy Moss",
+          "party": "DEM",
+          "candidate_id": "H6MI11191",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Moss, Jeremy",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/14/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI11191",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 29471739,
+              "oppose_cents": 0,
+              "records": 3
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 10400,
+                "oppose_cents": 0,
+                "records": 1
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 29461339,
+                "oppose_cents": 0,
+                "records": 2
+              }
+            },
+            "reported_names": [
+              "MOSS, JEREMY"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Ethan Baker",
+          "party": "REP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Baker, Ethan",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/20/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI11290",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance_candidate_id": "H6MI11290",
+          "finance_identity_evidence": {
+            "candidate_name": "Ethan Baker",
+            "party": "REP",
+            "office": "house",
+            "candidate_id": "H6MI11290",
+            "reported_fec_id": "H6MI11290",
+            "agency_reported_name": "Baker, Ethan",
+            "official_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+            "roster_reported_name": "Ethan D. Baker",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "6761718e0fd87e4c4697c0c26a70901d29955546173d069ae0cd02f946d3aa34",
+            "finance_reported_names": [
+              "BAKER, ETHAN D"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; individually_reviewed_legal_name_nickname_variant"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "BAKER, ETHAN D"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Farid Ishac",
+          "party": "LIB",
+          "candidate_id": "H6MI11316",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Ishac, Farid",
+          "reported_party": "Libertarian Party",
+          "agency_status": "listed_active",
+          "filed_on": "07/20/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI11316",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "ISHAC, FARID"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Ryan Teasdale",
+          "party": "GRN",
+          "candidate_id": "H6MI11308",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Teasdale, Ryan",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/27/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI11308",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "TEASDALE, RYAN"
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Anil Kumar",
+          "party": "IND",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Kumar, Anil",
+          "reported_party": "No Party Affiliation",
+          "agency_status": "listed_active",
+          "filed_on": "07/15/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H4MI10131",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:11",
+            "file": "usa_election_finance/2026/races/MI-house-11-97bef8a08ddc3ed6.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-11-97bef8a08ddc3ed6.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 29471739,
+          "oppose_cents": 0,
+          "records": 3
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 5,
+        "parties": [
+          "DEM",
+          "GRN",
+          "IND",
+          "LIB",
+          "REP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:12",
+      "state": "MI",
+      "office": "house",
+      "district": "12",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Rashida Tlaib",
+          "party": "DEM",
+          "candidate_id": "H8MI13250",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Tlaib, Rashida",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "03/12/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H8MI13250",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "TLAIB, RASHIDA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "James D. Hooper",
+          "party": "REP",
+          "candidate_id": "H2MI12198",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Hooper, James D.",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/21/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H2MI12198",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "HOOPER, JAMES D"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Marc Joseph Sosnowski",
+          "party": "UST",
+          "candidate_id": "H0MI14214",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Sosnowski, Marc Joseph",
+          "reported_party": "U.S. Taxpayers Party",
+          "agency_status": "listed_active",
+          "filed_on": "07/20/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H0MI14214",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SOSNOWSKI, MARC"
+            ],
+            "reported_parties": [
+              "UST"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Brenda K. Sanders",
+          "party": "GRN",
+          "candidate_id": "H4MI12145",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Sanders, Brenda K.",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "08/03/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H4MI12145",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SANDERS, BRENDA K."
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Gary Walkowicz",
+          "party": "WCP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Walkowicz, Gary",
+          "reported_party": "Working Class Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/08/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H8MI07039",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:12",
+            "file": "usa_election_finance/2026/races/MI-house-12-1f75b3e4132fbebe.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-12-1f75b3e4132fbebe.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 5,
+        "parties": [
+          "DEM",
+          "GRN",
+          "REP",
+          "UST",
+          "WCP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:house:13",
+      "state": "MI",
+      "office": "house",
+      "district": "13",
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Donavan McKinney",
+          "party": "DEM",
+          "candidate_id": "H6MI13254",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "McKinney, Donavan",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/21/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI13254",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 56059125,
+              "oppose_cents": 26869000,
+              "records": 21
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 56059125,
+                "oppose_cents": 26869000,
+                "records": 21
+              }
+            },
+            "reported_names": [
+              "MCKINNEY, DONAVAN",
+              "MCKINNEY, DONAVAN REP.",
+              "MCKINNEY, DONOVAN"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "T.P. Nykoriak",
+          "party": "REP",
+          "candidate_id": "H6MI13312",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Nykoriak, T.P.",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/21/2026",
+          "filing_method": "Petitions",
+          "reported_fec_id": "H6MI13312",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "NYKORIAK, T.P."
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Chris Dardzinski",
+          "party": "UST",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Dardzinski, Chris",
+          "reported_party": "U.S. Taxpayers Party",
+          "agency_status": "listed_active",
+          "filed_on": "07/20/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H2MI13337",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Raelyn Light",
+          "party": "GRN",
+          "candidate_id": "H6MI13320",
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Light, Raelyn",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "08/03/2026",
+          "filing_method": "Convention",
+          "reported_fec_id": "H6MI13320",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/MI",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "LIGHT, RAELYN"
+            ],
+            "reported_parties": [
+              "GRE"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Simone R. Coleman",
+          "party": "WCP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Coleman, Simone R.",
+          "reported_party": "Working Class Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/08/2026",
+          "filing_method": "Convention",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:MI:house:13",
+            "file": "usa_election_finance/2026/races/MI-house-13-e15faf56a9ded10d.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-house-13-e15faf56a9ded10d.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 232224625,
+          "oppose_cents": 26869000,
+          "records": 24
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 5,
+        "parties": [
+          "DEM",
+          "GRN",
+          "REP",
+          "UST",
+          "WCP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:senate",
+      "state": "MI",
+      "office": "senate",
+      "district": null,
+      "candidate_source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Abdul El-Sayed",
+          "party": "DEM",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "El-Sayed, Abdul",
+          "reported_party": "Democratic Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/14/2026",
+          "filing_method": "Petitions",
+          "finance_candidate_id": "S6MI00418",
+          "finance_identity_evidence": {
+            "candidate_name": "Abdul El-Sayed",
+            "party": "DEM",
+            "candidate_id": "S6MI00418",
+            "roster_reported_name": "Abdulrahman Mohamed El-Sayed \"Abdul\" El-Sayed",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "5d88285ba813bb3fb361a8a55d111e884b43f2fe384b1ca8eb4bc2ad24afbc54",
+            "finance_reported_names": [
+              "EL-SAYED, ABDUL"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 208305670,
+              "oppose_cents": 2055707986,
+              "records": 99
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 4481316,
+                "oppose_cents": 26617112,
+                "records": 21
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 203824354,
+                "oppose_cents": 2029090874,
+                "records": 78
+              }
+            },
+            "reported_names": [
+              "EL-SAYED, ABDUL"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Mike Rogers",
+          "party": "REP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Rogers, Mike",
+          "reported_party": "Republican Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/17/2026",
+          "filing_method": "Petitions",
+          "finance_candidate_id": "S4MI00595",
+          "finance_identity_evidence": {
+            "candidate_name": "Mike Rogers",
+            "party": "REP",
+            "candidate_id": "S4MI00595",
+            "roster_reported_name": "Michael J. \"Mike\" Rogers",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "5d88285ba813bb3fb361a8a55d111e884b43f2fe384b1ca8eb4bc2ad24afbc54",
+            "finance_reported_names": [
+              "ROGERS, MICHAEL",
+              "ROGERS, MICHAEL J",
+              "ROGERS, MICHAEL J."
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 620245482,
+              "oppose_cents": 466225612,
+              "records": 47
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 26617113,
+                "oppose_cents": 315907812,
+                "records": 18
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 593628369,
+                "oppose_cents": 150317800,
+                "records": 29
+              }
+            },
+            "reported_names": [
+              "ROGERS, MICHAEL",
+              "ROGERS, MICHAEL J",
+              "ROGERS, MICHAEL J."
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Lydia Christensen",
+          "party": "LIB",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Christensen, Lydia",
+          "reported_party": "Libertarian Party",
+          "agency_status": "listed_active",
+          "filed_on": "06/29/2026",
+          "filing_method": "Convention",
+          "finance_candidate_id": "S6MI00442",
+          "finance_identity_evidence": {
+            "candidate_name": "Lydia Christensen",
+            "party": "LIB",
+            "candidate_id": "S6MI00442",
+            "roster_reported_name": "Lydia Lynn Christensen",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "5d88285ba813bb3fb361a8a55d111e884b43f2fe384b1ca8eb4bc2ad24afbc54",
+            "finance_reported_names": [
+              "CHRISTENSEN, LYDIA LYNN"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "CHRISTENSEN, LYDIA LYNN"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Tim Long",
+          "party": "UST",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Long, Tim",
+          "reported_party": "U.S. Taxpayers Party",
+          "agency_status": "listed_active",
+          "filed_on": "07/20/2026",
+          "filing_method": "Convention",
+          "finance_candidate_id": "S6MI00566",
+          "finance_identity_evidence": {
+            "candidate_name": "Tim Long",
+            "party": "UST",
+            "candidate_id": "S6MI00566",
+            "roster_reported_name": "Timothy E. \"Tim\" Long",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "5d88285ba813bb3fb361a8a55d111e884b43f2fe384b1ca8eb4bc2ad24afbc54",
+            "finance_reported_names": [
+              "LONG, TIMOTHY E"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "LONG, TIMOTHY E"
+            ],
+            "reported_parties": [
+              "UST"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Douglas P. Marsh",
+          "party": "GRN",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Marsh, Douglas P.",
+          "reported_party": "Green Party",
+          "agency_status": "listed_active",
+          "filed_on": "04/27/2026",
+          "filing_method": "Convention",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": {
+            "race_id": "USA:MI:senate",
+            "name": "Douglas P. Marsh",
+            "reason": "fec_identity_unresolved"
+          }
+        },
+        {
+          "name": "Walter P. Kristy",
+          "party": "NLP",
+          "candidate_id": null,
+          "source_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?electionType=GEN&electionYear=2026&page=page.miboePublicReport",
+          "reported_name": "Kristy, Walter P.",
+          "reported_party": "Natural Law Party",
+          "agency_status": "listed_active",
+          "filed_on": "08/31/2026",
+          "filing_method": "Convention",
+          "finance_candidate_id": "S6MI00590",
+          "finance_identity_evidence": {
+            "candidate_name": "Walter P. Kristy",
+            "party": "NLP",
+            "candidate_id": "S6MI00590",
+            "roster_reported_name": "Walter P. Kristy",
+            "source_url": "https://www.thegreenpapers.com/G26/MI",
+            "source_sha256": "5d88285ba813bb3fb361a8a55d111e884b43f2fe384b1ca8eb4bc2ad24afbc54",
+            "finance_reported_names": [
+              "KRISTY, WALTER P."
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "KRISTY, WALTER P."
+            ],
+            "reported_parties": [
+              "NLP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state",
+              "cook_toss_up_and_lean",
+              "korean_company_facility"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 77,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 52,
+            "missing_sample_size": 1,
+            "primary_censored_less_than_one_percent_cannot_be_zero": 1,
+            "outside_reviewed_general_period": 6,
+            "unregistered_primary_host": 3
+          },
+          "review_queue_ids": [
+            "us-202you9af4ba59",
+            "us-202upscf2886a6",
+            "us-202micf2fa67e0",
+            "us-202gle5c572e3a",
+            "us-202marad729239",
+            "us-202z tb2a3f7be",
+            "us-202guic8eacfa2",
+            "us-202cyg13fa7f0a",
+            "us-202the9066d3a5",
+            "us-202traa454dc67",
+            "us-202epi5f481027",
+            "us-202miccc27552a",
+            "us-202micb55519f5",
+            "us-202susb1d73b8b",
+            "us-202fab12ee3caf",
+            "us-202tip8915c085",
+            "us-202gba7596c230",
+            "us-202bea6ed87549",
+            "us-202epife4108d8",
+            "us-202epia42401c2",
+            "us-202mit1e6a5692",
+            "us-202mit132a3ca8",
+            "us-202gle7fc79cd5",
+            "us-202gle6589d1bb",
+            "us-202qua3b4e634a",
+            "us-202qua38d03fbc",
+            "us-202qua1a64cfa3",
+            "us-202zenec41aa86",
+            "us-202zena20bfa8f",
+            "us-202zen354a92cf",
+            "us-202tul3efe64f6",
+            "us-202tip99de5023",
+            "us-202tip7ac4a21f",
+            "us-202tip6d4d41d9",
+            "us-202tip59dfdfa0",
+            "us-202tip3da9b019",
+            "us-202tip199bb9db",
+            "us-202mitf3d55a81",
+            "us-202mit9a5c32a0",
+            "us-202mit39173145",
+            "us-202gleeeb6be84",
+            "us-202gle2939b758",
+            "us-202gle0133b0b3",
+            "us-202emee754e4c5",
+            "us-202emeb507fcbb",
+            "us-202eme5bdd236b",
+            "us-202glef7ac134b",
+            "us-202glec0316553",
+            "us-202gle322439ae",
+            "us-202mit87b44bfc",
+            "us-202mit61ba1fad",
+            "us-202mit590c99af",
+            "us-202epid9595901",
+            "us-202epi46ef28e5",
+            "us-202ros8e5ec4d9",
+            "us-202ros410812c7",
+            "us-202ros2c880fd3",
+            "us-202norbd336de9",
+            "us-202nor7a88e643",
+            "us-202gledaa7038f",
+            "us-202glec19f2301",
+            "us-202gleb42f5fae",
+            "us-202tar417e15f3"
+          ],
+          "finance_join": {
+            "race_id": "USA:MI:senate",
+            "file": "usa_election_finance/2026/races/MI-senate-c54aefc491f52dac.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/MI-senate-c54aefc491f52dac.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 3753007724,
+          "oppose_cents": 2622352240,
+          "records": 258
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_major_party_field",
+        "source_url": "https://www.uspresidentialelectionnews.com/2026-senate-elections/",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:MI:governor",
+      "state": "MI",
+      "office": "governor",
+      "district": null,
+      "candidate_source_url": "https://www.nga.org/governors/elections/",
+      "candidate_coverage": "reported_major_party_field",
+      "candidate_source_role": "reported_governor_matchup",
+      "candidates": [
+        {
+          "candidate_id": "MI:reported-general:2026:007aaee99fada642",
+          "name": "Jocelyn Benson",
+          "reported_name_aliases": [
+            "Jocelyn Benson"
+          ],
+          "party": "DEM",
+          "office": "G",
+          "state": "MI",
+          "district": null,
+          "election_year": 2026,
+          "registration_status": "reported_general_ballot_not_state_certification",
+          "ballot_election_date": "2026-11-03",
+          "source_url": "https://www.nga.org/governors/elections/",
+          "candidate_identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "Jocelyn Benson"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "candidate_id": "MI:reported-general:2026:80440034f91f885d",
+          "name": "John James",
+          "reported_name_aliases": [
+            "John James"
+          ],
+          "party": "REP",
+          "office": "G",
+          "state": "MI",
+          "district": null,
+          "election_year": 2026,
+          "registration_status": "reported_general_ballot_not_state_certification",
+          "ballot_election_date": "2026-11-03",
+          "source_url": "https://www.nga.org/governors/elections/",
+          "candidate_identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "John James"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-06",
+        "fetched_at": "2026-11-06T01:30:05.901175+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-06",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-06",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state",
+              "cook_toss_up_and_lean",
+              "korean_company_facility"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 29,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 16,
+            "missing_sample_size": 1,
+            "primary_censored_less_than_one_percent_cannot_be_zero": 1,
+            "outside_reviewed_general_period": 3
+          },
+          "review_queue_ids": [
+            "gov202you672b417d",
+            "gov202miteee408e5",
+            "gov202gui12b1fe0d",
+            "gov202mic1cf10b5d",
+            "gov202gle26998710",
+            "gov202mar8163ad9f",
+            "gov202z t4d86dfd0",
+            "gov202cygf2c3fb04",
+            "gov202the9aa47f37",
+            "gov202epid5412b4c",
+            "gov202mice83aa799",
+            "gov202mic5eb03b97",
+            "gov202fabf0985b10",
+            "gov202beaa0ec547e",
+            "gov202epi61e1edf8",
+            "gov202mitf5301a04",
+            "gov202mitb973b6eb",
+            "gov202gleb47f8847",
+            "gov202gle3e02391a",
+            "gov202tipfd37dfae",
+            "gov202tip301d0975"
+          ],
+          "finance_join": {
+            "race_id": "USA:MI:governor",
+            "file": "usa_election_finance/2026/races/MI-governor-b68825c038e01729.json",
+            "status": "unsupported",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "unsupported",
+        "data_file": "usa_election_finance/2026/races/MI-governor-b68825c038e01729.json",
+        "source_status": null,
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "ballot_review_incomplete",
+        "candidate_count": null,
+        "general_unopposed": null,
+        "no_vote_status": "not_verified",
+        "confirmed_winner": false
+      }
+    }
+  ],
+  "governor_source_route": {
+    "status": "source_unavailable",
+    "agency": {
+      "agency": "Michigan Secretary of State MiTN",
+      "access": "public_search_and_annual_transaction_zip",
+      "url": "https://www.michigan.gov/sos/elections/disclosure/cfr",
+      "authentication": "public_search_no_account_per_official_docs",
+      "independent_expenditure_mapping": "not_implemented",
+      "last_probe": {
+        "date": "2026-10-02",
+        "result": "public_export_direct_request_timeout",
+        "status": "not_connected"
+      },
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "official_discovery_url": "https://www.michigan.gov/sos/elections/disclosure/cfr",
+        "official_guide_url": "https://www.michigan.gov/sos/elections/Disclosure/cfr/committee-search/intro/welcome-to-the-michigan-campaign-finance-searchable-database",
+        "merts_status": "decommissioned_and_migrated_to_MiTN_per_official_docs",
+        "authentication": "public_search_no_account",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=page.miboeCommitteeExpenditureAnalysisPublicSearch"
+          },
+          {
+            "role": "current_public_export",
+            "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=gov.mi.boe.component.cfrexport.page.cfrexportdownload"
+          },
+          {
+            "role": "legacy_independent_registry",
+            "url": "https://www.michigan.gov/sos/elections/disclosure/cfr/independent-expenditure-reports-state-level"
+          }
+        ],
+        "official_export_static_page_status": "0_matching_records_rendered; not_0_transactions",
+        "expense_identity_documentation": "Expense ID is retained across amended statements; candidate target/SO and office still require filing review",
+        "note_ko": "MiTN현재검색/연간파일직접요청시간초과·주사이트403. 브라우저공개화면존재는백엔드수집성공과다릅니다. 구ZIP은2025년4월전자료여서2026으로사용하지않습니다. 새API키가필요하다는근거는없으며후보별금액은미확보입니다."
+      }
+    },
+    "access_check": {
+      "schema": "usa_governor_source_access_v1",
+      "state": "MI",
+      "cycle": 2026,
+      "checked_at": "2026-10-08T13:19:46.738709+00:00",
+      "status": "source_unavailable",
+      "last_current_endpoint_accessible_at": null,
+      "financial_data_collected": false,
+      "candidate_amounts_available": false,
+      "current_portal_url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=page.miboeCommitteeExpenditureAnalysisPublicSearch",
+      "source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "official_discovery_url": "https://www.michigan.gov/sos/elections/disclosure/cfr",
+        "official_guide_url": "https://www.michigan.gov/sos/elections/Disclosure/cfr/committee-search/intro/welcome-to-the-michigan-campaign-finance-searchable-database",
+        "merts_status": "decommissioned_and_migrated_to_MiTN_per_official_docs",
+        "authentication": "public_search_no_account",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=page.miboeCommitteeExpenditureAnalysisPublicSearch"
+          },
+          {
+            "role": "current_public_export",
+            "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=gov.mi.boe.component.cfrexport.page.cfrexportdownload"
+          },
+          {
+            "role": "legacy_independent_registry",
+            "url": "https://www.michigan.gov/sos/elections/disclosure/cfr/independent-expenditure-reports-state-level"
+          }
+        ],
+        "official_export_static_page_status": "0_matching_records_rendered; not_0_transactions",
+        "expense_identity_documentation": "Expense ID is retained across amended statements; candidate target/SO and office still require filing review",
+        "note_ko": "MiTN현재검색/연간파일직접요청시간초과·주사이트403. 브라우저공개화면존재는백엔드수집성공과다릅니다. 구ZIP은2025년4월전자료여서2026으로사용하지않습니다. 새API키가필요하다는근거는없으며후보별금액은미확보입니다."
+      },
+      "endpoints": [
+        {
+          "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=page.miboeCommitteeExpenditureAnalysisPublicSearch",
+          "status": "source_unavailable",
+          "http_status": null,
+          "error_type": "URLError",
+          "role": "current_public_portal"
+        },
+        {
+          "url": "https://mi-boe.entellitrak.com/etk-mi-boe-prod/page.request.do?page=gov.mi.boe.component.cfrexport.page.cfrexportdownload",
+          "status": "source_unavailable",
+          "http_status": null,
+          "error_type": "URLError",
+          "role": "current_public_export"
+        },
+        {
+          "url": "https://www.michigan.gov/sos/elections/disclosure/cfr/independent-expenditure-reports-state-level",
+          "status": "source_access_blocked",
+          "http_status": 403,
+          "error_type": "HTTPError",
+          "role": "legacy_independent_registry"
+        }
+      ],
+      "note_ko": "공개 사이트 접근 검사만 수행. 후보별 독립지출 수집·금액·최신 공시일 확인과 다릅니다. 접근 실패는0달러가 아닙니다. 기존 유효 금융 파일/원래 기준일은 변경하지 않습니다.",
+      "data_file": "usa_governor_source_access/2026/MI.json"
+    }
+  },
+  "unmatched_reported_finance_races": [],
+  "source_dates": {
+    "poll_as_of": "2026-11-06",
+    "poll_fetched_at": "2026-11-06T01:30:05.901175+00:00",
+    "finance_index_generated_at": "2026-11-02T20:50:09.390952+00:00",
+    "federal_last_success_at": "2026-11-02T19:00:57.007406+00:00"
+  },
+  "limitations_ko": [
+    "50주 연결 점검을 주별 실제 원문 수집/공식 공시 전수 완성과 동일시하지 않습니다.",
+    "미확보는0달러·조사0%·승패가 아닙니다. 주 공시 독립지출은 연방 Super PAC 유형과 구분합니다.",
+    "원문 선거유형 코드별 본선·경선·미확인을 보존합니다. 처리 기준일이 원래 자료 기준일을 대체하지 않습니다.",
+    "후보 이름 변경으로 대진이 맞지 않는 조사는 새 후보에게 넘기지 않습니다."
+  ]
+}

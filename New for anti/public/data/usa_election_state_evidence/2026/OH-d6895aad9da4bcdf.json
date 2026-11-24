@@ -1,0 +1,4122 @@
+{
+  "schema": "usa_state_election_evidence_v1",
+  "cycle": 2026,
+  "state": "OH",
+  "state_name": "Ohio",
+  "group": "B",
+  "checked_as_of": "2026-11-09",
+  "review_checked_as_of": "2026-11-09",
+  "status": "partial_observed",
+  "work_status": "baseline_join_checked",
+  "live_capture_receipt": {
+    "state": "OH",
+    "cycle": 2026,
+    "captured_at": "2026-10-30T04:04:22.777739+00:00",
+    "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-30",
+    "capture_kind": "provider_transport_and_reviewed_primary_supplements",
+    "new_provider_collection": true,
+    "provider_records": 69,
+    "serialized_provider_records_sha256": "0f6396ebeb3253c4f67c849cd8dd30af2b519f6b680eaa778822d0e44e7e9937",
+    "note": "Digest is parsed provider JSON, not an invented original HTTP-body hash.",
+    "primary_supplement_receipts": [
+      {
+        "id": "primary-suffolk-oh-senate-20261002",
+        "state": "OH",
+        "status": "primary_documents_rechecked",
+        "original_reviewed_on": "2026-10-08",
+        "checked_at": "2026-10-19T08:27:47.115385+00:00",
+        "documents": [
+          {
+            "url": "https://www.suffolk.edu/-/media/suffolk/documents/academics/research-at-suffolk/suprc/polls/other-states/2026/10_2_2026_ohio_statewide_complete_marginals.pdf?hash=F70867C91DB279D508E706D79D98CCAA446A720D&la=en",
+            "status": "unchanged",
+            "sha256": "cee90f4e4d5c5ac0934ea51257a71a715d0a1cf412695dc84dcffab9aa0da293"
+          }
+        ],
+        "provider_duplicate_ids": [],
+        "reviewed_replaced_provider_ids": [],
+        "separate_question_provider_ids": []
+      }
+    ],
+    "serialized_provider_response_sha256": "e41cfcfbbee351cb0da1908dc3195a92401064d19262c2a0c6004e5a0af19918",
+    "provider_fetch": {
+      "via": "source_fetch.yml (GitHub Actions runner)",
+      "fetch_branch": "source-fetch/votehub-full-20261030-40999144298",
+      "fetched_at": "2026-10-30T03:46:38.238312+00:00",
+      "http_status": 200,
+      "raw_sha256": "3758903074d7cfd080f0509a6f6fb260b3870d4778b61d729a26b25cae87ec20"
+    },
+    "primary_documents_note": "Primary document rechecks restored from the previous packet: this replay could not refetch publisher documents from the agent sandbox."
+  },
+  "priority": {
+    "state_name": "Ohio",
+    "cook_competitive_races": 5,
+    "verified_company_facility_state": false
+  },
+  "office_coverage": {
+    "house": {
+      "scheduled_races": 15,
+      "non_election": false,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 8,
+      "candidate_id_links": 32
+    },
+    "senate": {
+      "scheduled_races": 1,
+      "non_election": false,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 1,
+      "candidate_id_links": 2
+    },
+    "governor": {
+      "scheduled_races": 1,
+      "non_election": false,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 0,
+      "candidate_id_links": 7
+    }
+  },
+  "races": [
+    {
+      "race_id": "USA:OH:house:01",
+      "state": "OH",
+      "office": "house",
+      "district": "01",
+      "candidate_source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Greg Landsman",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H2OH01194",
+          "source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "reported_fec_id": "H2OH01194",
+          "source_status": "official_general_candidate_listing",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "reported_name": "Greg Landsman",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 157757,
+              "oppose_cents": 0,
+              "records": 13
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 137246,
+                "oppose_cents": 0,
+                "records": 6
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 20511,
+                "oppose_cents": 0,
+                "records": 7
+              }
+            },
+            "reported_names": [
+              "LANDSMAN, GREG"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Eric Conroy",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H6OH01138",
+          "source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "reported_fec_id": "H6OH01138",
+          "source_status": "official_general_candidate_listing",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "reported_name": "Eric Conroy",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 28660983,
+              "oppose_cents": 0,
+              "records": 23
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 28660983,
+                "oppose_cents": 0,
+                "records": 23
+              }
+            },
+            "reported_names": [
+              "CONROY, ERIC"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Nathan Weise",
+          "party": "LIB",
+          "reported_party": "Libertarian",
+          "candidate_id": "H6OH01229",
+          "source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "reported_fec_id": "H6OH01229",
+          "source_status": "official_general_candidate_listing",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "reported_name": "Nathan Weise",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "WEISE, NATHAN"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "cook_toss_up_and_lean"
+            ],
+            "within_focus_order": 2
+          },
+          "status": "election_closed",
+          "provider_record_count": 1,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "primary_question_and_methods_not_obtained": 1
+          },
+          "review_queue_ids": [
+            "us-202quad5474d87"
+          ],
+          "finance_join": {
+            "race_id": "USA:OH:house:01",
+            "file": "usa_election_finance/2026/races/OH-house-01-a689350184bdeff2.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-01-a689350184bdeff2.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 28856147,
+          "oppose_cents": 0,
+          "records": 39
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "LIB",
+          "REP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:02",
+      "state": "OH",
+      "office": "house",
+      "district": "02",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Jen Mazzuckelli",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6OH02326",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH02326",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "MAZZUCKELLI, JEN"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "David J. \"Dave\" Taylor",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H4OH02248",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4OH02248",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "TAYLOR, DAVID"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:02",
+            "file": "usa_election_finance/2026/races/OH-house-02-dd61470926587042.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-02-dd61470926587042.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:03",
+      "state": "OH",
+      "office": "house",
+      "district": "03",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Joyce B. Beatty",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H2OH03125",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2OH03125",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "BEATTY, JOYCE"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Cleophus Dulaney",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H0OH03137",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H0OH03137",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "DULANEY, CLEOPHUS"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "national_scheduled_election"
+            ],
+            "within_focus_order": 4
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:03",
+            "file": "usa_election_finance/2026/races/OH-house-03-c738b5d050876589.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-03-c738b5d050876589.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:04",
+      "state": "OH",
+      "office": "house",
+      "district": "04",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Joshua \"Josh\" Kolasinski",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6OH04181",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH04181",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "KOLASINSKI, JOSHUA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "James D. \"Jim\" Jordan",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H6OH04082",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH04082",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "P2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              }
+            },
+            "reported_names": [
+              "JORDAN, JAMES D",
+              "JORDAN, JAMES D REP.",
+              "JORDAN, JAMES D."
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Tracey L. Tackett",
+          "party": "UNK",
+          "reported_party": "",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:04",
+            "file": "usa_election_finance/2026/races/OH-house-04-0f8c2216fcd90c42.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-04-0f8c2216fcd90c42.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "REP",
+          "UNK"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:05",
+      "state": "OH",
+      "office": "house",
+      "district": "05",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Brian Alan Shaver",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6OH05154",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH05154",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SHAVER, BRIAN ALAN MR."
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Robert Edward \"Bob\" Latta",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H8OH05036",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H8OH05036",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "LATTA, ROBERT EDWARD"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Michael J. \"Mike\" Veloff",
+          "party": "LIB",
+          "reported_party": "Libertarian",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:05",
+            "file": "usa_election_finance/2026/races/OH-house-05-38355b76f129fadc.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-05-38355b76f129fadc.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "LIB",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:06",
+      "state": "OH",
+      "office": "house",
+      "district": "06",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Elizabeth Ann Kirtley",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6OH06244",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH06244",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "KIRTLEY, ELIZABETH ANN MRS."
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Michael A. Rulli",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H4OH06165",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4OH06165",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "RULLI, MICHAEL"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:06",
+            "file": "usa_election_finance/2026/races/OH-house-06-b44143780045bfe9.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-06-b44143780045bfe9.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:07",
+      "state": "OH",
+      "office": "house",
+      "district": "07",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Brian K. Poindexter",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6OH07168",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH07168",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "poll_name_aliases": [
+            "Brian Poindexter"
+          ],
+          "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 57184042,
+              "oppose_cents": 0,
+              "records": 9
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 163653,
+                "oppose_cents": 0,
+                "records": 5
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 57020389,
+                "oppose_cents": 0,
+                "records": 4
+              }
+            },
+            "reported_names": [
+              "POINDEXTER, BRIAN"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Max Miller",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H2OH16051",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2OH16051",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              }
+            },
+            "reported_names": [
+              "MILLER, MAX"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Thahbia Asad, I",
+          "party": "WRI",
+          "reported_party": "Write-in; (Nonpartisan)",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "write_in",
+          "reported_fec_id": "H6OH07192",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Andrey Joseph Martinichin",
+          "party": "WRI",
+          "reported_party": "Write-in; (Nonpartisan)",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "write_in",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "cook_toss_up_and_lean"
+            ],
+            "within_focus_order": 2
+          },
+          "status": "election_closed",
+          "provider_record_count": 3,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "commissioner_primary_not_obtained": 1,
+            "primary_provider_sample_mismatch": 1,
+            "missing_pollster_sample_and_primary_methodology": 1
+          },
+          "review_queue_ids": [
+            "us-202beda3a16f8f",
+            "us-202tavd2d23773",
+            "us-202unke3b76dc0"
+          ],
+          "finance_join": {
+            "race_id": "USA:OH:house:07",
+            "file": "usa_election_finance/2026/races/OH-house-07-21b7c707b65383d6.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-07-21b7c707b65383d6.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 57184042,
+          "oppose_cents": 7533610,
+          "records": 14
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 4,
+        "parties": [
+          "DEM",
+          "REP",
+          "WRI"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [
+          "Thahbia Asad, I",
+          "Andrey Joseph Martinichin"
+        ],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:08",
+      "state": "OH",
+      "office": "house",
+      "district": "08",
+      "candidate_source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Vanessa Enoch",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": null,
+          "source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "reported_fec_id": "H8OH08097",
+          "source_status": "official_general_candidate_listing",
+          "reported_name": "Vanessa Enoch",
+          "poll_name_aliases": [
+            "Vanessa L. Enoch"
+          ],
+          "finance_candidate_id": "H8OH08097",
+          "finance_identity_evidence": {
+            "candidate_name": "Vanessa Enoch",
+            "party": "DEM",
+            "office": "house",
+            "candidate_id": "H8OH08097",
+            "reported_fec_id": "H8OH08097",
+            "agency_reported_name": "Vanessa Enoch",
+            "official_source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+            "roster_reported_name": "Vanessa L. Enoch",
+            "source_url": "https://www.thegreenpapers.com/G26/OH",
+            "source_sha256": "67ecdad6a8ccc1a6c966476166909219e367e385eaec3308829156492fa04dcc",
+            "finance_reported_names": [
+              "ENOCH, VANESSA L. DR."
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "exact_official_nominee_and_secondary_source_cited_id_corroborated_by_existing_fec_same_race_id_party; reviewed_middle_initial_variant"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "ENOCH, VANESSA L. DR."
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Warren Davidson",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H6OH08315",
+          "source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "reported_fec_id": "H6OH08315",
+          "source_status": "official_general_candidate_listing",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "reported_name": "Warren Davidson",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "DAVIDSON, WARREN"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:08",
+            "file": "usa_election_finance/2026/races/OH-house-08-bce76bfc5a23e6d5.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-08-bce76bfc5a23e6d5.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://votehamiltoncountyohio.gov/wp-content/uploads/2026/09/November-2026-Certified-Candidate-Profile-and-Data.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:09",
+      "state": "OH",
+      "office": "house",
+      "district": "09",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Marcia Carolyn \"Marcy\" Kaptur",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H2OH09031",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2OH09031",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "poll_name_aliases": [
+            "Marcy Kaptur"
+          ],
+          "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "poll_alias_sources": [
+            "https://www.thegreenpapers.com/G26/OH",
+            "https://www.fec.gov/data/candidate/H2OH09031/?cycle=2026&election_full=true"
+          ],
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 257077,
+              "oppose_cents": 0,
+              "records": 21
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 213718,
+                "oppose_cents": 0,
+                "records": 8
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 43359,
+                "oppose_cents": 0,
+                "records": 13
+              }
+            },
+            "reported_names": [
+              "KAPTUR, HON. M.C. MARCY",
+              "KAPTUR, MARCY",
+              "KAPTUR, MARCY HON. M.C.",
+              "KAPTUR, MARCY M.C.",
+              "KAPUR, MARCIA CAROLYN"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Derek Merrin",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H4OH09169",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4OH09169",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 3700000,
+              "oppose_cents": 6450000,
+              "records": 6
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 3700000,
+                "oppose_cents": 6450000,
+                "records": 6
+              }
+            },
+            "reported_names": [
+              "MERRIN, DEREK"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "cook_toss_up_and_lean"
+            ],
+            "within_focus_order": 2
+          },
+          "status": "election_closed",
+          "provider_record_count": 1,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:09",
+            "file": "usa_election_finance/2026/races/OH-house-09-423ab1ddf89e794e.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-09-423ab1ddf89e794e.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 12916577,
+          "oppose_cents": 6450000,
+          "records": 35
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:10",
+      "state": "OH",
+      "office": "house",
+      "district": "10",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Kristina Knickerbocker",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6OH10121",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH10121",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "KNICKERBOCKER, KRISTINA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Michael R. \"Mike\" Turner",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2OH03067",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Thomas F. \"Tom\" McMasters",
+          "party": "LIB",
+          "reported_party": "Libertarian",
+          "candidate_id": "H6OH10113",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH10113",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "MCMASTERS, THOMAS"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 1,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 1
+          },
+          "review_queue_ids": [
+            "us-202dccf9796e58"
+          ],
+          "finance_join": {
+            "race_id": "USA:OH:house:10",
+            "file": "usa_election_finance/2026/races/OH-house-10-463d7cd7c4b7bd60.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-10-463d7cd7c4b7bd60.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "LIB",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:11",
+      "state": "OH",
+      "office": "house",
+      "district": "11",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Shontel M. Brown",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H2OH11169",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2OH11169",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "BROWN, M SHONTEL",
+              "BROWN, SHONTEL"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Mike Kirchner",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H6OH11210",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH11210",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "KIRCHNER, MIKE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "national_scheduled_election"
+            ],
+            "within_focus_order": 4
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:11",
+            "file": "usa_election_finance/2026/races/OH-house-11-6a7650e41bba62c9.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-11-6a7650e41bba62c9.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:12",
+      "state": "OH",
+      "office": "house",
+      "district": "12",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Jerrad Shane Christian",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H4OH12080",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4OH12080",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "CHRISTIAN, JERRAD SHANE"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "William Troy \"Troy\" Balderson",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H8OH12180",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H8OH12180",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "BALDERSON, WILLIAM TROY"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:12",
+            "file": "usa_election_finance/2026/races/OH-house-12-04b10cd7343aaba2.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-12-04b10cd7343aaba2.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:13",
+      "state": "OH",
+      "office": "house",
+      "district": "13",
+      "candidate_source_url": "https://www.boe.ohio.gov/summit/c/upload/Election_CandidateList.pdf",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Emilia Sykes",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H2OH13264",
+          "source_url": "https://www.boe.ohio.gov/summit/c/upload/Election_CandidateList.pdf",
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "reported_fec_id": "H2OH13264",
+          "source_status": "official_general_candidate_listing",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "reported_name": "Emilia Sykes",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 33375,
+              "oppose_cents": 0,
+              "records": 13
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 33375,
+                "oppose_cents": 0,
+                "records": 13
+              }
+            },
+            "reported_names": [
+              "SYKES, EMILIA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Carey Coleman",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H6OH13307",
+          "source_url": "https://www.boe.ohio.gov/summit/c/upload/Election_CandidateList.pdf",
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "reported_fec_id": "H6OH13307",
+          "source_status": "official_general_candidate_listing",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "reported_name": "Carey Coleman",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "COLEMAN, CAREY"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Sandeep Dixit",
+          "party": "IND",
+          "reported_party": "Nonparty",
+          "candidate_id": null,
+          "source_url": "https://www.boe.ohio.gov/summit/c/upload/Election_CandidateList.pdf",
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "reported_fec_id": "H6OH13273",
+          "source_status": "official_general_candidate_listing",
+          "reported_name": "Sandeep Dixit",
+          "poll_name_aliases": [
+            "Sandeep S. Dixit"
+          ],
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "national_scheduled_election"
+            ],
+            "within_focus_order": 4
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:13",
+            "file": "usa_election_finance/2026/races/OH-house-13-e5ee2d2db80eb1d2.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-13-e5ee2d2db80eb1d2.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 33375,
+          "oppose_cents": 0,
+          "records": 13
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "IND",
+          "REP"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.boe.ohio.gov/summit/c/upload/Election_CandidateList.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:14",
+      "state": "OH",
+      "office": "house",
+      "district": "14",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Maria Jukic",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6OH14248",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH14248",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "JUKIC, MARIA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "David P. \"Dave\" Joyce",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H2OH14064",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2OH14064",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1200000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1200000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "JOYCE, DAVID P."
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:OH:house:14",
+            "file": "usa_election_finance/2026/races/OH-house-14-cba7b738aa9175e8.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-14-cba7b738aa9175e8.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1200000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:house:15",
+      "state": "OH",
+      "office": "house",
+      "district": "15",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/OH",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Don Ralph Leonard",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6OH15112",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH15112",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 625271,
+              "oppose_cents": 32186880,
+              "records": 10
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 179451,
+                "oppose_cents": 32186880,
+                "records": 5
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 445820,
+                "oppose_cents": 0,
+                "records": 5
+              }
+            },
+            "reported_names": [
+              "LEONARD, DON",
+              "LEONARD, DON RALPH"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Mike Carey",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H2OH15228",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2OH15228",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              }
+            },
+            "reported_names": [
+              "CAREY, MIKE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Brennan Jacob Barrington",
+          "party": "LIB",
+          "reported_party": "Libertarian",
+          "candidate_id": "H6OH15138",
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6OH15138",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "BARRINGTON, BRENNAN"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Gary Josephson",
+          "party": "WRI",
+          "reported_party": "Write-in",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "write_in",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Samuel \"Sam\" Ronan",
+          "party": "WRI",
+          "reported_party": "Write-in; (Republican)",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/OH",
+          "ballot_access": "write_in",
+          "reported_fec_id": "H6OH01088",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 4,
+            "reasons": [
+              "national_scheduled_election"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 3,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 1,
+            "primary_methodology_not_obtained": 2
+          },
+          "review_queue_ids": [
+            "us-202har6cfd60c5",
+            "us-202har67e7828b",
+            "us-202har2b87ea23"
+          ],
+          "finance_join": {
+            "race_id": "USA:OH:house:15",
+            "file": "usa_election_finance/2026/races/OH-house-15-b7e50de39f7a8ca5.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-house-15-b7e50de39f7a8ca5.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 625271,
+          "oppose_cents": 32186880,
+          "records": 10
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 5,
+        "parties": [
+          "DEM",
+          "LIB",
+          "REP",
+          "WRI"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/OH",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [
+          "Gary Josephson",
+          "Samuel \"Sam\" Ronan"
+        ],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:senate",
+      "state": "OH",
+      "office": "senate",
+      "district": null,
+      "candidate_source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Sherrod Brown",
+          "reported_name": "Sherrod Brown",
+          "party": "DEM",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_id": null,
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "finance_candidate_id": "S6OH00163",
+          "finance_identity_evidence": {
+            "candidate_name": "Sherrod Brown",
+            "party": "DEM",
+            "candidate_id": "S6OH00163",
+            "roster_reported_name": "Sherrod Brown",
+            "source_url": "https://www.thegreenpapers.com/G26/OH",
+            "source_sha256": "16634d47f8d653c138a024d55007851972218752738b3d048c91afa6540c4f09",
+            "finance_reported_names": [
+              "BROWN, SHERROD"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 6610661,
+              "oppose_cents": 213301843,
+              "records": 60
+            },
+            "by_election_type": {
+              "G2024": {
+                "status": "observed_partial",
+                "support_cents": 1091764,
+                "oppose_cents": 1000229,
+                "records": 2
+              },
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 3448648,
+                "oppose_cents": 84638688,
+                "records": 39
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 2070249,
+                "oppose_cents": 127662926,
+                "records": 19
+              },
+              "S2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              }
+            },
+            "reported_names": [
+              "BROWN, SHERROD",
+              "BROWN, SHERROD CAMPBELL"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jon Husted",
+          "reported_name": "Jon Husted",
+          "party": "REP",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_id": null,
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "finance_candidate_id": "S6OH00304",
+          "finance_identity_evidence": {
+            "candidate_name": "Jon Husted",
+            "party": "REP",
+            "candidate_id": "S6OH00304",
+            "roster_reported_name": "Jon A. Husted",
+            "source_url": "https://www.thegreenpapers.com/G26/OH",
+            "source_sha256": "16634d47f8d653c138a024d55007851972218752738b3d048c91afa6540c4f09",
+            "finance_reported_names": [
+              "HUSTED, JON"
+            ],
+            "reviewed_on": "2026-10-08",
+            "basis": "current_reviewed_nominee_and_source_cited_fec_id_corroborated_by_same_race_name_party"
+          },
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 147583147,
+              "oppose_cents": 1218390,
+              "records": 28
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 64771461,
+                "oppose_cents": 1218390,
+                "records": 18
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 82811686,
+                "oppose_cents": 0,
+                "records": 10
+              },
+              "S2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              }
+            },
+            "reported_names": [
+              "HUSTED, JON"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Greg Levy",
+          "reported_name": "Greg Levy",
+          "party": "OTH",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_id": null,
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "William B. Redpath",
+          "reported_name": "William B. Redpath",
+          "party": "LIB",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_id": null,
+          "ballot_access": "agency_listed_general_ballot_candidate",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Stephen Faris",
+          "reported_name": "Stephen Faris",
+          "party": "WRI",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_id": null,
+          "ballot_access": "declared_write_in",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Anthony Holliman",
+          "reported_name": "Anthony Holliman",
+          "party": "WRI",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_id": null,
+          "ballot_access": "declared_write_in",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Timothy Telymonde",
+          "reported_name": "Timothy Telymonde",
+          "party": "WRI",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_id": null,
+          "ballot_access": "declared_write_in",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 2,
+            "reasons": [
+              "cook_toss_up_and_lean"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 35,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 11,
+            "primary_release_not_accessed": 2,
+            "primary_geography_methodology_conflict": 1,
+            "primary_question_and_methods_not_obtained": 1,
+            "outside_reviewed_general_period": 7,
+            "unregistered_primary_host": 2
+          },
+          "review_queue_ids": [
+            "us-202sur47b76c1c",
+            "us-202con020b20e8",
+            "us-202new8d3274bf",
+            "us-202insea9816ae",
+            "us-202big1f625134",
+            "us-202qua2790f813",
+            "us-202tra4f3f6f82",
+            "us-202ins890b679a",
+            "us-202cona69a5893",
+            "us-202wedb13225b0",
+            "us-202bea58e907c0",
+            "us-202the85ab5fb4",
+            "us-202fabc4750dc3",
+            "us-202bea6ef5bd7d",
+            "us-202bow8a765810",
+            "us-202echefadd030",
+            "us-202quad6aba264",
+            "us-202onm04028dcb",
+            "us-202emc72b76be3",
+            "us-202emeea9b3350",
+            "us-202bow288ac89a",
+            "us-202eme8f806411",
+            "us-202bowabd25f95",
+            "us-202bowefe05ca7"
+          ],
+          "finance_join": {
+            "race_id": "USA:OH:senate",
+            "file": "usa_election_finance/2026/races/OH-senate-a827b99805f25ff2.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/OH-senate-a827b99805f25ff2.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 156913009,
+          "oppose_cents": 226560301,
+          "records": 101
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 7,
+        "parties": [
+          "DEM",
+          "LIB",
+          "OTH",
+          "REP",
+          "WRI"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [
+          "Stephen Faris",
+          "Anthony Holliman",
+          "Timothy Telymonde"
+        ],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:OH:governor",
+      "state": "OH",
+      "office": "governor",
+      "district": null,
+      "candidate_source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+      "candidate_coverage": "complete_active_agency_listing",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "candidate_id": "OH:reported-general:2026:6f98b24603280390",
+          "name": "Amy Acton",
+          "reported_name_aliases": [
+            "Amy Acton"
+          ],
+          "party": "DEM",
+          "office": "G",
+          "state": "OH",
+          "district": null,
+          "election_year": 2026,
+          "registration_status": "state_agency_certified_general_ballot",
+          "ballot_election_date": "2026-11-03",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_identity_basis": "state_election_agency_general_ballot_listing",
+          "lieutenant_governor": "David Pepper",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "Amy Acton"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "candidate_id": "OH:reported-general:2026:8ad7884d49cdcbe3",
+          "name": "Vivek Ramaswamy",
+          "reported_name_aliases": [
+            "Vivek Ramaswamy"
+          ],
+          "party": "REP",
+          "office": "G",
+          "state": "OH",
+          "district": null,
+          "election_year": 2026,
+          "registration_status": "state_agency_certified_general_ballot",
+          "ballot_election_date": "2026-11-03",
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "candidate_identity_basis": "state_election_agency_general_ballot_listing",
+          "lieutenant_governor": "Robert A. McColley",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "Vivek Ramaswamy"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "candidate_id": "OH:reported-general:2026:7d488af9538da62b",
+          "name": "Don Kissick",
+          "party": "LIB",
+          "office": "G",
+          "state": "OH",
+          "district": null,
+          "election_year": 2026,
+          "reported_name_aliases": [
+            "Don Kissick"
+          ],
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "registration_status": "state_agency_certified_general_ballot",
+          "candidate_identity_basis": "state_election_agency_general_ballot_listing",
+          "ballot_election_date": "2026-11-03",
+          "lieutenant_governor": "James L. Mills",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "Don Kissick"
+            ],
+            "reported_parties": [
+              "LIB"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "candidate_id": "OH:declared-write-in:2026:9ba9b146735359de",
+          "name": "Timothy Grady",
+          "party": "WRI",
+          "office": "G",
+          "state": "OH",
+          "district": null,
+          "election_year": 2026,
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "registration_status": "declared_write_in",
+          "ballot_access": "declared_write_in",
+          "reported_name_aliases": [
+            "Timothy Grady"
+          ],
+          "lieutenant_governor": "Andrea Neutzling",
+          "candidate_identity_basis": "state_election_agency_declared_write_in_listing",
+          "ballot_election_date": "2026-11-03",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "Timothy Grady"
+            ],
+            "reported_parties": [
+              "WRI"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "candidate_id": "OH:declared-write-in:2026:ea95a72ccc160c6c",
+          "name": "Heather Hill",
+          "party": "WRI",
+          "office": "G",
+          "state": "OH",
+          "district": null,
+          "election_year": 2026,
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "registration_status": "declared_write_in",
+          "ballot_access": "declared_write_in",
+          "reported_name_aliases": [
+            "Heather Hill"
+          ],
+          "lieutenant_governor": "Patrick Manley",
+          "candidate_identity_basis": "state_election_agency_declared_write_in_listing",
+          "ballot_election_date": "2026-11-03",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "Heather Hill"
+            ],
+            "reported_parties": [
+              "WRI"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "candidate_id": "OH:declared-write-in:2026:c346dec147d68207",
+          "name": "Renea Turner",
+          "party": "WRI",
+          "office": "G",
+          "state": "OH",
+          "district": null,
+          "election_year": 2026,
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "registration_status": "declared_write_in",
+          "ballot_access": "declared_write_in",
+          "reported_name_aliases": [
+            "Renea Turner"
+          ],
+          "lieutenant_governor": "Jalen Turner",
+          "candidate_identity_basis": "state_election_agency_declared_write_in_listing",
+          "ballot_election_date": "2026-11-03",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "Renea Turner"
+            ],
+            "reported_parties": [
+              "WRI"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "candidate_id": "OH:declared-write-in:2026:0ecdefd49c7f4c55",
+          "name": "Ron Ula",
+          "party": "WRI",
+          "office": "G",
+          "state": "OH",
+          "district": null,
+          "election_year": 2026,
+          "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+          "registration_status": "declared_write_in",
+          "ballot_access": "declared_write_in",
+          "reported_name_aliases": [
+            "Ron Ula"
+          ],
+          "lieutenant_governor": "Michael C. Lehnerd",
+          "candidate_identity_basis": "state_election_agency_declared_write_in_listing",
+          "ballot_election_date": "2026-11-03",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "Ron Ula"
+            ],
+            "reported_parties": [
+              "WRI"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-09",
+        "fetched_at": "2026-11-09T00:48:04.275573+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-09",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-09",
+        "monitoring": {
+          "priority": {
+            "order": 2,
+            "reasons": [
+              "cook_toss_up_and_lean"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 32,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 12,
+            "primary_geography_and_candidate_table_not_verified": 1,
+            "outside_reviewed_general_period": 5,
+            "unregistered_primary_host": 2
+          },
+          "review_queue_ids": [
+            "gov202surffbd3f26",
+            "gov202youa4debdcc",
+            "gov202conb5315a1c",
+            "gov202new6f646827",
+            "gov202big5e3239e4",
+            "gov202con13c1d7de",
+            "gov202wed2f55b36e",
+            "gov202beabaf570dd",
+            "gov202thead47ff93",
+            "gov202fab030f0b04",
+            "gov202bea4b73a536",
+            "gov202bow85a71f73",
+            "gov202ech25a43873",
+            "gov202qua7858d8a7",
+            "gov202emcfb09b615",
+            "gov202eme360bbf2f",
+            "gov202datc100c6d7",
+            "gov202bow6367b185",
+            "gov202hare48aef1c",
+            "gov202emefab11c0d"
+          ],
+          "finance_join": {
+            "race_id": "USA:OH:governor",
+            "file": "usa_election_finance/2026/races/OH-governor-4b117b839935b2c9.json",
+            "status": "unsupported",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "unsupported",
+        "data_file": "usa_election_finance/2026/races/OH-governor-4b117b839935b2c9.json",
+        "source_status": null,
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 7,
+        "parties": [
+          "DEM",
+          "LIB",
+          "REP",
+          "WRI"
+        ],
+        "coverage": "complete_active_agency_listing",
+        "source_url": "https://www.ohiosos.gov/assets/dir2026-45-form-of-the-official-ballot-for-the-november%203-general-election.pdf",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": false,
+        "write_in_candidates": [
+          "Timothy Grady",
+          "Heather Hill",
+          "Renea Turner",
+          "Ron Ula"
+        ],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    }
+  ],
+  "governor_source_route": {
+    "status": "source_access_blocked",
+    "agency": {
+      "agency": "Ohio Secretary of State",
+      "access": "official_public_campaign_finance_portal",
+      "url": "https://www.ohiosos.gov/elections/campaign-finance",
+      "authentication": "public_search_no_api_key_documented",
+      "independent_expenditure_mapping": "not_implemented",
+      "last_probe": {
+        "date": "2026-10-08",
+        "result": "current_portal_direct_http403",
+        "status": "not_connected"
+      },
+      "public_source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "official_discovery_url": "https://www.ohiosos.gov/elections/campaign-finance",
+        "authentication": "no_new_api_key_requirement_found",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://data.ohiosos.gov/portal/campaign-finance"
+          }
+        ],
+        "note_ko": "공식사이트의Simple/Advanced/FileTransfer가현재DataPortal을연결. 직접수집403. 검색화면존재와후보별독립지출금액확보는다릅니다. 지출유형·후보타깃·지지/반대·정정·선거단계원자료검증전에는캠프일반지출을IE로사용하지않습니다."
+      }
+    },
+    "access_check": {
+      "schema": "usa_governor_source_access_v1",
+      "state": "OH",
+      "cycle": 2026,
+      "checked_at": "2026-10-08T14:51:04.562788+00:00",
+      "status": "source_access_blocked",
+      "last_current_endpoint_accessible_at": null,
+      "financial_data_collected": false,
+      "candidate_amounts_available": false,
+      "current_portal_url": "https://data.ohiosos.gov/portal/campaign-finance",
+      "source_review": {
+        "cycle": 2026,
+        "reviewed_on": "2026-10-08",
+        "official_discovery_url": "https://www.ohiosos.gov/elections/campaign-finance",
+        "authentication": "no_new_api_key_requirement_found",
+        "endpoints": [
+          {
+            "role": "current_public_portal",
+            "url": "https://data.ohiosos.gov/portal/campaign-finance"
+          }
+        ],
+        "note_ko": "공식사이트의Simple/Advanced/FileTransfer가현재DataPortal을연결. 직접수집403. 검색화면존재와후보별독립지출금액확보는다릅니다. 지출유형·후보타깃·지지/반대·정정·선거단계원자료검증전에는캠프일반지출을IE로사용하지않습니다."
+      },
+      "endpoints": [
+        {
+          "url": "https://data.ohiosos.gov/portal/campaign-finance",
+          "status": "source_access_blocked",
+          "http_status": 403,
+          "error_type": "HTTPError",
+          "role": "current_public_portal"
+        }
+      ],
+      "note_ko": "공개 사이트 접근 검사만 수행. 후보별 독립지출 수집·금액·최신 공시일 확인과 다릅니다. 접근 실패는0달러가 아닙니다. 기존 유효 금융 파일/원래 기준일은 변경하지 않습니다.",
+      "data_file": "usa_governor_source_access/2026/OH.json"
+    }
+  },
+  "unmatched_reported_finance_races": [
+    "USA:OH:house:65"
+  ],
+  "source_dates": {
+    "poll_as_of": "2026-11-09",
+    "poll_fetched_at": "2026-11-09T00:48:04.275573+00:00",
+    "finance_index_generated_at": "2026-11-02T20:50:09.390952+00:00",
+    "federal_last_success_at": "2026-11-02T19:00:57.007406+00:00"
+  },
+  "limitations_ko": [
+    "50주 연결 점검을 주별 실제 원문 수집/공식 공시 전수 완성과 동일시하지 않습니다.",
+    "미확보는0달러·조사0%·승패가 아닙니다. 주 공시 독립지출은 연방 Super PAC 유형과 구분합니다.",
+    "원문 선거유형 코드별 본선·경선·미확인을 보존합니다. 처리 기준일이 원래 자료 기준일을 대체하지 않습니다.",
+    "후보 이름 변경으로 대진이 맞지 않는 조사는 새 후보에게 넘기지 않습니다."
+  ]
+}

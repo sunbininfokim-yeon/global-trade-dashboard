@@ -1,0 +1,5437 @@
+{
+  "schema": "usa_state_election_evidence_v1",
+  "cycle": 2026,
+  "state": "NY",
+  "state_name": "New York",
+  "group": "A",
+  "checked_as_of": "2026-11-07",
+  "review_checked_as_of": "2026-11-07",
+  "status": "partial_observed",
+  "work_status": "baseline_join_checked",
+  "live_capture_receipt": {
+    "state": "NY",
+    "cycle": 2026,
+    "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-10-23",
+    "captured_at": "2026-10-23T02:50:10.753236+00:00",
+    "capture_kind": "provider_transport_only",
+    "serialized_provider_response_sha256": "80178c77a7de36dccc70ef799db42c51a982966b7f6ebefae3c16c80363c0c70",
+    "provider_records": 35,
+    "primary_rechecked_ids": [
+      "us-202sie2af2e738"
+    ],
+    "primary_review_checked_at": "2026-10-16T09:52:29.946539+00:00",
+    "primary_review_data_file": "usa_election_poll_release_reviews/2026/NY-primary-20261016.json",
+    "primary_review_scope": "NY21 Siena Q4 only; other NY releases retain prior contracts",
+    "federal_finance_recollected": false,
+    "governor_finance_recollected": false,
+    "primary_supplement_receipts": [],
+    "provider_fetch": {
+      "via": "source_fetch.yml (GitHub Actions runner)",
+      "fetch_branch": "source-fetch/votehub-full-20261023-39883625299",
+      "fetched_at": "2026-10-23T01:23:30.037008+00:00",
+      "http_status": 200,
+      "raw_sha256": "f627290b88dcd935ce5a14885cc5c42e6620bd435ff2c7bd5875e0d22eef5ac4"
+    }
+  },
+  "priority": {
+    "state_name": "New York",
+    "cook_competitive_races": 3,
+    "verified_company_facility_state": false
+  },
+  "office_coverage": {
+    "house": {
+      "scheduled_races": 26,
+      "non_election": false,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 21,
+      "candidate_id_links": 47
+    },
+    "senate": {
+      "scheduled_races": 0,
+      "non_election": true,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 0,
+      "candidate_id_links": 0
+    },
+    "governor": {
+      "scheduled_races": 1,
+      "non_election": false,
+      "with_poll_observations": 0,
+      "with_recent_7d": 0,
+      "with_recent_14d": 0,
+      "with_observed_current_candidate_spending": 1,
+      "candidate_id_links": 2
+    }
+  },
+  "races": [
+    {
+      "race_id": "USA:NY:house:01",
+      "state": "NY",
+      "office": "house",
+      "district": "01",
+      "candidate_source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+      "candidate_coverage": "certified_major_party_field",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Christopher J. Gallant",
+          "party": "DEM",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H6NY01159",
+          "poll_name_aliases": [
+            "Chris Gallant"
+          ],
+          "reported_fec_id": "H6NY01159",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 118120,
+              "oppose_cents": 0,
+              "records": 5
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 118120,
+                "oppose_cents": 0,
+                "records": 5
+              }
+            },
+            "reported_names": [
+              "GALLANT, CHRISTOPHER"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Nicholas J. Lalota",
+          "party": "REP",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": null,
+          "poll_name_aliases": [
+            "Nick LaLota"
+          ],
+          "reported_fec_id": "H2NY01190",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 1,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 1
+          },
+          "review_queue_ids": [
+            "us-202pub8f0230b7"
+          ],
+          "finance_join": {
+            "race_id": "USA:NY:house:01",
+            "file": "usa_election_finance/2026/races/NY-house-01-0fcf8120a47a2531.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-01-0fcf8120a47a2531.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 118120,
+          "oppose_cents": 0,
+          "records": 5
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "certified_major_party_field",
+        "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:02",
+      "state": "NY",
+      "office": "house",
+      "district": "02",
+      "candidate_source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+      "candidate_coverage": "certified_major_party_field",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Patrick Halpin",
+          "party": "DEM",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H6NY02140",
+          "reported_fec_id": "H6NY02140",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "HALPIN, PATRICK"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Andrew R. Garbarino",
+          "party": "REP",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H0NY02234",
+          "poll_name_aliases": [
+            "Andrew Garbarino"
+          ],
+          "reported_fec_id": "H0NY02234",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "GARBARINO, ANDREW"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:02",
+            "file": "usa_election_finance/2026/races/NY-house-02-df1b4060ba6a5132.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-02-df1b4060ba6a5132.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "certified_major_party_field",
+        "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:03",
+      "state": "NY",
+      "office": "house",
+      "district": "03",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Thomas R. \"Tom\" Suozzi",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6NY03247",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY03247",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "poll_name_aliases": [
+            "Tom Suozzi"
+          ],
+          "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 137739,
+              "oppose_cents": 0,
+              "records": 5
+            },
+            "by_election_type": {
+              "G2024": {
+                "status": "observed_partial",
+                "support_cents": 3092,
+                "oppose_cents": 0,
+                "records": 1
+              },
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 6333,
+                "oppose_cents": 0,
+                "records": 2
+              },
+              "S2024": {
+                "status": "observed_partial",
+                "support_cents": 128314,
+                "oppose_cents": 0,
+                "records": 2
+              }
+            },
+            "reported_names": [
+              "SUOZZI, THOMAS",
+              "SUOZZI, TOM"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Michael J. \"Mike\" LiPetri, Jr.",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H0NY02267",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H0NY02267",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "poll_name_aliases": [
+            "Michael LiPetri Jr."
+          ],
+          "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 0,
+              "oppose_cents": 3092,
+              "records": 1
+            },
+            "by_election_type": {
+              "G2024": {
+                "status": "observed_partial",
+                "support_cents": 0,
+                "oppose_cents": 3092,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "LIPETRI, MIKE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state",
+              "cook_toss_up_and_lean"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:03",
+            "file": "usa_election_finance/2026/races/NY-house-03-47a0a4ce16229cf7.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-03-47a0a4ce16229cf7.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 137739,
+          "oppose_cents": 3092,
+          "records": 6
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_major_party_field",
+        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:04",
+      "state": "NY",
+      "office": "house",
+      "district": "04",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Laura Gillen",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H2NY04244",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2NY04244",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 433412,
+              "oppose_cents": 0,
+              "records": 13
+            },
+            "by_election_type": {
+              "G2024": {
+                "status": "observed_partial",
+                "support_cents": 291024,
+                "oppose_cents": 0,
+                "records": 5
+              },
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 135254,
+                "oppose_cents": 0,
+                "records": 5
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 7134,
+                "oppose_cents": 0,
+                "records": 3
+              }
+            },
+            "reported_names": [
+              "GILLEN, LAURA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jeanine C. Driscoll",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY04211",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY04211",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "poll_name_aliases": [
+            "Jeanine Driscoll"
+          ],
+          "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "DRISCOLL, JEANINE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Blay Tarnoff",
+          "party": "LIB",
+          "reported_party": "Libertarian",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY04237",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state",
+              "cook_toss_up_and_lean"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 1,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 1
+          },
+          "review_queue_ids": [
+            "us-202impfabbd7e2"
+          ],
+          "finance_join": {
+            "race_id": "USA:NY:house:04",
+            "file": "usa_election_finance/2026/races/NY-house-04-cd41f0d2683f1481.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-04-cd41f0d2683f1481.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 452345,
+          "oppose_cents": 291024,
+          "records": 24
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_major_party_field",
+        "source_url": "https://www.uspresidentialelectionnews.com/2026-house-elections/",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:05",
+      "state": "NY",
+      "office": "house",
+      "district": "05",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Gregory Weldon Meeks",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H8NY06048",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H8NY06048",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "MEEKS, GREGORY W."
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "George Marsh",
+          "party": "REP",
+          "reported_party": "Republican; Queens United",
+          "candidate_id": "H6NY05127",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY05127",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "MARSH, GEORGE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:05",
+            "file": "usa_election_finance/2026/races/NY-house-05-e8919a79b6c1847e.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-05-e8919a79b6c1847e.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:06",
+      "state": "NY",
+      "office": "house",
+      "district": "06",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Grace Meng",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H2NY06116",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2NY06116",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "MENG, GRACE"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Joseph Chou",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H4NY06047",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4NY06047",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "CHOU, JOSEPH"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:06",
+            "file": "usa_election_finance/2026/races/NY-house-06-6377850817483c06.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-06-6377850817483c06.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:07",
+      "state": "NY",
+      "office": "house",
+      "district": "07",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Claire Valdez",
+          "party": "DEM",
+          "reported_party": "Democratic; Working Families",
+          "candidate_id": "H6NY07214",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY07214",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 78511718,
+              "oppose_cents": 0,
+              "records": 9
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 78511718,
+                "oppose_cents": 0,
+                "records": 9
+              }
+            },
+            "reported_names": [
+              "VALDEZ, CLAIRE"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Melvin Rivera",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY07271",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY07271",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "RIVERA, MELVIN"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Priscilla Ghaznavi",
+          "party": "OTH",
+          "reported_party": "Our Future",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY07255",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:07",
+            "file": "usa_election_finance/2026/races/NY-house-07-7628215134f6f19a.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-07-7628215134f6f19a.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 166633967,
+          "oppose_cents": 0,
+          "records": 14
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "OTH",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:08",
+      "state": "NY",
+      "office": "house",
+      "district": "08",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Hakeem S. Jeffries",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H2NY10092",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H2NY10092",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "JEFFRIES, HAKEEM"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Lewis Mizrahi",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY08188",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY08188",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "MIZRAHI, LEWIS"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:08",
+            "file": "usa_election_finance/2026/races/NY-house-08-689a3dd45443f3a2.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-08-689a3dd45443f3a2.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:09",
+      "state": "NY",
+      "office": "house",
+      "district": "09",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Yvette D. Clarke",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H4NY11138",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4NY11138",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 28970539,
+              "oppose_cents": 0,
+              "records": 6
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 28970539,
+                "oppose_cents": 0,
+                "records": 6
+              }
+            },
+            "reported_names": [
+              "CLARKE, YVETTE D"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Joel Anabilah-Azumah",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY09145",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY09145",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "ANABILAH-AZUMAH, JOEL"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:09",
+            "file": "usa_election_finance/2026/races/NY-house-09-40930daf5e896297.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-09-40930daf5e896297.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 28970539,
+          "oppose_cents": 0,
+          "records": 6
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:10",
+      "state": "NY",
+      "office": "house",
+      "district": "10",
+      "candidate_source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+      "candidate_coverage": "certified_major_party_field",
+      "candidate_source_role": "reported_governor_matchup",
+      "candidates": [
+        {
+          "name": "Brad Lander",
+          "party": "DEM",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H6NY10176",
+          "reported_fec_id": "H6NY10176",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 30000,
+              "oppose_cents": 21903900,
+              "records": 7
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 30000,
+                "oppose_cents": 21903900,
+                "records": 7
+              }
+            },
+            "reported_names": [
+              "LANDER, BRAD",
+              "LANDER, BRAD MR."
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jennifer E. Moore",
+          "party": "REP",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H6NY10218",
+          "reported_fec_id": "H6NY10218",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "MOORE, JENNIFER E"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:10",
+            "file": "usa_election_finance/2026/races/NY-house-10-6103154a82d4c914.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-10-6103154a82d4c914.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 12633600,
+          "oppose_cents": 21903900,
+          "records": 11
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "certified_major_party_field",
+        "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:11",
+      "state": "NY",
+      "office": "house",
+      "district": "11",
+      "candidate_source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+      "candidate_coverage": "certified_major_party_field",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Mike DeCillis",
+          "party": "DEM",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": null,
+          "reported_fec_id": "H6NY11265",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Nicole Malliotakis",
+          "party": "REP",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H0NY11078",
+          "reported_fec_id": "H0NY11078",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              }
+            },
+            "reported_names": [
+              "MALLIOTAKIS, NICOLE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:11",
+            "file": "usa_election_finance/2026/races/NY-house-11-ceaa5e0949478cd9.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-11-ceaa5e0949478cd9.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "certified_major_party_field",
+        "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:12",
+      "state": "NY",
+      "office": "house",
+      "district": "12",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Micah Charles Lasher",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6NY12172",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY12172",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1077551972,
+              "oppose_cents": 301740956,
+              "records": 69
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1077551972,
+                "oppose_cents": 301740956,
+                "records": 69
+              }
+            },
+            "reported_names": [
+              "LASHER, MICAH",
+              "LASHER, MICAH CHARLES"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Caroline Shinkle",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY12404",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY12404",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SHINKLE, CAROLINE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Wilneida Negron",
+          "party": "OTH",
+          "reported_party": "For All of Us",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY12313",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:12",
+            "file": "usa_election_finance/2026/races/NY-house-12-d8680b182a37c4fc.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-12-d8680b182a37c4fc.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 3190737005,
+          "oppose_cents": 1117330724,
+          "records": 294
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "OTH",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:13",
+      "state": "NY",
+      "office": "house",
+      "district": "13",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Darializa Avila Chevalier",
+          "party": "DEM",
+          "reported_party": "Democratic; Working Families",
+          "candidate_id": "H6NY13279",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY13279",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 84425000,
+              "oppose_cents": 152410165,
+              "records": 14
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 84425000,
+                "oppose_cents": 152410165,
+                "records": 14
+              }
+            },
+            "reported_names": [
+              "AVILA CHEVALIER, DARIALIZA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jomo Manual Williams",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H6NY13303",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY13303",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "WILLIAMS, JOMO"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:13",
+            "file": "usa_election_finance/2026/races/NY-house-13-61cd4d3e45389979.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-13-61cd4d3e45389979.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 524275991,
+          "oppose_cents": 205197665,
+          "records": 39
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:14",
+      "state": "NY",
+      "office": "house",
+      "district": "14",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Alexandria Ocasio-Cortez",
+          "party": "DEM",
+          "reported_party": "Democratic; Working Families",
+          "candidate_id": "H8NY15148",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H8NY15148",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "OCASIO-CORTEZ, ALEXANDRIA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Diamant Hysenaj",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY14251",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY14251",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "HYSENAJ, DIAMANT"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:14",
+            "file": "usa_election_finance/2026/races/NY-house-14-5505a0586424ef4f.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-14-5505a0586424ef4f.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:15",
+      "state": "NY",
+      "office": "house",
+      "district": "15",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Ritchie John Torres",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H0NY15160",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H0NY15160",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 283572778,
+              "oppose_cents": 0,
+              "records": 32
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 283572778,
+                "oppose_cents": 0,
+                "records": 32
+              }
+            },
+            "reported_names": [
+              "TORRES, RITCHIE JOHN",
+              "TORRES, RITCHIE REP."
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Stylo Adonis Sapaskis",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H6NY16140",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY16140",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "SAPASKIS, STYLO ADONIS"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jose David Vega",
+          "party": "OTH",
+          "reported_party": "Speak The Truth; (Democratic)",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4NY15147",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:15",
+            "file": "usa_election_finance/2026/races/NY-house-15-feefe87e77459237.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-15-feefe87e77459237.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 283572778,
+          "oppose_cents": 0,
+          "records": 32
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 3,
+        "parties": [
+          "DEM",
+          "OTH",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:16",
+      "state": "NY",
+      "office": "house",
+      "district": "16",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "George Stephen Latimer",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H4NY16087",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4NY16087",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "LATIMER, GEORGE"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Joseph J. Cinquemani",
+          "party": "REP",
+          "reported_party": "Republican",
+          "candidate_id": "H4NY07052",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4NY07052",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "CINQUEMANI, JOSEPH"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:16",
+            "file": "usa_election_finance/2026/races/NY-house-16-6f837d94df49c445.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-16-6f837d94df49c445.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 262830,
+          "oppose_cents": -3105305,
+          "records": 4
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:17",
+      "state": "NY",
+      "office": "house",
+      "district": "17",
+      "candidate_source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+      "candidate_coverage": "certified_major_party_field",
+      "candidate_source_role": "reported_governor_matchup",
+      "candidates": [
+        {
+          "name": "Cait Conley",
+          "party": "DEM",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H6NY17171",
+          "reported_fec_id": "H6NY17171",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 54036027,
+              "oppose_cents": 153295181,
+              "records": 13
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 1760127,
+                "oppose_cents": 3295181,
+                "records": 10
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 52275900,
+                "oppose_cents": 150000000,
+                "records": 3
+              }
+            },
+            "reported_names": [
+              "CONLEY, CAIT"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Mike Lawler",
+          "party": "REP",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H2NY17162",
+          "poll_name_aliases": [
+            "Michael Lawler"
+          ],
+          "finance_name_aliases": [
+            "Michael Lawler"
+          ],
+          "reported_fec_id": "H2NY17162",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 0,
+              "oppose_cents": 1130719,
+              "records": 17
+            },
+            "by_election_type": {
+              "G2024": {
+                "status": "observed_partial",
+                "support_cents": 0,
+                "oppose_cents": 3092,
+                "records": 1
+              },
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 0,
+                "oppose_cents": 461838,
+                "records": 13
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 0,
+                "oppose_cents": 665789,
+                "records": 3
+              }
+            },
+            "reported_names": [
+              "LAWLER, MICHAEL",
+              "LAWLER, MICHAEL VINCENT",
+              "LAWLER, MIKE REP."
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state",
+              "cook_toss_up_and_lean"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 4,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 3
+          },
+          "review_queue_ids": [
+            "us-202co/cc143c95",
+            "us-202fm3b695b2b8",
+            "us-202imp36a5f870"
+          ],
+          "finance_join": {
+            "race_id": "USA:NY:house:17",
+            "file": "usa_election_finance/2026/races/NY-house-17-3017f3c2272cca40.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-17-3017f3c2272cca40.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 54039119,
+          "oppose_cents": 154425900,
+          "records": 31
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "certified_major_party_field",
+        "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+        "reviewed_on": "2026-10-07",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:18",
+      "state": "NY",
+      "office": "house",
+      "district": "18",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Patrick K. \"Pat\" Ryan",
+          "party": "DEM",
+          "reported_party": "Democratic; Working Families",
+          "candidate_id": "H8NY19223",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H8NY19223",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 3092,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "G2024": {
+                "status": "observed_partial",
+                "support_cents": 3092,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "RYAN, PATRICK"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Jacqueline Mary \"Jackie\" Auringer",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": null,
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY18252",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 1,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 1
+          },
+          "review_queue_ids": [
+            "us-202imp51a744df"
+          ],
+          "finance_join": {
+            "race_id": "USA:NY:house:18",
+            "file": "usa_election_finance/2026/races/NY-house-18-f0ba3302bc2205ea.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-18-f0ba3302bc2205ea.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 4092,
+          "oppose_cents": 3092,
+          "records": 3
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:19",
+      "state": "NY",
+      "office": "house",
+      "district": "19",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Josh Riley",
+          "party": "DEM",
+          "reported_party": "Democratic; Working Families",
+          "candidate_id": "H8NY22177",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H8NY22177",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 2000784,
+              "oppose_cents": 0,
+              "records": 24
+            },
+            "by_election_type": {
+              "G2024": {
+                "status": "observed_partial",
+                "support_cents": 291025,
+                "oppose_cents": 0,
+                "records": 5
+              },
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 1672558,
+                "oppose_cents": 0,
+                "records": 11
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 37201,
+                "oppose_cents": 0,
+                "records": 8
+              }
+            },
+            "reported_names": [
+              "RILEY, JOSH"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Peter Karl Oberacker, Jr.",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY19268",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY19268",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 0,
+              "oppose_cents": 231553,
+              "records": 2
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 0,
+                "oppose_cents": 231553,
+                "records": 2
+              }
+            },
+            "reported_names": [
+              "OBERACKER, PETER KARL JR"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:19",
+            "file": "usa_election_finance/2026/races/NY-house-19-b20c4c24f78886a7.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-19-b20c4c24f78886a7.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 2000784,
+          "oppose_cents": 522578,
+          "records": 31
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:20",
+      "state": "NY",
+      "office": "house",
+      "district": "20",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Paul David Tonko",
+          "party": "DEM",
+          "reported_party": "Democratic; Working Families",
+          "candidate_id": "H8NY21203",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H8NY21203",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1000,
+              "oppose_cents": 0,
+              "records": 1
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "TONKO, PAUL DAVID"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Ralph F. Ambrosio",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY20225",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY20225",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "AMBROSIO, RALPH"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:20",
+            "file": "usa_election_finance/2026/races/NY-house-20-d5544406748fcbf3.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-20-d5544406748fcbf3.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1000,
+          "oppose_cents": 0,
+          "records": 1
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:21",
+      "state": "NY",
+      "office": "house",
+      "district": "21",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Blake Gendebien",
+          "party": "DEM",
+          "reported_party": "Democratic",
+          "candidate_id": "H6NY21199",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY21199",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 2331591,
+              "oppose_cents": 4000000,
+              "records": 13
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 2331591,
+                "oppose_cents": 4000000,
+                "records": 13
+              },
+              "S2025": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "S2026": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              }
+            },
+            "reported_names": [
+              "GENDEBIEN, BLAKE"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Anthony Thomas Constantino",
+          "party": "REP",
+          "reported_party": "Republican; Taxpayer Rights",
+          "candidate_id": "H6NY21157",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY21157",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "poll_name_aliases": [
+            "Anthony Constantino"
+          ],
+          "poll_alias_basis": "existing_reviewed_identity_and_exact_source_name_or_quoted_nickname",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 0,
+              "oppose_cents": 8780500,
+              "records": 6
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 0,
+                "oppose_cents": 527500,
+                "records": 3
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 0,
+                "oppose_cents": 8253000,
+                "records": 3
+              }
+            },
+            "reported_names": [
+              "CONSTANTINO, ANTHONY THOMAS"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 4,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 1
+          },
+          "review_queue_ids": [
+            "us-202pube3646207"
+          ],
+          "finance_join": {
+            "race_id": "USA:NY:house:21",
+            "file": "usa_election_finance/2026/races/NY-house-21-47c21907a4cb2beb.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-21-47c21907a4cb2beb.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 18505291,
+          "oppose_cents": 12780500,
+          "records": 24
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "official_county_sample_ballot",
+        "source_url": "https://clintoncountyny.gov/sites/default/files/boe/Sample%20Ballots%20GE%2026.pdf",
+        "reviewed_on": "2026-10-16",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:22",
+      "state": "NY",
+      "office": "house",
+      "district": "22",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "John W. Mannion",
+          "party": "DEM",
+          "reported_party": "Democratic; Working Families",
+          "candidate_id": "H4NY22085",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4NY22085",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 4092,
+              "oppose_cents": 0,
+              "records": 2
+            },
+            "by_election_type": {
+              "G2024": {
+                "status": "observed_partial",
+                "support_cents": 3092,
+                "oppose_cents": 0,
+                "records": 1
+              },
+              "P2024": {
+                "status": "no_observed_records",
+                "support_cents": null,
+                "oppose_cents": null,
+                "records": null
+              },
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 1000,
+                "oppose_cents": 0,
+                "records": 1
+              }
+            },
+            "reported_names": [
+              "MANNION, JOHN",
+              "MANNION, JOHN W"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Kailee Marie Buller",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY22213",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY22213",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "BULLER, KAILEE"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:22",
+            "file": "usa_election_finance/2026/races/NY-house-22-ff9f7de923f6adbf.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-22-ff9f7de923f6adbf.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 4092,
+          "oppose_cents": 3092,
+          "records": 3
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:23",
+      "state": "NY",
+      "office": "house",
+      "district": "23",
+      "candidate_source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+      "candidate_coverage": "certified_major_party_field",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Aaron Gies",
+          "party": "DEM",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": null,
+          "reported_fec_id": "H6NY23559",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Nicholas A. Langworthy",
+          "party": "REP",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": null,
+          "poll_name_aliases": [
+            "Nick Langworthy"
+          ],
+          "reported_fec_id": "H2NY23228",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "finance": {
+            "join_status": "candidate_finance_not_linked",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [],
+            "reported_parties": [],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:23",
+            "file": "usa_election_finance/2026/races/NY-house-23-d22814e64254576f.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-23-d22814e64254576f.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "certified_major_party_field",
+        "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:24",
+      "state": "NY",
+      "office": "house",
+      "district": "24",
+      "candidate_source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+      "candidate_coverage": "certified_major_party_field",
+      "candidate_source_role": "state_election_agency",
+      "candidates": [
+        {
+          "name": "Alissa J. Ellman",
+          "party": "DEM",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H6NY24219",
+          "poll_name_aliases": [
+            "Alissa Ellman"
+          ],
+          "reported_fec_id": "H6NY24219",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 477357,
+              "oppose_cents": 0,
+              "records": 5
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 477357,
+                "oppose_cents": 0,
+                "records": 5
+              }
+            },
+            "reported_names": [
+              "ELLMAN, ALISSA"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Claudia Tenney",
+          "party": "REP",
+          "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+          "candidate_id": "H4NY22051",
+          "reported_fec_id": "H4NY22051",
+          "secondary_identifier_source_url": "https://www.thegreenpapers.com/G26/NY",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 0,
+              "oppose_cents": 293955,
+              "records": 8
+            },
+            "by_election_type": {
+              "G2026": {
+                "status": "observed_partial",
+                "support_cents": 0,
+                "oppose_cents": 293955,
+                "records": 8
+              }
+            },
+            "reported_names": [
+              "TENNEY, CLAUDIA"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 0,
+            "reasons": [
+              "house_toss_up_lean_first",
+              "requested_state"
+            ],
+            "within_focus_order": 1
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:24",
+            "file": "usa_election_finance/2026/races/NY-house-24-946522a8bec0e084.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-24-946522a8bec0e084.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 477357,
+          "oppose_cents": 293955,
+          "records": 13
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "certified_major_party_field",
+        "source_url": "https://elections.ny.gov/certification-november-3-2026-general-election",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:25",
+      "state": "NY",
+      "office": "house",
+      "district": "25",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Joseph D. \"Joe\" Morelle",
+          "party": "DEM",
+          "reported_party": "Democratic; Working Families",
+          "candidate_id": "H8NY25105",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H8NY25105",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 57193125,
+              "oppose_cents": 0,
+              "records": 7
+            },
+            "by_election_type": {
+              "P2026": {
+                "status": "observed_partial",
+                "support_cents": 57193125,
+                "oppose_cents": 0,
+                "records": 7
+              }
+            },
+            "reported_names": [
+              "MORELLE, JOSEPH D"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Virginia E. McIntyre",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY25208",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY25208",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "MCINTYRE, VIRGINIA"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:25",
+            "file": "usa_election_finance/2026/races/NY-house-25-563e2efc24193a7c.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-25-563e2efc24193a7c.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 57193125,
+          "oppose_cents": 0,
+          "records": 7
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:house:26",
+      "state": "NY",
+      "office": "house",
+      "district": "26",
+      "candidate_source_url": "https://www.thegreenpapers.com/G26/NY",
+      "candidate_coverage": "reported_active_candidate_listing",
+      "candidate_source_role": "reviewed_secondary_nominee_listing",
+      "candidates": [
+        {
+          "name": "Timothy M. \"Tim\" Kennedy",
+          "party": "DEM",
+          "reported_party": "Democratic; (Working Families)",
+          "candidate_id": "H4NY26078",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H4NY26078",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "KENNEDY, TIMOTHY"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "name": "Dennis E. Hannon",
+          "party": "REP",
+          "reported_party": "Republican; Conservative",
+          "candidate_id": "H6NY26131",
+          "source_url": "https://www.thegreenpapers.com/G26/NY",
+          "ballot_access": "reported_ballot_candidate",
+          "reported_fec_id": "H6NY26131",
+          "source_status": "authority_confirmation_reported_by_secondary_source",
+          "candidate_id_basis": "source_cited_id_corroborated_by_existing_fec_race_name_party",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "federal_super_pac",
+            "all_reported_election_types": {
+              "status": "no_observed_records",
+              "support_cents": null,
+              "oppose_cents": null,
+              "records": null
+            },
+            "by_election_type": {},
+            "reported_names": [
+              "HANNON, DENNIS"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 0,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {},
+          "review_queue_ids": [],
+          "finance_join": {
+            "race_id": "USA:NY:house:26",
+            "file": "usa_election_finance/2026/races/NY-house-26-8bf9879fedf0122b.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-house-26-8bf9879fedf0122b.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:00:57.007406+00:00",
+          "last_filing_date": "2026-10-21",
+          "quality": {
+            "included_records": 18393,
+            "excluded_records": {
+              "candidate_office_conflict": 211,
+              "memo": 1700,
+              "out_of_scope_office": 208,
+              "unresolved_id": 253,
+              "unresolved_state": 1
+            }
+          },
+          "notices_included": false,
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "no_observed_records",
+          "support_cents": null,
+          "oppose_cents": null,
+          "records": null
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "contested",
+        "candidate_count": 2,
+        "parties": [
+          "DEM",
+          "REP"
+        ],
+        "coverage": "reported_active_candidate_listing",
+        "source_url": "https://www.thegreenpapers.com/G26/NY",
+        "reviewed_on": "2026-10-08",
+        "general_unopposed": null,
+        "write_in_candidates": [],
+        "no_vote_status": "not_verified",
+        "no_vote_law_url": null,
+        "confirmed_winner": false,
+        "note_ko": "주 선관위 명부의 본선 무경쟁과 법령 근거를 별도 기록. 인증된 당선 결과로 간주하지 않습니다."
+      }
+    },
+    {
+      "race_id": "USA:NY:governor",
+      "state": "NY",
+      "office": "governor",
+      "district": null,
+      "candidate_source_url": "https://www.nga.org/governors/elections/",
+      "candidate_coverage": "reported_major_party_field",
+      "candidate_source_role": "reported_governor_matchup",
+      "candidates": [
+        {
+          "candidate_id": "NY:certified:2026:governor:kathy-hochul",
+          "name": "Kathy Hochul",
+          "reported_name_aliases": [
+            "Kathy Hochul"
+          ],
+          "party": "DEM",
+          "office": "G",
+          "state": "NY",
+          "district": null,
+          "election_year": 2026,
+          "registration_status": "reported_general_ballot_not_state_certification",
+          "ballot_election_date": "2026-11-03",
+          "source_url": "https://www.nga.org/governors/elections/",
+          "candidate_identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 1479239423,
+              "oppose_cents": 0,
+              "records": 42
+            },
+            "by_election_type": {
+              "UNKNOWN": {
+                "status": "observed_partial",
+                "support_cents": 1479239423,
+                "oppose_cents": 0,
+                "records": 42
+              }
+            },
+            "reported_names": [
+              "Kathy C. Hochul",
+              "Kathy Hochul"
+            ],
+            "reported_parties": [
+              "DEM"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        },
+        {
+          "candidate_id": "NY:certified:2026:governor:bruce-blakeman",
+          "name": "Bruce Blakeman",
+          "reported_name_aliases": [
+            "Bruce A Blakeman",
+            "Bruce Blakeman"
+          ],
+          "party": "REP",
+          "office": "G",
+          "state": "NY",
+          "district": null,
+          "election_year": 2026,
+          "registration_status": "reported_general_ballot_not_state_certification",
+          "ballot_election_date": "2026-11-03",
+          "source_url": "https://www.nga.org/governors/elections/",
+          "candidate_identity_basis": "NGA_general_candidate_section_full_name_party_office_cycle",
+          "finance": {
+            "join_status": "same_reviewed_candidate_id",
+            "measure": "state_independent_spending",
+            "all_reported_election_types": {
+              "status": "observed_partial",
+              "support_cents": 335962780,
+              "oppose_cents": 268003700,
+              "records": 42
+            },
+            "by_election_type": {
+              "UNKNOWN": {
+                "status": "observed_partial",
+                "support_cents": 335962780,
+                "oppose_cents": 268003700,
+                "records": 42
+              }
+            },
+            "reported_names": [
+              "Bruce A Blakeman",
+              "Bruce A. Blakeman",
+              "Bruce Blakeman"
+            ],
+            "reported_parties": [
+              "REP"
+            ],
+            "note_ko": "후보 캠프가 받은 후원금이 아닌 후보 대상 독립지출. 반대액을 상대 후보 지지액으로 전환하지 않습니다."
+          },
+          "finance_identity_hold": null
+        }
+      ],
+      "polling": {
+        "as_of": "2026-11-07",
+        "fetched_at": "2026-11-07T00:52:19.689009+00:00",
+        "source_status": "ok",
+        "schedule_status": "reported_general_matchup",
+        "observations": [],
+        "windows": {
+          "7": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          },
+          "14": {
+            "status": "awaiting_certified_result",
+            "party": null,
+            "pollster_count": 0
+          }
+        },
+        "windows_checked_as_of": "2026-11-07",
+        "held_observation_ids": [],
+        "phase": "awaiting_certified_result",
+        "result": null,
+        "unmatched_nonmajor_answer_names": [],
+        "source_url": "https://api.votehub.com/polls?subject=2026&from_date=2025-01-01&to_date=2026-11-07",
+        "monitoring": {
+          "priority": {
+            "order": 1,
+            "reasons": [
+              "requested_state"
+            ]
+          },
+          "status": "election_closed",
+          "provider_record_count": 24,
+          "accepted_count": 0,
+          "aggregation_eligible_count": 0,
+          "reference_only_count": 0,
+          "matchup_reviewed": true,
+          "latest_accepted_field_end": null,
+          "windows": {
+            "7": {
+              "status": "election_closed",
+              "pollster_count": 0
+            },
+            "14": {
+              "status": "election_closed",
+              "pollster_count": 0
+            }
+          },
+          "rejection_reasons": {
+            "pollster_not_selected": 10,
+            "outside_reviewed_general_period": 9,
+            "unregistered_primary_host": 1
+          },
+          "review_queue_ids": [
+            "gov202bea0915f96a",
+            "gov202conb6a8d324",
+            "gov202sie040ecd95",
+            "gov202red8c5fcf3a",
+            "gov202co/61f8d14e",
+            "gov202sied0732f72",
+            "gov202sie225a317c",
+            "gov202polf70d258d",
+            "gov202sief53f0c6e",
+            "gov202siec153e5e2",
+            "gov202echb68f41fd",
+            "gov202sie54d6070e",
+            "gov202mar6e5d554b",
+            "gov202mad3c7076a1",
+            "gov202sie42b3faba",
+            "gov202joh7fef529e",
+            "gov202sie7ce685a1",
+            "gov202sie1fbf4f7e",
+            "gov202j.la2014323",
+            "gov202grac908fd46"
+          ],
+          "finance_join": {
+            "race_id": "USA:NY:governor",
+            "file": "usa_election_finance/2026/races/NY-governor-3563b136badc5069.json",
+            "status": "partial",
+            "finance_generated_at": "2026-11-02T20:50:09.390952+00:00",
+            "measure": "candidate_targeted_independent_expenditure"
+          }
+        },
+        "automatic_admission": false,
+        "note_ko": "API 발견·후보 명부 연결·집계 적격·최근 조사 확보는 별개. 기관 수를 품질 등급으로 바꾸지 않습니다."
+      },
+      "finance": {
+        "status": "partial",
+        "data_file": "usa_election_finance/2026/races/NY-governor-3563b136badc5069.json",
+        "source_status": {
+          "status": "partial",
+          "last_success_at": "2026-11-02T19:01:17.711105+00:00",
+          "last_filing_date": null,
+          "quality": {
+            "input_records": 122,
+            "included_records": 84,
+            "excluded_records": {
+              "unreviewed_independent_spender": 25,
+              "ambiguous_version_or_multiple_targets": 12,
+              "unresolved_candidate_or_direction": 1
+            },
+            "unreviewed_filer_ids": [
+              "11236",
+              "11237",
+              "12223",
+              "17985",
+              "19479",
+              "22031",
+              "3003",
+              "3258",
+              "382439",
+              "592262",
+              "6107"
+            ]
+          },
+          "source_data_updated_at": "2026-11-02T09:26:20+00:00",
+          "reviewed_filer_registry_as_of": "2026-10-04",
+          "amount_basis": "gross_disclosed_payments_refunds_not_netted",
+          "limitations_ko": [
+            "공식 IE 통지에서 확인한 지출자만 포함하며 새 지출자는 검토 전 제외합니다. 연방 슈퍼팩 유형과 동일하지 않습니다.",
+            "주지사 후보별 Schedule R 배분이 단일 Schedule F 실제 지출과 같은 금액으로 연결된 건만 집계합니다. 연결 없는 누적 배분액·복수 후보·모호한 정정 버전은 제외합니다.",
+            "2025~2026 지출만 포함합니다. 4년 선거기간 전체 외부지출 총액이나 실시간 24시간 통지 총액이 아닙니다.",
+            "실제 지급액을 집계하며 하도급 세부 내역·미지급 잔액을 더하지 않습니다. 환불은 차감하지 않은 공시 지출액입니다.",
+            "API의 현재 공개 스냅샷을 매번 다시 집계합니다. 정정본은 날짜나 숫자 ID로 추측하지 않으며 모호한 연결은 제외합니다. 신고일·경선/본선 용도는 미확보입니다."
+          ],
+          "refresh_policy": "weekly",
+          "expected_interval_hours": 168,
+          "stale_after_hours": 240
+        },
+        "all_reported_candidates": {
+          "status": "observed_partial",
+          "support_cents": 1815202203,
+          "oppose_cents": 268003700,
+          "records": 84
+        },
+        "note_ko": "레이스 전체 금액에는 과거·경선 후보가 포함될 수 있습니다. 현재 후보별 금액은 검증한 후보 ID로 별도 연결합니다."
+      },
+      "ballot_competition": {
+        "status": "ballot_review_incomplete",
+        "candidate_count": null,
+        "general_unopposed": null,
+        "no_vote_status": "not_verified",
+        "confirmed_winner": false
+      }
+    }
+  ],
+  "governor_source_route": {
+    "status": "implemented_partial",
+    "agency": {
+      "agency": "New York State Board of Elections",
+      "access": "daily_socrata_api_and_public_notice_export",
+      "url": "https://elections.ny.gov/campaign-finance",
+      "authentication": "public_read_no_key_verified",
+      "independent_expenditure_mapping": "implemented_reviewed_IE_filers_unique_F_R_governor_links_partial",
+      "last_probe": {
+        "date": "2026-10-07",
+        "result": "official_API_101_allocations_75_reviewed_unique_F_R_links_refreshed_map_rebuild_required",
+        "status": "connected_partial"
+      },
+      "api_endpoint": "https://data.ny.gov/resource/e9ss-239a.json",
+      "metadata_url": "https://data.ny.gov/api/views/e9ss-239a.json",
+      "limitations_ko": "검토된 IE 지출자 8곳의 단일 후보 F/R 연결만. 누적 배분·복수 후보·불명확한 정정 연결 제외. 신규 지출자 검토 필요. 24시간 통지 직접 자동 수집은 403."
+    }
+  },
+  "unmatched_reported_finance_races": [
+    "USA:NY:house:00",
+    "USA:NY:house:28"
+  ],
+  "source_dates": {
+    "poll_as_of": "2026-11-07",
+    "poll_fetched_at": "2026-11-07T00:52:19.689009+00:00",
+    "finance_index_generated_at": "2026-11-02T20:50:09.390952+00:00",
+    "federal_last_success_at": "2026-11-02T19:00:57.007406+00:00"
+  },
+  "limitations_ko": [
+    "50주 연결 점검을 주별 실제 원문 수집/공식 공시 전수 완성과 동일시하지 않습니다.",
+    "미확보는0달러·조사0%·승패가 아닙니다. 주 공시 독립지출은 연방 Super PAC 유형과 구분합니다.",
+    "원문 선거유형 코드별 본선·경선·미확인을 보존합니다. 처리 기준일이 원래 자료 기준일을 대체하지 않습니다.",
+    "후보 이름 변경으로 대진이 맞지 않는 조사는 새 후보에게 넘기지 않습니다."
+  ]
+}
