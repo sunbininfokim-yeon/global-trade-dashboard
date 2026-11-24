@@ -225,6 +225,9 @@ def load_or_fetch(offline=False):
     fresh = fetch()
     monthly = fetch_monthly(cached.get("monthly"))
     mirror = fetch_mirror(cached.get("mirror"))
+    # Brazil's own monthly figures fill the months it has not sent Comtrade.
+    import comexstat
+    comexstat.load(mirror)
     if not fresh and monthly == cached.get("monthly") and mirror == cached.get("mirror"):
         log("Comtrade unavailable; using cached shares")
         return cached
