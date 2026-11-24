@@ -7584,3 +7584,15 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 /* CPI 상승·하락 TOP5: basis switch and the item's top-level group. */
 .mm-mover-basis { display: inline-flex; margin: 2px 0 10px; }
 .mm-mover-group { color: #64748b; font-size: 10.5px; }
+
+/* 의사록 비교 (mmMinutesCompareHtml) */
+.mm-mc-legend { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 6px 0 8px; font-size: 12px; }
+.mm-mc-legend i.mm-mc-bar { display: inline-block; width: 14px; height: 8px; margin-right: 4px; vertical-align: middle; }
+.mm-mc-row { display: grid; grid-template-columns: 7.5em 1fr 11em; gap: 8px; align-items: center; font-size: 12.5px; padding: 2px 0; }
+.mm-mc-bars { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mm-mc-bar { display: block; height: 6px; border-radius: 2px; }
+.mm-mc-bar.prev { background: rgba(140, 150, 170, 0.55); }
+.mm-mc-bar.cur { background: #4c8dff; }
+.mm-mc-val { text-align: right; font-variant-numeric: tabular-nums; }
+.mm-mc-val em { font-style: normal; margin-left: 6px; }
+@media (max-width: 560px) { .mm-mc-row { grid-template-columns: 6em 1fr 9.5em; font-size: 12px; } }
