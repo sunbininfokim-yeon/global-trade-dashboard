@@ -363,11 +363,11 @@ let MS_MODAL = null;          // { title, html }
 let MS_MODAL_KEY = null;      // 열려 있는 모달의 키 (기간 전환 시 재렌더용)
 let MS_PERIOD = '3m';         // 가격대별 표시 구간 — 1m / 2m / 3m / 6m / all
 let MS_CREDIT_ON = false;     // 가격대별 탭에서 예탁·신용 추이를 펼쳤는지
-let MS_HOLD_ON = false;       // 가격대별 탭에서 외국인 보유율·기관 누적을 겹쳤는지
+let MS_HOLD_ON = false;       // 가격대별 탭에서 외국인 보유율을 겹쳤는지
 
 // The largest moves in the foreign holding ratio over N trading days,
 // non-overlapping, biggest first -- the windows where foreigners visibly
-// rebalanced. Each comes with the price move and the foreign/institution net
+// rebalanced. Each comes with the price move and the foreign net
 // buying over the same days, so a ratio change can be told apart from a pure
 // price effect (a ratio moves with relative price too, not only with trades).
 const msHoldShifts = (pts, n = 5, top = 4) => {
@@ -379,7 +379,7 @@ const msHoldShifts = (pts, n = 5, top = 4) => {
         const sum = (k) => span.reduce((acc, d) => acc + (Number.isFinite(d[k]) ? d[k] : 0), 0);
         cands.push({ from: a.date, to: b.date, i0: i - n, i1: i, d_pp: b._fh - a._fh,
             px_pct: a.close ? (b.close / a.close - 1) * 100 : null,
-            foreign: sum('_foreign'), inst: sum('_inst'), fh: b._fh });
+            foreign: sum('_foreign'), fh: b._fh });
     }
     cands.sort((x, y) => Math.abs(y.d_pp) - Math.abs(x.d_pp));
     const picked = [];
@@ -875,32 +875,16 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         const pc = st && st.first ? ((st.last - st.first) / st.first) * 100 : null;
         return pc === null ? null : { v: pc, text: `${pc >= 0 ? '+' : ''}${pc.toFixed(1)}%` };
     };
-    // The ownership overlay: the foreign holding ratio (observed) and the
-    // institutions' running net buying from the window's first day. Daily
-    // institutional *holdings* are not published anywhere free, so the second
-    // line is labelled for what it is -- cumulative flow, not a ratio.
-    let instAcc = 0;
-    const instCum = new Map(pts.map((d) => {
-        if (Number.isFinite(d._inst)) instAcc += d._inst;
-        return [d.date, Number.isFinite(d._inst) ? instAcc : null];
-    }));
-    const signedEok = (v) => {
-        const a = Math.abs(v);
-        const t = a >= 10000 ? `${(a / 10000).toFixed(2)}조` : `${Math.round(a).toLocaleString('ko-KR')}억`;
-        return `${v >= 0 ? '+' : '−'}${t}`;
-    };
+    // The ownership overlay: the observed foreign holding ratio. Institutions'
+    // daily holdings are not published anywhere free, so they are not drawn.
     const OVER = [
         ...(opts.credit ? CREDIT_SERIES.map((s) => ({ ...s, group: '신용공여',
             get: (d) => creditJo(d, s.key), lab: joLabel, chg: pctChgText })) : []),
         ...(opts.hold ? [
-            { key: 'foreign_hold', ko: '외국인 보유율', cls: 'fhold', group: '보유',
+            { key: 'foreign_hold', ko: '외국인 보유율', cls: 'fhold', group: '외국인 보유',
                 get: (d) => (Number.isFinite(d._fh) ? d._fh : null),
                 lab: (v) => `${v.toFixed(2)}%`,
                 chg: (st) => (st ? { v: st.last - st.first, text: `${st.last - st.first >= 0 ? '+' : ''}${(st.last - st.first).toFixed(2)}%p` } : null) },
-            { key: 'inst_cum', ko: '기관 누적 순매수', cls: 'icum', group: '보유',
-                get: (d) => instCum.get(d.date) ?? null,
-                lab: signedEok,
-                chg: (st) => (st ? { v: st.last - st.first, text: signedEok(st.last - st.first) } : null) },
         ] : []),
     ];
     // Per-series span over the visible window, plus first/last for the legend.
@@ -1540,13 +1524,12 @@ const msLevelsTab = (D) => {
                 .map(([k, ko]) =>
                 `<button class="mm-view-btn ${MS_PERIOD === k ? 'on' : ''}" data-ms-period="${k}">${finEsc(ko)}</button>`).join('')}
             <span class="ms-period-spacer"></span>
-            <button class="mm-view-btn ${MS_HOLD_ON ? 'on' : ''}" data-ms-hold="1">외국인 보유율 · 기관 누적 ${MS_HOLD_ON ? '▲' : '▼'}</button>
+            <button class="mm-view-btn ${MS_HOLD_ON ? 'on' : ''}" data-ms-hold="1">외국인 보유율 ${MS_HOLD_ON ? '▲' : '▼'}</button>
             <button class="mm-view-btn ${MS_CREDIT_ON ? 'on' : ''}" data-ms-credit="1">예탁금 · 신용공여 ${MS_CREDIT_ON ? '▲' : '▼'}</button>
         </div>
         ${MS_HOLD_ON ? `<p class="fin-note ms-credit-hint">
-            <strong>외국인 보유율</strong>(실측${isIndex ? ', 코스피 시총 상위 100종목 합산' : ''})과
-            <strong>기관 누적 순매수</strong>(표시 구간 첫날 = 0)를 같은 날짜축에 겹쳤습니다. 둘은 단위가 달라 <strong>각자의 범위로</strong> 그렸으니 기울기만 보세요.
-            기관의 일별 <em>보유율</em>은 무료로 공개되는 곳이 없어 순매수 누적으로 대신 보여 주며, 보유율이 아닙니다.</p>` : ''}
+            <strong>외국인 보유율</strong>(실측${isIndex ? ', 코스피 시총 상위 100종목 합산' : ''})을 같은 날짜축에 겹쳤습니다.
+            주가와 단위가 달라 <strong>자체 범위로</strong> 그렸으니 기울기만 보세요. 실제 값은 범례와 마우스 올린 값에 있습니다.</p>` : ''}
         ${MS_CREDIT_ON ? `<p class="fin-note ms-credit-hint">
             아래 그래프에 예탁금 · 신용융자 · 미수금 · 반대매매가 <strong>같은 날짜축</strong>으로 겹쳐집니다.
             셋은 규모가 100배 넘게 차이나서 <strong>각자의 범위로</strong> 그렸습니다 —
@@ -1565,14 +1548,13 @@ const msLevelsTab = (D) => {
             const sh = msHoldShifts(pts);
             if (!sh.length) return `<p class="fin-note">${msMissing('이 구간에는 외국인 보유율이 없습니다')}</p>`;
             return `<h4 class="ms-sub-h">외국인 보유율이 크게 움직인 5거래일 구간</h4>
-                ${msTable(['구간', '보유율 변화', '구간 끝 보유율', '주가 변화', '외국인 순매수', '기관 순매수'],
+                ${msTable(['구간', '보유율 변화', '구간 끝 보유율', '주가 변화', '외국인 순매수'],
                     sh.map((c) => [
                         `${finEsc(c.from)} → ${finEsc(c.to)}`,
                         `<span class="${c.d_pp >= 0 ? 'fin-up' : 'fin-down'}">${c.d_pp >= 0 ? '+' : ''}${c.d_pp.toFixed(2)}%p</span>`,
                         `${c.fh.toFixed(2)}%`,
                         Number.isFinite(c.px_pct) ? `${c.px_pct >= 0 ? '+' : ''}${c.px_pct.toFixed(1)}%` : '—',
                         `<span class="${c.foreign >= 0 ? 'fin-up' : 'fin-down'}">${msEok(c.foreign)}</span>`,
-                        `<span class="${c.inst >= 0 ? 'fin-up' : 'fin-down'}">${msEok(c.inst)}</span>`,
                     ]))}
                 <p class="fin-note">겹치지 않는 5거래일 구간 중 보유율 변화가 큰 순서입니다. 보유율은 외국인이 사고판 것뿐 아니라
                     ${isIndex ? '종목 간 상대 주가 변화로도 움직이므로' : '유상증자·자사주 소각 같은 주식 수 변화로도 움직이므로'},

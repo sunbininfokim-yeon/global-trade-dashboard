@@ -5086,15 +5086,11 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .ms-plc-cr { fill: none; stroke-width: 1.8; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke; }
 .ms-plc-cr-deposit { stroke: #38bdf8; }
 .ms-plc-cr-credit { stroke: #fbbf24; }
-/* Ownership overlay: solid lines, so they never read as one of the dashed
-   credit lines (반대매매 is also purple). Colours follow the bars: 외국인 pink,
-   기관 violet. */
+/* Foreign holding overlay: a solid line in the 외국인 bar colour, so it never
+   reads as one of the dashed credit lines. */
 .ms-plc-cr-fhold { stroke: #f472b6; stroke-dasharray: none; stroke-width: 2.2; }
-.ms-plc-cr-icum { stroke: #a78bfa; stroke-dasharray: none; stroke-width: 1.6; opacity: .9; }
 .ms-plc-sw-cr.ms-plc-cr-fhold { border-color: #f472b6; border-top-style: solid; }
-.ms-plc-sw-cr.ms-plc-cr-icum { border-color: #a78bfa; border-top-style: solid; }
 .ms-plc-cr-lab.ms-plc-cr-fhold { fill: #f472b6; }
-.ms-plc-cr-lab.ms-plc-cr-icum { fill: #a78bfa; }
 .ms-plc-cr-uncollected { stroke: #f87171; }
 .ms-plc-cr-forced { stroke: #c084fc; }
 .ms-plc-sw-cr { display: inline-block; width: 14px; height: 0; border-top: 2px dashed; margin-left: 8px; }
