@@ -1,11 +1,11 @@
 {
   "schema_version": "us-kr-direction-display-v1",
-  "status": "retrospective_replay",
-  "target_date": "2026-11-24",
-  "generated_at": "2026-11-24T14:05:27.010383+00:00",
-  "KR_source_date": "2026-11-23",
-  "US_source_date": "2026-11-23",
-  "forecast_cutoff_KST": "2026-11-24T08:30:00+09:00",
+  "status": "unavailable",
+  "target_date": "2026-11-25",
+  "generated_at": "2026-11-24T21:53:19.738100+00:00",
+  "KR_source_date": "2026-11-24",
+  "US_source_date": "2026-11-24",
+  "forecast_cutoff_KST": "2026-11-25T08:30:00+09:00",
   "model_id": "115ddb42c8c8449b63c57c35fe7642d22f9af3f2fe84def467bebd30ed976d07",
   "trained_through": "2026-10-22",
   "research_only": true,
@@ -30,116 +30,18 @@
     "flat_probability": "not estimated; do not interpret binary complements as a three-class forecast",
     "reference_only": "recent base rate only; probabilities are not a model direction signal"
   },
-  "cards": [
-    {
-      "ticker": "005930",
-      "label_ko": "삼성전자",
-      "scores": {
-        "opening_up": {
-          "probability": 0.9773153261623594,
-          "score_0_100": 97.73153261623594,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.9773153261623594,
-          "down_probability": 0.022684673837640612
-        },
-        "closing_up": {
-          "probability": 0.7833680827233311,
-          "score_0_100": 78.33680827233312,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.7833680827233311,
-          "down_probability": 0.21663191727666886
-        },
-        "direction_persists": {
-          "probability": 0.7575757558441847,
-          "score_0_100": 75.75757558441848,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        },
-        "opening_extends": {
-          "probability": 0.49494951009868016,
-          "score_0_100": 49.49495100986802,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        }
-      }
-    },
-    {
-      "ticker": "000660",
-      "label_ko": "SK하이닉스",
-      "scores": {
-        "opening_up": {
-          "probability": 0.9981975206428328,
-          "score_0_100": 99.81975206428328,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.9981975206428328,
-          "down_probability": 0.0018024793571671527
-        },
-        "closing_up": {
-          "probability": 0.9052580146003236,
-          "score_0_100": 90.52580146003237,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.9052580146003236,
-          "down_probability": 0.09474198539967638
-        },
-        "direction_persists": {
-          "probability": 0.676767676965397,
-          "score_0_100": 67.6767676965397,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        },
-        "opening_extends": {
-          "probability": 0.4848484818619135,
-          "score_0_100": 48.48484818619135,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        }
-      }
-    },
-    {
-      "ticker": "KOSPI",
-      "label_ko": "KOSPI",
-      "scores": {
-        "opening_up": {
-          "probability": 0.986910252835763,
-          "score_0_100": 98.6910252835763,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.986910252835763,
-          "down_probability": 0.013089747164237053
-        },
-        "closing_up": {
-          "probability": 0.9127608310339672,
-          "score_0_100": 91.27608310339672,
-          "direction": "UP",
-          "information_state": "model_score_with_calibration",
-          "up_probability": 0.9127608310339672,
-          "down_probability": 0.08723916896603279
-        },
-        "direction_persists": {
-          "probability": 0.7227723562163977,
-          "score_0_100": 72.27723562163976,
-          "direction": "REFERENCE_ONLY",
-          "information_state": "recent_base_rate_only"
-        },
-        "opening_extends": {
-          "probability": 0.5312577842286011,
-          "score_0_100": 53.125778422860115,
-          "direction": "EXTEND",
-          "information_state": "model_score_with_calibration"
-        }
-      }
-    }
-  ],
+  "cards": [],
   "refresh": {
-    "status": "retrospective_replay",
-    "checked_at": "2026-11-24T14:05:27.010383+00:00",
+    "status": "unavailable",
+    "checked_at": "2026-11-24T21:53:19.738100+00:00",
     "reasons": [
-      "08:30 전 실행은 KRX 15007 원자료 저장소 접근 실패로 통합 전망을 만들지 못함. 같은 동결 엔진을 11/23 자료로 나중에 재생한 값이며 사전 예측이 아님."
+      "missing or invalid required source data"
     ]
+  },
+  "last_available": {
+    "target_date": "2026-11-24",
+    "generated_at": "2026-11-24T14:05:27.010383+00:00",
+    "status": "retrospective_replay"
   },
   "factors": {
     "options": {
@@ -153,8 +55,8 @@
       ],
       "status": "unavailable",
       "as_of": null,
-      "expected_source_date": "2026-11-23",
-      "generated_at": "2026-11-23T21:42:51.918060+00:00",
+      "expected_source_date": "2026-11-24",
+      "generated_at": "2026-11-24T21:53:20.088113+00:00",
       "cards": [
         {
           "ticker": "KOSPI",
@@ -339,8 +241,8 @@
       ],
       "status": "unavailable",
       "as_of": null,
-      "expected_source_date": "2026-11-23",
-      "generated_at": "2026-11-23T21:42:51.918060+00:00",
+      "expected_source_date": "2026-11-24",
+      "generated_at": "2026-11-24T21:53:20.088113+00:00",
       "cards": [
         {
           "ticker": "005930",
@@ -481,9 +383,9 @@
         "AMD_return1"
       ],
       "status": "available",
-      "as_of": "2026-11-23",
-      "expected_source_date": "2026-11-23",
-      "generated_at": "2026-11-23T21:42:51.918060+00:00",
+      "as_of": "2026-11-24",
+      "expected_source_date": "2026-11-24",
+      "generated_at": "2026-11-24T21:53:20.088113+00:00",
       "cards": [
         {
           "ticker": "KOSPI",
@@ -491,20 +393,20 @@
           "reason": null,
           "scores": {
             "opening_up": {
-              "probability": 0.994820106613453,
-              "up_probability": 0.994820106613453,
-              "down_probability": 0.005179893386547008,
-              "score_0_100": 99.4820106613453,
+              "probability": 0.20228364650820047,
+              "up_probability": 0.20228364650820047,
+              "down_probability": 0.7977163534917995,
+              "score_0_100": 20.228364650820048,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             },
             "closing_up": {
-              "probability": 0.8929995617568802,
-              "up_probability": 0.8929995617568802,
-              "down_probability": 0.10700043824311978,
-              "score_0_100": 89.29995617568802,
+              "probability": 0.34791750406771416,
+              "up_probability": 0.34791750406771416,
+              "down_probability": 0.6520824959322858,
+              "score_0_100": 34.79175040677141,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             }
           }
         },
@@ -514,20 +416,20 @@
           "reason": null,
           "scores": {
             "opening_up": {
-              "probability": 0.9880494487246246,
-              "up_probability": 0.9880494487246246,
-              "down_probability": 0.011950551275375365,
-              "score_0_100": 98.80494487246246,
+              "probability": 0.13335976066935618,
+              "up_probability": 0.13335976066935618,
+              "down_probability": 0.8666402393306438,
+              "score_0_100": 13.335976066935618,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             },
             "closing_up": {
-              "probability": 0.8469464832928024,
-              "up_probability": 0.8469464832928024,
-              "down_probability": 0.15305351670719758,
-              "score_0_100": 84.69464832928024,
+              "probability": 0.32661729008851415,
+              "up_probability": 0.32661729008851415,
+              "down_probability": 0.6733827099114859,
+              "score_0_100": 32.66172900885142,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             }
           }
         },
@@ -537,20 +439,20 @@
           "reason": null,
           "scores": {
             "opening_up": {
-              "probability": 0.9919366854693427,
-              "up_probability": 0.9919366854693427,
-              "down_probability": 0.00806331453065734,
-              "score_0_100": 99.19366854693426,
+              "probability": 0.12339711787940033,
+              "up_probability": 0.12339711787940033,
+              "down_probability": 0.8766028821205997,
+              "score_0_100": 12.339711787940033,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             },
             "closing_up": {
-              "probability": 0.8692184445614912,
-              "up_probability": 0.8692184445614912,
-              "down_probability": 0.13078155543850878,
-              "score_0_100": 86.92184445614912,
+              "probability": 0.30245564188544055,
+              "up_probability": 0.30245564188544055,
+              "down_probability": 0.6975443581145595,
+              "score_0_100": 30.245564188544055,
               "information_state": "model_score_with_calibration",
-              "direction": "UP"
+              "direction": "DOWN"
             }
           }
         }
@@ -659,10 +561,5 @@
         }
       }
     }
-  },
-  "last_available": {
-    "target_date": "2026-11-24",
-    "generated_at": "2026-11-23T21:42:51.655504+00:00",
-    "status": "unavailable"
   }
 }
