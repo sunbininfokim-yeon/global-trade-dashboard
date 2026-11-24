@@ -32,6 +32,8 @@ name: Refresh macro public series
 #   (wire_kr_money_debt.py: ECOS + e-나라지표 1106·1100).
 # 중국 GDP(wire_cn_official.py): 국가통계국 영문 분기 GDP 발표의 Table 2(분기별 전년비, 2021~)를 그대로 옮긴다.
 # 세계은행 연간치는 refresh_peer_gdp_in_pack.py 의 대체값으로만 남는다(live 카드는 건드리지 않음).
+# 중국 외환보유액도 같은 스크립트: 외환관리국(SAFE) 'Official Reserve Assets' 연도별 xlsx(최근 2년)의 합계를
+# IMF 이력 위에 덮는다. IMF 카드를 쓰는 wire_world_public_series.py 뒤에 돌아야 한다.
 # 한국 CPI 옛 기준 보관(archive_kr_cpi_base2020.py): 2025=100 개편(2026-12-18) 전까지 2020=100 품목 지수·
 # 가중치를 매일 덧붙이고, 품목·가중치나 과거 값이 바뀌면(개편) 스스로 얼린다. 개편 뒤 기여도를 끊기지 않게 잇는 데 쓴다.
 # 한국 CPI 기여도(wire_kr_cpi_contrib.py): ECOS(ECOS_API_KEY) 901Y009 품목 458개와 가중치로 헤드라인·근원(농산물·석유류
@@ -92,7 +94,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_cn_official.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_free_cards.py; python wire_kr_bank_credit.py; python wire_kr_nonbank_credit.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python wire_us_cpi_contrib.py; python archive_kr_cpi_base2020.py; python wire_kr_cpi_contrib.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_auctions.py; python wire_us_monetary.py; python wire_cb_balance_sheets.py; python wire_kr_money_debt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_cn_official.py; python wire_free_cards.py; python wire_kr_bank_credit.py; python wire_kr_nonbank_credit.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python wire_us_cpi_contrib.py; python archive_kr_cpi_base2020.py; python wire_kr_cpi_contrib.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_auctions.py; python wire_us_monetary.py; python wire_cb_balance_sheets.py; python wire_kr_money_debt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
           }
           for attempt in 1 2 3; do
             refresh
