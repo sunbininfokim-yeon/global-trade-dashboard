@@ -29,6 +29,7 @@ from shipping_capacity.portwatch import (
     normalize_status_contract,
 )
 from shipping_capacity.route_distances import attach_distance_evidence
+from shipping_capacity.route_alternatives import load_arctic_route_reference, service_detour_comparison
 from shipping_capacity.official_cargo import collect_official_cargo
 from shipping_capacity.hormuz_reconstruction import collect_hormuz_reconstruction
 from shipping_capacity.hormuz_bypass import collect_hormuz_bypass
@@ -667,9 +668,11 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                 "data_paths": [
                     "routes[]",
                     "routes[].baseline",
-                "routes[].operational_profile.normal",
-                "routes[].operational_profile.chokepoint_alternatives[]",
-                "routes[].operational_profile.chokepoint_alternatives[].distance_evidence",
+                    "routes[].operational_profile.normal",
+                    "routes[].operational_profile.chokepoint_alternatives[]",
+                    "routes[].operational_profile.chokepoint_alternatives[].distance_evidence",
+                    "routes[].operational_profile.detour_comparison.options[]",
+                    "arctic_route_reference",
                 ],
                 "primary_metrics": [
                     "baseline.baseline_required_dwt",
@@ -1172,6 +1175,10 @@ def build_snapshot(
             )
             live_persistence_results.append(persistence_result)
 
+        operational_profile = route_operational_profile(route)
+        operational_profile["detour_comparison"] = service_detour_comparison(
+            operational_profile, baseline, route["input_status"],
+        )
         route_outputs.append(
             {
                 "id": route["id"],
@@ -1199,7 +1206,7 @@ def build_snapshot(
                     "reserve_margin": route["reserve_margin"],
                     "uncertainty": route.get("uncertainty", {}),
                 },
-                "operational_profile": route_operational_profile(route),
+                "operational_profile": operational_profile,
                 "chokepoints": route.get("chokepoints", []),
                 "baseline": {**baseline, "interval": baseline_interval},
                 "stress_tests": stress_results,
@@ -1415,6 +1422,9 @@ def build_snapshot(
             "behavior_uncertainty": behavior_uncertainty_config,
             "historical_event_calibration": event_calibration,
             "route_catalog": route_catalog,
+            "arctic_route_reference": load_arctic_route_reference(
+                Path(__file__).resolve().parents[2] / "public" / "data" / "sea_route_v1.json"
+            ),
             "routes": route_outputs,
             "scenarios": scenarios,
             "scenario_summary": scenario_summary,
