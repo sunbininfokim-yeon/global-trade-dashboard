@@ -22,7 +22,7 @@ import argparse
 import json
 import os
 import tempfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from build_kospi200_price_panel import fetch_naver_chart
@@ -92,6 +92,8 @@ def build(archive, replays, model, prior=(), today=None):
     # always re-read so a row that was not yet matured fills in later.
     rows = {r['target']: {k: v for k, v in r.items() if k != 'actual'}
             for r in prior if r.get('kind') == 'replay' and oos(r)}
+    # US-factor values a live row borrowed earlier survive an incremental rebuild
+    prior_us = {r['target']: (r.get('us_price') or {}, r.get('us_price_kind')) for r in prior if r.get('us_price')}
     for path in sorted(Path(replays).glob('*/display_payload.json')) if replays else []:
         r = from_replay(path)
         if oos(r):
@@ -102,7 +104,7 @@ def build(archive, replays, model, prior=(), today=None):
         r = from_live(path)
         if oos(r):
             # live v1 records never carried the factor; borrow the replay's, labelled so
-            r['us_price'] = rows.get(r['target'], {}).get('us_price', {})
+            r['us_price'] = rows.get(r['target'], {}).get('us_price') or prior_us.get(r['target'], ({}, None))[0]
             r['us_price_kind'] = 'replay'
             old = rows.get(r['target'])
             # a real pre-open record beats a replay; between two live records of
@@ -123,10 +125,13 @@ def build(archive, replays, model, prior=(), today=None):
     first = (datetime.fromisoformat(targets[0]).toordinal() - 14)
     bars = daily_bars(datetime.fromordinal(first).strftime('%Y-%m-%d'), targets[-1])
     out = []
+    now_kst = (today or datetime.now(timezone.utc)).astimezone(timezone(timedelta(hours=9)))
     for t in targets:
         r = rows[t]
         r.setdefault('model_id', model['model_id'])  # rows from before the field existed
-        r['actual'] = {tk: actual(bars[tk], t) for tk in TICKERS}
+        # a session still trading has a partial bar -- never score it as the outcome
+        closed = t < now_kst.strftime('%Y-%m-%d') or (t == now_kst.strftime('%Y-%m-%d') and now_kst.hour * 60 + now_kst.minute >= 15 * 60 + 45)
+        r['actual'] = {tk: actual(bars[tk], t) if closed else None for tk in TICKERS}
         out.append(r)
     return {'schema_version': SCHEMA, 'model_id': model['model_id'], 'trained_through': trained,
             'generated_at': (today or datetime.now(timezone.utc)).isoformat(),

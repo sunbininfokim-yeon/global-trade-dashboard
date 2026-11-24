@@ -164,7 +164,7 @@ const msDirHistChart = (rows, ticker, head) => {
     const x = (i) => L + step * (i + 0.5);
     const bars = pts.map((d, i) => {
         const y = yP(d.p);
-        return `<rect x="${(x(i) - bw / 2).toFixed(1)}" y="${Math.min(y, mid).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0.5, Math.abs(y - mid)).toFixed(1)}" fill="var(--ms-hist-pred)" opacity="${d.kind === 'live' ? 0.95 : 0.4}"><title>${msDayLabel(d.t)} 예측 상승 ${msPct0(d.p)}${d.kind === 'live' ? ' (08:30 전 기록)' : ' (재생)'}${d.a === null ? '' : ` · 실제 ${(d.a * 100).toFixed(2)}%`}</title></rect>`;
+        return `<rect x="${(x(i) - bw / 2).toFixed(1)}" y="${Math.min(y, mid).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0.5, Math.abs(y - mid)).toFixed(1)}" fill="var(--ms-hist-pred)" opacity="${d.kind === 'live' ? 0.95 : 0.7}"><title>${msDayLabel(d.t)} 예측 상승 ${msPct0(d.p)}${d.kind === 'live' ? ' (08:30 전 기록)' : ' (재현 · 같은 엔진, 늦게 계산)'}${d.a === null ? '' : ` · 실제 ${(d.a * 100).toFixed(2)}%`}</title></rect>`;
     }).join('');
     const withA = pts.map((d, i) => ({ ...d, i })).filter((d) => d.a !== null);
     const line = withA.map((d, k) => `${k ? 'L' : 'M'}${x(d.i).toFixed(1)},${yA(d.a).toFixed(1)}`).join('');
@@ -208,7 +208,7 @@ const msDirectionHistorySection = (D) => {
         return `<div class="ms-dir-card ms-hist-card">
             <div class="ms-dir-head"><span class="ms-dir-title">${MS_HIST_NAME[tk]} · ${head === 'opening_up' ? '시작(시가)' : '마감(종가)'}</span></div>
             ${msDirHistChart(rows, tk, head)}
-            <div class="ms-hist-score">방향 적중 · 08:30 전 기록 ${fmt(s.live)} · 재생 ${fmt(s.replay)}${uAll[1] ? ` · 미국 주가 모델 ${fmt(uAll)}` : ''}</div>
+            <div class="ms-hist-score">누적 적중 <b>${fmt([s.live[0] + s.replay[0], s.live[1] + s.replay[1]])}</b> · 그중 08:30 전 기록 ${fmt(s.live)} · 재현 ${fmt(s.replay)}${uAll[1] ? ` · 미국 주가 모델 ${fmt(uAll)}` : ''}</div>
         </div>`;
     }).join('')).join('');
     const live = rows.filter((r) => r.kind === 'live').length;
@@ -227,16 +227,16 @@ const msDirectionHistorySection = (D) => {
     const tot = (fn) => MS_DIRECTION_ORDER.flatMap((tk) => ['opening_up', 'closing_up'].map((hd) => sum(fn(tk, hd))))
         .reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
     const table = `<div class="fin-table-wrap"><table class="fin-table ms-hist-table">
-        <thead><tr><th>종목 · 구간</th><th>전 기간<br><small>모든 모델 ${models.length}개</small></th><th>최신 모델<br><small>${finEsc(latest.slice(0, 7))}</small></th><th>최신 모델 중<br><small>08:30 전 기록만</small></th><th>미국 주가 모델<br><small>참고</small></th></tr></thead>
+        <thead><tr><th>종목 · 구간</th><th>누적 정답률<br><small>전 기간 · 모델 ${models.length}개</small></th><th>최신 모델<br><small>${finEsc(latest.slice(0, 7))}</small></th><th>참고: 최신 모델 중<br><small>08:30 전 기록만</small></th><th>미국 주가 모델<br><small>참고</small></th></tr></thead>
         <tbody>${tRows}<tr class="ms-hist-total"><td>합계</td><td>${pctCell(tot((tk, hd) => msDirHistScore(rows, tk, hd)))}</td><td>${pctCell(tot((tk, hd) => msDirHistScore(rows, tk, hd, 'v1', latest)))}</td>
             <td>${pctCell(MS_DIRECTION_ORDER.flatMap((tk) => ['opening_up', 'closing_up'].map((hd) => msDirHistScore(rows, tk, hd, 'v1', latest).live)).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]))}</td>
             <td>${pctCell(tot((tk, hd) => msDirHistScore(rows, tk, hd, 'us_price')))}</td></tr></tbody>
     </table></div>
-    <p class="fin-note">정답 = 예측 방향(상승 확률 50% 초과/미만)과 실제 방향(전일 종가 대비)이 같은 날. 전 기간·최신 모델 칸은 08:30 전 기록과 재생을 합친 값이고, 재생은 사전 예측이 아니므로 실제 성적은 「08:30 전 기록만」 칸입니다. 모델이 바뀌면 이전 모델의 날짜는 전 기간에만 남습니다.</p>`;
+    <p class="fin-note">정답 = 예측 방향(상승 확률 50% 초과/미만)과 실제 방향(전일 종가 대비)이 같은 날. 누적 정답률은 08:30 전 기록과 재현을 합친 값입니다. 재현은 같은 동결 엔진에 같은 날의 입력을 넣어 늦게 계산한 값이라(자료가 늦게 들어온 날 등) 누적에 포함합니다. 08:30 전 기록만 따로 본 값은 참고 칸에 둡니다. 모델이 바뀌면 이전 모델의 날짜는 누적 정답률에만 남습니다.</p>`;
     return `
     <section class="fin-block fin-block-wide">
-        <div class="ms-dir-section-head"><h2>예측 vs 실제 · 누적</h2><span class="ms-dir-badge is-muted">08:30 전 기록 ${live}일 · 재생 ${rows.length - live}일</span></div>
-        <p class="fin-lead"><span class="ms-hist-key is-pred"></span>파랑 막대 = 통합 전망의 상승 확률(가운데 50%, 위로 갈수록 상승 쪽) · <span class="ms-hist-key is-act"></span>빨강 선 = 실제 등락률(전일 종가 대비). 둘이 0선의 같은 쪽이면 방향을 맞힌 날입니다. 흐린 막대는 같은 동결 엔진을 나중에 돌린 <b>재생</b>이라 사전 예측 성적이 아닙니다.</p>
+        <div class="ms-dir-section-head"><h2>예측 vs 실제 · 누적</h2><span class="ms-dir-badge is-muted">누적 ${rows.length}일 (08:30 전 ${live} · 재현 ${rows.length - live})</span></div>
+        <p class="fin-lead"><span class="ms-hist-key is-pred"></span>파랑 막대 = 통합 전망의 상승 확률(가운데 50%, 위로 갈수록 상승 쪽) · <span class="ms-hist-key is-act"></span>빨강 선 = 실제 등락률(전일 종가 대비). 둘이 0선의 같은 쪽이면 방향을 맞힌 날입니다. 옅은 막대는 같은 동결 엔진을 자료가 들어온 뒤 늦게 돌린 <b>재현</b>이고, 누적 정답률에 포함됩니다.</p>
         ${table}
         <div class="ms-hist-grid">${cells}</div>
         <div class="ms-dir-foot">${msDayLabel(rows[0].target)} ~ ${msDayLabel(rows[rows.length - 1].target)} · 모델 ${finEsc(String(h.model_id || '').slice(0, 7))} (학습 ~${finEsc(msDayLabel(h.trained_through))}, 그 이전은 학습 구간이라 제외) · 실제 = 네이버 일봉 · 보합(0%)과 50% 예측은 적중 계산에서 뺌</div>
