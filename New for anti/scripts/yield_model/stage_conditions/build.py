@@ -32,6 +32,7 @@ import numpy as np
 import pandas as pd
 
 from . import ledger as L
+from . import usda_yields as U
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 YIELD_MODEL = os.path.dirname(HERE)
@@ -621,6 +622,9 @@ def keep_ledger(out, today=None):
         return None if labels is None else trend_residuals(labels)
 
     scored = L.score(book, residual_for)
+    psd = U.load(offline=os.environ.get("STAGE_OFFLINE") == "1")
+    provisional = L.score_provisional(
+        book, lambda r, c, y: U.national_residual(psd, r, c, y), today)
     L.save(book)
     out["live_record"] = L.summary(book)
     for region, entries in out["regions"].items():
@@ -630,9 +634,10 @@ def keep_ledger(out, today=None):
                 e["live_record"] = rec
             held = book["entries"].get(f"{region}|{e['crop']}|{e.get('harvest_year')}")
             if held and "residual_pct" not in held:
-                e["live_pending"] = {"verdict_ko": held["verdict_ko"], "frozen_on": held["frozen_on"]}
+                e["live_pending"] = {"verdict_ko": held["verdict_ko"], "frozen_on": held["frozen_on"],
+                                     "provisional": held.get("provisional")}
     s = out["live_record"]
-    log(f"ledger: +{len(added)} frozen, +{len(scored)} scored; {s['frozen']} held, {s['scored']} scored, "
+    log(f"ledger: +{len(added)} frozen, +{len(scored)} scored, {len(provisional)} provisional (USDA); {s['frozen']} held, {s['scored']} scored, "
         f"unfavourable {s['unfavorable']['hits']}/{s['unfavorable']['n']}, "
         f"favourable {s['favorable']['hits']}/{s['favorable']['n']}")
 
