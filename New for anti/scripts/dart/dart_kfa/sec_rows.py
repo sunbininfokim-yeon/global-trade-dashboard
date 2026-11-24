@@ -293,6 +293,8 @@ def us_extras(facts, fiscal_year_end: str, revenue: float | None) -> dict:
 
 # SEC SIC code -> engine kit (pe_cr_inputs.json kits).
 SIC_KITS = [
+    ((1000, 1099), "mining_smelting"), ((1200, 1299), "mining_smelting"), ((1400, 1499), "mining_smelting"),
+    ((3330, 3341), "mining_smelting"),
     ((3674, 3674), "semiconductor"), ((3570, 3579), "it_hardware"), ((3660, 3679), "it_hardware"),
     ((7370, 7379), "it_services"), ((2833, 2836), "pharma_bio"), ((8731, 8731), "pharma_bio"),
     ((3711, 3716), "automotive"), ((2911, 2911), "refining_energy"), ((1311, 1389), "refining_energy"),

@@ -147,7 +147,18 @@ def main() -> int:
         snap = json.loads((DATA / 'kfa_pecr' / f'{corp}_v1.json').read_text())
         try:
             if meta.get('market') == 'US':
-                q = us_quote(stock)
+                # Naver's Reuters codes: NASDAQ '.O', most NYSE plain, some NYSE '.K'
+                # (SCCO.K, ORCL.K) -- not predictable from the exchange, so try in turn.
+                base = stock.split('.')[0]
+                q, last = None, None
+                for cand in dict.fromkeys([stock, f'{base}.K', base, f'{base}.O']):
+                    try:
+                        q = us_quote(cand)
+                        break
+                    except Exception as exc:  # noqa: BLE001
+                        last = exc
+                if q is None:
+                    raise last
                 q['corp_code'] = corp
                 quotes[stock] = q
                 print(f'{stock} {q["name"]}: {q["price"]:,.2f} cap {q["market_cap_text"]}')

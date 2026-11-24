@@ -505,6 +505,51 @@ const pecrLoadPeers = async (snap) => {
     return loaded.filter(Boolean);
 };
 
+// --- 업종 핵심 지표 (investor_metrics.industry; 종합상사 / 광업·제련) ---------
+const KIT_TITLE = { trading_house: '종합상사', mining_smelting: '광업·비철 제련' };
+const KIT_FMT = { dso: 'days', dio: 'days', impairment: 'money' };
+const kitIndustryHtml = (snap) => {
+    const ind = snap.investor_metrics?.industry;
+    if (!ind || !ind.history) return '';
+    const years = Object.keys(ind.history).sort().slice(-5);
+    const keys = Object.keys(ind.labels).filter((k) => years.some((y) => Number.isFinite(ind.history[y][k])));
+    const f = (k, v) => (!Number.isFinite(v) ? '—' : KIT_FMT[k] === 'days' ? `${Math.round(v)}일`
+        : KIT_FMT[k] === 'money' ? pecrNum(v) : `${(v * 100).toFixed(1)}%`);
+    let extra = '';
+    if (ind.kit === 'trading_house') {
+        const seg = (snap.segments?.breakdowns || []).find((b) => b.kind === 'segment' && b.has_operating_income);
+        const rows = (seg?.rows || []).filter((r) => Number.isFinite(r.op));
+        const opSum = rows.reduce((a, r) => a + Math.max(r.op, 0), 0);
+        if (rows.length >= 2 && opSum > 0) {
+            extra = `<div class="co-table-wrap"><table class="co-table pecr-table">
+                <thead><tr><th>부문</th><th>매출</th><th>영업이익</th><th>이익률</th><th>이익 기여</th></tr></thead><tbody>
+                ${rows.map((r) => `<tr><td>${finEsc(r.label)}</td><td class="pecr-num">${pecrNum(r.revenue)}</td><td class="pecr-num">${pecrNum(r.op)}</td>
+                    <td class="pecr-num">${Number.isFinite(r.margin) ? `${(r.margin * 100).toFixed(1)}%` : '—'}</td>
+                    <td class="pecr-num">${r.op > 0 ? `${(r.op / opSum * 100).toFixed(0)}%` : '—'}</td></tr>`).join('')}
+                </tbody></table></div>
+                <p class="fin-note">매출은 트레이딩이 크지만 이익은 자원·에너지·물류가 버는 경우가 많습니다. 이익 기여가 매출 비중과 얼마나 다른지 보세요.</p>`;
+        } else if (snap.segments?.breakdowns?.length) {
+            extra = '<p class="fin-note">사업부문별 영업이익은 주석에 태그되지 않아 매출 비중만 아래 "사업부문" 표에 있습니다.</p>';
+        }
+    }
+    if (ind.kit === 'mining_smelting') {
+        const prov = (snap.note_items?.provisions?.classes || []).find((c) => /Decommission|Restoration|Rehabilitation/i.test(c.member) || /복구/.test(c.label));
+        if (prov) extra = `<p class="fin-note">복구충당부채 ${pecrNum(prov.value)} — 광산 폐쇄·원상복구 의무로 EV에 더할 부채성 항목입니다.</p>`;
+    }
+    const plain = {
+        trading_house: '박마진 사업이라 매출보다 매출총이익률·이익 구성을, 무역금융 때문에 운전자본 일수를 봅니다. 지분법이익 비중이 크면 자원 투자 실적이 이익을 좌우합니다.',
+        mining_smelting: '재투자율(설비투자 ÷ 감가상각)이 100%를 밑돌면 광산·설비가 닳는 속도보다 덜 투자하는 중입니다. EBITDA 마진은 원자재 가격에 따라 크게 출렁이니 여러 해를 함께 보세요.',
+    }[ind.kit];
+    return `<section class="pecr-section"><h3>업종 핵심 지표 — ${finEsc(KIT_TITLE[ind.kit] || ind.kit)}</h3>
+        <div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>지표</th>${years.map((y) => `<th>FY${y}</th>`).join('')}</tr></thead>
+            <tbody>${keys.map((k) => `<tr><td>${finEsc(ind.labels[k])}</td>${years.map((y) => `<td class="pecr-num">${f(k, ind.history[y][k])}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table></div>
+        ${extra}
+        <p class="fin-note">${finEsc(plain)}</p>
+    </section>`;
+};
+
 // --- 주석 항목 (snapshot.note_items; dart_kfa/note_items.py) ------------------
 const noteItemsHtml = (snap) => {
     const n = snap.note_items;
@@ -569,7 +614,8 @@ const financialKpisHtml = (snap) => {
 };
 
 // --- 사업부문·제품·지역 (snapshot.segments; dart_kfa/segments.py) ---------------
-const SEG_CHECK = { segment_total: '보고서의 부문 합계 행', income_statement: '손익계산서 매출(조정 항목 반영)' };
+const SEG_CHECK = { segment_total: '보고서의 부문 합계 행', income_statement: '손익계산서 매출(조정 항목 반영)',
+    income_statement_external: '손익계산서 매출(부문 매출이 이미 외부 매출 기준)' };
 const segPct = (v, sign = false) => (Number.isFinite(v) ? `${sign && v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%` : '—');
 const segTableHtml = (b, fy) => {
     const op = b.has_operating_income;
@@ -788,7 +834,7 @@ const invMetricsView = (snap) => {
     const inv = snap.investor_metrics;
     if (!inv) return '<p class="fin-note">이 스냅샷에는 투자지표가 아직 없습니다. 다음 엔진 재생성 때 채워집니다.</p>';
     const live = pecrLive(snap);
-    return financialKpisHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + noteItemsHtml(snap) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
+    return financialKpisHtml(snap) + kitIndustryHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + noteItemsHtml(snap) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
         + `<p class="fin-note">재무제표: OpenDART 사업보고서 FY${(inv.years || [])[0] || ''}~FY${inv.fiscal_year} ${snap.fs_div === 'OFS' ? '별도' : '연결'}.
             배당: 사업보고서 배당에 관한 사항. 자기주식: 자기주식 취득 및 처분 현황. 시세가 필요한 값(PEG, 시가 Z, 수익률)은 일별 시가총액으로 계산합니다.</p>`;
 };

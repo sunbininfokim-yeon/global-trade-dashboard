@@ -192,7 +192,8 @@ def build_one(ticker: str, cik: str, reuters: str | None, cache: Path, today: dt
         bases['ltm'] = l
     investor = investor_metrics(fy_reports, fiscal_year=fy, financial=financial, dilution=extras.get('dilution'),
                                 issued_common=(extras.get('dilution') or {}).get('issued_common'),
-                                lease_in_net_debt=True, ebitda=ebitda, ebitda_card='sec_op_plus_da')
+                                lease_in_net_debt=True, ebitda=ebitda, ebitda_card='sec_op_plus_da',
+                                kit=result.get('industry'))
     fin = None
     if fin_kind:
         fin = financial_kpis(rows, kind=fin_kind)

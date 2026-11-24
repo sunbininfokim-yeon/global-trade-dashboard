@@ -53,3 +53,10 @@ focus 는 기존 카드 키만 사용. 이전에는 이들이 manufacturing 또�
 - `fetch_kfa_market.py`: 미국 종목은 api.stock.naver.com (Reuters 코드) 시총·종가.
 - 한국 배치: 첫 수동 실행(2026-11-23)이 직렬 4분/사 속도로 340분 한도에 걸려 커밋 전 취소됨 →
   `--workers 4`(스레드, 호출 카운터 락) + `--max-minutes 290`. 키트: construction 에 M721(엔지니어링, 삼성E&A).
+
+## 추가 (PR 3): 종합상사·광업 키트
+
+- `pe_cr_inputs.json`: `trading_house`(G4680), `mining_smelting`(B05–B08, C242 비철 제련; SEC SIC 1000–1099, 1200–1299, 1400–1499, 3330–3341).
+- 상사는 KSIC 로 플랫폼(G461)과 구분이 안 됨 → 빌더가 `config/kfa_issuer_kits.json` 검토 목록 + 규칙(G461/467/468 + 인터내셔널·상사·코퍼레이션)으로 `industry` 를 지정(엔진의 explicit 경로).
+- `investor_metrics.industry_metrics`: 상사(매출총이익률·영업이익률·지분법이익 비중·매출채권/재고 일수), 광업(감가상각/매출·재투자율·EBITDA 마진·손상차손). 국내 요약 현금흐름표는 XBRL 주석 D&A 로 채움.
+- `segments.py`: 부문 매출이 이미 외부매출 기준(LX인터내셔널)이면 ±0.2% 정확 일치일 때만 `income_statement_external` 로 인정.
