@@ -9,6 +9,11 @@ name: KFA engine snapshots daily
 # builder version changed (--skip-fresh). --max-calls keeps the run inside the
 # OpenDART key's 20,000 calls/day, leaving room for the other workflows that
 # share secrets.DART_API. 19:30 UTC = 04:30 KST, after the day's filings.
+# From GitHub's runners one company takes ~4 minutes of OpenDART round trips,
+# so four are built in parallel and no new one starts after 290 minutes --
+# the job (340-minute limit) must reach its commit step. The first manual run
+# (2026-11-23) built 76 companies serially and was cancelled at the limit
+# before committing.
 # Listed in deploy.yml's workflow_run so new snapshots reach Cloudflare.
 
 on:
@@ -55,10 +60,10 @@ jobs:
         run: |
           set -euo pipefail
           if [ -n "$CORP_CODES" ]; then
-            python -u tools/ops/build_kfa_pecr_snapshots.py --cache "$RUNNER_TEMP/dart" --max-calls "$MAX_CALLS" $CORP_CODES
+            python -u tools/ops/build_kfa_pecr_snapshots.py --cache "$RUNNER_TEMP/dart" --max-calls "$MAX_CALLS" --workers 4 $CORP_CODES
           else
             python -u tools/ops/build_kfa_pecr_snapshots.py --cache "$RUNNER_TEMP/dart" --max-calls "$MAX_CALLS" \
-              --skip-fresh --universe "$UNIVERSE"
+              --skip-fresh --universe "$UNIVERSE" --workers 4 --max-minutes 290
           fi
       - name: Refuse to publish a key
         run: |

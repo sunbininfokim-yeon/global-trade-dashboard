@@ -1,0 +1,62 @@
+name: KFA SEC snapshots daily
+
+# US counterpart of 'KFA engine snapshots daily': runs the PE/CR + investor
+# engines on SEC companyfacts (tools/ops/build_kfa_sec_snapshots.py) for the
+# largest NASDAQ / NYSE companies, so the US side of the company calculator
+# gets the same 투자지표 / CR / PE·LBO / 딜 tabs. A company is rebuilt only when
+# it has a newer SEC filing or the builder version changed. No key; SEC's
+# fair-access limit (10 requests/second) is respected by the script's pacing.
+# 11:00 UTC = after the previous US session's filings.
+
+on:
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      universe:
+        description: "e.g. 'NASDAQ:150,NYSE:150'"
+        default: 'NASDAQ:150,NYSE:150'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kfa-sec-snapshots
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build SEC snapshots
+        id: build
+        continue-on-error: true
+        env:
+          UNIVERSE: ${{ github.event.inputs.universe || 'NASDAQ:150,NYSE:150' }}
+        run: python -u tools/ops/build_kfa_sec_snapshots.py --cache "$RUNNER_TEMP/sec" --skip-fresh --universe "$UNIVERSE"
+      - name: Commit snapshots
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/kfa_pecr'
+          if git diff --cached --quiet; then exit 0; fi
+          n=$(git diff --cached --name-only | wc -l)
+          git commit -m "chore: refresh KFA SEC snapshots ($n files)"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1
+      - name: Surface failures after persisting the rest
+        if: steps.build.outcome == 'failure'
+        run: exit 1
