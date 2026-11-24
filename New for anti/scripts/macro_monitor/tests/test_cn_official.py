@@ -83,5 +83,14 @@ class Safe(unittest.TestCase):
         self.assertEqual((p["display"], p["reference_period"], p["source"]), ("$3,778B", "2026-10", "safe:official_reserve_assets"))
 
 
+    def test_cache_round_trip(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "c.json"
+            self.assertIsNone(cn.load_reserves_cache(f))
+            cn.save_reserves_cache(f, [("2026-10-01", 3777.56)], ["u"], "2026-11-24T00:00:00Z")
+            self.assertEqual(cn.load_reserves_cache(f), ([("2026-10-01", 3777.56)], ["u"], "2026-11-24T00:00:00Z"))
+
+
 if __name__ == "__main__":
     unittest.main()
