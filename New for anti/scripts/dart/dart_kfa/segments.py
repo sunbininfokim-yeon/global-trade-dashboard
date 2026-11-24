@@ -214,6 +214,12 @@ def segment_breakdowns(instance: bytes, *, fs_div: str, fiscal_year_end: str, la
         if parts is not None and face_revenue:
             checks.append(("income_statement", face_revenue, parts + adjust))
         ok = next((name for name, target, got in checks if target and abs(got - target) <= TOLERANCE * abs(target)), None)
+        # LX인터내셔널: segment revenue is already external (net of inter-segment
+        # sales) yet an elimination member is tagged too. Accept parts = income
+        # statement only when it is exact to 0.2 %, so an incomplete table that
+        # happens to land near the total (한화오션 without 플랜트) cannot pass.
+        if ok is None and parts is not None and face_revenue and adjust and abs(parts - face_revenue) <= 0.002 * abs(face_revenue):
+            ok = "income_statement_external"
         rows.sort(key=lambda r: -(r["revenue"] if r["revenue"] is not None else float("-inf")))
         base = parts or face_revenue
         for r in rows:

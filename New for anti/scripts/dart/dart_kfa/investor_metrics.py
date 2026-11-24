@@ -47,7 +47,8 @@ ENGINE_KEYS = ("revenue", "op", "pretax_income", "parent_income", "total_income"
                "cash", "receivables", "inventory", "current_assets", "current_liabilities", "assets",
                "equity", "parent_equity", "issued_capital", "liabilities",
                "borrowings_short", "borrowings_current_portion", "bonds_current", "borrowings_long",
-               "bonds_noncurrent", "lease_current", "lease_noncurrent", "debt_current_total")
+               "bonds_noncurrent", "lease_current", "lease_noncurrent", "debt_current_total",
+               "cf_depreciation", "cf_amortisation", "cf_dep_amort_total")
 # ... and the ones only this module needs: (statement, ids, names). Names are
 # a fallback for cash-flow and provision lines whose ids vary by filer.
 EXTRA = {
@@ -77,6 +78,11 @@ EXTRA = {
                        ["배당금의 지급", "배당금지급", "배당금의지급"]),
     "buyback": ("CF", ["dart_AcquisitionOfTreasuryShares", "ifrs-full_PaymentsToAcquireOrRedeemEntitysShares"],
                 ["자기주식의 취득", "자기주식의취득", "자기주식 취득"]),
+    "equity_method_income": ("IS", ["ifrs-full_ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod"],
+                             ["지분법이익", "지분법손익", "관계기업투자손익", "관계기업 및 공동기업 투자손익"]),
+    "impairment": ("IS", ["ifrs-full_ImpairmentLossRecognisedInProfitOrLoss", "dart_ImpairmentLossOfTangibleAssets"],
+                   ["손상차손", "유형자산손상차손"]),
+    "da_total_sec": ("CF", ["ifrs-full_AdjustmentsForDepreciationAndAmortisationExpense"], ["감가상각비", "감가상각비와 상각비"]),
     "lease_repayment": ("CF", ["ifrs-full_PaymentsOfLeaseLiabilitiesClassifiedAsFinancingActivities",
                                "dart_RepaymentsOfLeaseLiabilities", "dart_RepaymentOfLeaseLiabilities"],
                         ["리스부채의 상환", "리스부채의상환", "리스부채 상환", "리스부채의 감소"]),
@@ -702,13 +708,77 @@ def ev_bridge(series: dict, fy: int, *, financial: bool, lease_in_net_debt: bool
             "basis": "조정 EV = EV + 순확정급여부채 + 미표시 리스부채 − 관계기업투자; 보수적 EV는 충당부채까지 가산"}
 
 
+# --------------------------------------------------------------------------- industry kits
+
+
+def _da(v, y):
+    total = _get(v, y, "cf_dep_amort_total")
+    if total is None:
+        total = _get(v, y, "da_total_sec")
+    if total is None:
+        parts = [_get(v, y, "cf_depreciation"), _get(v, y, "cf_amortisation")]
+        total = _sum(*parts) if parts[0] is not None else None
+    return abs(total) if total is not None else None
+
+
+def _days(balance_now, balance_before, flow):
+    avg = _avg(balance_now, balance_before) if balance_before is not None else balance_now
+    return avg / flow * 365 if avg is not None and flow else None
+
+
+def industry_metrics(series: dict, fy: int, kit: str | None) -> dict | None:
+    """The few ratios a kit is read by, over the years available.
+
+    trading_house    매출총이익률, 영업이익률, 지분법이익 ÷ 세전이익, 매출채권·재고 일수
+    mining_smelting  감가·감모상각 ÷ 매출, 설비투자 ÷ 감가상각(재투자율), EBITDA 마진, 손상차손
+    """
+    if kit not in ("trading_house", "mining_smelting"):
+        return None
+    v = series["values"]
+    years = [y for y in series["years"] if y <= fy][-5:]
+    hist = {}
+    for y in years:
+        rev, op = _get(v, y, "revenue"), _get(v, y, "op")
+        row = {}
+        if kit == "trading_house":
+            gp = _gross_profit(v, y)
+            pre, em = _get(v, y, "pretax_income"), _get(v, y, "equity_method_income")
+            row["gross_margin"] = _div(gp, rev)
+            row["op_margin"] = _div(op, rev)
+            row["equity_method_share"] = _div(em, pre) if pre and pre > 0 else None
+            row["dso"] = _days(_get(v, y, "receivables"), _get(v, y - 1, "receivables"), rev)
+            cogs = _get(v, y, "cogs")
+            if cogs is None and rev is not None and _gross_profit(v, y) is not None:
+                cogs = rev - _gross_profit(v, y)
+            row["dio"] = _days(_get(v, y, "inventory"), _get(v, y - 1, "inventory"), cogs)
+        else:
+            da, capex = _da(v, y), _capex(v, y)
+            row["da_to_sales"] = _div(da, rev)
+            row["capex_to_da"] = _div(abs(capex) if capex is not None else None, da)
+            row["ebitda_margin"] = _div(op + da, rev) if op is not None and da is not None else None
+            imp = _get(v, y, "impairment")
+            row["impairment"] = abs(imp) if imp is not None else None
+            row["impairment_to_assets"] = _div(abs(imp) if imp is not None else None, _get(v, y, "assets"))
+        if any(x is not None for x in row.values()):
+            hist[str(y)] = row
+    if not hist:
+        return None
+    labels = {
+        "trading_house": {"gross_margin": "매출총이익률", "op_margin": "영업이익률", "equity_method_share": "지분법이익 ÷ 세전이익",
+                          "dso": "매출채권 회전일수", "dio": "재고 회전일수"},
+        "mining_smelting": {"da_to_sales": "감가·감모상각 ÷ 매출", "capex_to_da": "설비투자 ÷ 감가상각 (재투자율)",
+                            "ebitda_margin": "EBITDA 마진", "impairment": "손상차손", "impairment_to_assets": "손상차손 ÷ 총자산"},
+    }[kit]
+    return {"kit": kit, "labels": labels, "history": hist}
+
+
 # --------------------------------------------------------------------------- entry
 
 
 def investor_metrics(fy_reports: dict, *, fiscal_year: int, financial: bool, dividends_rows=None,
                      treasury_rows=None, dilution=None, issued_common=None, lease_in_net_debt=True,
                      xbrl_lease=None, xbrl_lease_basis=None, ebitda=None, ebitda_card=None,
-                     balance_overrides=None) -> dict:
+                     balance_overrides=None, kit=None) -> dict:
     series = annual_series(fy_reports)
     # Note balances (trade receivables / payables split out of a face-statement
     # "trade and other" total) fill a year only where the face row is missing.
@@ -727,6 +797,7 @@ def investor_metrics(fy_reports: dict, *, fiscal_year: int, financial: bool, div
         "shareholder": shareholder_returns(series, fy, dividends=dividends_from_alot(dividends_rows or [], fy),
                                            treasury=treasury_from_tesstk(treasury_rows or []), issued_common=issued_common),
         "dilution": dilution,
+        "industry": industry_metrics(series, fy, kit),
         "ev_bridge": ev_bridge(series, fy, financial=financial, lease_in_net_debt=lease_in_net_debt,
                                xbrl_lease=xbrl_lease, xbrl_lease_basis=xbrl_lease_basis, ebitda=ebitda,
                                ebitda_card=ebitda_card),

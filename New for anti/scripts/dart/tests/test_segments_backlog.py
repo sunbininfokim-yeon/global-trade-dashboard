@@ -71,6 +71,20 @@ class Segments(unittest.TestCase):
         self.assertEqual(sorted(x["member"][:8] for x in b["rows"]), ["Enterpri", "SearchPl"])
         self.assertTrue(b["reconciles"])
 
+    def test_segments_already_external_with_elimination_tagged(self):
+        # LX인터내셔널: segment revenue sums to the income statement exactly, but an
+        # elimination member is tagged too.
+        on = lambda m: (*CUR, {**CONS, "ifrs-full:SegmentsAxis": f"e:{m}MemberOfSegTableOfMember",  # noqa: E731
+                               "ifrs-full:SegmentConsolidationItemsAxis": "ifrs-full:OperatingSegmentsMember"})
+        ctxs = {"a": on("Logistics"), "b": on("Trading"), "e": (*CUR, {**CONS,
+                "ifrs-full:SegmentConsolidationItemsAxis": "ifrs-full:EliminationOfIntersegmentAmountsMember"})}
+        facts = [("Revenue", "a", "7870"), ("Revenue", "b", "7620"), ("Revenue", "e", "-4253")]
+        r = segment_breakdowns(instance(ctxs, facts), fs_div="CFS", fiscal_year_end="2025-12-31", face_revenue=15490)
+        self.assertEqual(r["breakdowns"][0]["reconciled_against"], "income_statement_external")
+        # ... but only when exact: a 1 % gap is not accepted this way
+        r = segment_breakdowns(instance(ctxs, facts), fs_div="CFS", fiscal_year_end="2025-12-31", face_revenue=15650)
+        self.assertFalse(r["breakdowns"][0]["reconciles"])
+
     def test_unreconciled_breakdown_is_flagged_not_forced(self):
         p = lambda m: (*CUR, {**CONS, "ifrs-full:ProductsAndServicesAxis": f"e:{m}MemberOfProductsTableOfMember"})  # noqa: E731
         r = segment_breakdowns(instance({"a": p("Phone"), "b": p("Memory")}, [("Revenue", "a", "126"), ("Revenue", "b", "104")]),

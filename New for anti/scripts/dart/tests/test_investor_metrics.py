@@ -261,3 +261,31 @@ class Bridge(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Kits(unittest.TestCase):
+    def test_trading_house(self):
+        from dart_kfa.investor_metrics import industry_metrics
+        rows = statements(2025, ("7554", "7000"), ("140", "120"), ("90", "80"), ("5000", "4800"), ("2000", "1900"), [
+            row("IS", "ifrs-full_GrossProfit", "288", "260"), row("IS", "ifrs-full_CostOfSales", "7266", "6740"),
+            row("IS", "ifrs-full_ProfitLossBeforeTax", "100", "90"),
+            row("IS", "ifrs-full_ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod", "40", "30"),
+            row("BS", "ifrs-full_CurrentTradeReceivables", "1170", "1000"), row("BS", "ifrs-full_Inventories", "315", "266")])
+        h = industry_metrics(annual_series({2025: rows}), 2025, "trading_house")["history"]["2025"]
+        self.assertAlmostEqual(h["gross_margin"], 288 / 7554)
+        self.assertAlmostEqual(h["equity_method_share"], 0.4)
+        self.assertAlmostEqual(h["dso"], (1170 + 1000) / 2 / 7554 * 365)
+        self.assertAlmostEqual(h["dio"], (315 + 266) / 2 / 7266 * 365)
+
+    def test_mining_uses_note_da_when_cash_flow_is_summarised(self):
+        from dart_kfa.investor_metrics import industry_metrics
+        rows = statements(2025, ("1000", "900"), ("80", "70"), ("50", "40"), ("3000", "2900"), ("2000", "1900"), [
+            row("CF", "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities", "60")])
+        s = annual_series({2025: rows})
+        s["values"][2025]["cf_dep_amort_total"] = 20.0          # from the XBRL notes
+        h = industry_metrics(s, 2025, "mining_smelting")["history"]["2025"]
+        self.assertEqual((h["da_to_sales"], h["capex_to_da"], h["ebitda_margin"]), (0.02, 3.0, 0.1))
+
+    def test_other_kits_get_nothing(self):
+        from dart_kfa.investor_metrics import industry_metrics
+        self.assertIsNone(industry_metrics(annual_series({}), 2025, "semiconductor"))

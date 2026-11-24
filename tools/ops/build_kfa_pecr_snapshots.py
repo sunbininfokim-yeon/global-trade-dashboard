@@ -647,16 +647,39 @@ def investor_packet(dart: Dart, corp: str, year: int, fs: str, fy_rows: list, pr
         for row in (pack or {}).get('rows') or []:
             if row['key'] in ('receivables',) and row.get('period_start') is None:
                 overrides.setdefault(int(row['period_end'][:4]), {})['receivables'] = row['amount'] * row.get('scale', 1)
+            # D&A from the notes where the cash-flow statement is summarised
+            # (고려아연, 삼성전자): feeds the mining kit's D&A ratios.
+            if row['key'] in ('PPE_DEPRECIATION', 'INTANGIBLE_AMORTIZATION') and row.get('period_start'):
+                y = overrides.setdefault(int(row['period_end'][:4]), {})
+                y['cf_dep_amort_total'] = y.get('cf_dep_amort_total', 0) + row['amount'] * row.get('scale', 1)
     out = investor_metrics(
         fy_reports, fiscal_year=year, financial=financial,
         dividends_rows=alot.get('list') if alot.get('status') == '000' else None,
         treasury_rows=tess.get('list') if tess.get('status') == '000' else None,
         dilution=dilution, issued_common=issued, lease_in_net_debt=lease_in, xbrl_lease=xbrl_lease,
         xbrl_lease_basis=xbrl_lease_basis, ebitda=fyb.get('ebitda'), ebitda_card=fyb.get('ebitda_card'),
-        balance_overrides=overrides)
+        balance_overrides=overrides, kit=result.get('industry'))
     out['inputs'] = {'fy_reports': sorted(fy_reports), 'dividends': alot.get('status'), 'treasury': tess.get('status'),
                      'dilution': dil_note, 'issued_common_source': 'stockTotqySttus FY istc_totqy' if issued else None}
     return out, f"years={out['years'][0] if out['years'] else '-'}..{year} dilution={dil_note}"
+
+
+ISSUER_KITS = ENGINE / 'config' / 'kfa_issuer_kits.json'
+TRADING_NAME = re.compile(r'인터내셔널|상사|코퍼레이션')
+
+
+def issuer_kit(corp: str, company: dict) -> str | None:
+    """Kit the KSIC code cannot tell: a 종합상사 is filed as 상품 중개업 (G461,
+    the platform kit) or 종합 도매업. Reviewed overrides first, then the
+    name rule. None leaves the engine's KSIC routing alone."""
+    if ISSUER_KITS.exists():
+        kit = (json.loads(ISSUER_KITS.read_text()).get('overrides') or {}).get(corp)
+        if kit:
+            return kit
+    code = str(company.get('induty_code') or '')
+    if code.startswith(('461', '467', '468')) and TRADING_NAME.search(company.get('corp_name') or ''):
+        return 'trading_house'
+    return None
 
 
 def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
@@ -677,6 +700,9 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
                  'corp_cls': company.get('corp_cls'), 'stock_code': (company.get('stock_code') or '').strip() or None},
         'filings': filings, 'prior_reports': prior,
     }
+    kit = issuer_kit(corp, company)
+    if kit:
+        payload['industry'] = kit
     if fund:
         payload['funding'] = fund
     fy_rows = filings['FY']['response']['list']
