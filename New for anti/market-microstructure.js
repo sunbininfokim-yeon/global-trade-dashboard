@@ -363,6 +363,33 @@ let MS_MODAL = null;          // { title, html }
 let MS_MODAL_KEY = null;      // 열려 있는 모달의 키 (기간 전환 시 재렌더용)
 let MS_PERIOD = '3m';         // 가격대별 표시 구간 — 1m / 2m / 3m / 6m / all
 let MS_CREDIT_ON = false;     // 가격대별 탭에서 예탁·신용 추이를 펼쳤는지
+let MS_HOLD_ON = false;       // 가격대별 탭에서 외국인 보유율·기관 누적을 겹쳤는지
+
+// The largest moves in the foreign holding ratio over N trading days,
+// non-overlapping, biggest first -- the windows where foreigners visibly
+// rebalanced. Each comes with the price move and the foreign/institution net
+// buying over the same days, so a ratio change can be told apart from a pure
+// price effect (a ratio moves with relative price too, not only with trades).
+const msHoldShifts = (pts, n = 5, top = 4) => {
+    const cands = [];
+    for (let i = n; i < pts.length; i++) {
+        const a = pts[i - n], b = pts[i];
+        if (!Number.isFinite(a._fh) || !Number.isFinite(b._fh)) continue;
+        const span = pts.slice(i - n + 1, i + 1);
+        const sum = (k) => span.reduce((acc, d) => acc + (Number.isFinite(d[k]) ? d[k] : 0), 0);
+        cands.push({ from: a.date, to: b.date, i0: i - n, i1: i, d_pp: b._fh - a._fh,
+            px_pct: a.close ? (b.close / a.close - 1) * 100 : null,
+            foreign: sum('_foreign'), inst: sum('_inst'), fh: b._fh });
+    }
+    cands.sort((x, y) => Math.abs(y.d_pp) - Math.abs(x.d_pp));
+    const picked = [];
+    for (const c of cands) {
+        if (picked.length >= top) break;
+        if (picked.some((p) => !(c.i1 <= p.i0 || c.i0 >= p.i1))) continue;
+        picked.push(c);
+    }
+    return picked;
+};
 let MS_OVERSEAS_GROUP = 'hynix';
 let MS_OVERSEAS_PRODUCT = null;
 
@@ -837,9 +864,48 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         const v = row && row[key];
         return Number.isFinite(v) && v > 0 ? v / 10000 : null;
     };
+    // Everything here is carried in 조, but 반대매매 lives around 0.005~0.17조
+    // and would print as "0.0조" for most of the window -- a real number
+    // rendered as nothing. Below 0.5조 the label drops back to 억, its native
+    // unit in the source.
+    const joLabel = (v) => v < 0.5
+        ? `${Math.round(v * 10000).toLocaleString('ko-KR')}억`
+        : (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + '조';
+    const pctChgText = (st) => {
+        const pc = st && st.first ? ((st.last - st.first) / st.first) * 100 : null;
+        return pc === null ? null : { v: pc, text: `${pc >= 0 ? '+' : ''}${pc.toFixed(1)}%` };
+    };
+    // The ownership overlay: the foreign holding ratio (observed) and the
+    // institutions' running net buying from the window's first day. Daily
+    // institutional *holdings* are not published anywhere free, so the second
+    // line is labelled for what it is -- cumulative flow, not a ratio.
+    let instAcc = 0;
+    const instCum = new Map(pts.map((d) => {
+        if (Number.isFinite(d._inst)) instAcc += d._inst;
+        return [d.date, Number.isFinite(d._inst) ? instAcc : null];
+    }));
+    const signedEok = (v) => {
+        const a = Math.abs(v);
+        const t = a >= 10000 ? `${(a / 10000).toFixed(2)}조` : `${Math.round(a).toLocaleString('ko-KR')}억`;
+        return `${v >= 0 ? '+' : '−'}${t}`;
+    };
+    const OVER = [
+        ...(opts.credit ? CREDIT_SERIES.map((s) => ({ ...s, group: '신용공여',
+            get: (d) => creditJo(d, s.key), lab: joLabel, chg: pctChgText })) : []),
+        ...(opts.hold ? [
+            { key: 'foreign_hold', ko: '외국인 보유율', cls: 'fhold', group: '보유',
+                get: (d) => (Number.isFinite(d._fh) ? d._fh : null),
+                lab: (v) => `${v.toFixed(2)}%`,
+                chg: (st) => (st ? { v: st.last - st.first, text: `${st.last - st.first >= 0 ? '+' : ''}${(st.last - st.first).toFixed(2)}%p` } : null) },
+            { key: 'inst_cum', ko: '기관 누적 순매수', cls: 'icum', group: '보유',
+                get: (d) => instCum.get(d.date) ?? null,
+                lab: signedEok,
+                chg: (st) => (st ? { v: st.last - st.first, text: signedEok(st.last - st.first) } : null) },
+        ] : []),
+    ];
     // Per-series span over the visible window, plus first/last for the legend.
-    const creditStats = new Map(CREDIT_SERIES.map((s) => {
-        const seen = pts.map((d) => creditJo(d, s.key)).filter((v) => v !== null);
+    const creditStats = new Map(OVER.map((s) => {
+        const seen = pts.map((d) => s.get(d)).filter((v) => v !== null);
         if (!seen.length) return [s.key, null];
         const lo2 = Math.min(...seen), hi2 = Math.max(...seen);
         const pad = (hi2 - lo2) * 0.12 || Math.abs(hi2) * 0.02 || 0.1;
@@ -851,25 +917,17 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         if (!st || st.hi === st.lo) return T + (H - T - B) / 2;
         return T + (1 - (v - st.lo) / (st.hi - st.lo)) * (H - T - B);
     };
-    const creditPath = (key) => {
+    const creditPath = (s) => {
+        const key = s.key;
         let d = '', p = false;
         pts.forEach((pt, i) => {
-            const v = creditJo(pt, key);
+            const v = s.get(pt);
             if (v === null) { p = false; return; }
             d += `${p ? 'L' : 'M'}${sx(i).toFixed(1)},${syC(key, v).toFixed(1)}`;
             p = true;
         });
         return d;
     };
-    // Everything here is carried in 조, but 반대매매 lives around 0.005~0.17조
-    // and would print as "0.0조" for most of the window -- a real number
-    // rendered as nothing. Below 0.5조 the label drops back to 억, its native
-    // unit in the source.
-    const joLabel = (v) => v < 0.5
-        ? `${Math.round(v * 10000).toLocaleString('ko-KR')}억`
-        : (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + '조';
-    const pctChg = (st) => (st && st.first ? ((st.last - st.first) / st.first) * 100 : null);
-
     const grid = Array.from({ length: 7 }, (_, i) => yLo + (yHi - yLo) * (i / 6));
     const fmt = opts.fmtX || msEok;
 
@@ -885,9 +943,12 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
         const r = d._retail, f = d._foreign, ins = d._inst;
         const absSum = [r, f, ins].filter(Number.isFinite).reduce((s, v) => s + Math.abs(v), 0);
         const pct = (v) => (Number.isFinite(v) && absSum > 0) ? Math.round(Math.abs(v) / absSum * 100) : null;
-        const credit = hasCredit ? CREDIT_SERIES.map((s) => {
-            const v = creditJo(d, s.key);
-            return v === null ? '' : `<span>${finEsc(s.ko)}</span><span>${joLabel(v)}</span>`;
+        const overGroups = hasCredit ? [...new Set(OVER.map((s) => s.group))].map((g) => {
+            const cells = OVER.filter((s) => s.group === g).map((s) => {
+                const v = s.get(d);
+                return v === null ? '' : `<span>${finEsc(s.ko)}</span><span>${s.lab(v)}</span>`;
+            }).join('');
+            return cells ? `<div class="ms-plc-tip-h">${finEsc(g)}</div><div class="ms-plc-tip-row">${cells}</div>` : '';
         }).join('') : '';
         return `<div class="ms-plc-tip-date">${finEsc(d.date)}</div>
             <div class="ms-plc-tip-price">주가 ${msNum(d.close)}</div>
@@ -896,8 +957,7 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
                 ${flowRow('외국인', f, pct(f))}
                 ${flowRow('기관', ins, pct(ins))}
             </div>
-            ${credit ? `<div class="ms-plc-tip-h">신용공여</div>
-            <div class="ms-plc-tip-row">${credit}</div>` : ''}`;
+            ${overGroups}`;
     });
 
     return `
@@ -933,21 +993,29 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
             }).join('')}
             <line x1="${cx.toFixed(1)}" y1="${T}" x2="${cx.toFixed(1)}" y2="${H - B}" class="mm-zero"/>
             <path d="${line}" class="ms-plc-line"/>
-            ${hasCredit ? CREDIT_SERIES.map((s) => `<path d="${creditPath(s.key)}" class="ms-plc-cr ms-plc-cr-${s.cls}"/>`).join('') : ''}
-            ${hasCredit ? CREDIT_SERIES.map((s) => {
-                const st = creditStats.get(s.key);
-                if (!st) return '';
+            ${hasCredit ? OVER.map((s) => `<path d="${creditPath(s)}" class="ms-plc-cr ms-plc-cr-${s.cls}"/>`).join('') : ''}
+            ${hasCredit ? (() => {
                 // Each line ends at its own value, so the label goes at the line
-                // end rather than on a shared axis that no longer exists.
-                return `<text x="${W - R + 8}" y="${(syC(s.key, st.last) + 3.5).toFixed(1)}"
-                    class="mm-tick ms-plc-cr-lab ms-plc-cr-${s.cls}">${joLabel(st.last)}</text>`;
-            }).join('') : ''}
+                // end rather than on a shared axis that no longer exists. With
+                // both overlays on, several lines can end at nearly the same
+                // height; labels are pushed apart (keeping their order) so none
+                // prints over another.
+                const labs = OVER.map((s) => {
+                    const st = creditStats.get(s.key);
+                    return st ? { s, st, y: syC(s.key, st.last) + 3.5 } : null;
+                }).filter(Boolean).sort((a, b) => a.y - b.y);
+                for (let i = 1; i < labs.length; i++) labs[i].y = Math.max(labs[i].y, labs[i - 1].y + 11);
+                const over = labs.length ? labs[labs.length - 1].y - (H - B) : 0;
+                if (over > 0) labs.forEach((l) => { l.y -= over; });
+                return labs.map(({ s, st, y }) => `<text x="${W - R + 8}" y="${y.toFixed(1)}"
+                    class="mm-tick ms-plc-cr-lab ms-plc-cr-${s.cls}">${s.lab(st.last)}</text>`).join('');
+            })() : ''}
             ${pts.map((d, i) => `<rect x="${(sx(i) - (W - L - R) / pts.length / 2).toFixed(1)}" y="${T}"
                 width="${((W - L - R) / pts.length).toFixed(1)}" height="${(H - T - B).toFixed(1)}" class="ms-plc-hit" data-ms-tip-idx="${i}"><title>${
                 finEsc(d.date)} · ${finEsc(opts.lineName || '종가')} ${msNum(d.close)} · 개인 ${fmt(d._retail)} · 외국인 ${
-                fmt(d._foreign)} · 기관 ${fmt(d._inst)}${hasCredit ? CREDIT_SERIES.map((s) => {
-                    const v = creditJo(d, s.key);
-                    return v === null ? '' : ` · ${s.ko} ${joLabel(v)}`;
+                fmt(d._foreign)} · 기관 ${fmt(d._inst)}${hasCredit ? OVER.map((s) => {
+                    const v = s.get(d);
+                    return v === null ? '' : ` · ${s.ko} ${s.lab(v)}`;
                 }).join('') : ''}</title></rect>`).join('')}
             <text x="${L - 8}" y="${T - 12}" class="mm-tick" text-anchor="end">${finEsc(opts.yLabel || '(pt)')}</text>
             <text x="${W - R + 8}" y="${(H - B).toFixed(1)}" class="mm-tick">${finEsc(opts.xLabel || '순매수')}</text>
@@ -957,14 +1025,14 @@ const msPriceLevelChart = (pts, rows, opts = {}) => {
             ${show.map((s) => `<i class="ms-plc-sw ms-plc-${s.cls}"></i>${finEsc(s.ko)}`).join('')}
         </p>
         ${hasCredit ? `<p class="mm-legend-note ms-plc-cr-legend">
-            ${CREDIT_SERIES.map((s) => {
+            ${OVER.map((s) => {
                 const st = creditStats.get(s.key);
                 if (!st) return '';
-                const pc = pctChg(st);
-                const cls = pc === null ? '' : (pc >= 0 ? 'fin-up' : 'fin-down');
+                const c = s.chg(st);
+                const cls = c === null ? '' : (c.v >= 0 ? 'fin-up' : 'fin-down');
                 return `<span class="ms-plc-cr-item"><i class="ms-plc-sw-cr ms-plc-cr-${s.cls}"></i>${finEsc(s.ko)}
-                    ${joLabel(st.first)} → ${joLabel(st.last)}
-                    ${pc === null ? '' : `<b class="${cls}">${pc >= 0 ? '+' : ''}${pc.toFixed(1)}%</b>`}</span>`;
+                    ${s.lab(st.first)} → ${s.lab(st.last)}
+                    ${c === null ? '' : `<b class="${cls}">${c.text}</b>`}</span>`;
             }).join('')}
         </p>` : ''}
     </div>`;
@@ -1472,8 +1540,13 @@ const msLevelsTab = (D) => {
                 .map(([k, ko]) =>
                 `<button class="mm-view-btn ${MS_PERIOD === k ? 'on' : ''}" data-ms-period="${k}">${finEsc(ko)}</button>`).join('')}
             <span class="ms-period-spacer"></span>
+            <button class="mm-view-btn ${MS_HOLD_ON ? 'on' : ''}" data-ms-hold="1">외국인 보유율 · 기관 누적 ${MS_HOLD_ON ? '▲' : '▼'}</button>
             <button class="mm-view-btn ${MS_CREDIT_ON ? 'on' : ''}" data-ms-credit="1">예탁금 · 신용공여 ${MS_CREDIT_ON ? '▲' : '▼'}</button>
         </div>
+        ${MS_HOLD_ON ? `<p class="fin-note ms-credit-hint">
+            <strong>외국인 보유율</strong>(실측${isIndex ? ', 코스피 시총 상위 100종목 합산' : ''})과
+            <strong>기관 누적 순매수</strong>(표시 구간 첫날 = 0)를 같은 날짜축에 겹쳤습니다. 둘은 단위가 달라 <strong>각자의 범위로</strong> 그렸으니 기울기만 보세요.
+            기관의 일별 <em>보유율</em>은 무료로 공개되는 곳이 없어 순매수 누적으로 대신 보여 주며, 보유율이 아닙니다.</p>` : ''}
         ${MS_CREDIT_ON ? `<p class="fin-note ms-credit-hint">
             아래 그래프에 예탁금 · 신용융자 · 미수금 · 반대매매가 <strong>같은 날짜축</strong>으로 겹쳐집니다.
             셋은 규모가 100배 넘게 차이나서 <strong>각자의 범위로</strong> 그렸습니다 —
@@ -1485,7 +1558,26 @@ const msLevelsTab = (D) => {
             yLabel: isIndex ? '(pt)' : '(원)',
             xLabel: '순매수(억원)',
             credit: MS_CREDIT_ON ? (dc.history || []) : null,
+            hold: MS_HOLD_ON,
         })}
+        ${(() => {
+            if (!MS_HOLD_ON) return '';
+            const sh = msHoldShifts(pts);
+            if (!sh.length) return `<p class="fin-note">${msMissing('이 구간에는 외국인 보유율이 없습니다')}</p>`;
+            return `<h4 class="ms-sub-h">외국인 보유율이 크게 움직인 5거래일 구간</h4>
+                ${msTable(['구간', '보유율 변화', '구간 끝 보유율', '주가 변화', '외국인 순매수', '기관 순매수'],
+                    sh.map((c) => [
+                        `${finEsc(c.from)} → ${finEsc(c.to)}`,
+                        `<span class="${c.d_pp >= 0 ? 'fin-up' : 'fin-down'}">${c.d_pp >= 0 ? '+' : ''}${c.d_pp.toFixed(2)}%p</span>`,
+                        `${c.fh.toFixed(2)}%`,
+                        Number.isFinite(c.px_pct) ? `${c.px_pct >= 0 ? '+' : ''}${c.px_pct.toFixed(1)}%` : '—',
+                        `<span class="${c.foreign >= 0 ? 'fin-up' : 'fin-down'}">${msEok(c.foreign)}</span>`,
+                        `<span class="${c.inst >= 0 ? 'fin-up' : 'fin-down'}">${msEok(c.inst)}</span>`,
+                    ]))}
+                <p class="fin-note">겹치지 않는 5거래일 구간 중 보유율 변화가 큰 순서입니다. 보유율은 외국인이 사고판 것뿐 아니라
+                    ${isIndex ? '종목 간 상대 주가 변화로도 움직이므로' : '유상증자·자사주 소각 같은 주식 수 변화로도 움직이므로'},
+                    같은 구간의 외국인 순매수 방향과 함께 보세요. 둘이 같은 방향이면 실제 매매로 비중을 조정한 구간입니다.</p>`;
+        })()}
         ${pts.length ? `<p class="fin-note">표시 구간 ${finEsc(pts[0].date)} ~ ${finEsc(pts[pts.length - 1].date)} · ${pts.length}거래일.
             막대는 이 구간의 일별 순매수를 종가 레벨에 귀속해 다시 합산한 값입니다.</p>` : ''}
         ${rows.length
@@ -2971,6 +3063,7 @@ const renderMicrostructure = async (host) => {
         on('[data-ms-nps-view]', (b) => { MS_NPS_VIEW = b.dataset.msNpsView || 'path'; paint(); });
         on('[data-ms-ticker]', (b) => { MS_TICKER = b.dataset.msTicker || null; MS_TAB = 'levels'; paint(); });
         on('[data-ms-credit]', () => { MS_CREDIT_ON = !MS_CREDIT_ON; paint(); });
+        on('[data-ms-hold]', () => { MS_HOLD_ON = !MS_HOLD_ON; paint(); });
         // The three balance cards jump to the same-date overlay rather than
         // opening a card-specific modal, so 예탁금/신용융자/미수금 stay on
         // the overlay's per-series scale instead of gaining a second,
