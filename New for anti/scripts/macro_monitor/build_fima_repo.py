@@ -28,10 +28,13 @@ def main() -> int:
 
     existing = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
     rows = {r["wednesday"]: r for r in existing.get("weeks", [])}
-    unavailable = set(existing.get("unavailable", []))       # Thursdays with no release anywhere near them (holiday weeks)
+    today = date.today()
+    # Thursdays with no release anywhere near them (holiday weeks). A recent one is tried again every
+    # run: from 2026-10-01 to 11-19 every Thursday got written here after the runner was served 404s,
+    # and the card stood still at 09-23 for two months while the releases were all there.
+    unavailable = {d for d in existing.get("unavailable", []) if (today - date.fromisoformat(d)).days > 90}
     have_releases = {r["release"] for r in rows.values()}
 
-    today = date.today()
     start = date(today.year - args.years, today.month, min(today.day, 28))
     wanted = [d for d in h41_fima.thursdays(start, today) if d not in have_releases and d not in unavailable]
     # a release moved off Thursday is stored under its real date, so skip a Thursday whose week is already held
