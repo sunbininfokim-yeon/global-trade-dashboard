@@ -1,6 +1,6 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const {prepareEmbedding,loadBillActions}=require('../sync-congress.js');
+const {prepareEmbedding,loadBillActions,saveBillActionHistory}=require('../sync-congress.js');
 const source=fs.readFileSync(require.resolve('../sync-congress.js'),'utf8');
 function setup(failOnce=false){
  const events=[];
@@ -10,6 +10,9 @@ function setup(failOnce=false){
   supabaseGet:async()=>[{current_status:'Introduced',embedding:[1]}],
   supabaseUpsert:async(t,r)=>events.push({t,r}),
   supabaseInsertIgnore:async(t,r,key)=>{if(failOnce){failOnce=false;throw Error('history failed');}events.push({t,r,key});}};
+ ctx.saveBillActionHistory = bill => saveBillActionHistory(bill, {
+   get:async()=>[], upsert:ctx.supabaseUpsert, recordVote:async()=>{},
+ });
  vm.createContext(ctx);vm.runInContext(source.slice(source.indexOf('async function saveBundle('),source.indexOf('async function saveVote(')),ctx);
  return {ctx,events};
 }
@@ -51,13 +54,49 @@ test('vetoed bill saves full official history while a routine index bill saves o
  bill.row.current_stage='vetoed';
  bill.row.current_status=bill.actions.at(-1).text;
  await ctx.saveBundle(bill);
- assert.deepEqual(events.filter(e=>e.t==='bill_actions').map(e=>e.r[0].action_text),bill.actions.map(a=>a.text));
+ const saved=events.filter(e=>e.t==='bill_actions').flatMap(e=>e.r);
+ assert.deepEqual(saved.map(row=>row.action_text),bill.actions.map(a=>a.text));
  const history=events.find(e=>e.t==='bill_status_history');
- assert.equal(history.r.source_action_id,'119-hr-1:Vetoed by President');
+ assert.equal(history.r.source_action_id,saved.at(-1).bill_action_id);
  events.length=0;
  bill.row.current_stage='referred';
  bill.actions=bill.actions.slice(0,1).concat({actionDate:'2026-10-02',text:'Referred to Committee'});
  bill.row.current_status=bill.actions.at(-1).text;
  await ctx.saveBundle(bill);
  assert.deepEqual(events.filter(e=>e.t==='bill_actions').map(e=>e.r[0].action_text),['Referred to Committee']);
+});
+
+test('new and reordered actions reuse IDs including pre-existing ordinal IDs', async () => {
+ const bill=data();
+ bill.detailLevel='tracked';
+ const matching={actionDate:'2026-10-02',actionCode:'H1',text:'Referred to Committee'};
+ const legacy={bill_action_id:'legacy-ordinal-id',action_date:'2026-10-02T00:00:00+00:00',action_code:'H1',action_text:matching.text,raw_source:{}};
+ const storage=new Map([[legacy.bill_action_id,legacy]]);
+ const io={get:async()=>[...storage.values()],upsert:async(table,rows)=>rows.forEach(row=>storage.set(row.bill_action_id,row)),recordVote:async()=>{}};
+ const introduced={actionDate:'2026-10-01',text:'Introduced'};
+ bill.actions=[matching,introduced];
+ assert.equal(await saveBillActionHistory(bill,io),legacy.bill_action_id);
+ const introducedId=[...storage.values()].find(row=>row.action_text==='Introduced').bill_action_id;
+ const newer={actionDate:'2026-10-03',text:'Reported by Committee'};
+ bill.actions=[newer,introduced,matching,introduced];
+ await saveBillActionHistory(bill,io);
+ assert.equal(storage.size,3);
+ assert.equal(storage.get(introducedId).action_text,'Introduced');
+ assert.equal(storage.get(legacy.bill_action_id).action_text,matching.text);
+});
+
+test('separate official roll calls keep separate IDs even with the same text and date',async()=>{
+ const bill=data();
+ bill.detailLevel='enriched';
+ const action=roll=>({actionDate:'2026-10-02',actionCode:'H1',text:'On passage Passed House',
+   recordedVotes:[{chamber:'House',sessionNumber:2,rollNumber:roll}]});
+ const storage=new Map();
+ const io={get:async()=>[...storage.values()],upsert:async(table,rows)=>rows.forEach(row=>storage.set(row.bill_action_id,row)),recordVote:async()=>{}};
+ bill.actions=[action(10),action(11)];
+ await saveBillActionHistory(bill,io);
+ const ids=[...storage.keys()].sort();
+ assert.equal(ids.length,2);
+ bill.actions.reverse();
+ await saveBillActionHistory(bill,io);
+ assert.deepEqual([...storage.keys()].sort(),ids);
 });
