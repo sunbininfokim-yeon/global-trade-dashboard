@@ -1,0 +1,69 @@
+name: Crypto board daily
+
+# Refreshes public/data/crypto_board_v1.json for 시장 미시구조 › 가상자산
+# (scripts/crypto/build_crypto_board.py): BTC/ETH daily closes, Upbit won
+# prices and turnover, 김치 프리미엄, stablecoin supply, OKX BTC open
+# interest and funding. 00:20 UTC is just after the 00:00 UTC daily bar closes
+# on every source (Upbit's daily candle closes at 09:00 KST = 00:00 UTC).
+# Live prices on the tab come from the worker's /api/crypto-live, not this file.
+# Listed in deploy.yml's workflow_run so the refreshed file reaches Cloudflare.
+
+on:
+  schedule:
+    - cron: '20 0 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'New for anti/scripts/crypto/**'
+      - '.github/workflows/crypto_board_daily.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crypto-board-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    # Runs on PRs too, as a dry run from a runner IP (several exchanges block
+    # US addresses): builds and uploads the file; only main commits it.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Exits 1 when a source failed, but still writes the file with that
+      # series carried over -- so commit first, then surface the failure.
+      - name: Build crypto board
+        id: build
+        continue-on-error: true
+        run: python -u 'New for anti/scripts/crypto/build_crypto_board.py'
+      - name: Upload built file (dry run artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-board
+          path: New for anti/public/data/crypto_board_v1.json
+          if-no-files-found: warn
+      - name: Commit refreshed data
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/crypto_board_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh crypto board'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1
+      - name: Surface source failures after persisting the rest
+        if: steps.build.outcome == 'failure'
+        run: exit 1

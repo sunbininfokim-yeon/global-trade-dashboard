@@ -62,6 +62,11 @@ export default {
             return await handleLiquidity(request, env);
         }
 
+        // Live crypto quotes for 시장 미시구조 › 가상자산 (the daily history is a static file)
+        if (url.pathname === '/api/crypto-live') {
+            return await handleCryptoLive(env);
+        }
+
         // Instrument lookup + daily price history for the portfolio panel
         if (url.pathname.startsWith('/api/quote')) {
             return await handleQuote(request, env);
@@ -3528,6 +3533,70 @@ async function handleFutures(request, env) {
                 as_of: meta?.regularMarketTime
                     ? new Date(meta.regularMarketTime * 1000).toISOString() : null,
                 source: "Yahoo Finance", delayed: true,
+            },
+        };
+    });
+}
+
+// Live crypto snapshot: Upbit won prices and whole-market turnover, OKX dollar
+// prices and BTC funding, and the won/dollar rate -- enough for the 가상자산
+// tab's top cards and a live 김치 프리미엄. Every source is optional: a missing
+// one comes back null and the tab falls back to the daily file for it. Cached
+// 60 s in KV (the shortest TTL KV accepts), so visitors share one upstream call.
+async function handleCryptoLive(env) {
+    return kvCachedJson(env, 'crypto-live:v1', 60, async () => {
+        const ua = { 'User-Agent': 'Mozilla/5.0 (crypto-live)' };
+        const j = async (u) => {
+            try {
+                const r = await fetch(u, { headers: ua });
+                return r.ok ? await r.json() : null;
+            } catch (_) { return null; }
+        };
+        const [upbit, okxBtc, okxEth, funding, fx, markets] = await Promise.all([
+            j('https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-ETH,KRW-USDT'),
+            j('https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT'),
+            j('https://www.okx.com/api/v5/market/ticker?instId=ETH-USDT'),
+            j('https://www.okx.com/api/v5/public/funding-rate?instId=BTC-USDT-SWAP'),
+            j('https://query1.finance.yahoo.com/v8/finance/chart/KRW=X?range=1d&interval=5m'),
+            j('https://api.upbit.com/v1/market/all?isDetails=false'),
+        ]);
+        let turnover = null;
+        const krw = (markets || []).map((m) => m.market).filter((m) => m.startsWith('KRW-'));
+        if (krw.length) {
+            const chunks = [];
+            for (let i = 0; i < krw.length; i += 100) chunks.push(krw.slice(i, i + 100));
+            const got = await Promise.all(chunks.map((c) => j(`https://api.upbit.com/v1/ticker?markets=${c.join(',')}`)));
+            if (got.every(Boolean)) turnover = got.flat().reduce((s, t) => s + (Number(t.acc_trade_price_24h) || 0), 0) / 1e12;
+        }
+        const up = Object.fromEntries((upbit || []).map((t) => [t.market, t]));
+        const okx = (d) => { const t = d && d.data && d.data[0]; return t ? { last: Number(t.last), open: Number(t.sodUtc0) } : null; };
+        const res0 = fx && fx.chart && fx.chart.result && fx.chart.result[0];
+        const fxRate = res0 ? res0.meta.regularMarketPrice : null;
+        const coin = (sym) => {
+            const u = up[`KRW-${sym}`];
+            const o = okx(sym === 'BTC' ? okxBtc : okxEth);
+            return {
+                krw: u ? u.trade_price : null,
+                krw_change_pct: u ? u.signed_change_rate * 100 : null,
+                krw_turnover_24h_tn: u ? u.acc_trade_price_24h / 1e12 : null,
+                usd: o ? o.last : null,
+                usd_change_pct: o && o.open ? (o.last / o.open - 1) * 100 : null,
+                kimchi_pct: u && o && fxRate ? (u.trade_price / (o.last * fxRate) - 1) * 100 : null,
+            };
+        };
+        const f = funding && funding.data && funding.data[0];
+        return {
+            ok: true,
+            body: {
+                as_of: new Date().toISOString(),
+                usdkrw: fxRate,
+                usdt_krw: up['KRW-USDT'] ? up['KRW-USDT'].trade_price : null,
+                btc: coin('BTC'),
+                eth: coin('ETH'),
+                btc_funding_pct: f ? Number(f.fundingRate) * 100 : null,
+                btc_next_funding_utc: f ? new Date(Number(f.fundingTime)).toISOString() : null,
+                upbit_turnover_24h_tn: turnover,
+                upbit_krw_markets: krw.length || null,
             },
         };
     });
