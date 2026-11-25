@@ -51,6 +51,39 @@ function renderOi(){const oi=data.market_structure;if(oi?.status!=='observed'){$
 }
 function renderSources(){const sources=Object.entries(data.prices.sources??{}).map(([k,s])=>[k,s.status,s.latest_observation_date,s.source_url,s.sha256]);if(data.market_structure?.source_url)sources.push(['eex_futures_gross_oi',data.market_structure.status,data.market_structure.observation_date,data.market_structure.source_url,data.market_structure.sha256]);$('#cd-sources').innerHTML=`<table><thead><tr><th>계열</th><th>상태</th><th>관측일</th><th>원문</th></tr></thead><tbody>${sources.map(([k,status,d,url,hash])=>`<tr><td>${esc(k)}</td><td>${esc(status)}</td><td>${esc(d??'미확보')}</td><td><a href="${esc(url)}" target="_blank" rel="noreferrer">공식 자료</a><small>SHA256 ${esc(hash?.slice(0,16)??'미확보')}</small></td></tr>`).join('')}</tbody></table><p class="cd-footnote">가격 수집 기준 ${esc(data.prices.as_of)} · 수집 시각 ${esc(data.prices.retrieved_at??'미확인')} · 상업적 재배포 권한 미확인</p>`;}
 function reference(){const last=dailyAuctions(source).at(-1);if(!last)throw Error('참조가격 미확보');return{...last,fx:exactFx(fxSource,last.date)};}
+
+function renderRegulations() {
+ const review = data.regulations;
+ if (!review) {
+  $('#cd-regulations').textContent = '규정 검토 자료 미확보';
+  return;
+ }
+ const labels = {
+  in_force: '현행', adopted_official_listing: '채택 · 공식 소개 확인',
+  official_guidance: '당국 안내', proposal: '개정안', negotiation: '협상 중'
+ };
+ const rows = review.updates.map(update => {
+  const links = update.source_ids.map(id => {
+   const source = review.sources[id];
+   return `<a href="${esc(source.url)}" target="_blank" rel="noreferrer">${esc(source.locator)}</a>`;
+  }).join('<br>');
+  return `<tr><td>${esc(update.title_ko)}<small>${esc(labels[update.status] ?? update.status)} · 문서 ${esc(update.document_date)}</small></td><td>${esc(update.summary_ko)}<small>${esc(update.financial_effect_ko)}</small></td><td>${links}</td></tr>`;
+ }).join('');
+ $('#cd-regulations').innerHTML = `<p class="cd-sub">검토 기준 ${esc(review.as_of)} · 공식 출처 확인 ${esc(review.verified_at)}</p><div class="cd-table-wrap"><table class="cd-regulation-table"><thead><tr><th>규정·상태</th><th>내용과 비용 검토</th><th>근거 조항·자료</th></tr></thead><tbody>${rows}</tbody></table></div><p class="cd-footnote">${esc(review.coverage_ko)}</p>`;
+ updateRegulatoryYear();
+}
+
+function updateRegulatoryYear() {
+ const review = data?.regulations;
+ const year = Number(combinedForm.elements.namedItem('year').value);
+ const row = review?.ets_schedule.find(r => year >= r.emissions_year_from && year <= r.emissions_year_to && Number.isInteger(year));
+ if (!row) {
+  $('#cd-regulatory-year').textContent = '해당 배출연도의 규정 일정 확인 필요';
+  return;
+ }
+ combinedForm.elements.namedItem('ets_phase_factor').value = row.surrender_fraction;
+ $('#cd-regulatory-year').textContent = `${year}년 배출분 → ${year + 1}-${review.ets_surrender_month_day} 제출 · 현행 비율 ${Number(row.surrender_fraction) * 100}% · 가스 ${row.gases.join(' · ')} · 검토 ${review.as_of}. 단계비율을 수정하면 시나리오 가정으로 표시합니다. 노르웨이·아이슬란드 및 환적항은 두 제도의 항로 범위를 따로 확인하세요.`;
+}
 function riskValues(values){return `<div class="cd-risk-values">${values.map(([k,v])=>`<div><small>${esc(k)}</small><strong>${esc(v)}</strong></div>`).join('')}</div>`;}
 $('#cd-procurement').addEventListener('submit',e=>{e.preventDefault();try{const input=Object.fromEntries(new FormData(e.target)),p=reference(),r=procurement(input,p.price,p.fx);$('#cd-risk-error').textContent='';$('#cd-risk-output').innerHTML=riskValues([['부족 실물 수량',fmt(r.shortage,0)+' EUA'],['목표 헤지의 정수 lot',fmt(r.lots,0)+' lot'],['경매 참조 예산',fmt(r.budgetEur)+' EUR'],['동일일 환율 예산',r.budgetKrw==null?'환율 미확보':fmt(r.budgetKrw,0)+'원'],['EUA +5 순비용 증가',fmt(r.netCostUp5Eur)+' EUR'],['선물 -5 VM 유출 가정',fmt(r.futuresDown5VmEur)+' EUR']])+`<p class="cd-footnote">기준 ${esc(p.date)} · ${fmt(p.price)} EUR/EUA · 정수 lot 내림으로 목표 대비 ${fmt(r.roundingEua)} EUA 미헤지. 모든 수량은 사용자 입력 가정이며 세금·체결 비용 제외.</p>`;}catch(err){$('#cd-risk-output').textContent='계산 보류';$('#cd-risk-error').textContent=err.message;}});
 $('#cd-dealer').addEventListener('submit',e=>{e.preventDefault();try{const r=dealerRisk(Object.fromEntries(new FormData(e.target)));$('#cd-risk-error').textContent='';$('#cd-risk-output').innerHTML=riskValues([['순가격 노출',fmt(r.delta,0)+' EUA'],['가격 +5 시나리오 손익',fmt(r.pnlUp5Eur)+' EUR'],['선물 -5 현금 변동',fmt(r.futuresDown5CashEur)+' EUR']])+`<p class="cd-footnote">현물 + 선물 delta − 고정가격 공급 의무. 음수 현금 변동은 유출. 모든 가격이 동일하게 움직인다는 가정이며 고객 신용·인도 시점·월물 베이시스·초기증거금은 미반영.</p>`;}catch(err){$('#cd-risk-output').textContent='계산 보류';$('#cd-risk-error').textContent=err.message;}});
@@ -62,7 +95,7 @@ $('#cd-export').addEventListener('click',()=>{if(!source)return;const keys=['obs
 $('#cd-template').addEventListener('click',()=>download('eua-curve-empty.csv',curveHeader+'\n'));
 $('#cd-curve-file').addEventListener('change',async e=>{try{const file=e.target.files?.[0];if(!file)return;if(file.size>64000)throw Error('CSV는 64KB 이하로 제한합니다');if(!data)throw Error('자료 기준일 로딩 후 다시 선택하세요');const parsed=parseCurve(await file.text(),data.prices.as_of);curve=parsed;$('#cd-import-error').textContent='';$('#cd-curve-status').textContent='사용자 제공 · 원천 검증 전';const first=curve[0],last=curve.at(-1);const sameDay=dailyAuctions(source).find(r=>r.date===first.observation_date);$('#cd-curve-output').innerHTML=`<p class="cd-sub">${esc(first.venue)} · 관측일 ${esc(first.observation_date)} · EUR/EUA · settlement</p><svg id="cd-curve-chart" class="cd-curve-chart" role="img" aria-label="사용자 제공 EUA 월물 곡선"></svg><p class="cd-sub">${esc(last.expiry_month)} − ${esc(first.expiry_month)}: ${fmt(last.settlement_eur-first.settlement_eur)} EUR/EUA${sameDay?' · 근월 결제 − 동일일 경매 VWAP: '+fmt(first.settlement_eur-sameDay.price)+' EUR/EUA':' · 동일일 경매 없음: 경매 대비 차이 미산정'}</p><div class="cd-table-wrap"><table><thead><tr><th>월물</th><th>결제 EUR</th><th>거래량 lot</th><th>OI lot</th></tr></thead><tbody>${curve.map(r=>`<tr><td>${esc(r.expiry_month)}</td><td>${fmt(r.settlement_eur)}</td><td>${fmt(r.volume_lots,0)}</td><td>${fmt(r.open_interest_lots,0)}</td></tr>`).join('')}</tbody></table></div>`;draw();}catch(err){curve=[];$('#cd-curve-output').textContent='시세 검증 실패 · 곡선 산출 보류';$('#cd-curve-status').textContent='검증 실패';$('#cd-import-error').textContent=err.message;}});
 window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState)restore(e.detail.globals.widgetState);});restore(window.openai?.widgetState);
-async function init(payload){data=payload;source=data.prices?.sources?.eex_eua_auction;fxSource=data.prices?.sources?.ecb_eurkrw;$('#cd-freshness').textContent=`가격 관측 ${source?.latest_observation_date??'미확보'} · 수집 기준 ${data.prices.as_of}`;const names=[...new Set((source?.observations??[]).map(r=>r.auction_name))];$('#cd-auction').innerHTML='<option value="all">전체 · 일별 물량 가중평균</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');if(pageState.auction!=='all'&&!names.includes(pageState.auction))pageState.auction='all';renderPrices();renderOi();renderSources();renderAudit();if(data.combined_demo)renderCombined(data.combined_demo);$('#cd-status').textContent=`EEX 가격 ${source?.count??0}건 · ECB ${fxSource?.count??0}건 · 수집 ${data.prices.status}`;new ResizeObserver(draw).observe($('#cd-price-chart'));}
+async function init(payload){data=payload;source=data.prices?.sources?.eex_eua_auction;fxSource=data.prices?.sources?.ecb_eurkrw;$('#cd-freshness').textContent=`가격 관측 ${source?.latest_observation_date??'미확보'} · 수집 기준 ${data.prices.as_of}`;const names=[...new Set((source?.observations??[]).map(r=>r.auction_name))];$('#cd-auction').innerHTML='<option value="all">전체 · 일별 물량 가중평균</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');if(pageState.auction!=='all'&&!names.includes(pageState.auction))pageState.auction='all';renderPrices();renderOi();renderSources();renderRegulations();renderAudit();if(data.combined_demo)renderCombined(data.combined_demo);$('#cd-status').textContent=`EEX 가격 ${source?.count??0}건 · ECB ${fxSource?.count??0}건 · 수집 ${data.prices.status}`;new ResizeObserver(draw).observe($('#cd-price-chart'));}
 function renderAudit(){const a=data.fueleu_audit;if(a?.status!=='observed_source_audit')return;
  const labels={fuel:'연료',co2:'CO₂',ch4:'CH₄',n2o:'N₂O',between:'EU 역내',departed:'출항',arrived:'입항',in_port:'항구 내',hours:'해상 시간'};
  $('#cd-audit-coverage').innerHTML=`<p class="cd-sub">${a.year} Full ER ${fmt(a.full_reports,0)}건 · 필수값 관측 ${fmt(a.required_fields_present_reports,0)}건 · 수급 계산 유효입력 ${fmt(a.strict_usable_reports,0)}건 · 중복 IMO ${fmt(a.duplicate_imo_count,0)}개</p><div class="cd-table-wrap"><table><thead><tr><th>필드</th><th>결측</th><th>원문 0</th><th>비유한 수</th></tr></thead><tbody>${Object.entries(a.coverage).map(([key,v])=>`<tr><td>${esc(labels[key]??key)}</td><td>${fmt(v.missing,0)}</td><td>${fmt(v.observed_zero,0)}</td><td>${fmt(v.nonfinite,0)}</td></tr>`).join('')}</tbody></table></div><p class="cd-footnote">원문 0은 결측과 구분합니다. 엄격한 수급 계산에서 연료·CO₂ 양수와 범위 정합성을 추가 확인합니다.<br>${Object.entries(a.sources??{}).map(([y,s])=>`<a href="${esc(s.source_url)}" target="_blank" rel="noreferrer">EMSA ${esc(y)} v${esc(s.version)}</a> · SHA256 ${esc(s.sha256.slice(0,16))}`).join('<br>')}<br>감사 실행 ${esc(a.retrieved_at)} · Full/Partial 합산 안 함</p>`;
@@ -74,9 +107,23 @@ let combinedResult=null,combinedRequestVersion=0;
 const combinedForm=$('#cd-combined-form');
 function invalidateCombined(){combinedRequestVersion++;combinedResult=null;$('#cd-combined-export').disabled=true;$('#cd-combined-output').textContent='입력이 바뀌었습니다. 다시 계산하세요.';$('#cd-combined-error').textContent='';}
 combinedForm.addEventListener('input',invalidateCombined);
+combinedForm.elements.namedItem('year').addEventListener('input', updateRegulatoryYear);
 function renderCombined(r){const [a,b]=r.options;combinedResult=r;$('#cd-combined-export').disabled=false;
  const rows=[['화석 연료량 (t)',a.fossil_tonnes,b.fossil_tonnes],['바이오 연료량 (t)',a.bio_tonnes,b.bio_tonnes],['동등 에너지 (MJ)',a.energy_mj,b.energy_mj],['FuelEU 잔액 (tCO₂e)',a.fueleu.compliance_balance_tco2e,b.fueleu.compliance_balance_tco2e],['ETS 노출 (EUA)',a.ets_eua,b.ets_eua],['연료 비용 (EUR)',a.fuel_cost_eur,b.fuel_cost_eur],['ETS 참조 비용 (EUR)',a.ets_reference_cost_eur,b.ets_reference_cost_eur],['풀 매입 비용 (EUR)',a.pool_purchase_cost_eur,b.pool_purchase_cost_eur],['인식한 잉여 판매액 (EUR)',a.recognized_surplus_sale_eur,b.recognized_surplus_sale_eur],['수수료 (EUR)',a.fees_eur,b.fees_eur],['총 참조 비용 (EUR)',a.total_reference_cost_eur,b.total_reference_cost_eur],['추가 차입비용 (EUR)',a.funding.interest_eur,b.funding.interest_eur],['자금비용 포함 (EUR)',a.cost_including_financing_eur,b.cost_including_financing_eur],['일말 최대 추가자금 (EUR)',a.funding.peak_extra_funding_eur,b.funding.peak_extra_funding_eur]];
  $('#cd-combined-output').innerHTML=`<p class="cd-sub">EUA ${esc(r.reference.observation_date)} · ${fmt(r.reference.price_eur_eua)} EUR/EUA · ${esc(r.reference.status)} · 그 외 가격·계수는 입력 가정</p><div class="cd-risk-values" style="margin-top:16px"><div><small>혼합 선택의 비용 절감 · 자금비용 전</small><strong>${fmt(r.saving_before_financing_eur)} EUR</strong></div><div><small>바이오 인도가격 손익분기</small><strong>${r.bio_delivered_breakeven_eur_t==null?'혼합량 0':fmt(r.bio_delivered_breakeven_eur_t)+' EUR/t'}</strong></div><div><small>미계약 잉여 가치</small><strong>${r.surplus_sale_recognized?'계약 가정으로 인식':'수익 미인식'}</strong></div></div><div class="cd-table-wrap"><table><thead><tr><th>항목</th><th>화석+풀 매입</th><th>동등 에너지 혼합+잔여 매입</th></tr></thead><tbody>${rows.map(([label,x,y])=>`<tr><td>${esc(label)}</td><td>${fmt(x)}</td><td>${fmt(y)}</td></tr>`).join('')}</tbody></table></div><p class="cd-footnote">정적 비용 절감이 양수이면 입력 가정에서 혼합 비용이 낮음. 자금비용·기술·공급 제약을 함께 확인해야 합니다. ${a.funding.status==='held'?'자금 분석 보류: '+esc(a.funding.missing_inputs.join(', ')):''}</p><details class="cd-details"><summary>날짜별 자금 원장</summary>${a.funding.events?`<div class="cd-table-wrap"><table><thead><tr><th>일자</th><th>이벤트</th><th>화석 일말 현금 EUR</th><th>혼합 일말 현금 EUR</th></tr></thead><tbody>${a.funding.events.map((row,i)=>`<tr><td>${esc(row.date)}</td><td>${esc(row.items.join(' · '))}</td><td>${fmt(row.closing_cash_eur)}</td><td>${fmt(b.funding.events[i].closing_cash_eur)}</td></tr>`).join('')}</tbody></table></div>`:'필수 자금 입력 미확보'}</details><p class="cd-footnote">FuelEU engine SHA256 ${esc(r.fueleu_implementation_sha256['engine.py'].slice(0,16))} · ETS 근거: ${esc(r.ets_factor_basis)}</p>`;
+ const policy = r.regulation;
+ if (policy) {
+  const dates = policy.surrender_deadline
+   ? `${policy.emissions_year}년 배출분 · 제출기한 ${policy.surrender_deadline} · 현행 비율 ${Number(policy.statutory_phase_factor) * 100}% · 가스 ${policy.gases.join(' · ')}`
+   : '해당 배출연도의 규정 일정 확인 필요';
+  $('#cd-combined-output').insertAdjacentHTML('beforeend', `<p class="cd-footnote">규정 검토 ${esc(policy.review_as_of)} · ${esc(dates)}</p>`);
+  for (const warning of policy.warnings_ko) {
+   const note = document.createElement('p');
+   note.setAttribute('role', 'status');
+   note.textContent = warning;
+   $('#cd-combined-output').append(note);
+  }
+ }
 }
 // API_COMBINED_START
 async function requestCombined(p){const response=await fetch('/api/combined',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});const r=await response.json();if(!response.ok||r.error)throw Error(r.error??'통합 계산 실패');return r;}
@@ -84,6 +131,7 @@ async function requestCombined(p){const response=await fetch('/api/combined',{me
 combinedForm.addEventListener('submit',async e=>{e.preventDefault();const version=++combinedRequestVersion;combinedResult=null;$('#cd-combined-export').disabled=true;$('#cd-combined-output').textContent='계산 중';$('#cd-combined-error').textContent='';try{const p=Object.fromEntries(new FormData(combinedForm));combinedForm.querySelectorAll('input[type=checkbox]').forEach(el=>p[el.name]=el.checked);const r=await requestCombined(p);if(version!==combinedRequestVersion)return;renderCombined(r);}catch(err){if(version!==combinedRequestVersion)return;$('#cd-combined-output').textContent='계산 보류';$('#cd-combined-error').textContent=err.message;}});
 $('#cd-combined-export').addEventListener('click',()=>{if(combinedResult)download('carbon-fueleu-scenario.json',JSON.stringify(combinedResult,null,2),'application/json');});
 $('#cd-combined-example').addEventListener('click',()=>{const example={year:2026,base_fuel:'lfo',baseline_tonnes:1000,bio_energy_pct:20,base_price_eur_t:500,bio_price_eur_t:700,pool_buy_eur_tco2e:100,pool_compliance_year:2026,bio_e_value:14.9,fees_eur:1000,ets_fossil_tco2e_t:3.2,ets_bio_tco2e_t:.05,ets_scope_share:.5,ets_phase_factor:1,fueleu_scope_share:.5,ets_factor_basis:'가상 예제 · 실제 검증 계수/인증 자료 아님',scope_confirmed:true,technical_feasibility_confirmed:true,fueleu_bio_certified:true,ets_bio_zero_confirmed:false,surplus_sale_confirmed:false,pool_sell_eur_tco2e:'',fuel_payment_date:'2026-11-05',eua_payment_date:'2026-11-20',pool_payment_date:'2026-12-05',fee_payment_date:'2026-11-05',customer_receipt_date:'2026-12-20',customer_receipt_eur:750000,cash_buffer_eur:100000,funding_rate_pct:5,horizon_date:'2026-12-31'};Object.entries(example).forEach(([key,value])=>{const el=combinedForm.elements.namedItem(key);if(!el)return;if(el.type==='checkbox')el.checked=value;else el.value=value;});invalidateCombined();$('#cd-combined-output').textContent='가상 연료·풀 견적·ETS 계수·현금흐름 예제를 입력했습니다. 실제 고객 자료가 아닙니다. 계산 버튼으로 실행하세요.';});
+$('#cd-combined-example').addEventListener('click', updateRegulatoryYear);
 // DATA_LOADER_START
 fetch('/api/market').then(r=>{if(!r.ok)throw Error('관측자료 로딩 실패');return r.json();}).then(init).catch(e=>{$('#cd-status').textContent=e.message;$('#cd-price').textContent='자료 미확보';});
 // DATA_LOADER_END

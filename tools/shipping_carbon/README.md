@@ -109,9 +109,19 @@ PW_CHANNEL=chrome CARBON_BASE_URL=http://127.0.0.1:8775 node tools/shipping_carb
 
 ## 법령·자료 근거와 제한
 
+2026-11-25 지정 공식 자료 검토는 `regulatory_snapshot.json`에 기록한다. 법령·당국 안내·개정안·IMO 협상 상태,
+문서일·발효일·확인일과 원문 조항을 보존한다. `/api/regulations`와 `/climate`의 데이터·출처 메뉴가 같은 파일을 읽는다.
+계산 JSON은 규정 파일 해시, 배출연도, 다음 해 제출기한, 현행 제출비율, 해당 가스를 함께 반환한다.
+통합 입력에서 배출연도를 바꾸면 현행 단계비율을 채운다. 직접 수정한 비율은 계산값을 유지하고 현행 기준과 차이를 경고한다.
+
+이번 보완은 FuelEU DB 시행규칙 2026/394, 노르웨이 적용 지연(빨라도 2028-01-01), 환적항 시행규칙의 공식 소개,
+COM(2026) 616·620 개정안 및 IMO 후속 협상 상태를 추가했다. 2025/1127 본문은 접근 제한으로 항구 목록·발효일 적용을 보류했다.
+ETS의 2026년 배출분 100%·CH₄/N₂O 포함과 FuelEU의 현행 목표 계단을 재확인했다.
+개정안의 지원·공제·Annex 변경은 현행 계산에 반영하지 않는다. 현재 법정 일정과 입력한 적용 범위·계수의 적격성은 별도로 검토한다.
+
 - [EU ETS 해운 공식 FAQ](https://climate.ec.europa.eu/areas-action/transport-decarbonisation/reducing-emissions-shipping-sector/faq-maritime-transport-eu-emissions-trading-system-ets_en): 적용 범위·제출비율·가스·EUA 제출 설명.
 - [FuelEU 공식 Q&A](https://transport.ec.europa.eu/transport-modes/maritime/decarbonising-maritime-transport-fueleu-maritime/questions-and-answers-regulation-eu-20231805-use-renewable-and-low-carbon-fuels-maritime-transport_en): 잔액·유연성 수단·풀링 설명. Q&A와 법령 원문은 구별한다.
-- [Regulation (EU) 2023/1805](https://eur-lex.europa.eu/eli/reg/2023/1805): 현행 부속서 직접 대조 미완료. 법정 penalty 계산 보류.
+- [Regulation (EU) 2023/1805](https://eur-lex.europa.eu/eli/reg/2023/1805): 목표·적용일·준수 체계를 재확인했다. 통합 계산은 기존 FuelEU 엔진을 호출하며, 루트의 간이 계산은 법정 penalty 보류 상태다.
 - [EEX 공개 경매 자료](https://www.eex.com/en/market-data/market-data-hub/environmentals/eex-eua-primary-auction-spot-download), [ECB API 예제](https://data.ecb.europa.eu/help/api/data-examples): 참고자료 수집 경로.
 - [ICE EUA 선물 명세](https://www.ice.com/products/197/EUA-Future): 계약단위·호가·실물인도. 예제의 날짜·월물 입력은 실제 거래소 인도일 조회 결과가 아니다.
 

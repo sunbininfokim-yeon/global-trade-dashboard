@@ -6,6 +6,7 @@ factors automatically. No uncontracted surplus revenue is recognized.
 from collections import defaultdict
 from datetime import date
 from decimal import Decimal, InvalidOperation
+from regulations import ets_context
 
 
 def number(value, name, lower=0, upper=1e12):
@@ -174,6 +175,7 @@ def calculate(p, ref, fuel_engine, receipt):
         for key in [k for k in opt if k.startswith("_")]:
             del opt[key]
     return {"schema": "carbon_fueleu_equal_energy_scenario_v1", "status": "calculated_assumption",
+            "regulation": ets_context(year, phase),
             "year": year, "reference": ref, "fueleu_implementation_sha256": receipt,
             "energy_basis": "equal delivered lower-heating-value energy; same engine efficiency assumed",
             "baseline_energy_mj": float(energy), "bio_energy_pct": float(bio_share * 100),

@@ -3,6 +3,7 @@ import argparse
 import json
 import re
 from pathlib import Path
+from regulations import regulatory_review
 
 ROOT = Path(__file__).resolve().parent
 
@@ -12,7 +13,7 @@ def build(output):
     oi = ROOT / "source_data/market_structure.json"
     audit = ROOT / "source_data/fueleu_audit.json"
     demo = ROOT / "source_data/combined_example.json"
-    payload = {"prices": prices, "market_structure": json.loads(oi.read_text()) if oi.exists() else {"status": "not_collected", "records": []},
+    payload = {"prices": prices, "regulations": regulatory_review(), "market_structure": json.loads(oi.read_text()) if oi.exists() else {"status": "not_collected", "records": []},
                "fueleu_audit": json.loads(audit.read_text()) if audit.exists() else {"status": "not_collected"}}
     for s in payload["fueleu_audit"].get("sources", {}).values():
         s.pop("file", None)
