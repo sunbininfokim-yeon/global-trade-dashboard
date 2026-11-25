@@ -58,6 +58,16 @@ class Duration(unittest.TestCase):
         self.assertGreater(s["dv01_by_class_mn"]["notes"], 5 * s["dv01_by_class_mn"]["bills"])   # 100bn of 10y vs 300bn of bills
 
 
+    def test_flow_parts_add_up(self):
+        a = {"date": "2026-09-30", "duration": {"dv01_mn": 1000.0, "dv01_public_mn": 800.0, "dv01_per_bn_10y": 0.8}}
+        b = {"date": "2026-10-31", "duration": {"dv01_mn": 1100.0, "dv01_public_mn": 900.0, "dv01_per_bn_10y": 0.8,
+                                                "on_prev_curve": {"dv01_mn": 1050.0, "dv01_public_mn": 845.0, "buyback_dv01_mn": 4.0}}}
+        f = um.flows([a, b])[0]
+        # Treasury +50 (of which buybacks -4), Fed held 200 -> 205 on the old curve (-5 for the public), curve +55
+        self.assertEqual((f["treasury_ex_buyback"], f["buyback"], f["fed"], f["rates"], f["total"]),
+                         (67.5, -5.0, -6.2, 68.8, 125.0))
+
+
 class Toolkit(unittest.TestCase):
     def test_change_after_each_action_from_the_close_before(self):
         dgs = [("2026-08-17", 5.30), ("2026-08-18", 5.28), ("2026-08-19", 5.19), ("2026-08-20", 5.20),

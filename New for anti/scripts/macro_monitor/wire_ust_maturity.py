@@ -45,14 +45,15 @@ def toolkit(dgs30: list[tuple[str, float]], events: list[dict], since: str) -> d
 
 
 def duration_inputs():
-    """FRED par-curve series and a SOMA lookup (latest Wednesday on or before a month end)."""
+    """FRED par-curve series, a SOMA lookup (latest Wednesday on or before a month end), buybacks by month."""
     curves = {sid: ups.fetch_fred(sid) for sid in um.CURVE_IDS}
+    bought = um.fetch_buyback_details()
     dates = um.soma_dates()
 
     def soma_for(month_end: str):
         asof = max((d for d in dates if d <= month_end), default=None)
         return (asof, um.fetch_soma(asof)) if asof else None
-    return curves, soma_for
+    return curves, soma_for, bought
 
 
 def main() -> int:
@@ -63,12 +64,12 @@ def main() -> int:
     try:
         rows = um.fetch_rows(months[-1]["date"] if months else None)
         try:
-            curves, soma_for = duration_inputs() if rows else (None, None)
+            curves, soma_for, bought = duration_inputs() if rows else (None, None, None)
         except Exception as exc:  # noqa: BLE001 -- WAM still goes in; duration waits for the next run
             print(f"FAILED duration inputs: {exc}", file=sys.stderr)
-            curves, soma_for = None, None
+            curves, soma_for, bought = None, None, None
             failed += 1
-        new = um.monthly(rows, curves, soma_for)
+        new = um.monthly(rows, curves, soma_for, bought)
         cache["months"] = months
         if new:
             months += new
