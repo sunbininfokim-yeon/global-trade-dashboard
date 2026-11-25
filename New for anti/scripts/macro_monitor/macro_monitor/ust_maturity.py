@@ -334,7 +334,8 @@ def card(months: list[dict[str, Any]], retrieved_at: str) -> dict[str, Any]:
              "line": {"label": "민간 보유 변화 합계", "values": [f["total"] for f in fl]},
              "note_ko": ("한 달 동안 민간이 새로 떠안은 듀레이션(10년물 환산, 십억 달러)을 원인별로 나눴습니다. 재무부 순발행·바이백·연준은 "
                          "전월 말 수익률곡선으로 고정해 계산한 물량 효과이고, 나머지는 금리가 움직여 같은 채권의 듀레이션이 바뀐 효과입니다"
-                         "(금리가 내리면 늘어남). 바이백은 Fiscal Data 종목별 매입 내역, 연준은 뉴욕연준 SOMA 종목별 보유입니다."
+                         "(금리가 내리면 늘어남). 바이백은 Fiscal Data 종목별 매입 내역, 연준은 뉴욕연준 SOMA 종목별 보유입니다. 네 부분을 모두 이번 달 10년물 DV01로 "
+                         "환산해 합이 맞도록 했기 때문에, 달마다 환산 기준이 바뀌는 '듀레이션 공급' 탭의 월 차이와는 다를 수 있습니다."
                          + (f" {fl[-1]['date'][:7]}: 합계 {fl[-1]['total']:+,.0f} = 순발행 {fl[-1]['treasury_ex_buyback']:+,.0f}, "
                             f"바이백 {fl[-1]['buyback']:+,.0f}, 연준 {fl[-1]['fed']:+,.0f}, 금리 {fl[-1]['rates']:+,.0f}." if fl else ""))},
             {"id": "dv01_mix", "label": "금리 위험 구성", "type": "hbar", "unit": "%", "asof": dur[-1]["date"],
