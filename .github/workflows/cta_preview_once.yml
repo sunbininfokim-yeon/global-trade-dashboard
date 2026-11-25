@@ -1,0 +1,28 @@
+# TEMPORARY (removed before merge): runs the CTA builder once with --live on
+# this branch so the other-markets panel can be checked with real Yahoo data.
+name: CTA preview (temporary)
+on:
+  push:
+    branches: [claude/trusting-franklin-i9fizt]
+    paths: [.github/workflows/cta_preview_once.yml]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: New for anti/scripts/market_microstructure
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-ci.txt
+      - run: python build_krx_cta.py --live --print-stats
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "../../public/data/krx_cta_v1.json"
+          git commit -m "data: CTA snapshot with other markets (preview run)" || exit 0
+          git push
