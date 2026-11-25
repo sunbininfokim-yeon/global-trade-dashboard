@@ -225,6 +225,114 @@ def year_ago_comparison(card: dict[str, Any], rows: list[dict[str, Any]]) -> dic
     }
 
 
+def _cumulative_window(
+    by_start: dict[str, list[dict[str, Any]]], year: int, first: int, last: int, kind: str,
+) -> dict[str, Any]:
+    def summarize(target_year: int) -> tuple[str, str, float | None, list[str]]:
+        bounds = [quarter_dates(f"{q}Q{target_year:04d}") for q in range(first, last + 1)]
+        missing, amounts = [], []
+        for start, end in bounds:
+            matches = by_start.get(start, [])
+            row = matches[0] if len(matches) == 1 else {}
+            value = row.get("value")
+            if (row.get("period_end") != end or row.get("status") != "reported"
+                    or type(value) not in (int, float) or not math.isfinite(value) or value < 0):
+                missing.append(start)
+                continue
+            days = (date.fromisoformat(end) - date.fromisoformat(start)).days + 1
+            amounts.append(value * days)
+        return bounds[0][0], bounds[-1][1], None if missing else round(math.fsum(amounts), 3), missing
+
+    start, end, value, missing = summarize(year)
+    prior_start, prior_end, prior, prior_missing = summarize(year - 1)
+    comparison_status = (
+        "current_period_incomplete" if value is None else
+        "prior_period_incomplete" if prior is None else
+        "prior_period_zero" if prior == 0 else
+        "comparable"
+    )
+    return {
+        "kind": kind,
+        "label_ko": f"{year}년 {3 * first - 2}~{3 * last}월 누적",
+        "period_start": start,
+        "period_end": end,
+        "value": value,
+        "missing_quarter_starts": missing,
+        "prior_period_start": prior_start,
+        "prior_period_end": prior_end,
+        "prior_value": prior,
+        "prior_missing_quarter_starts": prior_missing,
+        "comparison_status": comparison_status,
+        "change_pct": round((value / prior - 1) * 100, 1) if comparison_status == "comparable" else None,
+    }
+
+
+def _cumulative_cards(
+    point_id: str, eia: dict[str, Any], as_of: date,
+) -> list[dict[str, Any]]:
+    """Aggregate one EIA edition; never splice months, sources or different scopes."""
+    publication = eia.get("source_published_at")
+    if not publication or publication > as_of.isoformat():
+        return []
+    oil_scope = next(scope for key, _, scope, _ in EIA_TABLES if key == point_id)
+    cards = []
+    for category, label in CARGO_LABELS.items():
+        scope = "suez_canal" if point_id == "suez" and category == "lng" else oil_scope
+        daily_unit = "billion_cubic_feet_per_day" if category == "lng" else "barrels_per_day"
+        by_start: dict[str, list[dict[str, Any]]] = {}
+        for row in eia.get("records", {}).get(point_id, []):
+            if not (
+                row.get("publisher") == "EIA" and row.get("source_published_at") == publication
+                and row.get("chokepoint_id") == point_id and row.get("frequency") == "quarterly"
+                and row.get("statistic") == "period_daily_mean" and row.get("cargo_category") == category
+                and row.get("geography_scope") == scope and row.get("unit") == daily_unit
+                and row.get("direction") == "source_aggregate_not_direction_resolved"
+            ):
+                continue
+            try:
+                start, end = quarter_dates(row.get("period", ""))
+            except (TypeError, ValueError):
+                continue
+            if (row.get("period_start"), row.get("period_end")) != (start, end) or end > publication:
+                continue
+            by_start.setdefault(start, []).append(row)
+        if not by_start:
+            continue
+        latest = date.fromisoformat(max(by_start))
+        last = (latest.month + 2) // 3
+        windows = [_cumulative_window(by_start, latest.year, 1, last, "year_to_date")]
+        # Exclude only quarters before either series starts. A gap or dash
+        # inside the overlap withholds its value instead of shortening it.
+        def first_covered_quarter(year: int) -> int:
+            start = min((key for key in by_start if key.startswith(f"{year:04d}-")), default=None)
+            return (date.fromisoformat(start).month + 2) // 3 if start else 5
+
+        first = max(first_covered_quarter(latest.year), first_covered_quarter(latest.year - 1))
+        if 1 < first <= last:
+            windows.append(_cumulative_window(by_start, latest.year, first, last, "trailing_matched_quarters"))
+        warning = "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다."
+        if scope == "suez_canal_and_sumed_pipeline":
+            warning += " 석유 수치는 수에즈 운하와 SUMED 송유관을 합한 값입니다."
+        if category == "lng":
+            warning += " LNG는 EIA의 기체 환산 부피이며 액화 화물창 부피가 아닙니다."
+        cards.append({
+            "cargo_category": category,
+            "label_ko": label,
+            "geography_scope": scope,
+            "unit": "billion_cubic_feet" if category == "lng" else "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": EIA_URL,
+            "source_published_at": publication,
+            "source_status": eia["status"],
+            "attribution": by_start[max(by_start)][0]["attribution"],
+            "warning_ko": warning,
+            "windows": windows,
+        })
+    return cards
+
+
 def parse_imo_links(html: str, base_url: str = IMO_URL, include_statements: bool = False) -> list[dict[str, str]]:
     parsed = OfficialHTML()
     parsed.feed(html)
@@ -331,6 +439,7 @@ def collect_official_cargo(
             "reference_cards": cards,
             "supplementary_reference_cards": supplementary,
             "reported_series": rows,
+            "cumulative_cards": _cumulative_cards(point_id, eia, now.date()),
             "reference_comparison_policy": "group_by_publisher_period_scope_and_commodity_never_mix_composition",
             "daily_chart": {
                 "source_path": f"chokepoints_live.{point_id}.metric_histories",

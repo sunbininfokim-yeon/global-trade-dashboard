@@ -28,8 +28,11 @@ on:
       - 'Coal reference prices'
       - 'Commodity News Ticker'
       - 'Commodity Reports Intel'
+      - 'Crypto board daily'
       - 'Equity heatmap daily'
       - 'KFA market caps daily'
+      - 'KFA engine snapshots daily'
+      - 'KFA SEC snapshots daily'
       - 'Refresh official election results'
       - 'Fetch ICRISAT Data'
       - 'FuelEU pool market refresh'
@@ -148,6 +151,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      # Workers Free allows 20,000 static asset files per version. The Comtrade parts alone
+      # passed that on 2026-11-24 (20,759 files, every deploy failed): fold them into shards in
+      # this checkout only (git keeps the parts), then refuse to call Cloudflare if the bundle is
+      # still over, so the failure names the cause.
+      - name: Pack bilateral trade parts and check the asset count
+        run: |
+          python3 tools/ops/pack_bilateral_parts.py
+          python3 tools/ops/count_assets.py
       - name: Deploy Worker
         run: npx wrangler deploy
         env:

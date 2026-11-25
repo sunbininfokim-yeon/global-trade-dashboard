@@ -1,0 +1,89 @@
+name: KFA engine snapshots daily
+
+# Runs the PE/CR + investor engines (tools/ops/build_kfa_pecr_snapshots.py) on
+# OpenDART for the largest listed companies, so the company calculator has
+# engine values for whatever a reader searches -- not only a hand-picked set.
+#
+# Coverage grows run by run: companies without a snapshot go first, and a
+# company is rebuilt only when it has filed a newer 사업/반기/분기보고서 or the
+# builder version changed (--skip-fresh). --max-calls keeps the run inside the
+# OpenDART key's 20,000 calls/day, leaving room for the other workflows that
+# share secrets.DART_API. 19:30 UTC = 04:30 KST, after the day's filings.
+# From GitHub's runners one company takes ~4 minutes of OpenDART round trips,
+# so four are built in parallel and no new one starts after 290 minutes --
+# the job (340-minute limit) must reach its commit step. The first manual run
+# (2026-11-23) built 76 companies serially and was cancelled at the limit
+# before committing.
+# Listed in deploy.yml's workflow_run so new snapshots reach Cloudflare.
+
+on:
+  schedule:
+    - cron: '30 19 * * *'
+  workflow_dispatch:
+    inputs:
+      universe:
+        description: "Largest companies by 시가총액, e.g. 'KOSPI:400,KOSDAQ:400'"
+        default: 'KOSPI:500,KOSDAQ:500'
+      corp_codes:
+        description: 'Space-separated DART corp codes to build now (overrides universe)'
+        default: ''
+      max_calls:
+        description: 'OpenDART request budget for this run'
+        default: '14000'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kfa-pecr-snapshots
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build snapshots
+        id: build
+        continue-on-error: true
+        env:
+          DART_API_KEY: ${{ secrets.DART_API }}
+          UNIVERSE: ${{ github.event.inputs.universe || 'KOSPI:500,KOSDAQ:500' }}
+          CORP_CODES: ${{ github.event.inputs.corp_codes || '' }}
+          MAX_CALLS: ${{ github.event.inputs.max_calls || '14000' }}
+        run: |
+          set -euo pipefail
+          if [ -n "$CORP_CODES" ]; then
+            python -u tools/ops/build_kfa_pecr_snapshots.py --cache "$RUNNER_TEMP/dart" --max-calls "$MAX_CALLS" --workers 4 $CORP_CODES
+          else
+            python -u tools/ops/build_kfa_pecr_snapshots.py --cache "$RUNNER_TEMP/dart" --max-calls "$MAX_CALLS" \
+              --skip-fresh --universe "$UNIVERSE" --workers 4 --max-minutes 290
+          fi
+      - name: Refuse to publish a key
+        run: |
+          if grep -rqF "${{ secrets.DART_API }}" 'New for anti/public/data/kfa_pecr'; then echo 'key found in output'; exit 1; fi
+      - name: Commit snapshots
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/kfa_pecr'
+          if git diff --cached --quiet; then exit 0; fi
+          n=$(git diff --cached --name-only | wc -l)
+          git commit -m "chore: refresh KFA engine snapshots ($n files)"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1
+      - name: Surface failures after persisting the rest
+        if: steps.build.outcome == 'failure'
+        run: exit 1

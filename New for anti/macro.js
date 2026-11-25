@@ -2272,6 +2272,234 @@ const mmBuybacksView = (ind) => {
         <p class="fin-note">재무부가 시장에서 기존 국채를 되사는 입찰입니다. 신청/한도가 높을수록 팔고 싶은 물량이 많았다는 뜻입니다. 출처: Fiscal Data.</p>`;
 };
 
+// 장기물 수요: offers against the maximum in every 10~20y / 20~30y nominal buyback, one dot per
+// operation. The background is shaded by the per-operation maximum in force (Treasury raised it from
+// $2B to $6B for 2026-09-09 .. 11-04), so a regime change reads without a hand-drawn annotation.
+const MM_BB_COLORS = { '10Y to 20Y': '#38bdf8', '20Y to 30Y': '#f59e0b' };
+const mmBuybackDemandView = (ind) => {
+    const le = (ind.buybacks || {}).long_end || {};
+    const series = Object.entries(le).filter(([, v]) => (v.points || []).length);
+    const all = series.flatMap(([, v]) => v.points);
+    if (all.length < 2) return '<p class="fin-note">장기물 바이백 기록이 없습니다.</p>';
+    const t = (d) => Date.parse(`${d}T00:00:00Z`);
+    const t0 = Math.min(...all.map((p) => t(p.date))), t1 = Math.max(...all.map((p) => t(p.date)));
+    const hi = Math.max(...all.map((p) => p.offered_to_max), 2) * 1.08;
+    const sx = (d) => MM_L + ((t(d) - t0) / Math.max(t1 - t0, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - v / hi) * (MM_H - MM_T - MM_B);
+    // Regimes of the maximum in force, across both buckets in date order.
+    const byDate = [...all].sort((a, b) => a.date.localeCompare(b.date));
+    const regimes = [];
+    byDate.forEach((p) => {
+        const r = regimes[regimes.length - 1];
+        if (r && r.max === p.max_bn) r.to = p.date;
+        else regimes.push({ max: p.max_bn, from: p.date, to: p.date });
+    });
+    const maxes = [...new Set(regimes.map((r) => r.max))].sort((a, b) => a - b);
+    const shade = (m) => (maxes.length > 1 ? 0.05 + 0.13 * (maxes.indexOf(m) / (maxes.length - 1)) : 0.06);
+    const bands = regimes.map((r, i) => {
+        const x0 = i === 0 ? MM_L : (sx(regimes[i - 1].to) + sx(r.from)) / 2;
+        const x1 = i === regimes.length - 1 ? MM_W - MM_R : (sx(r.to) + sx(regimes[i + 1].from)) / 2;
+        return `<rect x="${x0.toFixed(1)}" y="${MM_T}" width="${Math.max(x1 - x0, 1).toFixed(1)}" height="${MM_H - MM_T - MM_B}"
+            fill="#a78bfa" fill-opacity="${shade(r.max).toFixed(2)}"><title>회당 한도 $${mmFmt(r.max, 1)}B · ${finEsc(r.from)} ~ ${finEsc(r.to)}</title></rect>
+            ${x1 - x0 > 60 ? `<text x="${((x0 + x1) / 2).toFixed(1)}" y="${MM_T + 12}" class="mm-tick" text-anchor="middle">한도 $${mmFmt(r.max, 1)}B</text>` : ''}`;
+    }).join('');
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((k) => hi * k);
+    const years = [];
+    for (let y = new Date(t0).getUTCFullYear() + 1; y <= new Date(t1).getUTCFullYear(); y++) years.push(`${y}-01-01`);
+    const lines = series.map(([b, v]) => {
+        const c = MM_BB_COLORS[b] || '#94a3b8';
+        const pts = v.points;
+        const d = pts.map((p, i) => `${i ? 'L' : 'M'}${sx(p.date).toFixed(1)},${sy(p.offered_to_max).toFixed(1)}`).join('');
+        return `<path d="${d}" fill="none" stroke="${c}" stroke-width="1.4" stroke-opacity="0.55"/>
+            ${pts.map((p) => `<circle cx="${sx(p.date).toFixed(1)}" cy="${sy(p.offered_to_max).toFixed(1)}" r="3.2" fill="${c}">
+                <title>${finEsc(p.date)} ${finEsc(v.bucket_ko)} · 신청 $${mmFmt(p.offered_bn, 1)}B / 한도 $${mmFmt(p.max_bn, 1)}B = ${mmFmt(p.offered_to_max, 2)}배 · 매입 $${mmFmt(p.accepted_bn, 2)}B</title></circle>`).join('')}`;
+    }).join('');
+    const recent = [...all].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+    const bucketOf = (p) => series.find(([, v]) => v.points.includes(p));
+    return `
+        <div class="mm-chart-box">
+            <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="장기물 바이백 신청/한도 배수">
+                ${bands}
+                ${ticks.map((v) => `
+                    <line x1="${MM_L}" y1="${sy(v).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(v).toFixed(1)}" class="mm-grid"/>
+                    <text x="${MM_L - 7}" y="${(sy(v) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(v, 0)}배</text>`).join('')}
+                <line x1="${MM_L}" y1="${sy(1).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(1).toFixed(1)}" class="mm-threshold"/>
+                <text x="${MM_L + 6}" y="${(sy(1) - 5).toFixed(1)}" class="mm-threshold-tag" text-anchor="start">1배 = 신청이 한도와 같음</text>
+                ${lines}
+                ${years.map((y) => `<text x="${sx(y).toFixed(1)}" y="${MM_H - 8}" class="mm-tick" text-anchor="middle">${y.slice(0, 4)}</text>`).join('')}
+            </svg>
+            <p class="mm-legend-note">${series.map(([b, v]) => `<i class="mm-bb-dot" style="background:${MM_BB_COLORS[b] || '#94a3b8'}"></i>${finEsc(v.bucket_ko)}`).join(' ')}
+                <i class="mm-bb-band"></i>배경 진하기 = 회당 최대 매입 한도</p>
+        </div>
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>날짜</th><th>만기</th><th>매도 신청</th><th>한도</th><th>매입</th><th>신청/한도</th></tr></thead>
+            <tbody>${recent.map((p) => `<tr><td class="co-label">${finEsc(p.date)}</td><td>${finEsc((bucketOf(p) || [, {}])[1].bucket_ko || '')}</td>
+                <td>${mmFmt(p.offered_bn, 1)}B</td><td>${mmFmt(p.max_bn, 1)}B</td><td>${mmFmt(p.accepted_bn, 2)}B</td>
+                <td>${mmFmt(p.offered_to_max, 2)}배</td></tr>`).join('')}</tbody></table></div>
+        <p class="fin-note">재무부가 장기 비지표물을 되사는 유동성 지원 바이백에서, 시장이 팔겠다고 낸 물량을 회당 최대 매입 한도로 나눈 값입니다.
+            1배 아래면 한도만큼 팔 사람이 없었다는 뜻입니다. 출처: Fiscal Data buybacks_operations.</p>`;
+};
+
+// 툴키트 반응: the 30-year yield with each official debt-management action (refunding statement,
+// buyback change) marked, and how far the yield moved 1, 5 and 20 trading days after it. A record of
+// what happened next, not a claim that the action caused it.
+const MM_TK_COLORS = { refunding: '#a78bfa', buyback: '#f59e0b' };
+const mmToolkitView = (ind) => {
+    const tk = ind.toolkit || {};
+    const dates = (tk.series || {}).dates || [], vals = (tk.series || {}).values || [];
+    const n = dates.length;
+    if (n < 2) return '<p class="fin-note">30년물 금리 시계열이 없습니다.</p>';
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    const pad = (hi - lo) * 0.1 || 0.1; lo -= pad; hi += pad;
+    const sx = (i) => MM_L + (i / (n - 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const line = vals.map((v, i) => `${i ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join('');
+    // 10-year term premium on its own right-hand axis: the thing the toolkit is aimed at.
+    const tpv = ((tk.term_premium || {}).values || []);
+    const tpOk = tpv.filter(Number.isFinite);
+    let tpLine = '', tpTicks = '';
+    if (tpOk.length > 1) {
+        let tlo = Math.min(...tpOk), thi = Math.max(...tpOk);
+        const tpad = (thi - tlo) * 0.1 || 0.1; tlo -= tpad; thi += tpad;
+        const ty = (v) => MM_T + (1 - (v - tlo) / (thi - tlo)) * (MM_H - MM_T - MM_B);
+        let pen = false;
+        tpLine = tpv.map((v, i) => { if (!Number.isFinite(v)) { pen = false; return ''; } const c = `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${ty(v).toFixed(1)}`; pen = true; return c; }).join('');
+        tpTicks = [0, 0.5, 1].map((t) => tlo + (thi - tlo) * t).map((v) =>
+            `<text x="${MM_W - MM_R - 2}" y="${(ty(v) - 3).toFixed(1)}" class="mm-tick mm-tk-tp-tick" text-anchor="end">TP ${mmFmt(v, 2)}%</text>`).join('');
+    }
+    const ev = (tk.events || []).map((e, k) => ({ ...e, k: k + 1, i: dates.indexOf(e.on) })).filter((e) => e.i >= 0);
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+    const bp = (v) => (Number.isFinite(v) ? `<span class="${v > 0 ? 'fin-up' : v < 0 ? 'fin-down' : ''}">${v > 0 ? '+' : ''}${v}bp</span>` : '—');
+    return `
+        <div class="mm-chart-box">
+            <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="30년물 금리와 재무부 조치">
+                ${ticks.map((t) => `
+                    <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                    <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 2)}%</text>`).join('')}
+                ${ev.map((e) => `
+                    <line x1="${sx(e.i).toFixed(1)}" y1="${MM_T}" x2="${sx(e.i).toFixed(1)}" y2="${MM_H - MM_B}" stroke="${MM_TK_COLORS[e.kind] || '#94a3b8'}" stroke-dasharray="3 3" stroke-width="1.2"/>
+                    <circle cx="${sx(e.i).toFixed(1)}" cy="${MM_T + 8}" r="7" fill="${MM_TK_COLORS[e.kind] || '#94a3b8'}"><title>${finEsc(`${e.on} ${e.title}`)}</title></circle>
+                    <text x="${sx(e.i).toFixed(1)}" y="${MM_T + 11.5}" class="mm-tk-num" text-anchor="middle">${e.k}</text>`).join('')}
+                <path d="${line}" class="mm-line"/>
+                ${tpLine ? `<path d="${tpLine}" class="mm-tk-tp"/>${tpTicks}` : ''}
+                ${vals.map((v, i) => `<circle cx="${sx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="5" fill="transparent"><title>${finEsc(dates[i])} ${mmFmt(v, 2)}%</title></circle>`).join('')}
+                ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${finEsc(dates[i])}</text>`).join('')}
+            </svg>
+            <p class="mm-legend-note"><i class="mm-bb-dot" style="background:#38bdf8"></i>30년물 금리(왼쪽 축)
+                ${tpLine ? '<i class="mm-tk-tp-key"></i>10년 기간 프리미엄(오른쪽 축)' : ''}
+                <i class="mm-bb-dot" style="background:${MM_TK_COLORS.refunding}"></i>분기 발행계획
+                <i class="mm-bb-dot" style="background:${MM_TK_COLORS.buyback}"></i>바이백 조치</p>
+        </div>
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>#</th><th>날짜</th><th>조치</th><th>30Y 5일</th><th>30Y 20일</th>${tpLine ? '<th>TP 5일</th><th>TP 20일</th>' : ''}</tr></thead>
+            <tbody>${ev.map((e) => `<tr><td>${e.k}</td><td class="co-label" title="${finEsc(`직전 30년물 ${mmFmt(e.before_pct, 2)}% · 1일 ${Number.isFinite(e.d1_bp) ? e.d1_bp : '—'}bp`)}">${finEsc(e.on)}</td>
+                <td class="mm-tk-title"><a href="${finEsc(e.url)}" target="_blank" rel="noopener noreferrer">${finEsc(e.title)}</a></td>
+                <td>${bp(e.d5_bp)}</td><td>${bp(e.d20_bp)}</td>${tpLine ? `<td>${bp(e.tp_d5_bp)}</td><td>${bp(e.tp_d20_bp)}</td>` : ''}</tr>`).join('')}</tbody></table></div>
+        <p class="fin-note">재무부의 국채 관리 조치(공식 발표·집행일)와 그 뒤 30년물 금리 변화(조치 직전 종가 대비, 거래일 기준)입니다.
+            조치가 금리를 움직였다는 인과 추정이 아니라 그다음에 일어난 일의 기록입니다. 금리: ${finEsc(tk.source || 'FRED DGS30')}.
+            ${tpLine ? `TP = 10년 기간 프리미엄(장기 보유에 요구하는 추가 금리, ${finEsc((tk.term_premium || {}).source || '')}) -- 재무부 툴키트가 겨누는 대상입니다.` : ''}</p>`;
+};
+
+// 발행계획 문구 변화: the latest quarterly refunding policy statement against the previous one, section by
+// section, as a word-level redline (same renderer as the FOMC statement). Month names and years are left out
+// of the word counts -- every statement moves its quarter forward.
+const mmRefundingDiffView = (ind) => {
+    const r = ind.refunding_diff;
+    if (!r || !(r.sections || []).length) return '<p class="fin-note">비교할 두 분기 성명이 아직 없습니다.</p>';
+    return `
+        <p class="mm-view-title">${finEsc(r.previous.date)} → ${finEsc(r.current.date)} 분기 발행계획 성명 · 바뀐 단어 ${Number(r.changed_word_count || 0)}개(월·연도 제외)</p>
+        ${r.sections.map((sec) => `
+            <div class="mm-quality-card mm-quality-wide mm-rf-sec">
+                <span class="mm-quality-label">${finEsc(sec.header_ko)}${sec.new_section ? ' · 새 섹션' : sec.dropped_section ? ' · 빠진 섹션' : ''}</span>
+                <strong>${Number(sec.changed_word_count || 0)}단어 변경</strong>
+                <p class="mm-quality-redline">${mmRedline(sec.segments || [])}</p>
+            </div>`).join('')}
+        <p class="fin-note">취소선은 직전 성명에만 있던 표현, 강조는 이번에 새로 들어간 표현입니다. 첫 문단(이번 분기 입찰 금액·날짜)과
+            입찰 규모 표는 매 분기 바뀌므로 뺐습니다. 원문: <a class="mm-quality-link" href="${finEsc(r.current.url)}" target="_blank" rel="noopener noreferrer">이번 ↗</a> ·
+            <a class="mm-quality-link" href="${finEsc(r.previous.url)}" target="_blank" rel="noopener noreferrer">직전 ↗</a></p>`;
+};
+
+// The WAM card's side rail: Treasury's debt-management releases as they come (refunding, buybacks,
+// issuance, and speeches or statements whose text is about debt management), newest first.
+const MM_TK_KIND_COLOR = { refunding: '#a78bfa', buyback: '#f59e0b', issuance: '#38bdf8', speech: '#f472b6', policy: '#94a3b8' };
+const mmToolkitRail = (ind) => {
+    const items = ind.toolkit_feed || [];
+    if (!items.length) return mmNewsRail(ind);
+    return `
+    <aside class="mm-news mm-bb-rail">
+        <p class="mm-news-head">재무부 툴키트 피드</p>
+        ${items.map((it) => `
+            <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
+                <span class="mm-news-title"><i class="mm-tk-kind" style="background:${MM_TK_KIND_COLOR[it.kind] || '#94a3b8'}">${finEsc(it.kind_ko || it.kind)}</i>${finEsc(it.title)}</span>
+                <span class="mm-news-meta">${finEsc(it.date)}${(it.terms || []).length ? ` · ${finEsc(it.terms.slice(0, 4).join(', '))}` : ''}</span>
+            </a>`).join('')}
+        <p class="mm-news-foot">재무부 보도자료(GovDelivery 공식 RSS·보도자료 목록)를 매일 모읍니다. 발언·성명은 본문에 국채 관리 용어가 둘 이상일 때만.</p>
+    </aside>`;
+};
+
+// 매입 종목: which securities Treasury actually bought back -- totals by maturity year since the program
+// began (liquidity support vs cash management), and the latest purchases with their prices.
+const mmBuybackSecsView = (ind) => {
+    const s = (ind.buybacks || {}).securities;
+    if (!s || !(s.recent || []).length) return '<p class="fin-note">종목별 매입 내역이 없습니다.</p>';
+    const ys = s.by_maturity_year || [];
+    const hi = Math.max(...ys.map((y) => y.par_bn), 1e-9);
+    return `
+        <p class="mm-view-title">${finEsc(s.since)} 이후 누적 매입 $${mmFmt(s.total_bn, 0)}B · 평균 매입가 ${mmFmt(s.avg_price, 1)} (액면 100 기준)</p>
+        <div class="mm-bb-years">${ys.map((y) => `
+            <div class="mm-bb-ycol" title="${finEsc(`${y.year}년 만기: 합계 $${mmFmt(y.par_bn, 2)}B · 유동성 지원 $${mmFmt(y.liquidity_bn, 2)}B`)}">
+                <span class="mm-bb-ybar"><i class="liq" style="height:${(y.liquidity_bn / hi * 100).toFixed(1)}%"></i><i class="cash" style="height:${((y.par_bn - y.liquidity_bn) / hi * 100).toFixed(1)}%"></i></span>
+                <span class="mm-bb-ylab">${finEsc(y.year.slice(2))}</span>
+            </div>`).join('')}</div>
+        <p class="mm-legend-note"><i class="mm-bb-dot" style="background:#a78bfa"></i>유동성 지원 <i class="mm-bb-dot" style="background:#38bdf8"></i>현금 관리 · 가로축 = 만기 연도</p>
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>날짜</th><th>만기</th><th>쿠폰</th><th>매입</th><th>가격</th><th>구간</th></tr></thead>
+            <tbody>${s.recent.slice(0, 20).map((r) => `<tr><td class="co-label">${finEsc(r.date)}</td><td>${finEsc(r.maturity)}</td>
+                <td>${mmFmt(r.coupon_pct, 3)}%</td><td>$${mmFmt(r.par_bn, 2)}B</td><td>${Number.isFinite(r.price) ? mmFmt(r.price, 2) : '—'}</td>
+                <td>${finEsc(r.bucket_ko || '')}</td></tr>`).join('')}</tbody></table></div>
+        <p class="fin-note">재무부가 실제로 되산 종목(매입액 0인 응찰 종목은 제외)입니다. 가격이 100보다 한참 낮은 종목은 저금리 때 발행된 저쿠폰 채권으로,
+            액면보다 적은 현금으로 부채 액면을 줄입니다. 출처: Fiscal Data buybacks_security_details.</p>`;
+};
+
+// The buyback card's side rail: this quarter's ceilings and how much has been used, the next
+// operations on Treasury's tentative calendar, official announcements, then headlines.
+const mmBuybackRail = (ind) => {
+    const b = ind.buybacks || {};
+    const q = b.quarter, cal = b.calendar;
+    const link = (it, meta) => `
+        <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
+            <span class="mm-news-title">${finEsc(it.title)}</span>
+            ${meta ? `<span class="mm-news-meta">${meta}</span>` : ''}
+        </a>`;
+    const quarter = q && (q.items || []).some((i) => Number.isFinite(i.ceiling_bn)) ? `
+        <p class="mm-news-head">이번 분기 한도 사용 <span class="mm-bb-sub">${finEsc(q.start)} ~ ${finEsc(q.end)}</span></p>
+        ${q.items.filter((i) => Number.isFinite(i.ceiling_bn)).map((i) => `
+            <div class="mm-bb-q">
+                <span class="mm-bb-q-label">${finEsc(i.type_ko)}</span>
+                <span class="mm-bb-q-bar"><i style="width:${Math.min(100, (i.share || 0) * 100).toFixed(1)}%"></i></span>
+                <span class="mm-bb-q-val">$${mmFmt(i.used_bn, 1)}B / $${mmFmt(i.ceiling_bn, 0)}B</span>
+            </div>`).join('')}` : '';
+    const upcoming = cal && (cal.upcoming || []).length ? `
+        <p class="mm-news-head">다가오는 바이백 <span class="mm-bb-sub">재무부 잠정 일정</span></p>
+        <table class="mm-bb-cal"><tbody>${cal.upcoming.slice(0, 6).map((o) => `
+            <tr><td>${finEsc(o.date.slice(5))}</td><td>${finEsc(`${o.security_type_ko === '물가연동' ? '물가연동 ' : ''}${o.bucket_ko}`)}</td>
+                <td>$${mmFmt(o.max_bn, o.max_bn < 1 ? 2 : 1)}B</td></tr>`).join('')}</tbody></table>
+        ${cal.pdf ? `<p class="mm-news-foot"><a href="${finEsc(cal.pdf)}" target="_blank" rel="noopener noreferrer">전체 일정(PDF)</a> · ${cal.upcoming.length}회 남음</p>` : ''}` : '';
+    const official = (b.official || []).length ? `
+        <p class="mm-news-head">재무부 공식 발표</p>
+        ${b.official.map((o) => link(o, o.date ? finEsc(o.date) : '재무부')).join('')}` : '';
+    const news = (b.news || []).length ? `
+        <p class="mm-news-head">관련 뉴스</p>
+        ${b.news.map((n) => link(n, `${finEsc(n.source || '')}${n.published_at ? ` · ${finEsc(n.published_at)}` : ''}`)).join('')}` : '';
+    if (!quarter && !upcoming && !official && !news) return mmNewsRail(ind);
+    return `
+    <aside class="mm-news mm-bb-rail">
+        ${quarter}${upcoming}${official}${news}
+        <p class="mm-news-foot">뉴스는 Google 뉴스 검색(제목·매체·날짜만) · 투자 권유 아님</p>
+    </aside>`;
+};
+
 // Which panels an indicator can show, in the order they should appear. The
 // engine names the primary view (ui.click_view); chart_type covers the rest.
 const mmViewsFor = (ind) => {
@@ -2312,6 +2540,8 @@ const mmViewsFor = (ind) => {
     }
     if (has((ind.auctions || {}).latest_by_tenor)) views.push({ id: 'auctions', label: '입찰 결과' });
     if (has((ind.buybacks || {}).rows)) views.push({ id: 'buybacks', label: '바이백 내역' });
+    if (Object.values((ind.buybacks || {}).long_end || {}).some((v) => has(v.points))) views.push({ id: 'buyback_demand', label: '장기물 수요' });
+    if (has(((ind.buybacks || {}).securities || {}).recent)) views.push({ id: 'buyback_secs', label: '매입 종목' });
     // Assets and liabilities are two separate blocks -- two tabs -- not one
     // panel with both stacks in it. 부채 first: the reserves-against-the-axis
     // question is what this card exists to answer.
@@ -2346,6 +2576,8 @@ const mmViewsFor = (ind) => {
     if (ind.debt_groups && has(ind.debt_groups.years)) views.push({ id: 'debt_groups', label: '정부·공공기관' });
     // Pipeline-attached breakdowns (부문별, 연체 흐름, 은행별, ...), one tab each.
     (ind.panels || []).forEach((p) => views.push({ id: `panel:${p.id}`, label: p.label }));
+    if (((ind.toolkit || {}).series || {}).dates?.length) views.push({ id: 'toolkit', label: '툴키트 반응' });
+    if (((ind.refunding_diff || {}).sections || []).length) views.push({ id: 'refunding_diff', label: '발행계획 문구 변화' });
     // 5/20/60/120/240-day moving averages are a daily-chart convention
     // (Korean HTS terminology) and meaningless on the 5-year monthly bars
     // every other indicator uses -- a 240-period average over monthly data
@@ -2544,6 +2776,10 @@ const mmChartDrawer = () => {
     else if (view === 'cpi_movers') body = mmCpiMoversView(ind, mode || 'yoy');
     else if (view === 'auctions') body = mmAuctionsView(ind);
     else if (view === 'buybacks') body = mmBuybacksView(ind);
+    else if (view === 'buyback_demand') body = mmBuybackDemandView(ind);
+    else if (view === 'buyback_secs') body = mmBuybackSecsView(ind);
+    else if (view === 'toolkit') body = mmToolkitView(ind);
+    else if (view === 'refunding_diff') body = mmRefundingDiffView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
@@ -2670,6 +2906,10 @@ const mmChartDrawer = () => {
                 ? mmSomaMaturityRail(ind)
                 : view.startsWith('balance_')
                 ? mmBsLatestRail(ind.balance_sheet, view.slice('balance_'.length))
+                : ind.id === 'ust_buybacks'
+                ? mmBuybackRail(ind)
+                : ind.id === 'ust_debt_wam'
+                ? mmToolkitRail(ind)
                 : mmNewsRail(ind)}
         </div>
     </div>`;
@@ -2944,6 +3184,44 @@ const mmFomcDecisionHtml = (policy, extra = {}) => {
 // "Some", "A few" ...). The sentences are shown verbatim, grouped by that
 // wording only -- no topic tagging, no scoring, no hawk/dove reading -- and the
 // wording is the Fed's, not ours (build_fomc_minutes.py).
+// 의사록 비교: the latest minutes against the previous ones -- which topics were mentioned more or
+// less (per 1,000 words, a fixed lexicon) and, where the minutes tag sentences by how many members
+// held a view, how those shares moved. A comparison of wording, not a hawk/dove score.
+const MM_MC_GROUP_KO = {
+    all: '전원·거의 전원', most: '대부분·과반', many: '많은', several: '여럿', some: '일부', few: '소수', unqualified: '수량 표현 없음',
+};
+const mmMinutesCompareHtml = (mc) => {
+    if (!mc || !Array.isArray(mc.topics) || !mc.topics.length) return '';
+    const P = mc.previous || {}, C = mc.current || {};
+    const sgn = (v) => (Math.abs(v) < 0.05 ? '0.0' : `${v > 0 ? '+' : ''}${v.toFixed(1)}`);
+    const max = Math.max(...mc.topics.map((t) => Math.max(t.prev_per_1k, t.cur_per_1k)), 1);
+    const bar = (v, cls) => `<span class="mm-mc-bar ${cls}" style="width:${(v / max * 100).toFixed(1)}%"></span>`;
+    const rows = mc.topics.map((t) => `
+        <div class="mm-mc-row">
+            <span class="mm-mc-name">${finEsc(t.label_ko)}</span>
+            <span class="mm-mc-bars">${bar(t.prev_per_1k, 'prev')}${bar(t.cur_per_1k, 'cur')}</span>
+            <span class="mm-mc-val">${t.prev_per_1k.toFixed(1)} → <b>${t.cur_per_1k.toFixed(1)}</b>
+                <em class="${t.change_per_1k > 0 ? 'fin-up' : t.change_per_1k < 0 ? 'fin-down' : ''}">${sgn(t.change_per_1k)}</em></span>
+        </div>`).join('');
+    const examples = mc.topics.filter((t) => t.new_sentence).map((t) => `
+        <p class="mm-cb-para"><b>${finEsc(t.label_ko)}</b> · ${finEsc(t.new_sentence)}</p>`).join('');
+    const groups = (mc.groups || []).length ? `
+        <p class="mm-quality-muted"><b>문장 수량 표현 비중</b> (직전 → 이번):
+            ${mc.groups.map((g) => `${finEsc(MM_MC_GROUP_KO[g.group] || g.group)} ${g.prev_share.toFixed(0)}% → <b>${g.cur_share.toFixed(0)}%</b>`).join(' · ')}</p>` : '';
+    return `
+        <details class="mm-quality-details mm-mc">
+            <summary>의사록 비교 · ${finEsc(P.meeting_date || '')} → ${finEsc(C.meeting_date || '')} (주제 언급 빈도)</summary>
+            <div class="mm-mc-legend"><span><i class="mm-mc-bar prev"></i>${finEsc(P.meeting_date || '직전')}</span>
+                <span><i class="mm-mc-bar cur"></i>${finEsc(C.meeting_date || '이번')}</span>
+                <span class="mm-quality-muted">${finEsc(mc.unit_ko || '')} · 많이 바뀐 순</span></div>
+            ${rows}
+            ${groups}
+            ${examples ? `<p class="mm-quality-muted"><b>많이 늘어난 주제 — 이번 의사록에만 있는 문장</b></p>${examples}` : ''}
+            <p class="mm-quality-muted">${finEsc(mc.note_ko || '')}
+                분량: 직전 ${(P.words || 0).toLocaleString('ko-KR')} → 이번 ${(C.words || 0).toLocaleString('ko-KR')}${mc.unit_ko && mc.unit_ko.includes('어절') ? '어절' : '단어'}.</p>
+        </details>`;
+};
+
 const mmFomcMinutesHtml = (policy) => {
     const block = policy.minutes;
     if (!block || (!block.latest && !block.pending)) return '';
@@ -3010,6 +3288,7 @@ const mmFomcMinutesHtml = (policy) => {
         ${head}
         ${next}
         ${highlights}
+        ${mmMinutesCompareHtml(block.compare)}
         ${body}
     </div>`;
 };
@@ -3369,6 +3648,7 @@ const mmCbMinutesHtml = (cb) => {
     <div class="mm-quality-card mm-quality-wide">
         <span class="mm-quality-label">${cb.iso3 === 'EMU' ? '회의 요약(Account)' : '의사록'}</span>
         ${head}
+        ${mmMinutesCompareHtml(cb.minutes_compare)}
         ${body}
     </div>`;
 };

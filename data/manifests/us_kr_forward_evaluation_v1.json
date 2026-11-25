@@ -1,20 +1,20 @@
 {
   "schema_version": "us-kr-forward-evaluation-v1",
   "status": "forward_records_scored",
-  "generated_at": "2026-11-20T18:17:40.448954+00:00",
+  "generated_at": "2026-11-24T20:30:13.405670+00:00",
   "start": "2026-11-06",
-  "end": "2026-11-21",
+  "end": "2026-11-25",
   "model_id": "115ddb42c8c8449b63c57c35fe7642d22f9af3f2fe84def467bebd30ed976d07",
   "comparison_id": "69b110020c932a1e21d82e0824415598a20917115c34994e9dff3589e07815ea",
-  "price_input_sha256": "23dbe1c1f7b5d8e334fc7d8a861ff2ca0ceaee25698b6f21a3b3fe77a2bc9dc4",
+  "price_input_sha256": "63c0e8370eafc12ba5ff83ead60f22c7cb845cec9fa2ba25abe8059d6714b02c",
   "issuance": {
-    "expected_sessions_past_cutoff": 11,
+    "expected_sessions_past_cutoff": 13,
     "issued_sessions": 2,
-    "issuance_rate": 0.18181818181818182,
-    "matured_sessions": 11,
+    "issuance_rate": 0.15384615384615385,
+    "matured_sessions": 13,
     "unissued_reasons": {
       "no_recorded_attempt": 8,
-      "no_valid_first_forecast": 1
+      "no_valid_first_forecast": 3
     }
   },
   "all": {
@@ -6279,9 +6279,433 @@
       }
     }
   },
+  "us_price_forward": {
+    "model_id": "60cab8d3153ef34c097830c93726f8a0de8125b2faf34922e9fc50e00e137706",
+    "basis": "immutable pre-open generation receipts; independent public availability not verified",
+    "record_counts": {
+      "not_recorded": 12,
+      "available": 1
+    },
+    "all": {
+      "005930": {
+        "opening_up": {
+          "n": 1,
+          "status": "small_sample",
+          "brier": 0.00014281567578537576,
+          "always_yes_accuracy": 1.0,
+          "half_probability_brier": 0.25,
+          "n_decided": 1,
+          "n_neutral": 0,
+          "accuracy": 1.0,
+          "n_model_signal": 1,
+          "n_reference_only": 0,
+          "signal_accuracy": 1.0,
+          "signal_accuracy_wilson95": [
+            0.20654931437723745,
+            1
+          ],
+          "mean_probability": 0.9880494487246246,
+          "reliability": [
+            {
+              "lower": 0,
+              "upper": 0.4,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.45,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.45,
+              "upper": 0.5,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.55,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.55,
+              "upper": 0.6,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 1,
+              "n": 1,
+              "mean_probability": 0.9880494487246246,
+              "event_rate": 1.0
+            }
+          ],
+          "up_days": 1,
+          "down_days": 0,
+          "up_recall": 1.0,
+          "down_recall": null,
+          "missed_down_days": 0,
+          "down_precision": null
+        },
+        "closing_up": {
+          "n": 1,
+          "status": "small_sample",
+          "brier": 0.023425378976440408,
+          "always_yes_accuracy": 1.0,
+          "half_probability_brier": 0.25,
+          "n_decided": 1,
+          "n_neutral": 0,
+          "accuracy": 1.0,
+          "n_model_signal": 1,
+          "n_reference_only": 0,
+          "signal_accuracy": 1.0,
+          "signal_accuracy_wilson95": [
+            0.20654931437723745,
+            1
+          ],
+          "mean_probability": 0.8469464832928024,
+          "reliability": [
+            {
+              "lower": 0,
+              "upper": 0.4,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.45,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.45,
+              "upper": 0.5,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.55,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.55,
+              "upper": 0.6,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 1,
+              "n": 1,
+              "mean_probability": 0.8469464832928024,
+              "event_rate": 1.0
+            }
+          ],
+          "up_days": 1,
+          "down_days": 0,
+          "up_recall": 1.0,
+          "down_recall": null,
+          "missed_down_days": 0,
+          "down_precision": null
+        }
+      },
+      "000660": {
+        "opening_up": {
+          "n": 1,
+          "status": "small_sample",
+          "brier": 6.501704122030979e-05,
+          "always_yes_accuracy": 1.0,
+          "half_probability_brier": 0.25,
+          "n_decided": 1,
+          "n_neutral": 0,
+          "accuracy": 1.0,
+          "n_model_signal": 1,
+          "n_reference_only": 0,
+          "signal_accuracy": 1.0,
+          "signal_accuracy_wilson95": [
+            0.20654931437723745,
+            1
+          ],
+          "mean_probability": 0.9919366854693427,
+          "reliability": [
+            {
+              "lower": 0,
+              "upper": 0.4,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.45,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.45,
+              "upper": 0.5,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.55,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.55,
+              "upper": 0.6,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 1,
+              "n": 1,
+              "mean_probability": 0.9919366854693427,
+              "event_rate": 1.0
+            }
+          ],
+          "up_days": 1,
+          "down_days": 0,
+          "up_recall": 1.0,
+          "down_recall": null,
+          "missed_down_days": 0,
+          "down_precision": null
+        },
+        "closing_up": {
+          "n": 1,
+          "status": "small_sample",
+          "brier": 0.017103815242915744,
+          "always_yes_accuracy": 1.0,
+          "half_probability_brier": 0.25,
+          "n_decided": 1,
+          "n_neutral": 0,
+          "accuracy": 1.0,
+          "n_model_signal": 1,
+          "n_reference_only": 0,
+          "signal_accuracy": 1.0,
+          "signal_accuracy_wilson95": [
+            0.20654931437723745,
+            1
+          ],
+          "mean_probability": 0.8692184445614912,
+          "reliability": [
+            {
+              "lower": 0,
+              "upper": 0.4,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.45,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.45,
+              "upper": 0.5,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.55,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.55,
+              "upper": 0.6,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 1,
+              "n": 1,
+              "mean_probability": 0.8692184445614912,
+              "event_rate": 1.0
+            }
+          ],
+          "up_days": 1,
+          "down_days": 0,
+          "up_recall": 1.0,
+          "down_recall": null,
+          "missed_down_days": 0,
+          "down_precision": null
+        }
+      },
+      "KOSPI": {
+        "opening_up": {
+          "n": 1,
+          "status": "small_sample",
+          "brier": 2.683129549599343e-05,
+          "always_yes_accuracy": 1.0,
+          "half_probability_brier": 0.25,
+          "n_decided": 1,
+          "n_neutral": 0,
+          "accuracy": 1.0,
+          "n_model_signal": 1,
+          "n_reference_only": 0,
+          "signal_accuracy": 1.0,
+          "signal_accuracy_wilson95": [
+            0.20654931437723745,
+            1
+          ],
+          "mean_probability": 0.994820106613453,
+          "reliability": [
+            {
+              "lower": 0,
+              "upper": 0.4,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.45,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.45,
+              "upper": 0.5,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.55,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.55,
+              "upper": 0.6,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 1,
+              "n": 1,
+              "mean_probability": 0.994820106613453,
+              "event_rate": 1.0
+            }
+          ],
+          "up_days": 1,
+          "down_days": 0,
+          "up_recall": 1.0,
+          "down_recall": null,
+          "missed_down_days": 0,
+          "down_precision": null
+        },
+        "closing_up": {
+          "n": 1,
+          "status": "small_sample",
+          "brier": 0.01144909378421969,
+          "always_yes_accuracy": 1.0,
+          "half_probability_brier": 0.25,
+          "n_decided": 1,
+          "n_neutral": 0,
+          "accuracy": 1.0,
+          "n_model_signal": 1,
+          "n_reference_only": 0,
+          "signal_accuracy": 1.0,
+          "signal_accuracy_wilson95": [
+            0.20654931437723745,
+            1
+          ],
+          "mean_probability": 0.8929995617568802,
+          "reliability": [
+            {
+              "lower": 0,
+              "upper": 0.4,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.45,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.45,
+              "upper": 0.5,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.55,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.55,
+              "upper": 0.6,
+              "n": 0,
+              "mean_probability": null,
+              "event_rate": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 1,
+              "n": 1,
+              "mean_probability": 0.8929995617568802,
+              "event_rate": 1.0
+            }
+          ],
+          "up_days": 1,
+          "down_days": 0,
+          "up_recall": 1.0,
+          "down_recall": null,
+          "missed_down_days": 0,
+          "down_precision": null
+        }
+      }
+    }
+  },
   "publication_verified": {
     "verified_sessions": 2,
-    "verified_publication_rate": 0.18181818181818182,
+    "verified_publication_rate": 0.15384615384615385,
     "generated_without_verified_publication": 0,
     "all": {
       "005930": {
@@ -12554,6 +12978,7 @@
       "issued": false,
       "attempt_count": 0,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "reason": "no_recorded_attempt"
     },
     {
@@ -12611,6 +13036,7 @@
           "close": 5018.85
         }
       },
+      "US_price_first": "not_recorded",
       "last_attempt_status": "research_preopen_forecast",
       "last_attempt_reasons": [],
       "generated_at": "2026-11-08T03:47:47.645705+00:00",
@@ -12631,6 +13057,7 @@
       "issued": false,
       "attempt_count": 0,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "reason": "no_recorded_attempt"
     },
     {
@@ -12688,6 +13115,7 @@
           "close": 5375.36
         }
       },
+      "US_price_first": "not_recorded",
       "last_attempt_status": "research_preopen_forecast",
       "last_attempt_reasons": [],
       "generated_at": "2026-11-10T21:24:55.287094+00:00",
@@ -12708,6 +13136,7 @@
       "issued": false,
       "attempt_count": 0,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "reason": "no_recorded_attempt"
     },
     {
@@ -12716,6 +13145,7 @@
       "issued": false,
       "attempt_count": 0,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "reason": "no_recorded_attempt"
     },
     {
@@ -12724,6 +13154,7 @@
       "issued": false,
       "attempt_count": 6,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "last_attempt_status": "unavailable",
       "last_attempt_reasons": [
         "missing or invalid required source data"
@@ -12736,6 +13167,7 @@
       "issued": false,
       "attempt_count": 0,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "reason": "no_recorded_attempt"
     },
     {
@@ -12744,6 +13176,7 @@
       "issued": false,
       "attempt_count": 0,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "reason": "no_recorded_attempt"
     },
     {
@@ -12752,6 +13185,7 @@
       "issued": false,
       "attempt_count": 0,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "reason": "no_recorded_attempt"
     },
     {
@@ -12760,7 +13194,34 @@
       "issued": false,
       "attempt_count": 0,
       "tickers": {},
+      "US_price_first": "not_recorded",
       "reason": "no_recorded_attempt"
+    },
+    {
+      "target_date": "2026-11-23",
+      "matured": true,
+      "issued": false,
+      "attempt_count": 12,
+      "tickers": {},
+      "US_price_first": "not_recorded",
+      "last_attempt_status": "unavailable",
+      "last_attempt_reasons": [
+        "missing or invalid required source data"
+      ],
+      "reason": "no_valid_first_forecast"
+    },
+    {
+      "target_date": "2026-11-24",
+      "matured": true,
+      "issued": false,
+      "attempt_count": 1,
+      "tickers": {},
+      "US_price_first": "available",
+      "last_attempt_status": "unavailable",
+      "last_attempt_reasons": [
+        "missing or invalid required source data"
+      ],
+      "reason": "no_valid_first_forecast"
     }
   ],
   "limitations": [
@@ -12776,7 +13237,7 @@
     "No auto selection, retraining, threshold tuning, trading costs or PnL"
   ],
   "outcome_collection": {
-    "snapshot": "data/observations/us_kr_direction/44791220534-1/outcome_prices.json",
+    "snapshot": "data/observations/us_kr_direction/45481317364-1/outcome_prices.json",
     "errors": []
   }
 }

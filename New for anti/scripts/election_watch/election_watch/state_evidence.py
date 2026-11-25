@@ -310,4 +310,7 @@ def publish_states(public, plan, selected, builder, checked_at):
         if s not in result['source_review_blocked_states']), None)
     result['next_state_to_retry'] = next(iter(result['source_review_blocked_states']), None)
     atomic(path, result)
+    # Retire this run's states' superseded snapshots; one previous generation stays.
+    from .asset_prune import prune
+    prune(public, 'usa_election_state_evidence', [previous] if previous else [], {s for _, s in selected})
     return result

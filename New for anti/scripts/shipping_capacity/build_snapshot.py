@@ -29,8 +29,10 @@ from shipping_capacity.portwatch import (
     normalize_status_contract,
 )
 from shipping_capacity.route_distances import attach_distance_evidence
+from shipping_capacity.route_alternatives import load_arctic_route_reference, service_detour_comparison
 from shipping_capacity.official_cargo import collect_official_cargo
 from shipping_capacity.hormuz_reconstruction import collect_hormuz_reconstruction
+from shipping_capacity.hormuz_annual_outlook import build_hormuz_annual_outlook
 from shipping_capacity.hormuz_bypass import collect_hormuz_bypass
 from shipping_capacity.chokepoint_trend import build_chokepoint_trend
 
@@ -667,9 +669,11 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                 "data_paths": [
                     "routes[]",
                     "routes[].baseline",
-                "routes[].operational_profile.normal",
-                "routes[].operational_profile.chokepoint_alternatives[]",
-                "routes[].operational_profile.chokepoint_alternatives[].distance_evidence",
+                    "routes[].operational_profile.normal",
+                    "routes[].operational_profile.chokepoint_alternatives[]",
+                    "routes[].operational_profile.chokepoint_alternatives[].distance_evidence",
+                    "routes[].operational_profile.detour_comparison.options[]",
+                    "arctic_route_reference",
                 ],
                 "primary_metrics": [
                     "baseline.baseline_required_dwt",
@@ -699,8 +703,10 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "official_cargo_monitor.chokepoints.<id>.reference_cards[]",
                     "official_cargo_monitor.chokepoints.<id>.supplementary_reference_cards[]",
                     "official_cargo_monitor.chokepoints.<id>.reported_series[]",
+                    "official_cargo_monitor.chokepoints.<id>.cumulative_cards[].windows[]",
                     "official_cargo_monitor.chokepoints.<id>.transit_assessment",
                     "hormuz_reconstruction.headline",
+                    "hormuz_annual_outlook.cards[]",
                     "hormuz_reconstruction.mass_balance.terms[]",
                     "hormuz_reconstruction.producer_exports",
                     "hormuz_reconstruction.importer_receipts",
@@ -1172,6 +1178,10 @@ def build_snapshot(
             )
             live_persistence_results.append(persistence_result)
 
+        operational_profile = route_operational_profile(route)
+        operational_profile["detour_comparison"] = service_detour_comparison(
+            operational_profile, baseline, route["input_status"],
+        )
         route_outputs.append(
             {
                 "id": route["id"],
@@ -1199,7 +1209,7 @@ def build_snapshot(
                     "reserve_margin": route["reserve_margin"],
                     "uncertainty": route.get("uncertainty", {}),
                 },
-                "operational_profile": route_operational_profile(route),
+                "operational_profile": operational_profile,
                 "chokepoints": route.get("chokepoints", []),
                 "baseline": {**baseline, "interval": baseline_interval},
                 "stress_tests": stress_results,
@@ -1314,6 +1324,7 @@ def build_snapshot(
             "chokepoints": chokepoints,
             "chokepoints_live": live_status,
             "official_cargo_monitor": official_cargo,
+            "hormuz_annual_outlook": build_hormuz_annual_outlook(official_cargo, build_time.date()),
             "hormuz_reconstruction": collect_hormuz_reconstruction(
                 fetch=fetch_reconstruction, previous=fallback_reconstruction, now=build_time,
                 official_cargo=official_cargo, live_status=live_status,
@@ -1415,6 +1426,9 @@ def build_snapshot(
             "behavior_uncertainty": behavior_uncertainty_config,
             "historical_event_calibration": event_calibration,
             "route_catalog": route_catalog,
+            "arctic_route_reference": load_arctic_route_reference(
+                Path(__file__).resolve().parents[2] / "public" / "data" / "sea_route_v1.json"
+            ),
             "routes": route_outputs,
             "scenarios": scenarios,
             "scenario_summary": scenario_summary,

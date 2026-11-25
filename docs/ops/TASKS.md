@@ -88,6 +88,8 @@
 | CF03 | 해운 탄소금융 공개 실데이터 연결 | codex | `tools/shipping_carbon/**` | `codex/shipping-carbon-observed-data-20261102` | review | #789 병합 후속. 기본 관측자료/가상 계약 분리, EEX·ECB 재수집·EMSA 2025 full/partial 보고서 18,960건 로컬 확보, 원본·시세 git 제외. 단위39·산술16·실데이터/가안 적용 브라우저 확인. 5천/5만/20만 EUA 거래규모 가정과 별도 탄소금융 제안 추가. |
 | CF04 | EUA 시장 화면·FuelEU 독립 검증·통합 경제성 | codex | `tools/shipping_carbon/**`, 전용 handoff | `codex/carbon-finance-integration-20261104` | review | 사용자 11/04 승인. 경매189/환율215·월물 OI 수집, MRV 2024 v254·2025 v80 독립 감사(현재 결측0·엄격 검증 후 동일 합계), 대리 필터 민감도, Claude 엔진 호출·동등 에너지/ETS/풀/자금 비교. Python53·JS5·산술16·소유권15·Chrome/320px 확인. 원본·시세 git 제외. FuelEU 원본 코드·운영 UI·Worker·workflow·병합·배포 제외. |
 
+| CF05 | 해운 탄소규정 공식 자료 재검토 | codex | `tools/shipping_carbon/**`, 전용 handoff | `codex/maritime-regulation-update-20261125` | review | 사용자 11/25 규정 갱신 요청. 규정 정본 JSON·API·출처 표와 ETS 배출/제출연도·가스·가정 비율 차이 표시. Python55·JS45·설계16·소유권16·Chrome/320px·정적 미리보기 확인. [인수](handoff/2026-11-25-codex-maritime-regulations.md). |
+
 ## 백로그
 
 - 아르헨 norte_soja / chaco skill < 0.20
@@ -185,3 +187,4 @@
 
 | T-ISR-RESULTS-20261031 | 이스라엘 개표 결과·정부 구성 절차 우선 표시 | codex | Israel 전용 입력·builder·JS/CSS·테스트·생성물·인수 | codex/israel-results-20261031 | review | 사용자 10/31 조사·결과 우선 UI·PR 지시. #719 개표 기록 보존, 원문 재확인·공식 표/현행 법문 보류 구분. 선거 전 분석 하단 접기. 미국 자료·공용 UI·workflow·병합·배포 제외. |
 | T-ISR-COOPERATION-20261031 | 선거 후 협력 근거·정당 성향·아랍계 내부 분리 | codex | Israel 전용 입력·검증·UI·테스트·생성물·인수 | codex/israel-cooperation-20261031 | review | 사용자 직접 조사·구현 지시. #752 병합 후 최신 main 기반. 좌우·종교 축 분리, 라암/공동명부/구성당 구분, 회동·조건·거부·미확인 우선순위. 수치·과거 번역·미국·공용 UI·workflow·병합·배포 제외. |
+| T52 | 코스피200 위클리·차근월 옵션 체인, ETF 순자산 복구·일별 수집 → krx-month-paste | cursor | `kospi200_weekly_option_oi`, `kospi200_option_oi`, `etf_eod` | — | ready | 커버드콜 공급 분석용. 계약: `New for anti/scripts/market_microstructure/CURSOR_HANDOFF_OPTION_WEEKLY_CHAIN.md` |

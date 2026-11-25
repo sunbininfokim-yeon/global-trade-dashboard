@@ -185,7 +185,8 @@ def direct_fill(cfg, year, history):
     n34 = [E.sowing_nino34(series, int(y), cfg.crop) for y in past.year]
     n34 = np.array([np.nan if v is None else v for v in n34], dtype=float)
     now = E.sowing_nino34(series, year, cfg.crop)
-    shift, info = E.direct_adjust(past.year.values, past.yield_kg_ha.values, n34, now)
+    shift, info = E.direct_adjust(past.year.values, past.yield_kg_ha.values, n34, now,
+                                  *E.model_trend(cfg.key))
     if shift is None:
         return None
     bt = {}

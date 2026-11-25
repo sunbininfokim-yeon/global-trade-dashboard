@@ -39,6 +39,9 @@ def stage_paths():
         paths.append(PUBLIC+UNREVIEWED_FILE)
     index = __import__('json').loads(Path(PUBLIC+'usa_election_state_evidence_index_v1.json').read_text())
     paths += [PUBLIC+index['states'][p['state']]['data_file'] for p in packets()]
+    # publish_states retires superseded state snapshots; stage only those removals.
+    paths += subprocess.run(['git', 'ls-files', '--deleted', '--', PUBLIC+'usa_election_state_evidence'],
+                            check=True, capture_output=True, text=True).stdout.splitlines()
     return paths
 
 

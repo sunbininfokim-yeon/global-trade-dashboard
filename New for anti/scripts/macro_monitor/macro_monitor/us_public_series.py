@@ -171,7 +171,7 @@ def _fmt_krw_tn1(v: float) -> str:
 
 _FORMATS: dict[str, Callable[[float], str]] = {"pct1": _fmt_pct1, "k0": _fmt_k0, "bn2": _fmt_bn2, "mn0": _fmt_mn0,
                                                "krw_tn1": _fmt_krw_tn1, "tn2usd": lambda v: f"${v:,.2f}T",
-                                               "bn1usd": lambda v: f"${v:,.1f}B"}
+                                               "bn1usd": lambda v: f"${v:,.1f}B", "bn0usd": lambda v: f"${v:,.0f}B"}
 
 
 @dataclass(frozen=True)

@@ -4,6 +4,15 @@ Auctions come from TreasuryDirect's securities API, which carries a result the a
 Fiscal Data's auctions_query only fills a row in on the issue date, a week later. Buybacks come from
 Fiscal Data (buybacks_operations), which has each operation the day after. Both are keyless.
 
+The buyback card's side rail (see buyback_extras) adds, all keyless:
+  * the tentative buyback calendar Treasury publishes with each quarterly refunding (XML), linked from
+    the 'Most Recent Quarterly Refunding Documents' page;
+  * the quarter's ceilings from the refunding policy statement ('up to $70 billion ... liquidity support
+    and up to $25 billion ... cash management') and how much of each has been bought since the calendar
+    started;
+  * news headlines (title, outlet, date, link only) from Google News RSS, Korean and English, filtered to
+    Treasury buybacks; and the official announcements listed in config/ust_buyback_official_v1.json.
+
 Nominal coupons only (2/3/5/7/10/20/30-year, reopenings included): TIPS and FRNs are priced on a different
 basis and would make the yield column mean two things. Bidder shares are of the competitive amount
 awarded to primary dealers, direct and indirect bidders together -- the "dealer takedown" convention.
@@ -14,10 +23,15 @@ licensed market data. Each tenor is compared with its own previous auction inste
 
 from __future__ import annotations
 
+import html as _html
 import json
+import re
 import subprocess
+import xml.etree.ElementTree as ET
 from collections import defaultdict
+from email.utils import parsedate_to_datetime
 from typing import Any
+from urllib.parse import quote, urljoin
 
 TD_AUCTIONED = "https://www.treasurydirect.gov/TA_WS/securities/auctioned?format=json&type={type}&days={days}"
 FD_BUYBACKS = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/"
@@ -49,6 +63,13 @@ def _get(url: str, timeout: int = 120) -> Any:
     if proc.returncode != 0 or not proc.stdout:
         raise RuntimeError(f"{url.split('?')[0]}: curl rc={proc.returncode}")
     return json.loads(proc.stdout.decode("utf-8"))
+
+
+def _text(url: str, timeout: int = 60) -> str:
+    proc = subprocess.run(["curl", "-sS", "-g", "-L", "-m", str(timeout), "-A", "Mozilla/5.0", url], check=False, capture_output=True)
+    if proc.returncode != 0 or not proc.stdout:
+        raise RuntimeError(f"{url.split('?')[0]}: curl rc={proc.returncode}")
+    return proc.stdout.decode("utf-8", errors="replace")
 
 
 def _f(x: Any) -> float | None:
@@ -270,3 +291,198 @@ def upsert(country: dict[str, Any], card: dict[str, Any]) -> bool:
         chips[j] = {**chip, **({"hidden": True} if chips[j].get("hidden") else {})}
         changed = True
     return changed
+
+
+# --------------------------------------------------------------------------
+# Buyback side rail: calendar, quarter ceilings, long-end demand, news
+# --------------------------------------------------------------------------
+
+QR_DOCS = "https://home.treasury.gov/policy-issues/financing-the-government/quarterly-refunding/most-recent-quarterly-refunding-documents"
+LONG_BUCKETS = ("10Y to 20Y", "20Y to 30Y")
+NEWS_QUERIES = (
+    ("ko", "미국 국채 바이백 재무부 when:60d", "hl=ko&gl=KR&ceid=KR:ko"),
+    ("en", '"Treasury" buyback (bonds OR yields OR long-dated) when:60d', "hl=en-US&gl=US&ceid=US:en"),
+)
+# A 'buyback' headline about a company's shares, a crypto treasury or another country's bonds is not this.
+NEWS_EXCLUDE = re.compile(r"share|stock|equit|bitcoin|btc|ether|\beth\b|crypto|coin|token|brazil|brasil|"
+                          r"japan|jgb|india|china|uk gilt|R\$|\bTk\s?\d|taka|bangladesh|pakistan|nigeria|kenya|ghana|egypt|\breais?\b|자사주|주식|비트코인|코인|이더리움|일본|브라질|중국", re.I)
+NEWS_REQUIRE = {"ko": re.compile(r"바이백|환매"), "en": re.compile(r"buyback", re.I)}
+NEWS_TOPIC = {"ko": re.compile(r"미국|美|미\s*재무부|국채"), "en": re.compile(r"treasur", re.I)}
+
+
+def find_refunding_docs(page_html: str) -> dict[str, str]:
+    """Links on the refunding documents page (hrefs are unquoted there)."""
+    out: dict[str, str] = {}
+    for href, label in re.findall(r"<a[^>]+href=[\"']?([^\"'\s>]+)[\"']?[^>]*>([^<]+)</a>", page_html):
+        lab = _html.unescape(label).strip()
+        url = urljoin(QR_DOCS, href)
+        if "schedule_xml" not in out and re.search(r"buyback", href, re.I) and href.lower().endswith(".xml"):
+            out["schedule_xml"] = url
+        elif "schedule_pdf" not in out and re.search(r"buyback", href, re.I) and href.lower().endswith(".pdf"):
+            out["schedule_pdf"] = url
+        elif "policy_statement" not in out and lab.lower().startswith("policy statement"):
+            out["policy_statement"] = url
+            out["policy_statement_label"] = lab
+    return out
+
+
+def parse_schedule_xml(xml: str) -> dict[str, Any]:
+    root = ET.fromstring(xml)
+    ops = []
+    for d in root.iter("BuybackCalendarDate"):
+        g = lambda k: (d.findtext(k) or "").strip()  # noqa: E731
+        bucket = re.sub(r"^(Nominal Coupons|TIPS)\s+", "", g("PurchaseBucketName"))
+        sec = "Nominal Coupons" if g("SecurityType").upper().startswith("NOMINAL") else "TIPS"
+        mx = _f(g("MaximumPurchaseAmountDollars"))
+        ops.append({"date": g("OperationDate"), "announce": g("AnnouncementDate"), "type": g("OperationType"),
+                    "type_ko": OP_TYPE_KO.get(g("OperationType"), g("OperationType")),
+                    "security_type_ko": SEC_TYPE_KO.get(sec, sec), "bucket": bucket, "bucket_ko": bucket_ko(bucket),
+                    "max_bn": round(mx / 1e9, 3) if mx is not None else None})
+    return {"name": (root.findtext("BuybackCalendarName") or "").strip(), "start": (root.findtext("StartDate") or "").strip(),
+            "end": (root.findtext("EndDate") or "").strip(), "operations": sorted(ops, key=lambda o: o["date"])}
+
+
+def parse_policy_ceilings(statement_html: str) -> dict[str, Any] | None:
+    """'purchase up to $70 billion ... for liquidity support and up to $25 billion ... for cash management'."""
+    t = re.sub(r"\s+", " ", _html.unescape(re.sub(r"<[^>]+>", " ", statement_html)))
+    m = re.search(r"up to \$(\d+(?:\.\d+)?) billion[^.]*?liquidity support[^.]*?up to \$(\d+(?:\.\d+)?) billion[^.]*?cash management", t)
+    if not m:
+        return None
+    sent = re.search(r"[^.]*" + re.escape(m.group(0)) + r"[^.]*\.", t)
+    return {"liquidity_bn": float(m.group(1)), "cash_bn": float(m.group(2)), "sentence": (sent.group(0) if sent else m.group(0)).strip()}
+
+
+def quarter_progress(rows: list[dict[str, Any]], start: str, end: str, ceilings: dict[str, Any] | None) -> dict[str, Any]:
+    """Bought so far in the calendar's quarter, by purpose, against the policy statement's ceilings."""
+    inq = [r for r in rows if start <= r["date"] <= end]
+    used = {t: round(sum(r["accepted_bn"] for r in inq if r["type"] == t), 3) for t in OP_TYPE_KO}
+    out = {"start": start, "end": end, "operations_done": len(inq), "items": []}
+    for t, key in (("Liquidity Support", "liquidity_bn"), ("Cash Management", "cash_bn")):
+        cap = (ceilings or {}).get(key)
+        out["items"].append({"type": t, "type_ko": OP_TYPE_KO[t], "used_bn": used[t], "ceiling_bn": cap,
+                             "share": round(used[t] / cap, 4) if cap else None})
+    return out
+
+
+def long_end_demand(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Offers against the maximum in each long-end nominal operation, with the maximum itself: a change in the
+    maximum (2026-09: $2B -> $6B) shows as a step in max_bn, so the chart can shade each regime."""
+    out = {}
+    for b in LONG_BUCKETS:
+        pts = [{"date": r["date"], "offered_to_max": r["offered_to_max"], "max_bn": r["max_bn"], "accepted_bn": r["accepted_bn"],
+                "offered_bn": r["offered_bn"]}
+               for r in rows if r.get("security_type") == "Nominal Coupons" and r.get("bucket") == b and r.get("offered_to_max") is not None]
+        out[b] = {"bucket_ko": bucket_ko(b), "points": pts}
+    return out
+
+
+def parse_news_rss(xml: str, lang: str) -> list[dict[str, Any]]:
+    items = []
+    for it in re.findall(r"<item>(.*?)</item>", xml, re.S):
+        g = lambda k: _html.unescape(re.sub(r"<!\[CDATA\[|\]\]>", "", (re.search(rf"<{k}[^>]*>(.*?)</{k}>", it, re.S) or [None, ""])[1])).strip()  # noqa: E731
+        title, link, src, pub = g("title"), g("link"), g("source"), g("pubDate")
+        if src and title.endswith(f" - {src}"):
+            title = title[: -len(src) - 3].strip()
+        if not title or not link:
+            continue
+        if not NEWS_REQUIRE[lang].search(title) or not NEWS_TOPIC[lang].search(title) or NEWS_EXCLUDE.search(title):
+            continue
+        try:
+            date = parsedate_to_datetime(pub).date().isoformat()
+        except (TypeError, ValueError):
+            date = None
+        items.append({"title": title, "source": src, "url": link, "published_at": date, "lang": lang})
+    return items
+
+
+def _norm(t: str) -> str:
+    return re.sub(r"[\W_]+", "", re.sub(r"\((?:상보|종합|속보|1보|2보)\)", "", t)).lower()[:40]
+
+
+def merge_news(lists: list[list[dict[str, Any]]], limit: int = 12, per_list: int = 7) -> list[dict[str, Any]]:
+    """Newest first, one item per headline (wire copies of the same story share their first 40 characters),
+    at most `per_list` from each language so one feed cannot crowd the other out."""
+    seen, picked = set(), []
+    for xs in lists:
+        kept = 0
+        for it in sorted(xs, key=lambda x: x.get("published_at") or "", reverse=True):
+            k = _norm(it["title"])
+            if k in seen or kept >= per_list:
+                continue
+            seen.add(k)
+            picked.append(it)
+            kept += 1
+    return sorted(picked, key=lambda x: x.get("published_at") or "", reverse=True)[:limit]
+
+
+def fetch_news() -> list[dict[str, Any]]:
+    lists = []
+    for lang, q, loc in NEWS_QUERIES:
+        lists.append(parse_news_rss(_text(f"https://news.google.com/rss/search?q={quote(q)}&{loc}"), lang))
+    return merge_news(lists)
+
+
+def fetch_calendar() -> tuple[dict[str, Any], dict[str, Any] | None, dict[str, str]]:
+    docs = find_refunding_docs(_text(QR_DOCS))
+    if "schedule_xml" not in docs:
+        raise ValueError("refunding page: no buyback schedule XML link")
+    cal = parse_schedule_xml(_text(docs["schedule_xml"]))
+    ceilings = parse_policy_ceilings(_text(docs["policy_statement"])) if "policy_statement" in docs else None
+    return cal, ceilings, docs
+
+
+def buyback_extras(rows: list[dict[str, Any]], cal: dict[str, Any] | None, ceilings: dict[str, Any] | None,
+                   docs: dict[str, str], news: list[dict[str, Any]], official: list[dict[str, Any]], today: str) -> dict[str, Any]:
+    extras: dict[str, Any] = {"long_end": long_end_demand(rows), "news": news, "official": list(official)}
+    if docs.get("policy_statement"):
+        extras["official"].insert(0, {"title": f"분기 국채발행계획 성명 ({docs.get('policy_statement_label', '')})",
+                                      "url": docs["policy_statement"], "note_ko": (ceilings or {}).get("sentence")})
+    if cal:
+        done = {(r["date"], r.get("bucket")) for r in rows}
+        upcoming = [o for o in cal["operations"] if o["date"] >= today and (o["date"], o["bucket"]) not in done]
+        extras["calendar"] = {"name": cal["name"], "start": cal["start"], "end": cal["end"], "upcoming": upcoming,
+                              "total": len(cal["operations"]), "pdf": docs.get("schedule_pdf"), "xml": docs.get("schedule_xml")}
+        extras["quarter"] = quarter_progress(rows, cal["start"], cal["end"], ceilings)
+    return extras
+
+
+FD_BB_SECS = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/buybacks_security_details"
+              "?fields=operation_date,cusip_nbr,coupon_rate_pct,maturity_date,par_amt_accepted,weighted_avg_accepted_price"
+              "&sort=-operation_date&page[size]=10000")
+
+
+def buyback_securities(rows: list[dict[str, Any]], ops: list[dict[str, Any]], recent: int = 40,
+                       since: str = "2024-01-01") -> dict[str, Any]:
+    """Securities actually bought (par accepted > 0): the most recent, and totals by maturity year since the
+    program began. rows: Fiscal Data buybacks_security_details; ops: parsed operations (for purpose/bucket)."""
+    op_by_date: dict[str, list] = defaultdict(list)
+    for o in ops:
+        op_by_date[o["date"]].append(o)
+    got = []
+    for r in rows:
+        par = _f(r.get("par_amt_accepted"))
+        if not par or r.get("maturity_date") in (None, "null") or r["operation_date"] < since:
+            continue                                # the 2000-02 program is in the same table
+        same_day = op_by_date.get(r["operation_date"], [])
+        got.append({"date": r["operation_date"], "cusip": r.get("cusip_nbr"), "coupon_pct": _f(r.get("coupon_rate_pct")),
+                    "maturity": r["maturity_date"], "par_bn": round(par / 1e9, 3), "price": _f(r.get("weighted_avg_accepted_price")),
+                    "type_ko": same_day[0]["type_ko"] if len(same_day) == 1 else None,
+                    "bucket_ko": same_day[0]["bucket_ko"] if len(same_day) == 1 else None})
+    got.sort(key=lambda x: (x["date"], x["par_bn"]), reverse=True)
+    by_year: dict[str, float] = defaultdict(float)
+    liq_by_year: dict[str, float] = defaultdict(float)
+    for g in got:
+        by_year[g["maturity"][:4]] += g["par_bn"]
+        if g["type_ko"] == OP_TYPE_KO["Liquidity Support"]:
+            liq_by_year[g["maturity"][:4]] += g["par_bn"]
+    cash = sum(g["par_bn"] * g["price"] / 100 for g in got if g["price"])
+    par_priced = sum(g["par_bn"] for g in got if g["price"])
+    return {"recent": got[:recent], "since": got[-1]["date"] if got else None,
+            "avg_price": round(cash / par_priced * 100, 2) if par_priced else None,
+            "total_bn": round(sum(g["par_bn"] for g in got), 1),
+            "by_maturity_year": [{"year": y, "par_bn": round(by_year[y], 2), "liquidity_bn": round(liq_by_year[y], 2)}
+                                 for y in sorted(by_year)]}
+
+
+def fetch_buyback_securities(ops: list[dict[str, Any]]) -> dict[str, Any]:
+    return buyback_securities(_get(FD_BB_SECS).get("data") or [], ops)

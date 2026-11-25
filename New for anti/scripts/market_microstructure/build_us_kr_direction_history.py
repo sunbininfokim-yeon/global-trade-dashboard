@@ -22,7 +22,7 @@ import argparse
 import json
 import os
 import tempfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from build_kospi200_price_panel import fetch_naver_chart
@@ -44,7 +44,8 @@ def from_live(path):
     d = json.loads(Path(path).read_text())
     if d.get('status') != 'research_preopen_forecast':
         return None
-    return {'target': d['target_date'], 'kind': 'live', 'generated_at': d['generated_at'],
+    return {'target': d['target_date'], 'kind': 'live', 'generated_at': d['generated_at'], 'model_id': d.get('model_id'),
+            'trained_through': d.get('trained_through'),
             'v1': {t: {h: prob(d['results'][t]['scores'].get(h)) for h in HEADS} for t in TICKERS if t in d.get('results', {})},
             'us_price': {}}
 
@@ -57,7 +58,8 @@ def from_replay(path):
     us = ((d.get('factors') or {}).get('us_price') or {})
     us_cards = {c['ticker']: c for c in us.get('cards') or [] if c.get('status') == 'available'} \
         if us.get('as_of') and us.get('as_of') == us.get('expected_source_date') else {}
-    return {'target': d['target_date'], 'kind': 'replay', 'generated_at': d['generated_at'],
+    return {'target': d['target_date'], 'kind': 'replay', 'generated_at': d['generated_at'], 'model_id': d.get('model_id'),
+            'trained_through': d.get('trained_through'),
             'v1': {t: {h: prob(cards[t]['scores'].get(h)) for h in HEADS} for t in TICKERS if t in cards},
             'us_price': {t: {h: prob(us_cards[t]['scores'].get(h)) for h in HEADS} for t in TICKERS if t in us_cards},
             'us_price_kind': 'replay'}
@@ -82,22 +84,33 @@ def actual(bars, target):
 
 
 def build(archive, replays, model, prior=(), today=None):
-    trained = model['trained_through']; mid = model['model_id'][:16]
+    """Rows from every model version are kept; each row is dropped only when its
+    own model was trained through that target (in-sample)."""
+    trained = model['trained_through']
+    oos = lambda r: r and r['target'] > (r.get('trained_through') or trained)
     # Earlier replay rows stay (replays are not re-run every day); actuals are
     # always re-read so a row that was not yet matured fills in later.
     rows = {r['target']: {k: v for k, v in r.items() if k != 'actual'}
-            for r in prior if r.get('kind') == 'replay' and r['target'] > trained}
+            for r in prior if r.get('kind') == 'replay' and oos(r)}
+    # US-factor values a live row borrowed earlier survive an incremental rebuild
+    prior_us = {r['target']: (r.get('us_price') or {}, r.get('us_price_kind')) for r in prior if r.get('us_price')}
     for path in sorted(Path(replays).glob('*/display_payload.json')) if replays else []:
         r = from_replay(path)
-        if r and r['target'] > trained:
+        if oos(r):
             rows[r['target']] = r
-    for path in sorted(Path(archive).glob(f'*/{mid}/first.json')):
+    for path in sorted(Path(archive).glob('*/*/first.json')):
+        if path.parent.name == 'us_price':
+            continue
         r = from_live(path)
-        if r and r['target'] > trained:
+        if oos(r):
             # live v1 records never carried the factor; borrow the replay's, labelled so
-            r['us_price'] = rows.get(r['target'], {}).get('us_price', {})
+            r['us_price'] = rows.get(r['target'], {}).get('us_price') or prior_us.get(r['target'], ({}, None))[0]
             r['us_price_kind'] = 'replay'
-            rows[r['target']] = r  # a real pre-open record always wins over a replay
+            old = rows.get(r['target'])
+            # a real pre-open record beats a replay; between two live records of
+            # different models the newer model (later trained_through) wins
+            if not old or old['kind'] != 'live' or (r.get('trained_through') or '') > (old.get('trained_through') or ''):
+                rows[r['target']] = r
     us_first = Path(archive)
     for target, r in rows.items():  # #1077: immutable US-price first records win too
         for path in us_first.glob(f'{target}/us_price/*/first.json'):
@@ -112,9 +125,13 @@ def build(archive, replays, model, prior=(), today=None):
     first = (datetime.fromisoformat(targets[0]).toordinal() - 14)
     bars = daily_bars(datetime.fromordinal(first).strftime('%Y-%m-%d'), targets[-1])
     out = []
+    now_kst = (today or datetime.now(timezone.utc)).astimezone(timezone(timedelta(hours=9)))
     for t in targets:
         r = rows[t]
-        r['actual'] = {tk: actual(bars[tk], t) for tk in TICKERS}
+        r.setdefault('model_id', model['model_id'])  # rows from before the field existed
+        # a session still trading has a partial bar -- never score it as the outcome
+        closed = t < now_kst.strftime('%Y-%m-%d') or (t == now_kst.strftime('%Y-%m-%d') and now_kst.hour * 60 + now_kst.minute >= 15 * 60 + 45)
+        r['actual'] = {tk: actual(bars[tk], t) if closed else None for tk in TICKERS}
         out.append(r)
     return {'schema_version': SCHEMA, 'model_id': model['model_id'], 'trained_through': trained,
             'generated_at': (today or datetime.now(timezone.utc)).isoformat(),

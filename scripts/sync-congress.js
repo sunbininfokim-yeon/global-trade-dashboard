@@ -55,6 +55,31 @@ async function apiGet(path, query = {}, optional = false) {
   }
 }
 
+async function loadBillActions(billPath, get = apiGet) {
+  const actionsPath = `${billPath}/actions`;
+  const actions = [];
+  let offset = 0;
+  while (true) {
+    const body = await get(actionsPath, { limit: 250, offset }, offset === 0);
+    if (!body && offset === 0) return actions;
+    if (!Array.isArray(body?.actions)) throw new Error(`Congress.gov ${actionsPath}: invalid action page`);
+    actions.push(...body.actions);
+    const next = body.pagination?.next;
+    if (!next) {
+      if (Number(body.pagination?.count) > actions.length) {
+        throw new Error(`Congress.gov ${actionsPath}: incomplete action history`);
+      }
+      return actions;
+    }
+    // 공식 응답이 알려 준 페이지 위치만 사용하고 요청 호스트와 경로는 고정한다.
+    const nextOffset = new URL(next, API_BASE).searchParams.get('offset');
+    if (!nextOffset || !/^[0-9]+$/.test(nextOffset) || Number(nextOffset) !== actions.length || actions.length <= offset) {
+      throw new Error(`Congress.gov ${actionsPath}: invalid action pagination`);
+    }
+    offset = Number(nextOffset);
+  }
+}
+
 function idOf(congress, type, number) { return `${congress}-${String(type).toLowerCase()}-${number}`; }
 function officialUrl(ref) { return PolicyEvidence.billUrl(ref.congress, ref.type, ref.number); }
 function asChamber(value) {
@@ -97,8 +122,96 @@ function latestActionOf(actions, fallbackAction) {
   const ordered = chronologicalActions(actions);
   return ordered.length ? ordered.at(-1).action : fallbackAction;
 }
-function actionId(billId, action, index) {
-  return `ca_${crypto.createHash('sha256').update([billId, action.actionDate, action.actionTime, action.actionCode, action.text, index].join('|')).digest('hex').slice(0, 32)}`;
+function actionIdentity(row) {
+  return JSON.stringify([row.action_date ? parseTimestamp(row.action_date) : null, row.action_code || null, row.action_text]);
+}
+
+function actionVoteKeys(action) {
+  const keys = asArray(action.recordedVotes).flatMap(vote => {
+    const roll = Number(vote.rollNumber || vote.roll_number);
+    if (!Number.isInteger(roll) || roll <= 0) return [];
+    return [JSON.stringify([asChamber(vote.chamber) || actionChamber(action),
+      Number(vote.sessionNumber || vote.session) || null, roll])];
+  });
+  return [...new Set(keys)].sort();
+}
+
+async function existingBillActions(billId, get) {
+  const rows = [];
+  const pageSize = 500;
+  for (let offset = 0; ; offset += pageSize) {
+    const page = await get('bill_actions', {
+      select: 'bill_action_id,action_date,action_code,action_text,raw_source',
+      bill_id: `eq.${billId}`,
+      order: 'created_at.asc,bill_action_id.asc',
+      limit: String(pageSize),
+      offset: String(offset),
+    });
+    rows.push(...page);
+    if (page.length < pageSize) return rows;
+  }
+}
+
+async function saveBillActionHistory(data, {
+  get = supabaseGet,
+  upsert = supabaseUpsert,
+  recordVote = saveVote,
+} = {}) {
+  const latestAction = latestActionOf(data.actions, { actionDate: data.row.latest_action_date, text: data.row.latest_action_text });
+  // 거부권 행사 이후에도 이전 통과 및 대통령 송부 근거를 보존한다.
+  const keepFullHistory = data.detailLevel !== 'index' || data.row.current_stage === 'vetoed';
+  const actions = keepFullHistory && data.actions.length ? data.actions : [latestAction].filter(action => action?.text);
+  if (!actions.length) return null;
+  const prepared = actions.map(action => {
+    const text = firstNonEmpty(action.text, 'Action recorded');
+    return { action, voteKeys: actionVoteKeys(action), row: {
+      bill_id: data.billId,
+      action_date: parseTimestamp(`${parseDateOnly(action.actionDate) || '1900-01-01'}T${action.actionTime || '00:00:00'}Z`),
+      action_code: action.actionCode || null,
+      action_type: action.sourceSystem?.name || action.actionType || null,
+      chamber: actionChamber(action), action_text: text, normalized_stage: stage(text, data.ref.type, action),
+      source_url: withoutKey(action.url) || officialUrl(data.ref),
+    } };
+  });
+  const variants = new Map();
+  for (const { row, voteKeys } of prepared) {
+    const identity = actionIdentity(row);
+    if (!variants.has(identity)) variants.set(identity, new Set());
+    variants.get(identity).add(JSON.stringify(voteKeys));
+  }
+  const stored = new Map();
+  for (const row of await existingBillActions(data.billId, get)) {
+    const identity = actionIdentity(row);
+    if (!stored.has(identity)) stored.set(identity, []);
+    stored.get(identity).push(row);
+  }
+  const rows = new Map();
+  let latestActionId = null;
+  for (const { action, row, voteKeys } of prepared) {
+    const identity = actionIdentity(row);
+    const matches = stored.get(identity) || [];
+    const exact = matches.find(old => JSON.stringify(old.raw_source?.recorded_vote_keys) === JSON.stringify(voteKeys));
+    // 고유하게 식별할 수 있는 기존 행의 ID를 재사용해 상태 이력의 참조를 지킨다.
+    const legacy = variants.get(identity).size === 1
+      ? matches.find(old => !Array.isArray(old.raw_source?.recorded_vote_keys))
+      : undefined;
+    const storedId = (exact || legacy)?.bill_action_id;
+    const id = storedId || `ca_${crypto.createHash('sha256')
+      .update(JSON.stringify([data.billId, identity, voteKeys])).digest('hex').slice(0, 32)}`;
+    rows.set(id, { ...row, bill_action_id: id, raw_source: {
+      source: 'congress.gov', action_code: row.action_code,
+      recorded_vote_count: asArray(action.recordedVotes).length, recorded_vote_keys: voteKeys,
+    } });
+    if (action === latestAction) latestActionId = id;
+  }
+  const actionRows = [...rows.values()];
+  for (let index = 0; index < actionRows.length; index += 250) {
+    await upsert('bill_actions', actionRows.slice(index, index + 250), 'bill_action_id');
+  }
+  for (const action of actions) {
+    for (const vote of asArray(action.recordedVotes)) await recordVote(data, action, vote);
+  }
+  return latestActionId;
 }
 function withoutKey(url) {
   if (!url) return null;
@@ -246,14 +359,13 @@ async function bundle(ref) {
   // lifecycle stage is based on evidence, not only the wording of the latest
   // one-line status. Index-only bills discard the timeline after classification
   // and persist only its newest action for monitoring, without text versions.
-  const [summaryBody, subjectBody, committeeBody, actionBody] = await Promise.all([
+  const [summaryBody, subjectBody, committeeBody, actions] = await Promise.all([
     apiGet(`${path}/summaries`, { limit: 250 }, true), apiGet(`${path}/subjects`, { limit: 250 }, true),
-    apiGet(`${path}/committees`, { limit: 250 }, true), apiGet(`${path}/actions`, { limit: 250 }, true),
+    apiGet(`${path}/committees`, { limit: 250 }, true), loadBillActions(path),
   ]);
   const summaries = asArray(summaryBody?.summaries);
   const latestSummary = [...summaries].sort((a, b) => String(a.updateDate || '').localeCompare(String(b.updateDate || ''))).at(-1);
   const basicLatestAction = detail.latestAction || ref.listItem?.latestAction || {};
-  const actions = asArray(actionBody?.actions);
   const lifecycle = PolicyEvidence.buildLifecycle({ bill_type: ref.type, origin_chamber: origin(ref.type),
     congress_url: officialUrl(ref), bill_actions: actions.length ? actions : [basicLatestAction] });
   const currentStage = lifecycle.current.stage;
@@ -358,23 +470,7 @@ async function saveBundle(data) {
       first_referred_at: asArray(committee.activities).filter(a => /referred/i.test(a.name || '')).map(a => parseTimestamp(a.date)).filter(Boolean).sort()[0] || null,
       last_activity_at: asArray(committee.activities).map(a => parseTimestamp(a.date)).filter(Boolean).sort().at(-1) || null, raw_source: committee }], 'bill_id,committee_id');
   }
-  let latestActionId = null;
-  // Even an index-only record needs the newest official action for monitoring.
-  const historyActions = data.detailLevel === 'index'
-    ? [latestActionOf(data.actions, { actionDate: data.row.latest_action_date, text: data.row.latest_action_text })].filter(a => a?.text)
-    : data.actions;
-  for (let index = 0; index < historyActions.length; index += 1) {
-    const action = historyActions[index]; const actionText = firstNonEmpty(action.text, 'Action recorded'); const id = actionId(data.billId, action, index);
-    const actionDate = parseTimestamp(`${parseDateOnly(action.actionDate) || '1900-01-01'}T${action.actionTime || '00:00:00'}Z`);
-    await supabaseUpsert('bill_actions', [{ bill_action_id: id, bill_id: data.billId, action_date: actionDate,
-      action_code: action.actionCode || null, action_type: action.sourceSystem?.name || action.actionType || null,
-      chamber: actionChamber(action), action_text: actionText, normalized_stage: stage(actionText, data.ref.type, action),
-      source_url: withoutKey(action.url) || officialUrl(data.ref), raw_source: {
-        source: 'congress.gov', action_code: action.actionCode || null, recorded_vote_count: asArray(action.recordedVotes).length,
-      } }], 'bill_action_id');
-    if (action === latestActionOf(historyActions)) latestActionId = id;
-    for (const vote of asArray(action.recordedVotes)) await saveVote(data, action, vote);
-  }
+  const latestActionId = await saveBillActionHistory(data);
   // Idempotent insertion also repairs a run that wrote the bill then died before
   // writing history. Comparing only previous.current_status loses that event.
   if (latestActionId) await supabaseInsertIgnore('bill_status_history', { bill_id: data.billId, status: data.row.current_status,
@@ -586,5 +682,5 @@ async function run() {
     throw error;
   }
 }
-module.exports = { stage, stageFromActions, actionChamber, lifecycleFromActions, prepareEmbedding };
+module.exports = { stage, stageFromActions, actionChamber, lifecycleFromActions, prepareEmbedding, loadBillActions, saveBillActionHistory };
 if (require.main === module) run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });

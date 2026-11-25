@@ -8,6 +8,7 @@ import argparse
 from datetime import date, datetime, timezone
 from hashlib import sha256
 import json
+import re
 from pathlib import Path
 
 from bilateral import ContractError, build_partition, period_key
@@ -155,6 +156,27 @@ def publish(state, out_dir, catalogue, *, as_of, monitor=None):
                 'note_ko': '연도·월, 직접 신고·상대국 신고, 물량·금액의 기준을 합치지 않습니다. 미확보는 0이 아닙니다.'}
     atomic_json(out_dir / 'index.json', manifest)
     return manifest
+
+
+PART_NAME = re.compile(r'^[0-9a-f]{64}\.json$')
+
+
+def prune_parts(out_dir, manifest, previous=None):
+    """Delete parts neither this nor the previous index lists.
+
+    Parts are content-addressed and were never removed, so the static bundle
+    crossed Cloudflare's 20,000-file cap (2026-11-24). The previous index's
+    parts stay one generation for browsers still holding it. refresh_pipeline
+    calls this once, after the release gate, with the index as committed at
+    run start (one run publishes twice: comtrade, then korea_customs), so an
+    interrupted run leaves extra files, never a dangling path."""
+    keep = {e['path'] for idx in (manifest, previous or {}) for e in idx.get('entries', ())}
+    removed = []
+    for path in sorted((Path(out_dir) / 'parts').glob('*.json')):
+        if PART_NAME.match(path.name) and 'parts/' + path.name not in keep:
+            path.unlink()
+            removed.append('parts/' + path.name)
+    return removed
 
 
 def main(argv=None):

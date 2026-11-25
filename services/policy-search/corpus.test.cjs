@@ -3,6 +3,7 @@ const { PGlite } = require('@electric-sql/pglite');
 const { vector } = require('@electric-sql/pglite-pgvector');
 const { buildDocument, citations, chunks, officialUrl, hash } = require('../../scripts/lib/policy-search-document');
 const { parse, annotate, rank } = require('../../scripts/lib/policy-search-terms');
+const { processJob } = require('../../scripts/sync-policy-search');
 const sql = fs.readFileSync(require.resolve('../../supabase/migrations/20261005010000_policy_search_documents.sql'), 'utf8');
 const url = 'https://www.congress.gov/bill/119th-congress/house-joint-resolution/72/text';
 const eoUrl = 'https://www.govinfo.gov/content/pkg/DCPD-202500209/html/DCPD-202500209.htm';
@@ -70,6 +71,97 @@ test('source changes during processing reject old snapshot; old token cannot fin
   await db.exec("update policy_search_jobs set lease_until=now()-interval '1 second'");const recovered=await claim();
   assert.notEqual(recovered.claim_token,next.claim_token);
   assert.equal((await db.query('select finish_policy_search_job($1,$2) done',[next.document_id,next.claim_token])).rows[0].done,false);
+}));
+test('embedding refresh preserves the searchable snapshot until replacement vectors are ready', () => fixture(async ({ db, enqueue, claim, save, finish }) => {
+  const oldDocument = document();
+  const oldVector = [1, ...Array(1535).fill(0)];
+  const newVector = [0, 1, ...Array(1534).fill(0)];
+  await enqueue();
+  const initialJob = await claim();
+  await save(oldDocument, initialJob, oldDocument.passages.map(passage => ({
+    ...passage, embedding: oldVector, embedding_model: 'gemini-embedding-001',
+  })));
+  await finish(initialJob);
+
+  await enqueue();
+  const job = await claim();
+  const newDocument = {
+    ...oldDocument,
+    input_hash: hash('updated document'),
+    passages: oldDocument.passages.map((passage, index) => index === 0
+      ? { ...passage, text: 'Updated title', input_text: 'Updated title', input_hash: hash('Updated title') }
+      : passage),
+  };
+  const loader = { document: async () => structuredClone(newDocument) };
+  const snapshot = async () => (await db.query(
+    'select passage_index, input_hash, embedding::text from policy_search_passages order by passage_index'
+  )).rows;
+  const before = await snapshot();
+  let saves = 0;
+  const io = {
+    get: async (table, query) => {
+      assert.equal(table, 'policy_search_passages');
+      assert.equal(query.embedding, 'not.is.null');
+      return (await db.query(
+        'select passage_index,input_hash,embedding_model from policy_search_passages where document_id=$1 and embedding is not null',
+        [job.document_id]
+      )).rows;
+    },
+    rpc: async (name, args) => {
+      assert.equal(name, 'save_policy_search_document');
+      assert.equal(args.p_token, job.claim_token);
+      saves++;
+      return save(args.p_document, job, args.p_passages);
+    },
+  };
+  await assert.rejects(processJob(job, loader, true, {
+    ...io, embedTexts: async () => { throw new Error('HTTP 429'); },
+  }), /429/);
+  assert.equal(saves, 0);
+  assert.deepEqual(await snapshot(), before);
+  assert.equal((await processJob(job, loader, false, io)).preserved_existing, true);
+  assert.equal(saves, 0);
+  assert.deepEqual(await snapshot(), before);
+
+  const refreshed = await processJob(job, loader, true, {
+    ...io,
+    embedTexts: async (inputs) => {
+      assert.deepEqual(inputs, ['Updated title']);
+      assert.deepEqual(await snapshot(), before);
+      return [newVector];
+    },
+  });
+  assert.equal(refreshed.embedded, 1);
+  assert.equal(saves, 1);
+  const after = await snapshot();
+  assert.deepEqual(JSON.parse(after[0].embedding), newVector);
+  assert.deepEqual(after.slice(1), before.slice(1));
+}));
+
+test('a source revision arriving during Gemini generation keeps the old index and requeues work', () => fixture(async ({ db, enqueue, claim, save, finish }) => {
+  const oldDocument = document();
+  const vector = [1, ...Array(1535).fill(0)];
+  await enqueue();
+  const initialJob = await claim();
+  await save(oldDocument, initialJob, oldDocument.passages.map(passage => ({
+    ...passage, embedding: vector, embedding_model: 'gemini-embedding-001',
+  })));
+  await finish(initialJob);
+  await enqueue();
+  const job = await claim();
+  const nextDocument = { ...oldDocument, input_hash: hash('superseded document') };
+  const result = await processJob(job, { document: async () => structuredClone(nextDocument) }, true, {
+    get: async () => [],
+    embedTexts: async (inputs) => {
+      await enqueue();
+      return inputs.map(() => vector);
+    },
+    rpc: (name, args) => save(args.p_document, job, args.p_passages),
+  });
+  assert.deepEqual(result, { superseded: true, embedded: 0 });
+  assert.equal((await db.query('select input_hash from policy_search_documents')).rows[0].input_hash, oldDocument.input_hash);
+  await finish(job);
+  assert.equal((await db.query('select status from policy_search_jobs')).rows[0].status, 'queued');
 }));
 test('citation dependency refresh and source deletion preserve other sources; changed chunk clears old vector',()=>fixture(async({db,enqueue,claim,save,finish})=>{
   await db.exec("insert into bills(bill_id,title) values('119-hjres-72','Bill');insert into executive_orders(eo_number,title) values(14193,'EO')");

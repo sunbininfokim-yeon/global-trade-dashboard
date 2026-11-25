@@ -19,3 +19,10 @@ public/data/icrisat_crop_production.json
 macro_monitor.html
 macro_monitor.js
 macro_monitor.css
+
+# 2026-11-24: Workers Free caps a version at 20,000 static files; main reached
+# 20,119 and every deploy failed. Per-state election evidence (1,324 files) is
+# read only by scripts/election_watch at build time -- no browser code fetches
+# it (grep js/ app.js for "state_evidence": none). Its index stays published.
+public/data/usa_election_state_evidence
+public/data/usa_election_state_evidence/**

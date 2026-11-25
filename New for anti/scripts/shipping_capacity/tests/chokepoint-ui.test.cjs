@@ -24,6 +24,12 @@ const api = context.window.__chokeTest;
 const normalized = api.normalizeSnapshot(snapshot);
 const point = id => normalized.ui.chokepoints.find(row => row.id === id);
 const rows = id => api.publishedOfficialRows(point(id).officialCargo);
+const published = (id, category) => snapshot.official_cargo_monitor.chokepoints[id].reported_series
+  .filter(row => row.cargo_category === category);
+const latestPublished = (id, category) => published(id, category)
+  .filter(row => Number.isFinite(row.value) && row.status !== 'not_reported')
+  .sort((a, b) => b.period_end.localeCompare(a.period_end))[0];
+const oilText = row => `${(row.value / 1e4).toLocaleString('ko-KR', {maximumFractionDigits: 0})}만 배럴/일`;
 const plain = value => JSON.parse(JSON.stringify(value));
 const renderList = () => {
   const root = { innerHTML: '', querySelector: () => null, querySelectorAll: () => [] };
@@ -67,10 +73,11 @@ test('long-range axis uses unambiguous year-month ticks with mobile-safe density
 test('Hormuz main value is the latest official oil average, not a big -99% headline', () => {
   const html = card(renderList(), 'hormuz');
   const latest = api.latestOfficialCargo(point('hormuz'));
-  assert.equal(latest.publisher, 'IEA');
-  assert.equal(latest.value, 7600000);
-  assert.match(html, /760만 배럴\/일/);
-  assert.match(html, /2026-08/);
+  const expected = latestPublished('hormuz', 'total_oil');
+  assert.equal(latest.id, expected.id);
+  assert.equal(latest.value, expected.value);
+  assert.ok(html.includes(oilText(expected)));
+  assert.ok(html.includes(api.publicationPeriod(expected)));
   assert.match(html, /전체 AIS 포착량 변화/);
   assert.match(html, /전년 같은 요일 7일/);
   assert.doesNotMatch(html, /<strong class="shipping-change[^>]*>-99%/);
@@ -81,8 +88,8 @@ test('Suez headline is all-ship AIS tonnes; SUMED oil is only a separate referen
   const summary = api.trafficSummaryOf(point('suez'));
   const millions = (summary.current.value / 1e6).toFixed(2).replace('.', '\\.');
   assert.match(html, new RegExp(`<strong class="shipping-change[^>]*>${millions}M t/일`));
-  assert.doesNotMatch(html, /<strong class="shipping-change[^>]*>580만 배럴\/일/);
-  assert.match(html, /석유 참고 580만 배럴\/일/);
+  assert.doesNotMatch(html, /<strong class="shipping-change[^>]*>[^<]*배럴\/일/);
+  assert.ok(html.includes(`석유 참고 ${oilText(latestPublished('suez', 'total_oil'))}`));
   assert.match(html, /SUMED 포함/);
   // The top three ship types render in the engine's ranked order with its shares.
   const types = summary.ship_types.filter(row => Number.isFinite(row.current?.value)).slice(0, 3);
@@ -130,31 +137,38 @@ test('list is compact and the AIS overview is initially closed', () => {
 });
 
 test('official chart uses published period values and separates EIA from IEA', () => {
-  const config = api.officialVolumeChartData(rows('hormuz'), 'total_oil');
-  const eia = config.datasets.find(row => row.label.startsWith('EIA'));
-  const iea = config.datasets.find(row => row.label.startsWith('IEA'));
+  const entries = published('hormuz', 'total_oil');
+  const config = api.officialVolumeChartData(entries, 'total_oil');
+  const dates = [...new Set(entries.map(row => row.period_start))].sort();
   assert.equal(config.unit, 'barrels_per_day');
-  assert.deepEqual(plain(eia.data), [2090, 2100, 2130, 2160, 1490, 490, null]);
-  assert.deepEqual(plain(iea.data), [null, null, null, null, null, null, 760]);
-  assert.equal(iea.showLine, false);
-  assert.equal(eia.tension, 0);
-  assert.equal(eia.spanGaps, false);
-  assert.equal(config.labels.length, 7); // Not a fabricated 500-day official series.
+  const publishers = [...new Set(entries.map(row => row.publisher))];
+  assert.equal(config.datasets.length, publishers.length);
+  for (const publisher of publishers) {
+    const dataset = config.datasets.find(row => row.label.startsWith(publisher));
+    const byDate = new Map(entries.filter(row => row.publisher === publisher).map(row => [row.period_start, row.value]));
+    assert.deepEqual(plain(dataset.data), dates.map(date => Number.isFinite(byDate.get(date)) ? byDate.get(date) / 1e4 : null));
+    assert.equal(dataset.showLine, [...byDate.values()].filter(Number.isFinite).length > 1);
+    assert.equal(dataset.tension, 0);
+    assert.equal(dataset.spanGaps, false);
+  }
+  assert.equal(config.labels.length, dates.length); // No daily disaggregation.
 });
 
 test('crude selection cannot reuse the IEA total-oil reference', () => {
   const latest = api.latestOfficialCargo(point('hormuz'), 'crude_condensate');
   assert.equal(latest.publisher, 'EIA');
-  assert.equal(latest.value, 3700000);
+  assert.equal(latest.value, latestPublished('hormuz', 'crude_condensate').value);
   const config = api.officialVolumeChartData(rows('hormuz'), 'crude_condensate');
   assert.equal(config.datasets.length, 1);
-  assert.deepEqual(plain(config.datasets[0].data), [1480, 1490, 1500, 1590, 1090, 370]);
+  assert.deepEqual(plain(config.datasets[0].data), published('hormuz', 'crude_condensate')
+    .sort((a, b) => a.period_start.localeCompare(b.period_start)).map(row => row.value === null ? null : row.value / 1e4));
 });
 
 test('LNG retains its native unit and is never put on the oil axis', () => {
   const config = api.officialVolumeChartData(rows('hormuz'), 'lng');
   assert.equal(config.unit, 'billion_cubic_feet_per_day');
-  assert.deepEqual(plain(config.datasets[0].data), [11.7, 11, 10.9, 10.5, 7.4, 0.8]);
+  assert.deepEqual(plain(config.datasets[0].data), published('hormuz', 'lng')
+    .sort((a, b) => a.period_start.localeCompare(b.period_start)).map(row => row.value));
 });
 
 test('missing publication is a gap, not zero or an interpolated daily value', () => {

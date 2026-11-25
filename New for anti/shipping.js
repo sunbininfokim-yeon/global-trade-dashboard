@@ -40,6 +40,11 @@
       title: 'Net Zero 시나리오',
       desc: 'IMO 2050 넷제로 전략의 중간 관문인 CII 감축 일정(2026–2030)에 대응해 감속·개조가 유효 선복량을 얼마나 잠식하는지 봅니다. 2050년까지의 전체 경로가 아니라 현재 확정된 감축 계수 구간만 다룹니다.'
     },
+    shipping_arctic: {
+      eyebrow: 'NORTHERN SEA ROUTE',
+      title: '북극항로',
+      desc: '항로선 위 6개 구간의 해빙 농도(NSIDC 일별 위성 자료)로 북극항로가 언제 열리고 닫히는지 선급별로 판정하고, 다음 시즌을 전망합니다. 부산→로테르담 거리·일수를 수에즈·희망봉 항로와 비교합니다. 매일 자동 갱신됩니다.'
+    },
     shipping_fueleu: {
       eyebrow: 'FUELEU MARITIME',
       title: 'FuelEU 풀링',
@@ -56,6 +61,7 @@
     ['shipping_fleet', '글로벌 선대'],
     ['shipping_routes', '항로 운항 선복량'],
     ['shipping_chokepoints', '초크포인트'],
+    ['shipping_arctic', '북극항로'],
     ['shipping_carbon', '탄소금융'],
     ['shipping_fueleu', 'FuelEU 풀링']
   ];
@@ -506,8 +512,8 @@
             <p class="shipping-hero-desc">${escapeHtml(meta.desc)}</p>
           </div>
           <div class="shipping-hero-meta">
-            <span>${target === 'shipping_carbon' ? '가상 고객·가상 가격 시나리오' : target === 'shipping_fueleu' ? 'Regulation (EU) 2023/1805 · 공개 자료' : `스냅샷 ${formatDate(data.generated_at)}`}</span>
-            ${source && !['shipping_chokepoints', 'shipping_carbon', 'shipping_fueleu'].includes(target) ? `<a class="shipping-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">UNCTAD 원문 ↗</a>` : ''}
+            <span>${target === 'shipping_arctic' ? 'NSIDC 해빙 · CHNL 운항 기록' : target === 'shipping_carbon' ? '가상 고객·가상 가격 시나리오' : target === 'shipping_fueleu' ? 'Regulation (EU) 2023/1805 · 공개 자료' : `스냅샷 ${formatDate(data.generated_at)}`}</span>
+            ${source && !['shipping_chokepoints', 'shipping_carbon', 'shipping_fueleu', 'shipping_arctic'].includes(target) ? `<a class="shipping-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">UNCTAD 원문 ↗</a>` : ''}
           </div>
         </header>
         <nav class="shipping-tabs" aria-label="해운 데이터 화면">${tabs}</nav>
@@ -597,9 +603,10 @@
       // ledger stay exactly as the engine published them.
       const officialCargo = payload.official_cargo_monitor?.chokepoints?.[point.id] || null;
       const reconstruction = point.id === 'hormuz' ? (payload.hormuz_reconstruction || null) : null;
+      const annualOutlook = point.id === 'hormuz' ? (payload.hormuz_annual_outlook || null) : null;
       // The Red Sea bypass touches Hormuz (origin) and both Red Sea exits.
       const bypass = ['hormuz', 'bab_el_mandeb', 'suez'].includes(point.id) ? (payload.hormuz_bypass_monitor || null) : null;
-      return { ...point, live, display, metricKey, metric, shortfall, remaining, officialCargo, reconstruction, bypass };
+      return { ...point, live, display, metricKey, metric, shortfall, remaining, officialCargo, reconstruction, bypass, annualOutlook };
     });
 
     return {
@@ -843,9 +850,24 @@
             const normal = route.operational_profile?.normal || {};
             const alternatives = asArray(route.operational_profile?.chokepoint_alternatives)
               .filter(item => item.reroute_available && finite(item.reroute_extra_days_one_way));
-            const detour = alternatives.length
-              ? alternatives.map(item => `${escapeHtml(chokepointNames.get(item.chokepoint_id) || item.chokepoint_id)} +${formatNumber(item.reroute_extra_days_one_way, 1)}일`).join('<br>')
-              : '대체항로 없음·비대상';
+            // #1115: build_snapshot owns detour_comparison; render-only. Falls back
+            // to the older chokepoint_alternatives list when the field is absent.
+            const comparison = asArray(route.operational_profile?.detour_comparison?.options);
+            const detour = comparison.length
+              ? comparison.map(option => {
+                  const via = asArray(option.bypassed_chokepoint_ids).map(id => chokepointNames.get(id) || id).join('·');
+                  const needs = asArray(option.requires_open_chokepoint_ids).map(id => chokepointNames.get(id) || id).join('·');
+                  const title = escapeHtml([option.warning_ko, needs ? `${needs} 통과 필요` : ''].filter(Boolean).join(' · '));
+                  if (option.status === 'no_same_port_sea_detour') {
+                    const blocked = option.blocking_chokepoint_id ? (chokepointNames.get(option.blocking_chokepoint_id) || option.blocking_chokepoint_id) : via;
+                    return `<span title="${title}">${blocked ? `${escapeHtml(blocked)} 봉쇄 시 ` : ''}해상 우회 없음</span>`;
+                  }
+                  const conditional = option.status === 'conditional_geometry_only' ? ' <small style="color:#fbbf24">조건부</small>' : '';
+                  return `<span title="${title}">${escapeHtml(via ? `${via} 대신 ${option.label_ko || ''}` : option.label_ko || '')}${conditional}<br><small style="color:#94a3b8">+${formatNumber(option.additional_nm_one_way, 0)}해리 · 편도 +${formatNumber(option.additional_sailing_days_one_way, 1)}일 · 왕복 +${formatNumber(option.additional_cycle_days_round_trip, 1)}일<br>추가 ${formatDWT(option.additional_required_dwt)} (${finite(option.additional_required_dwt_pct) ? `+${formatNumber(option.additional_required_dwt_pct, 1)}%` : '—'})</small></span>`;
+                }).join('<br>')
+              : alternatives.length
+                ? alternatives.map(item => `${escapeHtml(chokepointNames.get(item.chokepoint_id) || item.chokepoint_id)} +${formatNumber(item.reroute_extra_days_one_way, 1)}일`).join('<br>')
+                : '대체항로 없음·비대상';
             const [label, tier, note] = statusMeta(route.input_status);
             return `<tr>
               <td style="font-weight:500;color:#f1f5f9">${escapeHtml(route.name_ko || route.id)}</td>
@@ -857,7 +879,7 @@
             </tr>`;
           }).join('')
         ))}
-        <p class="shipping-note">운항기간은 설정된 거리·서비스 속도로 계산한 항로 수준 가정이며, 선사 스케줄이나 실제 기항 일정이 아닙니다.</p>`;
+        <p class="shipping-note">운항기간은 설정된 거리·서비스 속도로 계산한 항로 수준 가정이며, 선사 스케줄이나 실제 기항 일정이 아닙니다. 우회 시 추가 DWT는 노출 물량만 우회한다는 모델상 서비스 전체 증가분이며, 실시간 가용 선대나 초크포인트 시뮬레이터 결과가 아닙니다. '조건부'는 거리 가정만 있는 경로(흘수·공급 가능성 미검증)입니다.</p>`;
 
       root.innerHTML = pageShell('shipping_routes', body, data);
       routeChart = createChart(root, 'shipping-routes-chart', {
@@ -1135,6 +1157,91 @@
       ${assessment?.warning_ko ? `<p class="shipping-note">${escapeHtml(assessment.warning_ko)}</p>` : ''}`;
   };
 
+  // #1113 / #1122 render-only. official_cargo.py and hormuz_annual_outlook.py
+  // own every number; nothing here recomputes, sums or converts to per-day.
+  const formatPeriodTotal = (value, unit) => {
+    if (!finite(value)) return '—';
+    return unit === 'billion_cubic_feet'
+      ? `${formatNumber(value, 1)} 십억 ft³`
+      : `${formatNumber(Number(value) / 1e8, 2)}억 배럴`;
+  };
+  const formatDailyRate = (value, unit) => {
+    if (!finite(value)) return '—';
+    return unit === 'billion_cubic_feet_per_day' ? formatBcf(value) : formatManBarrels(Number(value) / 1e4);
+  };
+  const periodLabel = (start, end) => start && end ? `${formatDate(start)} ~ ${formatDate(end)}` : '—';
+  const sourceLine = item => `<p class="shipping-note">${escapeHtml(item.publisher || 'EIA')} 발표 ${escapeHtml(item.source_published_at || '—')}${
+    item.source_status && item.source_status !== 'fetched' ? ` · ${escapeHtml(item.source_status)}` : ''}${
+    item.source_url ? ` · <a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener">원문 ↗</a>` : ''}${
+    item.attribution ? ` · ${escapeHtml(item.attribution)}` : ''}</p>`;
+
+  const renderCumulativeCards = official => {
+    const cards = asArray(official?.cumulative_cards);
+    if (!cards.length) return '';
+    const rows = cards.flatMap(card => asArray(card.windows).map(win => {
+      const comparable = win.comparison_status === 'comparable' && finite(win.change_pct);
+      const missing = [...asArray(win.missing_quarter_starts), ...asArray(win.prior_missing_quarter_starts)];
+      const change = comparable
+        ? `${Number(win.change_pct) >= 0 ? '+' : ''}${formatNumber(win.change_pct, 1)}%`
+        : `<small style="color:#64748b">${missing.length ? `미보고 분기 ${escapeHtml(missing.join(', '))}` : '비교 불가'}</small>`;
+      return `<tr>
+        <td style="font-weight:500;color:#f1f5f9">${escapeHtml(card.label_ko || card.cargo_category)}<br><small style="color:#64748b">${escapeHtml(GEOGRAPHY_LABELS[card.geography_scope] || card.geography_scope || '')}</small></td>
+        <td>${escapeHtml(win.label_ko || win.kind)}<br><small style="color:#64748b">${periodLabel(win.period_start, win.period_end)}</small></td>
+        <td style="text-align:right">${formatPeriodTotal(win.value, card.unit)}</td>
+        <td style="text-align:right">${formatPeriodTotal(win.prior_value, card.unit)}<br><small style="color:#64748b">${periodLabel(win.prior_period_start, win.prior_period_end)}</small></td>
+        <td style="text-align:right;font-weight:600">${change}</td>
+      </tr>`;
+    }));
+    // Oil and LNG cards share the sentence; LNG appends its unit caveat. Keep
+    // only notes that are not a prefix of a longer one.
+    const unique = [...new Set(cards.map(card => card.warning_ko).filter(Boolean))];
+    const warnings = unique.filter(text => !unique.some(other => other !== text && other.startsWith(text)));
+    return `
+      <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 × 실제 일수 · 기간 누적과 같은 기간 전년 비교</p>
+      ${table(['품목', '기간', { label: '누적', align: 'right' }, { label: '전년 동기', align: 'right' }, { label: '전년 대비', align: 'right' }], rows.join(''))}
+      ${warnings.map(text => `<p class="shipping-note">${escapeHtml(text)}</p>`).join('')}
+      ${sourceLine(cards[0])}`;
+  };
+
+  const OUTLOOK_STATUS_NOTE = {
+    insufficient_reported_quarters: '중간 분기 미보고·중복으로 산출 보류',
+    awaiting_second_quarter: '1분기만 발표돼 연간 시나리오 보류',
+    past_year_awaiting_final_quarter: '지난 연도라 가정 전망을 표시하지 않음'
+  };
+  const renderHormuzAnnualOutlook = outlook => {
+    if (!outlook || outlook.status === 'unavailable') return '';
+    const cards = asArray(outlook.cards);
+    if (!cards.length) return '';
+    const body = cards.map(card => {
+      const head = `<p class="shipping-panel-kicker" style="margin-top:12px">${escapeHtml(card.label_ko || card.cargo_category)} · ${escapeHtml(card.year)}년</p>`;
+      if (card.status === 'full_year_institution_estimate') {
+        return `${head}${definitionRows([['연간 기관 추정치 합계', formatPeriodTotal(card.full_year_institution_total, card.unit)],
+          ['성격', '1~4분기 기관 발표치 합계 · 실측 아님']])}`;
+      }
+      if (card.status !== 'conditional_outlook') {
+        return `${head}<p class="shipping-note">${escapeHtml(OUTLOOK_STATUS_NOTE[card.status] || card.status)}${
+          asArray(card.missing_quarter_starts).length ? ` · 미보고 ${escapeHtml(card.missing_quarter_starts.join(', '))}` : ''}</p>`;
+      }
+      const rows = asArray(card.scenarios).map(sc => `<tr>
+        <td style="font-weight:500;color:#f1f5f9">${escapeHtml(sc.label_ko || sc.id)}<br><small style="color:#64748b">기준 ${periodLabel(sc.reference_period_start, sc.reference_period_end)}</small></td>
+        <td style="text-align:right">${formatDailyRate(sc.assumed_daily_rate, card.daily_rate_unit)}</td>
+        <td style="text-align:right">${formatPeriodTotal(sc.unreported_period_estimate, card.unit)}</td>
+        <td style="text-align:right;font-weight:600">${formatPeriodTotal(sc.annual_total, card.unit)}</td>
+      </tr>`).join('');
+      return `${head}
+        ${definitionRows([
+          [`발표 누적 (${periodLabel(card.period_start, card.published_period_end)})`, formatPeriodTotal(card.reported_cumulative, card.unit)],
+          ['미발표 구간', `${formatDate(card.unreported_period_start)} ~ ${formatDate(card.period_end)} · ${formatNumber(card.unreported_days, 0)}일 (그중 경과 ${formatNumber(card.unreported_elapsed_days, 0)}일)`]
+        ])}
+        ${table(['가정', { label: '가정 일평균', align: 'right' }, { label: '미발표 구간', align: 'right' }, { label: '연간 합계', align: 'right' }], rows)}`;
+    }).join('');
+    return panel('ANNUAL CONDITIONAL SCENARIO', '호르무즈 연간 조건부 시나리오', `
+      <div class="shipping-callout warning"><strong>EIA 전망이 아닙니다.</strong> 한 번의 EIA 발표에서 분기 일평균을 미발표 구간에 그대로 적용한 가정치이며, 두 행 사이는 신뢰구간이나 확률 범위가 아닙니다.</div>
+      ${body}
+      ${outlook.warning_ko ? `<p class="shipping-note">${escapeHtml(outlook.warning_ko)}</p>` : ''}
+      ${sourceLine(outlook)}`, badge('가정 시나리오', 'estimated', '분기 일평균 × 미발표 일수'));
+  };
+
   const renderOfficialCargo = (official, point) => {
     if (!official) return '';
     const cards = asArray(official.reference_cards);
@@ -1157,6 +1264,7 @@
       ${hasLng ? `
         <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 · LNG (십억 입방피트/일 · 석유와 단위가 달라 따로 그림)</p>
         <div class="shipping-chart-wrap" style="min-height:220px"><canvas id="shipping-official-lng-chart"></canvas></div>` : ''}
+      ${renderCumulativeCards(official)}
       ${otherSeriesTable(rows)}
       ${definitionRows([
         ['일별 원유 통과량', '산출하지 않음 · 검증된 일별 품목 자료 없음'],
@@ -1421,9 +1529,10 @@
     officialCharts.forEach(chart => { try { chart.destroy(); } catch (_) { /* already gone */ } });
     activeCharts = activeCharts.filter(chart => !officialCharts.includes(chart));
     officialCharts = [];
-    if (!point.officialCargo && !point.reconstruction && !point.bypass) { mount.innerHTML = ''; return; }
+    if (!point.officialCargo && !point.reconstruction && !point.bypass && !point.annualOutlook) { mount.innerHTML = ''; return; }
     mount.innerHTML = `<div class="shipping-content" style="margin-top:18px">
       ${renderOfficialCargo(point.officialCargo, point)}
+      ${renderHormuzAnnualOutlook(point.annualOutlook)}
       ${renderBypass(point.bypass, point)}
       ${renderReconstruction(point.reconstruction)}
     </div>`;
@@ -2065,6 +2174,14 @@
     else slot.innerHTML = '<div class="shipping-error"><strong>탄소금융 모듈을 불러오지 못했습니다.</strong></div>';
   };
 
+  // The Northern Sea Route view lives in shipping-arctic.js; this only frames it.
+  const renderArctic = (data, root) => {
+    root.innerHTML = pageShell('shipping_arctic', '<div id="shipping-arctic-standalone"></div>', data);
+    const slot = root.querySelector('#shipping-arctic-standalone');
+    if (window.ShippingArctic) window.ShippingArctic.render(slot);
+    else slot.innerHTML = '<div class="shipping-error"><strong>북극항로 모듈을 불러오지 못했습니다.</strong></div>';
+  };
+
   const renderFuelEU = (data, root) => {
     root.innerHTML = pageShell('shipping_fueleu', '<div id="shipping-fueleu-standalone"></div>', data);
     const slot = root.querySelector('#shipping-fueleu-standalone');
@@ -2092,7 +2209,8 @@
     shipping_scenarios: renderScenarios,
     shipping_environment: renderEnvironment,
     shipping_carbon: renderCarbon,
-    shipping_fueleu: renderFuelEU
+    shipping_fueleu: renderFuelEU,
+    shipping_arctic: renderArctic
   };
 
   const render = async (target, host) => {

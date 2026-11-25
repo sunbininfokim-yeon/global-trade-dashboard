@@ -19,8 +19,8 @@ with its own 시가총액; the calculator adds the two for PER/PBR/EV.
 Naver's own PER/PBR/EPS/BPS (with the period they use) are kept as a
 cross-check -- they are not used in any ratio.
 
-No key, no paid source. Exits 1 if any company failed, after writing the
-rest (failed ones keep their previous entry, flagged stale).
+No key, no paid source. Exits 1 if more than 5 % of companies failed, after
+writing the rest (failed ones keep their previous entry, flagged stale).
 """
 from __future__ import annotations
 
@@ -37,6 +37,7 @@ DATA = ROOT / 'New for anti' / 'public' / 'data'
 INDEX = DATA / 'kfa_pecr' / 'index_v1.json'
 OUT = DATA / 'kfa_market_v1.json'
 API = 'https://m.stock.naver.com/api/stock/{code}/{kind}'
+US_API = 'https://api.stock.naver.com/stock/{code}/basic'   # Reuters code: AAPL.O (NASDAQ), JPM (NYSE)
 UA = {'User-Agent': 'Mozilla/5.0 (compatible; global-trade-dashboard/1.0)'}
 KST = dt.timezone(dt.timedelta(hours=9))
 
@@ -77,6 +78,38 @@ def number(text: str | None) -> float | None:
     return float(m.group(0).replace(',', '')) if m else None
 
 
+def us_quote(code: str) -> dict:
+    """US listing: close and 시가총액 in USD ('5조 615억 USD')."""
+    last = None
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(US_API.format(code=code), headers=UA)
+            with urllib.request.urlopen(req, timeout=20) as res:
+                basic = json.loads(res.read())
+            break
+        except Exception as exc:          # noqa: BLE001
+            last = exc
+            time.sleep(2 * (attempt + 1))
+    else:
+        raise RuntimeError(f'{code}: {last}')
+    info = {x.get('code'): x for x in basic.get('stockItemTotalInfos') or []}
+    price = number(basic.get('closePrice'))
+    text = (info.get('marketValue') or {}).get('value')
+    cap = korean_amount(text)
+    if not price or not cap:
+        raise RuntimeError(f'{code}: no price or market cap')
+
+    def ref(key):
+        x = info.get(key) or {}
+        v = number(x.get('value'))
+        return {'value': v, 'period': x.get('valueDesc')} if v is not None else None
+
+    return {'code': code, 'name': basic.get('stockName'), 'exchange': basic.get('stockExchangeName'), 'currency': 'USD',
+            'price': price, 'traded_at': basic.get('localTradedAt'), 'market_status': basic.get('marketStatus'),
+            'market_cap': cap, 'market_cap_text': text, 'listed_shares_implied': round(cap / price),
+            'naver_reference': {k: ref(k) for k in ('per', 'pbr', 'eps', 'bps', 'dividendYieldRatio')}}
+
+
 def quote(code: str) -> dict:
     basic = get(code, 'basic')
     integ = get(code, 'integration')
@@ -113,6 +146,24 @@ def main() -> int:
             continue
         snap = json.loads((DATA / 'kfa_pecr' / f'{corp}_v1.json').read_text())
         try:
+            if meta.get('market') == 'US':
+                # Naver's Reuters codes: NASDAQ '.O', most NYSE plain, some NYSE '.K'
+                # (SCCO.K, ORCL.K) -- not predictable from the exchange, so try in turn.
+                base = stock.split('.')[0]
+                q, last = None, None
+                for cand in dict.fromkeys([stock, f'{base}.K', base, f'{base}.O']):
+                    try:
+                        q = us_quote(cand)
+                        break
+                    except Exception as exc:  # noqa: BLE001
+                        last = exc
+                if q is None:
+                    raise last
+                q['corp_code'] = corp
+                quotes[stock] = q
+                print(f'{stock} {q["name"]}: {q["price"]:,.2f} cap {q["market_cap_text"]}')
+                time.sleep(0.3)
+                continue
             q = quote(stock)
             q['corp_code'] = corp
             # Only the first preferred line, and only when DART shows preferred
@@ -145,7 +196,9 @@ def main() -> int:
     }
     OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n')
     print(f'wrote {OUT.relative_to(ROOT)}: {len(quotes)} quotes, {len(failed)} failed')
-    return 1 if failed else 0
+    # With hundreds of companies a suspended or delisted line always fails;
+    # fail the run only when it looks systemic (> 5 %).
+    return 1 if failed and len(failed) > 0.05 * max(len(quotes), 1) else 0
 
 
 if __name__ == '__main__':

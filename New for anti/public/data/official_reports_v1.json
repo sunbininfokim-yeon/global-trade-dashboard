@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-23T07:46:47.823817+00:00",
+  "generated_at": "2026-11-25T03:33:42.716219+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 178,
     "scored": 178,
     "selected": 40,
-    "indicators": 13
+    "indicators": 12
   },
   "feed_status": [
     {
@@ -205,19 +205,6 @@
       "significance": 2.842
     },
     {
-      "series_id": "US_FED_FOMC",
-      "label_ko": "FOMC 성명·의사록",
-      "country": "USA",
-      "domains": [
-        "finance"
-      ],
-      "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617b.htm",
-      "published_at": "2026-06-17T18:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.842
-    },
-    {
       "series_id": "EU_ECB_POLICY",
       "label_ko": "ECB 정책",
       "country": "EUR",
@@ -246,20 +233,6 @@
       "significance": 2.64
     },
     {
-      "series_id": "EU_ECB_POLICY",
-      "label_ko": "ECB 정책",
-      "country": "EUR",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "ECB wage tracker suggests slightly higher wage growth in first three quarters of 2027 compared with the full year of 2026",
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261104~caf181d7ac.en.html",
-      "published_at": "2026-11-04T00:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.64
-    },
-    {
       "series_id": "US_EIA_ENERGY",
       "label_ko": "EIA 에너지",
       "country": "USA",
@@ -273,6 +246,20 @@
       "published_at": "2026-11-12T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (November 20)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
+      "published_at": "2026-11-25T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -661,40 +648,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "73ad9608ccf9f1e1",
-      "published_at": "2026-06-17T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_monetary",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617b.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance"
-      ],
-      "series_id": "US_FED_FOMC",
-      "title": {
-        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
-        "original_lang": "en",
-        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting"
-      },
-      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
-      "scores": {
-        "significance": 2.842,
-        "final": 2.842
-      },
-      "rank_reasons": [
-        "domains:finance",
-        "series:US_FED_FOMC"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "3ccec9193b30c1e1",
       "published_at": "2026-07-09T19:00:00+00:00",
       "source": {
@@ -784,41 +737,6 @@
         "original": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
         "original_lang": "en",
         "ko": "[EUR·금융] Philip R. Lane: The science and practice of monetary policy communication: the ECB experience"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.64,
-        "final": 2.64
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:EU_ECB_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "9c016461fa88d62d",
-      "published_at": "2026-11-04T00:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261104~caf181d7ac.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "EU_ECB_POLICY",
-      "title": {
-        "original": "ECB wage tracker suggests slightly higher wage growth in first three quarters of 2027 compared with the full year of 2026",
-        "original_lang": "en",
-        "ko": "[EUR·경제] ECB wage tracker suggests slightly higher wage growth in first three quarters of 2027 compared with the full year of 2026"
       },
       "summary": "",
       "scores": {
@@ -939,7 +857,42 @@
       "site_slot": null
     },
     {
-      "id": "b99c955e9743943c",
+      "id": "0a139c07c676687e",
+      "published_at": "2026-11-23T19:20:12+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/11/first-lady-melania-trump-hails-americas-armed-forces/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "First Lady Melania Trump Hails America’s Armed Forces",
+        "original_lang": "en",
+        "ko": "[USA·안보] First Lady Melania Trump Hails America’s Armed Forces"
+      },
+      "summary": "Declaring precision and mental strength the foundation of global military superiority As families across America prepare to celebrate Thanksgiving, First Lady Melania Trump addressed members of America’s armed forces at Joint Base Andrews, “The US military is the most powerful mi",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "09f1ee7ec0a8d19a",
       "published_at": "2026-11-20T15:39:53+00:00",
       "source": {
         "id": "us_whitehouse",
@@ -947,7 +900,7 @@
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/11/president-trump-brings-home-billions-in-economic-growth-and-strengthens-americas-security/",
+      "url": "https://www.whitehouse.gov/releases/2026/11/president-trump-brings-home-billions-in-economic-growth-and-strengthens-americas-security/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -1079,41 +1032,6 @@
       "site_slot": null
     },
     {
-      "id": "c2b91d329e8b42bd",
-      "published_at": "2026-11-12T21:34:51+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/11/presidential-message-on-national-military-families-month/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Presidential Message on National Military Families Month",
-        "original_lang": "en",
-        "ko": "[USA·안보] Presidential Message on National Military Families Month"
-      },
-      "summary": "For 250 years, our glorious Republic has been safeguarded by noble and heroic patriots in the United States Armed Forces. Throughout our storied history, these warriors have been sustained by the support, love, strength, and grit provided by their incomparable families. During Na",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "abf798de1c806f41",
       "published_at": "2026-11-19T08:00:00+00:00",
       "source": {
@@ -1220,34 +1138,35 @@
       "site_slot": null
     },
     {
-      "id": "0f26ee63b6374c09",
-      "published_at": "2026-11-12T01:30:00+00:00",
+      "id": "4736ab9e086b1f45",
+      "published_at": "2026-11-24T19:00:00+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko261112a.htm",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261124a.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "finance"
       ],
       "series_id": null,
       "title": {
-        "original": "Speech by Board Member ASADA in Nagasaki (Economic Activity, Prices, and Monetary Policy in Japan)",
+        "original": "Minutes of the Board's discount rate meetings on October 19 and October 28, 2026",
         "original_lang": "en",
-        "ko": "[JPN·금융] Speech by Board Member ASADA in Nagasaki (Economic Activity, Prices, and Monetary Policy in Japan)"
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on October 19 and October 28, 2026"
       },
-      "summary": "",
+      "summary": "Minutes of the Board's discount rate meetings on October 19 and October 28, 2026",
       "scores": {
-        "significance": 2.376,
-        "final": 2.376
+        "significance": 2.322,
+        "final": 2.322
       },
       "rank_reasons": [
-        "domains:economy,finance"
+        "domains:economy,finance",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -1672,40 +1591,99 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "c036c6d5adac248a",
+      "published_at": "2026-10-02T20:45:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "93f3d140dad3d27b",
+      "published_at": "2026-11-25T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (November 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
     {
-      "title": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 2.322,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "significance": 2.322,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
-      "title": "USDA Announces Agribusiness Trade Missions for 2027",
-      "url": "https://www.fas.usda.gov/newsroom/usda-announces-agribusiness-trade-missions-2027",
+      "title": "USDA Announces $14 Million Funding Opportunity for Food for Peace International Food Relief Partnership",
+      "url": "https://www.fas.usda.gov/newsroom/usda-announces-14-million-funding-opportunity-food-peace-international-relief-partnership",
       "country": "USA",
       "domains": [
         "economy",
         "agriculture"
       ],
       "significance": 2.236,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Philip R. Lane: Climate change and monetary policy",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261123~b5816801a0.en.pdf",
+      "country": "EUR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.112,
       "suggest": "label promote|keep|drop + series_id later"
     },
     {
@@ -1748,6 +1726,17 @@
       "domains": [
         "finance",
         "economy"
+      ],
+      "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Regulators unveil plans to simplify Senior Manager and Certification Regime",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/regulators-unveil-plans-to-simplify-senior-manager-and-certification-regime",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
       ],
       "significance": 2.024,
       "suggest": "label promote|keep|drop + series_id later"
@@ -2139,40 +2128,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "73ad9608ccf9f1e1",
-      "published_at": "2026-06-17T18:00:00+00:00",
-      "source": {
-        "id": "us_fed_monetary",
-        "name": "Federal Reserve",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617b.htm",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance"
-      ],
-      "series_id": "US_FED_FOMC",
-      "title": {
-        "original": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
-        "original_lang": "en",
-        "ko": "[USA·금융] Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting"
-      },
-      "summary": "Federal Reserve Board and Federal Open Market Committee release economic projections from the June 16-17 FOMC meeting",
-      "scores": {
-        "significance": 2.842,
-        "final": 2.842
-      },
-      "rank_reasons": [
-        "domains:finance",
-        "series:US_FED_FOMC"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "3ccec9193b30c1e1",
       "published_at": "2026-07-09T19:00:00+00:00",
       "source": {
@@ -2262,41 +2217,6 @@
         "original": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
         "original_lang": "en",
         "ko": "[EUR·금융] Philip R. Lane: The science and practice of monetary policy communication: the ECB experience"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.64,
-        "final": 2.64
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:EU_ECB_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "9c016461fa88d62d",
-      "published_at": "2026-11-04T00:00:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261104~caf181d7ac.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "EU_ECB_POLICY",
-      "title": {
-        "original": "ECB wage tracker suggests slightly higher wage growth in first three quarters of 2027 compared with the full year of 2026",
-        "original_lang": "en",
-        "ko": "[EUR·경제] ECB wage tracker suggests slightly higher wage growth in first three quarters of 2027 compared with the full year of 2026"
       },
       "summary": "",
       "scores": {
@@ -2417,7 +2337,42 @@
       "site_slot": null
     },
     {
-      "id": "b99c955e9743943c",
+      "id": "0a139c07c676687e",
+      "published_at": "2026-11-23T19:20:12+00:00",
+      "source": {
+        "id": "us_whitehouse",
+        "name": "White House",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.whitehouse.gov/briefings-statements/2026/11/first-lady-melania-trump-hails-americas-armed-forces/",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "security",
+        "economy",
+        "diplomacy"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "First Lady Melania Trump Hails America’s Armed Forces",
+        "original_lang": "en",
+        "ko": "[USA·안보] First Lady Melania Trump Hails America’s Armed Forces"
+      },
+      "summary": "Declaring precision and mental strength the foundation of global military superiority As families across America prepare to celebrate Thanksgiving, First Lady Melania Trump addressed members of America’s armed forces at Joint Base Andrews, “The US military is the most powerful mi",
+      "scores": {
+        "significance": 2.438,
+        "final": 2.438
+      },
+      "rank_reasons": [
+        "domains:economy,diplomacy,security"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "09f1ee7ec0a8d19a",
       "published_at": "2026-11-20T15:39:53+00:00",
       "source": {
         "id": "us_whitehouse",
@@ -2425,7 +2380,7 @@
         "region": "usa",
         "slant": null
       },
-      "url": "https://www.whitehouse.gov/fact-sheets/2026/11/president-trump-brings-home-billions-in-economic-growth-and-strengthens-americas-security/",
+      "url": "https://www.whitehouse.gov/releases/2026/11/president-trump-brings-home-billions-in-economic-growth-and-strengthens-americas-security/",
       "category": "official_report",
       "commodities": [],
       "domains": [
@@ -2557,41 +2512,6 @@
       "site_slot": null
     },
     {
-      "id": "c2b91d329e8b42bd",
-      "published_at": "2026-11-12T21:34:51+00:00",
-      "source": {
-        "id": "us_whitehouse",
-        "name": "White House",
-        "region": "usa",
-        "slant": null
-      },
-      "url": "https://www.whitehouse.gov/briefings-statements/2026/11/presidential-message-on-national-military-families-month/",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "security",
-        "economy",
-        "diplomacy"
-      ],
-      "series_id": null,
-      "title": {
-        "original": "Presidential Message on National Military Families Month",
-        "original_lang": "en",
-        "ko": "[USA·안보] Presidential Message on National Military Families Month"
-      },
-      "summary": "For 250 years, our glorious Republic has been safeguarded by noble and heroic patriots in the United States Armed Forces. Throughout our storied history, these warriors have been sustained by the support, love, strength, and grit provided by their incomparable families. During Na",
-      "scores": {
-        "significance": 2.438,
-        "final": 2.438
-      },
-      "rank_reasons": [
-        "domains:economy,diplomacy,security"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": null
-    },
-    {
       "id": "abf798de1c806f41",
       "published_at": "2026-11-19T08:00:00+00:00",
       "source": {
@@ -2698,34 +2618,35 @@
       "site_slot": null
     },
     {
-      "id": "0f26ee63b6374c09",
-      "published_at": "2026-11-12T01:30:00+00:00",
+      "id": "4736ab9e086b1f45",
+      "published_at": "2026-11-24T19:00:00+00:00",
       "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
         "slant": null
       },
-      "url": "http://www.boj.or.jp/en/about/press/koen_2026/ko261112a.htm",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261124a.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
-        "finance",
-        "economy"
+        "economy",
+        "finance"
       ],
       "series_id": null,
       "title": {
-        "original": "Speech by Board Member ASADA in Nagasaki (Economic Activity, Prices, and Monetary Policy in Japan)",
+        "original": "Minutes of the Board's discount rate meetings on October 19 and October 28, 2026",
         "original_lang": "en",
-        "ko": "[JPN·금융] Speech by Board Member ASADA in Nagasaki (Economic Activity, Prices, and Monetary Policy in Japan)"
+        "ko": "[USA·경제] Minutes of the Board's discount rate meetings on October 19 and October 28, 2026"
       },
-      "summary": "",
+      "summary": "Minutes of the Board's discount rate meetings on October 19 and October 28, 2026",
       "scores": {
-        "significance": 2.376,
-        "final": 2.376
+        "significance": 2.322,
+        "final": 2.322
       },
       "rank_reasons": [
-        "domains:economy,finance"
+        "domains:economy,finance",
+        "boost:1"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
@@ -3150,6 +3071,76 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "c036c6d5adac248a",
+      "published_at": "2026-10-02T20:45:00+00:00",
+      "source": {
+        "id": "us_fed_all",
+        "name": "Federal Reserve",
+        "region": "usa",
+        "slant": null
+      },
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": null,
+      "title": {
+        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original_lang": "en",
+        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+      },
+      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "scores": {
+        "significance": 2.322,
+        "final": 2.322
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "boost:1"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": null
+    },
+    {
+      "id": "93f3d140dad3d27b",
+      "published_at": "2026-11-25T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (November 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ]
 }

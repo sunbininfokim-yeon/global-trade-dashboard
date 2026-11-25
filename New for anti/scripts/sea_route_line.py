@@ -50,6 +50,7 @@ CLASSES = [
     ("arc7", "Arc7 빙급 (야말 LNG선급)", 0.80, (5, 1)),
 ]
 SMOOTH, GAP, WINDOW, FIRST_TEST, PASS = 5, 5, 30, 2001, 0.10
+CLIM = (1991, 2020)
 # CHNL transit records: first NSR entry and last NSR exit of transit voyages.
 TRANSITS = [
     {"year": 2020, "first_entry": "2020-07-20", "last_exit": "2020-11-17", "n": 64,
@@ -376,6 +377,13 @@ def build(volume=None, today=None):
             if s:
                 row[c["id"]] = {"open": s["open"], "close": s["close"]}
         val.append(row)
+    # Worst-leg concentration by day of year over the baseline years.
+    by = {}
+    for d, x in series.items():
+        if CLIM[0] <= d.year <= CLIM[1]:
+            by.setdefault(min(doy(d), 365), []).append(x)
+    clim_mean = [round(statistics.fmean(by[i]), 3) if len(by.get(i, [])) > 5 else None for i in range(1, 366)]
+    clim_sd = [round(statistics.pstdev(by[i]), 3) if len(by.get(i, [])) > 5 else None for i in range(1, 366)]
     last_raw = raw[max(raw)]
     status_now = {c["id"]: ("open" if c["seasons"] and c["seasons"][-1]["year"] == last.year
                             and c["seasons"][-1]["open"] and not c["seasons"][-1]["close"] else "closed")
@@ -394,4 +402,7 @@ def build(volume=None, today=None):
                     "선급 기준은 농도만 본 근사치로, 얼음 두께·정착빙·쇄빙선 호위·러시아 허가는 반영하지 않았습니다."),
         "years": {str(y): [[doy(d), round(series[d], 3)] for d in sorted(series) if d.year == y]
                   for y in (last.year, last.year - 1, 2012, 2020)},
+        "clim_base": f"{CLIM[0]}-{CLIM[1]}",
+        "clim_by_doy": clim_mean,
+        "clim_sd_by_doy": clim_sd,
     }

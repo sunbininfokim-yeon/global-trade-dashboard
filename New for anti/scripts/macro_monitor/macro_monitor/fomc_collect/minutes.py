@@ -26,16 +26,22 @@ from bs4 import BeautifulSoup
 
 _HEADINGS = {
     "participants' views on current conditions and the economic outlook": "participants_views",
+    # Renamed in the 2026-10-28 minutes (released 2026-11-18); same section.
+    "policymakers' discussion of current conditions, the economic outlook, and monetary policy considerations": "participants_views",
     "committee policy actions": "policy_actions",
 }
 
 # (regex on the sentence start, key, group). Longest alternatives first.
 _QUANTIFIERS: list[tuple[str, str, str]] = [
+    (r"the vast majority of", "the vast majority of", "most"),
+    (r"the vast majority", "the vast majority", "most"),
     (r"almost all", "almost all", "all"),
     (r"nearly all", "nearly all", "all"),
     (r"all", "all", "all"),
     (r"a large majority of", "a large majority of", "most"),
     (r"a majority of", "a majority of", "most"),
+    (r"a large majority", "a large majority", "most"),
+    (r"a majority", "a majority", "most"),
     (r"most", "most", "most"),
     (r"many", "many", "many"),
     (r"several", "several", "several"),
@@ -49,11 +55,17 @@ _QUANTIFIERS: list[tuple[str, str, str]] = [
     (r"three", "three", "few"),
     (r"four", "four", "few"),
 ]
+_NOUN = r"(?:participants|members|policymakers|of the participants|of the members|of policymakers)"
+# From the 2026-10-28 minutes the noun is often dropped: "Many pointed to ...", "A majority noted ...",
+# "A few, however, ...". A bare quantifier counts only when a reporting verb follows, so "Many firms"
+# or "Some measures" are not read as participants.
+_VERB = (r"(?:(?:also|however|generally|further|instead)\s*,?\s+)?"
+         r"(?:[a-z]+ed|saw|said|thought|felt|held|took|see|expect|anticipate|judge|note|observe|stress)\b")
 _QUANT_RES = [
-    (re.compile(rf"^{pat}\s+(participants|members|of the participants|of the members)\b", re.I), key, group)
+    (re.compile(rf"^{pat}(?:\s+{_NOUN}\b|\s*,\s*however\s*,|\s+(?={_VERB}))", re.I), key, group)
     for pat, key, group in _QUANTIFIERS
 ]
-_UNQUANTIFIED_RE = re.compile(r"^(participants|members)\s+(?!who\b)", re.I)
+_UNQUANTIFIED_RE = re.compile(r"^(participants|members|policymakers)\s+(?!who\b)", re.I)
 
 # A sentence can end inside a closing quote ('... "will deliver price stability."
 # Almost all members agreed ...'), so a quote after the period still counts.
