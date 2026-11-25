@@ -1,8 +1,8 @@
 {
   "schema_version": "shipping-capacity-v1",
   "artifact_type": "screen_snapshot",
-  "bundle_id": "60dbc04db2bcf2e37729",
-  "generated_at": "2026-11-25T02:45:37.070888+00:00",
+  "bundle_id": "68212c1b7a47eefaae7f",
+  "generated_at": "2026-11-25T13:45:07.649062+00:00",
   "artifact_manifest": {
     "screen": "shipping_capacity_v1.json",
     "scenario_grid": "shipping_capacity_scenario_grid_v1.json",
@@ -67,7 +67,9 @@
           "routes[].baseline",
           "routes[].operational_profile.normal",
           "routes[].operational_profile.chokepoint_alternatives[]",
-          "routes[].operational_profile.chokepoint_alternatives[].distance_evidence"
+          "routes[].operational_profile.chokepoint_alternatives[].distance_evidence",
+          "routes[].operational_profile.detour_comparison.options[]",
+          "arctic_route_reference"
         ],
         "primary_metrics": [
           "baseline.baseline_required_dwt",
@@ -90,8 +92,10 @@
           "official_cargo_monitor.chokepoints.<id>.reference_cards[]",
           "official_cargo_monitor.chokepoints.<id>.supplementary_reference_cards[]",
           "official_cargo_monitor.chokepoints.<id>.reported_series[]",
+          "official_cargo_monitor.chokepoints.<id>.cumulative_cards[].windows[]",
           "official_cargo_monitor.chokepoints.<id>.transit_assessment",
           "hormuz_reconstruction.headline",
+          "hormuz_annual_outlook.cards[]",
           "hormuz_reconstruction.mass_balance.terms[]",
           "hormuz_reconstruction.producer_exports",
           "hormuz_reconstruction.importer_receipts",
@@ -4067,7 +4071,7 @@
   },
   "market_signals": {
     "status": "source_registry_only_no_unlicensed_scraping",
-    "generated_at": "2026-11-25T02:45:39.212117+00:00",
+    "generated_at": "2026-11-25T13:45:09.804317+00:00",
     "signals": [
       {
         "id": "unctad_freight_rate_review",
@@ -20985,7 +20989,7 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -37995,7 +37999,7 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -55005,7 +55009,7 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -72015,7 +72019,7 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -89025,7 +89029,7 @@
         }
       },
       "multi_model_primary_metric": "tanker",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -106035,7 +106039,7 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -123045,7 +123049,7 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -140055,7 +140059,7 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -157065,7 +157069,7 @@
         }
       },
       "multi_model_primary_metric": "all",
-      "fetched_at": "2026-11-25T02:45:37.070888+00:00",
+      "fetched_at": "2026-11-25T13:45:07.649062+00:00",
       "stale_days": 3,
       "is_stale": false,
       "fallback_used": false,
@@ -157637,6 +157641,12 @@
               "normal_distance_nm": 10590.571929,
               "reroute_distance_nm": 11159.774782,
               "reroute_extra_nm": 569.202853,
+              "reroute_traversed_passages": [
+                "gibraltar",
+                "babalmandab",
+                "suez",
+                "sunda"
+              ],
               "baseline_distance_deviation_fraction": 0.008626,
               "reroute_extra_distance_deviation_nm": 0.797147,
               "source": {
@@ -157652,7 +157662,60 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "comtrade_manufactured_weight_extrapolation_proxy",
+          "baseline_required_dwt": 5594854.234428,
+          "options": [
+            {
+              "id": "cape_good_hope",
+              "label_ko": "희망봉 우회",
+              "status": "representative_sea_detour",
+              "bypassed_chokepoint_ids": [
+                "suez",
+                "bab_el_mandeb"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": 14000.0,
+              "additional_nm_one_way": 3500.0,
+              "additional_sailing_days_one_way": 8.578431,
+              "additional_cycle_days_round_trip": 17.156863,
+              "cycle_days_round_trip": 78.627451,
+              "exposed_flow_share": 0.95,
+              "required_dwt_with_detour": 7078338.311739,
+              "additional_required_dwt": 1483484.077311,
+              "additional_required_dwt_pct": 26.5152,
+              "warning_ko": "일반 운항 속도와 동일한 항만 체류 가정입니다. 운항표나 추가 대기 예측이 아닙니다."
+            },
+            {
+              "id": "malacca",
+              "label_ko": "순다 경유 가정",
+              "status": "conditional_geometry_only",
+              "bypassed_chokepoint_ids": [
+                "malacca"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "verified_open_network_distance",
+              "distance_evidence_id": "asia_north_europe_container_malacca",
+              "distance_nm_one_way": 11070.0,
+              "additional_nm_one_way": 570.0,
+              "additional_sailing_days_one_way": 1.397059,
+              "additional_cycle_days_round_trip": 2.794118,
+              "cycle_days_round_trip": 64.264706,
+              "exposed_flow_share": 0.95,
+              "required_dwt_with_detour": 5836450.212733,
+              "additional_required_dwt": 241595.978305,
+              "additional_required_dwt_pct": 4.3182,
+              "warning_ko": "통과 가능한 선박이라는 조건에서만 성립합니다. 선종·흘수별 통과 적격성이나 우회로 처리능력은 검증하지 않았습니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 5594854.234428,
@@ -157943,7 +158006,37 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "comtrade_manufactured_weight_extrapolation_proxy",
+          "baseline_required_dwt": 3117027.262799,
+          "options": [
+            {
+              "id": "panama",
+              "label_ko": "대표 우회거리 가정",
+              "status": "conditional_geometry_only",
+              "bypassed_chokepoint_ids": [
+                "panama"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": 14300.0,
+              "additional_nm_one_way": 4800.0,
+              "additional_sailing_days_one_way": 11.764706,
+              "additional_cycle_days_round_trip": 23.529412,
+              "cycle_days_round_trip": 79.098039,
+              "exposed_flow_share": 0.72,
+              "required_dwt_with_detour": 4067313.626617,
+              "additional_required_dwt": 950286.363817,
+              "additional_required_dwt_pct": 30.4869,
+              "warning_ko": "대표 우회거리로 계산한 민감도입니다. 실제 우회 경로·흘수·항만 조건은 정해지지 않았습니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 3117027.262799,
@@ -158060,7 +158153,37 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 7459408.069686,
+          "options": [
+            {
+              "id": "panama",
+              "label_ko": "대표 우회거리 가정",
+              "status": "conditional_geometry_only",
+              "bypassed_chokepoint_ids": [
+                "panama"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": 15500.0,
+              "additional_nm_one_way": 6500.0,
+              "additional_sailing_days_one_way": 20.833333,
+              "additional_cycle_days_round_trip": 41.666667,
+              "cycle_days_round_trip": 107.358974,
+              "exposed_flow_share": 0.8,
+              "required_dwt_with_detour": 11244431.680378,
+              "additional_required_dwt": 3785023.610692,
+              "additional_required_dwt_pct": 50.7416,
+              "warning_ko": "대표 우회거리로 계산한 민감도입니다. 실제 우회 경로·흘수·항만 조건은 정해지지 않았습니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 7459408.069686,
@@ -158177,7 +158300,35 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 1226701.801831,
+          "options": [
+            {
+              "id": "bosporus",
+              "label_ko": "동일 출발·도착항의 해상 우회 없음",
+              "status": "no_same_port_sea_detour",
+              "bypassed_chokepoint_ids": [],
+              "blocking_chokepoint_id": "bosporus",
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": null,
+              "additional_nm_one_way": null,
+              "additional_sailing_days_one_way": null,
+              "additional_cycle_days_round_trip": null,
+              "cycle_days_round_trip": null,
+              "exposed_flow_share": 1.0,
+              "required_dwt_with_detour": null,
+              "additional_required_dwt": null,
+              "additional_required_dwt_pct": null,
+              "warning_ko": "대체 선적·송유관·운송 보류는 별도입니다. 우회거리·추가 DWT를 0으로 보지 않습니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 1226701.801831,
@@ -158313,7 +158464,59 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 869658.282835,
+          "options": [
+            {
+              "id": "bosporus",
+              "label_ko": "동일 출발·도착항의 해상 우회 없음",
+              "status": "no_same_port_sea_detour",
+              "bypassed_chokepoint_ids": [],
+              "blocking_chokepoint_id": "bosporus",
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": null,
+              "additional_nm_one_way": null,
+              "additional_sailing_days_one_way": null,
+              "additional_cycle_days_round_trip": null,
+              "cycle_days_round_trip": null,
+              "exposed_flow_share": 1.0,
+              "required_dwt_with_detour": null,
+              "additional_required_dwt": null,
+              "additional_required_dwt_pct": null,
+              "warning_ko": "대체 선적·송유관·운송 보류는 별도입니다. 우회거리·추가 DWT를 0으로 보지 않습니다."
+            },
+            {
+              "id": "cape_good_hope",
+              "label_ko": "희망봉 우회",
+              "status": "representative_sea_detour",
+              "bypassed_chokepoint_ids": [
+                "suez"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [
+                "bosporus"
+              ],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": 12000.0,
+              "additional_nm_one_way": 3300.0,
+              "additional_sailing_days_one_way": 11.0,
+              "additional_cycle_days_round_trip": 22.0,
+              "cycle_days_round_trip": 88.0,
+              "exposed_flow_share": 0.92,
+              "required_dwt_with_detour": 1136353.489571,
+              "additional_required_dwt": 266695.206736,
+              "additional_required_dwt_pct": 30.6667,
+              "warning_ko": "일반 운항 속도와 동일한 항만 체류 가정입니다. 운항표나 추가 대기 예측이 아닙니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 869658.282835,
@@ -158468,7 +158671,60 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 7823431.250153,
+          "options": [
+            {
+              "id": "hormuz",
+              "label_ko": "동일 출발·도착항의 해상 우회 없음",
+              "status": "no_same_port_sea_detour",
+              "bypassed_chokepoint_ids": [],
+              "blocking_chokepoint_id": "hormuz",
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": null,
+              "additional_nm_one_way": null,
+              "additional_sailing_days_one_way": null,
+              "additional_cycle_days_round_trip": null,
+              "cycle_days_round_trip": null,
+              "exposed_flow_share": 1.0,
+              "required_dwt_with_detour": null,
+              "additional_required_dwt": null,
+              "additional_required_dwt_pct": null,
+              "warning_ko": "대체 선적·송유관·운송 보류는 별도입니다. 우회거리·추가 DWT를 0으로 보지 않습니다. 페르시아만 안쪽 항에서 출발하는 선박은 희망봉으로 돌아 호르무즈를 피할 수 없습니다."
+            },
+            {
+              "id": "cape_good_hope",
+              "label_ko": "희망봉 우회",
+              "status": "representative_sea_detour",
+              "bypassed_chokepoint_ids": [
+                "suez",
+                "bab_el_mandeb"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [
+                "hormuz"
+              ],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": 10600.0,
+              "additional_nm_one_way": 4400.0,
+              "additional_sailing_days_one_way": 14.102564,
+              "additional_cycle_days_round_trip": 28.205128,
+              "cycle_days_round_trip": 74.948718,
+              "exposed_flow_share": 0.72,
+              "required_dwt_with_detour": 11222310.871722,
+              "additional_required_dwt": 3398879.621569,
+              "additional_required_dwt_pct": 43.4449,
+              "warning_ko": "일반 운항 속도와 동일한 항만 체류 가정입니다. 운항표나 추가 대기 예측이 아닙니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 7823431.250153,
@@ -158604,6 +158860,10 @@
               "normal_distance_nm": 5962.655149,
               "reroute_distance_nm": 6587.665974,
               "reroute_extra_nm": 625.010825,
+              "reroute_traversed_passages": [
+                "ormuz",
+                "sunda"
+              ],
               "baseline_distance_deviation_fraction": 0.082668,
               "reroute_extra_distance_deviation_nm": 0.010825,
               "source": {
@@ -158619,7 +158879,59 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 72698330.35206,
+          "options": [
+            {
+              "id": "hormuz",
+              "label_ko": "동일 출발·도착항의 해상 우회 없음",
+              "status": "no_same_port_sea_detour",
+              "bypassed_chokepoint_ids": [],
+              "blocking_chokepoint_id": "hormuz",
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": null,
+              "additional_nm_one_way": null,
+              "additional_sailing_days_one_way": null,
+              "additional_cycle_days_round_trip": null,
+              "cycle_days_round_trip": null,
+              "exposed_flow_share": 1.0,
+              "required_dwt_with_detour": null,
+              "additional_required_dwt": null,
+              "additional_required_dwt_pct": null,
+              "warning_ko": "대체 선적·송유관·운송 보류는 별도입니다. 우회거리·추가 DWT를 0으로 보지 않습니다. 페르시아만 안쪽 항에서 출발하는 선박은 희망봉으로 돌아 호르무즈를 피할 수 없습니다."
+            },
+            {
+              "id": "malacca",
+              "label_ko": "순다 경유 가정",
+              "status": "conditional_geometry_only",
+              "bypassed_chokepoint_ids": [
+                "malacca"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [
+                "hormuz"
+              ],
+              "distance_basis": "verified_open_network_distance",
+              "distance_evidence_id": "persian_gulf_east_asia_crude_malacca",
+              "distance_nm_one_way": 7125.0,
+              "additional_nm_one_way": 625.0,
+              "additional_sailing_days_one_way": 2.003205,
+              "additional_cycle_days_round_trip": 4.00641,
+              "cycle_days_round_trip": 52.673077,
+              "exposed_flow_share": 0.95,
+              "required_dwt_with_detour": 78383872.191698,
+              "additional_required_dwt": 5685541.839639,
+              "additional_required_dwt_pct": 7.8207,
+              "warning_ko": "통과 가능한 선박이라는 조건에서만 성립합니다. 선종·흘수별 통과 적격성이나 우회로 처리능력은 검증하지 않았습니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 72698330.35206,
@@ -158716,7 +159028,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_sea_weight",
+          "baseline_required_dwt": 19250929.3155,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 19250929.3155,
@@ -159052,6 +159371,11 @@
               "normal_distance_nm": 7876.662652,
               "reroute_distance_nm": 8445.865505,
               "reroute_extra_nm": 569.202853,
+              "reroute_traversed_passages": [
+                "babalmandab",
+                "suez",
+                "sunda"
+              ],
               "baseline_distance_deviation_fraction": 0.073334,
               "reroute_extra_distance_deviation_nm": 0.797147,
               "source": {
@@ -159067,7 +159391,60 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "comtrade_manufactured_weight_extrapolation_proxy",
+          "baseline_required_dwt": 2757420.656538,
+          "options": [
+            {
+              "id": "cape_good_hope",
+              "label_ko": "희망봉 우회",
+              "status": "representative_sea_detour",
+              "bypassed_chokepoint_ids": [
+                "suez",
+                "bab_el_mandeb"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": 12000.0,
+              "additional_nm_one_way": 3500.0,
+              "additional_sailing_days_one_way": 8.578431,
+              "additional_cycle_days_round_trip": 17.156863,
+              "cycle_days_round_trip": 67.823529,
+              "exposed_flow_share": 0.95,
+              "required_dwt_with_detour": 3644458.551564,
+              "additional_required_dwt": 887037.895026,
+              "additional_required_dwt_pct": 32.1691,
+              "warning_ko": "일반 운항 속도와 동일한 항만 체류 가정입니다. 운항표나 추가 대기 예측이 아닙니다."
+            },
+            {
+              "id": "malacca",
+              "label_ko": "순다 경유 가정",
+              "status": "conditional_geometry_only",
+              "bypassed_chokepoint_ids": [
+                "malacca"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "verified_open_network_distance",
+              "distance_evidence_id": "asia_mediterranean_container_malacca",
+              "distance_nm_one_way": 9070.0,
+              "additional_nm_one_way": 570.0,
+              "additional_sailing_days_one_way": 1.397059,
+              "additional_cycle_days_round_trip": 2.794118,
+              "cycle_days_round_trip": 53.460784,
+              "exposed_flow_share": 0.95,
+              "required_dwt_with_detour": 2901881.113728,
+              "additional_required_dwt": 144460.45719,
+              "additional_required_dwt_pct": 5.239,
+              "warning_ko": "통과 가능한 선박이라는 조건에서만 성립합니다. 선종·흘수별 통과 적격성이나 우회로 처리능력은 검증하지 않았습니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 2757420.656538,
@@ -159339,7 +159716,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "comtrade_manufactured_weight_extrapolation_proxy",
+          "baseline_required_dwt": 3498064.766741,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 3498064.766741,
@@ -159613,7 +159997,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "comtrade_manufactured_weight_extrapolation_proxy",
+          "baseline_required_dwt": 340743.726178,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 340743.726178,
@@ -159710,7 +160101,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 799639.476961,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 799639.476961,
@@ -159807,7 +160205,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 45033074.105441,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 45033074.105441,
@@ -159904,7 +160309,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 56970826.674815,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 56970826.674815,
@@ -160001,7 +160413,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 550295.718394,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 550295.718394,
@@ -160098,7 +160517,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 6447680.791044,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 6447680.791044,
@@ -160195,7 +160621,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 9251016.499545,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 9251016.499545,
@@ -160292,7 +160725,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 9316286.253283,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 9316286.253283,
@@ -160409,7 +160849,35 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 1562114.885845,
+          "options": [
+            {
+              "id": "bosporus",
+              "label_ko": "동일 출발·도착항의 해상 우회 없음",
+              "status": "no_same_port_sea_detour",
+              "bypassed_chokepoint_ids": [],
+              "blocking_chokepoint_id": "bosporus",
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": null,
+              "additional_nm_one_way": null,
+              "additional_sailing_days_one_way": null,
+              "additional_cycle_days_round_trip": null,
+              "cycle_days_round_trip": null,
+              "exposed_flow_share": 1.0,
+              "required_dwt_with_detour": null,
+              "additional_required_dwt": null,
+              "additional_required_dwt_pct": null,
+              "warning_ko": "대체 선적·송유관·운송 보류는 별도입니다. 우회거리·추가 DWT를 0으로 보지 않습니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 1562114.885845,
@@ -160506,7 +160974,14 @@
         "chokepoint_alternatives": [],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 1001352.869369,
+          "options": [],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 1001352.869369,
@@ -160642,6 +161117,10 @@
               "normal_distance_nm": 5962.655149,
               "reroute_distance_nm": 6587.665974,
               "reroute_extra_nm": 625.010825,
+              "reroute_traversed_passages": [
+                "ormuz",
+                "sunda"
+              ],
               "baseline_distance_deviation_fraction": 0.082668,
               "reroute_extra_distance_deviation_nm": 0.010825,
               "source": {
@@ -160657,7 +161136,59 @@
         ],
         "method": "configured nautical miles divided by service speed",
         "input_status": "route_config_distance_assumption",
-        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip."
+        "warning": "Transit times are route-level assumptions and exclude named intermediate port-call schedules unless explicitly represented in port_days_round_trip.",
+        "detour_comparison": {
+          "method_id": "fixed_service_flow_exposure_weighted_cycle_v1",
+          "traffic_input_status": "observed_bilateral_weight_with_route_allocation_proxy",
+          "baseline_required_dwt": 5272749.416429,
+          "options": [
+            {
+              "id": "hormuz",
+              "label_ko": "동일 출발·도착항의 해상 우회 없음",
+              "status": "no_same_port_sea_detour",
+              "bypassed_chokepoint_ids": [],
+              "blocking_chokepoint_id": "hormuz",
+              "requires_open_chokepoint_ids": [],
+              "distance_basis": "route_config_distance_assumption",
+              "distance_evidence_id": null,
+              "distance_nm_one_way": null,
+              "additional_nm_one_way": null,
+              "additional_sailing_days_one_way": null,
+              "additional_cycle_days_round_trip": null,
+              "cycle_days_round_trip": null,
+              "exposed_flow_share": 1.0,
+              "required_dwt_with_detour": null,
+              "additional_required_dwt": null,
+              "additional_required_dwt_pct": null,
+              "warning_ko": "대체 선적·송유관·운송 보류는 별도입니다. 우회거리·추가 DWT를 0으로 보지 않습니다. 페르시아만 안쪽 항에서 출발하는 선박은 희망봉으로 돌아 호르무즈를 피할 수 없습니다."
+            },
+            {
+              "id": "malacca",
+              "label_ko": "순다 경유 가정",
+              "status": "conditional_geometry_only",
+              "bypassed_chokepoint_ids": [
+                "malacca"
+              ],
+              "blocking_chokepoint_id": null,
+              "requires_open_chokepoint_ids": [
+                "hormuz"
+              ],
+              "distance_basis": "verified_open_network_distance",
+              "distance_evidence_id": "persian_gulf_east_asia_lng_malacca",
+              "distance_nm_one_way": 7125.0,
+              "additional_nm_one_way": 625.0,
+              "additional_sailing_days_one_way": 1.578283,
+              "additional_cycle_days_round_trip": 3.156566,
+              "cycle_days_round_trip": 42.984848,
+              "exposed_flow_share": 0.95,
+              "required_dwt_with_detour": 5669743.45219,
+              "additional_required_dwt": 396994.03576,
+              "additional_required_dwt_pct": 7.5292,
+              "warning_ko": "통과 가능한 선박이라는 조건에서만 성립합니다. 선종·흘수별 통과 적격성이나 우회로 처리능력은 검증하지 않았습니다."
+            }
+          ],
+          "warning_ko": "영향받는 비중만 양방향으로 우회하고, 연간 화물·적재율·일반 속도·항만 체류일은 같다고 가정합니다. DWT는 운송 수요를 유지하는 데 필요한 모형상 배치량이며 실제 통항량·여유 선대가 아닙니다. 서로 다른 대안의 수치를 합하지 않습니다. 컨테이너 TEU·LNG 화물창 m³로 임의 환산하지 않습니다."
+        }
       },
       "baseline": {
         "baseline_required_dwt": 5272749.416429,
@@ -160710,6 +161241,96 @@
       }
     }
   ],
+  "hormuz_annual_outlook": {
+    "contract_version": "hormuz-annual-outlook-v1",
+    "method_id": "single_eia_release_fixed_quarter_daily_rate_to_year_end",
+    "status": "reference_available",
+    "publisher": "EIA",
+    "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+    "source_status": "fetched",
+    "source_published_at": "2026-11-16",
+    "as_of": "2026-11-25",
+    "cards": [
+      {
+        "cargo_category": "crude_condensate",
+        "label_ko": "원유+콘덴세이트",
+        "geography_scope": "strait_of_hormuz",
+        "status": "conditional_outlook",
+        "unit": "barrels",
+        "daily_rate_unit": "barrels_per_day",
+        "year": 2026,
+        "period_start": "2026-01-01",
+        "period_end": "2026-12-31",
+        "published_period_end": "2026-09-30",
+        "missing_quarter_starts": [],
+        "reported_cumulative": 1998400000.0,
+        "unreported_period_start": "2026-10-01",
+        "unreported_days": 92,
+        "unreported_elapsed_days": 56,
+        "full_year_institution_total": null,
+        "scenarios": [
+          {
+            "id": "latest_quarter_pace",
+            "label_ko": "최근 발표 분기의 하루 통항 물량 유지",
+            "reference_period_start": "2026-07-01",
+            "reference_period_end": "2026-09-30",
+            "assumed_daily_rate": 7300000,
+            "unreported_period_estimate": 671600000,
+            "annual_total": 2670000000.0
+          },
+          {
+            "id": "previous_quarter_pace",
+            "label_ko": "그 직전 분기의 하루 통항 물량을 적용",
+            "reference_period_start": "2026-04-01",
+            "reference_period_end": "2026-06-30",
+            "assumed_daily_rate": 3800000,
+            "unreported_period_estimate": 349600000,
+            "annual_total": 2348000000.0
+          }
+        ]
+      },
+      {
+        "cargo_category": "lng",
+        "label_ko": "LNG",
+        "geography_scope": "strait_of_hormuz",
+        "status": "conditional_outlook",
+        "unit": "billion_cubic_feet",
+        "daily_rate_unit": "billion_cubic_feet_per_day",
+        "year": 2026,
+        "period_start": "2026-01-01",
+        "period_end": "2026-12-31",
+        "published_period_end": "2026-09-30",
+        "missing_quarter_starts": [],
+        "reported_cumulative": 867.6,
+        "unreported_period_start": "2026-10-01",
+        "unreported_days": 92,
+        "unreported_elapsed_days": 56,
+        "full_year_institution_total": null,
+        "scenarios": [
+          {
+            "id": "latest_quarter_pace",
+            "label_ko": "최근 발표 분기의 하루 통항 물량 유지",
+            "reference_period_start": "2026-07-01",
+            "reference_period_end": "2026-09-30",
+            "assumed_daily_rate": 1.4,
+            "unreported_period_estimate": 128.8,
+            "annual_total": 996.4
+          },
+          {
+            "id": "previous_quarter_pace",
+            "label_ko": "그 직전 분기의 하루 통항 물량을 적용",
+            "reference_period_start": "2026-04-01",
+            "reference_period_end": "2026-06-30",
+            "assumed_daily_rate": 0.8,
+            "unreported_period_estimate": 73.6,
+            "annual_total": 941.2
+          }
+        ]
+      }
+    ],
+    "warning_ko": "연간 조건부 시나리오는 발표된 EIA 분기 일평균으로 환산한 누적에, 미발표 기간의 가정 물량을 더한 초크모니터 계산입니다. EIA 전망·실측·신뢰구간이 아닙니다. 미발표 기간에는 아직 수치가 발표되지 않은 과거 날짜도 포함될 수 있습니다. 호르무즈를 통과한 기관 추정 물량 기준이며 우회항 선적은 더하지 않습니다.",
+    "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Annual scenarios calculated by Chokemonitor."
+  },
   "environment": {
     "contract_version": "environment-pathways-v1",
     "status": "route_segmented_scenario_ranges",
@@ -162472,7 +163093,7 @@
   },
   "official_cargo_monitor": {
     "contract_version": "official-chokepoint-cargo-v1",
-    "generated_at": "2026-11-25T02:45:37.070888+00:00",
+    "generated_at": "2026-11-25T13:45:07.649062+00:00",
     "status": "available",
     "api_keys_required": [],
     "collection_policy": "keyless_reports_with_last_good_fallback_no_seed_no_daily_imputation",
@@ -162501,7 +163122,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162531,7 +163152,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162561,7 +163182,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162591,7 +163212,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162621,7 +163242,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162651,7 +163272,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162681,7 +163302,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162711,7 +163332,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162741,7 +163362,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162771,7 +163392,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162801,7 +163422,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162831,7 +163452,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162861,7 +163482,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162891,7 +163512,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162921,7 +163542,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162951,7 +163572,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -162981,7 +163602,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163011,7 +163632,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163041,7 +163662,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163071,7 +163692,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163101,7 +163722,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163131,7 +163752,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163161,7 +163782,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163191,7 +163812,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163223,7 +163844,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163253,7 +163874,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163283,7 +163904,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163313,7 +163934,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163343,7 +163964,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163373,7 +163994,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163403,7 +164024,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163433,7 +164054,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163463,7 +164084,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163493,7 +164114,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163523,7 +164144,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163553,7 +164174,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163583,7 +164204,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163613,7 +164234,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163643,7 +164264,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163673,7 +164294,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163703,7 +164324,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163733,7 +164354,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163763,7 +164384,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163793,7 +164414,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163823,7 +164444,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163853,7 +164474,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163883,7 +164504,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163913,7 +164534,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163945,7 +164566,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -163975,7 +164596,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164005,7 +164626,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164035,7 +164656,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164065,7 +164686,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164095,7 +164716,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164125,7 +164746,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164155,7 +164776,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164185,7 +164806,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164215,7 +164836,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164245,7 +164866,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164275,7 +164896,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164305,7 +164926,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164335,7 +164956,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164365,7 +164986,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164395,7 +165016,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164425,7 +165046,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164455,7 +165076,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164485,7 +165106,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164515,7 +165136,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164545,7 +165166,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164575,7 +165196,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164605,7 +165226,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164635,7 +165256,7 @@
               "upstream_provider": "Vortexa with EIA analysis",
               "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
               "source_published_at": "2026-11-16",
-              "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+              "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
               "revision_status": "revisable_institution_estimate",
               "method_id": "official_table_unit_conversion_only",
               "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164647,12 +165268,12 @@
           ]
         },
         "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
-        "last_attempt_at": "2026-11-25T02:45:37.070888+00:00",
+        "last_attempt_at": "2026-11-25T13:45:07.649062+00:00",
         "api_key_required": false,
         "source_published_at": "2026-11-16",
-        "content_sha256": "34924e615a615dc0078ff06125c9f033bc22a5f0ec7105f6144a56edeeea6de6",
+        "content_sha256": "f3ec80bc590c076d35ae1c803b66f46e94378299f2c432cd6dc2dbef42429f58",
         "status": "fetched",
-        "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+        "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
         "error_code": null,
         "missing_optional_tables": []
       },
@@ -164684,10 +165305,10 @@
           }
         ],
         "source_url": "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx",
-        "last_attempt_at": "2026-11-25T02:45:37.070888+00:00",
+        "last_attempt_at": "2026-11-25T13:45:07.649062+00:00",
         "api_key_required": false,
         "status": "fetched",
-        "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+        "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
         "error_code": null
       },
       "imo_red_sea": {
@@ -164724,10 +165345,10 @@
           }
         ],
         "source_url": "https://www.imo.org/en/mediacentre/hottopics/pages/red-sea.aspx",
-        "last_attempt_at": "2026-11-25T02:45:37.070888+00:00",
+        "last_attempt_at": "2026-11-25T13:45:07.649062+00:00",
         "api_key_required": false,
         "status": "fetched",
-        "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+        "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
         "error_code": null
       },
       "iea": {
@@ -164769,7 +165390,7 @@
         },
         "source_url": "https://www.iea.org/topics/the-middle-east-and-global-energy-markets",
         "api_key_required": false,
-        "last_attempt_at": "2026-11-25T02:45:37.070888+00:00",
+        "last_attempt_at": "2026-11-25T13:45:07.649062+00:00",
         "collection_policy": "official_topic_discovery_max_4_reports_explicit_cc_by_facts_only",
         "candidate_errors": [
           {
@@ -164812,7 +165433,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164850,7 +165471,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164888,7 +165509,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -164926,7 +165547,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165003,7 +165624,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165033,7 +165654,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165063,7 +165684,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165093,7 +165714,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165123,7 +165744,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165153,7 +165774,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165183,7 +165804,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165213,7 +165834,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165243,7 +165864,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165273,7 +165894,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165303,7 +165924,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165333,7 +165954,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165363,7 +165984,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165393,7 +166014,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165423,7 +166044,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165453,7 +166074,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165483,7 +166104,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165513,7 +166134,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165543,7 +166164,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165573,7 +166194,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165603,7 +166224,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165633,7 +166254,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165663,7 +166284,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165693,7 +166314,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165732,6 +166353,192 @@
             "attribution": "IEA (2026), https://www.iea.org/commentaries/oil-markets-strain-to-plug-the-gap-left-by-middle-east-supply-shortfall, Licence: CC BY 4.0; extracted and unit-converted by Chokemonitor.",
             "warning_ko": "기관이 발표한 해당 월의 석유 전체 일평균 추정값입니다. 원유 단독·오늘의 실측량·미포착 물량 보정치가 아닙니다. 다른 기간·품목 카드와 구성비를 계산하지 마세요.",
             "content_sha256": "4b193ea745b4bad631c9a5ea18f702a916207d46e19cb4875be7ab47e89bde95"
+          }
+        ],
+        "cumulative_cards": [
+          {
+            "cargo_category": "total_oil",
+            "label_ko": "석유 전체",
+            "geography_scope": "strait_of_hormuz",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 2651300000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 1301300000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 3888900000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": -66.5
+              }
+            ]
+          },
+          {
+            "cargo_category": "crude_condensate",
+            "label_ko": "원유+콘덴세이트",
+            "geography_scope": "strait_of_hormuz",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 1998400000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 1017400000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 2745100000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": -62.9
+              }
+            ]
+          },
+          {
+            "cargo_category": "petroleum_products",
+            "label_ko": "석유제품",
+            "geography_scope": "strait_of_hormuz",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 643800000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 274800000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 1143800000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": -76.0
+              }
+            ]
+          },
+          {
+            "cargo_category": "lng",
+            "label_ko": "LNG",
+            "geography_scope": "strait_of_hormuz",
+            "unit": "billion_cubic_feet",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다. LNG는 EIA의 기체 환산 부피이며 액화 화물창 부피가 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 867.6,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 201.6,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 2003.8,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": -89.9
+              }
+            ]
           }
         ],
         "reference_comparison_policy": "group_by_publisher_period_scope_and_commodity_never_mix_composition",
@@ -165812,7 +166619,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165850,7 +166657,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165888,7 +166695,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165926,7 +166733,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165967,7 +166774,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -165997,7 +166804,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166027,7 +166834,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166057,7 +166864,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166087,7 +166894,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166117,7 +166924,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166147,7 +166954,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166177,7 +166984,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166207,7 +167014,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166237,7 +167044,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166267,7 +167074,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166297,7 +167104,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166327,7 +167134,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166357,7 +167164,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166387,7 +167194,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166417,7 +167224,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166447,7 +167254,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166477,7 +167284,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166507,7 +167314,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166537,7 +167344,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166567,7 +167374,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166597,7 +167404,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166627,7 +167434,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166657,7 +167464,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166665,6 +167472,192 @@
             "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "status": "reported",
             "warning_ko": "기관의 기간별 일평균 추정값입니다. 특정 날짜의 실제 통항량이나 안전한 통항 확률이 아닙니다. AIS 누락과 사후 수정 가능성이 있습니다."
+          }
+        ],
+        "cumulative_cards": [
+          {
+            "cargo_category": "total_oil",
+            "label_ko": "석유 전체",
+            "geography_scope": "suez_canal_and_sumed_pipeline",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다. 석유 수치는 수에즈 운하와 SUMED 송유관을 합한 값입니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 1694000000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 1181000000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 979300000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": 20.6
+              }
+            ]
+          },
+          {
+            "cargo_category": "crude_condensate",
+            "label_ko": "원유+콘덴세이트",
+            "geography_scope": "suez_canal_and_sumed_pipeline",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다. 석유 수치는 수에즈 운하와 SUMED 송유관을 합한 값입니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 1057200000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 769200000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 549100000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": 40.1
+              }
+            ]
+          },
+          {
+            "cargo_category": "petroleum_products",
+            "label_ko": "석유제품",
+            "geography_scope": "suez_canal_and_sumed_pipeline",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다. 석유 수치는 수에즈 운하와 SUMED 송유관을 합한 값입니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 636800000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 411800000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 430200000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": -4.3
+              }
+            ]
+          },
+          {
+            "cargo_category": "lng",
+            "label_ko": "LNG",
+            "geography_scope": "suez_canal",
+            "unit": "billion_cubic_feet",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다. LNG는 EIA의 기체 환산 부피이며 액화 화물창 부피가 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 510.1,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 348.1,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 266.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": 30.9
+              }
+            ]
           }
         ],
         "reference_comparison_policy": "group_by_publisher_period_scope_and_commodity_never_mix_composition",
@@ -166726,7 +167719,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166764,7 +167757,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166802,7 +167795,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166840,7 +167833,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166877,7 +167870,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166907,7 +167900,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166937,7 +167930,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166967,7 +167960,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -166997,7 +167990,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167027,7 +168020,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167057,7 +168050,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167087,7 +168080,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167117,7 +168110,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167147,7 +168140,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167177,7 +168170,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167207,7 +168200,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167237,7 +168230,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167267,7 +168260,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167297,7 +168290,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167327,7 +168320,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167357,7 +168350,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167387,7 +168380,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167417,7 +168410,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167447,7 +168440,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167477,7 +168470,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167507,7 +168500,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167537,7 +168530,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167567,7 +168560,7 @@
             "upstream_provider": "Vortexa with EIA analysis",
             "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "source_published_at": "2026-11-16",
-            "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+            "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
             "revision_status": "revisable_institution_estimate",
             "method_id": "official_table_unit_conversion_only",
             "reuse_status": "publisher_reuse_permitted_third_party_exceptions_apply",
@@ -167575,6 +168568,203 @@
             "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
             "status": "not_reported",
             "warning_ko": "기관의 기간별 일평균 추정값입니다. 특정 날짜의 실제 통항량이나 안전한 통항 확률이 아닙니다. AIS 누락과 사후 수정 가능성이 있습니다."
+          }
+        ],
+        "cumulative_cards": [
+          {
+            "cargo_category": "total_oil",
+            "label_ko": "석유 전체",
+            "geography_scope": "strait_of_bab_el_mandeb",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 1820700000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 1316700000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 841900000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": 56.4
+              }
+            ]
+          },
+          {
+            "cargo_category": "crude_condensate",
+            "label_ko": "원유+콘덴세이트",
+            "geography_scope": "strait_of_bab_el_mandeb",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 1284300000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 978300000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 485000000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": 101.7
+              }
+            ]
+          },
+          {
+            "cargo_category": "petroleum_products",
+            "label_ko": "석유제품",
+            "geography_scope": "strait_of_bab_el_mandeb",
+            "unit": "barrels",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": 536400000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01"
+                ],
+                "comparison_status": "prior_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": 338400000.0,
+                "missing_quarter_starts": [],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": 347800000.0,
+                "prior_missing_quarter_starts": [],
+                "comparison_status": "comparable",
+                "change_pct": -2.7
+              }
+            ]
+          },
+          {
+            "cargo_category": "lng",
+            "label_ko": "LNG",
+            "geography_scope": "strait_of_bab_el_mandeb",
+            "unit": "billion_cubic_feet",
+            "evidence_class": "derived_from_institution_estimates",
+            "method_id": "eia_quarterly_daily_mean_times_calendar_days",
+            "publisher": "EIA",
+            "source_url": "https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "source_published_at": "2026-11-16",
+            "source_status": "fetched",
+            "attribution": "Source: U.S. Energy Information Administration (2026-11-16); EIA analysis based on Vortexa. Extracted, translated and unit-converted by Chokemonitor; original: https://www.eia.gov/outlooks/steo/report/energysecurity/article.php",
+            "warning_ko": "EIA 분기 일평균에 각 분기의 실제 일수를 곱한 누적 추정치입니다. 일별 실측이나 연간 전망이 아닙니다. LNG는 EIA의 기체 환산 부피이며 액화 화물창 부피가 아닙니다.",
+            "windows": [
+              {
+                "kind": "year_to_date",
+                "label_ko": "2026년 1~9월 누적",
+                "period_start": "2026-01-01",
+                "period_end": "2026-09-30",
+                "value": null,
+                "missing_quarter_starts": [
+                  "2026-04-01",
+                  "2026-07-01"
+                ],
+                "prior_period_start": "2025-01-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-01-01",
+                  "2025-04-01",
+                  "2025-07-01"
+                ],
+                "comparison_status": "current_period_incomplete",
+                "change_pct": null
+              },
+              {
+                "kind": "trailing_matched_quarters",
+                "label_ko": "2026년 4~9월 누적",
+                "period_start": "2026-04-01",
+                "period_end": "2026-09-30",
+                "value": null,
+                "missing_quarter_starts": [
+                  "2026-04-01",
+                  "2026-07-01"
+                ],
+                "prior_period_start": "2025-04-01",
+                "prior_period_end": "2025-09-30",
+                "prior_value": null,
+                "prior_missing_quarter_starts": [
+                  "2025-04-01",
+                  "2025-07-01"
+                ],
+                "comparison_status": "current_period_incomplete",
+                "change_pct": null
+              }
+            ]
           }
         ],
         "reference_comparison_policy": "group_by_publisher_period_scope_and_commodity_never_mix_composition",
@@ -167641,7 +168831,7 @@
   },
   "hormuz_reconstruction": {
     "contract_version": "hormuz-reconstruction-v1",
-    "generated_at": "2026-11-25T02:45:37.070888+00:00",
+    "generated_at": "2026-11-25T13:45:07.649062+00:00",
     "status": "available",
     "api_keys_required": [],
     "method_document": "New for anti/scripts/shipping_capacity/HORMUZ_UNOBSERVED_FLOW_RESEARCH.md",
@@ -169195,7 +170385,7 @@
         "reuse_status": "free_public_statistics_site_rights_reserved_individual_facts_cited",
         "attribution": "Source: JODI-Oil World Database (jodidata.org). Individual monthly figures cited; not a bulk redistribution.",
         "api_key_required": false,
-        "last_attempt_at": "2026-11-25T02:45:37.070888+00:00",
+        "last_attempt_at": "2026-11-25T13:45:07.649062+00:00",
         "data": {
           "observations": [
             {
@@ -169636,7 +170826,7 @@
           ]
         },
         "status": "fetched",
-        "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+        "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
         "error_code": null
       },
       "comtrade": {
@@ -169646,7 +170836,7 @@
         "reuse_status": "free_visualization_redissemination_policy_attribution",
         "attribution": "Source: UN Comtrade, United Nations Statistics Division; monthly HS 2709 imports, keyless public preview.",
         "api_key_required": false,
-        "last_attempt_at": "2026-11-25T02:45:37.070888+00:00",
+        "last_attempt_at": "2026-11-25T13:45:07.649062+00:00",
         "data": {
           "months": [
             "2026-05",
@@ -170077,7 +171267,7 @@
           ],
           "cell_errors": [
             {
-              "key": "IN:2026-08",
+              "key": "IN:2026-05",
               "error_code": "HTTPError"
             },
             {
@@ -170089,11 +171279,11 @@
               "error_code": "HTTPError"
             },
             {
-              "key": "KR:2026-09",
+              "key": "KR:2026-08",
               "error_code": "HTTPError"
             },
             {
-              "key": "CN:2026-05",
+              "key": "KR:2026-10",
               "error_code": "HTTPError"
             },
             {
@@ -170107,7 +171297,7 @@
           ]
         },
         "status": "fetched",
-        "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+        "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
         "error_code": null
       },
       "sentinel1": {
@@ -170117,7 +171307,7 @@
         "reuse_status": "copernicus_sentinel_free_full_open_metadata_only",
         "attribution": "Contains modified Copernicus Sentinel data (metadata only), Copernicus Data Space Ecosystem STAC.",
         "api_key_required": false,
-        "last_attempt_at": "2026-11-25T02:45:37.070888+00:00",
+        "last_attempt_at": "2026-11-25T13:45:07.649062+00:00",
         "data": {
           "window_start": "2026-10-26",
           "window_end": "2026-11-24",
@@ -170336,14 +171526,14 @@
           ]
         },
         "status": "fetched",
-        "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+        "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
         "error_code": null
       }
     }
   },
   "hormuz_bypass_monitor": {
     "contract_version": "hormuz-bypass-v1",
-    "generated_at": "2026-11-25T02:45:37.070888+00:00",
+    "generated_at": "2026-11-25T13:45:07.649062+00:00",
     "status": "available",
     "api_keys_required": [],
     "route": {
@@ -170890,9 +172080,9 @@
         "source_url": "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query",
         "publisher": "IMF PortWatch (Daily Ports Data)",
         "api_key_required": false,
-        "last_attempt_at": "2026-11-25T02:45:37.070888+00:00",
+        "last_attempt_at": "2026-11-25T13:45:07.649062+00:00",
         "status": "fetched",
-        "retrieved_at": "2026-11-25T02:45:37.070888+00:00",
+        "retrieved_at": "2026-11-25T13:45:07.649062+00:00",
         "error_code": null,
         "summary": {
           "monthly": [
@@ -174532,5 +175722,45 @@
       }
     ],
     "warning_ko": "PortWatch AIS로 포착된 통항의 전년 대비 변화다. 위협 해역에서 AIS를 끄면 실제 통항보다 크게 줄어 보일 수 있다. 공식 추정과의 비교는 각자의 전년 대비 비율끼리만 하며, 톤과 배럴을 서로 환산하지 않는다."
+  },
+  "arctic_route_reference": {
+    "source_path": "sea_route_v1.json",
+    "source_field": "route_line.compare",
+    "status": "conditional_port_pair_reference",
+    "routes": [
+      {
+        "id": "suez",
+        "distance_nm_one_way": 10801,
+        "transit_days_one_way": 33.1,
+        "difference_nm_one_way": 0,
+        "difference_days_one_way": 0.0,
+        "difference_days_round_trip_transit": 0.0,
+        "additional_required_dwt": null
+      },
+      {
+        "id": "cape",
+        "distance_nm_one_way": 14507,
+        "transit_days_one_way": 43.2,
+        "difference_nm_one_way": 3706,
+        "difference_days_one_way": 10.1,
+        "difference_days_round_trip_transit": 20.2,
+        "additional_required_dwt": null
+      },
+      {
+        "id": "nsr",
+        "distance_nm_one_way": 7582,
+        "transit_days_one_way": 22.9,
+        "difference_nm_one_way": -3219,
+        "difference_days_one_way": -10.2,
+        "difference_days_round_trip_transit": -20.4,
+        "additional_required_dwt": null
+      }
+    ],
+    "origin_ko": "부산",
+    "destination_ko": "로테르담",
+    "open_water_speed_knots": 14.0,
+    "baseline_id": "suez",
+    "source_note_ko": "대권 항로 거리(해리), 평균 14노트 가정. 북극항로 구간(카라해 관문~베링 해협)은 CHNL 2020년 평균 통과 8일, 수에즈 운하 통과·대기 1일을 더함. 쇄빙선 호위료·빙급선 용선료·보험료·러시아 허가와 제재는 반영하지 않음.",
+    "warning_ko": "부산–로테르담 대표 항구쌍의 모형 비교입니다. 왕복 차이는 양방향 통과시간이 같다는 가정이며 항만 체류를 제외합니다. 북극항로는 해빙·선박 적격성·허가에 따라 이용 가능성이 달라집니다. 동아시아–북유럽 전체 물동량이나 동일 선급 배치를 적용할 근거가 없어 추가 DWT는 산출하지 않습니다."
   }
 }
