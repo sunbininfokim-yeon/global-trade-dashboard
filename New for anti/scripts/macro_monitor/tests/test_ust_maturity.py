@@ -40,6 +40,24 @@ class Summarize(unittest.TestCase):
         self.assertEqual(c["panels"][1]["dates"], ["2027", "2029"])
 
 
+class Duration(unittest.TestCase):
+    def test_par_ten_year_and_bill(self):
+        p, d = um.price_duration(10, 0.05, 0.05, "notes")
+        self.assertAlmostEqual(p, 1.0, places=6)
+        self.assertAlmostEqual(d, 7.79, delta=0.02)               # modified duration of a 5% par 10-year
+        p, d = um.price_duration(0.5, 0, 0.04, "bills")
+        self.assertAlmostEqual(d, 0.49, delta=0.01)
+
+    def test_summary_takes_out_fed_holdings(self):
+        curve = [(0.25, 0.04), (2, 0.04), (10, 0.05), (30, 0.05)]
+        rows = [row("Bills Maturity Value", "B1", "2027-04-30", "300000"),
+                {**row("Notes", "N1", "2036-10-31", "100000"), "interest_rate_pct": "5.0"}]
+        s = um.summarize(rows, curve=curve, soma={"N1": 50.0}, soma_asof="2026-10-28")["duration"]
+        self.assertAlmostEqual(s["teneq_bn"], 100 + 300 * (0.49 / 7.79), delta=2)   # bills add ~19bn of 10y risk
+        self.assertAlmostEqual(s["fed_share_pct"], 50 * 7.79 / (s["dv01_mn"] / 0.1) * 100, delta=1)
+        self.assertGreater(s["dv01_by_class_mn"]["notes"], 5 * s["dv01_by_class_mn"]["bills"])   # 100bn of 10y vs 300bn of bills
+
+
 class Toolkit(unittest.TestCase):
     def test_change_after_each_action_from_the_close_before(self):
         dgs = [("2026-08-17", 5.30), ("2026-08-18", 5.28), ("2026-08-19", 5.19), ("2026-08-20", 5.20),

@@ -2,7 +2,8 @@
 """US marketable debt: weighted average maturity, bills share and maturity wall (MSPD), plus the 30-year
 yield around Treasury's debt-management actions -> USA card `ust_debt_wam` (see macro_monitor/ust_maturity.py).
 
-    python3 wire_ust_maturity.py
+    python3 wire_ust_maturity.py             # new months only
+    python3 wire_ust_maturity.py --rebuild   # every month again (adds duration to the cached history)
 
 Monthly summaries are kept in config/ust_mspd_wam_v1.json; each run fetches only months after the last
 one. A source that cannot be read leaves the card as it was and exits 1. Keyless.
@@ -43,14 +44,35 @@ def toolkit(dgs30: list[tuple[str, float]], events: list[dict], since: str) -> d
             "label_ko": "미국 30년 국채금리(%)", "source": "FRED DGS30"}
 
 
+def duration_inputs():
+    """FRED par-curve series and a SOMA lookup (latest Wednesday on or before a month end)."""
+    curves = {sid: ups.fetch_fred(sid) for sid in um.CURVE_IDS}
+    dates = um.soma_dates()
+
+    def soma_for(month_end: str):
+        asof = max((d for d in dates if d <= month_end), default=None)
+        return (asof, um.fetch_soma(asof)) if asof else None
+    return curves, soma_for
+
+
 def main() -> int:
     now, failed = ups.now_iso(), 0
+    rebuild = "--rebuild" in sys.argv
     cache = json.loads(CACHE.read_text(encoding="utf-8")) if CACHE.exists() else {"schema": "ust_mspd_wam_v1", "months": []}
-    months = cache["months"]
+    months = [] if rebuild else cache["months"]
     try:
-        new = um.monthly(um.fetch_rows(months[-1]["date"] if months else None))
+        rows = um.fetch_rows(months[-1]["date"] if months else None)
+        try:
+            curves, soma_for = duration_inputs() if rows else (None, None)
+        except Exception as exc:  # noqa: BLE001 -- WAM still goes in; duration waits for the next run
+            print(f"FAILED duration inputs: {exc}", file=sys.stderr)
+            curves, soma_for = None, None
+            failed += 1
+        new = um.monthly(rows, curves, soma_for)
+        cache["months"] = months
         if new:
             months += new
+            cache["months"] = months
             CACHE.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     except Exception as exc:  # noqa: BLE001
         print(f"FAILED mspd: {exc}", file=sys.stderr)
