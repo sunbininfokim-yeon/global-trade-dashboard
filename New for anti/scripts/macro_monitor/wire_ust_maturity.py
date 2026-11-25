@@ -170,6 +170,14 @@ def main() -> int:
                         key=lambda e: e["date"])
         card["toolkit_feed"] = feed[:15]
         try:
+            um.add_buyers_panel(card, months, um.fetch_bill_buyers())
+        except Exception as exc:  # noqa: BLE001
+            print(f"FAILED bill buyers: {exc}", file=sys.stderr)
+            failed += 1
+            old_p = next((x for x in (prev or {}).get("panels", []) if x["id"] == "bill_buyers"), None)
+            if old_p:
+                card["panels"].append(old_p)
+        try:
             ol = outlook(months)
             if ol and ol["path"]:
                 um.add_outlook_panels(card, months, ol)

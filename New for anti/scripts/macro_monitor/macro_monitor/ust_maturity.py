@@ -372,3 +372,43 @@ def add_outlook_panels(card: dict[str, Any], months: list[dict[str, Any]], ol: d
         {"id": "outlook_wam", "label": "평균만기 전망", "type": "lines", "unit": "개월", "compare_ko": "전월",
          "dates": dates, "series": two("wam_months", "평균만기"), "note_ko": head + basis},
     ]
+
+
+OFR_MMF_TSY = "https://data.financialresearch.gov/v1/series/timeseries?mnemonic=MMF-MMF_T_TOT-M"
+LLAMA_STABLES = "https://stablecoins.llama.fi/stablecoincharts/all?stablecoin="
+
+
+def fetch_bill_buyers() -> dict[str, dict[str, float]]:
+    """{'YYYY-MM': value bn} for money-market funds' Treasury holdings (OFR MMF monitor, month end) and
+    USD stablecoin supply (DefiLlama, last day of each month)."""
+    from datetime import datetime, timezone
+    mmf = {d[:7]: v / 1e9 for d, v in _get(OFR_MMF_TSY) if v is not None}
+    st: dict[str, float] = {}
+    for x in _get(LLAMA_STABLES):
+        v = ((x.get("totalCirculatingUSD") or {}).get("peggedUSD"))
+        if v:
+            st[datetime.fromtimestamp(int(x["date"]), timezone.utc).strftime("%Y-%m")] = v / 1e9   # later days overwrite
+    return {"mmf": mmf, "stablecoins": st}
+
+
+def add_buyers_panel(card: dict[str, Any], months: list[dict[str, Any]], buyers: dict[str, dict[str, float]],
+                     since: str = "2019-01") -> None:
+    ms = [m for m in months if m["date"][:7] >= since]
+    keys = [m["date"][:7] for m in ms]
+    bills = [round(m["by_class_bn"].get("bills", 0) / 1000, 3) for m in ms]
+    mmf = [round(buyers["mmf"][k] / 1000, 3) if k in buyers["mmf"] else None for k in keys]
+    st = [round(buyers["stablecoins"][k] / 1000, 3) if k in buyers["stablecoins"] else None for k in keys]
+    i = max((k for k, v in enumerate(mmf) if v is not None), default=None)
+    share = f"MMF 국채 보유는 단기채 잔액의 {mmf[i] / bills[i] * 100:.0f}%({keys[i]})" if i is not None else ""
+    j = max((k for k, v in enumerate(st) if v is not None), default=None)
+    sc = f", 달러 스테이블코인 공급 {st[j] * 10000:,.0f}억 달러(단기채 잔액의 {st[j] / bills[j] * 100:.1f}%)" if j is not None else ""
+    card["panels"].append({
+        "id": "bill_buyers", "label": "단기채 구매자", "type": "lines", "unit": "조$", "compare_ko": "전월",
+        "dates": [m["date"] for m in ms],
+        "series": [{"label": "단기채 잔액", "values": bills},
+                   {"label": "MMF 국채 보유", "values": mmf},
+                   {"label": "달러 스테이블코인 공급", "values": st}],
+        "note_ko": (f"단기채를 사 줄 구조적 수요입니다. {share}{sc}. MMF 보유(OFR 단기자금 모니터)는 단기채가 대부분이지만 "
+                    "이표채도 일부 섞여 있습니다. 스테이블코인은 공급량이며, 준비금의 대부분이 단기채·국채 레포라 단기채 수요의 대리 지표로 씁니다"
+                    "(발행사별 준비금 구성은 공시 PDF라 싣지 않았습니다)."),
+    })

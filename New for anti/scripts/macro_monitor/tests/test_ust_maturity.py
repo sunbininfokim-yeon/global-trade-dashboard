@@ -68,6 +68,16 @@ class Duration(unittest.TestCase):
                          (67.5, -5.0, -6.2, 68.8, 125.0))
 
 
+    def test_bill_buyers_panel(self):
+        months = [{"date": "2026-10-31", "by_class_bn": {"bills": 7382.0}}]
+        card = {"panels": []}
+        um.add_buyers_panel(card, months, {"mmf": {"2026-10": 3620.0}, "stablecoins": {"2026-10": 297.0}})
+        p = card["panels"][0]
+        self.assertEqual([s["values"][0] for s in p["series"]], [7.382, 3.62, 0.297])
+        self.assertIn("49%", p["note_ko"])
+        self.assertIn("2,970억 달러", p["note_ko"])
+
+
 class Toolkit(unittest.TestCase):
     def test_change_after_each_action_from_the_close_before(self):
         dgs = [("2026-08-17", 5.30), ("2026-08-18", 5.28), ("2026-08-19", 5.19), ("2026-08-20", 5.20),
