@@ -5204,6 +5204,8 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .ms-mc-tip-row { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #cbd5e1; font-variant-numeric: tabular-nums; }
 .ms-mc-tip-row i { width: 10px; height: 3px; border-radius: 2px; flex: none; }
 .ms-mc-tip-row b { margin-left: auto; padding-left: 10px; font-weight: 620; color: #f1f5f9; }
+/* CTA threshold calendar: a reference price within ±5% of today's close. */
+.ms-cta-hot { color: #fbbf24; font-weight: 650; }
 .ms-mc-tip-row em { font-style: normal; color: #94a3b8; padding-left: 8px; font-size: 10.5px; }
 .ms-mark { stroke: rgba(226,232,240,.6); stroke-width: 1; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
 .ms-mark-tag { fill: #cbd5e1; font-size: 10px; }
@@ -7634,3 +7636,11 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 /* 시장 미시구조 › 가상자산: up red / down blue (Korean convention) */
 .ms-cr-up { color: #f87171; }
 .ms-cr-down { color: #60a5fa; }
+/* 네 마녀의 날 (quarterly expiry) shading on the price-level chart */
+.ms-plc-qw { fill: rgba(251,191,36,.14); pointer-events: none; }
+.ms-plc-qw-tag { fill: #fbbf24; font-size: 10px; }
+.ms-plc-sw-qw { display: inline-block; width: 10px; height: 10px; background: rgba(251,191,36,.35); margin-right: 4px; vertical-align: middle; }
+.ms-cta-guide { border: 1px solid rgba(148,163,184,.25); border-radius: 8px; padding: 10px 14px; margin: 8px 0 12px; background: rgba(148,163,184,.06); font-size: 13px; line-height: 1.55; }
+.ms-cta-guide ol { margin: 6px 0 4px 18px; padding: 0; }
+.ms-cta-guide li { margin: 2px 0; }
+.ms-cta-guide p { margin: 4px 0 0; color: #94a3b8; }
