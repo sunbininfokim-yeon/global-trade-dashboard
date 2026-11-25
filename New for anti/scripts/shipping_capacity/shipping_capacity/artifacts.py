@@ -354,6 +354,7 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
             snapshot.get("chokepoints_live", {})
         ),
         "routes": [_screen_route(route) for route in routes],
+        **({"hormuz_annual_outlook": snapshot["hormuz_annual_outlook"]} if "hormuz_annual_outlook" in snapshot else {}),
         "environment": _screen_environment(snapshot.get("environment", {})),
     }
     scenario_grid = {
@@ -423,6 +424,8 @@ def golden_contract_failures(
     bundle_id_values = {screen.get("bundle_id"), diagnostics.get("bundle_id"), scenario_grid.get("bundle_id")}
     if None in bundle_id_values or len(bundle_id_values) != 1:
         failures.append("bundle_id_mismatch")
+    if screen.get("hormuz_annual_outlook") != diagnostics.get("hormuz_annual_outlook"):
+        failures.append("hormuz_annual_outlook_screen_diagnostics_mismatch")
     diagnostic_routes = {row["id"]: row for row in diagnostics.get("routes", [])}
     for route in screen.get("routes", []):
         source = diagnostic_routes.get(route["id"])
