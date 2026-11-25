@@ -58,6 +58,34 @@ class Duration(unittest.TestCase):
         self.assertGreater(s["dv01_by_class_mn"]["notes"], 5 * s["dv01_by_class_mn"]["bills"])   # 100bn of 10y vs 300bn of bills
 
 
+    def test_flow_parts_add_up(self):
+        a = {"date": "2026-09-30", "duration": {"dv01_mn": 1000.0, "dv01_public_mn": 800.0, "dv01_per_bn_10y": 0.8}}
+        b = {"date": "2026-10-31", "duration": {"dv01_mn": 1100.0, "dv01_public_mn": 900.0, "dv01_per_bn_10y": 0.8,
+                                                "on_prev_curve": {"dv01_mn": 1050.0, "dv01_public_mn": 845.0, "buyback_dv01_mn": 4.0}}}
+        f = um.flows([a, b])[0]
+        # Treasury +50 (of which buybacks -4), Fed held 200 -> 205 on the old curve (-5 for the public), curve +55
+        self.assertEqual((f["treasury_ex_buyback"], f["buyback"], f["fed"], f["rates"], f["total"]),
+                         (67.5, -5.0, -6.2, 68.8, 125.0))
+
+
+    def test_bill_buyers_panel(self):
+        months = [{"date": "2026-10-31", "by_class_bn": {"bills": 7382.0}}]
+        card = {"panels": []}
+        um.add_buyers_panel(card, months, {"mmf": {"2026-10": 3620.0}, "stablecoins": {"2026-10": 297.0}})
+        p = card["panels"][0]
+        self.assertEqual([s["values"][0] for s in p["series"]], [7.382, 3.62, 0.297])
+        self.assertIn("49%", p["note_ko"])
+        self.assertIn("2,970억 달러", p["note_ko"])
+
+
+    def test_tga_panel_step_assumption(self):
+        card = {"panels": []}
+        um.add_tga_panel(card, [("2026-09-30", 984.0), ("2026-11-23", 898.8)], {"2026-07": 950.0, "2026-10": 850.0, "2027-01": 1000.0})
+        p = card["panels"][0]
+        self.assertEqual(p["series"][1]["values"], [950.0, 850.0])
+        self.assertIn("이번 분기말 8,500억 달러, 다음 분기말 1조 달러", p["note_ko"])
+
+
 class Toolkit(unittest.TestCase):
     def test_change_after_each_action_from_the_close_before(self):
         dgs = [("2026-08-17", 5.30), ("2026-08-18", 5.28), ("2026-08-19", 5.19), ("2026-08-20", 5.20),

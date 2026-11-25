@@ -181,6 +181,14 @@ jobs:
         continue-on-error: true
         run: python build_krx_deriv_flow.py --source "${{ github.workspace }}/krx-month-paste" --print-stats
 
+      # CTA-style trend signal on the KOSPI 200 front-month close, built from
+      # the published krx_deriv_flow_v1.json, so it runs whether or not the
+      # krx-month-paste checkout worked (it then repeats the last close).
+      - name: KRX CTA trend
+        id: krx_cta
+        continue-on-error: true
+        run: python build_krx_cta.py --live --print-stats
+
       # KOSPI 200 covered-call ETF size and the call notional their index
       # rules imply. FDR's ETF/KR listing appends today every run; the KRX
       # 13101 history in krx-month-paste seeds earlier days when the checkout
@@ -230,6 +238,7 @@ jobs:
             "New for anti/public/data/derivatives_board_v1.json" \
             "New for anti/public/data/krx_deriv_flow_v1.json" \
             "New for anti/public/data/covered_call_supply_v1.json" \
+            "New for anti/public/data/krx_cta_v1.json" \
             "New for anti/public/data/us_oi_daily_archive.jsonl" \
             "New for anti/public/data/market_microstructure_v1.json" \
             "New for anti/public/data/ai_casino_brief_v1.json" \
@@ -273,6 +282,7 @@ jobs:
           KRX_CHECKOUT: ${{ steps.krx15007_checkout.outcome }}
           KRX_FLOW: ${{ steps.krx_flow.outcome }}
           COVERED_CALL: ${{ steps.covered_call.outcome }}
+          KRX_CTA: ${{ steps.krx_cta.outcome }}
           ALERT_LEVELS: ${{ steps.alert_levels.outcome }}
         run: |
           failed=()
@@ -281,6 +291,7 @@ jobs:
           [ "$KRX_CHECKOUT" = "failure" ]    && failed+=("Checkout krx-month-paste")
           [ "$KRX_FLOW" = "failure" ]        && failed+=("KRX derivatives microstructure history")
           [ "$COVERED_CALL" = "failure" ]    && failed+=("Covered-call supply")
+          [ "$KRX_CTA" = "failure" ]         && failed+=("KRX CTA trend")
           [ "$ALERT_LEVELS" = "failure" ]    && failed+=("Alert levels")
           if [ "${#failed[@]}" -eq 0 ]; then
             echo "No continue-on-error step failed."

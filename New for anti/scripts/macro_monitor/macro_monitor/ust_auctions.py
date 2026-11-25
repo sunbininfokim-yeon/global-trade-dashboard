@@ -444,3 +444,45 @@ def buyback_extras(rows: list[dict[str, Any]], cal: dict[str, Any] | None, ceili
                               "total": len(cal["operations"]), "pdf": docs.get("schedule_pdf"), "xml": docs.get("schedule_xml")}
         extras["quarter"] = quarter_progress(rows, cal["start"], cal["end"], ceilings)
     return extras
+
+
+FD_BB_SECS = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/buybacks_security_details"
+              "?fields=operation_date,cusip_nbr,coupon_rate_pct,maturity_date,par_amt_accepted,weighted_avg_accepted_price"
+              "&sort=-operation_date&page[size]=10000")
+
+
+def buyback_securities(rows: list[dict[str, Any]], ops: list[dict[str, Any]], recent: int = 40,
+                       since: str = "2024-01-01") -> dict[str, Any]:
+    """Securities actually bought (par accepted > 0): the most recent, and totals by maturity year since the
+    program began. rows: Fiscal Data buybacks_security_details; ops: parsed operations (for purpose/bucket)."""
+    op_by_date: dict[str, list] = defaultdict(list)
+    for o in ops:
+        op_by_date[o["date"]].append(o)
+    got = []
+    for r in rows:
+        par = _f(r.get("par_amt_accepted"))
+        if not par or r.get("maturity_date") in (None, "null") or r["operation_date"] < since:
+            continue                                # the 2000-02 program is in the same table
+        same_day = op_by_date.get(r["operation_date"], [])
+        got.append({"date": r["operation_date"], "cusip": r.get("cusip_nbr"), "coupon_pct": _f(r.get("coupon_rate_pct")),
+                    "maturity": r["maturity_date"], "par_bn": round(par / 1e9, 3), "price": _f(r.get("weighted_avg_accepted_price")),
+                    "type_ko": same_day[0]["type_ko"] if len(same_day) == 1 else None,
+                    "bucket_ko": same_day[0]["bucket_ko"] if len(same_day) == 1 else None})
+    got.sort(key=lambda x: (x["date"], x["par_bn"]), reverse=True)
+    by_year: dict[str, float] = defaultdict(float)
+    liq_by_year: dict[str, float] = defaultdict(float)
+    for g in got:
+        by_year[g["maturity"][:4]] += g["par_bn"]
+        if g["type_ko"] == OP_TYPE_KO["Liquidity Support"]:
+            liq_by_year[g["maturity"][:4]] += g["par_bn"]
+    cash = sum(g["par_bn"] * g["price"] / 100 for g in got if g["price"])
+    par_priced = sum(g["par_bn"] for g in got if g["price"])
+    return {"recent": got[:recent], "since": got[-1]["date"] if got else None,
+            "avg_price": round(cash / par_priced * 100, 2) if par_priced else None,
+            "total_bn": round(sum(g["par_bn"] for g in got), 1),
+            "by_maturity_year": [{"year": y, "par_bn": round(by_year[y], 2), "liquidity_bn": round(liq_by_year[y], 2)}
+                                 for y in sorted(by_year)]}
+
+
+def fetch_buyback_securities(ops: list[dict[str, Any]]) -> dict[str, Any]:
+    return buyback_securities(_get(FD_BB_SECS).get("data") or [], ops)
