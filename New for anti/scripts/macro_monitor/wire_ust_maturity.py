@@ -170,6 +170,23 @@ def main() -> int:
                         key=lambda e: e["date"])
         card["toolkit_feed"] = feed[:15]
         try:
+            cash = {}
+            if QRA.exists():
+                from macro_monitor import ust_projection as pj
+                for e in sorted(json.loads(QRA.read_text(encoding="utf-8"))["events"], key=lambda e: e["id"]):
+                    for qq in (e.get("estimates") or {}).get("quarters", []):
+                        m = pj.QUARTER.search(qq.get("period") or "")
+                        if m and qq.get("end_cash_balance_bn") is not None and qq.get("kind") == "estimate":
+                            cash[f"{m.group(3)}-{pj.MONTH_NAMES[m.group(1)]:02d}"] = float(qq["end_cash_balance_bn"])
+            since = f"{int(months[-1]['date'][:4]) - 2}{months[-1]['date'][4:7]}-01"
+            um.add_tga_panel(card, um.fetch_tga(since), cash)
+        except Exception as exc:  # noqa: BLE001
+            print(f"FAILED tga: {exc}", file=sys.stderr)
+            failed += 1
+            old_p = next((x for x in (prev or {}).get("panels", []) if x["id"] == "tga"), None)
+            if old_p:
+                card["panels"].append(old_p)
+        try:
             um.add_buyers_panel(card, months, um.fetch_bill_buyers())
         except Exception as exc:  # noqa: BLE001
             print(f"FAILED bill buyers: {exc}", file=sys.stderr)

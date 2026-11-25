@@ -78,6 +78,14 @@ class Duration(unittest.TestCase):
         self.assertIn("2,970억 달러", p["note_ko"])
 
 
+    def test_tga_panel_step_assumption(self):
+        card = {"panels": []}
+        um.add_tga_panel(card, [("2026-09-30", 984.0), ("2026-11-23", 898.8)], {"2026-07": 950.0, "2026-10": 850.0, "2027-01": 1000.0})
+        p = card["panels"][0]
+        self.assertEqual(p["series"][1]["values"], [950.0, 850.0])
+        self.assertIn("이번 분기말 8,500억 달러, 다음 분기말 1조 달러", p["note_ko"])
+
+
 class Toolkit(unittest.TestCase):
     def test_change_after_each_action_from_the_close_before(self):
         dgs = [("2026-08-17", 5.30), ("2026-08-18", 5.28), ("2026-08-19", 5.19), ("2026-08-20", 5.20),

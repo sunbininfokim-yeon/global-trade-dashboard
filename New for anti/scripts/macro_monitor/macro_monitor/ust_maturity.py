@@ -420,3 +420,39 @@ def add_buyers_panel(card: dict[str, Any], months: list[dict[str, Any]], buyers:
                     "이표채도 일부 섞여 있습니다. 스테이블코인은 공급량이며, 준비금의 대부분이 단기채·국채 레포라 단기채 수요의 대리 지표로 씁니다"
                     "(발행사별 준비금 구성은 공시 PDF라 싣지 않았습니다)."),
     })
+
+
+FD_TGA = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance"
+          "?fields=record_date,account_type,open_today_bal&filter=account_type:eq:Treasury%20General%20Account%20(TGA)%20Closing%20Balance,"
+          "record_date:gte:{since}&sort=record_date&page[size]=10000")
+
+
+def fetch_tga(since: str) -> list[tuple[str, float]]:
+    """Daily TGA closing balance, bn USD (Daily Treasury Statement)."""
+    return [(r["record_date"], float(r["open_today_bal"]) / 1000) for r in _get(FD_TGA.format(since=since)).get("data") or []
+            if _num(r.get("open_today_bal")) is not None]
+
+
+def add_tga_panel(card: dict[str, Any], tga: list[tuple[str, float]], quarters_cash: dict[str, float]) -> None:
+    """TGA daily against Treasury's end-of-quarter cash assumption (refunding estimates), drawn as a step over
+    each quarter. quarters_cash: {'YYYY-MM' first month of quarter: assumed end balance bn}."""
+    if not tga:
+        return
+    def q(d: str) -> str:
+        return f"{d[:4]}-{((int(d[5:7]) - 1) // 3) * 3 + 1:02d}"
+    dates = [d for d, _ in tga]
+    vals = [round(v, 1) for _, v in tga]
+    assume = [quarters_cash.get(q(d)) for d in dates]
+    last_q = q(dates[-1])
+    nxt = sorted(k for k in quarters_cash if k > last_q)
+    eok = lambda v: (f"{v / 1000:.2f}".rstrip("0").rstrip(".") + "조 달러") if v >= 1000 else f"{v * 10:,.0f}억 달러"  # noqa: E731
+    tail = (f" 재무부 가정: 이번 분기말 {eok(quarters_cash[last_q])}" if last_q in quarters_cash else "") + \
+           (f", 다음 분기말 {eok(quarters_cash[nxt[0]])}" if nxt else "")
+    card["panels"].append({
+        "id": "tga", "label": "TGA 현금잔고", "type": "lines", "unit": "십억$", "compare_ko": "전 영업일",
+        "dates": dates, "series": [{"label": "TGA 잔고", "values": vals},
+                                   {"label": "재무부 분기말 가정", "values": assume}],
+        "note_ko": (f"재무부 현금계좌(TGA) 일별 잔고입니다(차트 단위 십억 달러, 일일 국고 명세 DTS). {dates[-1]} {eok(vals[-1])}." + tail +
+                    ". TGA가 가정보다 낮으면 그만큼 시장에 돈이 풀린 상태(지준 증가)이고, 분기말에 가정 수준으로 다시 채우려면 단기채를 더 찍어야 합니다. "
+                    "가정선은 각 분기 발행계획 추정치의 분기말 현금잔고를 그 분기 전체에 그은 것입니다."),
+    })
