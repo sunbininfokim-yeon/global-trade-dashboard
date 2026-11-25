@@ -133,20 +133,27 @@ class Engine(unittest.TestCase):
 
 
 class Schedule(unittest.TestCase):
-    def test_due_every_two_weeks(self):
+    def test_follows_the_steo_cycle(self):
+        """EIA publishes -> build -> build again 14 days after the release -> wait for the next STEO."""
         import json
         import tempfile
         from datetime import datetime, timedelta, timezone
-        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
         import build_oil_balance as b
-        made = datetime(2026, 11, 25, 7, 45, tzinfo=timezone.utc)
+        rel = datetime(2026, 11, 5, tzinfo=timezone.utc)
         with tempfile.TemporaryDirectory() as d:
             out = Path(d) / "o.json"
-            self.assertTrue(b.due(out, 14))                                   # no previous build
-            out.write_text(json.dumps({"generated_at": made.isoformat()}))
-            self.assertFalse(b.due(out, 14, made + timedelta(days=13)))                     # a day early: same hour, day 13
-            self.assertTrue(b.due(out, 14, made + timedelta(days=13, hours=23, minutes=58)))   # same cron hour, day 14
-            self.assertTrue(b.due(out, None, made + timedelta(hours=1)))       # manual run without the flag
+            save = lambda made, v: out.write_text(json.dumps({"generated_at": made.isoformat(), "steo": {"vintage": v}}))
+            self.assertTrue(b.due(out, "2026-11-05", 14))                                  # first ever
+            save(rel + timedelta(days=1, hours=8), "2026-11-05")                           # built the day after release
+            self.assertIsNone(b.due(out, "2026-11-05", 14, rel + timedelta(days=10)))      # mid-cycle: skip
+            self.assertIsNone(b.due(out, "2026-11-05", 14, rel + timedelta(days=13)))
+            self.assertIn("14 days", b.due(out, "2026-11-05", 14, rel + timedelta(days=14, hours=8)))   # the second run
+            save(rel + timedelta(days=14, hours=8), "2026-11-05")
+            self.assertIsNone(b.due(out, "2026-11-05", 14, rel + timedelta(days=30)))      # both done: wait for EIA
+            self.assertIn("new STEO", b.due(out, "2026-12-08", 14, rel + timedelta(days=34)))
+            save(rel + timedelta(days=12), "2026-11-05")                                   # an off-cycle manual build
+            self.assertTrue(b.due(out, "2026-11-05", 14, rel + timedelta(days=14, hours=8)))   # does not cancel day 14
+            self.assertTrue(b.due(out, None, 14))                                          # release date unreadable: build
 
 
 if __name__ == "__main__":

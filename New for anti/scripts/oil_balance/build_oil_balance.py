@@ -4,9 +4,9 @@ stocks, OPEC spare capacity and the dollar, and a forecast from the assumptions 
 (see oil_balance/forecast.py for the three layers). Free, keyless sources only.
 
     python3 build_oil_balance.py                   # current STEO + FRED + Yahoo; archived history from the cache
-    python3 build_oil_balance.py --every-days 14   # skip unless the last successful build is 14 days old
-                                                   # (the daily workflow calls it this way: a failed run
-                                                   # leaves the old file, so the next day tries again)
+    python3 build_oil_balance.py --follow-steo 14  # the daily workflow: build when EIA publishes a new STEO,
+                                                   # once more 14 days after that release, otherwise skip
+                                                   # (a failed run leaves the old file, so the next day retries)
     python3 build_oil_balance.py --rebuild-history [--archive-dir DIR]
                                                    # re-read the December STEO archives (2007-2022 history,
                                                    # 2007-2025 vintages for the back-test) into the cache
@@ -24,7 +24,7 @@ import statistics as st
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -85,11 +85,11 @@ def resolve_inputs(a: dict, eng: dict) -> dict:
     return inp
 
 
-def build() -> dict:
+def build(raw: bytes | None = None) -> dict:
     hist_doc = json.loads(HISTORY.read_text(encoding="utf-8"))
     hist, vintages = hist_doc["series"], hist_doc.get("vintages", {})
     A = json.loads(ASSUMPTIONS.read_text(encoding="utf-8"))
-    raw = steo.fetch(steo.CURRENT)
+    raw = raw or steo.fetch(steo.CURRENT)
     cur = steo.parse(raw)
     vdate = steo.vintage_date(raw, False)
     first_fc = vdate[:7] if vdate else None
@@ -218,29 +218,48 @@ def build() -> dict:
     return doc, log
 
 
-def due(out: Path, every_days: float | None, now: datetime | None = None) -> bool:
-    """True when there is no previous build, or it is at least every_days old (half a day of slack so a
-    daily cron at the same hour lands on day 14, not 15)."""
-    if not every_days or not out.exists():
-        return True
+def due(out: Path, vintage: str | None, days: float, now: datetime | None = None) -> str | None:
+    """Why to build now, or None to skip. Cycle: EIA publishes a STEO -> build -> build again `days` after that
+    release (prices and the dollar have moved, the stock path has not) -> wait for the next STEO. Half a day
+    of slack so a daily cron at the same hour lands on day `days`."""
+    if not out.exists():
+        return "no previous build"
     try:
-        made = datetime.fromisoformat(json.loads(out.read_text(encoding="utf-8"))["generated_at"])
-    except (ValueError, KeyError, OSError):
-        return True
+        prev = json.loads(out.read_text(encoding="utf-8"))
+        made, built_vintage = datetime.fromisoformat(prev["generated_at"]), prev["steo"]["vintage"]
+    except (ValueError, KeyError, TypeError, OSError):
+        return "previous build unreadable"
+    if not vintage:
+        return "STEO release date not found"
+    if vintage != built_vintage:
+        return f"new STEO {vintage}"
+    second = datetime.fromisoformat(vintage).replace(tzinfo=timezone.utc) + timedelta(days=days - 0.5)
     now = now or datetime.now(timezone.utc)
-    return (now - made).total_seconds() >= (every_days - 0.5) * 86400
+    if now >= second and made < second:
+        return f"{days:g} days after STEO {vintage}"
+    return None
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--rebuild-history", action="store_true")
     ap.add_argument("--archive-dir", help="local copies of decYY_base.xls/xlsx to read before fetching")
-    ap.add_argument("--every-days", type=float, help="run only if the last build is this many days old")
+    ap.add_argument("--follow-steo", type=float, metavar="DAYS",
+                    help="build only on a new STEO release and DAYS after it")
     a = ap.parse_args()
-    if not a.rebuild_history and not due(OUT, a.every_days):
-        made = json.loads(OUT.read_text(encoding="utf-8"))["generated_at"]
-        print(f"oil balance: last build {made}, next after {a.every_days:g} days -- skipped")
-        return 0
+    raw = None
+    if a.follow_steo and not a.rebuild_history:
+        try:
+            raw = steo.fetch(steo.CURRENT)
+            vintage = steo.vintage_date(raw, False)
+        except Exception as exc:  # noqa: BLE001
+            print(f"FAILED oil balance: STEO read: {exc}", file=sys.stderr)
+            return 1
+        why = due(OUT, vintage, a.follow_steo)
+        if not why:
+            print(f"oil balance: STEO {vintage} already built; next run {a.follow_steo:g} days after it or on the next STEO -- skipped")
+            return 0
+        print(f"oil balance: building ({why})")
     if a.rebuild_history or not HISTORY.exists():
         series, vint = steo.history_from_archives(local_dir=a.archive_dir)
         HISTORY.write_text(json.dumps({"schema": "steo_history_v1",
@@ -248,7 +267,7 @@ def main() -> int:
                                                "figures for that year and the next (the back-test's inputs).",
                                        "series": series, "vintages": vint}, separators=(",", ":")) + "\n", encoding="utf-8")
     try:
-        doc, log = build()
+        doc, log = build(raw)
     except Exception as exc:  # noqa: BLE001
         print(f"FAILED oil balance: {exc}", file=sys.stderr)
         return 1

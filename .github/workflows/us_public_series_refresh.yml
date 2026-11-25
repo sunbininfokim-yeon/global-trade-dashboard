@@ -39,7 +39,7 @@ name: Refresh macro public series
 # 듀레이션 공급(DV01·10년물 환산, 민간 보유분)까지 붙이고, 재무부 조치(config/ust_toolkit_events_v1.json)
 # 전후 30년물 금리(FRED DGS30)를 붙인다.
 # 원유 수급·적정가·전망(scripts/oil_balance): EIA 단기에너지전망(STEO_m.xlsx, 키 없음)의 공급·수요·OECD 재고·OPEC 여유능력,
-# FRED 브렌트·달러, Yahoo 브렌트 선물로 적정가와 P10/P50/P90 전망을 2주마다 다시 계산한다(매일 돌되 마지막 성공 후 14일이 안 됐으면 건너뜀; 가정은 config/assumptions_v1.json,
+# FRED 브렌트·달러, Yahoo 브렌트 선물로 적정가와 P10/P50/P90 전망을 EIA STEO 발표 직후와 그 14일 뒤에 다시 계산한다(매일 STEO 판만 확인하고 나머지 날은 건너뜀; 가정은 config/assumptions_v1.json,
 # 과거 STEO 12월판 이력·전망은 config/steo_history_v1.json 에 고정). STEO 판마다 그 시점 전망을
 # config/forecast_log_v1.json 에 한 번 저장하고, 달이 지나면 실제와 채점한다.
 # 재무부 툴키트 피드(wire_ust_toolkit_feed.py): GovDelivery 공식 보도자료 RSS + 재무부 보도자료 목록에서 국채 관리 발표를
@@ -104,7 +104,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
-            (cd "New for anti/scripts/oil_balance" && python build_oil_balance.py --every-days 14) || true
+            (cd "New for anti/scripts/oil_balance" && python build_oil_balance.py --follow-steo 14) || true
             (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_cn_official.py; python wire_free_cards.py; python wire_kr_bank_credit.py; python wire_kr_nonbank_credit.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python wire_us_cpi_contrib.py; python archive_kr_cpi_base2020.py; python wire_kr_cpi_contrib.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_toolkit_feed.py; python wire_ust_auctions.py; python wire_ust_maturity.py; python wire_us_monetary.py; python wire_cb_balance_sheets.py; python wire_kr_money_debt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
           }
           for attempt in 1 2 3; do
