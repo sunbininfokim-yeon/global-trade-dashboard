@@ -22,6 +22,7 @@ from macro_monitor import us_public_series as ups  # noqa: E402
 DATA = ROOT.parent.parent / "public" / "data"
 PACK = DATA / "macro_monitor_v1.json"
 OUT = DATA / "ust_auctions_v1.json"
+OFFICIAL = ROOT / "config" / "ust_buyback_official_v1.json"
 
 
 def main() -> int:
@@ -51,6 +52,36 @@ def main() -> int:
     pack = json.loads(text)
     usa = next(c for c in pack["countries"] if c["iso3"] == "USA")
     old = {i["id"]: i for i in usa["indicators"]}
+
+    # The buyback card's side rail. Each part that cannot be read keeps what the card had.
+    bb = next((c for c in cards if c["id"] == "ust_buybacks"), None)
+    if bb is not None:
+        prev_bb = (old.get("ust_buybacks") or {}).get("buybacks") or {}
+        cal = ceilings = None
+        docs: dict = {}
+        try:
+            cal, ceilings, docs = ua.fetch_calendar()
+        except Exception as exc:  # noqa: BLE001
+            failures.append(f"buyback calendar: {exc}")
+        try:
+            news = ua.fetch_news()
+        except Exception as exc:  # noqa: BLE001
+            failures.append(f"buyback news: {exc}")
+            news = prev_bb.get("news") or []
+        official = json.loads(OFFICIAL.read_text(encoding="utf-8"))["items"] if OFFICIAL.exists() else []
+        feed = ROOT / "config" / "ust_toolkit_feed_v1.json"
+        if feed.exists():                       # buyback releases the daily feed picked up
+            have = {o["url"] for o in official}
+            official += [{"date": f["date"], "title": f["title"], "url": f["url"]}
+                         for f in json.loads(feed.read_text(encoding="utf-8"))["items"]
+                         if f["kind"] == "buyback" and f["url"] not in have][:5]
+        extras = ua.buyback_extras(buybacks, cal, ceilings, docs, news, official, now[:10])
+        if cal is None:
+            for k in ("calendar", "quarter"):
+                if k in prev_bb:
+                    extras[k] = prev_bb[k]
+            extras["official"] = [o for o in prev_bb.get("official", []) if "분기 국채발행계획" in o.get("title", "")] + extras["official"]
+        bb["buybacks"].update(extras)
     for c in cards:
         prev = old.get(c["id"])
         if prev and {**prev, "retrieved_at": None} == {**c, "retrieved_at": None}:
