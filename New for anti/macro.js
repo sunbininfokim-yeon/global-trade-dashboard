@@ -2272,6 +2272,112 @@ const mmBuybacksView = (ind) => {
         <p class="fin-note">재무부가 시장에서 기존 국채를 되사는 입찰입니다. 신청/한도가 높을수록 팔고 싶은 물량이 많았다는 뜻입니다. 출처: Fiscal Data.</p>`;
 };
 
+// 장기물 수요: offers against the maximum in every 10~20y / 20~30y nominal buyback, one dot per
+// operation. The background is shaded by the per-operation maximum in force (Treasury raised it from
+// $2B to $6B for 2026-09-09 .. 11-04), so a regime change reads without a hand-drawn annotation.
+const MM_BB_COLORS = { '10Y to 20Y': '#38bdf8', '20Y to 30Y': '#f59e0b' };
+const mmBuybackDemandView = (ind) => {
+    const le = (ind.buybacks || {}).long_end || {};
+    const series = Object.entries(le).filter(([, v]) => (v.points || []).length);
+    const all = series.flatMap(([, v]) => v.points);
+    if (all.length < 2) return '<p class="fin-note">장기물 바이백 기록이 없습니다.</p>';
+    const t = (d) => Date.parse(`${d}T00:00:00Z`);
+    const t0 = Math.min(...all.map((p) => t(p.date))), t1 = Math.max(...all.map((p) => t(p.date)));
+    const hi = Math.max(...all.map((p) => p.offered_to_max), 2) * 1.08;
+    const sx = (d) => MM_L + ((t(d) - t0) / Math.max(t1 - t0, 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - v / hi) * (MM_H - MM_T - MM_B);
+    // Regimes of the maximum in force, across both buckets in date order.
+    const byDate = [...all].sort((a, b) => a.date.localeCompare(b.date));
+    const regimes = [];
+    byDate.forEach((p) => {
+        const r = regimes[regimes.length - 1];
+        if (r && r.max === p.max_bn) r.to = p.date;
+        else regimes.push({ max: p.max_bn, from: p.date, to: p.date });
+    });
+    const maxes = [...new Set(regimes.map((r) => r.max))].sort((a, b) => a - b);
+    const shade = (m) => (maxes.length > 1 ? 0.05 + 0.13 * (maxes.indexOf(m) / (maxes.length - 1)) : 0.06);
+    const bands = regimes.map((r, i) => {
+        const x0 = i === 0 ? MM_L : (sx(regimes[i - 1].to) + sx(r.from)) / 2;
+        const x1 = i === regimes.length - 1 ? MM_W - MM_R : (sx(r.to) + sx(regimes[i + 1].from)) / 2;
+        return `<rect x="${x0.toFixed(1)}" y="${MM_T}" width="${Math.max(x1 - x0, 1).toFixed(1)}" height="${MM_H - MM_T - MM_B}"
+            fill="#a78bfa" fill-opacity="${shade(r.max).toFixed(2)}"><title>회당 한도 $${mmFmt(r.max, 1)}B · ${finEsc(r.from)} ~ ${finEsc(r.to)}</title></rect>
+            ${x1 - x0 > 60 ? `<text x="${((x0 + x1) / 2).toFixed(1)}" y="${MM_T + 12}" class="mm-tick" text-anchor="middle">한도 $${mmFmt(r.max, 1)}B</text>` : ''}`;
+    }).join('');
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((k) => hi * k);
+    const years = [];
+    for (let y = new Date(t0).getUTCFullYear() + 1; y <= new Date(t1).getUTCFullYear(); y++) years.push(`${y}-01-01`);
+    const lines = series.map(([b, v]) => {
+        const c = MM_BB_COLORS[b] || '#94a3b8';
+        const pts = v.points;
+        const d = pts.map((p, i) => `${i ? 'L' : 'M'}${sx(p.date).toFixed(1)},${sy(p.offered_to_max).toFixed(1)}`).join('');
+        return `<path d="${d}" fill="none" stroke="${c}" stroke-width="1.4" stroke-opacity="0.55"/>
+            ${pts.map((p) => `<circle cx="${sx(p.date).toFixed(1)}" cy="${sy(p.offered_to_max).toFixed(1)}" r="3.2" fill="${c}">
+                <title>${finEsc(p.date)} ${finEsc(v.bucket_ko)} · 신청 $${mmFmt(p.offered_bn, 1)}B / 한도 $${mmFmt(p.max_bn, 1)}B = ${mmFmt(p.offered_to_max, 2)}배 · 매입 $${mmFmt(p.accepted_bn, 2)}B</title></circle>`).join('')}`;
+    }).join('');
+    const recent = [...all].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+    const bucketOf = (p) => series.find(([, v]) => v.points.includes(p));
+    return `
+        <div class="mm-chart-box">
+            <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="장기물 바이백 신청/한도 배수">
+                ${bands}
+                ${ticks.map((v) => `
+                    <line x1="${MM_L}" y1="${sy(v).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(v).toFixed(1)}" class="mm-grid"/>
+                    <text x="${MM_L - 7}" y="${(sy(v) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(v, 0)}배</text>`).join('')}
+                <line x1="${MM_L}" y1="${sy(1).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(1).toFixed(1)}" class="mm-threshold"/>
+                <text x="${MM_L + 6}" y="${(sy(1) - 5).toFixed(1)}" class="mm-threshold-tag" text-anchor="start">1배 = 신청이 한도와 같음</text>
+                ${lines}
+                ${years.map((y) => `<text x="${sx(y).toFixed(1)}" y="${MM_H - 8}" class="mm-tick" text-anchor="middle">${y.slice(0, 4)}</text>`).join('')}
+            </svg>
+            <p class="mm-legend-note">${series.map(([b, v]) => `<i class="mm-bb-dot" style="background:${MM_BB_COLORS[b] || '#94a3b8'}"></i>${finEsc(v.bucket_ko)}`).join(' ')}
+                <i class="mm-bb-band"></i>배경 진하기 = 회당 최대 매입 한도</p>
+        </div>
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>날짜</th><th>만기</th><th>매도 신청</th><th>한도</th><th>매입</th><th>신청/한도</th></tr></thead>
+            <tbody>${recent.map((p) => `<tr><td class="co-label">${finEsc(p.date)}</td><td>${finEsc((bucketOf(p) || [, {}])[1].bucket_ko || '')}</td>
+                <td>${mmFmt(p.offered_bn, 1)}B</td><td>${mmFmt(p.max_bn, 1)}B</td><td>${mmFmt(p.accepted_bn, 2)}B</td>
+                <td>${mmFmt(p.offered_to_max, 2)}배</td></tr>`).join('')}</tbody></table></div>
+        <p class="fin-note">재무부가 장기 비지표물을 되사는 유동성 지원 바이백에서, 시장이 팔겠다고 낸 물량을 회당 최대 매입 한도로 나눈 값입니다.
+            1배 아래면 한도만큼 팔 사람이 없었다는 뜻입니다. 출처: Fiscal Data buybacks_operations.</p>`;
+};
+
+// The buyback card's side rail: this quarter's ceilings and how much has been used, the next
+// operations on Treasury's tentative calendar, official announcements, then headlines.
+const mmBuybackRail = (ind) => {
+    const b = ind.buybacks || {};
+    const q = b.quarter, cal = b.calendar;
+    const link = (it, meta) => `
+        <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
+            <span class="mm-news-title">${finEsc(it.title)}</span>
+            ${meta ? `<span class="mm-news-meta">${meta}</span>` : ''}
+        </a>`;
+    const quarter = q && (q.items || []).some((i) => Number.isFinite(i.ceiling_bn)) ? `
+        <p class="mm-news-head">이번 분기 한도 사용 <span class="mm-bb-sub">${finEsc(q.start)} ~ ${finEsc(q.end)}</span></p>
+        ${q.items.filter((i) => Number.isFinite(i.ceiling_bn)).map((i) => `
+            <div class="mm-bb-q">
+                <span class="mm-bb-q-label">${finEsc(i.type_ko)}</span>
+                <span class="mm-bb-q-bar"><i style="width:${Math.min(100, (i.share || 0) * 100).toFixed(1)}%"></i></span>
+                <span class="mm-bb-q-val">$${mmFmt(i.used_bn, 1)}B / $${mmFmt(i.ceiling_bn, 0)}B</span>
+            </div>`).join('')}` : '';
+    const upcoming = cal && (cal.upcoming || []).length ? `
+        <p class="mm-news-head">다가오는 바이백 <span class="mm-bb-sub">재무부 잠정 일정</span></p>
+        <table class="mm-bb-cal"><tbody>${cal.upcoming.slice(0, 6).map((o) => `
+            <tr><td>${finEsc(o.date.slice(5))}</td><td>${finEsc(`${o.security_type_ko === '물가연동' ? '물가연동 ' : ''}${o.bucket_ko}`)}</td>
+                <td>$${mmFmt(o.max_bn, o.max_bn < 1 ? 2 : 1)}B</td></tr>`).join('')}</tbody></table>
+        ${cal.pdf ? `<p class="mm-news-foot"><a href="${finEsc(cal.pdf)}" target="_blank" rel="noopener noreferrer">전체 일정(PDF)</a> · ${cal.upcoming.length}회 남음</p>` : ''}` : '';
+    const official = (b.official || []).length ? `
+        <p class="mm-news-head">재무부 공식 발표</p>
+        ${b.official.map((o) => link(o, o.date ? finEsc(o.date) : '재무부')).join('')}` : '';
+    const news = (b.news || []).length ? `
+        <p class="mm-news-head">관련 뉴스</p>
+        ${b.news.map((n) => link(n, `${finEsc(n.source || '')}${n.published_at ? ` · ${finEsc(n.published_at)}` : ''}`)).join('')}` : '';
+    if (!quarter && !upcoming && !official && !news) return mmNewsRail(ind);
+    return `
+    <aside class="mm-news mm-bb-rail">
+        ${quarter}${upcoming}${official}${news}
+        <p class="mm-news-foot">뉴스는 Google 뉴스 검색(제목·매체·날짜만) · 투자 권유 아님</p>
+    </aside>`;
+};
+
 // Which panels an indicator can show, in the order they should appear. The
 // engine names the primary view (ui.click_view); chart_type covers the rest.
 const mmViewsFor = (ind) => {
@@ -2312,6 +2418,7 @@ const mmViewsFor = (ind) => {
     }
     if (has((ind.auctions || {}).latest_by_tenor)) views.push({ id: 'auctions', label: '입찰 결과' });
     if (has((ind.buybacks || {}).rows)) views.push({ id: 'buybacks', label: '바이백 내역' });
+    if (Object.values((ind.buybacks || {}).long_end || {}).some((v) => has(v.points))) views.push({ id: 'buyback_demand', label: '장기물 수요' });
     // Assets and liabilities are two separate blocks -- two tabs -- not one
     // panel with both stacks in it. 부채 first: the reserves-against-the-axis
     // question is what this card exists to answer.
@@ -2544,6 +2651,7 @@ const mmChartDrawer = () => {
     else if (view === 'cpi_movers') body = mmCpiMoversView(ind, mode || 'yoy');
     else if (view === 'auctions') body = mmAuctionsView(ind);
     else if (view === 'buybacks') body = mmBuybacksView(ind);
+    else if (view === 'buyback_demand') body = mmBuybackDemandView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
@@ -2670,6 +2778,8 @@ const mmChartDrawer = () => {
                 ? mmSomaMaturityRail(ind)
                 : view.startsWith('balance_')
                 ? mmBsLatestRail(ind.balance_sheet, view.slice('balance_'.length))
+                : ind.id === 'ust_buybacks'
+                ? mmBuybackRail(ind)
                 : mmNewsRail(ind)}
         </div>
     </div>`;
