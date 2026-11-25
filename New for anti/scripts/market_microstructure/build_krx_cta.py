@@ -64,6 +64,20 @@ TARGET_VOL_ANN = 0.15
 MAX_EXPOSURE = 2.0
 K200_MULTIPLIER = 250_000      # 원 per index point (KOSPI 200 futures)
 TRADING_DAYS = 252
+LADDER_PCT = (-10, -7, -5, -3, -2, -1, 0, 1, 2, 3, 5, 7, 10)
+QUAD_MONTHS = (3, 6, 9, 12)
+# Liquid futures a typical CTA book holds. Yahoo continuous front-month
+# symbols (free); fetched only with --live, in CI.
+ASSETS = (
+    ("sp500", "S&P 500 선물", "ES=F", "주식"), ("nasdaq", "나스닥100 선물", "NQ=F", "주식"),
+    ("nikkei", "니케이225", "^N225", "주식"), ("ust10", "미국 10년 국채선물", "ZN=F", "채권"),
+    ("gold", "금", "GC=F", "원자재"), ("wti", "WTI 원유", "CL=F", "원자재"),
+    ("copper", "구리", "HG=F", "원자재"), ("usdkrw", "달러/원", "KRW=X", "통화"),
+    ("usdjpy", "달러/엔", "JPY=X", "통화"),
+)
+# SG CTA Index replication ETF: a free, daily check on whether a multi-asset
+# version of this model tracks what CTAs actually earned.
+CTA_PROXY = ("DBMF", "DBMF (SG CTA 지수 복제 ETF)")
 
 
 # --- core model ---------------------------------------------------------------
@@ -270,12 +284,207 @@ def weekly_corr(dates: list[str], sig: list[float | None], flow_by_date: dict[st
     }
 
 
+# --- price translation ----------------------------------------------------------
+
+def contracts_per_1jo(expo: float | None, price: float) -> int | None:
+    return None if expo is None else round(expo * 1e12 / (price * K200_MULTIPLIER))
+
+
+def price_ladder(prices: list[float], kospi_ratio: float | None) -> list[dict[str, Any]]:
+    """Tomorrow's close at fixed % moves -> signal, exposure, and the contracts a
+    1조원 book would trade to get there (full recomputation, vol included)."""
+    p0 = prices[-1]
+    vol0 = daily_vol(prices, len(prices) - 1)
+    e0 = exposure(signal_at(prices, len(prices) - 1, vol0)[0], vol0)
+    c0 = contracts_per_1jo(e0, p0)
+    rows = []
+    for pct in LADDER_PCT:
+        px = p0 * (1 + pct / 100)
+        ext = prices + [px]
+        v = daily_vol(ext, len(ext) - 1)
+        sgl = signal_at(ext, len(ext) - 1, v)[0]
+        e = exposure(sgl, v)
+        c = contracts_per_1jo(e, px)
+        rows.append({"pct": pct, "price": round(px, 2),
+                     "kospi": round(px * kospi_ratio, 1) if kospi_ratio else None,
+                     "signal": round(sgl, 4), "exposure_pct": round(e * 100, 1),
+                     "contracts_per_1jo": c, "trade_per_1jo": None if c is None or c0 is None else c - c0})
+    return rows
+
+
+def scenario_flows(prices: list[float], vol: float, paths: dict[str, list[float | None]]) -> dict[str, Any]:
+    """Contracts a 1조원 book would have bought (+) or sold (-) after 5 and 21
+    days along each scenario path."""
+    p0 = prices[-1]
+    sigma = vol * math.sqrt(HORIZON)
+    c0 = contracts_per_1jo(exposure(signal_at(prices, len(prices) - 1, vol)[0], vol), p0)
+    out = {}
+    for key, _ko, m in SCENARIOS:
+        row = {}
+        for d in (5, HORIZON):
+            sgl = paths[key][d - 1]
+            px = p0 * math.exp(m * sigma * d / HORIZON)
+            c = contracts_per_1jo(exposure(sgl, vol), px)
+            row[f"d{d}"] = None if c is None or c0 is None else c - c0
+        out[key] = row
+    return out
+
+
+# --- quarterly expiry (네 마녀의 날) ------------------------------------------------
+
+def second_thursday(y: int, m: int) -> date:
+    d = date(y, m, 1)
+    d += timedelta(days=(3 - d.weekday()) % 7)
+    return d + timedelta(days=7)
+
+
+def quad_witching_days(dates: list[str]) -> list[str]:
+    """Quarterly KOSPI 200 futures/options expiry: the 2nd Thursday of
+    Mar/Jun/Sep/Dec, or the last trading day before it when it is a holiday."""
+    out = []
+    years = sorted({int(d[:4]) for d in dates})
+    for y in years:
+        for m in QUAD_MONTHS:
+            t = second_thursday(y, m).isoformat()
+            cand = [d for d in dates if d[:7] == t[:7] and d <= t]
+            if cand and dates[-1] >= t:
+                out.append(cand[-1])
+    return out
+
+
+def _median(v: list[float]) -> float | None:
+    if not v:
+        return None
+    v = sorted(v)
+    n = len(v)
+    return round(v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2, 2)
+
+
+def expiry_vol(ohlc: dict[str, dict[str, float]]) -> dict[str, Any] | None:
+    """|close-to-close move| and intraday range on quad-witching days, the day
+    before and the day after, against every other day."""
+    dates = sorted(ohlc)
+    if len(dates) < 60:
+        return None
+    idx = {d: i for i, d in enumerate(dates)}
+    stats = []
+    for i in range(1, len(dates)):
+        prev, r = ohlc[dates[i - 1]]["c"], ohlc[dates[i]]
+        ret = (r["c"] / prev - 1) * 100
+        rng = (r["h"] - r["l"]) / prev * 100 if r.get("h") and r.get("l") else None
+        stats.append((dates[i], ret, rng))
+    by_date = {d: (ret, rng) for d, ret, rng in stats}
+    qw = [d for d in quad_witching_days(dates) if d in by_date]
+    qset = set(qw)
+    near = {dates[idx[d] + k] for d in qw for k in (-1, 1) if 0 <= idx[d] + k < len(dates)}
+
+    def summ(ds):
+        rets = [abs(by_date[d][0]) for d in ds if d in by_date]
+        rngs = [by_date[d][1] for d in ds if d in by_date and by_date[d][1] is not None]
+        if not rets:
+            return None
+        return {"n": len(rets), "abs_ret_pct": round(sum(rets) / len(rets), 2),
+                "range_pct": round(sum(rngs) / len(rngs), 2) if rngs else None,
+                "big_move_share": round(sum(1 for x in rets if x >= 2) / len(rets) * 100, 1)}
+
+    events = []
+    for d in qw:
+        i = idx[d]
+        prior = [by_date[x][1] for x in dates[max(1, i - 20):i] if by_date.get(x) and by_date[x][1] is not None]
+        base = sum(prior) / len(prior) if prior else None
+        ret, rng = by_date[d]
+        nxt = by_date.get(dates[i + 1]) if i + 1 < len(dates) else None
+        events.append({"date": d, "ret_pct": round(ret, 2), "range_pct": round(rng, 2) if rng is not None else None,
+                       "range_vs_20d": round(rng / base, 2) if rng is not None and base else None,
+                       "next_ret_pct": round(nxt[0], 2) if nxt else None})
+    today = date.fromisoformat(dates[-1])
+    nxt_dates = [second_thursday(y, m) for y in (today.year, today.year + 1) for m in QUAD_MONTHS]
+    upcoming = min(d for d in nxt_dates if d > today)
+    return {
+        "dates": qw, "upcoming": upcoming.isoformat(),
+        "summary": {"witching": summ(qw), "day_before": summ([dates[idx[d] - 1] for d in qw if idx[d] > 0]),
+                    "day_after": summ([dates[idx[d] + 1] for d in qw if idx[d] + 1 < len(dates)]),
+                    "other": summ([d for d, _, _ in stats if d not in qset and d not in near])},
+        "range_vs_20d_median": _median([e["range_vs_20d"] for e in events if e["range_vs_20d"] is not None]),
+        "range_vs_20d_above_share": round(sum(1 for e in events if (e["range_vs_20d"] or 0) > 1) / len(events) * 100, 1) if events else None,
+        "events": events[-12:],
+        "from": dates[0], "to": dates[-1],
+    }
+
+
+# --- other markets ----------------------------------------------------------------
+
+def asset_block(dates: list[str], prices: list[float]) -> dict[str, Any] | None:
+    if len(prices) < max(LOOKBACKS) + VOL_WINDOW:
+        return None
+    t = len(prices) - 1
+    vol = daily_vol(prices, t)
+    sgl, comps = signal_at(prices, t, vol)
+    sig = [signal_at(prices, i)[0] for i in range(len(prices))]
+    pnl = model_pnl(prices, sig)
+    trig = trigger_levels(prices)
+    return {"as_of": dates[t], "close": round(prices[t], 4), "signal": round(sgl, 4),
+            "components": {str(k): round(v, 4) for k, v in comps.items()},
+            "exposure_pct": round(exposure(sgl, vol) * 100, 1),
+            "vol_ann_pct": round(vol * math.sqrt(TRADING_DAYS) * 100, 1),
+            "zero": trig["zero"],
+            "pnl_20d_pct": round(pnl[-1] - pnl[-21], 3) if pnl[-21] is not None else None,
+            "_pnl": dict(zip(dates, pnl))}
+
+
+def multi_asset(series: dict[str, dict[str, float]], proxy: dict[str, float] | None,
+                kospi_pnl: dict[str, float | None]) -> dict[str, Any] | None:
+    """Same model on each market, an equal-risk book of all of them (the K200
+    leg included), and that book's correlation with a CTA replication ETF."""
+    blocks = {}
+    for key, ko, sym, cls in ASSETS:
+        px = series.get(key) or {}
+        ds = sorted(px)
+        b = asset_block(ds, [px[d] for d in ds]) if ds else None
+        if b:
+            blocks[key] = {"label_ko": ko, "symbol": sym, "class_ko": cls, **b}
+    if not blocks:
+        return None
+    # Each leg is already vol-targeted, so an equal-weight average of their
+    # daily PnL changes is an equal-risk book.
+    legs = [b["_pnl"] for b in blocks.values()] + [kospi_pnl]
+    all_dates = sorted(set().union(*[set(l) for l in legs]))
+    book, cum, prev = [], 0.0, [None] * len(legs)
+    for d in all_dates:
+        chg = []
+        for j, l in enumerate(legs):
+            v = l.get(d)
+            if v is not None and prev[j] is not None:
+                chg.append(v - prev[j])
+            if v is not None:
+                prev[j] = v
+        if chg:
+            cum += sum(chg) / len(chg)
+        book.append(round(cum, 3))
+    peak = max(book)
+    out = {"assets": {k: {kk: vv for kk, vv in b.items() if kk != "_pnl"} for k, b in blocks.items()},
+           "book": {"dates": all_dates[-HISTORY_DAYS:], "pnl_pct": book[-HISTORY_DAYS:],
+                    "pnl_20d_pct": round(book[-1] - book[-21], 3) if len(book) > 21 else None,
+                    "drawdown_pct": round(book[-1] - peak, 3)}}
+    if proxy:
+        bd = dict(zip(all_dates, book))
+        ds = [d for d in sorted(proxy) if d in bd]
+        xs, ys = [], []
+        for a, b in zip(ds, ds[1:]):
+            xs.append(bd[b] - bd[a])
+            ys.append((proxy[b] / proxy[a] - 1) * 100)
+        wk = lambda v: [sum(v[i:i + 5]) for i in range(0, len(v) - 4, 5)]
+        out["proxy"] = {"label_ko": CTA_PROXY[1], "daily_corr": _corr(xs[-250:], ys[-250:]),
+                        "weekly_corr": _corr(wk(xs[-250:]), wk(ys[-250:])), "n_days": min(len(xs), 250)}
+    return out
+
+
 # --- assembly -----------------------------------------------------------------
 
 def price_series(flow: dict[str, Any], k200: dict[str, float] | None) -> tuple[list[str], list[float], str, list[str]]:
     if k200:
         dates = sorted(k200)
-        return dates, [k200[d] for d in dates], "코스피200 지수 종가 (FinanceDataReader KS200)", []
+        return dates, [k200[d] for d in dates], "코스피200 지수 종가", []
     front = flow.get("futures_front") or {}
     closes = front.get("close") or []
     contracts = front.get("contract") or []
@@ -285,7 +494,9 @@ def price_series(flow: dict[str, Any], k200: dict[str, float] | None) -> tuple[l
     return [o[0] for o in obs], [o[1] for o in obs], "코스피200 선물 최근월물 종가 (정규장, 롤 보정 없음)", rolls
 
 
-def build(flow: dict[str, Any], k200: dict[str, float] | None = None) -> dict[str, Any]:
+def build(flow: dict[str, Any], k200: dict[str, float] | None = None,
+          kospi: dict[str, float] | None = None, ohlc: dict[str, dict[str, float]] | None = None,
+          markets: dict[str, dict[str, float]] | None = None, proxy: dict[str, float] | None = None) -> dict[str, Any]:
     dates, prices, source_ko, rolls = price_series(flow, k200)
     if len(prices) < max(LOOKBACKS) + VOL_WINDOW:
         raise ValueError("not enough observed closes for the 12-month lookback")
@@ -311,6 +522,15 @@ def build(flow: dict[str, Any], k200: dict[str, float] | None = None) -> dict[st
     pnl_obs = [p for p in pnl if p is not None]
     peak = max(pnl_obs) if pnl_obs else None
     scen = scenario_paths(prices, vol)
+    ratio = kospi[dates[t]] / prices[t] if kospi and dates[t] in kospi and k200 else None
+    triggers = trigger_levels(prices)
+    if ratio:
+        for x in triggers.values():
+            if x:
+                x["kospi"] = round(x["price"] * ratio, 1)
+        for f in flips:
+            f["kospi"] = round(f["flip_price"] * ratio, 1)
+    kh = [kospi.get(d) for d in dates] if kospi else None
 
     all_dates = flow["dates"]
     fl = (flow.get("flow") or {}).get("futures") or {}
@@ -346,7 +566,8 @@ def build(flow: dict[str, Any], k200: dict[str, float] | None = None) -> dict[st
             "date": dates[t], "close": prices[t], "signal": round(s_now, 4),
             "daily_vol": round(vol, 5), "vol_ann_pct": round(vol * math.sqrt(TRADING_DAYS) * 100, 1),
             "sigma_1m_pct": round(sigma_1m * 100, 2), "flips": flips,
-            "triggers": trigger_levels(prices),
+            "triggers": triggers, "kospi_ratio": round(ratio, 4) if ratio else None,
+            "kospi_close": kospi.get(dates[t]) if kospi else None,
             "exposure_pct": round(expo * 100, 1),
             # contracts per 1조원 of AUM at that exposure
             "contracts_per_1jo": round(expo * 1e12 / (prices[t] * K200_MULTIPLIER)),
@@ -355,10 +576,14 @@ def build(flow: dict[str, Any], k200: dict[str, float] | None = None) -> dict[st
             "pnl_20d_pct": round(pnl[-1] - pnl[-21], 3) if len(pnl) > 21 and pnl[-21] is not None else None,
             "pnl_60d_pct": round(pnl[-1] - pnl[-61], 3) if len(pnl) > 61 and pnl[-61] is not None else None,
         },
-        "history": {"dates": dates[h], "close": prices[h], "signal": sig[h], "pnl_pct": pnl[h],
+        "history": {"dates": dates[h], "close": prices[h], "kospi": kh[h] if kh else None,
+                    "signal": sig[h], "pnl_pct": pnl[h],
                     "foreign_net_60d": foreign_60[h]},
         "scenarios": {"dates_est": next_weekdays(dates[t], HORIZON), **scen["signal"],
-                      "pnl_pct": scen["pnl_pct"]},
+                      "pnl_pct": scen["pnl_pct"], "flows_per_1jo": scenario_flows(prices, vol, scen["signal"])},
+        "ladder": price_ladder(prices, ratio),
+        "expiry_vol": expiry_vol(ohlc) if ohlc else None,
+        "multi_asset": multi_asset(markets, proxy, dict(zip(dates, pnl))) if markets else None,
         "threshold_calendar": threshold_calendar(prices, dates),
         "realized": {
             "flow_as_of": last_flow,
@@ -379,12 +604,49 @@ def build(flow: dict[str, Any], k200: dict[str, float] | None = None) -> dict[st
     }
 
 
-def _k200_live(start: str = "2018-01-01") -> dict[str, float]:
+def _k200_file() -> dict[str, dict[str, float]]:
+    """KRX 개별지수 history committed to the repo (OHLC, observed rows only)."""
+    path = DATA / "kospi200_index_daily_v1.json"
+    if not path.exists():
+        return {}
+    rows = json.loads(path.read_text(encoding="utf-8")).get("rows") or []
+    return {r["date"]: {"o": r.get("open"), "h": r.get("high"), "l": r.get("low"), "c": float(r["close"])}
+            for r in rows if isinstance(r.get("close"), (int, float)) and r["close"] > 0 and r.get("quality", "observed") == "observed"}
+
+
+def _fdr(symbol: str, start: str = "2018-01-01") -> dict[str, dict[str, float]]:
     import FinanceDataReader as fdr
 
-    df = fdr.DataReader("KS200", start)
-    return {i.strftime("%Y-%m-%d"): float(r["Close"]) for i, r in df.iterrows()
-            if r.get("Close") is not None and r["Close"] == r["Close"] and r["Close"] > 0}
+    df = fdr.DataReader(symbol, start)
+    out = {}
+    for i, r in df.iterrows():
+        c = r.get("Close")
+        if c is None or c != c or c <= 0:
+            continue
+        out[i.strftime("%Y-%m-%d")] = {"o": float(r.get("Open") or 0) or None, "h": float(r.get("High") or 0) or None,
+                                       "l": float(r.get("Low") or 0) or None, "c": float(c)}
+    return out
+
+
+def _yahoo(symbols: list[str], start: str = "2018-01-01") -> dict[str, dict[str, float]]:
+    try:
+        import yfinance as yf
+    except ImportError as exc:
+        print(f"yfinance unavailable, no other markets: {exc}", file=sys.stderr)
+        return {}
+
+    out = {}
+    for sym in symbols:
+        try:
+            df = yf.Ticker(sym).history(start=start, auto_adjust=False)
+        except Exception as exc:  # noqa: BLE001
+            print(f"{sym}: {type(exc).__name__}: {exc}", file=sys.stderr)
+            continue
+        if df is None or df.empty or "Close" not in df:
+            print(f"{sym}: no rows", file=sys.stderr)
+            continue
+        out[sym] = {i.strftime("%Y-%m-%d"): float(c) for i, c in df["Close"].items() if c == c and c > 0}
+    return out
 
 
 def main() -> int:
@@ -395,13 +657,22 @@ def main() -> int:
     ap.add_argument("--print-stats", action="store_true")
     args = ap.parse_args()
     flow = json.loads(args.flow.read_text(encoding="utf-8"))
-    k200 = None
+    ohlc = _k200_file()
+    kospi = markets = proxy = None
     if args.live:
         try:
-            k200 = _k200_live()
+            ohlc.update(_fdr("KS200"))
         except Exception as exc:  # noqa: BLE001
-            print(f"KS200 unavailable, falling back to the futures close: {type(exc).__name__}: {exc}", file=sys.stderr)
-    payload = build(flow, k200)
+            print(f"KS200 unavailable, using the committed KRX index file: {type(exc).__name__}: {exc}", file=sys.stderr)
+        try:
+            kospi = {d: r["c"] for d, r in _fdr("KS11").items()}
+        except Exception as exc:  # noqa: BLE001
+            print(f"KS11 unavailable, no KOSPI translation: {type(exc).__name__}: {exc}", file=sys.stderr)
+        got = _yahoo([sym for _, _, sym, _ in ASSETS] + [CTA_PROXY[0]])
+        markets = {key: got[sym] for key, _, sym, _ in ASSETS if got.get(sym)}
+        proxy = got.get(CTA_PROXY[0])
+    k200 = {d: r["c"] for d, r in ohlc.items()} or None
+    payload = build(flow, k200, kospi, ohlc, markets or None, proxy)
     args.out.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     if args.print_stats:
         L = payload["latest"]
@@ -412,6 +683,8 @@ def main() -> int:
                           "flips": [(f["k"], f["component"], f["flip_price"], f["dist_pct"]) for f in L["flips"]],
                           "scen_pnl": {k: v[-1] for k, v in payload["scenarios"]["pnl_pct"].items()},
                           "corr": payload["realized"]["weekly_change_corr"]["foreign"],
+                          "expiry": (payload["expiry_vol"] or {}).get("summary"),
+                          "assets": sorted(((payload["multi_asset"] or {}).get("assets") or {})),
                           "bytes": args.out.stat().st_size}, ensure_ascii=False))
     return 0
 

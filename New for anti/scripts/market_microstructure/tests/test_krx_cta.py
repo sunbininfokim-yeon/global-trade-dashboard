@@ -126,5 +126,40 @@ class TestBuild(unittest.TestCase):
         self.assertGreater(wc["corr"], 0.5)
 
 
+    def test_quad_witching_is_second_thursday_or_the_day_before_a_holiday(self):
+        dates = cta.next_weekdays("2026-02-27", 200)
+        qw = cta.quad_witching_days(dates)
+        self.assertIn("2026-03-12", qw)
+        self.assertIn("2026-06-11", qw)
+        holiday = [d for d in dates if d != "2026-09-10"]  # expiry falls on a holiday
+        self.assertIn("2026-09-09", cta.quad_witching_days(holiday))
+
+    def test_expiry_vol_summary_and_upcoming(self):
+        dates = cta.next_weekdays("2025-01-01", 400)
+        ohlc = {d: {"h": 101.0, "l": 99.0, "c": 100.0 * (1.01 if i % 2 else 1.0)} for i, d in enumerate(dates)}
+        e = cta.expiry_vol(ohlc)
+        self.assertGreaterEqual(e["summary"]["witching"]["n"], 5)
+        self.assertGreater(e["upcoming"], dates[-1])
+
+    def test_ladder_zero_row_is_today_and_kospi_scales(self):
+        prices = zigzag_trend(400, -0.002)
+        lad = cta.price_ladder(prices, 6.5)
+        flat = next(r for r in lad if r["pct"] == 0)
+        self.assertAlmostEqual(flat["price"], round(prices[-1], 2))
+        self.assertAlmostEqual(flat["kospi"], round(prices[-1] * 6.5, 1))
+        up = next(r for r in lad if r["pct"] == 10)
+        self.assertGreaterEqual(up["trade_per_1jo"], flat["trade_per_1jo"])  # a rally makes a short buy back
+
+    def test_multi_asset_book_and_proxy_corr(self):
+        dates = cta.next_weekdays("2023-01-01", 450)
+        up = dict(zip(dates, zigzag_trend(450, 0.002)))
+        dn = dict(zip(dates, zigzag_trend(450, -0.002)))
+        out = cta.multi_asset({"gold": up, "wti": dn}, up, {d: 0.0 for d in dates})
+        self.assertEqual(sorted(out["assets"]), ["gold", "wti"])
+        self.assertGreater(out["assets"]["gold"]["signal"], 0)
+        self.assertLess(out["assets"]["wti"]["signal"], 0)
+        self.assertIsNotNone(out["proxy"]["daily_corr"])
+
+
 if __name__ == "__main__":
     unittest.main()
