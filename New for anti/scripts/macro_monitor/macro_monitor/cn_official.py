@@ -202,21 +202,23 @@ def merge_history(card: dict[str, Any], safe: list[tuple[str, float]]) -> list[t
     return sorted(by.items())
 
 
+def http_get_bytes(url: str, timeout: int = 60) -> bytes:
+    """Standard library only: the refresh workflow installs no `requests` (both reads failed on the
+    first CI run with 'No module named requests')."""
+    import urllib.request
+
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read()
+
+
 def http_get(url: str) -> str:
-    import requests
-
-    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
-    r.raise_for_status()
-    r.encoding = r.apparent_encoding or "utf-8"
-    return r.text
-
-
-def http_get_bytes(url: str) -> bytes:
-    import requests
-
-    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
-    r.raise_for_status()
-    return r.content
+    raw = http_get_bytes(url, timeout=30)
+    m = re.search(rb'charset=["\']?([\w-]+)', raw[:2048])
+    try:
+        return raw.decode(m.group(1).decode() if m else "utf-8", errors="replace")
+    except LookupError:
+        return raw.decode("utf-8", errors="replace")
 
 
 def build_reserves_patch(points: list[tuple[str, float]], urls: list[str], *, retrieved_at: str) -> dict[str, Any]:
