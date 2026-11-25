@@ -19,7 +19,14 @@ const safeUrl = (url) => (typeof url === 'string' && /^https?:\/\//.test(url) ? 
 const day = (value) => (value && /^\d{4}-\d{2}-\d{2}$/.test(value)
     ? `${value.slice(0, 4)}년 ${Number(value.slice(5, 7))}월 ${Number(value.slice(8))}일` : value || null);
 
-const row = (label, value) => (value ? `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>` : '');
+// 짧은 값은 '라벨 … 값' 한 줄, 긴 설명(선출 방식 등)은 라벨 아래 문단으로 -- 오른쪽 정렬 굵은
+// 글씨로 세 줄을 넘기면 읽히지 않는다.
+const LONG = 40;
+const row = (label, value) => {
+    if (!value) return '';
+    const long = String(value).length > LONG;
+    return `<div${long ? ' class="is-long"' : ''}><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
+};
 
 const candidateTable = (candidates, basis) => {
     if (!candidates?.length) return '';
@@ -39,14 +46,29 @@ const seatTable = (seats, total) => {
     const tiers = seats.some((s) => s.seats_district != null || s.seats_list != null);
     const change = seats.some((s) => typeof s.seats_change === 'number');
     const signed = (v) => (typeof v === 'number' ? (v > 0 ? `+${v}` : String(v)) : '');
-    const body = seats.map((s) => `<tr><td>${escapeHtml(s.party_ko || s.party || '불명')}</td>
+    // 'PARTIDO POPULAR - PP' 같은 긴 명부 이름은 뒤의 약칭만 보이고 전체는 툴팁으로.
+    const label = (s) => {
+        const full = s.party_ko || s.party || '불명';
+        const tail = full.includes(' - ') ? full.split(' - ').pop().trim() : '';
+        return tail && tail.length <= 24 && full.length > 28
+            ? `<span title="${escapeHtml(full)}">${escapeHtml(tail)}</span>` : escapeHtml(full);
+    };
+    const rowHtml = (s) => `<tr><td>${label(s)}</td>
         <td class="num">${escapeHtml(num(s.seats) ?? '')}</td>
         ${tiers ? `<td class="num">${escapeHtml(num(s.seats_district) ?? '')}</td><td class="num">${escapeHtml(num(s.seats_list) ?? '')}</td>` : ''}
         ${change ? `<td class="num">${escapeHtml(signed(s.seats_change))}</td>` : ''}
-        <td class="num">${escapeHtml(pct(s.vote_pct) || '')}</td></tr>`).join('');
-    return `<table class="elections-er-table"><thead><tr><th>정당</th><th class="num">의석${total ? ` / ${escapeHtml(num(total))}` : ''}</th>
+        <td class="num">${escapeHtml(pct(s.vote_pct) || '')}</td></tr>`;
+    // 의석 많은 순 8줄만 펼치고, 나머지(지역 명부·군소 정당)는 접는다.
+    const sorted = [...seats].sort((a, b) => (b.seats ?? -1) - (a.seats ?? -1) || (b.vote_pct ?? 0) - (a.vote_pct ?? 0));
+    const SHOW = 8;
+    const head = `<thead><tr><th>정당</th><th class="num">의석${total ? ` / ${escapeHtml(num(total))}` : ''}</th>
         ${tiers ? '<th class="num">지역</th><th class="num">비례</th>' : ''}${change ? '<th class="num">증감</th>' : ''}
-        <th class="num">득표율</th></tr></thead><tbody>${body}</tbody></table>`;
+        <th class="num">득표율</th></tr></thead>`;
+    const rest = sorted.slice(SHOW);
+    const restSeats = rest.reduce((sum, s) => sum + (typeof s.seats === 'number' ? s.seats : 0), 0);
+    return `<table class="elections-er-table">${head}<tbody>${sorted.slice(0, SHOW).map(rowHtml).join('')}</tbody></table>
+        ${rest.length ? `<details class="elections-disclosure elections-er-more"><summary>그 외 ${rest.length}개 정당·명부 · ${num(restSeats)}석</summary>
+            <table class="elections-er-table"><tbody>${rest.map(rowHtml).join('')}</tbody></table></details>` : ''}`;
 };
 
 // 선거 뒤 바뀐 지금 구성(교섭단체·회파 이동, 결원)은 선거 결과와 섞지 않고 따로 보인다.
@@ -109,8 +131,9 @@ const nextLine = (office, today = todayIso()) => {
     if (office.next?.date && office.next.date < today) return heldLine(office.next, office);
     if (!office.next && office.next_held?.date) return heldLine(office.next_held, office);
     if (office.next?.date) return `${day(office.next.date)}${office.next.date_status === 'tentative' ? ' (잠정)' : ''}${office.next.label_ko ? ` · ${office.next.label_ko}` : ''}`;
-    if (office.next) return `날짜 미정${office.next.label_ko ? ` · ${office.next.label_ko}` : ''}`;
+    // 날짜 없는 '다음 선거' 행(예: '공고된 날짜 없음')보다 임기 기준 연도가 더 많은 것을 말한다.
     if (office.next_due?.year) return `${office.next_due.year}년 무렵 (임기 기준)`;
+    if (office.next) return `날짜 미정${office.next.label_ko ? ` · ${office.next.label_ko}` : ''}`;
     return null;
 };
 
