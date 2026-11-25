@@ -121,6 +121,7 @@ def attach_distance_evidence(
                 "normal_distance_nm": row["normal_distance_nm"],
                 "reroute_distance_nm": row["reroute_distance_nm"],
                 "reroute_extra_nm": row["reroute_extra_nm"],
+                "reroute_traversed_passages": row.get("reroute_traversed_passages", []),
                 "baseline_distance_deviation_fraction": baseline_deviation,
                 "reroute_extra_distance_deviation_nm": extra_deviation,
                 "source": row["source"],

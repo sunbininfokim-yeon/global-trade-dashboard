@@ -47,6 +47,39 @@
   "type": "object",
   "required": ["schema_version", "artifact_type", "bundle_id", "generated_at", "artifact_manifest", "coverage_summary", "model", "ui_delivery_contract", "fleet", "lng_fleet", "chokepoints", "chokepoints_live", "routes", "route_catalog", "scenarios", "scenario_summary", "live_display", "live_data_quality", "environment", "comtrade_routes", "portwatch_port_context", "market_signals", "pdf_reports"],
   "properties": {
+    "arctic_route_reference": {
+      "type": "object",
+      "required": ["status", "source_path", "source_field", "routes"],
+      "properties": {
+        "status": {"enum": ["unavailable", "conditional_port_pair_reference"]},
+        "source_path": {"const": "sea_route_v1.json"},
+        "source_field": {"const": "route_line.compare"},
+        "baseline_id": {"const": "suez"},
+        "open_water_speed_knots": {"type": "number", "exclusiveMinimum": 0},
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "distance_nm_one_way", "transit_days_one_way", "difference_nm_one_way", "difference_days_one_way", "difference_days_round_trip_transit", "additional_required_dwt"],
+            "properties": {
+              "id": {"enum": ["suez", "cape", "nsr"]},
+              "distance_nm_one_way": {"type": "number", "exclusiveMinimum": 0},
+              "transit_days_one_way": {"type": "number", "exclusiveMinimum": 0},
+              "difference_nm_one_way": {"type": "number"},
+              "difference_days_one_way": {"type": "number"},
+              "difference_days_round_trip_transit": {"type": "number"},
+              "additional_required_dwt": {"type": "null"}
+            }
+          }
+        }
+      },
+      "if": {"properties": {"status": {"const": "conditional_port_pair_reference"}}},
+      "then": {
+        "required": ["origin_ko", "destination_ko", "open_water_speed_knots", "baseline_id", "source_note_ko", "warning_ko"],
+        "properties": {"routes": {"minItems": 3, "maxItems": 3}}
+      },
+      "else": {"properties": {"routes": {"maxItems": 0}}}
+    },
     "official_cargo_monitor": {
       "type": "object",
       "required": ["contract_version", "generated_at", "status", "api_keys_required", "collection_policy", "sources", "chokepoints"],
@@ -378,6 +411,56 @@
               "normal": {
                 "type": "object",
                 "required": ["distance_nm_one_way", "speed_knots", "sea_days_one_way", "port_days_round_trip", "cycle_days_round_trip"]
+              },
+              "detour_comparison": {
+                "type": "object",
+                "required": ["method_id", "traffic_input_status", "baseline_required_dwt", "options", "warning_ko"],
+                "properties": {
+                  "method_id": {"const": "fixed_service_flow_exposure_weighted_cycle_v1"},
+                  "traffic_input_status": {"type": "string"},
+                  "baseline_required_dwt": {"type": ["number", "null"], "minimum": 0},
+                  "options": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["id", "label_ko", "status", "bypassed_chokepoint_ids", "blocking_chokepoint_id", "requires_open_chokepoint_ids", "distance_basis", "distance_evidence_id", "distance_nm_one_way", "additional_nm_one_way", "additional_sailing_days_one_way", "additional_cycle_days_round_trip", "cycle_days_round_trip", "exposed_flow_share", "required_dwt_with_detour", "additional_required_dwt", "additional_required_dwt_pct", "warning_ko"],
+                      "properties": {
+                        "id": {"type": "string"},
+                        "status": {"enum": ["representative_sea_detour", "conditional_geometry_only", "no_same_port_sea_detour"]},
+                        "bypassed_chokepoint_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+                        "requires_open_chokepoint_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+                        "blocking_chokepoint_id": {"type": ["string", "null"]},
+                        "distance_evidence_id": {"type": ["string", "null"]},
+                        "distance_nm_one_way": {"type": ["number", "null"], "minimum": 0},
+                        "additional_nm_one_way": {"type": ["number", "null"], "minimum": 0},
+                        "additional_sailing_days_one_way": {"type": ["number", "null"], "minimum": 0},
+                        "additional_cycle_days_round_trip": {"type": ["number", "null"], "minimum": 0},
+                        "cycle_days_round_trip": {"type": ["number", "null"], "minimum": 0},
+                        "exposed_flow_share": {"type": "number", "minimum": 0, "maximum": 1},
+                        "required_dwt_with_detour": {"type": ["number", "null"], "minimum": 0},
+                        "additional_required_dwt": {"type": ["number", "null"], "minimum": 0},
+                        "additional_required_dwt_pct": {"type": ["number", "null"], "minimum": 0}
+                      },
+                      "if": {"properties": {"status": {"const": "no_same_port_sea_detour"}}},
+                      "then": {
+                        "properties": {
+                          "bypassed_chokepoint_ids": {"maxItems": 0},
+                          "requires_open_chokepoint_ids": {"maxItems": 0},
+                          "blocking_chokepoint_id": {"type": "string"},
+                          "distance_nm_one_way": {"type": "null"},
+                          "additional_nm_one_way": {"type": "null"},
+                          "additional_sailing_days_one_way": {"type": "null"},
+                          "additional_cycle_days_round_trip": {"type": "null"},
+                          "cycle_days_round_trip": {"type": "null"},
+                          "required_dwt_with_detour": {"type": "null"},
+                          "additional_required_dwt": {"type": "null"},
+                          "additional_required_dwt_pct": {"type": "null"}
+                        }
+                      },
+                      "else": {"properties": {"bypassed_chokepoint_ids": {"minItems": 1}, "blocking_chokepoint_id": {"type": "null"}}}
+                    }
+                  }
+                }
               },
               "chokepoint_alternatives": {
                 "type": "array",

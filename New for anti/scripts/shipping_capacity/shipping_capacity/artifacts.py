@@ -363,7 +363,7 @@ def build_artifact_bundle(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]
         "generated_at": snapshot["generated_at"],
         "ui_scenario_grid": _screen_grid(snapshot["ui_scenario_grid"]),
     }
-    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend"):
+    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend", "arctic_route_reference"):
         if key in snapshot:
             screen[key] = snapshot[key]
     diagnostics = {
@@ -417,7 +417,7 @@ def golden_contract_failures(
     for point_id, status in screen.get("chokepoints_live", {}).items():
         if status.get("traffic_summary") != diagnostics.get("chokepoints_live", {}).get(point_id, {}).get("traffic_summary"):
             failures.append(f"traffic_summary_screen_diagnostics_mismatch:{point_id}")
-    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend"):
+    for key in ("official_cargo_monitor", "hormuz_reconstruction", "hormuz_bypass_monitor", "chokepoint_trend", "arctic_route_reference"):
         if screen.get(key) != diagnostics.get(key):
             failures.append(f"{key}_screen_diagnostics_mismatch")
     bundle_id_values = {screen.get("bundle_id"), diagnostics.get("bundle_id"), scenario_grid.get("bundle_id")}
@@ -432,6 +432,10 @@ def golden_contract_failures(
         for field, value in route.get("baseline", {}).items():
             if value != source.get("baseline", {}).get(field):
                 failures.append(f"route_baseline_mismatch:{route['id']}:{field}")
+        if (route.get("operational_profile") or {}).get("detour_comparison") != (
+            source.get("operational_profile") or {}
+        ).get("detour_comparison"):
+            failures.append(f"route_detour_comparison_mismatch:{route['id']}")
     diagnostic_environment = {
         row["id"]: row
         for row in diagnostics.get("environment", {}).get("scenarios", [])
