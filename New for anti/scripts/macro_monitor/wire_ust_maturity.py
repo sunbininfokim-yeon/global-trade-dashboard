@@ -26,6 +26,29 @@ PACK = ROOT.parent.parent / "public" / "data" / "macro_monitor_v1.json"
 CACHE = ROOT / "config" / "ust_mspd_wam_v1.json"
 EVENTS = ROOT / "config" / "ust_toolkit_events_v1.json"
 FEED = ROOT / "config" / "ust_toolkit_feed_v1.json"
+STATEMENTS = ROOT / "config" / "ust_refunding_statements_v1.json"
+
+
+def refunding_diff(feed: list[dict]) -> dict | None:
+    """Store each refunding policy statement the feed has seen (text fetched once) and compare the last two."""
+    from macro_monitor import ust_refunding_diff as rd
+    from macro_monitor import ust_toolkit_feed as tf
+    doc = json.loads(STATEMENTS.read_text(encoding="utf-8")) if STATEMENTS.exists() else {"schema": "ust_refunding_statements_v1", "items": []}
+    have = {x["url"] for x in doc["items"]}
+    added = False
+    for f in feed:
+        if f["kind"] == "refunding" and "refunding statement" in f["title"].lower() and f["url"] not in have \
+                and "home.treasury.gov" in f["url"]:
+            text = rd.statement_text(tf._curl(f["url"]))
+            if len(text) > 500:
+                doc["items"].append({"date": f["date"], "url": f["url"], "title": f["title"], "text": text})
+                added = True
+    doc["items"].sort(key=lambda x: x["date"])
+    if added:
+        STATEMENTS.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    if len(doc["items"]) < 2:
+        return None
+    return rd.compare(doc["items"][-2], doc["items"][-1])
 
 
 def toolkit(dgs30: list[tuple[str, float]], events: list[dict], since: str,
@@ -109,6 +132,15 @@ def main() -> int:
                                   for f in feed if f["kind"] in ("refunding", "buyback") and f["url"] not in have],
                         key=lambda e: e["date"])
         card["toolkit_feed"] = feed[:15]
+        try:
+            rdiff = refunding_diff(feed)
+            if rdiff:
+                card["refunding_diff"] = rdiff
+        except Exception as exc:  # noqa: BLE001
+            print(f"FAILED refunding diff: {exc}", file=sys.stderr)
+            failed += 1
+            if prev and prev.get("refunding_diff"):
+                card["refunding_diff"] = prev["refunding_diff"]
         since = min([e["date"] for e in events] + [months[-1]["date"]])
         since = f"{int(since[:4]) - 1}{since[4:]}"                   # a year of context before the first action
         try:

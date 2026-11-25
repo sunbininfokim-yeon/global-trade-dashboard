@@ -2401,6 +2401,25 @@ const mmToolkitView = (ind) => {
             ${tpLine ? `TP = 10년 기간 프리미엄(장기 보유에 요구하는 추가 금리, ${finEsc((tk.term_premium || {}).source || '')}) -- 재무부 툴키트가 겨누는 대상입니다.` : ''}</p>`;
 };
 
+// 발행계획 문구 변화: the latest quarterly refunding policy statement against the previous one, section by
+// section, as a word-level redline (same renderer as the FOMC statement). Month names and years are left out
+// of the word counts -- every statement moves its quarter forward.
+const mmRefundingDiffView = (ind) => {
+    const r = ind.refunding_diff;
+    if (!r || !(r.sections || []).length) return '<p class="fin-note">비교할 두 분기 성명이 아직 없습니다.</p>';
+    return `
+        <p class="mm-view-title">${finEsc(r.previous.date)} → ${finEsc(r.current.date)} 분기 발행계획 성명 · 바뀐 단어 ${Number(r.changed_word_count || 0)}개(월·연도 제외)</p>
+        ${r.sections.map((sec) => `
+            <div class="mm-quality-card mm-quality-wide mm-rf-sec">
+                <span class="mm-quality-label">${finEsc(sec.header_ko)}${sec.new_section ? ' · 새 섹션' : sec.dropped_section ? ' · 빠진 섹션' : ''}</span>
+                <strong>${Number(sec.changed_word_count || 0)}단어 변경</strong>
+                <p class="mm-quality-redline">${mmRedline(sec.segments || [])}</p>
+            </div>`).join('')}
+        <p class="fin-note">취소선은 직전 성명에만 있던 표현, 강조는 이번에 새로 들어간 표현입니다. 첫 문단(이번 분기 입찰 금액·날짜)과
+            입찰 규모 표는 매 분기 바뀌므로 뺐습니다. 원문: <a class="mm-quality-link" href="${finEsc(r.current.url)}" target="_blank" rel="noopener noreferrer">이번 ↗</a> ·
+            <a class="mm-quality-link" href="${finEsc(r.previous.url)}" target="_blank" rel="noopener noreferrer">직전 ↗</a></p>`;
+};
+
 // The WAM card's side rail: Treasury's debt-management releases as they come (refunding, buybacks,
 // issuance, and speeches or statements whose text is about debt management), newest first.
 const MM_TK_KIND_COLOR = { refunding: '#a78bfa', buyback: '#f59e0b', issuance: '#38bdf8', speech: '#f472b6', policy: '#94a3b8' };
@@ -2533,6 +2552,7 @@ const mmViewsFor = (ind) => {
     // Pipeline-attached breakdowns (부문별, 연체 흐름, 은행별, ...), one tab each.
     (ind.panels || []).forEach((p) => views.push({ id: `panel:${p.id}`, label: p.label }));
     if (((ind.toolkit || {}).series || {}).dates?.length) views.push({ id: 'toolkit', label: '툴키트 반응' });
+    if (((ind.refunding_diff || {}).sections || []).length) views.push({ id: 'refunding_diff', label: '발행계획 문구 변화' });
     // 5/20/60/120/240-day moving averages are a daily-chart convention
     // (Korean HTS terminology) and meaningless on the 5-year monthly bars
     // every other indicator uses -- a 240-period average over monthly data
@@ -2733,6 +2753,7 @@ const mmChartDrawer = () => {
     else if (view === 'buybacks') body = mmBuybacksView(ind);
     else if (view === 'buyback_demand') body = mmBuybackDemandView(ind);
     else if (view === 'toolkit') body = mmToolkitView(ind);
+    else if (view === 'refunding_diff') body = mmRefundingDiffView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
