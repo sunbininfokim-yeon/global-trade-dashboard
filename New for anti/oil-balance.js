@@ -18,7 +18,8 @@
     let pending;
     let generation = 0;
     let state = null;          // {inp, probs}; null = defaults from the file
-    let cache = null;          // {key, sim, central}
+    let panelOpen = false;     // the inputs panel ('개별 전망'); closed = conclusion view on the general values
+    const runs = new Map();    // side runs for the conclusion's what-ifs
 
     if (!document.querySelector('style[data-oilbal-style]')) {
         const css = document.createElement('style');
@@ -46,6 +47,16 @@
             [data-oilbal] .ob-warn { font-size:12px; color:#fcd34d; background:rgba(251,191,36,0.08); border-radius:6px; padding:6px 8px; margin-top:6px; }
             [data-oilbal] .ob-ok { font-size:12px; color:#86efac; margin-top:6px; }
             [data-oilbal] details > summary { cursor:pointer; font-size:12.5px; color:#cbd5e1; margin-top:10px; }
+            [data-oilbal] .ob-head { font-size:12.5px; color:#cbd5e1; margin:4px 0 2px; }
+            [data-oilbal] .ob-big { font-size:26px; font-weight:600; color:#f1f5f9; font-variant-numeric:tabular-nums; margin:2px 0; }
+            [data-oilbal] .ob-big span { font-size:13px; font-weight:400; color:#94a3b8; margin-left:6px; }
+            [data-oilbal] .ob-chip { font-size:11px; padding:1px 7px; border-radius:9px; background:rgba(56,189,248,0.15); color:#7dd3fc; }
+            [data-oilbal] .ob-chip.custom { background:rgba(251,191,36,0.18); color:#fcd34d; }
+            [data-oilbal] ul.ob-why { margin:8px 0 4px; padding-left:16px; font-size:12.5px; line-height:1.55; color:#e2e8f0; }
+            [data-oilbal] ul.ob-why li { margin-bottom:4px; }
+            [data-oilbal] .ob-btns button.on { background:rgba(167,139,250,0.2); border-color:#a78bfa; color:#e9d5ff; }
+            [data-oilbal] .ob-panel { border:1px solid rgba(148,163,184,0.18); border-radius:8px; padding:8px 10px; margin:6px 0 4px; }
+            [data-oilbal] details details { margin-left:4px; }
             [data-oilbal] .ob-gap-up { color:#fca5a5; } [data-oilbal] .ob-gap-dn { color:#86efac; }`;
         document.head.appendChild(css);
     }
@@ -153,20 +164,32 @@
 
     // ---------------------------------------------------------------- state
 
+    // Nothing typed in = the general values from config/assumptions_v1.json (state stays null).
+    const defaultProbs = (d) => Object.fromEntries(d.scenarios.list.map((s) => [s.id, s.prob]));
+    const general = (d) => ({ inp: { ...d.inputs.resolved }, probs: defaultProbs(d) });
+
     function current(d) {
-        if (!state) {
-            state = { inp: { ...d.inputs.resolved }, probs: Object.fromEntries(d.scenarios.list.map((s) => [s.id, s.prob])) };
-        }
-        return state;
+        return state || general(d);
+    }
+
+    function isCustom(d) {
+        if (!state) return false;
+        const g = general(d);
+        return Object.keys(g.inp).some((k) => state.inp[k] !== g.inp[k]) || Object.keys(g.probs).some((k) => Number(state.probs[k]) !== g.probs[k]);
+    }
+
+    function runWith(d, inp, probs, n = 1500) {
+        const key = JSON.stringify([inp, probs, n]);
+        if (runs.has(key)) return runs.get(key);
+        const scen = d.scenarios.list.map((x) => ({ ...x, prob: Number(probs[x.id]) || 0 }));
+        const out = { sim: simulate(d.engine, inp, scen, d.inputs.spreads, n), central: project(d.engine, inp) };
+        runs.set(key, out);
+        return out;
     }
 
     function run(d) {
         const s = current(d);
-        const key = JSON.stringify(s);
-        if (cache?.key === key) return cache;
-        const scen = d.scenarios.list.map((x) => ({ ...x, prob: Number(s.probs[x.id]) || 0 }));
-        cache = { key, sim: simulate(d.engine, s.inp, scen, d.inputs.spreads), central: project(d.engine, s.inp) };
-        return cache;
+        return runWith(d, s.inp, s.probs);
     }
 
     // fair value by month: history from the file, the projected months from the current inputs
@@ -308,11 +331,55 @@
                 ${lastS ? `${scored.length}건 채점 — 최근 모형 ${usd(lastS.mae_model, 1)} · 무변화 ${usd(lastS.mae_rw, 1)}${Number.isFinite(lastS.mae_eia) ? ` · EIA ${usd(lastS.mae_eia, 1)}` : ''}${Number.isFinite(lastS.mae_futures) ? ` · 선물 ${usd(lastS.mae_futures, 1)}` : ''}` : '첫 채점은 다음 달 브렌트가 확정된 뒤'}.</div></details>`;
     }
 
-    function cardHtml(d) {
-        const m = d.model, res = run(d), s = state, inp = s.inp, spec = d.inputs.spec;
+    // The conclusion: one number, the range, and the three things that make it -- on whatever inputs are live.
+    function conclusionView(d, res, custom) {
+        const y = d.engine.months.at(-1).slice(0, 4);
+        const f = res.sim.annual[y] || {};
+        const a = d.annual.find((x) => x.year === y) || {};
         const jp = (d.bank_views || [])[0];
         const last = d.brent_last || {};
-        const prem = Number.isFinite(last.value) && Number.isFinite(last.fair_value_month) ? (last.value / last.fair_value_month - 1) * 100 : null;
+        const prem = (last.value / last.fair_value_month - 1) * 100;
+        const m = d.model, I = d.identity, E = d.engine, T = E.months.length;
+        const fvs = E.months.map((mm, i) => [mm, res.central[i].fv]).filter(([mm]) => mm.startsWith(y));
+        const fvAvg = fvs.length === 12 ? fvs.reduce((s, [, v]) => s + v, 0) / 12 : null;
+        const build = (res.central[T - 1].stocks - E.stocks_anchor) / (T * DAYS);
+        const half = Math.max(1, Math.round(m.half_life));
+        const gen = custom ? runWith(d, d.inputs.resolved, defaultProbs(d)).sim.annual[y] : null;
+        const top = Object.entries(I.outside_oecd_annual || {}).reduce((b, e) => (e[1] > b[1] ? e : b), ['', -Infinity]);
+        const lines = [
+            `지금 ${usd(last.value, 1)}는 적정가 ${usd(last.fair_value_month, 1)}보다 ${sgn(prem, 0)}% 높습니다. 이 웃돈은 ${num(m.half_life)}개월마다 절반으로 줄어든다고 보고(과거 평균), ${y}년 봄이면 대부분 빠집니다.`,
+            `그 뒤 가격은 OECD 재고가 정합니다. 재고가 하루 ${num(build, 2)}백만 배럴씩 늘면(${custom ? '입력한 경로' : 'EIA 전망 경로'}) ${y}년 적정가는 평균 ${usd(fvAvg)}입니다.`,
+        ];
+        if (!custom) {
+            const zero = runWith(d, { ...d.inputs.resolved, oecd_mode: 'value', oecd_build: 0 }, defaultProbs(d), 800).sim.annual[y];
+            const jpm = runWith(d, jpmInputs(d), defaultProbs(d), 800).sim.annual[y];
+            lines.push(`갈림길은 '남는 원유가 어디에 쌓이나'입니다. EIA는 하루 ${num(I.outside_oecd_eia, 1)}백만 배럴이 중국 등 OECD 밖에 쌓인다고 보는데, 2015년 이후 최대는 ${num(top[1], 1)}(${esc(top[0])}년)입니다.
+                OECD 재고가 늘지 않으면 ${usd(zero?.p50)}, JP모건 가정(하루 0.4)이면 ${usd(jpm?.p50)}.`);
+        }
+        lines.push(`과거 12년 1년 앞 오차는 이 모형·EIA·무변화가 모두 약 $13로 비슷했습니다. 숫자 하나보다 '어떤 가정이면 얼마'로 읽으세요.`);
+        return `<div class="ob-head"><span class="ob-chip ${custom ? 'custom' : ''}">${custom ? '개별 전망' : '일반값'}</span> ${esc(y)}년 브렌트 평균
+                <div class="ob-big">${usd(f.p50)} <span>P10 ${usd(f.p10)} ~ P90 ${usd(f.p90)}</span></div>
+                <div class="stock-note">${custom && gen ? `일반값 ${usd(gen.p50)} · ` : ''}EIA ${usd(a.brent_eia)} · 선물 ${usd(a.futures)}${a.futures_months && a.futures_months < 12 ? `(${a.futures_months}개월)` : ''}${jp?.brent_annual?.[y] ? ` · JP모건 ${usd(jp.brent_annual[y])}` : ''}</div></div>
+            <ul class="ob-why">${lines.map((t) => `<li>${t}</li>`).join('')}</ul>`;
+    }
+
+    function inputsPanel(d) {
+        const s = state, inp = s.inp, spec = d.inputs.spec, scen = d.scenarios.list;
+        const probSum = scen.reduce((a, x) => a + (Number(s.probs[x.id]) || 0), 0);
+        return `<div class="ob-panel">
+            <p class="trade-rank-group-head">가정 입력 <span class="stock-note">값을 바꾸면 바로 다시 계산 · 비워 두면 일반값 · <span class="ob-tag data">데이터</span><span class="ob-tag judgment">판단</span></span></p>
+            <div class="ob-btns"><button type="button" data-ob-preset="jpm">JP모건 가정 (OECD 0.4·중국 0.7)</button><button type="button" data-ob-preset="identity">항등식으로 OECD 계산</button></div>
+            ${['oecd_mode', 'oecd_build', 'supply_delta', 'demand_delta', 'china_build', 'other_build', 'spare_mode', 'spare', 'dxy_pct', 'half_life'].map((k) => inputRow(spec, k, inp[k])).join('')}
+            <p class="trade-rank-group-head" style="margin-top:10px;">시나리오 확률 (%) <span class="ob-tag judgment">판단</span> <span class="stock-note">합 ${num(probSum, 0)} — 100이 아니면 비율로 나눔</span></p>
+            ${scen.map((x) => `<div class="ob-in"><span>${esc(x.label)}<span class="stock-note"> ${x.months ? `${esc(d.engine.months[x.start] || '')}부터 ${x.months}개월 · OECD ${sgn(x.oecd_add, 2)} · 여유능력 ${sgn(x.spare_add, 1)} · 프리미엄 ${sgn(x.premium_pct, 0)}%` : '추가 충격 없음'}</span></span>
+                <input type="number" step="5" min="0" data-ob-prob="${esc(x.id)}" value="${esc(s.probs[x.id])}"></div>`).join('')}
+            <div class="stock-note">${esc(d.scenarios.note)}</div>
+            ${identityView(d, inp)}</div>`;
+    }
+
+    function cardHtml(d) {
+        const m = d.model, res = run(d), custom = isCustom(d);
+        const jp = (d.bank_views || [])[0];
         const fvm = fvByMonth(d, res);
         const fvYear = (y) => { const v = Object.entries(fvm).filter(([mm]) => mm.startsWith(y)).map(([, x]) => x); return v.length === 12 ? v.reduce((a, b) => a + b, 0) / 12 : null; };
         const rows = d.annual.map((a) => {
@@ -322,26 +389,18 @@
                 <td>${usd(a.brent_eia)}</td><td>${usd(a.futures)}${a.futures_months && a.futures_months < 12 ? ` <span class="stock-note">(${a.futures_months}개월)</span>` : ''}</td>
                 <td>${jp && jp.brent_annual?.[a.year] ? usd(jp.brent_annual[a.year]) : '—'}</td></tr>`;
         }).join('');
-        const scen = d.scenarios.list;
-        const probSum = scen.reduce((a, x) => a + (Number(s.probs[x.id]) || 0), 0);
-        return `<p class="section-title">브렌트: 추정 · 가정 · 예측 <span class="stock-note">EIA STEO ${esc(d.steo.vintage || '')} · 무료 자료만</span></p>
-            <div class="ob-line"><span>브렌트 ${esc(last.date || '')}</span><span>${usd(last.value, 1)} · 적정가 ${usd(last.fair_value_month, 1)}
-                ${Number.isFinite(prem) ? `<b class="${prem > 0 ? 'ob-gap-up' : 'ob-gap-dn'}">${sgn(prem, 0)}%</b>` : ''}</span></div>
-            <div class="ob-line"><span>프리미엄 반감기 (잔차 AR(1))</span><span>${num(m.half_life)}개월 · 한 달 뒤 ${Math.round(m.rho * 100)}% 남음 · 월 ±${num(m.resid_sd * 100)}%</span></div>
+        return `<p class="section-title">브렌트 전망 <span class="stock-note">EIA STEO ${esc(d.steo.vintage || '')} · 무료 자료만</span></p>
+            ${conclusionView(d, res, custom)}
             ${chart(d, res)}
+            <div class="ob-btns" style="margin-top:8px;">
+                <button type="button" data-ob-toggle class="${panelOpen ? 'on' : ''}">${panelOpen ? '가정 입력 닫기 ▴' : '개별 전망 만들기 — 가정 직접 입력 ▾'}</button>
+                ${custom ? '<button type="button" data-ob-reset>일반값으로 되돌리기</button>' : ''}</div>
+            ${panelOpen ? inputsPanel(d) : ''}
             <p class="trade-rank-group-head" style="margin-top:8px;">연간 (과잉 = EIA 공급−수요, 백만 배럴/일 · 가격 달러/배럴)</p>
             <table class="ob-tab"><thead><tr><th>연도</th><th>과잉</th><th>적정가</th><th>실적 · 전망<br>P10~P50~P90</th><th>EIA</th><th>선물</th><th>JP모건</th></tr></thead><tbody>${rows}</tbody></table>
-            <div class="stock-note">적정가 = 프리미엄 0일 때 값. 전망 연도의 적정가와 P10~P90은 아래 입력으로 다시 계산됩니다.</div>
+            <div class="stock-note">적정가 = 웃돈(프리미엄) 0일 때 값.</div>
 
-            <p class="trade-rank-group-head" style="margin-top:12px;">가정 입력 <span class="stock-note">값을 바꾸면 바로 다시 계산 · <span class="ob-tag data">데이터</span><span class="ob-tag judgment">판단</span></span></p>
-            <div class="ob-btns"><button type="button" data-ob-preset="default">기본값 (EIA 경로)</button><button type="button" data-ob-preset="jpm">JP모건 가정 (OECD 0.4·중국 0.7)</button><button type="button" data-ob-preset="identity">항등식으로 OECD 계산</button></div>
-            ${['oecd_mode', 'oecd_build', 'supply_delta', 'demand_delta', 'china_build', 'other_build', 'spare_mode', 'spare', 'dxy_pct', 'half_life'].map((k) => inputRow(spec, k, inp[k])).join('')}
-            <p class="trade-rank-group-head" style="margin-top:10px;">시나리오 확률 (%) <span class="ob-tag judgment">판단</span> <span class="stock-note">합 ${num(probSum, 0)} — 100이 아니면 비율로 나눔</span></p>
-            ${scen.map((x) => `<div class="ob-in"><span>${esc(x.label)}<span class="stock-note"> ${x.months ? `${esc(d.engine.months[x.start] || '')}부터 ${x.months}개월 · OECD ${sgn(x.oecd_add, 2)} · 여유능력 ${sgn(x.spare_add, 1)} · 프리미엄 ${sgn(x.premium_pct, 0)}%` : '추가 충격 없음'}</span></span>
-                <input type="number" step="5" min="0" data-ob-prob="${esc(x.id)}" value="${esc(s.probs[x.id])}"></div>`).join('')}
-            <div class="stock-note">${esc(d.scenarios.note)}</div>
-            ${identityView(d, inp)}
-
+            <details><summary>근거 · 모형 점검</summary>
             ${competeView(d)}
             ${stabilityView(d)}
             ${scoreView(d)}
@@ -351,8 +410,9 @@
                 ${(jp.notes_ko || []).map((t) => `<div class="stock-note" style="margin:4px 0;">· ${esc(t)}</div>`).join('')}</details>` : ''}
             <div class="stock-note" style="margin-top:8px;">식: log(브렌트) = ${num(m.beta[0], 2)} ${m.beta.slice(1).map((b, i) => `${b < 0 ? '−' : '+'} ${Math.abs(b).toFixed(4)}×${esc(m.labels[i])}`).join(' ')}
                 (${esc(m.from)}~${esc(m.to)} 월별, R² ${num(m.r2, 2)}; 최대 괴리 +$${num(m.max_premium)} ${esc(m.max_premium_month)}, $10 넘는 괴리 평균 ${num(m.avg_months_above_10)}개월).
-                전망 = 입력 경로의 적정가 + 지금 프리미엄 × ${num(m.rho, 2)}^개월. 범위 = 계수 오차 + 잔차 + 입력 범위 + 시나리오, 1,500회 모의.
-                출처: <a href="${esc(d.steo.url)}" target="_blank" rel="noopener" style="color:#7dd3fc;">EIA 단기에너지전망</a> · FRED DCOILBRENTEU·DTWEXBGS · Yahoo 브렌트 선물(BZ)</div>`;
+                전망 = 입력 경로의 적정가 + 지금 프리미엄 × ${num(m.rho, 2)}^개월 (반감기 ${num(m.half_life)}개월, 월 ±${num(m.resid_sd * 100)}%). 범위 = 계수 오차 + 잔차 + 입력 범위 + 시나리오, 1,500회 모의.
+                출처: <a href="${esc(d.steo.url)}" target="_blank" rel="noopener" style="color:#7dd3fc;">EIA 단기에너지전망</a> · FRED DCOILBRENTEU·DTWEXBGS · Yahoo 브렌트 선물(BZ)</div>
+            </details>`;
     }
 
     // The JP Morgan preset takes the bank's 2027 supply and surplus (bank_views) as deltas to EIA's year, so the
@@ -367,7 +427,6 @@
     }
 
     const PRESETS = {
-        default: (d) => { state.probs = Object.fromEntries(d.scenarios.list.map((s) => [s.id, s.prob])); return { ...d.inputs.resolved, oecd_mode: 'eia' }; },
         jpm: jpmInputs,
         identity: () => ({ ...state.inp, oecd_mode: 'identity' }),
     };
@@ -393,6 +452,7 @@
         paint();
         slot.addEventListener('change', (e) => {
             const t = e.target;
+            if (t.dataset.obIn || t.dataset.obProb) state ||= general(doc);
             if (t.dataset.obIn) {
                 const k = t.dataset.obIn;
                 if (t.tagName === 'SELECT') state.inp[k] = t.value;
@@ -407,8 +467,18 @@
             paint();
         });
         slot.addEventListener('click', (e) => {
+            if (e.target.closest('[data-ob-toggle]')) {
+                panelOpen = !panelOpen;
+                if (panelOpen) state ||= general(doc);
+                return paint();
+            }
+            if (e.target.closest('[data-ob-reset]')) {
+                state = panelOpen ? general(doc) : null;
+                return paint();
+            }
             const b = e.target.closest('[data-ob-preset]');
             if (!b) return;
+            state ||= general(doc);
             state.inp = PRESETS[b.dataset.obPreset](doc);
             paint();
         });
