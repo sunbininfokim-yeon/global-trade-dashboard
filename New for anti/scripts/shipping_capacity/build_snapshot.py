@@ -32,6 +32,7 @@ from shipping_capacity.route_distances import attach_distance_evidence
 from shipping_capacity.route_alternatives import load_arctic_route_reference, service_detour_comparison
 from shipping_capacity.official_cargo import collect_official_cargo
 from shipping_capacity.hormuz_reconstruction import collect_hormuz_reconstruction
+from shipping_capacity.hormuz_annual_outlook import build_hormuz_annual_outlook
 from shipping_capacity.hormuz_bypass import collect_hormuz_bypass
 from shipping_capacity.chokepoint_trend import build_chokepoint_trend
 
@@ -705,6 +706,7 @@ def build_ui_delivery_contract() -> dict[str, Any]:
                     "official_cargo_monitor.chokepoints.<id>.cumulative_cards[].windows[]",
                     "official_cargo_monitor.chokepoints.<id>.transit_assessment",
                     "hormuz_reconstruction.headline",
+                    "hormuz_annual_outlook.cards[]",
                     "hormuz_reconstruction.mass_balance.terms[]",
                     "hormuz_reconstruction.producer_exports",
                     "hormuz_reconstruction.importer_receipts",
@@ -1322,6 +1324,7 @@ def build_snapshot(
             "chokepoints": chokepoints,
             "chokepoints_live": live_status,
             "official_cargo_monitor": official_cargo,
+            "hormuz_annual_outlook": build_hormuz_annual_outlook(official_cargo, build_time.date()),
             "hormuz_reconstruction": collect_hormuz_reconstruction(
                 fetch=fetch_reconstruction, previous=fallback_reconstruction, now=build_time,
                 official_cargo=official_cargo, live_status=live_status,

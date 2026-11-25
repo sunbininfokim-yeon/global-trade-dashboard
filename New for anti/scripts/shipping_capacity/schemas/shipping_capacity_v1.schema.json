@@ -200,6 +200,84 @@
         }
       }
     },
+    "hormuz_annual_outlook": {
+      "type": "object",
+      "required": ["contract_version", "method_id", "status", "publisher", "source_url", "source_status", "source_published_at", "as_of", "cards", "warning_ko"],
+      "properties": {
+        "contract_version": {"const": "hormuz-annual-outlook-v1"},
+        "method_id": {"const": "single_eia_release_fixed_quarter_daily_rate_to_year_end"},
+        "status": {"enum": ["unavailable", "reference_available"]},
+        "publisher": {"const": "EIA"},
+        "source_url": {"type": "string", "format": "uri"},
+        "source_status": {"enum": ["fetched", "cached_fallback", "cached_offline", "unavailable", "not_fetched"]},
+        "source_published_at": {"type": ["string", "null"], "format": "date"},
+        "as_of": {"type": "string", "format": "date"},
+        "cards": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["cargo_category", "label_ko", "geography_scope", "status", "unit", "daily_rate_unit", "year", "period_start", "period_end", "published_period_end", "missing_quarter_starts", "reported_cumulative", "unreported_period_start", "unreported_days", "unreported_elapsed_days", "full_year_institution_total", "scenarios"],
+            "properties": {
+              "cargo_category": {"enum": ["crude_condensate", "lng"]},
+              "geography_scope": {"const": "strait_of_hormuz"},
+              "status": {"enum": ["conditional_outlook", "full_year_institution_estimate", "insufficient_reported_quarters", "awaiting_second_quarter", "past_year_awaiting_final_quarter"]},
+              "unit": {"enum": ["barrels", "billion_cubic_feet"]},
+              "daily_rate_unit": {"enum": ["barrels_per_day", "billion_cubic_feet_per_day"]},
+              "year": {"type": "integer", "minimum": 2000},
+              "period_start": {"type": "string", "format": "date"},
+              "period_end": {"type": "string", "format": "date"},
+              "published_period_end": {"type": "string", "format": "date"},
+              "missing_quarter_starts": {"type": "array", "uniqueItems": true, "items": {"type": "string", "format": "date"}},
+              "reported_cumulative": {"type": ["number", "null"], "minimum": 0},
+              "unreported_period_start": {"type": ["string", "null"], "format": "date"},
+              "unreported_days": {"type": "integer", "minimum": 0, "maximum": 366},
+              "unreported_elapsed_days": {"type": "integer", "minimum": 0, "maximum": 366},
+              "full_year_institution_total": {"type": ["number", "null"], "minimum": 0},
+              "scenarios": {
+                "type": "array", "maxItems": 2,
+                "items": {
+                  "type": "object",
+                  "required": ["id", "label_ko", "reference_period_start", "reference_period_end", "assumed_daily_rate", "unreported_period_estimate", "annual_total"],
+                  "properties": {
+                    "id": {"enum": ["latest_quarter_pace", "previous_quarter_pace"]},
+                    "reference_period_start": {"type": "string", "format": "date"},
+                    "reference_period_end": {"type": "string", "format": "date"},
+                    "assumed_daily_rate": {"type": "number", "minimum": 0},
+                    "unreported_period_estimate": {"type": "number", "minimum": 0},
+                    "annual_total": {"type": "number", "minimum": 0}
+                  }
+                }
+              }
+            },
+            "allOf": [
+              {
+                "if": {"properties": {"cargo_category": {"const": "lng"}}},
+                "then": {"properties": {"unit": {"const": "billion_cubic_feet"}, "daily_rate_unit": {"const": "billion_cubic_feet_per_day"}}},
+                "else": {"properties": {"unit": {"const": "barrels"}, "daily_rate_unit": {"const": "barrels_per_day"}}}
+              },
+              {
+                "if": {"properties": {"status": {"const": "conditional_outlook"}}},
+                "then": {"properties": {"scenarios": {"minItems": 1}, "unreported_days": {"minimum": 1}, "reported_cumulative": {"type": "number"}, "missing_quarter_starts": {"maxItems": 0}}},
+                "else": {"properties": {"scenarios": {"maxItems": 0}}}
+              },
+              {
+                "if": {"properties": {"status": {"const": "full_year_institution_estimate"}}},
+                "then": {"properties": {"full_year_institution_total": {"type": "number"}, "unreported_days": {"const": 0}, "reported_cumulative": {"type": "number"}, "missing_quarter_starts": {"maxItems": 0}}},
+                "else": {"properties": {"full_year_institution_total": {"type": "null"}}}
+              },
+              {
+                "if": {"properties": {"status": {"const": "insufficient_reported_quarters"}}},
+                "then": {"properties": {"reported_cumulative": {"type": "null"}, "missing_quarter_starts": {"minItems": 1}}}
+              }
+            ]
+          }
+        }
+      },
+      "if": {"properties": {"status": {"const": "reference_available"}}},
+      "then": {"required": ["attribution"], "properties": {"source_published_at": {"type": "string"}, "cards": {"minItems": 2}}},
+      "else": {"properties": {"cards": {"maxItems": 0}}}
+    },
     "hormuz_reconstruction": {
       "type": "object",
       "required": ["contract_version", "generated_at", "status", "api_keys_required", "method_document", "headline", "mass_balance", "producer_exports", "importer_receipts", "sar_coverage", "identifiability", "rejected_shortcuts", "sources"],
