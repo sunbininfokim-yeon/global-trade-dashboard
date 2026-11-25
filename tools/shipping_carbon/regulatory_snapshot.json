@@ -1,0 +1,108 @@
+{
+  "schema": "maritime_regulatory_review_v1",
+  "as_of": "2026-11-25",
+  "verified_at": "2026-11-25",
+  "verification": "primary_sources_reviewed",
+  "coverage_ko": "EU ETS 해운·FuelEU와 IMO 탄소가격 논의의 지정 자료 검토. 적용 범위·가스·면제·인증의 개별 선박 판정은 입력 근거로 확인합니다.",
+  "ets_schedule": [
+    {"emissions_year_from": 2024, "emissions_year_to": 2024, "surrender_fraction": "0.4", "gases": ["CO2"]},
+    {"emissions_year_from": 2025, "emissions_year_to": 2025, "surrender_fraction": "0.7", "gases": ["CO2"]},
+    {"emissions_year_from": 2026, "emissions_year_to": 2050, "surrender_fraction": "1", "gases": ["CO2", "CH4", "N2O"]}
+  ],
+  "ets_surrender_month_day": "09-30",
+  "sources": {
+    "ets_directive": {"url": "https://eur-lex.europa.eu/eli/dir/2023/959/oj/eng", "verification": "text_reviewed", "verified_at": "2026-11-25", "locator": "Article 1 amendments to Directive 2003/87/EC, Articles 3gb and 12, Annex I maritime activities"},
+    "ets_commission": {"url": "https://climate.ec.europa.eu/areas-action/transport-decarbonisation/reducing-emissions-shipping-sector_en", "verification": "text_reviewed", "verified_at": "2026-11-25", "locator": "Inclusion of maritime emissions in the EU ETS; Legislative process"},
+    "fueleu_base": {"url": "https://eur-lex.europa.eu/eli/reg/2023/1805", "verification": "selected_provisions_reviewed", "verified_at": "2026-11-25", "locator": "Articles 2, 4, 19 to 23, 32"},
+    "fueleu_database": {"url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32026R0394", "verification": "text_reviewed", "verified_at": "2026-11-25", "locator": "Articles 3, 5, 7, 10; OJ 24 February 2026"},
+    "fueleu_commission": {"url": "https://transport.ec.europa.eu/transport-modes/maritime/decarbonising-maritime-transport-fueleu-maritime_en", "verification": "text_reviewed", "verified_at": "2026-11-25", "locator": "Secondary legislation; neighbouring container transhipment ports"},
+    "norway_authority": {"url": "https://www.sdir.no/en/news/further-delay-to-fueleu-maritime/", "verification": "text_reviewed", "verified_at": "2026-11-25", "locator": "11 August 2026; Only half counts"},
+    "ets_proposal": {"url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52026PC0616", "verification": "selected_provisions_reviewed", "verified_at": "2026-11-25", "locator": "COM(2026) 616, 17 July 2026; proposed Articles 3gg and 3gaa"},
+    "mrv_proposal": {"url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52026PC0620", "verification": "selected_provisions_reviewed", "verified_at": "2026-11-25", "locator": "COM(2026) 620, 17 July 2026; explanatory memorandum and Article 3"},
+    "mrv_procedure": {"url": "https://eur-lex.europa.eu/legal-content/EN/HIS/?uri=CELEX:52026PC0620", "verification": "procedure_ongoing_verified", "verified_at": "2026-11-25", "locator": "2026/0210/COD, Ongoing"},
+    "imo_mepc84": {"url": "https://www.imo.org/en/mediacentre/meetingsummaries/pages/temporary-mepc-84th-session.aspx", "verification": "text_reviewed", "verified_at": "2026-11-25", "locator": "IMO Net Zero Framework; working groups and MEPC 85 schedule"}
+  },
+  "updates": [
+    {
+      "id": "ets_maritime_current_schedule",
+      "title_ko": "ETS 배출연도·제출연도와 가스 범위",
+      "status": "in_force",
+      "document_date": "2023-05-10",
+      "effective_date": "2024-01-01",
+      "summary_ko": "2024·2025·2026년 이후 배출분의 제출비율은 각각 40%·70%·100%입니다. 제출은 다음 해 9월 30일까지이며, CH₄·N₂O는 2026년 배출분부터 포함됩니다.",
+      "financial_effect_ko": "연도별 EUA 수요·가스 계수·납부 일정을 맞춥니다. 적용 범위와 예외는 선박·항로별 근거를 확인합니다.",
+      "source_ids": ["ets_directive", "ets_commission"]
+    },
+    {
+      "id": "fueleu_current_targets",
+      "title_ko": "FuelEU의 현행 목표와 준수 방식",
+      "status": "in_force",
+      "document_date": "2023-09-13",
+      "effective_date": "2025-01-01",
+      "summary_ko": "현행 연료 온실가스 집약도 목표와 선박별 이월·차입·풀링 체계를 기준으로 검토했습니다.",
+      "financial_effect_ko": "기존 FuelEU 엔진의 목표 계단과 계산식을 사용하며, 풀 견적은 해당 준수연도로 확인합니다.",
+      "source_ids": ["fueleu_base"]
+    },
+    {
+      "id": "fueleu_database_2026_394",
+      "title_ko": "FuelEU 데이터베이스 시행규칙 (EU) 2026/394",
+      "status": "in_force",
+      "document_date": "2026-02-23",
+      "effective_date": "2026-02-25",
+      "summary_ko": "THETIS-MRV 기반 데이터베이스의 권한·준수잔액·이월·차입·풀 등록·검증 기능을 정합니다.",
+      "financial_effect_ko": "풀 계약 정산과 실사에는 선박별 검증 잔액·배분·등록 근거가 필요합니다. 데이터 접근은 역할별 권한에 따릅니다.",
+      "source_ids": ["fueleu_database"]
+    },
+    {
+      "id": "fueleu_neighbouring_ports_2025_1127",
+      "title_ko": "FuelEU 인접 컨테이너 환적항 시행규칙 (EU) 2025/1127",
+      "status": "adopted_official_listing",
+      "document_date": "2025-06-06",
+      "effective_date": null,
+      "summary_ko": "집행위는 지정 환적항 기항을 FuelEU의 port of call에서 제외하는 시행규칙을 게시했습니다. 이번 검토에서는 공식 목록 소개를 확인했습니다.",
+      "financial_effect_ko": "적용 항차의 경계를 확인해야 합니다. EUR-Lex 본문 접근 제한으로 항구 목록과 발효일의 자동 적용은 보류합니다.",
+      "source_ids": ["fueleu_commission"]
+    },
+    {
+      "id": "fueleu_norway_delay_2026",
+      "title_ko": "노르웨이 FuelEU 적용 지연",
+      "status": "official_guidance",
+      "document_date": "2026-08-11",
+      "effective_date": null,
+      "earliest_possible_application": "2028-01-01",
+      "summary_ko": "노르웨이 당국은 적용이 빨라도 2028년 1월 1일 가능하다고 안내했습니다. EEA 편입 전 노르웨이·아이슬란드 항구는 FuelEU상 제3국으로 취급합니다.",
+      "financial_effect_ko": "해당 기간 EU↔노르웨이·아이슬란드 항차의 FuelEU 에너지는 50%입니다. ETS 적용 범위는 별도로 확인합니다. 2028년 적용일 확정은 보류 상태입니다.",
+      "source_ids": ["norway_authority"]
+    },
+    {
+      "id": "ets_revision_com_2026_616",
+      "title_ko": "ETS 개정안 COM(2026) 616",
+      "status": "proposal",
+      "document_date": "2026-07-17",
+      "effective_date": null,
+      "summary_ko": "해운의 지속가능 연료·추진기술 지원과 향후 IMO 가격제 도입 시 이중 부담 검토를 제안합니다.",
+      "financial_effect_ko": "지원금과 IMO 공제는 입법 결과·적격성·시행 조건 확인 후 평가할 항목입니다. 현재 계산에는 제안상의 혜택을 반영하지 않습니다.",
+      "source_ids": ["ets_proposal", "ets_commission"]
+    },
+    {
+      "id": "mrv_fueleu_revision_com_2026_620",
+      "title_ko": "MRV·FuelEU 보고 통합 개정안 COM(2026) 620",
+      "status": "proposal",
+      "document_date": "2026-07-17",
+      "effective_date": null,
+      "summary_ko": "보고·검증 절차 통합과 책임 주체 정렬을 제안합니다. EUR-Lex 절차 2026/0210/COD는 진행 중으로 표시됩니다.",
+      "financial_effect_ko": "개정안의 Annex II 삭제나 보고 통합을 현행 연료계수·비용식에 적용하지 않습니다. 법령 채택·시행 시점에 다시 확인합니다.",
+      "source_ids": ["mrv_proposal", "mrv_procedure"]
+    },
+    {
+      "id": "imo_nzf_negotiation",
+      "title_ko": "IMO Net-Zero Framework 협상",
+      "status": "negotiation",
+      "document_date": "2026-05-01",
+      "effective_date": null,
+      "summary_ko": "MEPC 84는 추가 협상을 정했습니다. MEPC 85는 11월 30일~12월 3일 예정이며 12월 4일 특별회의 재개는 MEPC 85 확인 조건입니다.",
+      "financial_effect_ko": "IMO 요율·공제·확정 시행일은 비용에 반영하지 않습니다. 후속 회의 결과로 제안의 채택 여부를 확인합니다.",
+      "source_ids": ["imo_mepc84"]
+    }
+  ]
+}

@@ -39,6 +39,30 @@ class CombinedTests(unittest.TestCase):
         p["bio_price_eur_t"] = r["bio_delivered_breakeven_eur_t"]
         self.assertLess(abs(run(p)["saving_before_financing_eur"]), 2)
 
+    def test_emissions_year_drives_reviewed_surrender_year_and_gases(self):
+        p = inputs()
+        p.update(year=2025, pool_compliance_year=2025, ets_phase_factor="0.7")
+        previous = run(p)
+        current = run(inputs())
+        self.assertEqual(previous["regulation"]["surrender_deadline"], "2026-09-30")
+        self.assertEqual(previous["regulation"]["gases"], ["CO2"])
+        self.assertEqual(current["regulation"]["surrender_deadline"], "2027-09-30")
+        self.assertEqual(current["regulation"]["gases"], ["CO2", "CH4", "N2O"])
+        self.assertEqual(previous["options"][0]["ets_eua"],
+                         current["options"][0]["ets_eua"] * .7)
+        self.assertEqual(current["regulation"]["status"], "matches_reviewed_schedule")
+
+    def test_manual_phase_keeps_scenario_and_exposes_statutory_difference(self):
+        p = inputs()
+        p["ets_phase_factor"] = ".7"
+        result = run(p)
+        policy = result["regulation"]
+        self.assertEqual(policy["status"], "phase_assumption_differs")
+        self.assertEqual(policy["statutory_phase_factor"], "1")
+        self.assertEqual(len(policy["review_sha256"]), 64)
+        self.assertTrue(policy["warnings_ko"])
+        self.assertEqual(result["options"][0]["ets_eua"], 1120)
+
     def test_no_automatic_zero_rating_or_sales(self):
         p = inputs(); p["ets_bio_tco2e_t"] = 0
         with self.assertRaisesRegex(ValueError, "zero ETS"):

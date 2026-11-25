@@ -9,6 +9,7 @@ from engine import calculate, defaults, json_value
 from presets import catalog
 from fueleu_adapter import call_fueleu
 from combined_finance import observed_reference
+from regulations import ets_context, regulatory_review
 
 ROOT = Path(__file__).resolve().parent
 FORCE_SYNTHETIC = False
@@ -35,11 +36,13 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
+        if self.path == "/api/regulations":
+            return self.reply(200, regulatory_review())
         if self.path == "/api/market":
             def local_json(name, fallback):
                 path = ROOT / "source_data" / name
                 return json.loads(path.read_text()) if path.exists() else fallback
-            return self.reply(200, {"prices": snapshot(),
+            return self.reply(200, {"prices": snapshot(), "regulations": regulatory_review(),
                 "market_structure": local_json("market_structure.json", {"status": "not_collected", "records": []}),
                 "fueleu_audit": local_json("fueleu_audit.json", {"status": "not_collected"})})
         if self.path == "/api/presets":
@@ -90,7 +93,9 @@ class Handler(BaseHTTPRequestHandler):
                 result["inputs"] = p
                 self.reply(200, result)
             else:
-                self.reply(200, calculate(p, snapshot()))
+                result = calculate(p, snapshot())
+                result["regulation"] = ets_context(p.get("emissions_year"), p["phase_factor"])
+                self.reply(200, result)
         except (ValueError, KeyError, TypeError) as exc:
             self.reply(400, {"error": str(exc)})
 
