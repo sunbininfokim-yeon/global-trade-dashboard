@@ -69,6 +69,7 @@ jobs:
             data/normalized/kospi200_futures_oi
             data/normalized/kospi200_option_oi
             data/normalized/kospi_program
+            data/normalized/etf_eod
             data/manifests/krx_15007_k200_investor.json
             data/manifests/kospi_program.json
           sparse-checkout-cone-mode: false
@@ -180,6 +181,20 @@ jobs:
         continue-on-error: true
         run: python build_krx_deriv_flow.py --source "${{ github.workspace }}/krx-month-paste" --print-stats
 
+      # KOSPI 200 covered-call ETF size and the call notional their index
+      # rules imply. FDR's ETF/KR listing appends today every run; the KRX
+      # 13101 history in krx-month-paste seeds earlier days when the checkout
+      # worked. The file is merged, so a failed checkout loses nothing.
+      - name: Covered-call supply
+        id: covered_call
+        continue-on-error: true
+        run: |
+          SEED=()
+          if [ "${{ steps.krx15007_checkout.outcome }}" = "success" ]; then
+            SEED=(--seed-krx "${{ github.workspace }}/krx-month-paste")
+          fi
+          python build_covered_call_supply.py --live "${SEED[@]}" --print-stats
+
       # Investor × price levels moved to investor_price_levels_daily.yml, which
       # runs after the KRX close. This job's schedule lands anywhere between
       # 08:50 and 10:00 KST (GitHub delays a 06:13 KST cron by 2.5-3.7h), i.e.
@@ -214,6 +229,7 @@ jobs:
             "New for anti/public/data/us_kr_regime_proxy_backtest_v1.json" \
             "New for anti/public/data/derivatives_board_v1.json" \
             "New for anti/public/data/krx_deriv_flow_v1.json" \
+            "New for anti/public/data/covered_call_supply_v1.json" \
             "New for anti/public/data/us_oi_daily_archive.jsonl" \
             "New for anti/public/data/market_microstructure_v1.json" \
             "New for anti/public/data/ai_casino_brief_v1.json" \
@@ -256,6 +272,7 @@ jobs:
           MICRO_SNAPSHOT: ${{ steps.micro_snapshot.outcome }}
           KRX_CHECKOUT: ${{ steps.krx15007_checkout.outcome }}
           KRX_FLOW: ${{ steps.krx_flow.outcome }}
+          COVERED_CALL: ${{ steps.covered_call.outcome }}
           ALERT_LEVELS: ${{ steps.alert_levels.outcome }}
         run: |
           failed=()
@@ -263,6 +280,7 @@ jobs:
           [ "$MICRO_SNAPSHOT" = "failure" ]  && failed+=("Market microstructure snapshot")
           [ "$KRX_CHECKOUT" = "failure" ]    && failed+=("Checkout krx-month-paste")
           [ "$KRX_FLOW" = "failure" ]        && failed+=("KRX derivatives microstructure history")
+          [ "$COVERED_CALL" = "failure" ]    && failed+=("Covered-call supply")
           [ "$ALERT_LEVELS" = "failure" ]    && failed+=("Alert levels")
           if [ "${#failed[@]}" -eq 0 ]; then
             echo "No continue-on-error step failed."

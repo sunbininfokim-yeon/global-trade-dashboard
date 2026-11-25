@@ -18,6 +18,8 @@
 // US options tape is leaning on Korea. The rule throughout: a null stays blank.
 // A plausible-looking number in a positioning panel is worse than an empty one.
 const MS_FILES = {
+    // 코스피200 커버드콜 ETF 규모와 추정 콜 매도 (build_covered_call_supply.py).
+    cc: 'covered_call_supply_v1.json',
     transmission: 'us_kr_transmission_v1.json',
     alerts: 'alert_levels_v1.json',
     conc: 'kospi_concentration_history_v1.json',
@@ -2320,6 +2322,148 @@ const msProgramSection = (D) => {
     </section>`;
 };
 
+// --- 코스피200 커버드콜 공급 (covered_call_supply_v1.json) --------------------
+// The mirror image of the leveraged-ETF rebalancing views: covered-call ETFs
+// write KOSPI 200 calls on a schedule printed in the name of the index each
+// tracks. Fund size is observed (market cap); the call notional is an
+// estimate from that published rule, never an observed order.
+// The KRX seed is sparse (2023 and mid-2026 days only), so the full span
+// compresses years into a few points; the default window is recent days.
+let MS_CC_WIN = '60';
+const MS_CC_RULE_KO = (r) => {
+    if (!r) return '—';
+    const tenor = r.tenor === 'weekly' ? '위클리' : '월물';
+    if (r.kind === 'target_premium') return `${tenor} · 연 ${r.target_premium_pct}% 프리미엄 목표 (커버 비율 변동)`;
+    if (r.kind === 'fixed_coverage') return `${tenor} · 커버 ${r.coverage_pct}% · ${r.otm_pct ? `${r.otm_pct}% OTM` : 'ATM'}${r.mixed_with_bonds ? ' · 채권혼합' : ''}`;
+    return '규칙 미확인';
+};
+
+const msCoveredCallSection = (D) => {
+    const C = D.cc;
+    if (!C || C.schema_version !== 'covered-call-supply-v1' || !(C.history || []).length) return '';
+    const hist = C.history;
+    const L = hist[hist.length - 1];
+    // Outside "전체", start after the last gap of more than 45 calendar days, so
+    // a 2023 seed point is not joined to 2026 across a compressed axis.
+    const gapStart = (() => {
+        for (let i = hist.length - 1; i > 0; i--) {
+            if ((Date.parse(hist[i].date) - Date.parse(hist[i - 1].date)) / 864e5 > 45) return i;
+        }
+        return 0;
+    })();
+    const recent = MS_CC_WIN === 'all' ? hist : hist.slice(gapStart);
+    const n = msWinN(MS_CC_WIN, recent.length);
+    const win = recent.slice(-n);
+    // Four weeks back on the observed axis, or the nearest earlier observation.
+    const back = (() => {
+        const t = new Date(`${L.date}T00:00:00Z`); t.setUTCDate(t.getUTCDate() - 28);
+        const cut = t.toISOString().slice(0, 10);
+        return [...hist].reverse().find((h) => h.date <= cut) || null;
+    })();
+    const chg = back && back.total_mcap_krw ? (L.total_mcap_krw / back.total_mcap_krw - 1) * 100 : null;
+    const prods = C.products || [];
+    const top = prods.slice(0, 4);
+    const COLORS = ['#38bdf8', '#fbbf24', '#a78bfa', '#94a3b8'];
+    const jo = (v) => Number.isFinite(v) ? `${(v / 1e12).toFixed(2)}조` : '—';
+    // Gaps between observations stay gaps: the seed history is sparse KRX days,
+    // then one point per trading day once the daily job appends.
+    const series = [{ label: '합계', color: '#e2e8f0', values: win.map((h) => msToJo(h.total_mcap_krw)) },
+        ...top.map((p, i) => ({ label: p.name, color: COLORS[i], values: win.map((h) => msToJo((h.by_ticker || {})[p.ticker])) }))];
+    const ov = (C.overseas || [])[0];
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>코스피200 커버드콜 공급 (국내 ETF · 추정)</h2>
+        <p class="fin-lead">코스피200 커버드콜 ETF는 추종 지수에 적힌 규칙대로 매주·매월 코스피200 콜을 팝니다.
+            레버리지 ETF의 일일 리밸런싱과 반대로, 변동성을 <strong>파는</strong> 쪽의 정기 공급입니다. 기준일 ${finEsc(L.date)}.</p>
+        ${msStaleNote('커버드콜 ETF 규모', L.date)}
+        <div class="fin-cards">
+            ${msCard('국내 K200 커버드콜 ETF 시총', jo(L.total_mcap_krw),
+                `${prods.length}개 상품${chg === null ? '' : ` · ${finEsc(back.date)} 대비 <span class="${chg >= 0 ? 'fin-up' : 'fin-down'}">${chg >= 0 ? '+' : ''}${chg.toFixed(1)}%</span>`}`, null)}
+            ${msCard('고정 커버 상품 · 주당 콜 매도 명목', jo(L.est_fixed_call_notional_per_week_krw),
+                Number.isFinite(L.est_fixed_call_contracts_per_week) ? `약 ${msNum(L.est_fixed_call_contracts_per_week)}계약/주 · 코스피200 ${msNum(L.k200, 2)} 기준 (추정)` : '추정', null)}
+            ${msCard('타겟 프리미엄 상품 · 주당 필요 프리미엄', msKrwEokLevel(L.est_target_premium_per_week_krw),
+                '연 목표% × 시총 ÷ 52 (추정) · 커버 비율은 IV에 따라 바뀜', null)}
+        </div>
+        <div class="ms-flow-controls">
+            <span class="ms-sub-h">시총 추이 · 관측 ${msNum(win.length)}일 (${finEsc(win[0].date)} ~ ${finEsc(L.date)}) · 관측된 날만 이어 그림</span>
+            ${msWinBar('ms-cc-win', MS_CC_WIN)}
+        </div>
+        ${msMultiChart(win.map((h) => h.date), series, { zero: false, signed: false, unit: '조', digits: 2, label: '코스피200 커버드콜 ETF 시가총액' })}
+        <h3 class="fin-sub">상품별 규칙과 규모</h3>
+        ${msTable(['상품', '콜 매도 규칙 (지수 이름 기준)', '시총', '주당 콜 매도 명목 (추정)'],
+            prods.map((p) => {
+                const m = (L.by_ticker || {})[p.ticker];
+                const r = p.rule || {};
+                let est = '—';
+                if (Number.isFinite(m) && r.kind === 'fixed_coverage') {
+                    const v = m * r.coverage_pct / 100 / (r.tenor === 'weekly' ? 1 : 52 / 12);
+                    est = jo(v);
+                } else if (Number.isFinite(m) && r.kind === 'target_premium') {
+                    est = `프리미엄 ${msKrwEokLevel(m * r.target_premium_pct / 100 / 52)}`;
+                }
+                return [`${finEsc(p.name)} <span class="ms-q">${finEsc(p.ticker)}</span>`, finEsc(MS_CC_RULE_KO(r)), jo(m), est];
+            }))}
+        ${ov ? `<h3 class="fin-sub">해외 · ${finEsc(ov.ticker)} ${finEsc(ov.name)}</h3>
+        <p class="fin-note">${finEsc(ov.listed)} 상장 · ${finEsc(ov.structure_ko)} · ${finEsc(ov.distribution_ko)} · 보수 ${ov.fee_pct}% · ${finEsc(ov.coverage_ko)}.
+            선물 다리는 위 「외국인 KOSPI200 파생 수급」의 선물 매수로, 콜 다리는 KRX 상장 옵션을 쓴다면 외국인 콜 매도로 잡힙니다.
+            일별 운용자산 소스가 아직 없어 규모는 계산하지 않습니다. 출처 ${finEsc(ov.source_ko)}.</p>` : ''}
+        <p class="fin-note ms-warn">${(C.notes_ko || []).map(finEsc).join(' ')}</p>
+    </section>`;
+};
+
+// Monthly KOSPI 200 option expiry (2nd Thursday) and the days around it:
+// where a monthly call writer rolls, IV and call flow should show it.
+// Weekly expiries are not in the published chain, so they are not listed.
+const msSecondThursday = (y, m) => {
+    const d = new Date(Date.UTC(y, m, 1));
+    const off = (4 - d.getUTCDay() + 7) % 7;
+    return new Date(Date.UTC(y, m, 1 + off + 7)).toISOString().slice(0, 10);
+};
+const msExpiryEventSection = (D) => {
+    const F = D.flow;
+    if (!msFlowOk(F) || !F.option_oi) return '';
+    const ds = F.dates;
+    const at = new Map(ds.map((d, i) => [d, i]));
+    const iv = F.option_oi.atm_iv || [];
+    const cf = msFlowCol(F, 'options_call', 'foreign_net');
+    const ci = msFlowCol(F, 'options_call', 'institution_net');
+    const last = ds[ds.length - 1];
+    const [ly, lm] = last.split('-').map(Number);
+    // Date.UTC normalises negative months, so this walks back across years.
+    const months = Array.from({ length: 10 }, (_, k) => {
+        const d = new Date(Date.UTC(ly, lm - 1 - k, 1));
+        return msSecondThursday(d.getUTCFullYear(), d.getUTCMonth());
+    });
+    const rows = months.map((exp) => {
+        // KRX moves the expiry to the prior trading day on a holiday: take the
+        // last observed day on or before the 2nd Thursday, within that month.
+        let i = -1;
+        for (let j = ds.length - 1; j >= 0; j--) if (ds[j] <= exp) { i = j; break; }
+        if (i >= 0 && ds[i].slice(0, 7) !== exp.slice(0, 7)) i = -1;
+        if (i < 1 || i + 2 >= ds.length) return null;
+        const ivBefore = iv[i - 1], ivAfter = iv[i + 2];
+        const sum = (col) => { let s = 0, n2 = 0; for (let j = Math.max(0, i - 4); j <= i; j++) if (Number.isFinite(col[j])) { s += col[j]; n2++; } return n2 ? s : null; };
+        const f = sum(cf), ins = sum(ci);
+        return [finEsc(ds[i]),
+            Number.isFinite(ivBefore) ? `${ivBefore.toFixed(1)}%` : '—',
+            Number.isFinite(ivAfter) ? `${ivAfter.toFixed(1)}%` : '—',
+            Number.isFinite(ivBefore) && Number.isFinite(ivAfter) ? `<span class="${ivAfter - ivBefore >= 0 ? 'fin-up' : 'fin-down'}">${ivAfter - ivBefore >= 0 ? '+' : ''}${(ivAfter - ivBefore).toFixed(1)}%p</span>` : '—',
+            `<span class="${msSignCls(f)}">${msKrwEok(Number.isFinite(f) ? f * 1e6 : null)}</span>`,
+            `<span class="${msSignCls(ins)}">${msKrwEok(Number.isFinite(ins) ? ins * 1e6 : null)}</span>`];
+    }).filter(Boolean);
+    if (!rows.length) return '';
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>월물 만기 전후 · ATM IV와 콜 수급</h2>
+        <p class="fin-lead">코스피200 옵션 월물 만기일(둘째 목요일)마다, 만기 전날과 이틀 뒤(새 월물)의 ATM 내재변동성, 만기일까지 5거래일의 콜 순매수입니다.
+            월물 콜을 파는 커버드콜이 롤할 때 IV가 눌리는지, 누가 콜을 팔았는지 보는 표입니다.</p>
+        ${msStaleNote('옵션 미결제약정·수급', (F.last_dates || {}).option_oi)}
+        ${msTable(['만기일', 'ATM IV 만기 전날', 'ATM IV 이틀 뒤 (새 월물)', 'IV 변화', '콜 외국인 순매수 (5일)', '콜 기관 순매수 (5일)'], rows)}
+        <p class="fin-note">만기 전날과 이틀 뒤는 서로 다른 월물의 ATM이라 기간 구조 차이가 섞입니다. 위클리 옵션 만기는 공개 체인에 없어 넣지 않았습니다.
+            콜 순매수는 프리미엄 거래대금이며 계약 수가 아닙니다.</p>
+    </section>`;
+};
+
 // --- ④ KRX 파생 수급 --------------------------------------------------------
 // The public KRX dashboard identifies the foreign investor's K200 futures and
 // options-total flow. It does *not* split that foreign options flow into calls
@@ -2416,6 +2560,10 @@ const msDerivatives = (D) => {
     ${msOptionOiSection(D)}
 
     ${msProgramSection(D)}
+
+    ${msCoveredCallSection(D)}
+
+    ${msExpiryEventSection(D)}
 
     <section class="fin-block fin-block-wide">
         <h2>KOSPI200 시장 전체 거래 활동</h2>
@@ -3072,6 +3220,7 @@ const renderMicrostructure = async (host) => {
         on('[data-ms-flow-win]', (b) => { MS_FLOW_WIN = b.dataset.msFlowWin; paint(); });
         on('[data-ms-oi-win]', (b) => { MS_OI_WIN = b.dataset.msOiWin; paint(); });
         on('[data-ms-prog-win]', (b) => { MS_PROG_WIN = b.dataset.msProgWin; paint(); });
+        on('[data-ms-cc-win]', (b) => { MS_CC_WIN = b.dataset.msCcWin; paint(); });
         mmWireCharts(host);
         msWireMultiCharts(host);
         msWirePlcHover(host);
