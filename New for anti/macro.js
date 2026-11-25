@@ -2340,6 +2340,50 @@ const mmBuybackDemandView = (ind) => {
             1배 아래면 한도만큼 팔 사람이 없었다는 뜻입니다. 출처: Fiscal Data buybacks_operations.</p>`;
 };
 
+// 툴키트 반응: the 30-year yield with each official debt-management action (refunding statement,
+// buyback change) marked, and how far the yield moved 1, 5 and 20 trading days after it. A record of
+// what happened next, not a claim that the action caused it.
+const MM_TK_COLORS = { refunding: '#a78bfa', buyback: '#f59e0b' };
+const mmToolkitView = (ind) => {
+    const tk = ind.toolkit || {};
+    const dates = (tk.series || {}).dates || [], vals = (tk.series || {}).values || [];
+    const n = dates.length;
+    if (n < 2) return '<p class="fin-note">30년물 금리 시계열이 없습니다.</p>';
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    const pad = (hi - lo) * 0.1 || 0.1; lo -= pad; hi += pad;
+    const sx = (i) => MM_L + (i / (n - 1)) * (MM_W - MM_L - MM_R);
+    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const line = vals.map((v, i) => `${i ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join('');
+    const ev = (tk.events || []).map((e, k) => ({ ...e, k: k + 1, i: dates.indexOf(e.on) })).filter((e) => e.i >= 0);
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const xAt = [0, Math.floor((n - 1) / 2), n - 1];
+    const bp = (v) => (Number.isFinite(v) ? `<span class="${v > 0 ? 'fin-up' : v < 0 ? 'fin-down' : ''}">${v > 0 ? '+' : ''}${v}bp</span>` : '—');
+    return `
+        <div class="mm-chart-box">
+            <svg class="mm-chart" viewBox="0 0 ${MM_W} ${MM_H}" preserveAspectRatio="none" role="img" aria-label="30년물 금리와 재무부 조치">
+                ${ticks.map((t) => `
+                    <line x1="${MM_L}" y1="${sy(t).toFixed(1)}" x2="${MM_W - MM_R}" y2="${sy(t).toFixed(1)}" class="mm-grid"/>
+                    <text x="${MM_L - 7}" y="${(sy(t) + 3.5).toFixed(1)}" class="mm-tick" text-anchor="end">${mmFmt(t, 2)}%</text>`).join('')}
+                ${ev.map((e) => `
+                    <line x1="${sx(e.i).toFixed(1)}" y1="${MM_T}" x2="${sx(e.i).toFixed(1)}" y2="${MM_H - MM_B}" stroke="${MM_TK_COLORS[e.kind] || '#94a3b8'}" stroke-dasharray="3 3" stroke-width="1.2"/>
+                    <circle cx="${sx(e.i).toFixed(1)}" cy="${MM_T + 8}" r="7" fill="${MM_TK_COLORS[e.kind] || '#94a3b8'}"><title>${finEsc(`${e.on} ${e.title}`)}</title></circle>
+                    <text x="${sx(e.i).toFixed(1)}" y="${MM_T + 11.5}" class="mm-tk-num" text-anchor="middle">${e.k}</text>`).join('')}
+                <path d="${line}" class="mm-line"/>
+                ${vals.map((v, i) => `<circle cx="${sx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="5" fill="transparent"><title>${finEsc(dates[i])} ${mmFmt(v, 2)}%</title></circle>`).join('')}
+                ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${finEsc(dates[i])}</text>`).join('')}
+            </svg>
+            <p class="mm-legend-note"><i class="mm-bb-dot" style="background:${MM_TK_COLORS.refunding}"></i>분기 발행계획
+                <i class="mm-bb-dot" style="background:${MM_TK_COLORS.buyback}"></i>바이백 조치</p>
+        </div>
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>#</th><th>날짜</th><th>조치</th><th>직전</th><th>1일</th><th>5일</th><th>20일</th></tr></thead>
+            <tbody>${ev.map((e) => `<tr><td>${e.k}</td><td class="co-label">${finEsc(e.on)}</td>
+                <td class="mm-tk-title"><a href="${finEsc(e.url)}" target="_blank" rel="noopener noreferrer">${finEsc(e.title)}</a></td>
+                <td>${mmFmt(e.before_pct, 2)}%</td><td>${bp(e.d1_bp)}</td><td>${bp(e.d5_bp)}</td><td>${bp(e.d20_bp)}</td></tr>`).join('')}</tbody></table></div>
+        <p class="fin-note">재무부의 국채 관리 조치(공식 발표·집행일)와 그 뒤 30년물 금리 변화(조치 직전 종가 대비, 거래일 기준)입니다.
+            조치가 금리를 움직였다는 인과 추정이 아니라 그다음에 일어난 일의 기록입니다. 금리: ${finEsc(tk.source || 'FRED DGS30')}.</p>`;
+};
+
 // The buyback card's side rail: this quarter's ceilings and how much has been used, the next
 // operations on Treasury's tentative calendar, official announcements, then headlines.
 const mmBuybackRail = (ind) => {
@@ -2453,6 +2497,7 @@ const mmViewsFor = (ind) => {
     if (ind.debt_groups && has(ind.debt_groups.years)) views.push({ id: 'debt_groups', label: '정부·공공기관' });
     // Pipeline-attached breakdowns (부문별, 연체 흐름, 은행별, ...), one tab each.
     (ind.panels || []).forEach((p) => views.push({ id: `panel:${p.id}`, label: p.label }));
+    if (((ind.toolkit || {}).series || {}).dates?.length) views.push({ id: 'toolkit', label: '툴키트 반응' });
     // 5/20/60/120/240-day moving averages are a daily-chart convention
     // (Korean HTS terminology) and meaningless on the 5-year monthly bars
     // every other indicator uses -- a 240-period average over monthly data
@@ -2652,6 +2697,7 @@ const mmChartDrawer = () => {
     else if (view === 'auctions') body = mmAuctionsView(ind);
     else if (view === 'buybacks') body = mmBuybacksView(ind);
     else if (view === 'buyback_demand') body = mmBuybackDemandView(ind);
+    else if (view === 'toolkit') body = mmToolkitView(ind);
     else if (view === 'status') body = mmStatusView(ind);
     else if (view === 'compare') body = mmCompareView(ind);
     else if (view === 'mix') body = mmMixView(ind);
