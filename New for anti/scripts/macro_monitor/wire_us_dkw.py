@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 
 
 URL = "https://www.federalreserve.gov/econres/notes/feds-notes/DKW_updates.csv"
+REFERENCE_URL = "https://www.federalreserve.gov/data/yield-curve-tables/feds200628.csv"
 PACK = Path(__file__).resolve().parents[2] / "public/data/macro_monitor_v1.json"
 FACTORS = {
     "exp.real.short.rate.10": "기대 실질단기금리",
@@ -26,29 +27,50 @@ FITTED = "nominal.yield.fitted.10"
 PANEL_ID = "dkw_yield_change"
 
 
-def month_end_rows(text: str, today: date) -> list[tuple[date, dict[str, float]]]:
+def csv_rows(text: str, date_column: str, required_columns: tuple[str, ...]) -> csv.DictReader:
     lines = iter(text.splitlines())
     for line in lines:
         header = next(csv.reader([line]), [])
-        if header and header[0] == "date":
-            break
-    else:
-        raise ValueError("DKW CSV date header missing")
+        if header and header[0] == date_column:
+            if set(required_columns) - set(header):
+                raise ValueError(f"Missing required columns in {date_column} CSV")
+            return csv.DictReader(lines, fieldnames=header)
+    raise ValueError(f"{date_column} CSV header missing")
+
+
+def confirmed_month_ends(text: str, today: date) -> dict[date, date]:
+    """Use the last published GSW yield date of each fully covered month."""
+    by_month: dict[date, date] = {}
+    for row in csv_rows(text, "Date", ("SVENY10",)):
+        value = (row["SVENY10"] or "").strip()
+        if not row["Date"] or value in {"", "NA", "."}:
+            continue
+        day = date.fromisoformat(row["Date"])
+        if day > today or not isfinite(float(value)):
+            continue
+        month = day.replace(day=1)
+        by_month[month] = max(day, by_month.get(month, day))
+    if not by_month:
+        raise ValueError("No valid dates in Fed nominal yield curve CSV")
+    # An observation in a later month confirms the prior month in the reference
+    # file has finished publishing, including short months and market holidays.
+    del by_month[max(by_month)]
+    return by_month
+
+
+def month_end_rows(text: str, reference_text: str, today: date) -> list[tuple[date, dict[str, float]]]:
     columns = (*FACTORS, OBSERVED, FITTED)
-    if set(columns) - set(header):
-        raise ValueError("DKW CSV missing 10-year columns")
-    current_month = today.replace(day=1)
-    latest_by_month = {}
-    for row in csv.DictReader(lines, fieldnames=header):
+    reference_days = set(confirmed_month_ends(reference_text, today).values())
+    matched = {}
+    for row in csv_rows(text, "date", columns):
         if not row["date"]:
             continue
         day = date.fromisoformat(row["date"])
-        month = day.replace(day=1)
-        if month < current_month and (month not in latest_by_month or day > latest_by_month[month][0]):
-            latest_by_month[month] = day, row
+        if day in reference_days:
+            matched[day] = row
     observations = []
-    for month in sorted(latest_by_month)[-25:]:
-        day, row = latest_by_month[month]
+    for day in sorted(matched)[-25:]:
+        row = matched[day]
         values = {key: float(row[key]) for key in columns}
         if not all(isfinite(value) for value in values.values()):
             raise ValueError(f"Missing or nonfinite DKW values for {day}")
@@ -56,12 +78,12 @@ def month_end_rows(text: str, today: date) -> list[tuple[date, dict[str, float]]
             raise ValueError(f"DKW factor sum differs from fitted yield for {day}")
         observations.append((day, values))
     if len(observations) < 2:
-        raise ValueError("DKW requires at least two completed months")
+        raise ValueError("DKW requires at least two confirmed month-end observations")
     return observations
 
 
-def build_panel(text: str, today: date) -> dict:
-    observations = month_end_rows(text, today)
+def build_panel(text: str, reference_text: str, today: date) -> dict:
+    observations = month_end_rows(text, reference_text, today)
     dates, changes = [], []
     for (before, previous), (day, values) in zip(observations, observations[1:]):
         if (day.year - before.year) * 12 + day.month - before.month != 1:
@@ -117,20 +139,26 @@ def build_panel(text: str, today: date) -> dict:
     }
 
 
+def load_csv(path: Path | None, url: str) -> str:
+    if path:
+        return path.read_text(encoding="utf-8-sig")
+    response = subprocess.run(
+        ["curl", "-fsSL", "--retry", "2", "--max-time", "30", url],
+        check=True, stdout=subprocess.PIPE,
+    )
+    return response.stdout.decode("utf-8-sig")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv", type=Path, help="Use a saved Fed CSV for reproducibility")
+    parser.add_argument("--reference-csv", type=Path, help="Use a saved Fed nominal yield curve CSV")
     parser.add_argument("--pack", type=Path, default=PACK)
     args = parser.parse_args()
-    if args.csv:
-        text = args.csv.read_text(encoding="utf-8-sig")
-    else:
-        response = subprocess.run(
-            ["curl", "-fsSL", "--retry", "2", "--max-time", "30", URL],
-            check=True, stdout=subprocess.PIPE,
-        )
-        text = response.stdout.decode("utf-8-sig")
-    panel = build_panel(text, datetime.now(ZoneInfo("America/New_York")).date())
+    panel = build_panel(
+        load_csv(args.csv, URL), load_csv(args.reference_csv, REFERENCE_URL),
+        datetime.now(ZoneInfo("America/New_York")).date(),
+    )
     existing = args.pack.read_text(encoding="utf-8")
     pack = json.loads(existing)
     usa = next(country for country in pack["countries"] if country["iso3"] == "USA")
