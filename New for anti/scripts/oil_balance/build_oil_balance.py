@@ -4,6 +4,9 @@ stocks, OPEC spare capacity and the dollar, and a forecast from the assumptions 
 (see oil_balance/forecast.py for the three layers). Free, keyless sources only.
 
     python3 build_oil_balance.py                   # current STEO + FRED + Yahoo; archived history from the cache
+    python3 build_oil_balance.py --every-days 14   # skip unless the last successful build is 14 days old
+                                                   # (the daily workflow calls it this way: a failed run
+                                                   # leaves the old file, so the next day tries again)
     python3 build_oil_balance.py --rebuild-history [--archive-dir DIR]
                                                    # re-read the December STEO archives (2007-2022 history,
                                                    # 2007-2025 vintages for the back-test) into the cache
@@ -215,11 +218,29 @@ def build() -> dict:
     return doc, log
 
 
+def due(out: Path, every_days: float | None, now: datetime | None = None) -> bool:
+    """True when there is no previous build, or it is at least every_days old (half a day of slack so a
+    daily cron at the same hour lands on day 14, not 15)."""
+    if not every_days or not out.exists():
+        return True
+    try:
+        made = datetime.fromisoformat(json.loads(out.read_text(encoding="utf-8"))["generated_at"])
+    except (ValueError, KeyError, OSError):
+        return True
+    now = now or datetime.now(timezone.utc)
+    return (now - made).total_seconds() >= (every_days - 0.5) * 86400
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--rebuild-history", action="store_true")
     ap.add_argument("--archive-dir", help="local copies of decYY_base.xls/xlsx to read before fetching")
+    ap.add_argument("--every-days", type=float, help="run only if the last build is this many days old")
     a = ap.parse_args()
+    if not a.rebuild_history and not due(OUT, a.every_days):
+        made = json.loads(OUT.read_text(encoding="utf-8"))["generated_at"]
+        print(f"oil balance: last build {made}, next after {a.every_days:g} days -- skipped")
+        return 0
     if a.rebuild_history or not HISTORY.exists():
         series, vint = steo.history_from_archives(local_dir=a.archive_dir)
         HISTORY.write_text(json.dumps({"schema": "steo_history_v1",

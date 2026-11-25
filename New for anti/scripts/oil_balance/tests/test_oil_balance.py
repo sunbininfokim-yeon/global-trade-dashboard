@@ -132,5 +132,22 @@ class Engine(unittest.TestCase):
         self.assertEqual(fc.score_log([e], {}, "2026-11")[0]["months"], 0)
 
 
+class Schedule(unittest.TestCase):
+    def test_due_every_two_weeks(self):
+        import json
+        import tempfile
+        from datetime import datetime, timedelta, timezone
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        import build_oil_balance as b
+        made = datetime(2026, 11, 25, 7, 45, tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "o.json"
+            self.assertTrue(b.due(out, 14))                                   # no previous build
+            out.write_text(json.dumps({"generated_at": made.isoformat()}))
+            self.assertFalse(b.due(out, 14, made + timedelta(days=13)))                     # a day early: same hour, day 13
+            self.assertTrue(b.due(out, 14, made + timedelta(days=13, hours=23, minutes=58)))   # same cron hour, day 14
+            self.assertTrue(b.due(out, None, made + timedelta(hours=1)))       # manual run without the flag
+
+
 if __name__ == "__main__":
     unittest.main()
