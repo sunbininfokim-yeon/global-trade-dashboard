@@ -38,8 +38,10 @@ name: Refresh macro public series
 # 월마다 계산(config/ust_mspd_wam_v1.json 에 누적, 새 달만 받음)하고, 그달 말 수익률곡선(FRED)·연준 보유(뉴욕연준 SOMA)로
 # 듀레이션 공급(DV01·10년물 환산, 민간 보유분)까지 붙이고, 재무부 조치(config/ust_toolkit_events_v1.json)
 # 전후 30년물 금리(FRED DGS30)를 붙인다.
-# 원유 수급·적정가(scripts/oil_balance): EIA 단기에너지전망(STEO_m.xlsx, 키 없음)의 세계 공급·수요·OECD 재고와 FRED 브렌트로
-# 재고 기준 적정가를 매일 다시 계산한다(과거 STEO 12월판 이력은 config/steo_history_v1.json 에 고정).
+# 원유 수급·적정가·전망(scripts/oil_balance): EIA 단기에너지전망(STEO_m.xlsx, 키 없음)의 공급·수요·OECD 재고·OPEC 여유능력,
+# FRED 브렌트·달러, Yahoo 브렌트 선물로 적정가와 P10/P50/P90 전망을 매일 다시 계산한다(가정은 config/assumptions_v1.json,
+# 과거 STEO 12월판 이력·전망은 config/steo_history_v1.json 에 고정). STEO 판마다 그 시점 전망을
+# config/forecast_log_v1.json 에 한 번 저장하고, 달이 지나면 실제와 채점한다.
 # 재무부 툴키트 피드(wire_ust_toolkit_feed.py): GovDelivery 공식 보도자료 RSS + 재무부 보도자료 목록에서 국채 관리 발표를
 # 매일 모아(config/ust_toolkit_feed_v1.json) WAM 카드 옆 칸·툴키트 차트·바이백 공식 발표에 붙인다. 바이백 카드의 옆 칸(일정·분기 한도·공식 발표·뉴스)은 wire_ust_auctions.py.
 # 한국 CPI 옛 기준 보관(archive_kr_cpi_base2020.py): 2025=100 개편(2026-12-18) 전까지 2020=100 품목 지수·
@@ -88,7 +90,7 @@ jobs:
         run: pip install pytest beautifulsoup4 openpyxl xlrd pdfplumber
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_idn_public_series.py tests/test_world_public_series.py tests/test_gdp_contrib.py tests/test_hidden_flags.py tests/test_source_notices.py tests/test_cpi_api.py -v
+        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_idn_public_series.py tests/test_world_public_series.py tests/test_gdp_contrib.py tests/test_hidden_flags.py tests/test_source_notices.py tests/test_cpi_api.py ../oil_balance/tests/test_oil_balance.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
@@ -135,6 +137,7 @@ jobs:
                     "New for anti/public/data/fed_qe_qt_history_v1.json" \
                     "New for anti/public/data/fed_balance_sheet_v1.json" \
                     "New for anti/public/data/oil_balance_v1.json" \
+                    "New for anti/scripts/oil_balance/config/forecast_log_v1.json" \
                     "New for anti/public/data/macro_monitor_v1.json"
             git commit -m "chore: refresh macro public series" || { echo "nothing changed"; exit 0; }
             if git push; then exit 0; fi

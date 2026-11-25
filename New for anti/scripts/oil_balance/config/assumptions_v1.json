@@ -1,0 +1,51 @@
+{
+  "schema": "oil_assumptions_v1",
+  "updated": "2026-11-25",
+  "note": "Layer 3 of scripts/oil_balance/oil_balance/forecast.py. Change numbers here (or on screen); the structure (layer 2) is re-fitted by the build. kind: data = read from a source, judgment = someone's call. Every value carries where it came from and when.",
+  "structure": {
+    "vars": ["dev_mb", "spare", "log_dxy"],
+    "fit_from": "2008-01",
+    "fit_to": "2025-12",
+    "why_fit_to": "2026 is left out of the fit: its war premium is what the model is meant to measure, not learn."
+  },
+  "inputs": {
+    "oecd_mode": {"value": "eia", "label": "OECD 재고 경로", "options": {"eia": "EIA 전망 경로", "value": "직접 입력(아래 증가 속도)", "identity": "항등식(공급−수요−중국−기타)"},
+                  "kind": "judgment", "source": "선택", "as_of": "2026-11-25"},
+    "oecd_build": {"value": 0.4, "label": "OECD 상업재고 증가", "unit": "백만 배럴/일", "spread": 0.3,
+                   "kind": "judgment", "source": "JP모건 2027 가정 (텔레그램 요약, 원문 미확인)", "as_of": "2026-11-23"},
+    "supply_delta": {"value": 0.0, "label": "세계 공급 조정(EIA 대비)", "unit": "백만 배럴/일",
+                     "kind": "judgment", "source": "기본 0 = EIA 그대로. JP모건 2027 공급 109 vs EIA 경로 비교해 입력", "as_of": "2026-11-25"},
+    "demand_delta": {"value": 0.0, "label": "세계 수요 조정(EIA 대비)", "unit": "백만 배럴/일",
+                     "kind": "judgment", "source": "기본 0 = EIA 그대로", "as_of": "2026-11-25"},
+    "china_build": {"value": 0.7, "label": "중국 재고 축적", "unit": "백만 배럴/일",
+                    "kind": "judgment", "source": "JP모건 2027 가정 (텔레그램 요약, 원문 미확인). 무료 실측 불가 — 중국 해관 수입 통계가 자동 수집을 막음", "as_of": "2026-11-23"},
+    "other_build": {"value": 0.5, "label": "기타 흡수(해상·비OECD)", "unit": "백만 배럴/일",
+                    "kind": "judgment", "source": "JP모건 수치의 나머지(과잉 1.6 − 중국 0.7 − OECD 0.4)", "as_of": "2026-11-23"},
+    "spare_mode": {"value": "eia", "label": "OPEC 여유 생산능력", "options": {"eia": "EIA 전망 경로", "value": "직접 입력"},
+                   "kind": "data", "source": "EIA STEO 표 3d", "as_of": "STEO"},
+    "spare": {"value": null, "label": "OPEC 여유 생산능력(직접 입력)", "unit": "백만 배럴/일", "spread": 0.5,
+              "kind": "data", "source": "비우면 EIA 전망 기간 평균", "as_of": "STEO"},
+    "dxy_pct": {"value": 0.0, "label": "달러 변화(최근 대비)", "unit": "%", "spread": 5.0,
+                "kind": "judgment", "source": "기본 0 = 최근 월 수준 유지 (FRED DTWEXBGS)", "as_of": "FRED"},
+    "half_life": {"value": null, "label": "프리미엄 반감기", "unit": "개월", "spread": 1.0,
+                  "kind": "data", "source": "비우면 잔차 AR(1)에서 추정", "as_of": "build"}
+  },
+  "scenarios": {
+    "kind": "judgment",
+    "note": "확률과 충격 크기는 예시 판단값. start = 전망 첫 달부터 몇 번째 달(0부터), months = 지속 기간. oecd_add = OECD 재고 증가 속도 가감(백만 배럴/일), spare_add = 여유능력 가감, premium_pct = 시작 달에 더해져 반감기대로 줄어드는 프리미엄.",
+    "as_of": "2026-11-25",
+    "list": [
+      {"id": "base", "label": "기본: 흐름 회복", "prob": 60, "start": 0, "months": 0, "oecd_add": 0, "spare_add": 0, "premium_pct": 0},
+      {"id": "hormuz", "label": "호르무즈 재차단 3개월", "prob": 15, "start": 3, "months": 3, "oecd_add": -3.0, "spare_add": -1.5, "premium_pct": 25},
+      {"id": "iran", "label": "이란 협상 타결", "prob": 15, "start": 3, "months": 12, "oecd_add": 0.5, "spare_add": 0, "premium_pct": -5},
+      {"id": "russia", "label": "러시아 휴전", "prob": 10, "start": 3, "months": 12, "oecd_add": 0.35, "spare_add": 0, "premium_pct": -3}
+    ]
+  },
+  "cadence": [
+    {"when": "매주 수요일", "what": "EIA 주간 석유현황 — 미국 재고로 OECD 재고 가정 점검"},
+    {"when": "매월 초(STEO)", "what": "기본값 갱신, 구조 경쟁·계수 안정성 재실행, 예측 기록"},
+    {"when": "매월 중순", "what": "OPEC 월보·중국 통계 — 공급·중국 재고 가정 갱신"},
+    {"when": "이벤트 때", "what": "시나리오 확률만 변경, 구조는 그대로"},
+    {"when": "분기마다", "what": "예측 기록 채점 — EIA·선물·무변화 대비"}
+  ]
+}
