@@ -346,3 +346,29 @@ def card(months: list[dict[str, Any]], retrieved_at: str) -> dict[str, Any]:
                          "금리 위험은 거의 없습니다 -- 단기채를 늘리고 장기채 발행을 묶으면 시장에 풀리는 듀레이션은 거의 늘지 않습니다.")},
         ]
     return out
+
+
+def add_outlook_panels(card: dict[str, Any], months: list[dict[str, Any]], ol: dict[str, Any]) -> None:
+    """'전망' panels: the last 12 months as recorded and the projected path from the latest month end."""
+    hist = months[-12:]
+    path = ol["path"]
+    dates = [m["date"][:7] for m in hist] + [p["month"] for p in path]
+    pad = [None] * len(path)
+    bt = ol.get("backtest")
+    btxt = (f" 같은 방법을 {bt['quarter']} 분기 시작({bt['base'][:7]} 말)부터 돌려 실제와 비교하면 단기채 비중 평균 "
+            f"{bt['bills_pp_mean']:+.2f}%p, 평균만기 평균 {bt['wam_m_mean_abs']:.2f}개월 차이였습니다"
+            f"(연준이 입찰에서 받아 가는 단기채는 넣지 않아 단기채 비중이 낮게 나오는 경향)." if bt else "")
+    basis = ("재무부 분기 순차입 추정치(분기 안에서는 균등 배분)에서 이표채 순발행(발행계획 성명의 입찰 규모 표 - MSPD 월별 만기)을 "
+             "뺀 나머지를 단기채로 채웠습니다. 표 밖의 달은 직전 분기와 같은 규모로 가정(재무부 안내: '향후 몇 분기 유지')." + btxt)
+    head = (f"{path[-1]['month']} 말 전망: 단기채 비중 {path[-1]['bills_share_pct']:.1f}%, 평균만기 {path[-1]['wam_months']:.1f}개월 "
+            f"(지금 {hist[-1]['bills_share_pct']:.1f}%, {hist[-1]['wam_months']:.1f}개월). ")
+
+    def two(key: str, label: str) -> list[dict[str, Any]]:
+        return [{"label": f"{label} 실적", "values": [m[key] for m in hist] + pad},
+                {"label": f"{label} 전망", "values": [None] * (len(hist) - 1) + [hist[-1][key]] + [p[key] for p in path]}]
+    card["panels"][1:1] = [
+        {"id": "outlook_bills", "label": "단기채 비중 전망", "type": "lines", "unit": "%", "compare_ko": "전월",
+         "dates": dates, "series": two("bills_share_pct", "단기채 비중"), "note_ko": head + basis, "path": path, "backtest": bt},
+        {"id": "outlook_wam", "label": "평균만기 전망", "type": "lines", "unit": "개월", "compare_ko": "전월",
+         "dates": dates, "series": two("wam_months", "평균만기"), "note_ko": head + basis},
+    ]

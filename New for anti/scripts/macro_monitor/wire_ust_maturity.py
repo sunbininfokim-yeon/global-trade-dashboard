@@ -27,6 +27,43 @@ CACHE = ROOT / "config" / "ust_mspd_wam_v1.json"
 EVENTS = ROOT / "config" / "ust_toolkit_events_v1.json"
 FEED = ROOT / "config" / "ust_toolkit_feed_v1.json"
 STATEMENTS = ROOT / "config" / "ust_refunding_statements_v1.json"
+QRA = ROOT.parent.parent / "public" / "data" / "qra_engine_v1.json"
+
+
+def outlook(months: list[dict]) -> dict | None:
+    """Bills share and WAM for the next quarters from Treasury's estimates and auction sizes, plus the same
+    method run from the start of the last finished quarter against what actually happened."""
+    from macro_monitor import ust_projection as pj
+    st = json.loads(STATEMENTS.read_text(encoding="utf-8"))["items"] if STATEMENTS.exists() else []
+    if not st or not QRA.exists():
+        return None
+    quarters = pj.quarter_estimates(json.loads(QRA.read_text(encoding="utf-8"))["events"])
+    by = {m["date"][:7]: m for m in months}
+    base = months[-1]["date"]
+
+    def rows_for(month_end: str) -> list[dict]:
+        return [r for r in um.fetch_rows(um.prev_month_end(month_end)) if r["record_date"] == month_end]
+
+    latest = st[-1]
+    path = pj.project(rows_for(base), base, quarters, pj.parse_auction_table(latest["text"]),
+                      pj.parse_tips(latest["text"], latest["date"]), 6)
+    # Backtest: the last quarter with an actual, from its first month-end before, with the statement of that quarter.
+    done = sorted(k for k, v in quarters.items() if "actual" in v)
+    check = None
+    if done:
+        q0 = done[-1]
+        b0 = um.prev_month_end(f"{q0}-01")
+        stq = next((x for x in st if x["date"][:7] >= q0), None)
+        if stq and b0[:7] in by:
+            bt = pj.project(rows_for(b0), b0, {q0: {"estimate": quarters[q0]["estimate"]}},
+                            pj.parse_auction_table(stq["text"]), pj.parse_tips(stq["text"], stq["date"]), 3)
+            errs = [(p["month"], round(p["bills_share_pct"] - by[p["month"]]["bills_share_pct"], 2),
+                     round(p["wam_months"] - by[p["month"]]["wam_months"], 2)) for p in bt if p["month"] in by]
+            if errs:
+                check = {"quarter": q0, "base": b0, "statement": stq["url"], "errors": errs,
+                         "bills_pp_mean": round(sum(e[1] for e in errs) / len(errs), 2),
+                         "wam_m_mean_abs": round(sum(abs(e[2]) for e in errs) / len(errs), 2)}
+    return {"base": base, "path": path, "statement": latest["url"], "backtest": check}
 
 
 def refunding_diff(feed: list[dict]) -> dict | None:
@@ -132,6 +169,13 @@ def main() -> int:
                                   for f in feed if f["kind"] in ("refunding", "buyback") and f["url"] not in have],
                         key=lambda e: e["date"])
         card["toolkit_feed"] = feed[:15]
+        try:
+            ol = outlook(months)
+            if ol and ol["path"]:
+                um.add_outlook_panels(card, months, ol)
+        except Exception as exc:  # noqa: BLE001
+            print(f"FAILED outlook: {exc}", file=sys.stderr)
+            failed += 1
         try:
             rdiff = refunding_diff(feed)
             if rdiff:
