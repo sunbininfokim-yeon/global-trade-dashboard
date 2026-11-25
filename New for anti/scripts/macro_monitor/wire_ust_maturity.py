@@ -119,7 +119,7 @@ def toolkit(dgs30: list[tuple[str, float]], events: list[dict], since: str,
 
 def duration_inputs():
     """FRED par-curve series, a SOMA lookup (latest Wednesday on or before a month end), buybacks by month."""
-    curves = {sid: ups.fetch_fred(sid) for sid in um.CURVE_IDS}
+    curves = {sid: ups.fetch_fred(sid) for sid in {**um.CURVE_IDS, **um.CURVE_REAL_IDS}}
     bought = um.fetch_buyback_details()
     dates = um.soma_dates()
 

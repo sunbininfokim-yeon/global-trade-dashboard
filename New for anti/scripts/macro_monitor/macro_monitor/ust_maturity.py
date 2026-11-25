@@ -13,8 +13,9 @@ TIPS are at the outstanding amount the table gives, without the inflation adjust
 Duration (from 2003-07, where the NY Fed's security-level SOMA history starts): each security's DV01 from
 its coupon and maturity, priced off the Treasury par curve at month end (FRED DGS1MO..DGS30, linear between
 tenors). Bills and anything inside six months: discount, DV01 = price x time. FRNs reset weekly: a
-quarter-year duration. TIPS are priced on the nominal curve -- an approximation, their real duration is a
-little longer. Fed holdings (SOMA par by CUSIP, the Wednesday on or before month end) are taken out to get
+quarter-year duration. TIPS on the real par curve (FRED DFII5..DFII30; shorter TIPS at the 5-year real
+yield), with the table's outstanding amount, which already carries the inflation adjustment; before the
+real curve exists (2003) they fall back to the nominal one. Fed holdings (SOMA par by CUSIP, the Wednesday on or before month end) are taken out to get
 the duration the public holds. 10-year equivalents divide by the DV01 of a par 10-year note on that day.
 """
 
@@ -31,6 +32,7 @@ UA = "macro-monitor/1.0 (+https://github.com/sunbininfokim-yeon/global-trade-das
 FIELDS = "record_date,security_class1_desc,security_class2_desc,maturity_date,outstanding_amt,interest_rate_pct"
 CURVE_IDS = {"DGS1MO": 1 / 12, "DGS3MO": 0.25, "DGS6MO": 0.5, "DGS1": 1, "DGS2": 2, "DGS3": 3, "DGS5": 5, "DGS7": 7,
              "DGS10": 10, "DGS20": 20, "DGS30": 30}
+CURVE_REAL_IDS = {"DFII5": 5, "DFII7": 7, "DFII10": 10, "DFII20": 20, "DFII30": 30}
 SOMA_DATES = "https://markets.newyorkfed.org/api/soma/asofdates/list.json"
 SOMA_ASOF = "https://markets.newyorkfed.org/api/soma/tsy/get/asof/{d}.json"
 FD_BB_DETAIL = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/buybacks_security_details"
@@ -77,10 +79,10 @@ def _num(x: Any) -> float | None:
         return None
 
 
-def curve_on(series: dict[str, list[tuple[str, float]]], day: str) -> list[tuple[float, float]]:
+def curve_on(series: dict[str, list[tuple[str, float]]], day: str, ids: dict[str, float] | None = None) -> list[tuple[float, float]]:
     """[(tenor years, yield as a fraction)] -- each tenor's last value on or before `day`, within 10 days."""
     out = []
-    for sid, t in CURVE_IDS.items():
+    for sid, t in (ids or CURVE_IDS).items():
         pts = [v for d, v in series.get(sid, []) if d <= day and d >= _minus_days(day, 10)]
         if pts:
             out.append((t, pts[-1] / 100))
@@ -138,7 +140,8 @@ def _dv01_10y(curve: list[tuple[float, float]]) -> float:
 def summarize(rows: list[dict[str, Any]], horizon: int = 10, curve: list[tuple[float, float]] | None = None,
               soma: dict[str, float] | None = None, soma_asof: str | None = None,
               curve_prev: list[tuple[float, float]] | None = None,
-              bought: list[tuple[float, str, float]] | None = None) -> dict[str, Any]:
+              bought: list[tuple[float, str, float]] | None = None,
+              real: list[tuple[float, float]] | None = None, real_prev: list[tuple[float, float]] | None = None) -> dict[str, Any]:
     """One month's rows -> WAM (months), amounts by class (bn USD), bills share, maturity profile by calendar year,
     and with a curve (and SOMA) the DV01 of the marketable debt and of the part the public holds."""
     rec = date.fromisoformat(rows[0]["record_date"])
@@ -165,14 +168,16 @@ def summarize(rows: list[dict[str, Any]], horizon: int = 10, curve: list[tuple[f
         if y < rec.year + horizon:
             wall[str(y)][cls] += amt
         if curve:
-            price, md = price_duration(yrs, (_num(r.get("interest_rate_pct")) or 0) / 100, _yield(curve, yrs), cls)
+            cv = real if (cls == "tips" and real) else curve
+            price, md = price_duration(yrs, (_num(r.get("interest_rate_pct")) or 0) / 100, _yield(cv, yrs), cls)
             d1 = amt * price * md * 0.1            # $bn x years x 1bp -> $mn per bp
             dv[cls] += d1
             held = min(soma.get(r.get("security_class2_desc") or "", 0.0), amt) if soma is not None else 0.0
             if soma is not None:
                 dv_pub += d1 * (amt - held) / amt
             if curve_prev:
-                pp, mp = price_duration(yrs, (_num(r.get("interest_rate_pct")) or 0) / 100, _yield(curve_prev, yrs), cls)
+                cvp = real_prev if (cls == "tips" and real_prev) else curve_prev
+                pp, mp = price_duration(yrs, (_num(r.get("interest_rate_pct")) or 0) / 100, _yield(cvp, yrs), cls)
                 d0 = amt * pp * mp * 0.1
                 pv_tot += d0
                 pv_pub += d0 * (amt - held) / amt
@@ -222,10 +227,13 @@ def monthly(rows: list[dict[str, Any]], curves: dict[str, list[tuple[str, float]
         prev = (prev_month_end(d) if k == 0 else keys[k - 1])
         cprev = curve_on(curves, prev) if curves else None
         held = soma_for(d) if (soma_for and curve) else None
+        rl = curve_on(curves, d, CURVE_REAL_IDS) if curves else None
+        rlp = curve_on(curves, prev, CURVE_REAL_IDS) if curves else None
         out.append(summarize(by[d], curve=curve if curve and len(curve) >= 4 else None,
                              soma=held[1] if held else None, soma_asof=held[0] if held else None,
                              curve_prev=cprev if cprev and len(cprev) >= 4 else None,
-                             bought=(bought or {}).get(d[:7])))
+                             bought=(bought or {}).get(d[:7]),
+                             real=rl if rl and len(rl) >= 3 else None, real_prev=rlp if rlp and len(rlp) >= 3 else None))
     return out
 
 
@@ -324,7 +332,7 @@ def card(months: list[dict[str, Any]], retrieved_at: str) -> dict[str, Any]:
              "note_ko": (f"재무부가 시장에 넘긴 금리 위험을 10년물 환산액으로 나타냈습니다(조 달러). {dur[-1]['date'][:7]} 말 전체 "
                          f"{ld['teneq_bn'] / 1000:.1f}조, 연준(SOMA) 보유분을 뺀 민간 보유 {ld['teneq_public_bn'] / 1000:.1f}조{d_y}. "
                          f"DV01(금리 1bp당 가치 변화)은 전체 {ld['dv01_mn'] / 1000:.1f}십억 달러, 이 중 연준 몫 {ld['fed_share_pct']:.1f}%. "
-                         "종목별 쿠폰·만기를 그달 말 국채 수익률곡선(FRED)으로 계산했고, 물가연동채는 명목 곡선으로 근사했습니다.")},
+                         "종목별 쿠폰·만기를 그달 말 국채 수익률곡선(FRED)으로 계산했고, 물가연동채는 실질금리 곡선(DFII)과 물가 조정된 잔액을 썼습니다.")},
             {"id": "duration_flow", "label": "월별 듀레이션 순공급", "type": "stack", "unit": "십억$", "compare_ko": "전월",
              "dates": [f["date"] for f in fl],
              "series": [{"label": "재무부 순발행(바이백 제외)", "values": [f["treasury_ex_buyback"] for f in fl]},
