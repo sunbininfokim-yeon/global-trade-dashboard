@@ -129,5 +129,20 @@ class BuybackRail(unittest.TestCase):
         self.assertEqual(ex["long_end"]["20Y to 30Y"]["points"][0]["offered_to_max"], 0.76)
 
 
+class BuybackSecurities(unittest.TestCase):
+    def test_bought_only_current_program_by_maturity_year(self):
+        rows = [{"operation_date": "2026-11-17", "cusip_nbr": "A", "coupon_rate_pct": "3.000", "maturity_date": "2048-08-15",
+                 "par_amt_accepted": "972000000", "weighted_avg_accepted_price": "67.906"},
+                {"operation_date": "2026-11-17", "cusip_nbr": "B", "coupon_rate_pct": "4.000", "maturity_date": "2049-08-15",
+                 "par_amt_accepted": "0.00", "weighted_avg_accepted_price": "null"},
+                {"operation_date": "2001-05-01", "cusip_nbr": "C", "coupon_rate_pct": "8.000", "maturity_date": "2020-05-15",
+                 "par_amt_accepted": "1000000000", "weighted_avg_accepted_price": "120"}]
+        ops = [{"date": "2026-11-17", "type_ko": "유동성 지원", "bucket_ko": "20~30년"}]
+        s = ua.buyback_securities(rows, ops)
+        self.assertEqual([r["cusip"] for r in s["recent"]], ["A"])
+        self.assertEqual(s["by_maturity_year"], [{"year": "2048", "par_bn": 0.97, "liquidity_bn": 0.97}])
+        self.assertEqual(s["avg_price"], 67.91)
+
+
 if __name__ == "__main__":
     unittest.main()

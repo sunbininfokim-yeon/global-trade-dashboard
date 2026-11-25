@@ -81,6 +81,12 @@ def main() -> int:
                 if k in prev_bb:
                     extras[k] = prev_bb[k]
             extras["official"] = [o for o in prev_bb.get("official", []) if "분기 국채발행계획" in o.get("title", "")] + extras["official"]
+        try:
+            extras["securities"] = ua.fetch_buyback_securities(buybacks)
+        except Exception as exc:  # noqa: BLE001
+            failures.append(f"buyback securities: {exc}")
+            if prev_bb.get("securities"):
+                extras["securities"] = prev_bb["securities"]
         bb["buybacks"].update(extras)
     for c in cards:
         prev = old.get(c["id"])

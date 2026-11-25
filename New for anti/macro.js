@@ -2438,6 +2438,30 @@ const mmToolkitRail = (ind) => {
     </aside>`;
 };
 
+// 매입 종목: which securities Treasury actually bought back -- totals by maturity year since the program
+// began (liquidity support vs cash management), and the latest purchases with their prices.
+const mmBuybackSecsView = (ind) => {
+    const s = (ind.buybacks || {}).securities;
+    if (!s || !(s.recent || []).length) return '<p class="fin-note">종목별 매입 내역이 없습니다.</p>';
+    const ys = s.by_maturity_year || [];
+    const hi = Math.max(...ys.map((y) => y.par_bn), 1e-9);
+    return `
+        <p class="mm-view-title">${finEsc(s.since)} 이후 누적 매입 $${mmFmt(s.total_bn, 0)}B · 평균 매입가 ${mmFmt(s.avg_price, 1)} (액면 100 기준)</p>
+        <div class="mm-bb-years">${ys.map((y) => `
+            <div class="mm-bb-ycol" title="${finEsc(`${y.year}년 만기: 합계 $${mmFmt(y.par_bn, 2)}B · 유동성 지원 $${mmFmt(y.liquidity_bn, 2)}B`)}">
+                <span class="mm-bb-ybar"><i class="liq" style="height:${(y.liquidity_bn / hi * 100).toFixed(1)}%"></i><i class="cash" style="height:${((y.par_bn - y.liquidity_bn) / hi * 100).toFixed(1)}%"></i></span>
+                <span class="mm-bb-ylab">${finEsc(y.year.slice(2))}</span>
+            </div>`).join('')}</div>
+        <p class="mm-legend-note"><i class="mm-bb-dot" style="background:#a78bfa"></i>유동성 지원 <i class="mm-bb-dot" style="background:#38bdf8"></i>현금 관리 · 가로축 = 만기 연도</p>
+        <div class="co-table-wrap mm-table"><table class="co-table">
+            <thead><tr><th>날짜</th><th>만기</th><th>쿠폰</th><th>매입</th><th>가격</th><th>구간</th></tr></thead>
+            <tbody>${s.recent.slice(0, 20).map((r) => `<tr><td class="co-label">${finEsc(r.date)}</td><td>${finEsc(r.maturity)}</td>
+                <td>${mmFmt(r.coupon_pct, 3)}%</td><td>$${mmFmt(r.par_bn, 2)}B</td><td>${Number.isFinite(r.price) ? mmFmt(r.price, 2) : '—'}</td>
+                <td>${finEsc(r.bucket_ko || '')}</td></tr>`).join('')}</tbody></table></div>
+        <p class="fin-note">재무부가 실제로 되산 종목(매입액 0인 응찰 종목은 제외)입니다. 가격이 100보다 한참 낮은 종목은 저금리 때 발행된 저쿠폰 채권으로,
+            액면보다 적은 현금으로 부채 액면을 줄입니다. 출처: Fiscal Data buybacks_security_details.</p>`;
+};
+
 // The buyback card's side rail: this quarter's ceilings and how much has been used, the next
 // operations on Treasury's tentative calendar, official announcements, then headlines.
 const mmBuybackRail = (ind) => {
@@ -2517,6 +2541,7 @@ const mmViewsFor = (ind) => {
     if (has((ind.auctions || {}).latest_by_tenor)) views.push({ id: 'auctions', label: '입찰 결과' });
     if (has((ind.buybacks || {}).rows)) views.push({ id: 'buybacks', label: '바이백 내역' });
     if (Object.values((ind.buybacks || {}).long_end || {}).some((v) => has(v.points))) views.push({ id: 'buyback_demand', label: '장기물 수요' });
+    if (has(((ind.buybacks || {}).securities || {}).recent)) views.push({ id: 'buyback_secs', label: '매입 종목' });
     // Assets and liabilities are two separate blocks -- two tabs -- not one
     // panel with both stacks in it. 부채 first: the reserves-against-the-axis
     // question is what this card exists to answer.
@@ -2752,6 +2777,7 @@ const mmChartDrawer = () => {
     else if (view === 'auctions') body = mmAuctionsView(ind);
     else if (view === 'buybacks') body = mmBuybacksView(ind);
     else if (view === 'buyback_demand') body = mmBuybackDemandView(ind);
+    else if (view === 'buyback_secs') body = mmBuybackSecsView(ind);
     else if (view === 'toolkit') body = mmToolkitView(ind);
     else if (view === 'refunding_diff') body = mmRefundingDiffView(ind);
     else if (view === 'status') body = mmStatusView(ind);
