@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-24T19:31:53.314223+00:00",
+  "generated_at": "2026-11-25T03:33:42.716219+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -153,20 +153,6 @@
       "significance": 3.251
     },
     {
-      "series_id": "JP_BOJ_POLICY",
-      "label_ko": "일본은행 정책·공표",
-      "country": "JPN",
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "title": "Outlook for Economic Activity and Prices (October 2026, full text)",
-      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
-      "published_at": "2026-11-02T05:00:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 3.251
-    },
-    {
       "series_id": "US_FED_FOMC",
       "label_ko": "FOMC 성명·의사록",
       "country": "USA",
@@ -260,6 +246,20 @@
       "published_at": "2026-11-12T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (November 20)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
+      "published_at": "2026-11-25T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -460,42 +460,6 @@
         "original": "Highlights of the Outlook for Economic Activity and Prices (October 2026)",
         "original_lang": "en",
         "ko": "[JPN·경제] Highlights of the Outlook for Economic Activity and Prices (October 2026)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.251,
-        "final": 3.251
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "7fec949e684b12c3",
-      "published_at": "2026-11-02T05:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Outlook for Economic Activity and Prices (October 2026, full text)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (October 2026, full text)"
       },
       "summary": "",
       "scores": {
@@ -1662,6 +1626,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "93f3d140dad3d27b",
+      "published_at": "2026-11-25T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (November 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1727,6 +1726,17 @@
       "domains": [
         "finance",
         "economy"
+      ],
+      "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Regulators unveil plans to simplify Senior Manager and Certification Regime",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/regulators-unveil-plans-to-simplify-senior-manager-and-certification-regime",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
       ],
       "significance": 2.024,
       "suggest": "label promote|keep|drop + series_id later"
@@ -1946,42 +1956,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "7fec949e684b12c3",
-      "published_at": "2026-11-02T05:00:00+00:00",
-      "source": {
-        "id": "jp_boj_whatsnew",
-        "name": "Bank of Japan",
-        "region": "jpn",
-        "slant": null
-      },
-      "url": "http://www.boj.or.jp/en/mopo/outlook/gor2610b.pdf",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "economy",
-        "finance"
-      ],
-      "series_id": "JP_BOJ_POLICY",
-      "title": {
-        "original": "Outlook for Economic Activity and Prices (October 2026, full text)",
-        "original_lang": "en",
-        "ko": "[JPN·경제] Outlook for Economic Activity and Prices (October 2026, full text)"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 3.251,
-        "final": 3.251
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:JP_BOJ_POLICY",
-        "boost:1"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "a1c8d6b06aff99cb",
       "published_at": "2026-11-20T19:41:38+00:00",
       "source": {
@@ -3132,6 +3106,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": null
+    },
+    {
+      "id": "93f3d140dad3d27b",
+      "published_at": "2026-11-25T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (November 20)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 20)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ]
 }

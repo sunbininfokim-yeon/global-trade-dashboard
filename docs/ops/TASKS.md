@@ -185,3 +185,4 @@
 
 | T-ISR-RESULTS-20261031 | 이스라엘 개표 결과·정부 구성 절차 우선 표시 | codex | Israel 전용 입력·builder·JS/CSS·테스트·생성물·인수 | codex/israel-results-20261031 | review | 사용자 10/31 조사·결과 우선 UI·PR 지시. #719 개표 기록 보존, 원문 재확인·공식 표/현행 법문 보류 구분. 선거 전 분석 하단 접기. 미국 자료·공용 UI·workflow·병합·배포 제외. |
 | T-ISR-COOPERATION-20261031 | 선거 후 협력 근거·정당 성향·아랍계 내부 분리 | codex | Israel 전용 입력·검증·UI·테스트·생성물·인수 | codex/israel-cooperation-20261031 | review | 사용자 직접 조사·구현 지시. #752 병합 후 최신 main 기반. 좌우·종교 축 분리, 라암/공동명부/구성당 구분, 회동·조건·거부·미확인 우선순위. 수치·과거 번역·미국·공용 UI·workflow·병합·배포 제외. |
+| T52 | 코스피200 위클리·차근월 옵션 체인, ETF 순자산 복구·일별 수집 → krx-month-paste | cursor | `kospi200_weekly_option_oi`, `kospi200_option_oi`, `etf_eod` | — | ready | 커버드콜 공급 분석용. 계약: `New for anti/scripts/market_microstructure/CURSOR_HANDOFF_OPTION_WEEKLY_CHAIN.md` |

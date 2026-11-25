@@ -1392,6 +1392,7 @@ const renderTradeWorldPanel = (arcs) => {
     window.CoalPrices?.render();
     window.BiomassPks?.render();
     window.GrainBalance?.render();
+    window.OilBalance?.render();
     window.FertilizerPrices?.render();
 };
 
