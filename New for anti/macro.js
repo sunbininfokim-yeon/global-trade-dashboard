@@ -2354,6 +2354,19 @@ const mmToolkitView = (ind) => {
     const sx = (i) => MM_L + (i / (n - 1)) * (MM_W - MM_L - MM_R);
     const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
     const line = vals.map((v, i) => `${i ? 'L' : 'M'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join('');
+    // 10-year term premium on its own right-hand axis: the thing the toolkit is aimed at.
+    const tpv = ((tk.term_premium || {}).values || []);
+    const tpOk = tpv.filter(Number.isFinite);
+    let tpLine = '', tpTicks = '';
+    if (tpOk.length > 1) {
+        let tlo = Math.min(...tpOk), thi = Math.max(...tpOk);
+        const tpad = (thi - tlo) * 0.1 || 0.1; tlo -= tpad; thi += tpad;
+        const ty = (v) => MM_T + (1 - (v - tlo) / (thi - tlo)) * (MM_H - MM_T - MM_B);
+        let pen = false;
+        tpLine = tpv.map((v, i) => { if (!Number.isFinite(v)) { pen = false; return ''; } const c = `${pen ? 'L' : 'M'}${sx(i).toFixed(1)},${ty(v).toFixed(1)}`; pen = true; return c; }).join('');
+        tpTicks = [0, 0.5, 1].map((t) => tlo + (thi - tlo) * t).map((v) =>
+            `<text x="${MM_W - MM_R - 2}" y="${(ty(v) - 3).toFixed(1)}" class="mm-tick mm-tk-tp-tick" text-anchor="end">TP ${mmFmt(v, 2)}%</text>`).join('');
+    }
     const ev = (tk.events || []).map((e, k) => ({ ...e, k: k + 1, i: dates.indexOf(e.on) })).filter((e) => e.i >= 0);
     const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
     const xAt = [0, Math.floor((n - 1) / 2), n - 1];
@@ -2369,19 +2382,23 @@ const mmToolkitView = (ind) => {
                     <circle cx="${sx(e.i).toFixed(1)}" cy="${MM_T + 8}" r="7" fill="${MM_TK_COLORS[e.kind] || '#94a3b8'}"><title>${finEsc(`${e.on} ${e.title}`)}</title></circle>
                     <text x="${sx(e.i).toFixed(1)}" y="${MM_T + 11.5}" class="mm-tk-num" text-anchor="middle">${e.k}</text>`).join('')}
                 <path d="${line}" class="mm-line"/>
+                ${tpLine ? `<path d="${tpLine}" class="mm-tk-tp"/>${tpTicks}` : ''}
                 ${vals.map((v, i) => `<circle cx="${sx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="5" fill="transparent"><title>${finEsc(dates[i])} ${mmFmt(v, 2)}%</title></circle>`).join('')}
                 ${xAt.map((i) => `<text x="${sx(i).toFixed(1)}" y="${MM_H - 8}" class="mm-tick" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${finEsc(dates[i])}</text>`).join('')}
             </svg>
-            <p class="mm-legend-note"><i class="mm-bb-dot" style="background:${MM_TK_COLORS.refunding}"></i>분기 발행계획
+            <p class="mm-legend-note"><i class="mm-bb-dot" style="background:#38bdf8"></i>30년물 금리(왼쪽 축)
+                ${tpLine ? '<i class="mm-tk-tp-key"></i>10년 기간 프리미엄(오른쪽 축)' : ''}
+                <i class="mm-bb-dot" style="background:${MM_TK_COLORS.refunding}"></i>분기 발행계획
                 <i class="mm-bb-dot" style="background:${MM_TK_COLORS.buyback}"></i>바이백 조치</p>
         </div>
         <div class="co-table-wrap mm-table"><table class="co-table">
-            <thead><tr><th>#</th><th>날짜</th><th>조치</th><th>직전</th><th>1일</th><th>5일</th><th>20일</th></tr></thead>
-            <tbody>${ev.map((e) => `<tr><td>${e.k}</td><td class="co-label">${finEsc(e.on)}</td>
+            <thead><tr><th>#</th><th>날짜</th><th>조치</th><th>30Y 5일</th><th>30Y 20일</th>${tpLine ? '<th>TP 5일</th><th>TP 20일</th>' : ''}</tr></thead>
+            <tbody>${ev.map((e) => `<tr><td>${e.k}</td><td class="co-label" title="${finEsc(`직전 30년물 ${mmFmt(e.before_pct, 2)}% · 1일 ${Number.isFinite(e.d1_bp) ? e.d1_bp : '—'}bp`)}">${finEsc(e.on)}</td>
                 <td class="mm-tk-title"><a href="${finEsc(e.url)}" target="_blank" rel="noopener noreferrer">${finEsc(e.title)}</a></td>
-                <td>${mmFmt(e.before_pct, 2)}%</td><td>${bp(e.d1_bp)}</td><td>${bp(e.d5_bp)}</td><td>${bp(e.d20_bp)}</td></tr>`).join('')}</tbody></table></div>
+                <td>${bp(e.d5_bp)}</td><td>${bp(e.d20_bp)}</td>${tpLine ? `<td>${bp(e.tp_d5_bp)}</td><td>${bp(e.tp_d20_bp)}</td>` : ''}</tr>`).join('')}</tbody></table></div>
         <p class="fin-note">재무부의 국채 관리 조치(공식 발표·집행일)와 그 뒤 30년물 금리 변화(조치 직전 종가 대비, 거래일 기준)입니다.
-            조치가 금리를 움직였다는 인과 추정이 아니라 그다음에 일어난 일의 기록입니다. 금리: ${finEsc(tk.source || 'FRED DGS30')}.</p>`;
+            조치가 금리를 움직였다는 인과 추정이 아니라 그다음에 일어난 일의 기록입니다. 금리: ${finEsc(tk.source || 'FRED DGS30')}.
+            ${tpLine ? `TP = 10년 기간 프리미엄(장기 보유에 요구하는 추가 금리, ${finEsc((tk.term_premium || {}).source || '')}) -- 재무부 툴키트가 겨누는 대상입니다.` : ''}</p>`;
 };
 
 // The WAM card's side rail: Treasury's debt-management releases as they come (refunding, buybacks,

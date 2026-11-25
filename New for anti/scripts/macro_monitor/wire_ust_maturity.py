@@ -28,10 +28,13 @@ EVENTS = ROOT / "config" / "ust_toolkit_events_v1.json"
 FEED = ROOT / "config" / "ust_toolkit_feed_v1.json"
 
 
-def toolkit(dgs30: list[tuple[str, float]], events: list[dict], since: str) -> dict:
-    """The 30-year yield from `since`, and its change 1, 5 and 20 trading days after each action."""
+def toolkit(dgs30: list[tuple[str, float]], events: list[dict], since: str,
+            tp: list[tuple[str, float]] | None = None) -> dict:
+    """The 30-year yield from `since`, and its change 1, 5 and 20 trading days after each action. With `tp`
+    (10-year term premium, %), the term premium on the same dates and its change 5 and 20 days after."""
     pts = [(d, v) for d, v in dgs30 if d >= since]
     dates = [d for d, _ in pts]
+    tpd = dict(tp or [])
     out = []
     for e in events:
         i = next((k for k, d in enumerate(dates) if d >= e["date"]), None)
@@ -39,9 +42,19 @@ def toolkit(dgs30: list[tuple[str, float]], events: list[dict], since: str) -> d
             continue
         base = pts[i - 1][1] if i > 0 else pts[i][1]       # the close before the action
         chg = {f"d{n}_bp": (round((pts[i + n - 1][1] - base) * 100) if i + n - 1 < len(pts) else None) for n in (1, 5, 20)}
+        if tpd:
+            t0 = tpd.get(dates[i - 1] if i > 0 else dates[i])
+            for n in (5, 20):
+                j = i + n - 1
+                t1 = tpd.get(dates[j]) if j < len(dates) else None
+                chg[f"tp_d{n}_bp"] = round((t1 - t0) * 100) if t0 is not None and t1 is not None else None
         out.append({**e, "on": dates[i], "before_pct": base, **chg})
-    return {"series": {"dates": dates, "values": [v for _, v in pts]}, "events": out,
-            "label_ko": "미국 30년 국채금리(%)", "source": "FRED DGS30"}
+    res = {"series": {"dates": dates, "values": [v for _, v in pts]}, "events": out,
+           "label_ko": "미국 30년 국채금리(%)", "source": "FRED DGS30"}
+    if tpd:
+        res["term_premium"] = {"values": [tpd.get(d) for d in dates], "label_ko": "10년 기간 프리미엄(%)",
+                               "source": "FRED THREEFYTP10 (연준 이사회 Kim-Wright 모형)"}
+    return res
 
 
 def duration_inputs():
@@ -98,7 +111,12 @@ def main() -> int:
         card["toolkit_feed"] = feed[:15]
         since = min([e["date"] for e in events] + [months[-1]["date"]])
         since = f"{int(since[:4]) - 1}{since[4:]}"                   # a year of context before the first action
-        card["toolkit"] = toolkit(ups.fetch_fred("DGS30"), events, since)
+        try:
+            tp = ups.fetch_fred("THREEFYTP10")
+        except Exception as exc:  # noqa: BLE001 -- the yield panel goes out without it
+            print(f"FAILED term premium: {exc}", file=sys.stderr)
+            tp, failed = None, failed + 1
+        card["toolkit"] = toolkit(ups.fetch_fred("DGS30"), events, since, tp)
     except Exception as exc:  # noqa: BLE001
         print(f"FAILED toolkit: {exc}", file=sys.stderr)
         failed += 1
