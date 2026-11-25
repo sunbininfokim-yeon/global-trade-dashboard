@@ -146,14 +146,23 @@ def validate(frame, head, groups):
     return fit(rows, head, groups['semiconductors']), summary, scores
 
 
+def check_completed_us_date(day, when):
+    ny = xc.get_calendar('XNYS', start=day-pd.Timedelta(days=8), end=day+pd.Timedelta(days=8))
+    if day not in ny.sessions or when.tzinfo is None or when < ny.session_close(day):
+        raise ValueError('requires a completed US trading session')
+
+
 def train(directory, through):
-    if through >= pd.Timestamp.now(tz='America/New_York').tz_localize(None).normalize():
-        raise ValueError('train through a completed prior US date')
+    check_completed_us_date(through, pd.Timestamp.now(tz='UTC'))
     fitted, reports, predictions = {}, {}, []
     for ticker, frame in panel(directory, through).items():
+        groups = features(ticker)
+        endpoint = prices(directory, ticker).reindex([through])
+        if endpoint.isna().any().any() or frame.loc[[through], groups['semiconductors']].isna().any().any():
+            raise ValueError(f'incomplete training cutoff prices or inputs for {ticker}')
         fitted[ticker], reports[ticker] = {}, {}
         for h in HEADS:
-            model, result, scores = validate(frame,h,features(ticker))
+            model, result, scores = validate(frame, h, groups)
             fitted[ticker][h] = model
             reports[ticker][h] = result
             predictions.append(scores.assign(ticker=ticker, head=h))

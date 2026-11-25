@@ -24,6 +24,12 @@ class ReverseDirectionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             eng.check_window(pd.Timestamp('2026-11-26'), pd.Timestamp('2026-11-26T16:00:00+09:00'))
 
+    def test_us_close_is_eligible_before_midnight(self):
+        d = pd.Timestamp('2026-11-24')
+        with self.assertRaisesRegex(ValueError, 'completed US trading session'):
+            eng.check_completed_us_date(d, pd.Timestamp('2026-11-24T15:59:59-05:00'))
+        eng.check_completed_us_date(d, pd.Timestamp('2026-11-24T16:01:00-05:00'))
+
     def test_target_us_prices_are_only_labels(self):
         idx = pd.bdate_range('2026-08-03', '2026-11-24')
         close = np.linspace(100, 110, len(idx))
