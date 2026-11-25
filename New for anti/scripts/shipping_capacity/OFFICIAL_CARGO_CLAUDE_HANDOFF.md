@@ -51,6 +51,7 @@ const point = monitor?.chokepoints?.[selectedPointId];
 2. 공식 참고 카드: `point.reference_cards[]`를 그대로 렌더링한다. `display_label_ko`, `value`, `unit`, `period_start`, `period_end`, `publisher`, `source_url`, `source_published_at`, `source_status`, `warning_ko`를 보인다.
 3. 월간 보조 참고: `point.supplementary_reference_cards[]`는 IEA의 별도 월간 **석유 전체 일평균**이다. EIA 분기 구성비 카드에 섞지 않는다. `license`, `attribution`, `source_published_at`, `period`, `warning_ko`를 같이 표시한다. 현재 2026-08 760만 배럴/일이며 오늘의 원유 통과량이 아니다.
    기간별 공식 추세: `point.reported_series[]`에는 EIA 분기와 IEA 월간 기록이 함께 있다. 반드시 publisher·frequency·geography_scope·cargo_category별로 나눠 그린다. 날짜별 실측 선그래프와 혼합하지 말고 기간 막대 또는 별도 참고 그래프를 쓴다.
+   품목별 누적: `point.cumulative_cards[].windows[]`는 엔진이 계산한 EIA 품목별 기간 누적이다. [누적·전년비 후속 계약](../../../docs/ops/handoff/2026-11-25-codex-chokepoint-cargo-cumulative.md)을 따른다.
 4. `geography_scope === 'suez_canal_and_sumed_pipeline'`이면 제목에 `수에즈+SUMED`를 반드시 표시한다. LNG의 `suez_canal` 범위는 운하 단독이다.
 5. `barrels_per_day`는 숫자 배럴/일, `billion_cubic_feet_per_day`는 십억 입방피트/일로 표시한다. 원유+콘덴세이트를 원유 단독으로 축약하지 않는다.
 6. `point.transit_assessment.advisory_references[]`는 공식 경보 원문 링크다. “통항 여건 확인” 패널로 표시한다. `success_probability`는 null이며 백분율·안전판정·보험 가능 여부로 만들지 않는다. `advisory_source_status`도 함께 표시한다.
