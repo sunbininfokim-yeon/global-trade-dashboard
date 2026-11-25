@@ -18,6 +18,8 @@
 // US options tape is leaning on Korea. The rule throughout: a null stays blank.
 // A plausible-looking number in a positioning panel is worse than an empty one.
 const MS_FILES = {
+    // 코스피200 선물 CTA 추세 신호 추정 (build_krx_cta.py).
+    cta: 'krx_cta_v1.json',
     // 코스피200 커버드콜 ETF 규모와 추정 콜 매도 (build_covered_call_supply.py).
     cc: 'covered_call_supply_v1.json',
     transmission: 'us_kr_transmission_v1.json',
@@ -2464,6 +2466,138 @@ const msExpiryEventSection = (D) => {
     </section>`;
 };
 
+// --- CTA 추세 (krx_cta_v1.json, build_krx_cta.py) -----------------------------
+// What a mechanical trend follower would hold in KOSPI 200, backed out from
+// the index close: an estimate in signal units (-1 … +1) and, through a vol
+// target, as a share of capital -- never won, since no CTA's size is public.
+// The builder does all the arithmetic; this only draws it.
+const MS_CTA_SCEN_COLORS = { up_big: '#22c55e', up_small: '#3b82f6', flat: '#94a3b8', down_small: '#fca5a5', down_big: '#ef4444' };
+const msCtaWord = (s) => !Number.isFinite(s) ? '—'
+    : s <= -0.6 ? '강한 숏' : s <= -0.2 ? '숏' : s < 0.2 ? '중립' : s < 0.6 ? '롱' : '강한 롱';
+
+const msCtaSection = (D) => {
+    const C = D.cta;
+    if (!C || C.schema_version !== 'krx-cta-v1' || !C.latest) return '';
+    const L = C.latest;
+    const H = C.history || {};
+    const S = C.scenarios || {};
+    const SP = S.pnl_pct || {};
+    const T = L.triggers || {};
+    const flips = L.flips || [];
+    const R = C.realized || {};
+    const wc = R.weekly_change_corr || {};
+    const wf = wc.foreign || {};
+    const scen = (C.model && C.model.scenarios) || [];
+    const pct = (v, d = 1) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${v.toFixed(d)}%` : '—';
+    const sig = (v) => Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${v.toFixed(2)}` : '—';
+    const trig = (x) => x && Number.isFinite(x.price) ? `${msNum(x.price, 2)} (${pct(x.dist_pct)})` : '하루 안에 도달 불가';
+    const spot = /지수/.test(C.price_source_ko || '');
+
+    // History tail + the five one-month paths on one axis (signal units).
+    const tail = 60;
+    const hd = (H.dates || []).slice(-tail);
+    const hs = (H.signal || []).slice(-tail);
+    const fut = S.dates_est || [];
+    const xs = [...hd, ...fut];
+    const lastS = hs[hs.length - 1];
+    const series = [
+        { label: '추정 신호 (실현)', color: '#e2e8f0', values: [...hs, ...fut.map(() => null)] },
+        ...scen.map((sc) => ({ label: sc.label_ko, color: MS_CTA_SCEN_COLORS[sc.key] || '#94a3b8',
+            values: [...hd.map((_, i) => (i === hd.length - 1 ? lastS : null)), ...(S[sc.key] || [])] })),
+    ];
+    const up = SP.up_big ? SP.up_big.slice(-1)[0] : null;
+    const dn = SP.down_big ? SP.down_big.slice(-1)[0] : null;
+
+    // Threshold calendar: distance of each lookback's reference price on a few
+    // future days. Within ±near_pct the threshold is in play that day.
+    const cal = C.threshold_calendar || [];
+    const pick = [1, 5, 10, 15, 21].map((d) => cal.find((r) => r.d === d)).filter(Boolean);
+    const nearPct = C.model.near_pct;
+    const calRows = (C.model.lookbacks || []).map((k) => {
+        const lab = (flips.find((f) => f.k === k) || {}).label_ko || `${k}일`;
+        const nearDays = cal.filter((r) => (r.near || []).includes(k)).map((r) => r.date_est);
+        return [finEsc(lab),
+            ...pick.map((r) => {
+                const x = (r.refs || {})[String(k)];
+                if (!x) return '—';
+                const hot = Math.abs(x.dist_pct) <= nearPct;
+                return `<span class="${hot ? 'ms-cta-hot' : ''}">${pct(x.dist_pct)}</span>`;
+            }),
+            nearDays.length ? `${finEsc(nearDays[0])}${nearDays.length > 1 ? ` 외 ${nearDays.length - 1}일` : ''}` : '없음'];
+    });
+    const nearCount = cal.filter((r) => (r.near || []).length).length;
+
+    const fsum = (H.foreign_net_60d || []).map((v) => (Number.isFinite(v) ? v / 1e6 : null)); // 백만원 → 조
+    const disagree = Number.isFinite(L.signal) && Number.isFinite(R.foreign_60d_krw) && Math.sign(L.signal) !== Math.sign(R.foreign_60d_krw);
+    return `
+    <section class="fin-block fin-block-wide">
+        <h2>CTA 추세 · 코스피200 (추정)</h2>
+        <p class="fin-lead">추세추종 선물 펀드(CTA)의 기계적 규칙(1·3·6·12개월 수익률 ÷ 변동성)을 ${finEsc(C.price_source_ko || '코스피200')}에 적용한
+            <strong>추정 신호</strong>입니다. -1은 최대 숏, +1은 최대 롱이며 실제 포지션이 아닙니다. 기준일 ${finEsc(L.date)} · 종가 ${msNum(L.close, 2)}.</p>
+        ${msStaleNote(spot ? '코스피200 지수 종가' : '코스피200 선물 종가', L.date)}
+        <div class="fin-cards">
+            ${msCard('추세 신호', `<span class="${L.signal >= 0 ? 'fin-up' : 'fin-down'}">${sig(L.signal)}</span>`,
+                `${msCtaWord(L.signal)} · ${flips.map((f) => `${f.label_ko} ${sig(f.component)}`).join(' · ')}`, null)}
+            ${msCard('롱·숏 전환 가격 (내일 종가)', T.zero ? msNum(T.zero.price, 2) : '—',
+                T.zero ? `현재가 대비 ${pct(T.zero.dist_pct)} · 종합 신호가 0이 되는 값` : '하루 안에 도달 불가', null)}
+            ${msCard('변동성 목표 노출', `<span class="${L.exposure_pct >= 0 ? 'fin-up' : 'fin-down'}">${pct(L.exposure_pct)}</span>`,
+                `운용자산 1조원당 ${L.contracts_per_1jo >= 0 ? '+' : ''}${msNum(L.contracts_per_1jo, 0)}계약 · 실현 변동성 연 ${L.vol_ann_pct}%`, null)}
+            ${msCard('모델 손익 (자본 대비)', pct(L.pnl_20d_pct, 2),
+                `최근 20일 · 고점 대비 ${pct(L.pnl_drawdown_pct, 1)} · 60일 ${pct(L.pnl_60d_pct, 1)}`, null)}
+        </div>
+        ${msTable(['트리거 (내일 종가)', '가격', '현재가 대비'],
+            [['롱·숏 전환 (신호 0)', T.zero], ['최대 롱 (신호 +1)', T.full_long], ['최대 숏 (신호 -1)', T.full_short]]
+                .map(([lab, x]) => [lab, x ? msNum(x.price, 2) : '—', x ? pct(x.dist_pct) : '하루 안에 도달 불가']))}
+        ${msTable(['룩백', '구성 신호', '뒤집힘 가격 (내일 기준)', '기준일', '현재가 대비', '1개월 σ 배수'],
+            flips.map((f) => [finEsc(f.label_ko),
+                `<span class="${f.component >= 0 ? 'fin-up' : 'fin-down'}">${sig(f.component)}</span>`,
+                msNum(f.flip_price, 2), finEsc(f.flip_ref_date), pct(f.dist_pct),
+                `${f.dist_sigma_1m >= 0 ? '+' : ''}${f.dist_sigma_1m}σ`]))}
+        <p class="fin-note">트리거는 내일 종가 하나로 종합 신호를 다시 계산해(새 종가가 60일 변동성에도 들어감) 구한 값입니다. 뒤집힘 가격은 룩백별 기준가(그 기간 전 종가)로,
+            넘으면 해당 구성의 부호가 바뀝니다. 구성은 ±1로 잘려 있어 실제 변화는 0 부근에서 일어납니다. 지금 전환까지 ${trig(T.zero)}.</p>
+
+        <h3 class="fin-sub">1개월 조건부 신호 · 다섯 경로 (최근 ${hd.length}거래일 + 향후 ${fut.length}거래일)</h3>
+        ${msMultiChart(xs, series, { digits: 2, label: 'CTA 추세 신호 1개월 조건부 경로' })}
+        ${msTable(['경로', '한 달 뒤 신호', '한 달 모델 손익'],
+            scen.map((sc) => [`<span style="color:${MS_CTA_SCEN_COLORS[sc.key] || '#94a3b8'}">●</span> ${finEsc(sc.label_ko)}`,
+                sig((S[sc.key] || []).slice(-1)[0]), pct((SP[sc.key] || []).slice(-1)[0], 2)]))}
+        <p class="fin-note">향후 21거래일 동안 가격이 보합 / ±1σ / ±2.5σ (1개월 σ ${L.sigma_1m_pct.toFixed(1)}%)만큼 일정하게 움직인다고 놓고 매일 신호와 노출을 다시 계산했습니다.
+            손익 비대칭: 대폭 상승 ${pct(up, 2)} · 대폭 하락 ${pct(dn, 2)}${Number.isFinite(up) && Number.isFinite(dn)
+                ? ` — 지금 포지션은 ${dn > up ? '하락' : '상승'} 쪽에서 버는 구조입니다` : ''}.
+            미래 날짜는 주말만 뺀 추정이며 공휴일은 반영하지 않았습니다.</p>
+
+        <h3 class="fin-sub">모델 누적 손익 (자본 대비 %, 비용·금리 제외)</h3>
+        ${msMultiChart((H.dates || []), [{ label: '모델 누적 손익', color: '#a78bfa', values: H.pnl_pct || [] }],
+            { unit: '%', digits: 1, label: 'CTA 모델 누적 손익' })}
+        <p class="fin-note">전날 노출 × 당일 수익률의 누적입니다. 손실이 쌓이는 구간에서 실제 CTA는 위험을 줄이므로, 낙폭은 포지션 축소 압력의 대리 지표로 봅니다.
+            현재 고점 대비 ${pct(L.pnl_drawdown_pct, 1)}.</p>
+
+        <h3 class="fin-sub">스레숄드 달력 · 기준가가 현재가 ±${nearPct}% 안으로 들어오는 날</h3>
+        ${msTable(['룩백', ...pick.map((r) => `+${r.d}일 (${r.date_est.slice(5)})`), `±${nearPct}% 안 첫날`], calRows)}
+        <p class="fin-note">각 칸은 그날 해당 룩백의 기준가가 오늘 종가(${msNum(L.close, 2)}) 대비 얼마나 떨어져 있는지입니다. ±${nearPct}% 안이면 강조합니다.
+            향후 21거래일 중 스레숄드가 가까운 날: <strong>${nearCount}일</strong>${nearCount ? '' : ' — 당분간 신호를 뒤집을 기준가가 멀리 있습니다'}.</p>
+
+        <h3 class="fin-sub">실측 비교 · 외국인 선물 순매수 60일 합 (조원)</h3>
+        ${msStaleNote('KRX 투자자별 선물 수급', R.flow_as_of)}
+        ${msMultiChart((H.dates || []), [{ label: '외국인 선물 순매수 60일 합', color: '#f472b6', values: fsum }],
+            { unit: '조', digits: 1, label: '외국인 선물 순매수 60일 합' })}
+        ${msMultiChart((H.dates || []), [{ label: '추정 신호', color: '#e2e8f0', values: H.signal || [] }],
+            { digits: 2, label: 'CTA 추세 신호' })}
+        ${msTable(['외국인 선물 순매수와의 주간 상관', '값'], [
+            ['같은 주 (신호 변화 ↔ 그 주 순매수)', `<strong>${sig(wf.corr)}</strong>`],
+            ['다음 주 (신호가 선행)', sig(wf.next_week)],
+            ['지난 주 (수급이 선행)', sig(wf.prev_week)],
+            ['같은 주 · 신호가 롱일 때', sig(wf.when_long)],
+            ['같은 주 · 신호가 숏일 때', sig(wf.when_short)],
+        ])}
+        <p class="fin-note ms-warn">${wf.n_weeks || '—'}주 기준. 기관 ${sig((wc.institution || {}).corr)} · 개인 ${sig((wc.retail || {}).corr)}.
+            같은 주 상관은 있지만 다음 주 선행 상관(${sig(wf.next_week)})은 거의 0이라, 이 신호로 다음 주 외국인 수급을 예측하긴 어렵습니다.
+            신호 수준과 외국인 60일 합의 상관도 ${sig(R.level_corr_foreign_60d)}로 약합니다. 외국인 선물 계좌에는 현물 헤지·차익·스왑이 섞여 있어 CTA만의 흔적이 아닙니다${disagree
+                ? ` — 지금도 모델은 ${L.signal < 0 ? '숏' : '롱'}인데 외국인은 60일간 ${msSignedJo(R.foreign_60d_krw)} 순매수입니다` : ''}.</p>
+        <p class="fin-note">${(C.notes_ko || []).map(finEsc).join(' ')}${(C.rolls || []).length ? ` 롤오버 ${(C.rolls || []).length}회 (선물 종가 사용 시).` : ''}</p>
+    </section>`;
+};
+
 // --- ④ KRX 파생 수급 --------------------------------------------------------
 // The public KRX dashboard identifies the foreign investor's K200 futures and
 // options-total flow. It does *not* split that foreign options flow into calls
@@ -2556,6 +2690,8 @@ const msDerivatives = (D) => {
     </section>
 
     ${msFlowSection(D)}
+
+    ${msCtaSection(D)}
 
     ${msOptionOiSection(D)}
 
