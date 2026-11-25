@@ -2384,6 +2384,24 @@ const mmToolkitView = (ind) => {
             조치가 금리를 움직였다는 인과 추정이 아니라 그다음에 일어난 일의 기록입니다. 금리: ${finEsc(tk.source || 'FRED DGS30')}.</p>`;
 };
 
+// The WAM card's side rail: Treasury's debt-management releases as they come (refunding, buybacks,
+// issuance, and speeches or statements whose text is about debt management), newest first.
+const MM_TK_KIND_COLOR = { refunding: '#a78bfa', buyback: '#f59e0b', issuance: '#38bdf8', speech: '#f472b6', policy: '#94a3b8' };
+const mmToolkitRail = (ind) => {
+    const items = ind.toolkit_feed || [];
+    if (!items.length) return mmNewsRail(ind);
+    return `
+    <aside class="mm-news mm-bb-rail">
+        <p class="mm-news-head">재무부 툴키트 피드</p>
+        ${items.map((it) => `
+            <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
+                <span class="mm-news-title"><i class="mm-tk-kind" style="background:${MM_TK_KIND_COLOR[it.kind] || '#94a3b8'}">${finEsc(it.kind_ko || it.kind)}</i>${finEsc(it.title)}</span>
+                <span class="mm-news-meta">${finEsc(it.date)}${(it.terms || []).length ? ` · ${finEsc(it.terms.slice(0, 4).join(', '))}` : ''}</span>
+            </a>`).join('')}
+        <p class="mm-news-foot">재무부 보도자료(GovDelivery 공식 RSS·보도자료 목록)를 매일 모읍니다. 발언·성명은 본문에 국채 관리 용어가 둘 이상일 때만.</p>
+    </aside>`;
+};
+
 // The buyback card's side rail: this quarter's ceilings and how much has been used, the next
 // operations on Treasury's tentative calendar, official announcements, then headlines.
 const mmBuybackRail = (ind) => {
@@ -2826,6 +2844,8 @@ const mmChartDrawer = () => {
                 ? mmBsLatestRail(ind.balance_sheet, view.slice('balance_'.length))
                 : ind.id === 'ust_buybacks'
                 ? mmBuybackRail(ind)
+                : ind.id === 'ust_debt_wam'
+                ? mmToolkitRail(ind)
                 : mmNewsRail(ind)}
         </div>
     </div>`;

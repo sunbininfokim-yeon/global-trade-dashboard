@@ -69,6 +69,12 @@ def main() -> int:
             failures.append(f"buyback news: {exc}")
             news = prev_bb.get("news") or []
         official = json.loads(OFFICIAL.read_text(encoding="utf-8"))["items"] if OFFICIAL.exists() else []
+        feed = ROOT / "config" / "ust_toolkit_feed_v1.json"
+        if feed.exists():                       # buyback releases the daily feed picked up
+            have = {o["url"] for o in official}
+            official += [{"date": f["date"], "title": f["title"], "url": f["url"]}
+                         for f in json.loads(feed.read_text(encoding="utf-8"))["items"]
+                         if f["kind"] == "buyback" and f["url"] not in have][:5]
         extras = ua.buyback_extras(buybacks, cal, ceilings, docs, news, official, now[:10])
         if cal is None:
             for k in ("calendar", "quarter"):

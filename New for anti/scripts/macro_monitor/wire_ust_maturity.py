@@ -24,6 +24,7 @@ from macro_monitor import us_public_series as ups  # noqa: E402
 PACK = ROOT.parent.parent / "public" / "data" / "macro_monitor_v1.json"
 CACHE = ROOT / "config" / "ust_mspd_wam_v1.json"
 EVENTS = ROOT / "config" / "ust_toolkit_events_v1.json"
+FEED = ROOT / "config" / "ust_toolkit_feed_v1.json"
 
 
 def toolkit(dgs30: list[tuple[str, float]], events: list[dict], since: str) -> dict:
@@ -64,6 +65,14 @@ def main() -> int:
     prev = next((i for i in usa["indicators"] if i["id"] == card["id"]), None)
     try:
         events = json.loads(EVENTS.read_text(encoding="utf-8"))["items"]
+        feed = json.loads(FEED.read_text(encoding="utf-8"))["items"] if FEED.exists() else []
+        # Refunding and buyback releases from the feed are marked too; a hand-written entry for the same
+        # release (same URL) keeps its shorter Korean title.
+        have = {e["url"] for e in events}
+        events = sorted(events + [{"date": f["date"], "kind": f["kind"], "title": f["title"], "url": f["url"]}
+                                  for f in feed if f["kind"] in ("refunding", "buyback") and f["url"] not in have],
+                        key=lambda e: e["date"])
+        card["toolkit_feed"] = feed[:15]
         since = min([e["date"] for e in events] + [months[-1]["date"]])
         since = f"{int(since[:4]) - 1}{since[4:]}"                   # a year of context before the first action
         card["toolkit"] = toolkit(ups.fetch_fred("DGS30"), events, since)
