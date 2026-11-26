@@ -1314,7 +1314,7 @@ const msLevelsCompute = (D) => {
         _foreign: isIndex ? d.foreign_net_eok : (d.foreign_net_krw || 0) / 1e8,
         _inst: isIndex ? d.institution_net_eok : (d.institution_net_krw || 0) / 1e8,
     }));
-    const nWindow = { '1m': 21, '2m': 42, '3m': 63, '6m': 126, all: allDays.length }[MS_PERIOD] ?? allDays.length;
+    const nWindow = { '1m': 21, '2m': 42, '3m': 63, '6m': 126, all: 250 }[MS_PERIOD] ?? 250;
     const pts = allDays.slice(-Math.max(nWindow, 2));
     // Index bins follow the published psychological step; a single name has no
     // such convention, so its range is split into a comparable number of rows.
@@ -1591,7 +1591,7 @@ const msLevelsTab = (D) => {
         </div>
         ${src.headline_ko && MS_PERIOD === 'all' ? `<p class="ms-lead-strong">${finEsc(src.headline_ko)}</p>` : ''}
         <div class="co-struct-toggle ms-period-row">
-            ${[['1m', '1개월'], ['2m', '2개월'], ['3m', '3개월'], ['6m', '6개월'], ['all', `전체 (${allDays.length}일)`]]
+            ${[['1m', '1개월'], ['2m', '2개월'], ['3m', '3개월'], ['6m', '6개월'], ['all', allDays.length >= 250 ? '1년' : `1년 (${allDays.length}일)`]]
                 .filter(([k]) => k === 'all' || ({ '1m': 21, '2m': 42, '3m': 63, '6m': 126 })[k] < allDays.length)
                 .map(([k, ko]) =>
                 `<button class="mm-view-btn ${MS_PERIOD === k ? 'on' : ''}" data-ms-period="${k}">${finEsc(ko)}</button>`).join('')}
@@ -2807,6 +2807,25 @@ const msCtaSection = (D) => {
 // options-total flow. It does *not* split that foreign options flow into calls
 // and puts, so those two cells stay visibly missing until authenticated KRX
 // investor-detail CSVs are supplied. Never infer the split from market volume.
+// One card for both put/call ratios. Volume (today's KRX snapshot) and
+// trading value (KRX 15007, 2019~) can disagree -- cheap far-OTM puts lift the
+// volume ratio without lifting the value ratio -- so they sit together.
+// The card opens the value history when there is one (it reaches 2019),
+// otherwise the volume log.
+const msPcCard = (options) => {
+    const vol = Number.isFinite(options.put_call_volume) ? options.put_call_volume : null;
+    const rows = msFlowActivityRows();
+    const lastR = rows ? rows[rows.length - 1] : null;
+    const tv = lastR && Number.isFinite(lastR.pc_tv) ? lastR.pc_tv : null;
+    const val = `<span class="ms-pc-pair"><small>거래량</small> ${vol === null ? '—' : vol.toFixed(2)}
+        <small>거래대금</small> ${tv === null ? '—' : tv.toFixed(2)}</span>`;
+    const sub = [
+        '풋 ÷ 콜 · 1보다 크면 풋이 더 많음',
+        tv === null ? '' : `거래대금 ${finEsc(lastR.date)} · 2019~ ${msRankLabel(rows.map((r) => r.pc_tv), tv) || '—'} · 콜 ${msKrwEokLevel(lastR.call_tv)} · 풋 ${msKrwEokLevel(lastR.put_tv)}`,
+    ].filter(Boolean).join(' · ');
+    return msCard('풋/콜 비율', val, sub, tv === null ? 'hist:act:pc_vol' : 'hist:act:pc_tv');
+};
+
 const msDerivatives = (D) => {
     const kr = (D.board || {}).kr || {};
     const dashboard = (kr.investor_nets || {}).public_dashboard || {};
@@ -2858,26 +2877,27 @@ const msDerivatives = (D) => {
     return `
     <section class="fin-block fin-block-wide">
         <h2>KOSPI200 시장 전체 거래 활동</h2>
-        <p class="fin-lead">아래는 투자자별 수급과 별개인 시장 전체 체결 합계입니다. 활동 규모를 보되, 외국인 거래로 읽으면 안 됩니다.</p>
+        <p class="fin-lead">윗줄은 외국인의 당일 순매수(KRX 공개 대시보드·15007, 수급 기준일 ${finEsc(foreignAsOf)})이고, 아랫줄은 투자자 구분 없는 시장 전체 체결 합계입니다. 아랫줄을 외국인 거래로 읽으면 안 됩니다.</p>
         ${msStaleNote('KRX OpenAPI 시장 활동 스냅샷', kr.as_of)}
-        <div class="fin-cards">
+        <div class="fin-cards ms-cards-4">
+            ${msCard('외국인 K200 선물 순매수', `<span class="${futuresFlow.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(futuresFlow.net_krw)}</span>`,
+                `매수 ${msJo(futuresFlow.buy_krw)} · 매도 ${msJo(futuresFlow.sell_krw)}`, 'kr_investor')}
+            ${msCard('외국인 콜 순매수', callState.ok ? `<span class="${callP.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(callP.foreign.net_krw)}</span>` : '—',
+                callState.ok ? `${finEsc(callP.as_of || '')} · 매수 ${msKrwEokLevel(callP.foreign.buy_krw)} · 매도 ${msKrwEokLevel(callP.foreign.sell_krw)}` : msMissing(callState.reason),
+                has15007Hist ? 'kr_15007_hist' : null)}
+            ${msCard('외국인 풋 순매수', putState.ok ? `<span class="${putP.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(putP.foreign.net_krw)}</span>` : '—',
+                putState.ok ? `${finEsc(putP.as_of || '')} · 매수 ${msKrwEokLevel(putP.foreign.buy_krw)} · 매도 ${msKrwEokLevel(putP.foreign.sell_krw)}` : msMissing(putState.reason),
+                has15007Hist ? 'kr_15007_hist' : null)}
+            ${msCard('풋 순매수 − 콜 순매수', relKrw === null ? '—' : `<span class="${relKrw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(relKrw)}</span>`,
+                relKrw === null ? msMissing('콜·풋 모두 관측 필요') : `${relLabel} · 당일 거래 흐름의 상대값 — 방향·OI·헤지 판정 아님`,
+                has15007Hist ? 'kr_15007_hist' : null)}
             ${msCard('K200 선물 거래대금', msJo(futures.trading_value_krw),
                 `거래량 ${msNum(futures.volume)}계약 · ${finEsc(futures.coverage_ko || '')}`, 'hist:act:fut_tv')}
             ${msCard('K200 콜옵션 거래량', Number.isFinite(options.call_volume) ? `${msNum(options.call_volume)}계약` : '—',
                 `거래대금 ${msKrwEokLevel(options.call_trading_value_krw)}`, 'hist:act:call_vol')}
             ${msCard('K200 풋옵션 거래량', Number.isFinite(options.put_volume) ? `${msNum(options.put_volume)}계약` : '—',
                 `거래대금 ${msKrwEokLevel(options.put_trading_value_krw)}`, 'hist:act:put_vol')}
-            ${msCard('풋/콜 거래량 비율', Number.isFinite(options.put_call_volume) ? options.put_call_volume.toFixed(2) : '—',
-                '시장 전체 풋 거래량 ÷ 콜 거래량', 'hist:act:pc_vol')}
-            ${(() => {
-                const rows = msFlowActivityRows();
-                const lastR = rows ? rows[rows.length - 1] : null;
-                if (!lastR || !Number.isFinite(lastR.pc_tv)) return '';
-                return msCard('풋/콜 거래대금 비율 (15007)', lastR.pc_tv.toFixed(2),
-                    `${finEsc(lastR.date)} · 2019~ ${msRankLabel(rows.map((r) => r.pc_tv), lastR.pc_tv) || '—'} · 콜 ${msKrwEokLevel(lastR.call_tv)} · 풋 ${msKrwEokLevel(lastR.put_tv)}`,
-                    'hist:act:pc_tv');
-            })()}
-            ${msCard('오늘 전체 활동 표', '한 번에 보기', '선물·콜·풋 거래량과 거래대금', 'kr_activity')}
+            ${msPcCard(options)}
         </div>
         <p class="fin-note">시장 활동 기준일 ${finEsc(activityAsOf)} · 선물 ${finEsc(futures.source || '출처 미표기')} · 옵션 ${finEsc(options.source || '출처 미표기')}. 이 보드에서는 한국 OI를 표시하지 않습니다.
             ${msFlowActivityRows() ? ' 거래대금 추이는 KRX 15007 시장 전체 거래대금(2019~)으로, 거래량 추이는 일별 활동 로그로 그립니다.'
@@ -2908,19 +2928,6 @@ const msDerivatives = (D) => {
         <h2>외국인 KOSPI200 파생 수급</h2>
         <p class="fin-lead">매도·매수·순매수는 KRX 공개 대시보드(선물)와 인증된 KRX 15007 원자료(콜·풋)의 당일 거래 흐름입니다. 수급 기준일 ${finEsc(foreignAsOf)} · 표출 시각 ${finEsc(observedAt)}.</p>
         ${/^\d{4}-\d{2}-\d{2}$/.test(foreignAsOf) ? msStaleNote('KRX 공개 대시보드 수급', foreignAsOf) : ''}
-        <div class="fin-cards">
-            ${msCard('외국인 K200 선물 순매수', `<span class="${futuresFlow.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msSignedJo(futuresFlow.net_krw)}</span>`,
-                `매수 ${msJo(futuresFlow.buy_krw)} · 매도 ${msJo(futuresFlow.sell_krw)}`, 'kr_investor')}
-            ${msCard('외국인 콜 순매수', callState.ok ? `<span class="${callP.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(callP.foreign.net_krw)}</span>` : '—',
-                callState.ok ? `${finEsc(callP.as_of || '')} · 매수 ${msKrwEokLevel(callP.foreign.buy_krw)} · 매도 ${msKrwEokLevel(callP.foreign.sell_krw)}` : msMissing(callState.reason),
-                has15007Hist ? 'kr_15007_hist' : null)}
-            ${msCard('외국인 풋 순매수', putState.ok ? `<span class="${putP.foreign.net_krw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(putP.foreign.net_krw)}</span>` : '—',
-                putState.ok ? `${finEsc(putP.as_of || '')} · 매수 ${msKrwEokLevel(putP.foreign.buy_krw)} · 매도 ${msKrwEokLevel(putP.foreign.sell_krw)}` : msMissing(putState.reason),
-                has15007Hist ? 'kr_15007_hist' : null)}
-            ${msCard('풋 순매수 − 콜 순매수', relKrw === null ? '—' : `<span class="${relKrw >= 0 ? 'fin-up' : 'fin-down'}">${msKrwEok(relKrw)}</span>`,
-                relKrw === null ? msMissing('콜·풋 모두 관측 필요') : `${relLabel} · 당일 거래 흐름의 상대값 — 방향·OI·헤지 판정 아님`,
-                has15007Hist ? 'kr_15007_hist' : null)}
-        </div>
         ${msTable(['구분', '매도', '매수', '순매수', '데이터 상태'], [
             (() => {
                 const r = flowRow('K200 선물', futuresFlow, (dashboard.futures || {}).quality === 'observed' ? '실측' : '—');
