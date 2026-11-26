@@ -663,7 +663,7 @@ const mmBarSeries = (dates, values, opts = {}) => {
 // Detail panels a pipeline attaches to a card (ind.panels): grouped bars, a signed stack with a
 // balance line, lines, or a ranked list (bank by bank). One renderer for all of them, so a new
 // breakdown is data, not code. First used by the Korean bank credit cards (kr_bank_credit.py).
-const MM_PANEL_COLORS = ['#38bdf8', '#f97316', '#a78bfa', '#34d399', '#fb7185', '#facc15'];
+const MM_PANEL_COLORS = ['#38bdf8', '#f97316', '#a78bfa', '#34d399', '#fb7185', '#facc15', '#e879f9', '#94a3b8'];
 const mmPanelNum = (v, unit) => (Number.isFinite(v)
     ? `${v.toLocaleString(undefined, { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 })}${unit === '%' ? '%' : unit ? ` ${unit}` : ''}`
     : '—');
@@ -703,7 +703,12 @@ const mmPanelView = (p) => {
         series.forEach((s) => vals.push(...s.values.filter(Number.isFinite)));
     }
     if (line) vals.push(...line.values.filter(Number.isFinite));
-    let lo = Math.min(...vals, p.type === 'lines' ? Infinity : 0), hi = Math.max(...vals, p.type === 'lines' ? -Infinity : 0);
+    // p.log: a log axis for lines that grow at very different rates (an index where one line went x9), so
+    // equal ratios look equal. Only when every value is positive.
+    const logAx = p.log && p.type === 'lines' && vals.every((v) => v > 0);
+    const tf = logAx ? Math.log : (v) => v;
+    const inv = logAx ? Math.exp : (v) => v;
+    let lo = Math.min(...vals.map(tf), p.type === 'lines' ? Infinity : 0), hi = Math.max(...vals.map(tf), p.type === 'lines' ? -Infinity : 0);
     if (!Number.isFinite(lo) || !Number.isFinite(hi)) return `<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>${note}`;
     if (lo === hi) { lo -= 1; hi += 1; }
     const pad = (hi - lo) * 0.08; lo -= p.type === 'lines' ? pad : (lo < 0 ? pad : 0); hi += pad;
@@ -711,9 +716,9 @@ const mmPanelView = (p) => {
     const plotW = MM_W - MM_L - MM_R;
     const slot = plotW / n;
     const cx = (i) => MM_L + slot * (i + 0.5);
-    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
-    const zero = sy(Math.max(lo, Math.min(0, hi)));
-    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const sy = (v) => MM_T + (1 - (tf(v) - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const zero = logAx ? MM_H - MM_B : sy(Math.max(lo, Math.min(0, hi)));
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => inv(lo + (hi - lo) * t));
     const step = Math.max(1, Math.ceil(n / 8));
 
     let marks = '';
@@ -722,7 +727,7 @@ const mmPanelView = (p) => {
         series.forEach((s, j) => s.values.forEach((v, i) => {
             if (!Number.isFinite(v)) return;
             const x = cx(i) - slot * 0.4 + j * bw, y = sy(v);
-            marks += `<rect x="${x.toFixed(1)}" y="${Math.min(y, zero).toFixed(1)}" width="${(bw * 0.9).toFixed(1)}" height="${Math.max(Math.abs(zero - y), 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % 6]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
+            marks += `<rect x="${x.toFixed(1)}" y="${Math.min(y, zero).toFixed(1)}" width="${(bw * 0.9).toFixed(1)}" height="${Math.max(Math.abs(zero - y), 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % MM_PANEL_COLORS.length]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
         }));
     } else if (p.type === 'stack') {
         const bw = Math.max(slot * 0.62, 1);
@@ -734,13 +739,17 @@ const mmPanelView = (p) => {
                 const from = v >= 0 ? pos : neg, to = from + v;
                 if (v >= 0) pos = to; else neg = to;
                 const y1 = sy(Math.max(from, to)), y2 = sy(Math.min(from, to));
-                marks += `<rect x="${(cx(i) - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(y2 - y1, 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % 6]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
+                marks += `<rect x="${(cx(i) - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(y2 - y1, 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % MM_PANEL_COLORS.length]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
             });
         }
     } else {
+        // p.markers: a dot on every observation, so a quarterly line on a monthly axis shows where its
+        // points really are (the line between them is only a guide).
         series.forEach((s, j) => {
+            const color = MM_PANEL_COLORS[j % MM_PANEL_COLORS.length];
             const d = s.values.map((v, i) => (Number.isFinite(v) ? `${cx(i).toFixed(1)},${sy(v).toFixed(1)}` : null)).filter(Boolean);
-            if (d.length) marks += `<polyline points="${d.join(' ')}" fill="none" stroke="${MM_PANEL_COLORS[j % 6]}" stroke-width="2"/>`;
+            if (d.length) marks += `<polyline points="${d.join(' ')}" fill="none" stroke="${color}" stroke-width="${p.markers ? 1.6 : 2}"/>`;
+            if (p.markers) s.values.forEach((v, i) => { if (Number.isFinite(v)) marks += `<circle cx="${cx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.4" fill="${color}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></circle>`; });
         });
     }
     if (line) {
@@ -749,10 +758,13 @@ const mmPanelView = (p) => {
         line.values.forEach((v, i) => { if (Number.isFinite(v)) marks += `<circle cx="${cx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.6" fill="#e2e8f0"><title>${finEsc(`${dates[i]} ${line.label} ${mmPanelNum(v, p.unit)}`)}</title></circle>`; });
     }
 
-    const all = [...series.map((s, j) => ({ ...s, color: MM_PANEL_COLORS[j % 6] })), ...(line ? [{ ...line, color: '#e2e8f0' }] : [])];
+    const all = [...series.map((s, j) => ({ ...s, color: MM_PANEL_COLORS[j % MM_PANEL_COLORS.length] })), ...(line ? [{ ...line, color: '#e2e8f0' }] : [])];
     const lastIdx = (s) => { for (let i = s.values.length - 1; i >= 0; i -= 1) if (Number.isFinite(s.values[i])) return i; return -1; };
     const legend = all.map((s) => {
-        const i = lastIdx(s), prev = i > 0 ? s.values[i - 1] : null;
+        const i = lastIdx(s);
+        let k = i - 1;                                           // the previous observation, not the previous slot
+        while (k >= 0 && !Number.isFinite(s.values[k])) k -= 1;
+        const prev = k >= 0 ? s.values[k] : null;
         const chg = Number.isFinite(prev) && i >= 0 ? s.values[i] - prev : null;
         return `<span class="mm-panel-key"><i style="background:${s.color}"></i>${finEsc(s.label)} <b>${i >= 0 ? mmPanelNum(s.values[i], p.unit) : '—'}</b>${Number.isFinite(chg) ? `<em>${chg >= 0 ? '+' : ''}${chg.toFixed(2)}</em>` : ''}</span>`;
     }).join('');
@@ -2608,6 +2620,10 @@ const mmViewsFor = (ind) => {
     if (ind.official_history && has(ind.official_history.values)) views.push({ id: 'official', label: '원자료·산식' });
     if (ind.contrib && has(ind.contrib.parts)) views.push({ id: 'contrib', label: ind.contrib_industry ? '지출 기여도' : '기여도' });
     if (ind.contrib_industry && has(ind.contrib_industry.parts)) views.push({ id: 'contrib_ind', label: '산업 기여도' });
+    // A card whose point is its breakdown (several series drawn together) opens on that panel.
+    const fp = (ind.ui || {}).first_panel;
+    const at = fp ? views.findIndex((v) => v.id === `panel:${fp}`) : -1;
+    if (at > 0) views.unshift(...views.splice(at, 1));
     return views.length ? views : [{ id: 'history', label: '추이' }];
 };
 
