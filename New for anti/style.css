@@ -5185,6 +5185,11 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .mm-tk-num { font-size: 10px; fill: #0f172a; font-weight: 700; }
 .mm-bb-band { display: inline-block; width: 14px; height: 8px; background: rgba(167,139,250,.3); margin: 0 4px 0 12px; vertical-align: middle; }
 .mm-news-empty { font-size: 11.5px; color: #64748b; margin: 0 0 8px; }
+.mm-news-tabs > input { position: absolute; opacity: 0; pointer-events: none; }
+.mm-news-tabs > label { display: inline-block; font-size: 11.5px; padding: 3px 9px; margin: 0 4px 8px 0; border-radius: 6px; border: 1px solid rgba(148,163,184,.25); color: #94a3b8; cursor: pointer; }
+.mm-news-tabs > input:checked + label { background: rgba(56,189,248,.15); border-color: #38bdf8; color: #e0f2fe; }
+.mm-news-tabs .mm-news-list { display: none; }
+.mm-news-tabs .mm-nt-off:checked ~ .mm-news-off, .mm-news-tabs .mm-nt-press:checked ~ .mm-news-press { display: block; }
 .mm-news-q { font-size: 10.5px; color: #475569; margin: 0; }
 .mm-news-q code { background: rgba(148,163,184,.1); padding: 1px 4px; border-radius: 3px; }
 .mm-news-foot { font-size: 10px; color: #334155; margin: 14px 0 0; line-height: 1.5; }

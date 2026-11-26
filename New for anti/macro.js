@@ -3029,18 +3029,40 @@ const mmReservesRatioRail = (r, dates) => {
     </aside>`;
 };
 
-const mmNewsRail = (ind) => {
-    const items = Array.isArray(ind.news) ? ind.news : null;
-    return `
-    <aside class="mm-news">
-        <p class="mm-news-head">관련 뉴스</p>
-        ${items && items.length ? items.map((it) => `
+let MM_NEWS_SEQ = 0;
+const mmNewsItems = (items) => items.map((it) => `
             <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
                 <span class="mm-news-title">${finEsc(it.title)}</span>
                 <span class="mm-news-meta">${finEsc(it.source || '')}${it.published_at ? ` · ${finEsc(String(it.published_at).slice(0, 10))}` : ''}</span>
-            </a>`).join('')
-        : `<p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
-           ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}`}
+            </a>`).join('');
+
+// Official releases first (wire_card_news.py: Fed, BEA, Treasury, BLS links), press articles behind a
+// toggle (free Google News RSS). The toggle is two radio buttons and CSS -- no handler, survives re-render.
+const mmNewsRail = (ind) => {
+    const official = Array.isArray(ind.news_official) ? ind.news_official : [];
+    const press = [...(Array.isArray(ind.news_press) ? ind.news_press : []), ...(Array.isArray(ind.news) ? ind.news : [])];
+    if (official.length || press.length) {
+        const n = ++MM_NEWS_SEQ;
+        const first = official.length ? 'off' : 'press';
+        return `
+    <aside class="mm-news">
+        <p class="mm-news-head">관련 뉴스</p>
+        <div class="mm-news-tabs">
+            <input type="radio" class="mm-nt-off" id="mm-nt-off-${n}" name="mm-nt-${n}" ${first === 'off' ? 'checked' : ''}>
+            <label for="mm-nt-off-${n}">공식 발표 ${official.length}</label>
+            <input type="radio" class="mm-nt-press" id="mm-nt-press-${n}" name="mm-nt-${n}" ${first === 'press' ? 'checked' : ''}>
+            <label for="mm-nt-press-${n}">언론 기사 ${press.length}</label>
+            <div class="mm-news-list mm-news-off">${official.length ? mmNewsItems(official) : '<p class="mm-news-empty">이 지표의 공식 발표 피드가 없습니다.</p>'}</div>
+            <div class="mm-news-list mm-news-press">${press.length ? mmNewsItems(press) : '<p class="mm-news-empty">최근 45일 관련 기사가 없습니다.</p>'}</div>
+        </div>
+        <p class="mm-news-foot">공식 발표 = 연준·BEA·재무부 원문(BLS는 최신 보도자료 링크) · 언론 기사 = Google 뉴스(무료) · 투자 권유 아님</p>
+    </aside>`;
+    }
+    return `
+    <aside class="mm-news">
+        <p class="mm-news-head">관련 뉴스</p>
+        <p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
+        ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}
         <p class="mm-news-foot">투자 권유 아님 · 뉴스 요약은 참고용</p>
     </aside>`;
 };
