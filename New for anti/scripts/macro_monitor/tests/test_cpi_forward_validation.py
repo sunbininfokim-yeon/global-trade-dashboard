@@ -5,7 +5,7 @@ import numpy as np
 
 from build_us_cpi_forward_validation import CONFIG, MonthlyPriceTable, run
 from macro_monitor.cpi.external_backtest import ExternalBacktestError
-from macro_monitor.cpi.forward_validation import candidate_specs, evaluate, monthly_changes, shift
+from macro_monitor.cpi.forward_validation import candidate_specs, evaluate, monthly_changes, scan_lags, shift
 
 
 def configs():
@@ -64,6 +64,30 @@ class ForwardValidationTests(unittest.TestCase):
         parser.feed("<tr><td class='B4'>&nbsp;2026</td>" +
                     "".join(f"<td class='B3'>{v}</td>" for v in values) + "</tr>")
         self.assertEqual(parser.points, [("2026-01", 1), ("2026-03", 2)])
+
+    def test_lag_selection_is_pre_cutoff_and_nowcast_is_separate(self):
+        months = [shift("2011-01", i) for i in range(185)]
+        rng = np.random.default_rng(84)
+        source = dict(zip(months, rng.normal(size=len(months))))
+        target = {m: 0.8 * source[shift(m, -2)] + 0.05 * rng.normal() for m in months[2:]}
+        spec = {"id": "test", "relationship_map_id": None, "target": "y", "controls": [],
+                "terms": [("x", i) for i in range(5)], "calendar_effects": False,
+                "minimum_train": 72, "mode": "includes_lag_zero_nowcast"}
+        kwargs = {"cutoff": months[-4], "through": months[-1]}
+        first, nowcast = scan_lags(spec, {"x": source, "y": target}, **kwargs)
+        self.assertEqual(first["selected_lag_months"], 2)
+        self.assertEqual(first["validation_last"], kwargs["cutoff"])
+        self.assertEqual(first["positive_coefficient_share_by_input"]["x"], 1)
+        self.assertEqual(len({m["n"] for m in first["validation_by_lag"].values()}), 1)
+        self.assertEqual(nowcast["candidate_lags_months"], [0])
+        self.assertEqual(nowcast["mode"], "same_month_nowcast")
+        self.assertLess(first["replay"]["holdout"]["extended_rmse_pp"], 0.2)
+        for m in months[-3:]:
+            target[m] = 1000 * source[m]
+        second = scan_lags(spec, {"x": source, "y": target}, **kwargs)[0]
+        self.assertEqual(first["validation_by_lag"], second["validation_by_lag"])
+        self.assertEqual(second["selected_lag_months"], 2)
+        self.assertNotEqual(first["replay"]["holdout"], second["replay"]["holdout"])
 
     def test_source_failure_is_partial_and_keyless(self):
         def unavailable(series_id, *, api_key, start):

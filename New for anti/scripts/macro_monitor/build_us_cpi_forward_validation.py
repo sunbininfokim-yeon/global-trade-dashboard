@@ -15,7 +15,7 @@ from urllib.request import urlopen
 from macro_monitor.cpi.external_backtest import (
     EIA_FRED_FALLBACKS, ExternalBacktestError, fetch_fred_monthly_series,
 )
-from macro_monitor.cpi.forward_validation import candidate_specs, evaluate, monthly_changes, shift
+from macro_monitor.cpi.forward_validation import candidate_specs, evaluate, monthly_changes, scan_lags, shift
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = ROOT / "config"
@@ -124,7 +124,11 @@ def run(history: dict, vehicle: dict, external: dict, structure: dict, *, cutoff
                             "reason": metadata.get("reason", "no_consecutive_months")}
             series[name], sources[name] = changes, metadata
 
-    results = [evaluate(spec, series, cutoff=cutoff, through=through) for spec in specs]
+    results = []
+    for spec in specs:
+        result = evaluate(spec, series, cutoff=cutoff, through=through)
+        result["lag_diagnostics"] = scan_lags(spec, series, cutoff=cutoff, through=through)
+        results.append(result)
     return {
         "schema_version": "us-cpi-forward-validation-v1", "country": "USA",
         "training_cutoff": cutoff, "holdout_through": through,
@@ -140,6 +144,9 @@ def run(history: dict, vehicle: dict, external: dict, structure: dict, *, cutoff
             "Same-reference-month EIA inputs are nowcast features; their as-of completeness has not been audited.",
             "Re-running can change older scores as sources revise. Small holdouts and confounding preclude promotion, causality or a live forecast.",
             "Relative RMSE change is suppressed for fewer than three matched holdout months.",
+            "Single-lag diagnostics rank common pre-cutoff expanding-window folds, never the holdout. The selected lag is re-fit on its available pre-cutoff rows.",
+            "Pre/post-2022 lag and rolling coefficient signs are stability diagnostics, not independent significance tests.",
+            "Multivariate pathways group eligible inputs at one common lag; an EIA lag-zero model is run separately and contains only eligible lag-zero inputs.",
         ],
         "sources": sources, "relationships": results,
     }

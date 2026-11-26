@@ -78,6 +78,102 @@ def _fit(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     return coef
 
 
+def _regressors(month: str, terms: list[tuple[str, int]],
+                series: Mapping[str, Mapping[str, float]], *, calendar_effects: bool) -> list[float] | None:
+    values = [series.get(name, {}).get(shift(month, -lag), math.nan) for name, lag in terms]
+    if not all(math.isfinite(value) for value in values):
+        return None
+    calendar = [float(int(month[5:]) == i) for i in range(2, 13)] if calendar_effects else []
+    return [1.0, *calendar, *values]
+
+
+LAG_SCREEN_MIN_VALIDATION = 24
+LAG_SCREEN_SPLIT = "2022-01"
+
+
+def _select_lag(spec: Mapping[str, Any], series: Mapping[str, Mapping[str, float]], *,
+                cutoff: str, zero: bool) -> dict[str, Any]:
+    mode = "same_month_nowcast" if zero else "lagged_only"
+    grid: dict[int, list[tuple[str, int]]] = {}
+    for name, lag in spec["terms"]:
+        if (lag == 0) == zero:
+            grid.setdefault(lag, []).append((name, lag))
+    if not grid:
+        return {"mode": mode, "status": "no_configured_lags"}
+
+    base = [(spec["target"], 1), *spec["controls"]]
+    lags = sorted(grid)
+    grid_terms = [term for lag in lags for term in grid[lag]]
+    nbase = 1 + len(base) + 11 * bool(spec["calendar_effects"])
+    columns: dict[int, list[int]] = {}
+    offset = nbase
+    for lag in lags:
+        columns[lag] = list(range(nbase)) + list(range(offset, offset + len(grid[lag])))
+        offset += len(grid[lag])
+    rows = [
+        (m, x, actual) for m, actual in sorted(series.get(spec["target"], {}).items())
+        if m <= cutoff and math.isfinite(actual)
+        and (x := _regressors(m, base + grid_terms, series, calendar_effects=spec["calendar_effects"])) is not None
+    ]
+    minimum_train = spec["minimum_train"]
+    report: dict[str, Any] = {"mode": mode, "candidate_lags_months": lags, "common_rows": len(rows)}
+    if len(rows) < minimum_train + LAG_SCREEN_MIN_VALIDATION:
+        return {**report, "status": "insufficient_common_history"}
+    x = np.array([r[1] for r in rows])
+    y = np.array([r[2] for r in rows])
+    scores: dict[int, list[dict]] = {lag: [] for lag in lags}
+    paths: dict[int, list[np.ndarray]] = {lag: [] for lag in lags}
+    for i in range(minimum_train, len(rows)):
+        try:
+            base_pred = _fit(x[:i, :nbase], y[:i]) @ x[i, :nbase]
+            fits = {lag: _fit(x[:i, cols], y[:i]) for lag, cols in columns.items()}
+        except ValueError:
+            # Exclude the fold for all candidates so that a candidate cannot
+            # benefit from skipping hard months or having fewer valid folds.
+            continue
+        for lag, cols in columns.items():
+            scores[lag].append({"month": rows[i][0], "actual": y[i], "baseline": base_pred,
+                                "extended": fits[lag] @ x[i, cols]})
+            paths[lag].append(fits[lag][nbase:])
+    if len(scores[lags[0]]) < LAG_SCREEN_MIN_VALIDATION:
+        return {**report, "status": "insufficient_rank_valid_folds"}
+    by_lag = {lag: metrics(scores[lag]) for lag in lags}
+    winner = min(lags, key=lambda lag: (by_lag[lag]["extended_rmse_pp"], lag))
+    blocks = {}
+    for name, early in (("before_2022", True), ("since_2022", False)):
+        block = {lag: metrics([r for r in scores[lag] if (r["month"] < LAG_SCREEN_SPLIT) == early]) for lag in lags}
+        if block[winner]["n"] >= 12:
+            blocks[name] = {"best_lag_months": min(lags, key=lambda lag: (block[lag]["extended_rmse_pp"], lag)),
+                            "selected_lag_metrics": block[winner]}
+    return {
+        **report, "status": "selected", "selected_lag_months": winner, "terms": grid[winner],
+        "validation_first": scores[winner][0]["month"], "validation_last": scores[winner][-1]["month"],
+        "validation_by_lag": by_lag, "subperiods_descriptive": blocks,
+        "positive_coefficient_share_by_input": {
+            name: float(np.mean(np.array(paths[winner])[:, pos] > 0))
+            for pos, (name, _) in enumerate(grid[winner])
+        },
+    }
+
+
+def scan_lags(spec: Mapping[str, Any], series: Mapping[str, Mapping[str, float]], *,
+              cutoff: str, through: str) -> list[dict[str, Any]]:
+    """Select lag(s) only on historical rolling folds, then replay after cutoff."""
+    diagnostics = []
+    for zero in (False, True):
+        selection = _select_lag(spec, series, cutoff=cutoff, zero=zero)
+        if selection["status"] == "no_configured_lags":
+            continue
+        if selection["status"] == "selected":
+            selected_spec = {**spec, "terms": selection["terms"], "mode": selection["mode"]}
+            replay = evaluate(selected_spec, series, cutoff=cutoff, through=through)
+            selection["replay"] = {key: replay[key] for key in (
+                "status", "training", "holdout", "monthly_replay", "unscored_months",
+            ) if key in replay}
+        diagnostics.append(selection)
+    return diagnostics
+
+
 def evaluate(spec: Mapping[str, Any], series: Mapping[str, Mapping[str, float]], *,
              cutoff: str, through: str) -> dict[str, Any]:
     if shift(through, 0) <= shift(cutoff, 0):
@@ -102,13 +198,8 @@ def evaluate(spec: Mapping[str, Any], series: Mapping[str, Mapping[str, float]],
         return {**out, "status": "source_unavailable", "unavailable_series": missing}
 
     def regressors(month: str) -> tuple[list[float], list[float]] | None:
-        values = [series[name].get(shift(month, -lag), math.nan) for name, lag in terms]
-        if not all(math.isfinite(value) for value in values):
-            return None
-        base = [1.0, *values[:len(base_terms)]]
-        if spec["calendar_effects"]:
-            base.extend(float(int(month[5:]) == i) for i in range(2, 13))
-        return base, base + values[len(base_terms):]
+        x = _regressors(month, terms, series, calendar_effects=spec["calendar_effects"])
+        return (x[:len(x) - len(spec["terms"])], x) if x is not None else None
 
     train = [(m, row, value) for m, value in sorted(series[target].items())
              if m <= cutoff and math.isfinite(value) and (row := regressors(m)) is not None]
