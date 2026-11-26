@@ -64,6 +64,28 @@ python3 build_us_cpi_forward_validation.py --vehicle-only
 - Zillow만 관측값을 공급하고 나머지는 출처 링크로 보낸다. 숫자는 `observation.status == "observed"`일 때만 표시한다. Zillow는 시장 임대료 참고이지 CPI 입력·기여도가 아니며, 정확한 발표일은 이 CSV에 없다. Zillow 공개 재배포 조건은 UI 배포 전에 확인한다.
 - Zillow 진단은 최신 개정 이력으로 CPI 주거 임차료 SA MoM을 대상으로 한 탐색이다. 1~12개월 시차 중 최대값인 12개월이 선택되더라도 ‘12개월 뒤 전이’라고 표시하지 않는다. 진단 수치와 예측은 UI 기본 카드에 쓰지 않는다.
 
+### USDA 계란 도매가 감시 자동화 인수
+
+`build_us_cpi_food_watch.py`는 USDA AMS 2843 공개 최신 PDF에서 전국 FOB 흰색 대란(일반 사육·등급 규격·5일 가중평균)의
+같은 행만 읽는다. API 키는 사용하지 않는다. 직전 보고와 비교해 **3% 이상이면서 다스당 3센트 이상 상승**했을 때만
+우측 뉴스 상단에 놓을 `alerts[]`을 낸다. 3%/3센트는 편집 기준이며 전이율이나 통계 모델은 아니다.
+대상은 가정식 전체가 아니라 **BLS 세부 품목 계란(SEFH)**만이다. 이전 CPI의 전월비·가중치는 기존 기여도 파일에서 읽는다.
+
+```bash
+# New for anti/scripts/macro_monitor 에서, pypdf 6.14.2를 사용
+python -B -m unittest discover -s tests -p 'test_cpi_food_watch.py'
+python build_us_cpi_food_watch.py --out ../../public/data/us_cpi_food_watch_v1.json
+```
+
+Claude 연결 사항:
+
+1. 영업일 오후 USDA 발행 이후 GitHub Actions에서 하루 한 번 실행. 평일 예시 `15 19 * * 1-5`(UTC). 수동 실행도 열어둔다.
+   기존 CPI 월간 갱신과 별도이며 `us_cpi_food_watch_v1.json` 한 파일만 게시한다. 보고서가 같으면 결과 파일도 바뀌지 않는다.
+2. 실행 실패 시 기존 결과를 게시 파일에 덮어쓰지 않는다. 경보는 `expires_on_us_eastern`이 지났거나 대상월 BLS CPI가 이미
+   게시됐다면 렌더링하지 않는다. 배포 재실행으로 새 뉴스가 중복되지 않도록 `observation_id`로 구분하되 슬롯 `id`는 고정이다.
+3. `mmNewsRail` 앞 미국 헤드라인 CPI 전용 슬롯에서 `alerts[]`을 먼저 그린다. NaN`다음 발표에서 볼 CPI` 계란 → 직전 CPI 수치 → USDA 원문 순으로 표시한다. 근원 CPI 우측에는 띄우지 않는다.
+   계란이 탑·바텀 순위에 없더라도 이 슬롯은 독립적으로 표시한다. 텍스트는 시장 관찰로 표시하고 CPI 전망값은 만들지 않는다.
+
 ## 프로토타입 UI (기존 app.js 미수정)
 
 ```bash
