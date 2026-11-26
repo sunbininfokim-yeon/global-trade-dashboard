@@ -60,3 +60,12 @@ focus 는 기존 카드 키만 사용. 이전에는 이들이 manufacturing 또�
 - 상사는 KSIC 로 플랫폼(G461)과 구분이 안 됨 → 빌더가 `config/kfa_issuer_kits.json` 검토 목록 + 규칙(G461/467/468 + 인터내셔널·상사·코퍼레이션)으로 `industry` 를 지정(엔진의 explicit 경로).
 - `investor_metrics.industry_metrics`: 상사(매출총이익률·영업이익률·지분법이익 비중·매출채권/재고 일수), 광업(감가상각/매출·재투자율·EBITDA 마진·손상차손). 국내 요약 현금흐름표는 XBRL 주석 D&A 로 채움.
 - `segments.py`: 부문 매출이 이미 외부매출 기준(LX인터내셔널)이면 ±0.2% 정확 일치일 때만 `income_statement_external` 로 인정.
+
+## 추가 (PR 4, 2026-11-26): 카드 클릭 → 계산 근거 + 분기별 변화
+
+- `dart_kfa/quarterly.py`: 분기말(FY-1 말, FY Q1/H1/Q3, FY 말, FY+1 Q1/H1/Q3) 재무상태표 + LTM 손익 →
+  시가총액(월말 종가 × 현재 주식수), 순차입금(엔진 reported 와 같은 계정), 비지배지분, EV, EV/EBIT, 유동·부채비율.
+  미국은 `sec_rows.sec_points`(10-Q/10-K 시점 잔액, LTM). 테스트 `tests/test_quarterly.py`.
+- 빌더: 카드 `inputs` 를 버리지 않고 `parts`(계정명·금액·기준일·접수번호·보고서)로 압축. 스냅샷 `quarterly`.
+  월말 종가: 국내 fchart.stock.naver.com, 미국 api.stock.naver.com chart. BUILDER_VERSION 2026-11-26.1 / us2.
+- 화면: 엔진 카드 클릭 → 상세 박스(구성 요소·출처·분기 막대·분기 표). 딜 탭 EV 행 클릭 → 오늘 시세 EV 근거.
