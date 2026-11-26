@@ -64,6 +64,23 @@ python3 build_us_cpi_forward_validation.py --vehicle-only
 - Zillow만 관측값을 공급하고 나머지는 출처 링크로 보낸다. 숫자는 `observation.status == "observed"`일 때만 표시한다. Zillow는 시장 임대료 참고이지 CPI 입력·기여도가 아니며, 정확한 발표일은 이 CSV에 없다. Zillow 공개 재배포 조건은 UI 배포 전에 확인한다.
 - Zillow 진단은 최신 개정 이력으로 CPI 주거 임차료 SA MoM을 대상으로 한 탐색이다. 1~12개월 시차 중 최대값인 12개월이 선택되더라도 ‘12개월 뒤 전이’라고 표시하지 않는다. 진단 수치와 예측은 UI 기본 카드에 쓰지 않는다.
 
+### 비식료 CPI 주간 및 발표 D-3 운영 인수 (#1149)
+
+운영 명령은 위의 연구용 미리보기 대신 아래 하나를 쓴다. API 키·LLM·주간 재학습 없이
+기존 본문 데이터와 외부 시세를 한 JSON으로 조립한다. 공용 UI/Actions는 Claude 소유이며 이 PR에서 활성화하지 않는다.
+
+```bash
+cd "New for anti/scripts/macro_monitor"
+python3 -B refresh_us_cpi_watch.py --out ../../public/data/us_cpi_watch_v1.json
+```
+
+- Actions: 매일 UTC 21:17 (`17 21 * * *`) 위 명령 실행. 실제 수집은 미국 동부 금요일과 공식 발표 D-3~D-1에만 한다(기타 날짜는 캘린더만 확인). 수동 실행은 `--force`. CPI 기존 Python 의존성을 설치하고 성공한 경우에만 변경된 파일 하나를 게시한다. 동시 실행은 직렬화한다. 실패·예약일 아님은 기존 파일을 보존한다.
+- 기간은 BLS 일정의 **Reference Month**에서 읽는다. 공식 페이지가 차단되면 출처 확인일로부터 21일간만 `config/cpi_release_fallback.json`을 사용한다. 만료 시 일정을 추측하지 않고 실패한다. 실패 알림을 연결하고 공식 일정 재확인 후 갱신할 것.
+- 본문 TOP/BOTTOM 선택 시 `internal_pathways`만 사용한다. `monitor_status`별로 측정·비교·가설을 구분하며 미지지 중고차→수리비 알림은 만들지 않는다. `reference_period`는 **이미 발표한 CPI**의 기준월이다.
+- 우측 `mmNewsRail`은 미국 CPI에서만 `briefing.news_ids` 순서로 `external_prices`를 조회한다. 해당 CPI 품목·출처 기준월/관측일·발표예정일을 함께 표시한다. `briefing.target_reference_period`는 **앞으로 발표할 CPI**다. 그 CPI가 게시됐거나 동부 날짜가 `hide_on_or_after_eastern`에 도달하면 숨긴다. 과거 선택월에 최신 뉴스를 붙이지 않는다. 근원 CPI에서는 휘발유·유틸리티 자체 항목을 제외한다. 기존 계란 알림은 별도 계약.
+- EIA는 동일 월 주차끼리 비교한 원자료(비계절조정 $/갤런), 전주비는 정확히 7일 전 값이 있을 때만 표시. 기준월 이후 데이터는 제외한다. 월말 또는 오늘 기준 10일 넘게 뒤진 값은 뉴스에서 제외한다. Zillow 관측월/추세는 별도 표시(재배포 조건 확인 전 외부 공개 보류). Manheim은 링크 전용이다.
+- 요율은 전국 자동 수집기가 아니다. `config/cpi_reviewed_rate_orders.json`의 `orders`에 담당자가 검토한 주별 공식 문서만 등록한다. 필드: source_id(해당 *_rate_actions), jurisdiction, provider, applies_to(신규/갱신 또는 가정용 청구대상), approved_on, effective_on, source_url(정부 HTTPS 원문). 적용일이 지난 대상월 건만 지역 사례로 표시한다. 빈 목록은 ‘검토된 사건 없음’이지 ‘전국 요금 동결’이 아니다.
+
 ### USDA 계란 도매가 감시 자동화 인수
 
 `build_us_cpi_food_watch.py`는 USDA AMS 2843 공개 최신 PDF에서 전국 FOB 흰색 대란(일반 사육·등급 규격·5일 가중평균)의
