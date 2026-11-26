@@ -1,0 +1,57 @@
+{
+  "schema_version": "us-cpi-food-watch-v1",
+  "country": "USA",
+  "status": "watch",
+  "alerts": [
+    {
+      "id": "usda_shell_eggs",
+      "observation_id": "usda_ams_2843:2026-11-25",
+      "observed_on": "2026-11-25",
+      "published_at": null,
+      "expires_on_us_eastern": "2026-12-01",
+      "title_ko": "USDA 계란 도매가 +3.3% · 다음 발표에서 계란 CPI 확인",
+      "watch_ko": "USDA 전국 흰색 대란 도매가가 상승. 다음 CPI에서 소매 계란 가격도 같은 방향인지 확인.",
+      "interpretation": "external_price_watch_not_forecast",
+      "target_item_id": "eggs",
+      "target_cpi_reference_period": "2026-11",
+      "source_url": "https://mymarketnews.ams.usda.gov/viewReport/2843"
+    }
+  ],
+  "external_prices": [
+    {
+      "id": "usda_shell_eggs",
+      "label_ko": "USDA 전국 흰색 대란 도매가",
+      "source": "USDA AMS 2843",
+      "source_url": "https://mymarketnews.ams.usda.gov/viewReport/2843",
+      "latest_pdf_url": "https://www.ams.usda.gov/mnreports/ams_2843.pdf",
+      "unit": "cents_per_dozen",
+      "series": "National FOB, caged, graded loose, white, large, 5-day weighted",
+      "target": {
+        "item_id": "eggs",
+        "bls_item_code": "SEFH",
+        "label_ko": "계란 CPI",
+        "headline_only": true,
+        "reference_period": "2026-10",
+        "mom_pct": 0.583,
+        "yoy_pct": null,
+        "approx_weight_pct": 0.116,
+        "source_url": "https://www.bls.gov/news.release/cpi.t02.htm"
+      },
+      "observation": {
+        "reference_date": "2026-11-25",
+        "prior_reference_date": "2026-11-24",
+        "cents_per_dozen": 142.26,
+        "prior_cents_per_dozen": 137.7,
+        "change_cents": 4.56,
+        "change_pct": 3.3115
+      }
+    }
+  ],
+  "policy": {
+    "minimum_rise_pct": 3.0,
+    "minimum_rise_cents": 3.0,
+    "threshold_type": "editorial_materiality_not_statistically_calibrated",
+    "maximum_report_age_days": 6,
+    "forecast_active": false
+  }
+}
