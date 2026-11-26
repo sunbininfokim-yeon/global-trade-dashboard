@@ -2316,6 +2316,14 @@ body.trade-map-mode .right-pane {
 
 .shipping-kpi small { color: #64748b; font-size: 11px; margin-top: 8px; }
 
+/* The commodity overview row needs room for a sparkline under the headline
+   value, so it can't center-justify like a plain .shipping-kpi. */
+.shipping-kpi.has-sparkline { justify-content: flex-start; min-height: 150px; }
+.shipping-kpi-spark { position: relative; height: 42px; margin-top: 10px; }
+.shipping-kpi-spark canvas { display: block; }
+
+.shipping-commodity-overview { margin-bottom: 4px; }
+
 .shipping-grid {
     display: grid;
     gap: 18px;

@@ -1046,6 +1046,101 @@
     .filter(row => row.cargo_category === category && row.unit === (category === 'lng' ? 'billion_cubic_feet_per_day' : 'barrels_per_day') && finite(row.value) && row.status !== 'not_reported')
     .sort((a, b) => String(b.period_end || b.period_start || '').localeCompare(String(a.period_end || a.period_start || '')))[0] || null;
 
+  // Every reported point for one category, oldest first, for a sparkline —
+  // `latestOfficialCargo` only keeps the newest point for the headline.
+  const officialSeriesForCategory = (point, category) => publishedOfficialRows(point.officialCargo)
+    .filter(row => row.cargo_category === category && row.unit === (category === 'lng' ? 'billion_cubic_feet_per_day' : 'barrels_per_day') && finite(row.value) && row.status !== 'not_reported')
+    .sort((a, b) => String(a.period_end || a.period_start || '').localeCompare(String(b.period_end || b.period_start || '')));
+
+  const COMMODITY_OVERVIEW_SERIES = [
+    ['crude_condensate', '원유+콘덴세이트', OIL_SERIES.find(([key]) => key === 'crude_condensate')[2]],
+    ['petroleum_products', '석유제품', OIL_SERIES.find(([key]) => key === 'petroleum_products')[2]],
+    ['lng', 'LNG', LNG_COLOR]
+  ];
+
+  // Hormuz/Suez/Bab el-Mandeb only: the three straits with a published
+  // commodity monitor. Container has no official figure, so it rides along
+  // as an AIS-estimated tile only once at least one official tile exists —
+  // elsewhere it belongs in the AIS tab, not duplicated here.
+  const commodityOverviewTiles = point => {
+    const tiles = COMMODITY_OVERVIEW_SERIES.map(([key, label, color]) => {
+      const series = officialSeriesForCategory(point, key);
+      if (!series.length) return null;
+      const latest = series[series.length - 1];
+      return {
+        key, label, color, estimated: true,
+        value: formatOfficialValue(latest.value, latest.unit),
+        note: `${escapeHtml(latest.publisher)} · ${escapeHtml(publicationPeriod(latest))}`,
+        points: series.map(row => Number(row.value))
+      };
+    }).filter(Boolean);
+    if (!tiles.length) return tiles;
+    const containerMetric = point.live?.metrics?.container;
+    const containerHistory = asArray(point.live?.metric_histories?.container?.history)
+      .filter(row => finite(row?.value));
+    if (containerMetric && containerHistory.length > 1) {
+      tiles.push({
+        key: 'container', label: '컨테이너', color: SHIP_TYPE_COLORS.container, estimated: true,
+        value: `${formatTonnes(containerMetric.current_7d_mean_estimated_trade_tonnes)}/일`,
+        note: 'AIS 포착 · 최근 7일 평균',
+        points: containerHistory.slice(-90).map(row => Number(row.value))
+      });
+    }
+    return tiles;
+  };
+
+  // A row of boxes so all commodities are visible without a tab click; the
+  // 공식 물량 tab still holds the full chart with period labels and sources.
+  const renderCommodityOverview = point => {
+    const tiles = commodityOverviewTiles(point);
+    if (!tiles.length) return '';
+    return `
+      <section class="shipping-commodity-overview" aria-label="품목별 추정 물동량 한눈에 보기">
+        <div class="shipping-kpi-grid">
+          ${tiles.map(tile => `
+            <article class="shipping-kpi has-sparkline">
+              <span class="shipping-kpi-label">${escapeHtml(tile.label)} ${tile.estimated ? badge('추정', 'estimated') : ''}</span>
+              <strong>${tile.value}</strong>
+              <div class="shipping-kpi-spark"><canvas id="shipping-commodity-spark-${tile.key}" role="img" aria-label="${escapeHtml(tile.label)} 추세"></canvas></div>
+              <small>${tile.note}</small>
+            </article>`).join('')}
+        </div>
+      </section>`;
+  };
+
+  const bindCommodityOverview = (mount, point) => {
+    commodityOverviewTiles(point).forEach(tile => {
+      if (tile.points.length < 2) return;
+      createChart(mount, `shipping-commodity-spark-${tile.key}`, {
+        type: 'line',
+        data: {
+          labels: tile.points.map((_, index) => index),
+          datasets: [{
+            data: tile.points, borderColor: tile.color, backgroundColor: 'transparent',
+            borderWidth: 2, pointRadius: 0, pointHitRadius: 6, tension: 0.25, spanGaps: true
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.96)', borderColor: 'rgba(148, 163, 184, 0.25)', borderWidth: 1, padding: 8, displayColors: false,
+              callbacks: {
+                title: () => '',
+                label: context => finite(context.parsed.y)
+                  ? (tile.key === 'container' ? `${formatTonnes(context.parsed.y)}/일` : formatOfficialValue(context.parsed.y, tile.key === 'lng' ? 'billion_cubic_feet_per_day' : 'barrels_per_day'))
+                  : '자료 없음'
+              }
+            }
+          },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+    });
+  };
+
   const officialVolumeChartData = (rows, category) => {
     const unit = category === 'lng' ? 'billion_cubic_feet_per_day' : 'barrels_per_day';
     const scale = category === 'lng' ? 1 : 1e4;
@@ -1705,6 +1800,7 @@
       let activeTab = hasOfficial ? 'official' : 'ais';
 
       detail.innerHTML = `
+        ${renderCommodityOverview(point)}
         <div class="shipping-detail-grid">
           ${panel('LOCATION', point.name_ko, '<div id="shipping-minimap"><p class="shipping-empty">지도를 불러오는 중…<span class="inline-spinner" aria-hidden="true"></span></p></div>')}
           ${panel('CHOKEPOINT DETAIL', '물량과 통항 여건', `
@@ -1717,6 +1813,7 @@
           <summary class="shipping-secondary-control">자료·방법 자세히 · 원자료 / 우회로 / 미포착 분석</summary>
           <div id="shipping-official-cargo"></div>
         </details>`;
+      bindCommodityOverview(detail, point);
 
       const mounted = new Set();
       const showTab = async key => {
