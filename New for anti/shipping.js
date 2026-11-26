@@ -949,7 +949,7 @@
     if (unit === 'barrels_per_day') {
       return number >= 1e4 ? `${formatNumber(number / 1e4, 0)}만 배럴/일` : `${formatNumber(number)} 배럴/일`;
     }
-    if (unit === 'billion_cubic_feet_per_day') return `${formatNumber(number, 1)} 십억 입방피트/일`;
+    if (unit === 'billion_cubic_feet_per_day') return `${formatNumber(number, 1)} Bcf/일`;
     return `${formatNumber(number, 1)} ${escapeHtml(unit || '')}`;
   };
 
@@ -1027,7 +1027,7 @@
   };
 
   const formatManBarrels = value => `${formatNumber(value, 0)}만 배럴/일`;
-  const formatBcf = value => `${formatNumber(value, 1)} 십억 입방피트/일`;
+  const formatBcf = value => `${formatNumber(value, 1)} Bcf/일`;
 
   const publicationPeriod = row => {
     const quarter = /^([1-4])Q(\d{2})$/.exec(String(row?.period || ''));
@@ -1058,6 +1058,21 @@
     ['lng', 'LNG', LNG_COLOR]
   ];
 
+  // No chokepoint here publishes a real TEU count (the project otherwise
+  // refuses to invent one — see route_alternatives.py and the grid's
+  // container_teu_rule). This single rough average-cargo-weight conversion
+  // is an explicit, user-requested exception, so it must stay visibly
+  // labeled as a conversion rather than blend in as an observed figure.
+  const CONTAINER_TONNES_PER_TEU = 10;
+  const formatTeu = value => {
+    if (!finite(value)) return '—';
+    const number = Number(value);
+    if (number >= 1e6) return `${(number / 1e6).toFixed(2)}M TEU`;
+    if (number >= 1e3) return `${(number / 1e3).toFixed(1)}K TEU`;
+    return `${formatNumber(number)} TEU`;
+  };
+  const formatTeuPerDay = tonnesValue => finite(tonnesValue) ? `${formatTeu(Number(tonnesValue) / CONTAINER_TONNES_PER_TEU)}/일` : '—';
+
   // Hormuz/Suez/Bab el-Mandeb only: the three straits with a published
   // commodity monitor. Container has no official figure, so it rides along
   // as an AIS-estimated tile only once at least one official tile exists —
@@ -1068,7 +1083,7 @@
       if (!series.length) return null;
       const latest = series[series.length - 1];
       return {
-        key, label, color, estimated: true,
+        key, label, color, badgeLabel: '추정',
         value: formatOfficialValue(latest.value, latest.unit),
         note: `${escapeHtml(latest.publisher)} · ${escapeHtml(publicationPeriod(latest))}`,
         points: series.map(row => Number(row.value))
@@ -1080,10 +1095,11 @@
       .filter(row => finite(row?.value));
     if (containerMetric && containerHistory.length > 1) {
       tiles.push({
-        key: 'container', label: '컨테이너', color: SHIP_TYPE_COLORS.container, estimated: true,
-        value: `${formatTonnes(containerMetric.current_7d_mean_estimated_trade_tonnes)}/일`,
-        note: 'AIS 포착 · 최근 7일 평균',
-        points: containerHistory.slice(-90).map(row => Number(row.value))
+        key: 'container', label: '컨테이너', color: SHIP_TYPE_COLORS.container,
+        badgeLabel: '환산 추정',
+        value: formatTeuPerDay(containerMetric.current_7d_mean_estimated_trade_tonnes),
+        note: `AIS 추정 화물중량 ÷ 평균 ${CONTAINER_TONNES_PER_TEU}t/TEU 환산 · 실측 TEU 아님`,
+        points: containerHistory.slice(-90).map(row => Number(row.value) / CONTAINER_TONNES_PER_TEU)
       });
     }
     return tiles;
@@ -1099,7 +1115,7 @@
         <div class="shipping-kpi-grid">
           ${tiles.map(tile => `
             <article class="shipping-kpi has-sparkline">
-              <span class="shipping-kpi-label">${escapeHtml(tile.label)} ${tile.estimated ? badge('추정', 'estimated') : ''}</span>
+              <span class="shipping-kpi-label">${escapeHtml(tile.label)} ${badge(tile.badgeLabel, 'estimated')}</span>
               <strong>${tile.value}</strong>
               <div class="shipping-kpi-spark"><canvas id="shipping-commodity-spark-${tile.key}" role="img" aria-label="${escapeHtml(tile.label)} 추세"></canvas></div>
               <small>${tile.note}</small>
@@ -1130,7 +1146,7 @@
               callbacks: {
                 title: () => '',
                 label: context => finite(context.parsed.y)
-                  ? (tile.key === 'container' ? `${formatTonnes(context.parsed.y)}/일` : formatOfficialValue(context.parsed.y, tile.key === 'lng' ? 'billion_cubic_feet_per_day' : 'barrels_per_day'))
+                  ? (tile.key === 'container' ? formatTeu(context.parsed.y) : formatOfficialValue(context.parsed.y, tile.key === 'lng' ? 'billion_cubic_feet_per_day' : 'barrels_per_day'))
                   : '자료 없음'
               }
             }
@@ -1204,7 +1220,7 @@
       const config = officialVolumeChartData(rows, category);
       const formatter = category === 'lng' ? formatBcf : formatManBarrels;
       const options = lineChartOptions(formatter, { formatTick: value => formatNumber(value, category === 'lng' ? 1 : 0) });
-      options.scales.y.title = { display: true, text: category === 'lng' ? '십억 입방피트/일' : '만 배럴/일', color: INK.secondary };
+      options.scales.y.title = { display: true, text: category === 'lng' ? 'Bcf/일' : '만 배럴/일', color: INK.secondary };
       options.scales.x.title = { display: true, text: '발표 대상 기간', color: INK.secondary };
       options.plugins.tooltip.callbacks.title = contexts => {
         const context = contexts[0];
@@ -1357,7 +1373,7 @@
         <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 · 석유 전체 = 원유+콘덴세이트 + 석유제품 · 실선 올해, 점선 전년</p>
         <div class="shipping-chart-wrap"><canvas id="shipping-official-series-chart"></canvas></div>` : ''}
       ${hasLng ? `
-        <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 · LNG (십억 입방피트/일 · 석유와 단위가 달라 따로 그림)</p>
+        <p class="shipping-panel-kicker" style="margin-top:18px">EIA 분기 일평균 · LNG (Bcf/일 · 석유와 단위가 달라 따로 그림)</p>
         <div class="shipping-chart-wrap" style="min-height:220px"><canvas id="shipping-official-lng-chart"></canvas></div>` : ''}
       ${renderCumulativeCards(official)}
       ${otherSeriesTable(rows)}
