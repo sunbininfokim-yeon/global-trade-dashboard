@@ -28,3 +28,32 @@ export const loadEopChart = () => {
     }
     return eopPromise;
 };
+
+let dashboardPromise = null;
+let governorsPromise = null;
+let electionResultsPromise = null;
+
+const loadDashboardAsset = (name) => fetch(`/public/data/${name}.json`, { cache: 'no-store' })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((data) => (data?.schema === name ? data : null))
+    .catch(() => null);
+
+export const loadUsCongressDashboard = () => {
+    if (!dashboardPromise) {
+        dashboardPromise = Promise.all([
+            loadDashboardAsset('usa_congress_dashboard_v1'),
+            loadDashboardAsset('usa_congress_agenda_v1'),
+        ]).then(([rosters, agenda]) => ({ rosters, agenda }));
+    }
+    return dashboardPromise;
+};
+
+export const loadUsGovernorDashboard = () => {
+    governorsPromise ||= loadDashboardAsset('usa_governors_dashboard_v1');
+    return governorsPromise;
+};
+
+export const loadUsElectionResultsDashboard = () => {
+    electionResultsPromise ||= loadDashboardAsset('usa_state_executive_results_v1');
+    return electionResultsPromise;
+};
