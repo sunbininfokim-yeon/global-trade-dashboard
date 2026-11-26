@@ -46,7 +46,7 @@ OUT_DIR = ROOT / 'New for anti' / 'public' / 'data' / 'kfa_pecr'
 sys.path.insert(0, str(ENGINE))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-BUILDER_VERSION = '2026-11-24.us1'
+BUILDER_VERSION = '2026-11-26.us2'
 UA = os.environ.get('SEC_USER_AGENT') or 'global-trade-dashboard research client'
 NAVER_US = 'https://api.stock.naver.com/stock/exchange/{market}/marketValue?page={page}&pageSize=100'
 DEFAULT = ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOGL', 'META', 'TSLA', 'JPM', 'BAC', 'WMT', 'COST', 'LLY', 'JNJ',
@@ -93,6 +93,21 @@ def universe(spec: str) -> list[tuple[str, str]]:
 
 def reuters_for(ticker: str, exchange: str | None) -> str:
     return f'{ticker}.O' if (exchange or '').upper().startswith('NASDAQ') else ticker.replace('-', '')
+
+
+def us_monthly(reuters: str) -> dict:
+    """{'YYYYMM': close} from Naver's US monthly chart (no key)."""
+    base = reuters.split('.')[0]
+    end = dt.date.today().strftime('%Y%m%d') + '0000'
+    for code in dict.fromkeys([reuters, f'{base}.K', base, f'{base}.O']):
+        try:
+            rows = json.loads(fetch(f'https://api.stock.naver.com/chart/foreign/item/{code}/month?startDateTime=202201010000&endDateTime={end}',
+                                    ua='Mozilla/5.0 (compatible; global-trade-dashboard/1.0)'))
+        except Exception:      # noqa: BLE001 -- try the next Reuters suffix
+            continue
+        if rows:
+            return {str(r['localDate'])[:6]: float(r['closePrice']) for r in rows if r.get('closePrice')}
+    return {}
 
 
 def merge_predecessor(facts: dict, cik10: str, cache: Path) -> tuple[dict, list[str]]:
@@ -194,6 +209,13 @@ def build_one(ticker: str, cik: str, reuters: str | None, cache: Path, today: dt
                                 issued_common=(extras.get('dilution') or {}).get('issued_common'),
                                 lease_in_net_debt=True, ebitda=ebitda, ebitda_card='sec_op_plus_da',
                                 kit=result.get('industry'))
+    quarterly = None
+    try:
+        from dart_kfa.quarterly import series  # noqa: E402
+        quarterly = series(sec_rows.sec_points(facts), closes=us_monthly(reuters), shares=sec_rows.shares_outstanding(facts))
+        quarterly['shares'] = {'common': sec_rows.shares_outstanding(facts), 'preferred': None}
+    except Exception as exc:  # noqa: BLE001 -- the snapshot still publishes
+        print(f'  quarterly {ticker}: {type(exc).__name__}: {exc}', file=sys.stderr)
     fin = None
     if fin_kind:
         fin = financial_kpis(rows, kind=fin_kind)
@@ -212,12 +234,12 @@ def build_one(ticker: str, cik: str, reuters: str | None, cache: Path, today: dt
         'receipts': {'FY': f'SEC-10K-{fye}'}, 'latest_filing': (subm.get('filings', {}).get('recent', {}).get('accessionNumber') or [None])[0],
         'market_input': 'naver_us_daily', 'pe_cr': result, 'valuation_bases': bases, 'investor_metrics': investor,
         'order_backlog': extras.get('backlog'), 'note_items': extras.get('note_items'), 'financial_kpis': fin,
-        'segments': None, 'segments_input': 'not_in_sec_companyfacts',
+        'segments': None, 'segments_input': 'not_in_sec_companyfacts', 'quarterly': quarterly,
     }
 
 
 def main() -> int:
-    from build_kfa_pecr_snapshots import slim  # noqa: E402
+    from build_kfa_pecr_snapshots import slim  # noqa: E402 -- also compacts card inputs to parts
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('tickers', nargs='*')
     ap.add_argument('--universe', default='', help="e.g. 'NASDAQ:150,NYSE:150'")
