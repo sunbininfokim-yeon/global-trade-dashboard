@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-25T14:29:36.138216+00:00",
+  "generated_at": "2026-11-26T00:27:16.058581+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -20,7 +20,7 @@
     "raw_items": 178,
     "scored": 178,
     "selected": 40,
-    "indicators": 11
+    "indicators": 13
   },
   "feed_status": [
     {
@@ -246,6 +246,34 @@
       "published_at": "2026-11-12T14:00:00+00:00",
       "site_slot": "ticker",
       "significance": 2.402
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Japanese Government Bonds Held by the Bank of Japan",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261120.xlsx",
+      "published_at": "2026-11-25T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (November 20)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
+      "published_at": "2026-11-25T01:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
     }
   ],
   "ticker_items": [
@@ -1578,74 +1606,74 @@
       "site_slot": null
     },
     {
-      "id": "1333cf6b2f7f6b4c",
-      "published_at": "2026-10-05T20:30:00+00:00",
+      "id": "cca767699af93aac",
+      "published_at": "2026-11-25T08:00:00+00:00",
       "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261120.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
         "economy",
         "finance"
       ],
-      "series_id": null,
+      "series_id": "JP_BOJ_POLICY",
       "title": {
-        "original": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
         "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Isabella Bank Corporation"
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
-      "summary": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+      "summary": "",
       "scores": {
-        "significance": 2.322,
-        "final": 2.322
+        "significance": 2.306,
+        "final": 2.306
       },
       "rank_reasons": [
         "domains:economy,finance",
-        "boost:1"
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
     },
     {
-      "id": "c036c6d5adac248a",
-      "published_at": "2026-10-02T20:45:00+00:00",
+      "id": "93f3d140dad3d27b",
+      "published_at": "2026-11-25T01:00:00+00:00",
       "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
         "economy",
         "finance"
       ],
-      "series_id": null,
+      "series_id": "JP_BOJ_POLICY",
       "title": {
-        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original": "Bank of Japan Accounts (November 20)",
         "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 20)"
       },
-      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "summary": "",
       "scores": {
-        "significance": 2.322,
-        "final": 2.322
+        "significance": 2.306,
+        "final": 2.306
       },
       "rank_reasons": [
         "domains:economy,finance",
-        "boost:1"
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1724,6 +1752,28 @@
         "finance"
       ],
       "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "David Roberts CV and questionnaire for the Treasury Select Committee",
+      "url": "https://www.bankofengland.co.uk/news/2026/october/david-roberts-tsc-reappointment",
+      "country": "GBR",
+      "domains": [
+        "finance",
+        "economy"
+      ],
+      "significance": 2.024,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the Meeting of the Court of Directors held on 17 September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/court-minutes-17-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
       "suggest": "label promote|keep|drop + series_id later"
     }
   ],
@@ -3057,74 +3107,74 @@
       "site_slot": null
     },
     {
-      "id": "1333cf6b2f7f6b4c",
-      "published_at": "2026-10-05T20:30:00+00:00",
+      "id": "cca767699af93aac",
+      "published_at": "2026-11-25T08:00:00+00:00",
       "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261120.xlsx",
       "category": "official_report",
       "commodities": [],
       "domains": [
         "economy",
         "finance"
       ],
-      "series_id": null,
+      "series_id": "JP_BOJ_POLICY",
       "title": {
-        "original": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+        "original": "Japanese Government Bonds Held by the Bank of Japan",
         "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Isabella Bank Corporation"
+        "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
       },
-      "summary": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+      "summary": "",
       "scores": {
-        "significance": 2.322,
-        "final": 2.322
+        "significance": 2.306,
+        "final": 2.306
       },
       "rank_reasons": [
         "domains:economy,finance",
-        "boost:1"
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
     },
     {
-      "id": "c036c6d5adac248a",
-      "published_at": "2026-10-02T20:45:00+00:00",
+      "id": "93f3d140dad3d27b",
+      "published_at": "2026-11-25T01:00:00+00:00",
       "source": {
-        "id": "us_fed_all",
-        "name": "Federal Reserve",
-        "region": "usa",
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
         "slant": null
       },
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261120.htm",
       "category": "official_report",
       "commodities": [],
       "domains": [
         "economy",
         "finance"
       ],
-      "series_id": null,
+      "series_id": "JP_BOJ_POLICY",
       "title": {
-        "original": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+        "original": "Bank of Japan Accounts (November 20)",
         "original_lang": "en",
-        "ko": "[USA·경제] Federal Reserve Board announces approval of application by Fleur Capital Corporation"
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 20)"
       },
-      "summary": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "summary": "",
       "scores": {
-        "significance": 2.322,
-        "final": 2.322
+        "significance": 2.306,
+        "final": 2.306
       },
       "rank_reasons": [
         "domains:economy,finance",
-        "boost:1"
+        "series:JP_BOJ_POLICY"
       ],
       "translation_status": "skipped",
       "event_type": "official_report",
-      "site_slot": null
+      "site_slot": "finance.policy"
     }
   ]
 }
