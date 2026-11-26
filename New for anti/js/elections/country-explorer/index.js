@@ -1,11 +1,11 @@
-import { renderCountryShell } from './country-shell.js?v=10';
+import { renderCountryShell } from './country-shell.js?v=11';
 import { loadIsraelElectionAnalysis } from '../data/israel-service.js';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js?v=11';
 import { renderUsaStateDashboard } from './usa-state-dashboard.js?v=16';
 import { renderUsaDistrictMap } from './usa-district-map.js?v=7';
 import { createModal } from '../modal.js';
-import { loadUsCommittees, loadEopChart } from '../data/us-congress-service.js';
+import { loadUsCommittees, loadEopChart, loadUsCongressDashboard } from '../data/us-congress-service.js?v=2';
 import { loadStateFinance, loadStateFinanceIndex, loadFinanceDisplayContract, loadUsaElectionFinance, prefetchStateFinance } from '../data/finance-service.js?v=4';
 import { MAPPING_FAILED } from './special/usa-state-superpac.js?v=11';
 import { loadLivePolls } from '../data/poll-service.js?v=5';
@@ -120,9 +120,13 @@ export const createCountryExplorer = ({ host, bundle, onCountryOpen, onBack, onR
             // The 의회 screen's 상임위 chips need the policy overview's
             // committee list before the panel is built; only the USA screen
             // reads it, so it is fetched once, lazily, here.
-            if (iso3 === 'USA' && !country.us_committees) {
-                country.us_committees = await loadUsCommittees();
-                applyEopChart(await loadEopChart());
+            if (iso3 === 'USA' && country.us_congress_dashboard === undefined) {
+                const [committees, eop, dashboard] = await Promise.all([
+                    loadUsCommittees(), loadEopChart(), loadUsCongressDashboard(),
+                ]);
+                country.us_committees = committees;
+                country.us_congress_dashboard = dashboard;
+                applyEopChart(eop);
             }
             // 중국 당 주요 직위 골격도 같은 방식이다 -- 화면이 그려지기 전에 한 번만
             // 읽고, 못 읽으면 모듈 내장 골격으로 그린다.

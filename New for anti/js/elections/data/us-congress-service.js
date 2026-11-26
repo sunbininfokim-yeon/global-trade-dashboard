@@ -28,3 +28,19 @@ export const loadEopChart = () => {
     }
     return eopPromise;
 };
+
+let dashboardPromise = null;
+
+export const loadUsCongressDashboard = () => {
+    if (!dashboardPromise) {
+        const load = (name) => fetch(`/public/data/${name}.json`, { cache: 'no-store' })
+            .then((response) => (response.ok ? response.json() : null))
+            .then((data) => (data?.schema === name ? data : null))
+            .catch(() => null);
+        dashboardPromise = Promise.all([
+            load('usa_congress_dashboard_v1'),
+            load('usa_congress_agenda_v1'),
+        ]).then(([rosters, agenda]) => ({ rosters, agenda }));
+    }
+    return dashboardPromise;
+};
