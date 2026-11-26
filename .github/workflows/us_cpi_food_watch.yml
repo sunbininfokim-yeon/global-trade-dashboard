@@ -1,0 +1,40 @@
+name: Refresh USDA egg watch
+
+# USDA AMS 2843 계란 도매가 감시 (#1149, build_us_cpi_food_watch.py). USDA가 오후에 발행한 뒤 평일 하루 한 번.
+# 직전 보고 대비 3% 이상이면서 다스당 3센트 이상 오르면 미국 헤드라인 CPI 카드 오른쪽 칸에 알림을 낸다.
+# public/data/us_cpi_food_watch_v1.json 한 파일만 게시하고, 보고서가 같으면 바뀌지 않는다. 키 없음.
+
+on:
+  schedule:
+    - cron: '15 19 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: us-cpi-food-watch
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: pip install pypdf==6.14.2 pytest
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -B -m unittest discover -s tests -p 'test_cpi_food_watch.py'
+      - name: Refresh
+        working-directory: New for anti/scripts/macro_monitor
+        run: python build_us_cpi_food_watch.py --out ../../public/data/us_cpi_food_watch_v1.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/us_cpi_food_watch_v1.json"
+          git commit -m "chore: refresh USDA egg watch" || exit 0
+          bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"

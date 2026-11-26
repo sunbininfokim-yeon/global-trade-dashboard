@@ -23,6 +23,12 @@ let MM_CHART = null;            // { indicatorId, window }
 let MM_CPI_STRUCTURE = null;    // U.S. CPI relationship map/snapshot, loaded on demand
 const MM_CPI_CONTRIB = {};      // file -> us/kr_cpi_contrib_v1.json: item contributions, loaded when the tab opens
 const MM_CPI_CONTRIB_PROMISE = {};
+// #1149 US CPI watch files (small; read once when a US CPI card opens):
+//   internal  us_cpi_internal_watch_v1.json  each item's MoM against its own prior-36-month P90 (BLS, monthly)
+//   watch     us_cpi_watch_v1.json           external prices before the next CPI (weekly + release D-3)
+//   food      us_cpi_food_watch_v1.json      USDA wholesale egg alert (weekdays)
+const MM_CPI_WATCH = {};
+let MM_CPI_WATCH_STARTED = false;
 let MM_CPI_STRUCTURE_PROMISE = null;
 let MM_CPI_STRUCTURE_ERROR = '';
 let MM_QUALITY_PROMISE = null;  // U.S. official-document layer; loaded only for USA
@@ -1791,6 +1797,98 @@ const MM_CPI_RELATION_TYPES = {
     },
 };
 
+const mmCpiWatchLoad = () => {
+    if (MM_CPI_WATCH_STARTED) return;
+    MM_CPI_WATCH_STARTED = true;
+    [['internal', 'us_cpi_internal_watch_v1.json'], ['watch', 'us_cpi_watch_v1.json'], ['food', 'us_cpi_food_watch_v1.json']]
+        .forEach(([k, f]) => fetch(`/public/data/${f}`, { cache: 'no-cache' })
+            .then((r) => (r.ok ? r.json() : null)).catch(() => null)
+            .then((doc) => { MM_CPI_WATCH[k] = doc || false; if (MM_CHART) mmPaint(); }));
+};
+
+// "Today" in US Eastern time, as the watch files' expiry dates are written.
+const mmEasternToday = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+
+const MM_CPI_WATCH_LABELS = {
+    all_items: '전체', core: '근원', food: '식품', food_at_home: '가정식', energy: '에너지', core_goods: '근원 상품',
+    core_services: '근원 서비스', shelter: '주거', rent_primary: '임차료', owners_equivalent_rent: '자가주거비(OER)',
+    new_vehicles: '신차', used_cars_and_trucks: '중고차', motor_vehicle_parts: '자동차 부품', motor_vehicle_maintenance: '자동차 정비',
+    motor_vehicle_insurance: '자동차 보험', motor_fuel: '자동차 연료', medical_care: '의료', medical_care_commodities: '의약품',
+    education_communication: '교육·통신', college_tuition: '대학 등록금', public_transportation: '대중교통',
+};
+
+// Below the TOP/BOTTOM lists: which items rose faster than their own recent past (an editorial screen, not a
+// forecast), shown only when the file is about the same CPI month as the card.
+const mmCpiInternalBlock = (ref) => {
+    mmCpiWatchLoad();
+    const w = MM_CPI_WATCH.internal;
+    if (!w || w.reference_period !== ref) return '';
+    const items = Object.entries(w.items || {});
+    const hot = items.filter(([, x]) => x.positive_spike);
+    const pct = (v) => (Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${v.toFixed(2)}%` : '—');
+    const veh = w.vehicle_watch || {};
+    return `
+    <div class="mm-cpi-watch">
+        <p class="mm-view-title">내부 점검 · ${finEsc(ref)} · 품목별 전월비가 자기 직전 36개월의 상위 10%(P90)를 넘었는가</p>
+        ${hot.length ? `<div class="mm-cpi-watch-rows">${hot.map(([k, x]) => `
+            <div class="mm-cpi-watch-row"><span>${finEsc(MM_CPI_WATCH_LABELS[k] || k)}</span>
+                <b>${pct(x.mom_pct)}</b><em>기준 ${pct(x.prior_p90_pct)} · 3개월 평균 ${pct(x.avg_3m_mom_pct)}</em></div>`).join('')}</div>`
+        : `<p class="fin-note">점검한 ${items.length}개 품목 중 자기 기준을 넘은 품목이 없습니다.</p>`}
+        <p class="fin-note">자동차: ${finEsc(veh.label_ko || '—')}${(veh.check_next || []).length ? ` · 다음에 볼 것: ${finEsc(veh.check_next.join(', '))}` : ''}.
+            점검 ${items.length}개 품목(계절조정 전월비, BLS). 편집 기준의 관찰이며 다음 달 전망이 아닙니다.</p>
+    </div>`;
+};
+
+// Right rail of the US CPI cards, above the news: the USDA egg alert (headline CPI only) and, in the week before
+// a release, the external prices to check (gasoline and utility items left out for core CPI). Each is shown only
+// until the CPI it points at is published or its own expiry date passes.
+const MM_CPI_ENERGY_WATCH = new Set(['eia_gasoline', 'electricity_rate_actions', 'utility_gas_rate_actions']);
+const mmCpiWatchRail = (ind) => {
+    if (!mmIsCpiStructureIndicator(ind)) return '';
+    mmCpiWatchLoad();
+    const published = (ind.movers || {}).reference_period || '';
+    const today = mmEasternToday();
+    const out = [];
+    const food = MM_CPI_WATCH.food;
+    if (ind.id === 'cpi_yoy' && food) {
+        (food.alerts || []).filter((a) => today <= a.expires_on_us_eastern && a.target_cpi_reference_period > published).forEach((a) => {
+            const ext = (food.external_prices || []).find((e) => e.id === a.id) || {};
+            const t = ext.target || {}, o = ext.observation || {};
+            out.push(`
+            <div class="mm-cpi-alert">
+                <p class="mm-cpi-alert-title">${finEsc(a.title_ko)}</p>
+                <p class="mm-cpi-alert-line">다음 발표에서 볼 CPI: ${finEsc(t.label_ko || '계란')} (${finEsc(a.target_cpi_reference_period)}분)</p>
+                <p class="mm-cpi-alert-line">USDA ${finEsc(o.reference_date || '')} ${Number.isFinite(o.cents_per_dozen) ? `${o.cents_per_dozen}¢/다스` : ''}
+                    (${finEsc(o.prior_reference_date || '')} ${Number.isFinite(o.prior_cents_per_dozen) ? `${o.prior_cents_per_dozen}¢` : ''} 대비 ${Number.isFinite(o.change_pct) ? `+${o.change_pct.toFixed(1)}%` : '—'})</p>
+                <p class="mm-cpi-alert-line">직전 CPI 계란(${finEsc(t.reference_period || '')}): 전월비 ${Number.isFinite(t.mom_pct) ? `${t.mom_pct >= 0 ? '+' : ''}${t.mom_pct.toFixed(2)}%` : '—'}${Number.isFinite(t.approx_weight_pct) ? ` · 가중치 약 ${t.approx_weight_pct.toFixed(2)}%` : ''}</p>
+                <p class="mm-news-meta"><a href="${finEsc(a.source_url)}" target="_blank" rel="noopener noreferrer">USDA AMS 2843 원문</a> · 시장 관찰이며 CPI 전망 아님</p>
+            </div>`);
+        });
+    }
+    const watch = MM_CPI_WATCH.watch;
+    const b = watch && watch.briefing;
+    if (b && today < b.hide_on_or_after_eastern && b.target_reference_period > published) {
+        const rows = (b.news_ids || []).map((id) => (watch.external_prices || []).find((e) => e.id === id))
+            .filter((e) => e && !(ind.id === 'core_cpi_yoy' && MM_CPI_ENERGY_WATCH.has(e.id)));
+        const obs = (e) => {
+            const o = e.observation || {};
+            if (Number.isFinite(o.usd_per_gallon)) return `${o.observed_on} $${o.usd_per_gallon.toFixed(3)}/갤런${Number.isFinite(o.week_over_week_pct) ? ` · 전주비 ${o.week_over_week_pct >= 0 ? '+' : ''}${o.week_over_week_pct.toFixed(1)}%` : ''}${Number.isFinite(o.prior_month_matched_weeks_pct) ? ` · 전월 같은 주 대비 ${o.prior_month_matched_weeks_pct >= 0 ? '+' : ''}${o.prior_month_matched_weeks_pct.toFixed(1)}%` : ''}`;
+            if (Number.isFinite(o.mom_pct)) return `${o.reference_period} 전월비 ${o.mom_pct >= 0 ? '+' : ''}${o.mom_pct.toFixed(2)}%${Number.isFinite(o.yoy_pct) ? ` · 전년비 ${o.yoy_pct >= 0 ? '+' : ''}${o.yoy_pct.toFixed(1)}%` : ''}`;
+            if ((o.events || []).length) return o.events.map((ev) => `${ev.jurisdiction} ${ev.provider} ${ev.effective_on} 시행`).join(' · ');
+            return '';
+        };
+        if (rows.length) out.push(`
+            <div class="mm-cpi-ext">
+                <p class="mm-news-head">${finEsc(b.target_reference_period)} CPI 발표(${finEsc(b.release_date)}) 전 확인할 시세</p>
+                ${rows.map((e) => `<a class="mm-news-item" href="${finEsc(e.source_url)}" target="_blank" rel="noopener noreferrer">
+                    <span class="mm-news-title">${finEsc(e.label_ko)} — ${finEsc(obs(e))}</span>
+                    <span class="mm-news-meta">${finEsc(e.role_ko || '')} · ${finEsc(e.watch_ko || '')}</span></a>`).join('')}
+                <p class="mm-news-foot">${finEsc(b.as_of_eastern)} 수집 · 전망 아님</p>
+            </div>`);
+    }
+    return out.join('');
+};
+
 const mmIsCpiStructureIndicator = (ind) => (
     MM_COUNTRY?.country?.iso3 === 'USA'
     && ['cpi_yoy', 'core_cpi_yoy'].includes(String(ind?.id || ''))
@@ -2042,6 +2140,7 @@ const mmMoversView = (ind) => {
         </div>
     </div>
     ${mmCpiPathPanel(ind, mv)}
+    ${mmIsCpiStructureIndicator(ind) ? mmCpiInternalBlock(mv0.reference_period) : ''}
     <p class="fin-note">${finEsc(mv.reference_period || '')} 발표 기준. ${finEsc(mv.note_ko || '')}${basis === 'yoy' ? ' (지금은 같은 항목을 전년 동월 대비로 정렬)' : ''}</p>`;
 };
 
@@ -2099,7 +2198,8 @@ const mmCpiMoversView = (ind, mode) => {
     </div>
     <p class="fin-note">${finEsc(month)} · ${modeKo} · 세부 품목 ${items.length}개 중 순위${meta.basket === 'core' ? ' (근원 바스켓)' : ''}.
         상승률 순은 가중치가 아주 작은 품목도 위로 올라올 수 있어, 지수를 실제로 얼마나 움직였는지는 '기여도 순'으로 보세요.
-        위 '${finEsc(modeKo)}' 버튼과 기여도 탭에서 고른 달을 따릅니다.</p>`;
+        위 '${finEsc(modeKo)}' 버튼과 기여도 탭에서 고른 달을 따릅니다.</p>
+    ${mmIsCpiStructureIndicator(ind) ? mmCpiInternalBlock(String(month).slice(0, 7)) : ''}`;
 };
 
 const mmCpiContribView = (ind, mode) => {
@@ -3070,7 +3170,7 @@ const mmNewsRail = (ind) => {
         const n = ++MM_NEWS_SEQ;
         const first = official.length ? 'off' : 'press';
         return `
-    <aside class="mm-news">${mmDurationBlock(ind.duration_rail)}
+    <aside class="mm-news">${mmDurationBlock(ind.duration_rail)}${mmCpiWatchRail(ind)}
         <p class="mm-news-head">관련 뉴스</p>
         <div class="mm-news-tabs">
             <input type="radio" class="mm-nt-off" id="mm-nt-off-${n}" name="mm-nt-${n}" ${first === 'off' ? 'checked' : ''}>
@@ -3084,7 +3184,7 @@ const mmNewsRail = (ind) => {
     </aside>`;
     }
     return `
-    <aside class="mm-news">${mmDurationBlock(ind.duration_rail)}
+    <aside class="mm-news">${mmDurationBlock(ind.duration_rail)}${mmCpiWatchRail(ind)}
         <p class="mm-news-head">관련 뉴스</p>
         <p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
         ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}
