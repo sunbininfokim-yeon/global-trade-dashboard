@@ -132,7 +132,7 @@ const OFFICES = {
 
 const leadersHtml = (rows, people) => rows.length
     ? `<div class="elections-disclosure-rows elections-leader-rows">${rows.map((row) => `<div>
-        <span>${escapeHtml(row.title)}${row.status_ko ? ` · ${escapeHtml(row.status_ko)}` : ''}</span>
+        <span>${escapeHtml(row.title)}${row.status_ko ? ` · ${escapeHtml(row.status_ko)}` : ''}${row.source_url ? ` · ${sourceLink('근거', row.source_url)}` : ''}</span>
         <strong><i aria-hidden="true" class="elections-party-dot" style="background:${partyColor(row.party_abbr)}"></i>${nameHtml(row.name, row.bioguide_id, people)}</strong>
     </div>`).join('')}</div>`
     : '<p class="elections-muted">공개된 지도부 명부가 없습니다.</p>';
@@ -197,7 +197,7 @@ const agendaPanel = (chamber, agenda, today) => {
     return `<div class="elections-screen-list">${upcoming.filter((item) => item.kind !== 'committee').map(eventHtml).join('')}</div>
         ${meetings.length ? `<details class="elections-disclosure"><summary>상원 청문회·위원회 일정 ${meetings.length}건</summary>
             <div class="elections-screen-list">${meetings.map(eventHtml).join('')}</div>
-            <p class="elections-panel-note">${sourceLink('상원 전체 청문회 일정', 'https://www.senate.gov/committees/hearings_meetings.htm')}</p>
+            <p class="elections-panel-note">주요 공고를 선별해 표시합니다. ${sourceLink('상원 전체 청문회 일정', 'https://www.senate.gov/committees/hearings_meetings.htm')}</p>
         </details>` : ''}
         ${sources.map((source) => `<details class="elections-disclosure">
             <summary>${escapeHtml(source.label_ko)}${source.date ? ` · ${escapeHtml(source.date)}` : ''}</summary>
@@ -231,8 +231,8 @@ const FACTION_TYPES = {
 const factionRows = (groups, members, people, chamber) => {
     const byId = new Map(members.map((row) => [row.bioguideId, row]));
     const assigned = new Set();
-    const rosterDetails = (label, list, caption = '', extra = '') => `<details class="elections-disclosure">
-        <summary>${escapeHtml(label)} · ${list.length}명</summary>
+    const rosterDetails = (label, list, caption = '', extra = '', partial = false) => `<details class="elections-disclosure">
+        <summary>${escapeHtml(label)} · ${partial ? '확인 ' : ''}${list.length}명</summary>
         ${caption ? `<p class="elections-panel-note">${caption}</p>` : ''}
         ${list.length ? rosterHtml(list, people) : '<p class="elections-muted">해당 의원 없음</p>'}
         ${extra}
@@ -244,12 +244,16 @@ const factionRows = (groups, members, people, chamber) => {
             || (a.district ?? 0) - (b.district ?? 0) || a.name.localeCompare(b.name));
         const caption = [FACTION_TYPES[group.kind], group.as_of].filter(Boolean).map(escapeHtml).join(' · ');
         const links = [group.source_url, group.additional_source_url].filter(Boolean);
+        const votingProfile = group.kind === 'voting_profile';
+        const partial = ['named_cochairs', 'named_participants'].includes(group.kind);
         return rosterDetails(group.name_ko, list, caption,
-            links.length ? `<p class="elections-panel-note">${links.map((url) => sourceLink('명단 원문', url)).join(' · ')}</p>` : '');
+            links.length ? `<p class="elections-panel-note">${links.map((url) => sourceLink(votingProfile ? 'Voteview 원자료' : '명단 원문', url)).join(' · ')}</p>` : '',
+            partial);
     });
     const unclassified = members.filter((row) => !assigned.has(row.bioguideId))
         .sort((a, b) => a.state.localeCompare(b.state) || a.name.localeCompare(b.name));
-    return `${chamber === 'senate' ? '<p class="elections-panel-note">당내 표결 위치는 Voteview의 1차원 점수를 사용합니다. 공개 소속은 별도로 표시합니다.</p>' : ''}
+    return `${chamber === 'senate' && (groups || []).some((group) => group.kind === 'voting_profile')
+        ? '<p class="elections-panel-note">표결 성향은 119대 Voteview DW-NOMINATE 1차원 점수를 정당별로 정렬해 세 구간으로 나눈 자체 분류입니다. 공개 코커스 소속은 별도로 표시합니다.</p>' : ''}
         ${details.join('')}${rosterDetails(chamber === 'senate' ? '공개 계파·연대 미확인' : '계파 미확인', unclassified, (groups || []).length
             ? '표시된 명단과 연결되지 않은 의원입니다.' : '공개 명단을 확보하면 반영합니다.')}
         ${details.length ? '<p class="elections-panel-note">한 의원이 여러 명단에 포함될 수 있습니다.</p>' : ''}`;
@@ -315,6 +319,12 @@ export const usaLegislature = (country, chamber, { today = dateInWashington() } 
     const date = chamber === 'house' ? congress.context_coverage?.house_source_published_on
         : congress.context_coverage?.senate_roster_as_of?.slice(0, 10);
     const committees = flattenCommittees(congress.committees);
+    const standingCards = (congress.standing_committee_cards?.[chamber] || []).map((card) => {
+        const correction = senateCurrent?.standing_committee_roles?.[card.system_code];
+        if (!correction || correction.bioguide_id !== card.ranking_member?.bioguide) return card;
+        return { ...card, committee_url: correction.source_url,
+            ranking_member: { ...card.ranking_member, role_ko: correction.role_ko } };
+    });
 
     return `<div class="elections-usa-legislature" data-usa-chamber="${chamber}">
         <div class="elections-chamber-quadrants">
@@ -339,7 +349,7 @@ export const usaLegislature = (country, chamber, { today = dateInWashington() } 
         <div class="elections-chamber-quadrants" style="margin-top:10px">
             <section class="elections-quadrant" aria-label="상임위">
                 <h4 class="section-title">상임위</h4>
-                ${committeePanel(chamber, committees, congress.standing_committee_cards?.[chamber], people,
+                ${committeePanel(chamber, committees, standingCards, people,
                     senateCurrent ? chamberData?.special_committees : null)}
             </section>
             <section class="elections-quadrant" aria-label="공석과 주요 일정">

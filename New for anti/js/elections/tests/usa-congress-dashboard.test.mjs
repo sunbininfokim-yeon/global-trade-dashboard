@@ -69,12 +69,21 @@ test('Senate official snapshot displays officers, independents and verified meet
     const { congress } = snapshot.ui_ready;
     congress.summary.senate_by_party = { GOP: 53, DEM: 45, IND: 2 };
     congress.senate_members.push(member('S000002', 'Two, Senator', 'IND', 'VT', null));
+    congress.standing_committee_cards = { senate: [{
+        system_code: 'ssap00', name: 'Appropriations', ranking_member: { bioguide: 'S000001', name: 'One, Senator', role_ko: '간사' },
+    }] };
     const { rosters, agenda } = snapshot.us_congress_dashboard;
     rosters.people.S000002 = { name: 'Senator Two', official_url: 'https://official.senate.gov/' };
+    rosters.chambers.senate.factions.DEM.push({
+        name_ko: 'Named caucus', kind: 'named_cochairs', member_ids: ['S000001'],
+    });
     rosters.chambers.senate.current = {
         checked_on: '2026-11-26', ends_before: '2027-01-03', vacancies: 0,
         leadership_url: 'https://www.senate.gov/senators/leadership.htm',
         seats_url: 'https://www.senate.gov/about/parties-leadership/party-division.shtml',
+        standing_committee_roles: {
+            ssap00: { bioguide_id: 'S000001', role_ko: '부위원장', source_url: 'https://www.appropriations.senate.gov/' },
+        },
         independent_caucus: { member_ids: ['S000002'], party_abbr: 'DEM', source_url: 'https://www.senate.gov/' },
         leaders: [{ name: 'Senator Two', bioguide_id: 'S000002', title: '대외협력위원장', party_abbr: 'IND', caucus_party_abbr: 'DEM', featured: true },
           { name: 'Former member', bioguide_id: 'S000003', title: '위원장', party_abbr: 'DEM', featured: true }],
@@ -86,7 +95,10 @@ test('Senate official snapshot displays officers, independents and verified meet
     assert.match(html, /href="https:\/\/official\.senate\.gov\/"[^>]*>Senator Two/);
     assert.ok(html.includes('민주당 의원총회에 참여'));
     assert.ok(html.includes('상원 청문회·위원회 일정 1건'));
+    assert.ok(html.includes('Named caucus · 확인 1명'));
+    assert.match(html, /Appropriations[\s\S]*부위원장/);
+    assert.ok(html.includes('자체 분류'));
     assert.doesNotMatch(html, /Former member/);
     const later = usaLegislature(snapshot, 'senate', { today: '2027-01-03' });
-    assert.doesNotMatch(later, /상원 공식 의석·공석 집계|의원총회에 참여|상원 인준 청문회/);
+    assert.doesNotMatch(later, /상원 공식 의석·공석 집계|의원총회에 참여|상원 인준 청문회|부위원장/);
 });

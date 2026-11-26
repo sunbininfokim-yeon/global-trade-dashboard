@@ -1,4 +1,4 @@
-import { renderCountryShell } from './country-shell.js?v=12';
+import { renderCountryShell } from './country-shell.js?v=13';
 import { loadIsraelElectionAnalysis } from '../data/israel-service.js';
 import { renderWorldElectionMap } from './world-map.js';
 import { renderCountryMap } from './country-map.js?v=11';
