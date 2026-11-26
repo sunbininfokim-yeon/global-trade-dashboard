@@ -327,3 +327,72 @@ def financial_kind_for_sic(sic) -> str | None:
     except (TypeError, ValueError):
         return None
     return next((k for (lo, hi), k in SIC_FINANCIAL_KIND if lo <= n <= hi), None)
+
+
+# --------------------------------------------------------------------------- quarterly
+Q_BALANCES = {
+    "cash": ["CashAndCashEquivalentsAtCarryingValue", "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents"],
+    "equity": ["StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest", "StockholdersEquity"],
+    "parent_equity": ["StockholdersEquity"],
+    "current_assets": ["AssetsCurrent"], "current_liabilities": ["LiabilitiesCurrent"], "liabilities": ["Liabilities"],
+    "borrowings_short": ["ShortTermBorrowings", "CommercialPaper"],
+    "borrowings_current_portion": ["LongTermDebtCurrent", "LongTermDebtAndCapitalLeaseObligationsCurrent"],
+    "borrowings_long": ["LongTermDebtNoncurrent", "LongTermDebtAndCapitalLeaseObligations"],
+    "lease_current": ["OperatingLeaseLiabilityCurrent"], "lease_noncurrent": ["OperatingLeaseLiabilityNoncurrent"],
+    "_total": ["LiabilitiesAndStockholdersEquity"],
+}
+
+
+def _instant(facts, concepts, end):
+    for c in concepts:
+        pts = [p for p in _points(facts, c) if p.get("end") == end and not p.get("start")
+               and (p.get("form") or "")[:4] in ("10-Q", "10-K")]
+        if pts:
+            return float(max(pts, key=lambda p: p.get("filed") or "")["val"])
+    return None
+
+
+def _ltm_at(facts, concepts, end, fy_ends):
+    if end in fy_ends:
+        v, _ = _value(facts, concepts, end, True)
+        return v
+    prior_fy = max((e for e in fy_ends if e < end), default=None)
+    if not prior_fy:
+        return None
+    fy, _ = _value(facts, concepts, prior_fy, True)
+    for c in concepts:
+        cur = [p for p in _points(facts, c) if p.get("end") == end and p.get("start")
+               and (p.get("form") or "").startswith("10-Q") and p["start"] > prior_fy]
+        if not cur:
+            continue
+        cur = max(cur, key=lambda p: (_days(p), p.get("filed") or ""))
+        prior = [p for p in _points(facts, c) if p.get("start") and abs(_days(p) - _days(cur)) <= 7
+                 and abs((date.fromisoformat(cur["end"]) - date.fromisoformat(p["end"])).days - 364) <= 10]
+        if fy is not None and prior:
+            return fy + float(cur["val"]) - float(max(prior, key=lambda p: p.get("filed") or "")["val"])
+    return None
+
+
+def sec_points(facts, n: int = 8) -> list[dict]:
+    """Last n 10-Q/10-K balance-sheet dates, in the shape quarterly.series reads."""
+    ends = sorted({p["end"] for p in _points(facts, "Assets") if not p.get("start")
+                   and (p.get("form") or "")[:4] in ("10-Q", "10-K")})[-n:]
+    fy_ends = set(fiscal_year_ends(facts))
+    pts = []
+    for e in ends:
+        bal = {k: _instant(facts, c, e) for k, c in Q_BALANCES.items()}
+        if bal.get("liabilities") is None and bal.get("_total") is not None and bal.get("equity") is not None:
+            bal["liabilities"] = bal["_total"] - bal["equity"]
+        bal = {k: v for k, v in bal.items() if v is not None and not k.startswith("_")}
+        ltm = {"revenue": _ltm_at(facts, MAP[0][2], e, fy_ends), "op": _ltm_at(facts, ["OperatingIncomeLoss"], e, fy_ends)}
+        pts.append({"period_end": e, "report": "10-K" if e in fy_ends else "10-Q", "balances": bal,
+                    "ltm": {k: v for k, v in ltm.items() if v is not None}})
+    return pts
+
+
+def shares_outstanding(facts):
+    pts = (((facts.get("facts") or {}).get("dei") or {}).get("EntityCommonStockSharesOutstanding") or {}).get("units", {}).get("shares") or []
+    if not pts:
+        return None
+    last = max(p["end"] for p in pts)
+    return float(sum(p["val"] for p in pts if p["end"] == last))      # all classes on the cover page
