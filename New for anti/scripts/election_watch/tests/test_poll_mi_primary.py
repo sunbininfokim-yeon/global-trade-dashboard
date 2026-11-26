@@ -1,4 +1,4 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, load_pinned_finance
 import copy,json,unittest
 from pathlib import Path
 from urllib.error import URLError
@@ -6,7 +6,7 @@ from election_watch.live_polls import normalize,summarize
 from election_watch.governor_matchups import apply_matchups
 from election_watch.poll_targets import apply_targets
 from election_watch.governor_source_access import collect_access
-from election_watch.state_evidence import build_state,load_finance
+from election_watch.state_evidence import build_state
 from test_poll_state_source_access import Response
 
 ROOT=Path(__file__).resolve().parents[1];CONFIG=ROOT/'config/usa_polls';PUBLIC=ROOT.parent.parent/'public/data'
@@ -73,7 +73,7 @@ class MichiganPrimaryTests(unittest.TestCase):
         read=lambda p:json.loads(p.read_text())
         return [read(CONFIG/'state_evidence_plan_2026.json'),read(CONFIG/'targets_2026.json'),
                 read(ROOT/'config/federal_matchups/2026.json'),read(ROOT/'config/governor_matchups/2026.json'),
-                read(PUBLIC/'usa_election_live_polls_v1.json'),load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL),
+                read(PUBLIC/'usa_election_live_polls_v1.json'),load_pinned_finance(),
                 read(ROOT/'config/usa_state_campaign_finance_sources_v1.json')],read(CONFIG/'state_finance_identities_2026.json')
 
     def test_reviewed_nickname_links_existing_fec_records_and_keeps_primary_separate(self):

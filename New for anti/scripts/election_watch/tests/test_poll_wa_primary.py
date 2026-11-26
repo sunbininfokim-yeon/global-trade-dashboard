@@ -1,5 +1,5 @@
 """WA official field, initial/leaner questions and exact finance identities."""
-from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, load_pinned_finance
 import copy
 import json
 from pathlib import Path
@@ -10,7 +10,7 @@ from election_watch.governor_matchups import apply_matchups
 from election_watch.live_polls import normalize, summarize
 from election_watch.polls import read
 from election_watch.poll_targets import apply_targets
-from election_watch.state_evidence import build_state, load_finance
+from election_watch.state_evidence import build_state
 from publish_state_packets import rebuild
 from tests.poll_config_fixture import SNAPSHOT_DAY
 
@@ -135,7 +135,7 @@ class WashingtonEvidenceTests(unittest.TestCase):
         packet = read(ROOT/'config/state_evidence/2026/WA.json')
         old = read(PUBLIC/'usa_election_live_polls_v1.json')
         board, _ = rebuild(old, read(PUBLIC/'usa_election_poll_history_2026.json'), [packet], PUBLIC)
-        finance = load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL)
+        finance = load_pinned_finance()
         state = build_state('WA', 'C', read(CONFIG/'state_evidence_plan_2026.json'), self.catalog,
             self.federal, self.governors, board, finance,
             read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), PUBLIC_SNAPSHOT_DAY,
@@ -150,8 +150,8 @@ class WashingtonEvidenceTests(unittest.TestCase):
         self.assertFalse(self.audit['finance_review']['FEC_recollected'])
         self.assertEqual(state['source_dates']['federal_last_success_at'],
                          finance['source_status']['federal']['last_success_at'])
-        # A later main collection may supersede the reviewed capture. Linking
-        # an identity must retain that actual source date, never roll it back.
+        # The regression snapshot may postdate the review, but the join still
+        # reports the source's own collection date.
         self.assertGreaterEqual(state['source_dates']['federal_last_success_at'],
                                 self.audit['finance_review']['existing_last_success_at'])
 
