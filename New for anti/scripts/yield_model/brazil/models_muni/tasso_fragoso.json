@@ -1,0 +1,70 @@
+{
+  "key": "tasso_fragoso",
+  "crop": "soja",
+  "n_seasons": 42,
+  "trained_years": [
+    1984,
+    2025
+  ],
+  "features": [
+    "days_late",
+    "precip_rep",
+    "heat_vpd_stress",
+    "gwetroot_rep_mean"
+  ],
+  "trend": {
+    "log_poly_coef": [
+      0.06083914683687028,
+      -114.96829150764938
+    ],
+    "degree": 1,
+    "form": "recent10",
+    "window": 10
+  },
+  "scaler": {
+    "mean": [
+      11.3,
+      321.858,
+      3.460808485141457,
+      0.3934483050847457
+    ],
+    "scale": [
+      10.325211862233141,
+      80.06240738324072,
+      1.1717423701736887,
+      0.07016805538221649
+    ]
+  },
+  "ridge": {
+    "alpha": 24.244620170823307,
+    "coef": [
+      -0.020804292929147095,
+      -0.027452604163704354,
+      -0.006055467578247397,
+      -0.023267363129043272
+    ],
+    "intercept": -4.374323611646926e-16
+  },
+  "beats_trend": false,
+  "skill_vs_trend_full": -0.013614289269469504,
+  "skill_vs_trend_recent": -0.13096862938618403,
+  "sigma_kg_ha": 655.4862964778567,
+  "top_effects": [
+    {
+      "feature": "precip_rep",
+      "effect_pct": -2.71
+    },
+    {
+      "feature": "gwetroot_rep_mean",
+      "effect_pct": -2.3
+    },
+    {
+      "feature": "days_late",
+      "effect_pct": -2.06
+    },
+    {
+      "feature": "heat_vpd_stress",
+      "effect_pct": -0.6
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "key": "pedro_afonso",
+  "crop": "soja",
+  "n_seasons": 39,
+  "trained_years": [
+    1985,
+    2025
+  ],
+  "features": [
+    "heat_vpd_stress",
+    "heat_days_35",
+    "heat_excess",
+    "days_late",
+    "precip_rep",
+    "gwetroot_rep_mean",
+    "oni_season"
+  ],
+  "trend": {
+    "log_poly_coef": [
+      0.018403650611299092,
+      -29.155431231452113
+    ],
+    "degree": 1,
+    "form": "deg1",
+    "window": null
+  },
+  "scaler": {
+    "mean": [
+      0.33651957612277966,
+      0.3076923076923077,
+      0.16692307692307706,
+      9.538461538461538,
+      509.0902564102564,
+      0.6070580182529335,
+      -0.012948717948717943
+    ],
+    "scale": [
+      0.9960700461710668,
+      1.135755620017954,
+      0.6766135656042996,
+      12.101803539769902,
+      132.93721059760776,
+      0.05215011976593335,
+      1.031667630554654
+    ]
+  },
+  "ridge": {
+    "alpha": 10000.0,
+    "coef": [
+      -0.00020389207507759408,
+      -0.00017288922914717012,
+      -0.000123625541065623,
+      -6.59266913883114e-05,
+      -0.00011980978176999208,
+      -1.1528725765892882e-05,
+      -0.00014008108684653348
+    ],
+    "intercept": 2.5278899404337892e-15
+  },
+  "beats_trend": false,
+  "skill_vs_trend_full": -0.03900025876908342,
+  "skill_vs_trend_recent": 0.00271863425549701,
+  "sigma_kg_ha": 571.8669231697469,
+  "top_effects": [
+    {
+      "feature": "heat_vpd_stress",
+      "effect_pct": -0.02
+    },
+    {
+      "feature": "heat_days_35",
+      "effect_pct": -0.02
+    },
+    {
+      "feature": "oni_season",
+      "effect_pct": -0.01
+    },
+    {
+      "feature": "heat_excess",
+      "effect_pct": -0.01
+    },
+    {
+      "feature": "precip_rep",
+      "effect_pct": -0.01
+    },
+    {
+      "feature": "days_late",
+      "effect_pct": -0.01
+    },
+    {
+      "feature": "gwetroot_rep_mean",
+      "effect_pct": -0.0
+    }
+  ]
+}

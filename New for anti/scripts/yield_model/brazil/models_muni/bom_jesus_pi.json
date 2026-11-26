@@ -1,0 +1,95 @@
+{
+  "key": "bom_jesus_pi",
+  "crop": "soja",
+  "n_seasons": 28,
+  "trained_years": [
+    1998,
+    2025
+  ],
+  "features": [
+    "heat_vpd_stress",
+    "heat_days_35",
+    "heat_excess",
+    "days_late",
+    "precip_rep",
+    "gwetroot_rep_mean",
+    "oni_season"
+  ],
+  "trend": {
+    "log_poly_coef": [
+      0.0008324401040933583,
+      -3.3314414851400085,
+      3340.7907203513496
+    ],
+    "degree": 2,
+    "form": "deg2",
+    "window": null
+  },
+  "scaler": {
+    "mean": [
+      3.5289153054170295,
+      10.357142857142858,
+      16.65,
+      19.821428571428573,
+      274.8171428571429,
+      0.3917903551251009,
+      -0.006339285714285718
+    ],
+    "scale": [
+      1.4589105051349578,
+      9.972155110657896,
+      20.228153824381927,
+      19.775622748779387,
+      119.03767611430374,
+      0.05629033560607678,
+      1.09110966659088
+    ]
+  },
+  "ridge": {
+    "alpha": 10000.0,
+    "coef": [
+      -0.00019820678258261322,
+      -0.00023993225953076447,
+      -0.00027015062077058845,
+      0.00011838135729992447,
+      6.390907789692017e-05,
+      -7.325840744648913e-05,
+      -0.0003217286553083874
+    ],
+    "intercept": -1.770266277431984e-12
+  },
+  "beats_trend": false,
+  "skill_vs_trend_full": -0.00028341119674046844,
+  "skill_vs_trend_recent": -0.00028341119674046844,
+  "sigma_kg_ha": 517.5523344335204,
+  "top_effects": [
+    {
+      "feature": "oni_season",
+      "effect_pct": -0.03
+    },
+    {
+      "feature": "heat_excess",
+      "effect_pct": -0.03
+    },
+    {
+      "feature": "heat_days_35",
+      "effect_pct": -0.02
+    },
+    {
+      "feature": "heat_vpd_stress",
+      "effect_pct": -0.02
+    },
+    {
+      "feature": "days_late",
+      "effect_pct": 0.01
+    },
+    {
+      "feature": "gwetroot_rep_mean",
+      "effect_pct": -0.01
+    },
+    {
+      "feature": "precip_rep",
+      "effect_pct": 0.01
+    }
+  ]
+}
