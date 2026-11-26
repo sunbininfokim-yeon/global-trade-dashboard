@@ -14,6 +14,7 @@ from urllib.request import urlopen
 
 from build_us_cpi_forward_validation import CONFIG, PUBLIC, read_json
 from macro_monitor.cpi.forward_validation import monthly_changes, scan_lags, shift
+from macro_monitor.cpi.internal_watch import assess
 
 ZORI_DATA = (
     "https://files.zillowstatic.com/research/public_csvs/zori/Metro_zori_uc_sfrcondomfr_sm_sa_month.csv"
@@ -113,6 +114,7 @@ def build(macro: dict, mapping: dict, history: dict, levels: dict[str, float], *
                 for key, ids, label, role, watch, url in EXTERNAL]
     return {
         "schema_version": "us-cpi-watch-v1", "reference_period": ref, "forecast_active": False,
+        "internal_monitor": assess(history, mapping, ref),
         "movers": {basis: rank_movers(movers, basis) for basis in ("mom", "yoy")},
         "internal_pathways": [
             {**{k: row[k] for k in ("id", "type", "source_ids", "target_ids", "mechanism_ko")},

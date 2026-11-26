@@ -135,7 +135,8 @@ def refresh(today, force=False, fetch=get):
     levels = {m: v for m, v in levels.items() if m <= min(ref, today.isoformat()[:7])}
     if not levels:
         raise ValueError("no dated national ZORI data")
-    report = build(macro, read_json(CONFIG / "cpi_structure.map.json"), {}, levels, include_research=False)
+    report = build(macro, read_json(CONFIG / "cpi_structure.map.json"),
+                   read_json(PUBLIC / "us_cpi_api_history_v1.json"), levels, include_research=False)
     if ref <= report["reference_period"]:
         raise ValueError("target CPI already published; check calendar")
     events = read_json(CONFIG / "cpi_reviewed_rate_orders.json")["orders"]
