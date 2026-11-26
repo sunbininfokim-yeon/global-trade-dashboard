@@ -7474,6 +7474,13 @@ body.tutorial-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 
 .ms-hist-key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 2px; vertical-align: -1px; }
 .ms-hist-key.is-pred { background: var(--ms-hist-pred); }
 .ms-hist-key.is-act { background: var(--ms-hist-act); }
+/* 주가 예측 탭 구조도 */
+.ms-predict-h { font-size: 15px; margin: 22px 0 6px; color: rgba(226, 232, 240, 0.92); }
+.ms-flow { display: grid; gap: 10px; }
+.ms-flow-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; }
+.ms-flow-node { border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 10px; padding: 10px 12px; font-weight: 600; display: flex; flex-direction: column; gap: 2px; }
+.ms-flow-node small { font-weight: 400; font-size: 11px; color: rgba(148, 163, 184, 0.85); }
+.ms-flow-arrow { font-size: 20px; color: var(--ms-hist-pred); }
 .ms-hist-table td:not(:first-child), .ms-hist-table th:not(:first-child) { text-align: right; }
 .ms-hist-table small { font-weight: 400; opacity: 0.7; }
 .ms-hist-n { font-size: 11px; opacity: 0.65; }

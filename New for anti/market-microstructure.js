@@ -350,16 +350,17 @@ const msOpenTab = (id) => { if (MS_TABS.some((t) => t.id === id)) MS_TAB = id; }
 const msCredit = (D) => ((D.credit || {}).deposit_credit) || (D.micro || {}).deposit_credit || {};
 
 const MS_TABS = [
+    // Order and the 한국 미국 방향성 예측 name: user decision 2026-11-26.
+    { id: 'levels', label: '가격대별 체결', blurb: '어느 가격에서 누가 샀는가 (Volume Profile)' },
+    { id: 'uskr',   label: '한국 미국 방향성 예측', blurb: '한국 장 마감 → 그날 밤 미국 반도체 시가, 그리고 미국 장 마감 → 다음 한국 장 예측이 실제와 얼마나 맞았는지. 연구용 확률입니다.' },
+    { id: 'derivatives', label: '파생 수급', blurb: '외국인 K200 선물·옵션 수급과 시장 전체 거래 활동' },
     { id: 'tangle', label: '수급 불균형', blurb: '집중도와 단일종목 레버리지 ETF (Distortion & Squeeze)' },
     { id: 'overseas', label: '해외 LETF', blurb: '삼성전자·SK하이닉스 해외 상품과 미국 주요 비교 상품 · 거래·구성·추정 리밸런싱' },
-    { id: 'levels', label: '가격대별 체결', blurb: '어느 가격에서 누가 샀는가 (Volume Profile)' },
-    { id: 'uskr',   label: '해외-국내 선행', blurb: '미국 옵션 레짐이 한국으로 (Global Spillover)' },
-    { id: 'derivatives', label: '파생 수급', blurb: '외국인 K200 선물·옵션 수급과 시장 전체 거래 활동' },
     { id: 'crypto', label: '가상자산', blurb: 'BTC·ETH 가격, 김치 프리미엄, 스테이블코인 유동성, 선물 레버리지, 업비트 거래대금' },
 ];
 
 let MS_DATA = null;
-let MS_TAB = 'tangle';
+let MS_TAB = 'levels';
 let MS_UNIVERSE = 'marcap';
 let MS_TICKER = null;         // 가격대별 탭에서 선택한 종목 (null = 코스피 지수)
 let MS_STOCK = null;          // 수급 꼬임 탭에서 선택한 종목
@@ -1575,6 +1576,7 @@ const msLevelsTab = (D) => {
     const L = kl.latest || {};
 
     return `
+    ${msUsToKrBlock(D)}
     ${msFactorSection(D, 'foreign_stock_flow')}
     <section class="fin-block fin-block-wide">
         <h2>가격대별 누적 수급 <span class="ms-q">${finEsc(src.quality || '')}</span></h2>
@@ -1713,6 +1715,57 @@ const msLevelsTab = (D) => {
     </section>`;
 };
 
+// --- 미국 반도체 방향 예측 탭 (한국 → 미국) + 미국 → 한국 블록 -------------------------------------------
+// The 현재 관찰되는 연결 / 채널 / 알림 / 장초 30분 blocks below read prototype
+// (mock) inputs, so they are hidden by default (user decision 2026-11-26).
+// ?uskr_obs=on shows them again for review; ?uskr_obs=off hides; kept in localStorage.
+const msUskrShowObserved = () => {
+    let v = null;
+    try {
+        const q = new URLSearchParams(location.search).get('uskr_obs');
+        if (q === 'on' || q === 'off') localStorage.setItem('ms_uskr_obs', q);
+        v = localStorage.getItem('ms_uskr_obs');
+    } catch (_) { /* storage blocked: stay hidden */ }
+    return v === 'on';
+};
+const msFlowRow = (from, fromSub, to, toSub) => `
+        <div class="ms-flow-row">
+            <span class="ms-flow-node">${from}<small>${fromSub}</small></span>
+            <span class="ms-flow-arrow">→</span>
+            <span class="ms-flow-node">${to}<small>${toSub}</small></span>
+        </div>`;
+// 미국 → 한국 sits on top of 가격대별 체결; 한국 → 미국 is its own tab
+// (user decision 2026-11-26).
+const msUsToKrBlock = (D) => `
+    <h2 class="ms-predict-h">미국 → 한국 · 오늘 한국 장 방향</h2>
+    <div class="ms-flow">${msFlowRow('🇺🇸 미국 장 마감', '06:00 KST', '🇰🇷 다음 한국 장', '시가·종가 방향 · 08:30 전 확정')}</div>
+    ${msFactorSection(D, 'us_price')}`;
+// 한국 → 미국 (#1121 engine, #1129 display spec). No scheduled publisher yet,
+// so each card shows 전망 준비 중 plus the frozen model's past validation;
+// numbers are copied from docs/ops/handoff/2026-11-25-codex-kr-us-semiconductor*.md.
+const MS_KRUS_CARDS = [
+    { ticker: 'MU', name: '마이크론', input: 'SK하이닉스의 코스피 대비 움직임',
+      validation: '2016~2026년 2,531거래일 · 상승 출발일 83% 포착 · 하락 출발일 44% 포착',
+      status: '하이닉스 후보 모델 학습 완료 · 매일 발행 연결 준비 중' },
+    { ticker: 'SNDK', name: '샌디스크', input: '삼성전자·SK하이닉스의 코스피 대비 움직임',
+      validation: '2026년 211거래일 · Brier 0.216 → 0.185 (연구 중)',
+      status: '과거 비교 완료 · 동결 모델과 매일 발행 필요' },
+];
+const msKrUsSection = () => `
+    <section class="fin-block fin-block-wide">
+        <div class="ms-dir-section-head"><h2>마이크론·샌디스크 시가 방향</h2><span class="ms-dir-badge is-muted">전망 준비 중</span></div>
+        <p class="fin-lead">오늘 한국 장에서 삼성전자·SK하이닉스가 코스피보다 얼마나 강했는지로, 오늘 밤 미국 시가가 전 거래일 종가보다 오를지 봅니다. 공통 입력은 미국 전 거래일 가격과 한국 당일 코스피입니다.</p>
+        <div class="ms-dir-grid">${MS_KRUS_CARDS.map((c) => `
+            <div class="ms-dir-card">
+                <div class="ms-dir-head"><span class="ms-dir-title">${finEsc(c.name)} · ${finEsc(c.ticker)}</span></div>
+                <div class="ms-dir-empty">—</div>
+                <p class="ms-dir-note">${finEsc(c.status)}</p>
+                <p class="ms-dir-note">입력 · ${finEsc(c.input)}</p>
+                <p class="ms-dir-note">과거 검증 · ${finEsc(c.validation)}</p>
+            </div>`).join('')}</div>
+        <p class="fin-note">상승 출발일 83% 포착은 실제로 오른 날을 오른다고 본 비율이고, 하락 출발일 44%는 내린 날을 내린다고 본 비율입니다. 하락은 절반도 못 잡습니다. 한국 가격이 미국을 움직였다는 인과는 확인되지 않았습니다.</p>
+    </section>`;
+
 // --- ③ US → KR 관찰 ----------------------------------------------------------
 const msUsKr = (D) => {
     const t = D.transmission || {};
@@ -1743,8 +1796,14 @@ const msUsKr = (D) => {
         ];
     });
 
+    const observed = msUskrShowObserved();
     return `
-    ${msFactorSection(D, 'us_price')}
+    <h2 class="ms-predict-h">한국 → 미국 · 오늘 밤 미국 반도체 방향</h2>
+    <div class="ms-flow">${msFlowRow('🇰🇷 한국 장 마감', '15:30 KST', '🇺🇸 그날 밤 미국 장', '시가 방향 · 미국 개장 전 확정')}</div>
+    ${msKrUsSection()}
+    ${msDirectionHistorySection(D)}
+    ${observed ? `
+    <h2 class="ms-predict-h">참고 · 현재 관찰되는 연결 (시험 자료)</h2>
     <section class="fin-block fin-block-wide">
         <h2>현재 관찰되는 US → KR 연결</h2>
         <div class="ms-headline">
@@ -1835,7 +1894,7 @@ const msUsKr = (D) => {
         <ul class="fin-list">${gs.data_limits_ko.map((x) => `<li>${finEsc(x)}</li>`).join('')}</ul>` : ''}
     </section>` : ''}
 
-    <p class="mm-disclaimer">${finEsc(t.disclaimer_ko || '')}</p>`;
+    <p class="mm-disclaimer">${finEsc(t.disclaimer_ko || '')}</p>` : ''}`;
 };
 
 // --- KRX 15007 투자자별 파생 순매수 히스토리 ---------------------------------
@@ -2775,7 +2834,6 @@ const msDerivatives = (D) => {
     return `
     ${msFactorSection(D, 'options')}
     ${msDirectionSection(D)}
-    ${msDirectionHistorySection(D)}
 
     <section class="fin-block fin-block-wide">
         <h2>외국인 KOSPI200 파생 수급</h2>
