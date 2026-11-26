@@ -154,7 +154,7 @@ def predict_one(cfg, year, oni, dmi, blue_dailies=None):
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
         "point": point_kg,
         "range_68": [point_kg - sigma, point_kg + sigma],
-        "range_95": [point_kg - 1.96 * sigma, point_kg + 1.96 * sigma],
+        "range_95": [point_kg - 2.5 * sigma, point_kg + 2.5 * sigma],
         "sigma": sigma,
         "beats_trend": model["beats_trend"],
         "skill_vs_trend": model["recent_skill_vs_trend"],

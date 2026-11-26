@@ -304,5 +304,5 @@ def predict_target(model, year, feature_values):
         "candidate_weather_effect": float(np.exp(trend(year) + candidate_shock) - trend_value),
         "sigma": sigma,
         "range_68": [max(0.0, point - sigma), point + sigma],
-        "range_95": [max(0.0, point - 1.96 * sigma), point + 1.96 * sigma],
+        "range_95": [max(0.0, point - 2.5 * sigma), point + 2.5 * sigma],
     }

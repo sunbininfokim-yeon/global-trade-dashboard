@@ -56,7 +56,7 @@ def _inflate_ranges(result, observed_share):
     result["base_sigma"] = result["sigma"]
     result["sigma"] = sigma
     result["range_68"] = [max(0.0, point - sigma), point + sigma]
-    result["range_95"] = [max(0.0, point - 1.96 * sigma), point + 1.96 * sigma]
+    result["range_95"] = [max(0.0, point - 2.5 * sigma), point + 2.5 * sigma]
     return result
 
 
