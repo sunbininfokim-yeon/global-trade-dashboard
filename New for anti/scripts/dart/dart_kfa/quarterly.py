@@ -89,16 +89,17 @@ def series(points: list[dict], *, closes: dict | None = None, shares: float | No
         net_debt = gross - cash if gross is not None and cash is not None else None
         nci = b["equity"] - b["parent_equity"] if b.get("equity") is not None and b.get("parent_equity") is not None else None
         ym = p["period_end"][:4] + p["period_end"][5:7]
-        cap = None
+        cap = common_cap = pref_cap = None
         if closes and shares and closes.get(ym):
-            cap = closes[ym] * shares
+            common_cap = closes[ym] * shares
             if pref_closes and pref_shares and pref_closes.get(ym):
-                cap += pref_closes[ym] * pref_shares
+                pref_cap = pref_closes[ym] * pref_shares
+            cap = common_cap + (pref_cap or 0)
         ev = cap + net_debt + (nci or 0) if cap is not None and net_debt is not None else None
         op = ltm.get("op")
         row = {
             "period_end": p["period_end"], "report": p["report"],
-            "market_cap": cap, "price": (closes or {}).get(ym), "net_debt": net_debt, "gross_debt": gross,
+            "market_cap": cap, "common_cap": common_cap, "preferred_cap": pref_cap, "price": (closes or {}).get(ym), "net_debt": net_debt, "gross_debt": gross,
             "lease": lease, "short_term_debt": short, "cash": cash, "nci": nci, "ev": ev,
             "revenue_ltm": ltm.get("revenue"), "op_ltm": op,
             "ev_to_ebit": ev / op if ev is not None and op and op > 0 else None,

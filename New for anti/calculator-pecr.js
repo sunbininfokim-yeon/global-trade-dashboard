@@ -892,12 +892,53 @@ const Q_FOR_CARD = {
     operating_income: 'op_ltm', debt_due_within_1y: 'short_term_debt',
 };
 const Q_LABEL = {
-    ev: ['EV', 'money'], market_cap: ['시가총액', 'money'], net_debt: ['순차입금', 'money'], gross_debt: ['총차입금(리스 포함)', 'money'],
+    ev: ['EV', 'money'], market_cap: ['시가총액', 'money'], common_cap: ['보통주 시가', 'money'], preferred_cap: ['우선주 시가', 'money'], net_debt: ['순차입금', 'money'], gross_debt: ['총차입금(리스 포함)', 'money'],
     nci: ['비지배지분', 'money'], cash: ['현금', 'money'], short_term_debt: ['단기 차입(1년 내)', 'money'],
     current_ratio: ['유동비율', 'x'], debt_ratio: ['부채비율', 'pct'], ev_to_ebit: ['EV/EBIT (LTM 영업이익)', 'x'],
     op_ltm: ['영업이익 (LTM)', 'money'], revenue_ltm: ['매출 (LTM)', 'money'],
 };
 const qFmt = (kind, v) => (!Number.isFinite(v) ? '—' : kind === 'money' ? pecrNum(v) : kind === 'pct' ? `${(v * 100).toFixed(0)}%` : `${v.toFixed(1)}배`);
+
+// EV = 보통주 + 우선주 + 순차입금 + 비지배지분, one stacked bar per quarter.
+// Net cash (negative net debt) hangs below zero, so the bar's net height still
+// equals EV; a dot marks EV itself.
+const EV_STACK = [
+    ['common_cap', '보통주 시가총액', '#60a5fa'], ['preferred_cap', '우선주 시가총액', '#a78bfa'],
+    ['net_debt', '순차입금 (음수면 순현금)', '#f59e0b'], ['nci', '비지배지분', '#34d399'],
+];
+const pecrEvStackHtml = (pts) => {
+    const rows = pts.map((p) => ({
+        p, segs: EV_STACK.map(([k]) => (k === 'common_cap' && !Number.isFinite(p.common_cap) ? p.market_cap : p[k]))
+            .map((v) => (Number.isFinite(v) ? v : 0)),
+    }));
+    const hi = Math.max(0, ...rows.map((r) => r.segs.filter((v) => v > 0).reduce((a, b) => a + b, 0)));
+    const lo = Math.min(0, ...rows.map((r) => r.segs.filter((v) => v < 0).reduce((a, b) => a + b, 0)));
+    const W = 640, H = 170, top = 10, bottom = 18, span = (hi - lo) || 1;
+    const y = (v) => top + (hi - v) / span * (H - top - bottom);
+    const slot = W / rows.length, bw = Math.min(46, slot * 0.6);
+    const bars = rows.map((r, i) => {
+        const x = i * slot + (slot - bw) / 2;
+        let up = 0, down = 0;
+        const rects = r.segs.map((v, k) => {
+            if (!v) return '';
+            const from = v > 0 ? up : down;
+            const to = from + v;
+            if (v > 0) up = to; else down = to;
+            const [, label, color] = EV_STACK[k];
+            return `<rect x="${x.toFixed(1)}" y="${Math.min(y(from), y(to)).toFixed(1)}" width="${bw.toFixed(1)}"
+                height="${Math.max(1, Math.abs(y(from) - y(to))).toFixed(1)}" fill="${color}"><title>${finEsc(r.p.period_end)} ${finEsc(label)} ${pecrNum(v)}</title></rect>`;
+        }).join('');
+        const ev = r.p.ev;
+        const dot = Number.isFinite(ev) ? `<circle cx="${(x + bw / 2).toFixed(1)}" cy="${y(ev).toFixed(1)}" r="3.2" fill="#f1f5f9"><title>EV ${pecrNum(ev)}</title></circle>` : '';
+        const lbl = `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="#94a3b8">${finEsc(r.p.period_end.slice(2, 7).replace('-', '.'))}</text>`;
+        return rects + dot + lbl;
+    }).join('');
+    const zero = `<line x1="0" x2="${W}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="#475569" stroke-width="1"/>`;
+    const used = EV_STACK.filter(([k]) => rows.some((r) => r.segs[EV_STACK.findIndex((e) => e[0] === k)]));
+    return `<svg viewBox="0 0 ${W} ${H}" class="pecr-stack" role="img" aria-label="분기별 EV 구성">${zero}${bars}</svg>
+        <div class="pecr-legend">${used.map(([, l, c]) => `<span><i style="background:${c}"></i>${finEsc(l)}</span>`).join('')}
+            <span><i class="dot"></i>EV</span></div>`;
+};
 
 const pecrQuarterHtml = (snap, metric) => {
     const q = snap.quarterly;
@@ -905,10 +946,12 @@ const pecrQuarterHtml = (snap, metric) => {
     const pts = (q.points || []).filter((p) => Number.isFinite(p[metric]));
     if (pts.length < 2) return '<p class="fin-note">분기별 값을 만들 공시가 부족합니다.</p>';
     const [label, kind] = Q_LABEL[metric] || [metric, 'money'];
-    const bars = typeof finPeriodBars === 'function'
+    const bars = metric === 'ev' ? pecrEvStackHtml(pts) : typeof finPeriodBars === 'function'
         ? finPeriodBars(pts.map((p) => ({ label: p.period_end.slice(2, 7).replace('-', '.'), value: p[metric] })), (v) => qFmt(kind, v)) : '';
     const comps = metric === 'ev' || metric === 'ev_to_ebit'
-        ? ['market_cap', 'net_debt', 'nci', 'ev', 'op_ltm', 'ev_to_ebit'] : metric === 'net_debt' || metric === 'gross_debt'
+        ? (pts.some((p) => Number.isFinite(p.preferred_cap))
+            ? ['common_cap', 'preferred_cap', 'net_debt', 'nci', 'ev', 'op_ltm', 'ev_to_ebit']
+            : ['market_cap', 'net_debt', 'nci', 'ev', 'op_ltm', 'ev_to_ebit']) : metric === 'net_debt' || metric === 'gross_debt'
             ? ['gross_debt', 'cash', 'net_debt'] : [metric];
     return `<div class="pecr-q"><p class="pecr-q-title">분기별 ${finEsc(label)}</p>${bars}
         <div class="co-table-wrap"><table class="co-table pecr-table">
