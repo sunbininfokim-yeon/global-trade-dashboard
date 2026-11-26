@@ -663,7 +663,7 @@ const mmBarSeries = (dates, values, opts = {}) => {
 // Detail panels a pipeline attaches to a card (ind.panels): grouped bars, a signed stack with a
 // balance line, lines, or a ranked list (bank by bank). One renderer for all of them, so a new
 // breakdown is data, not code. First used by the Korean bank credit cards (kr_bank_credit.py).
-const MM_PANEL_COLORS = ['#38bdf8', '#f97316', '#a78bfa', '#34d399', '#fb7185', '#facc15'];
+const MM_PANEL_COLORS = ['#38bdf8', '#f97316', '#a78bfa', '#34d399', '#fb7185', '#facc15', '#e879f9', '#94a3b8'];
 const mmPanelNum = (v, unit) => (Number.isFinite(v)
     ? `${v.toLocaleString(undefined, { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 })}${unit === '%' ? '%' : unit ? ` ${unit}` : ''}`
     : '—');
@@ -671,6 +671,10 @@ const mmPanelNum = (v, unit) => (Number.isFinite(v)
 const mmPanelView = (p) => {
     if (!p) return '<p class="fin-note">패널 데이터가 없습니다.</p>';
     const note = p.note_ko ? `<p class="fin-note">${finEsc(p.note_ko)}</p>` : '';
+    // Several charts on one tab, stacked on the same date axis (SOMA with TGA underneath).
+    if (p.type === 'charts') {
+        return `${(p.charts || []).map((c) => `<div class="mm-panel-stacked"><p class="mm-panel-sub">${finEsc((c.series || [])[0]?.label || c.label || '')}</p>${mmPanelView(c)}</div>`).join('')}${note}`;
+    }
     if (p.type === 'hbar') {
         const rows = p.rows || [];
         const hi = Math.max(...rows.map((r) => Math.abs(r.value) || 0), 1e-9);
@@ -703,7 +707,12 @@ const mmPanelView = (p) => {
         series.forEach((s) => vals.push(...s.values.filter(Number.isFinite)));
     }
     if (line) vals.push(...line.values.filter(Number.isFinite));
-    let lo = Math.min(...vals, p.type === 'lines' ? Infinity : 0), hi = Math.max(...vals, p.type === 'lines' ? -Infinity : 0);
+    // p.log: a log axis for lines that grow at very different rates (an index where one line went x9), so
+    // equal ratios look equal. Only when every value is positive.
+    const logAx = p.log && p.type === 'lines' && vals.every((v) => v > 0);
+    const tf = logAx ? Math.log : (v) => v;
+    const inv = logAx ? Math.exp : (v) => v;
+    let lo = Math.min(...vals.map(tf), p.type === 'lines' ? Infinity : 0), hi = Math.max(...vals.map(tf), p.type === 'lines' ? -Infinity : 0);
     if (!Number.isFinite(lo) || !Number.isFinite(hi)) return `<p class="fin-note">그릴 수 있는 시계열이 없습니다.</p>${note}`;
     if (lo === hi) { lo -= 1; hi += 1; }
     const pad = (hi - lo) * 0.08; lo -= p.type === 'lines' ? pad : (lo < 0 ? pad : 0); hi += pad;
@@ -711,9 +720,9 @@ const mmPanelView = (p) => {
     const plotW = MM_W - MM_L - MM_R;
     const slot = plotW / n;
     const cx = (i) => MM_L + slot * (i + 0.5);
-    const sy = (v) => MM_T + (1 - (v - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
-    const zero = sy(Math.max(lo, Math.min(0, hi)));
-    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + (hi - lo) * t);
+    const sy = (v) => MM_T + (1 - (tf(v) - lo) / (hi - lo)) * (MM_H - MM_T - MM_B);
+    const zero = logAx ? MM_H - MM_B : sy(Math.max(lo, Math.min(0, hi)));
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => inv(lo + (hi - lo) * t));
     const step = Math.max(1, Math.ceil(n / 8));
 
     let marks = '';
@@ -722,7 +731,7 @@ const mmPanelView = (p) => {
         series.forEach((s, j) => s.values.forEach((v, i) => {
             if (!Number.isFinite(v)) return;
             const x = cx(i) - slot * 0.4 + j * bw, y = sy(v);
-            marks += `<rect x="${x.toFixed(1)}" y="${Math.min(y, zero).toFixed(1)}" width="${(bw * 0.9).toFixed(1)}" height="${Math.max(Math.abs(zero - y), 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % 6]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
+            marks += `<rect x="${x.toFixed(1)}" y="${Math.min(y, zero).toFixed(1)}" width="${(bw * 0.9).toFixed(1)}" height="${Math.max(Math.abs(zero - y), 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % MM_PANEL_COLORS.length]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
         }));
     } else if (p.type === 'stack') {
         const bw = Math.max(slot * 0.62, 1);
@@ -734,13 +743,17 @@ const mmPanelView = (p) => {
                 const from = v >= 0 ? pos : neg, to = from + v;
                 if (v >= 0) pos = to; else neg = to;
                 const y1 = sy(Math.max(from, to)), y2 = sy(Math.min(from, to));
-                marks += `<rect x="${(cx(i) - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(y2 - y1, 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % 6]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
+                marks += `<rect x="${(cx(i) - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(y2 - y1, 0.6).toFixed(1)}" fill="${MM_PANEL_COLORS[j % MM_PANEL_COLORS.length]}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></rect>`;
             });
         }
     } else {
+        // p.markers: a dot on every observation, so a quarterly line on a monthly axis shows where its
+        // points really are (the line between them is only a guide).
         series.forEach((s, j) => {
+            const color = MM_PANEL_COLORS[j % MM_PANEL_COLORS.length];
             const d = s.values.map((v, i) => (Number.isFinite(v) ? `${cx(i).toFixed(1)},${sy(v).toFixed(1)}` : null)).filter(Boolean);
-            if (d.length) marks += `<polyline points="${d.join(' ')}" fill="none" stroke="${MM_PANEL_COLORS[j % 6]}" stroke-width="2"/>`;
+            if (d.length) marks += `<polyline points="${d.join(' ')}" fill="none" stroke="${color}" stroke-width="${p.markers ? 1.6 : 2}"/>`;
+            if (p.markers) s.values.forEach((v, i) => { if (Number.isFinite(v)) marks += `<circle cx="${cx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.4" fill="${color}"><title>${finEsc(`${dates[i]} ${s.label} ${mmPanelNum(v, p.unit)}`)}</title></circle>`; });
         });
     }
     if (line) {
@@ -749,10 +762,13 @@ const mmPanelView = (p) => {
         line.values.forEach((v, i) => { if (Number.isFinite(v)) marks += `<circle cx="${cx(i).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.6" fill="#e2e8f0"><title>${finEsc(`${dates[i]} ${line.label} ${mmPanelNum(v, p.unit)}`)}</title></circle>`; });
     }
 
-    const all = [...series.map((s, j) => ({ ...s, color: MM_PANEL_COLORS[j % 6] })), ...(line ? [{ ...line, color: '#e2e8f0' }] : [])];
+    const all = [...series.map((s, j) => ({ ...s, color: MM_PANEL_COLORS[j % MM_PANEL_COLORS.length] })), ...(line ? [{ ...line, color: '#e2e8f0' }] : [])];
     const lastIdx = (s) => { for (let i = s.values.length - 1; i >= 0; i -= 1) if (Number.isFinite(s.values[i])) return i; return -1; };
     const legend = all.map((s) => {
-        const i = lastIdx(s), prev = i > 0 ? s.values[i - 1] : null;
+        const i = lastIdx(s);
+        let k = i - 1;                                           // the previous observation, not the previous slot
+        while (k >= 0 && !Number.isFinite(s.values[k])) k -= 1;
+        const prev = k >= 0 ? s.values[k] : null;
         const chg = Number.isFinite(prev) && i >= 0 ? s.values[i] - prev : null;
         return `<span class="mm-panel-key"><i style="background:${s.color}"></i>${finEsc(s.label)} <b>${i >= 0 ? mmPanelNum(s.values[i], p.unit) : '—'}</b>${Number.isFinite(chg) ? `<em>${chg >= 0 ? '+' : ''}${chg.toFixed(2)}</em>` : ''}</span>`;
     }).join('');
@@ -2608,6 +2624,10 @@ const mmViewsFor = (ind) => {
     if (ind.official_history && has(ind.official_history.values)) views.push({ id: 'official', label: '원자료·산식' });
     if (ind.contrib && has(ind.contrib.parts)) views.push({ id: 'contrib', label: ind.contrib_industry ? '지출 기여도' : '기여도' });
     if (ind.contrib_industry && has(ind.contrib_industry.parts)) views.push({ id: 'contrib_ind', label: '산업 기여도' });
+    // A card whose point is its breakdown (several series drawn together) opens on that panel.
+    const fp = (ind.ui || {}).first_panel;
+    const at = fp ? views.findIndex((v) => v.id === `panel:${fp}`) : -1;
+    if (at > 0) views.unshift(...views.splice(at, 1));
     return views.length ? views : [{ id: 'history', label: '추이' }];
 };
 
@@ -3013,18 +3033,61 @@ const mmReservesRatioRail = (r, dates) => {
     </aside>`;
 };
 
-const mmNewsRail = (ind) => {
-    const items = Array.isArray(ind.news) ? ind.news : null;
-    return `
-    <aside class="mm-news">
-        <p class="mm-news-head">관련 뉴스</p>
-        ${items && items.length ? items.map((it) => `
+let MM_NEWS_SEQ = 0;
+const mmNewsItems = (items) => items.map((it) => `
             <a class="mm-news-item" href="${finEsc(it.url)}" target="_blank" rel="noopener noreferrer">
                 <span class="mm-news-title">${finEsc(it.title)}</span>
                 <span class="mm-news-meta">${finEsc(it.source || '')}${it.published_at ? ` · ${finEsc(String(it.published_at).slice(0, 10))}` : ''}</span>
-            </a>`).join('')
-        : `<p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
-           ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}`}
+            </a>`).join('');
+
+// A card can carry a small summary block above its news (the SOMA card's duration: how much of the Treasury
+// market's rate risk the Fed holds, and what QT hands back to private holders month by month).
+const mmDurationBlock = (r) => {
+    if (!r || !(r.rows || []).length) return '';
+    const bars = r.bars || [];
+    const hi = Math.max(...bars.map((b) => Math.abs(b.value) || 0), 1e-9);
+    return `
+        <div class="mm-dur">
+            <p class="mm-news-head">${finEsc(r.title || '')} <span class="mm-news-meta">${finEsc(r.asof || '')}</span></p>
+            ${r.rows.map((x) => `<div class="mm-dur-row"><span>${finEsc(x.label)}</span><b>${finEsc(x.value)}</b></div>`).join('')}
+            ${bars.length ? `<div class="mm-dur-bars">${bars.map((b) => {
+                const h = `${(Math.abs(b.value) / hi * 100).toFixed(0)}%`;
+                return `<span class="mm-dur-bar" title="${finEsc(`${b.date} ${b.value >= 0 ? '+' : ''}${b.value}십억$`)}">
+                    <span class="mm-dur-h top">${b.value > 0 ? `<i class="up" style="height:${h}"></i>` : ''}</span>
+                    <span class="mm-dur-h bot">${b.value < 0 ? `<i class="dn" style="height:${h}"></i>` : ''}</span></span>`;
+            }).join('')}</div>
+                <div class="mm-dur-axis"><span>${finEsc(bars[0].date)}</span><span>${finEsc(bars[bars.length - 1].date)}</span></div>` : ''}
+            ${r.note_ko ? `<p class="mm-news-foot">${finEsc(r.note_ko)}</p>` : ''}
+        </div>`;
+};
+
+// Official releases first (wire_card_news.py: Fed, BEA, Treasury, BLS links), press articles behind a
+// toggle (free Google News RSS). The toggle is two radio buttons and CSS -- no handler, survives re-render.
+const mmNewsRail = (ind) => {
+    const official = Array.isArray(ind.news_official) ? ind.news_official : [];
+    const press = [...(Array.isArray(ind.news_press) ? ind.news_press : []), ...(Array.isArray(ind.news) ? ind.news : [])];
+    if (official.length || press.length) {
+        const n = ++MM_NEWS_SEQ;
+        const first = official.length ? 'off' : 'press';
+        return `
+    <aside class="mm-news">${mmDurationBlock(ind.duration_rail)}
+        <p class="mm-news-head">관련 뉴스</p>
+        <div class="mm-news-tabs">
+            <input type="radio" class="mm-nt-off" id="mm-nt-off-${n}" name="mm-nt-${n}" ${first === 'off' ? 'checked' : ''}>
+            <label for="mm-nt-off-${n}">공식 발표 ${official.length}</label>
+            <input type="radio" class="mm-nt-press" id="mm-nt-press-${n}" name="mm-nt-${n}" ${first === 'press' ? 'checked' : ''}>
+            <label for="mm-nt-press-${n}">언론 기사 ${press.length}</label>
+            <div class="mm-news-list mm-news-off">${official.length ? mmNewsItems(official) : '<p class="mm-news-empty">이 지표의 공식 발표 피드가 없습니다.</p>'}</div>
+            <div class="mm-news-list mm-news-press">${press.length ? mmNewsItems(press) : '<p class="mm-news-empty">최근 45일 관련 기사가 없습니다.</p>'}</div>
+        </div>
+        <p class="mm-news-foot">공식 발표 = 연준·BEA·재무부 원문(BLS는 최신 보도자료 링크) · 언론 기사 = Google 뉴스(무료) · 투자 권유 아님</p>
+    </aside>`;
+    }
+    return `
+    <aside class="mm-news">${mmDurationBlock(ind.duration_rail)}
+        <p class="mm-news-head">관련 뉴스</p>
+        <p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
+        ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}
         <p class="mm-news-foot">투자 권유 아님 · 뉴스 요약은 참고용</p>
     </aside>`;
 };

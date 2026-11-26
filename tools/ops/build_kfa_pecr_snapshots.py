@@ -758,6 +758,10 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     regulatory, regulatory_note = regulatory_series(dart, corp, year, company, fs)
     bases = valuation_bases(dart, corp, year, fs, fy_rows, result.get('cards') or {})
     try:
+        quarterly, quarterly_note = quarterly_packet(dart, corp, year, fs, filings, stock, today)
+    except Exception as exc:  # noqa: BLE001
+        quarterly, quarterly_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
+    try:
         notes, notes_note = notes_packet(dart, year, fs, fy_rows)
     except Exception as exc:  # noqa: BLE001
         notes, notes_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
@@ -799,6 +803,8 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
         'investor_metrics': investor,
         'segments': segments,
         'note_items': notes,
+        'quarterly': quarterly,
+        'quarterly_input': quarterly_note,
         'note_items_input': notes_note,
         'segments_input': segments_note,
         'order_backlog': backlog,
@@ -811,7 +817,7 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
 
 
 # Bump when the snapshot's content changes, so every company is rebuilt once.
-BUILDER_VERSION = '2026-11-24.2'
+BUILDER_VERSION = '2026-11-26.1'
 NAVER_RANK = 'https://m.stock.naver.com/api/stocks/marketValue/{market}?page={page}&pageSize=100'
 EXTRA_TARGETS = ROOT / 'New for anti' / 'scripts' / 'dart' / 'config' / 'kfa_pecr_extra_targets.json'
 
@@ -858,13 +864,70 @@ def latest_periodic_receipt(dart: Dart, corp: str, today: dt.date) -> str | None
     return max((r['rcept_no'] for r in rows), default=None)
 
 
+def compact_parts(inputs: list) -> list:
+    """The card's inputs as the detail box shows them: what, how much, from which
+    account / report / date. The full canonical provenance (~75 % of the file)
+    is dropped; the receipts kept make the run reproducible."""
+    parts = []
+    for i in inputs or []:
+        if not isinstance(i, dict):
+            continue
+        if i.get('input') == 'market_observation':
+            parts.append({'input': 'market', 'market_cap': i.get('market_cap'),
+                          'preferred_equity': i.get('preferred_equity'), 'as_of': i.get('as_of')})
+            continue
+        pv = i.get('provenance') or {}
+        parts.append({k: v for k, v in {
+            'input': i.get('input'), 'label': pv.get('source_account_name') or i.get('input'),
+            'value': i.get('value'), 'period_end': i.get('period_end'), 'opening': i.get('opening') or None,
+            'filing': pv.get('filing_id'), 'report': i.get('report_code'),
+        }.items() if v is not None})
+    return parts
+
+
 def slim(snap: dict) -> dict:
-    """Drop per-card input provenance (~75 % of the file; the calculator never
-    reads it). The engine run is reproducible from the receipts kept."""
     for card in ((snap.get('pe_cr') or {}).get('cards') or {}).values():
         if isinstance(card, dict) and isinstance(card.get('inputs'), list):
-            card['input_count'] = len(card.pop('inputs'))
+            card['parts'] = compact_parts(card.pop('inputs'))
     return snap
+
+
+def naver_monthly(code: str) -> dict:
+    """{'YYYYMM': close} for ~4 years from Naver's chart feed (no key)."""
+    from dart_kfa.quarterly import parse_fchart
+    url = f'https://fchart.stock.naver.com/sise.nhn?symbol={code}&timeframe=month&count=48&requestType=0'
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; global-trade-dashboard/1.0)'})
+    with urllib.request.urlopen(req, timeout=30) as res:
+        return parse_fchart(res.read().decode('euc-kr', 'ignore'))
+
+
+def quarterly_packet(dart: Dart, corp: str, year: int, fs: str, filings: dict, stock: str | None,
+                     today: dt.date) -> tuple[dict | None, str]:
+    """Quarter-end EV and its parts (dart_kfa/quarterly.py) from the reports this
+    run already fetched, plus monthly closes for the market cap."""
+    from dart_kfa.quarterly import dart_points, series  # noqa: E402
+    rows = lambda r: r['response']['list'] if r['response']['status'] == '000' else []  # noqa: E731
+    quarters = {b: rows(filings[b]) for b in ('Q1', 'H1', 'Q3')}
+    nxt = {b: rows(report(dart, corp, year + 1, b, fs)) for b in ('Q1', 'H1', 'Q3')}
+    points = dart_points(year, rows(filings['FY']), None, quarters, nxt)
+    closes = pref_closes = shares = pref_shares = None
+    if stock:
+        srows, _ = share_rows(dart, corp, today)
+        for r in srows:
+            se = _se(r)
+            if se in COMMON_LABELS:
+                shares = num(r.get('istc_totqy'))
+            elif se in ('우선주', '우선주식'):
+                pref_shares = num(r.get('istc_totqy'))
+        try:
+            closes = naver_monthly(stock)
+            if pref_shares:
+                pref_closes = naver_monthly(stock[:-1] + '5')
+        except Exception as exc:  # noqa: BLE001 -- the balances still publish
+            print(f'  monthly prices {stock}: {exc}', file=sys.stderr)
+    res = series(points, closes=closes, shares=shares, pref_closes=pref_closes, pref_shares=pref_shares)
+    res['shares'] = {'common': shares, 'preferred': pref_shares}
+    return (res if res['points'] else None), f"{len(res['points'])}_quarters"
 
 
 def main() -> int:

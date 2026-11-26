@@ -49,8 +49,9 @@ class Transforms(unittest.TestCase):
 
     def test_every_spec_has_a_transform_and_a_format(self):
         fake = lambda sid: [("2020-01-01", 1.0), ("2021-01-01", 2.0)]
+        census = lambda: {"Data center": [("2020-01-01", 1000.0)]}
         for sid, spec in ure.SPECS.items():
-            ure.series_for(sid, fake)
+            ure.series_for(sid, fake, census)
             self.assertIn(spec.fmt, ups._FORMATS)
 
 
@@ -82,6 +83,82 @@ class Apply(unittest.TestCase):
         ure.apply(p, {"mortgage_30y": self.patch("mortgage_30y")})
         ids = [i["id"] for i in p["countries"][0]["indicators"]]
         self.assertEqual(ids, ["mortgage_30y"])
+
+
+class Capex(unittest.TestCase):
+    def raw(self):
+        months = [f"{y}-{m:02d}-01" for y in range(2019, 2027) for m in range(1, 13) if f"{y}-{m:02d}" <= "2026-09"]
+        quarters = [d for d in months if d[5:7] in ("01", "04", "07")]
+        out = {}
+        for label, _, _, cadence, k in ure.CAPEX:
+            pts = months if cadence == "monthly" else quarters
+            out[label] = [(d, (1000.0 if k == 1e-3 else 1.0) * (1 + i * 0.01)) for i, d in enumerate(pts)]
+        return out
+
+    def test_three_panels_on_one_monthly_axis(self):
+        panels = ure.capex_panels(self.raw(), months=24)
+        self.assertEqual([p["id"] for p in panels], ["capex_index", "capex_construction", "capex_yoy"])
+        for p in panels:
+            self.assertEqual(len(p["dates"]), 24)
+            self.assertTrue(p["markers"])
+            self.assertTrue(all(len(s["values"]) == 24 for s in p["series"]))
+        self.assertEqual(panels[0]["dates"][-1], "26.9")
+        self.assertEqual(len(panels[0]["series"]), 7)
+        self.assertEqual(len(panels[1]["series"]), 4)                     # the four construction lines only
+
+    def test_index_starts_at_100_and_quarters_sit_mid_quarter(self):
+        p = ure.capex_panels(self.raw(), months=24)[0]
+        for s in p["series"]:
+            self.assertEqual(next(v for v in s["values"] if v is not None), 100.0)
+        q = next(s for s in p["series"] if s["label"].endswith("(분기)"))
+        on = [p["dates"][i] for i, v in enumerate(q["values"]) if v is not None]
+        self.assertTrue(all(int(d.split(".")[1]) in (2, 5, 8, 11) for d in on))
+
+    def test_census_two_digit_years(self):
+        import io
+        import openpyxl
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.append(["Value of Private Construction"])
+        ws.append(["Date", "Data center", "Manufacturing"])
+        ws.append(["Sep-26p", 96462, 167226])
+        ws.append(["Jan-93", None, 30000])
+        buf = io.BytesIO()
+        wb.save(buf)
+        out = ure.parse_census_private(buf.getvalue())
+        self.assertEqual(out["Data center"], [("2026-09-01", 96462.0)])
+        self.assertEqual(out["Manufacturing"][0], ("1993-01-01", 30000.0))
+
+
+class CreditMerge(unittest.TestCase):
+    def test_us_panels(self):
+        from macro_monitor import credit_merge as cm
+        fake = lambda sid: [(f"20{y:02d}-{m:02d}-01", 1.0 + y / 10) for y in range(15, 27) for m in (1, 4, 7, 10)]
+        panels = cm.us_panels(fake, quarters=8)
+        self.assertEqual([p["id"] for p in panels], ["us_delinq_rates", "us_chargeoff_rates", "us_delinq_vs_chargeoff"])
+        self.assertEqual(panels[0]["dates"][-1], "26.4Q")
+        self.assertEqual(len(panels[0]["series"]), 6)
+
+    def test_kr_panels_and_idempotent_apply(self):
+        from macro_monitor import credit_merge as cm
+        seg = {"id": "segments", "type": "bars", "unit": "%", "dates": ["26.1Q", "26.2Q"],
+               "series": [{"label": "가계", "values": [0.4, 0.4]}, {"label": "기업", "values": [0.7, 0.68]}]}
+        flow = {"id": "flow", "type": "stack", "unit": "조원", "dates": ["26.1Q", "26.2Q"],
+                "series": [{"label": "신규연체", "values": [8.0, 8.75]}, {"label": "상각", "values": [-3.0, -3.09]}]}
+        pack = {"countries": [{"iso3": "KOR", "categories": {"liquidity": [{"id": "delinq_monthly", "label_ko": "대출 연체율(월)"}]},
+                               "indicators": [
+                                   {"id": "delinq_monthly", "label_ko": "대출 연체율(월)", "panels": [
+                                       {"id": "m_segments", "type": "lines", "unit": "%", "dates": ["26.9"], "series": [{"label": "전체", "values": [0.59]}]}]},
+                                   {"id": "delinq_all", "panels": [seg, flow]}]}]}
+        self.assertEqual(cm.apply(pack, None), ["KOR"])
+        host = pack["countries"][0]["indicators"][0]
+        ids = [p["id"] for p in host["panels"]]
+        self.assertEqual(ids, ["m_segments", "kr_hh_corp_q", "kr_writeoff"])
+        self.assertTrue(all(p.get("markers") for p in host["panels"]))
+        wo = host["panels"][2]
+        self.assertEqual(wo["series"][1]["values"], [3.0, 3.09])                 # charge-offs drawn as positive amounts
+        self.assertEqual(pack["countries"][0]["categories"]["liquidity"][0]["label_ko"], cm.KR_LABEL)
+        self.assertEqual(cm.apply(pack, None), [])
 
 
 if __name__ == "__main__":

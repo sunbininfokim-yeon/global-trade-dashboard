@@ -122,7 +122,7 @@ const pecrCardHtml = (snap, key) => {
         ? '<span class="pecr-badge" title="주석 검토값이 없어 공시 재무제표 계정으로 계산했습니다">공시계정 기준</span>' : '';
     const date = key === 'market_cap' && card.market_date ? ` · ${finEsc(card.market_date)} 기준` : '';
     return `
-        <div class="fin-card pecr-card${card.value === null || card.value === undefined ? ' pecr-empty' : ''}">
+        <div class="fin-card pecr-card co-clickable${card.value === null || card.value === undefined ? ' pecr-empty' : ''}" data-pecr-detail="${finEsc(key)}" title="클릭: 계산 근거와 분기별 변화">
             <span class="fin-card-title">${finEsc(label)} ${badge}</span>
             <span class="fin-card-value">${pecrFmt(fmt, card.value)}</span>
             <p class="fin-card-plain">${finEsc(plain)}${date}${card.reason ? ` <span class="pecr-reason">(${finEsc(pecrReason(card.reason))})</span>` : ''}</p>
@@ -426,7 +426,7 @@ const pecrMarketHtml = (snap) => {
     const ltmLabel = m.ltm ? `최근 4분기(~${m.ltm.period_end})` : null;
     const fyLabel = `FY${String(m.fy.period_end || '').slice(0, 4)}`;
     const capText = `${pecrNum(m.equity)}`;
-    const row = (label, value, formula, basis, plain) => `<tr><td><b>${finEsc(label)}</b><br><span class="fin-note">${finEsc(plain)}</span></td>
+    const row = (label, value, formula, basis, plain) => `<tr${/^EV/.test(label) ? ' class="co-clickable" data-pecr-detail="live_ev" title="클릭: EV 계산 근거와 분기별 변화"' : ''}><td><b>${finEsc(label)}</b>${/^EV/.test(label) ? ' <span class="pecr-badge">근거 ▸</span>' : ''}<br><span class="fin-note">${finEsc(plain)}</span></td>
         <td class="pecr-num">${value}</td><td>${formula}</td><td>${finEsc(basis)}</td></tr>`;
     const x = (v, loss) => (loss ? '적자' : pecrFmt('x', v));
     const rows = [
@@ -874,6 +874,161 @@ const invFccrHtml = (snap) => {
     </section>`;
 };
 
+// --- 카드 상세: 계산 근거 + 분기별 변화 (card.parts, snapshot.quarterly) -------
+// Clicking an engine card (or the live EV row) opens a box under it: how the
+// value was built from which accounts of which filing, and the same quantity
+// at every quarter end the filings allow.
+const PART_LABEL = {
+    cash: '현금및현금성자산', equity: '자본총계', parent_equity: '지배주주 자본', borrowings_short: '단기차입금',
+    borrowings_current_portion: '유동성장기차입금', bonds_current: '유동성사채', borrowings_long: '장기차입금',
+    bonds_noncurrent: '사채', lease_current: '유동리스부채', lease_noncurrent: '비유동리스부채', debt_current_total: '단기차입금(유동성 포함)',
+};
+const PART_SIGN = { cash: '−', parent_equity: '−' };
+const REPORT_NAME = { 11011: '사업보고서', 11012: '반기보고서', 11013: '1분기보고서', 11014: '3분기보고서' };
+const Q_FOR_CARD = {
+    ev: 'ev', ev_reported: 'ev', market_cap: 'market_cap', net_debt: 'net_debt', net_debt_reported: 'net_debt',
+    gross_debt_reported: 'gross_debt', current_ratio: 'current_ratio', debt_ratio: 'debt_ratio',
+    ev_to_ebitda: 'ev_to_ebit', ev_to_ebit: 'ev_to_ebit', ev_reported_to_ebitda: 'ev_to_ebit',
+    operating_income: 'op_ltm', debt_due_within_1y: 'short_term_debt',
+};
+const Q_LABEL = {
+    ev: ['EV', 'money'], market_cap: ['시가총액', 'money'], common_cap: ['보통주 시가', 'money'], preferred_cap: ['우선주 시가', 'money'], net_debt: ['순차입금', 'money'], gross_debt: ['총차입금(리스 포함)', 'money'],
+    nci: ['비지배지분', 'money'], cash: ['현금', 'money'], short_term_debt: ['단기 차입(1년 내)', 'money'],
+    current_ratio: ['유동비율', 'x'], debt_ratio: ['부채비율', 'pct'], ev_to_ebit: ['EV/EBIT (LTM 영업이익)', 'x'],
+    op_ltm: ['영업이익 (LTM)', 'money'], revenue_ltm: ['매출 (LTM)', 'money'],
+};
+const qFmt = (kind, v) => (!Number.isFinite(v) ? '—' : kind === 'money' ? pecrNum(v) : kind === 'pct' ? `${(v * 100).toFixed(0)}%` : `${v.toFixed(1)}배`);
+
+// EV = 보통주 + 우선주 + 순차입금 + 비지배지분, one stacked bar per quarter.
+// Net cash (negative net debt) hangs below zero, so the bar's net height still
+// equals EV; a dot marks EV itself.
+const EV_STACK = [
+    ['common_cap', '보통주 시가총액', '#60a5fa'], ['preferred_cap', '우선주 시가총액', '#a78bfa'],
+    ['net_debt', '순차입금 (음수면 순현금)', '#f59e0b'], ['nci', '비지배지분', '#34d399'],
+];
+const pecrEvStackHtml = (pts) => {
+    const rows = pts.map((p) => ({
+        p, segs: EV_STACK.map(([k]) => (k === 'common_cap' && !Number.isFinite(p.common_cap) ? p.market_cap : p[k]))
+            .map((v) => (Number.isFinite(v) ? v : 0)),
+    }));
+    const hi = Math.max(0, ...rows.map((r) => r.segs.filter((v) => v > 0).reduce((a, b) => a + b, 0)));
+    const lo = Math.min(0, ...rows.map((r) => r.segs.filter((v) => v < 0).reduce((a, b) => a + b, 0)));
+    const W = 640, H = 170, top = 10, bottom = 18, span = (hi - lo) || 1;
+    const y = (v) => top + (hi - v) / span * (H - top - bottom);
+    const slot = W / rows.length, bw = Math.min(46, slot * 0.6);
+    const bars = rows.map((r, i) => {
+        const x = i * slot + (slot - bw) / 2;
+        let up = 0, down = 0;
+        const rects = r.segs.map((v, k) => {
+            if (!v) return '';
+            const from = v > 0 ? up : down;
+            const to = from + v;
+            if (v > 0) up = to; else down = to;
+            const [, label, color] = EV_STACK[k];
+            return `<rect x="${x.toFixed(1)}" y="${Math.min(y(from), y(to)).toFixed(1)}" width="${bw.toFixed(1)}"
+                height="${Math.max(1, Math.abs(y(from) - y(to))).toFixed(1)}" fill="${color}"><title>${finEsc(r.p.period_end)} ${finEsc(label)} ${pecrNum(v)}</title></rect>`;
+        }).join('');
+        const ev = r.p.ev;
+        const dot = Number.isFinite(ev) ? `<circle cx="${(x + bw / 2).toFixed(1)}" cy="${y(ev).toFixed(1)}" r="3.2" fill="#f1f5f9"><title>EV ${pecrNum(ev)}</title></circle>` : '';
+        const lbl = `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="#94a3b8">${finEsc(r.p.period_end.slice(2, 7).replace('-', '.'))}</text>`;
+        return rects + dot + lbl;
+    }).join('');
+    const zero = `<line x1="0" x2="${W}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="#475569" stroke-width="1"/>`;
+    const used = EV_STACK.filter(([k]) => rows.some((r) => r.segs[EV_STACK.findIndex((e) => e[0] === k)]));
+    return `<svg viewBox="0 0 ${W} ${H}" class="pecr-stack" role="img" aria-label="분기별 EV 구성">${zero}${bars}</svg>
+        <div class="pecr-legend">${used.map(([, l, c]) => `<span><i style="background:${c}"></i>${finEsc(l)}</span>`).join('')}
+            <span><i class="dot"></i>EV</span></div>`;
+};
+
+const pecrQuarterHtml = (snap, metric) => {
+    const q = snap.quarterly;
+    if (!q || !metric) return '';
+    const pts = (q.points || []).filter((p) => Number.isFinite(p[metric]));
+    if (pts.length < 2) return '<p class="fin-note">분기별 값을 만들 공시가 부족합니다.</p>';
+    const [label, kind] = Q_LABEL[metric] || [metric, 'money'];
+    const bars = metric === 'ev' ? pecrEvStackHtml(pts) : typeof finPeriodBars === 'function'
+        ? finPeriodBars(pts.map((p) => ({ label: p.period_end.slice(2, 7).replace('-', '.'), value: p[metric] })), (v) => qFmt(kind, v)) : '';
+    const comps = metric === 'ev' || metric === 'ev_to_ebit'
+        ? (pts.some((p) => Number.isFinite(p.preferred_cap))
+            ? ['common_cap', 'preferred_cap', 'net_debt', 'nci', 'ev', 'op_ltm', 'ev_to_ebit']
+            : ['market_cap', 'net_debt', 'nci', 'ev', 'op_ltm', 'ev_to_ebit']) : metric === 'net_debt' || metric === 'gross_debt'
+            ? ['gross_debt', 'cash', 'net_debt'] : [metric];
+    return `<div class="pecr-q"><p class="pecr-q-title">분기별 ${finEsc(label)}</p>${bars}
+        <div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>분기말</th>${comps.map((c) => `<th>${finEsc((Q_LABEL[c] || [c])[0])}</th>`).join('')}</tr></thead>
+            <tbody>${pts.map((p) => `<tr><td>${finEsc(p.period_end)} <span class="fin-note">${finEsc(p.report)}</span></td>
+                ${comps.map((c) => `<td class="pecr-num">${qFmt((Q_LABEL[c] || [])[1] || 'money', p[c])}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table></div>
+        <p class="fin-note">${finEsc(q.basis || '')}</p></div>`;
+};
+
+const pecrPartsHtml = (snap, card) => {
+    const parts = card?.parts || [];
+    if (!parts.length) return '';
+    const fy = String(snap.fiscal_year || '');
+    const rows = parts.map((x) => {
+        if (x.input === 'market') {
+            const pref = Number.isFinite(x.preferred_equity?.value) && x.preferred_equity.value > 0 ? ` (우선주 ${pecrNum(x.preferred_equity.value)} 포함)` : '';
+            return `<tr><td>+ 시가총액${pref}</td><td class="pecr-num">${pecrNum(x.market_cap)}</td><td>스냅샷 기준일 시세 ${finEsc(x.as_of || '')}</td></tr>`;
+        }
+        const name = PART_LABEL[x.input] || x.label || x.input;
+        const src = x.filing ? `${REPORT_NAME[x.report] || x.report || ''} ${x.period_end || ''}${x.opening ? ' (기초)' : ''} · 접수 ${x.filing}`
+            : (x.period_end || '');
+        return `<tr><td>${PART_SIGN[x.input] || ''} ${finEsc(name)}${x.label && x.label !== name ? ` <span class="fin-note">(공시 계정: ${finEsc(x.label)})</span>` : ''}</td>
+            <td class="pecr-num">${Number.isFinite(x.value) ? pecrNum(x.value) : '—'}</td><td class="fin-note">${finEsc(src)}</td></tr>`;
+    });
+    return `<div class="co-table-wrap"><table class="co-table pecr-table"><thead><tr><th>구성 요소</th><th>금액</th><th>출처</th></tr></thead>
+        <tbody>${rows.join('')}</tbody></table></div>
+        <p class="fin-note">비지배지분 = 자본총계 − 지배주주 자본. FY${finEsc(fy)} ${snap.source === 'SEC' ? 'SEC 10-K' : 'OpenDART 공시'} 기준.</p>`;
+};
+
+const pecrDetailHtml = (snap, key) => {
+    if (key === 'live_ev') {
+        const m = pecrLive(snap);
+        if (!m) return '';
+        const qq = m.q;
+        return `<div class="pecr-detail"><p class="pecr-q-title">EV (오늘 시세 기준) = 시가총액 + 순차입금 + 비지배지분</p>
+            <div class="co-table-wrap"><table class="co-table pecr-table"><tbody>
+                <tr><td>+ 시가총액 (보통주${m.prefCap ? '·우선주' : ''})</td><td class="pecr-num">${pecrNum(m.equity)}</td><td class="fin-note">${finEsc((qq.traded_at || '').slice(0, 10))} 종가 ${pecrPx(qq.price)}</td></tr>
+                <tr><td>+ 순차입금</td><td class="pecr-num">${pecrNum(m.fy.net_debt)}</td><td class="fin-note">${finEsc(m.fy.period_end || '')} 재무상태표 (${finEsc(m.fy.net_debt_card || '')})</td></tr>
+                <tr><td>+ 비지배지분</td><td class="pecr-num">${pecrNum(m.nci)}</td><td class="fin-note">${finEsc(m.latest.period_end || '')} 자본총계 − 지배주주 자본</td></tr>
+                <tr class="pecr-median"><td>= EV</td><td class="pecr-num">${pecrNum(m.ev)}</td><td></td></tr>
+                <tr><td>÷ EBITDA</td><td class="pecr-num">${pecrNum(m.fy.ebitda)}</td><td class="fin-note">FY ${finEsc(m.fy.ebitda_card || '')}</td></tr>
+                <tr class="pecr-median"><td>= EV/EBITDA</td><td class="pecr-num">${pecrFmt('x', m.ev_to_ebitda)}</td><td></td></tr>
+            </tbody></table></div>
+            ${pecrQuarterHtml(snap, 'ev')}</div>`;
+    }
+    // the card the screen shows: strict if it has a value, else its reported-basis fallback
+    const card = pecrCard(snap, key) || snap.pe_cr?.cards?.[key];
+    if (!card) return '';
+    const [label, fmt, plain] = PECR_META[key] || [key, 'x', ''];
+    return `<div class="pecr-detail"><p class="pecr-q-title">${finEsc(label)} = ${pecrFmt(fmt, card.value)}${card.basis === 'reported' ? ' <span class="pecr-badge">공시계정 기준</span>' : ''}</p>
+        <p class="fin-note">${finEsc(plain)}${card.definition ? ` <span class="pecr-reason">(엔진 정의: ${finEsc(card.definition)})</span>` : ''}
+            ${card.reason ? ` · 값이 없는 이유: ${finEsc(pecrReason(card.reason))}` : ''}</p>
+        ${pecrPartsHtml(snap, card)}
+        ${pecrQuarterHtml(snap, Q_FOR_CARD[key])}</div>`;
+};
+
+const pecrBindDetails = (out, snap) => {
+    out.querySelectorAll('[data-pecr-detail]').forEach((el) => el.addEventListener('click', (e) => {
+        if (e.target.closest('.pecr-detail')) return;
+        const key = el.dataset.pecrDetail;
+        const open = out.querySelector(`.pecr-detail[data-for="${key}"]`);
+        out.querySelectorAll('.pecr-detail').forEach((d) => d.remove());
+        out.querySelectorAll('[data-pecr-detail].open').forEach((d) => d.classList.remove('open'));
+        if (open) return;
+        const html = pecrDetailHtml(snap, key);
+        if (!html) return;
+        const box = document.createElement('div');
+        box.innerHTML = html;
+        const node = box.firstElementChild;
+        node.dataset.for = key;
+        el.classList.add('open');
+        // inside a card grid the box spans the full row; in a table it follows the table
+        (el.tagName === 'TR' ? el.closest('.co-table-wrap') : el).after(node);
+    }));
+};
+
 // --- Views ---------------------------------------------------------------------
 const pecrHead = (snap) => {
     const p = snap.pe_cr || {};
@@ -933,6 +1088,7 @@ const pecrViewHtml = (data, view) => {
 };
 
 const pecrBind = (out, data, rerender) => {
+    if (data.pecr) pecrBindDetails(out, data.pecr);
     out.querySelectorAll('[data-lbo]').forEach((el) => el.addEventListener('input', () => {
         const v = Number(el.value);
         if (!Number.isFinite(v)) return;

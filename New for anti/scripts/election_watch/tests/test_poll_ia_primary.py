@@ -1,4 +1,4 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
+from tests.poll_config_fixture import SNAPSHOT_DAY, load_pinned_finance
 import copy
 import json
 from pathlib import Path
@@ -7,7 +7,7 @@ import unittest
 from election_watch.governor_matchups import apply_matchups
 from election_watch.live_polls import normalize, summarize
 from election_watch.poll_targets import apply_targets
-from election_watch.state_evidence import build_state, load_finance
+from election_watch.state_evidence import build_state
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT/'config/usa_polls'
@@ -117,7 +117,7 @@ class IowaPrimaryTests(unittest.TestCase):
         result = build_state('IA', 'B', read(CONFIG/'state_evidence_plan_2026.json'),
             read(CONFIG/'targets_2026.json'), read(ROOT/'config/federal_matchups/2026.json'),
             self.gov, polls,
-            load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL),
+            load_pinned_finance(),
             read(ROOT/'config/usa_state_campaign_finance_sources_v1.json'), max(DAY, polls['as_of']),
             read(CONFIG/'state_finance_identities_2026.json'), governor_access={'IA': access})
         self.assertEqual(result['work_status'], 'live_poll_sources_reviewed_finance_mapping_required')
