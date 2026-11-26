@@ -326,20 +326,86 @@ def _merge_ui(spec: dict[str, Any], country_cfg: dict[str, Any]) -> dict[str, An
 
 
 _US_QUERY = re.compile(r"^(?:US|U\.S\.)\s+")
-_US_ONLY_WORDS = {"BLS", "BEA", "Fed", "FOMC"}
+_US_STATS_AGENCIES = {"BLS", "BEA"}
+_US_ONLY_WORDS = {"Fed", "FOMC"}
 
 
-def localize_news_query(query: str | None, iso3: str, name_en: str) -> str | None:
+def localize_news_query(
+    query: str | None, iso3: str, name_en: str, stats_agency: str | None = None
+) -> str | None:
     """The spec's default news queries are written for the U.S. card ("US CPI inflation consumer prices
-    BLS"); another country that inherits one would be shown U.S. news. Swap the country in and drop
-    the U.S. agencies. A query a country configured itself never starts with "US" and is left alone."""
+    BLS"); another country that inherits one would be shown U.S. news. Swap the country in, put the
+    country's own statistics agency where the U.S. one (BLS/BEA) was, and drop the Fed. A query a
+    country configured itself never starts with "US" and is left alone, which also makes this
+    idempotent."""
     if not query or iso3 == "USA":
         return query
     m = _US_QUERY.match(query)
     if not m:
         return query
-    rest = [w for w in query[m.end():].split() if w not in _US_ONLY_WORDS]
-    return " ".join([name_en, *rest])
+    words: list[str] = []
+    for w in query[m.end():].split():
+        if w in _US_ONLY_WORDS:
+            continue
+        if w in _US_STATS_AGENCIES:
+            if stats_agency and stats_agency not in words:
+                words.append(stats_agency)
+            continue
+        words.append(w)
+    return " ".join([name_en, *words])
+
+
+def localize_news_tags(tags: list[str] | None, iso3: str, stats_agency: str | None = None) -> list[str] | None:
+    """Tags inherited from a U.S. default query: BLS/BEA become the country's own agency, Fed/FOMC go."""
+    if not tags or iso3 == "USA":
+        return tags
+    out: list[str] = []
+    for t in tags:
+        if t.lower() in {"fed", "fomc"}:
+            continue
+        if t in _US_STATS_AGENCIES:
+            if not stats_agency:
+                continue
+            t = stats_agency
+        if t not in out:
+            out.append(t)
+    return out
+
+
+def localize_news_fields(
+    ind: dict[str, Any], iso3: str, name_en: str, stats_agency: str | None,
+    spec_query: str | None = None,
+) -> bool:
+    """Localize a card's news_query/news_tags in place; returns True if anything changed.
+
+    Only a card that carries the spec's U.S. default is touched. The engine sees the raw default
+    ("US CPI ..."); an already-built pack may hold the earlier, agency-less localization, which is
+    recognized by comparing against the spec default (spec_query) so the pack can be
+    patched in place and re-patching is a no-op."""
+    if iso3 == "USA":
+        return False
+    q = ind.get("news_query")
+    inherited = bool(q and _US_QUERY.match(q))
+    if not inherited and spec_query and _US_QUERY.match(spec_query):
+        inherited = q in {
+            localize_news_query(spec_query, iso3, name_en),  # earlier, agency-less form
+            localize_news_query(spec_query, iso3, name_en, stats_agency),
+        }
+        q = spec_query if inherited else q
+    if not inherited:
+        return False
+    changed = False
+    new_q = localize_news_query(q, iso3, name_en, stats_agency)
+    if new_q != ind.get("news_query"):
+        ind["news_query"] = new_q
+        changed = True
+    tags = ind.get("news_tags")
+    if tags:
+        new_t = localize_news_tags(list(tags), iso3, stats_agency)
+        if new_t != tags:
+            ind["news_tags"] = new_t
+            changed = True
+    return changed
 
 
 def build_indicator(
