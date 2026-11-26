@@ -31,6 +31,7 @@ export const loadEopChart = () => {
 
 let dashboardPromise = null;
 let governorsPromise = null;
+let electionResultsPromise = null;
 
 const loadDashboardAsset = (name) => fetch(`/public/data/${name}.json`, { cache: 'no-store' })
     .then((response) => (response.ok ? response.json() : null))
@@ -50,4 +51,9 @@ export const loadUsCongressDashboard = () => {
 export const loadUsGovernorDashboard = () => {
     governorsPromise ||= loadDashboardAsset('usa_governors_dashboard_v1');
     return governorsPromise;
+};
+
+export const loadUsElectionResultsDashboard = () => {
+    electionResultsPromise ||= loadDashboardAsset('usa_state_executive_results_v1');
+    return electionResultsPromise;
 };
