@@ -330,7 +330,10 @@ def assemble_bok(doc: dict[str, Any], *, today: date) -> dict[str, Any] | None:
         "outlook": outlook,
         "minutes": minutes,
         "opinions": None,
-        "schedule": {"next_meeting_date": upcoming, "next_meeting_days": [upcoming] if upcoming else None, "next_outlook_release": None},
+        # meeting_dates: the whole published calendar, so the Worker's cron can tell a meeting day
+        # (next_meeting_date already points past it once the day's file is built).
+        "schedule": {"next_meeting_date": upcoming, "next_meeting_days": [upcoming] if upcoming else None, "next_outlook_release": None,
+                     "meeting_dates": calendar},
         "releases": releases,
         "roster": {"asof": (doc.get("retrieved_at") or "")[:10], "source": "한국은행 금융통화위원회 위원 명단",
                    "members": [{"name": r["name"], "role": r["role"]} for r in roster]},
