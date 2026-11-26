@@ -3,6 +3,7 @@ import { escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
 import { usaSections } from './special/usa.js';
 import { usaLegislature } from './special/usa-legislature.js?v=5';
 import { usaExecutive } from './special/usa-executive.js';
+import { usaExecutivePanels } from './special/usa-governors.js';
 import { chinaSections } from './special/china.js';
 import { cnMapLegendHtml } from './special/chn-leaders.js';
 import { personnelCategories, personnelPartHtml, OFFICE_LABELS } from './special/personnel-roster.js';
@@ -221,7 +222,9 @@ const specialContent = (country, section) => {
     if (country.iso3 === 'CHN' && section === 'military') return chnMilitary(country);
     if (country.iso3 === 'CHN' && section === 'state_council') return chnStateCouncil(country);
     if (isUsaChamber(country, section)) return usaLegislature(country, section);
-    if (country.iso3 === 'USA' && section === 'executive') return usaExecutive(country);
+    if (country.iso3 === 'USA' && section === 'executive') {
+        return usaExecutivePanels(usaExecutive(country), country.us_governor_dashboard);
+    }
     if (country.iso3 === 'JPN' && section === 'executive') return jpnExecutive(country);
     if (country.iso3 === 'JPN' && section === 'legislature') return jpnLegislature(country);
     if (country.iso3 === 'JPN' && section === 'factions') return jpnFactions(country);

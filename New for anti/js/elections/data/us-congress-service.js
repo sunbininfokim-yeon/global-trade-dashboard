@@ -30,17 +30,24 @@ export const loadEopChart = () => {
 };
 
 let dashboardPromise = null;
+let governorsPromise = null;
+
+const loadDashboardAsset = (name) => fetch(`/public/data/${name}.json`, { cache: 'no-store' })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((data) => (data?.schema === name ? data : null))
+    .catch(() => null);
 
 export const loadUsCongressDashboard = () => {
     if (!dashboardPromise) {
-        const load = (name) => fetch(`/public/data/${name}.json`, { cache: 'no-store' })
-            .then((response) => (response.ok ? response.json() : null))
-            .then((data) => (data?.schema === name ? data : null))
-            .catch(() => null);
         dashboardPromise = Promise.all([
-            load('usa_congress_dashboard_v1'),
-            load('usa_congress_agenda_v1'),
+            loadDashboardAsset('usa_congress_dashboard_v1'),
+            loadDashboardAsset('usa_congress_agenda_v1'),
         ]).then(([rosters, agenda]) => ({ rosters, agenda }));
     }
     return dashboardPromise;
+};
+
+export const loadUsGovernorDashboard = () => {
+    governorsPromise ||= loadDashboardAsset('usa_governors_dashboard_v1');
+    return governorsPromise;
 };
