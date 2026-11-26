@@ -27,9 +27,8 @@ const seatEntries = (byParty) => Object.entries(byParty || {})
 const majorityAbbr = (byParty) => seatEntries(byParty)[0]?.[0] || null;
 const minorityAbbr = (byParty) => seatEntries(byParty)[1]?.[0] || null;
 
-const chamberGroups = (chamber, summary) => {
+const chamberGroups = (chamber, summary, vacancies) => {
     const byParty = chamber === 'house' ? summary.house_by_party : summary.senate_by_party;
-    const vacancies = chamber === 'house' ? (summary.house_vacancies || 0) : 0;
     const majority = majorityAbbr(byParty);
     const minority = minorityAbbr(byParty);
     // Minority on the left, majority on the right, everyone else between --
@@ -69,10 +68,26 @@ const flattenCommittees = (committeesData) => {
     return rows.length ? rows : null;
 };
 
-const committeePanel = (chamber, committees, cards, people) => {
+const committeeLeadership = (label, cards, people) => cards?.length
+    ? `<details class="elections-disclosure"><summary>${label}</summary>
+        ${cards.map((card) => `<article class="elections-event">
+            <div class="elections-event-title">${sourceLink(card.name, card.committee_url)}</div>
+            <div class="elections-disclosure-rows">${[['위원장', card.chair], [card.ranking_member?.role_ko || '간사', card.ranking_member]]
+                .map(([title, member]) => `<div><span>${escapeHtml(title)}</span><strong>${member
+                    ? nameHtml(displayName(member.name), member.bioguide, people) : '공개 명단 미확인'}</strong></div>`).join('')}</div>
+        </article>`).join('')}
+    </details>` : '';
+
+const committeePanel = (chamber, committees, cards, people, specialCommittees) => {
+    const links = chamber === 'senate'
+        ? `<p class="elections-panel-note">${sourceLink('공식 위원회 배정', 'https://www.senate.gov/general/committee_assignments/assignments.htm')} · ${sourceLink('전체 청문회 일정', 'https://www.senate.gov/committees/hearings_meetings.htm')}</p>`
+        : '';
     if (!Array.isArray(committees)) {
         return `<p class="elections-muted">상임위 목록은 정책 데이터에서 불러옵니다.</p>
-            <button class="elections-button" type="button" data-election-action="policy-committees">정책 › 미국 상임위 열기</button>`;
+            <button class="elections-button" type="button" data-election-action="policy-committees">정책 › 미국 상임위 열기</button>
+            ${committeeLeadership('상임위별 위원장 · 간사', cards, people)}
+            ${committeeLeadership('특별·선출위원회 지도부', specialCommittees, people)}
+            ${links}`;
     }
     const rows = committees.filter((row) => row.chamber === chamber);
     if (!rows.length) return '<p class="elections-muted">이 원의 상임위 목록이 비어 있습니다.</p>';
@@ -87,14 +102,9 @@ const committeePanel = (chamber, committees, cards, people) => {
             data-committee-name="${escapeHtml(row.name || '')}"
             title="${escapeHtml(row.name || '')}">${escapeHtml(row.short_name || row.name || row.committee_id)}</button>`).join('')}</div>
         <p class="elections-panel-note">누르면 정책 › 미국 › 상임위 화면으로 이동합니다.</p>
-        ${cards?.length ? `<details class="elections-disclosure"><summary>상임위별 위원장 · 간사</summary>
-            ${cards.map((card) => `<article class="elections-event">
-                <div class="elections-event-title">${sourceLink(card.name, card.committee_url)}</div>
-                <div class="elections-disclosure-rows">${[["위원장", card.chair], ["간사", card.ranking_member]]
-                    .map(([title, member]) => `<div><span>${title}</span><strong>${member
-                        ? nameHtml(displayName(member.name), member.bioguide, people) : "공개 명단 미확인"}</strong></div>`).join("")}</div>
-            </article>`).join("")}
-        </details>` : ""}`;
+        ${committeeLeadership('상임위별 위원장 · 간사', cards, people)}
+        ${committeeLeadership('특별·선출위원회 지도부', specialCommittees, people)}
+        ${links}`;
 };
 
 const httpsUrl = (value) => /^https:\/\//i.test(value || '') ? value : '';
@@ -157,9 +167,8 @@ const incomingHtml = (incoming, people, today) => {
     </details>`;
 };
 
-const vacancyPanel = (chamber, congress) => {
+const vacancyPanel = (chamber, congress, count, senateSource) => {
     const rows = (congress.vacancies || []).filter((row) => row.chamber === chamber);
-    const count = chamber === 'house' ? congress.summary?.house_vacancies : congress.summary?.senate_vacancies;
     const status = Number.isInteger(count) ? `${count}석` : '공개 집계 미확인';
     return `<p class="elections-panel-note">의원 공석 · <strong>${status}</strong></p>
         ${rows.length ? `<div class="elections-disclosure-rows">${rows.map((row) => `<div>
@@ -167,7 +176,8 @@ const vacancyPanel = (chamber, congress) => {
             <strong>${escapeHtml(row.special_election_date ? `보궐 ${row.special_election_date}`
                 : row.special_election_date_status === 'unannounced' ? '보궐일 미발표' : '보궐 일정 미수집')}</strong>
         </div>`).join('')}</div>` : ''}
-        ${chamber === 'house' ? `<p class="elections-panel-note">${sourceLink('하원 사무처 공석 공고', 'https://clerk.house.gov/Members/ViewVacancies')}</p>` : ''}`;
+        ${chamber === 'house' ? `<p class="elections-panel-note">${sourceLink('하원 사무처 공석 공고', 'https://clerk.house.gov/Members/ViewVacancies')}</p>`
+            : senateSource ? `<p class="elections-panel-note">${sourceLink('상원 공식 의석·공석 집계', senateSource)}</p>` : ''}`;
 };
 
 const dateInWashington = () => new Intl.DateTimeFormat('sv-SE', {
@@ -183,7 +193,12 @@ const agendaPanel = (chamber, agenda, today) => {
     const upcoming = (agenda?.milestones || []).filter((item) =>
         item.chambers?.includes(chamber) && item.date >= today).sort((a, b) => a.date.localeCompare(b.date));
     const sources = (agenda?.sources || []).filter((source) => source.chamber === chamber);
-    return `<div class="elections-screen-list">${upcoming.map(eventHtml).join('')}</div>
+    const meetings = upcoming.filter((item) => item.kind === 'committee');
+    return `<div class="elections-screen-list">${upcoming.filter((item) => item.kind !== 'committee').map(eventHtml).join('')}</div>
+        ${meetings.length ? `<details class="elections-disclosure"><summary>상원 청문회·위원회 일정 ${meetings.length}건</summary>
+            <div class="elections-screen-list">${meetings.map(eventHtml).join('')}</div>
+            <p class="elections-panel-note">${sourceLink('상원 전체 청문회 일정', 'https://www.senate.gov/committees/hearings_meetings.htm')}</p>
+        </details>` : ''}
         ${sources.map((source) => `<details class="elections-disclosure">
             <summary>${escapeHtml(source.label_ko)}${source.date ? ` · ${escapeHtml(source.date)}` : ''}</summary>
             ${source.status === 'stale' ? '<p class="elections-panel-note">수집 장애 · 마지막 확인 자료</p>'
@@ -209,6 +224,8 @@ const FACTION_TYPES = {
     research_snapshot: '공개 자료로 재구성한 명단',
     affiliated_roster: '연계 PAC 공개 명단',
     public_membership: '공개 회원 명단',
+    named_cochairs: '원문에서 확인한 공동의장',
+    named_participants: '원문에서 이름을 확인한 의원',
 };
 
 const factionRows = (groups, members, people, chamber) => {
@@ -235,7 +252,7 @@ const factionRows = (groups, members, people, chamber) => {
     return `${chamber === 'senate' ? '<p class="elections-panel-note">당내 표결 위치는 Voteview의 1차원 점수를 사용합니다. 공개 소속은 별도로 표시합니다.</p>' : ''}
         ${details.join('')}${rosterDetails(chamber === 'senate' ? '공개 계파·연대 미확인' : '계파 미확인', unclassified, (groups || []).length
             ? '표시된 명단과 연결되지 않은 의원입니다.' : '공개 명단을 확보하면 반영합니다.')}
-        ${chamber === 'house' && details.length ? '<p class="elections-panel-note">한 의원이 여러 명단에 포함될 수 있습니다.</p>' : ''}`;
+        ${details.length ? '<p class="elections-panel-note">한 의원이 여러 명단에 포함될 수 있습니다.</p>' : ''}`;
 };
 
 const partyCard = (abbr, { chamber, members, leaders, total, groups, people, swingSeats, term }) => {
@@ -243,9 +260,10 @@ const partyCard = (abbr, { chamber, members, leaders, total, groups, people, swi
     const states = new Map();
     for (const member of partyMembers) {
         const state = member.state || member.state_abbr;
-        states.set(state, (states.get(state) || 0) + 1);
+        if (!states.has(state)) states.set(state, []);
+        states.get(state).push(member);
     }
-    const stateRows = [...states.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    const stateRows = [...states.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
     return `<article class="elections-party-card">
         <header class="elections-party-card-head">
             <i aria-hidden="true" class="elections-party-dot" style="background:${partyColor(abbr)}"></i>
@@ -254,13 +272,15 @@ const partyCard = (abbr, { chamber, members, leaders, total, groups, people, swi
         </header>
         <p class="elections-party-card-label">주별 분포</p>
         ${stateRows.length ? `<details class="elections-disclosure"><summary>${stateRows.length}개 주</summary>
-            <div class="elections-disclosure-rows">${stateRows.map(([state, count]) => `<div><span>${escapeHtml(state)}</span><strong>${count}명</strong></div>`).join('')}</div>
+            <div class="elections-disclosure-rows">${stateRows.map(([state, roster]) => `<div><span>${escapeHtml(state)}${chamber === 'senate' ? ` · ${roster.length}명` : ''}</span>
+                <strong>${chamber === 'senate' ? roster.map((member) =>
+                    nameHtml(people[member.bioguideId]?.name || displayName(member.name), member.bioguideId, people)).join(' · ') : `${roster.length}명`}</strong></div>`).join('')}</div>
         </details>` : '<p class="elections-muted">명부가 없습니다.</p>'}
         ${swingSeats.length ? `<details class="elections-disclosure"><summary>확인된 경합 이력 ${swingSeats.length}곳</summary>
             <div class="elections-disclosure-rows">${swingSeats.map((row) => `<div><span>${escapeHtml([row.state, row.district].filter(Boolean).join('-'))}</span><strong>${escapeHtml(row.basis_ko)}</strong></div>`).join('')}</div>
         </details>` : ''}
         <p class="elections-party-card-label">주요 당직자</p>
-        ${leadersHtml(leaders.filter((row) => row.party_abbr === abbr), people)}
+        ${leadersHtml(leaders.filter((row) => row.party_abbr === abbr || row.caucus_party_abbr === abbr), people)}
         <p class="elections-party-card-label">계파 분류${term ? ` · ${term}대` : ''}</p>
         ${factionRows(groups, partyMembers, people, chamber)}
     </article>`;
@@ -275,8 +295,23 @@ export const usaLegislature = (country, chamber, { today = dateInWashington() } 
     const summary = congress.summary;
     const byParty = summary[`${chamber}_by_party`];
     const members = (congress[`${chamber}_members`] || []).filter((row) => !row.is_delegate);
-    const groups = chamberGroups(chamber, summary);
-    const leaders = leadershipRows(congress, chamber, members, people, byParty);
+    const current = chamberData?.current;
+    const senateCurrent = chamber === 'senate' && current?.checked_on <= today && today < current.ends_before
+        ? current : null;
+    const officialLeaders = (senateCurrent?.leaders || []).filter((row) =>
+        members.some((member) => member.bioguideId === row.bioguide_id && member.abbr === row.party_abbr));
+    const leaders = officialLeaders.length ? officialLeaders : leadershipRows(congress, chamber, members, people, byParty);
+    const coreLeaders = officialLeaders.length ? leaders.filter((row) => row.featured) : leaders;
+    const additionalLeaders = officialLeaders.length ? leaders.filter((row) => !row.featured) : [];
+    const caucusing = senateCurrent?.independent_caucus;
+    const allies = (caucusing?.member_ids || []).filter((id) =>
+        members.some((member) => member.bioguideId === id && member.abbr === 'IND'));
+    const senateOccupied = seatEntries(summary.senate_by_party).reduce((count, [, seats]) => count + seats, 0);
+    const officialVacancies = senateCurrent?.vacancies;
+    const currentVacancies = Number.isInteger(officialVacancies) && senateOccupied + officialVacancies === 100
+        ? officialVacancies : summary.senate_vacancies;
+    const vacancies = chamber === 'house' ? summary.house_vacancies : currentVacancies;
+    const groups = chamberGroups(chamber, summary, vacancies);
     const date = chamber === 'house' ? congress.context_coverage?.house_source_published_on
         : congress.context_coverage?.senate_roster_as_of?.slice(0, 10);
     const committees = flattenCommittees(congress.committees);
@@ -285,7 +320,11 @@ export const usaLegislature = (country, chamber, { today = dateInWashington() } 
         <div class="elections-chamber-quadrants">
             <section class="elections-quadrant" aria-label="원내 지도부">
                 <h4 class="section-title">원내 지도부</h4>
-                ${leadersHtml(leaders, people)}
+                ${leadersHtml(coreLeaders, people)}
+                ${additionalLeaders.length ? `<details class="elections-disclosure">
+                    <summary>주요 당직 ${additionalLeaders.length}개 더 보기</summary>${leadersHtml(additionalLeaders, people)}
+                </details>` : ''}
+                ${senateCurrent?.leadership_url ? `<p class="elections-panel-note">${sourceLink('상원 공식 지도부 명단', senateCurrent.leadership_url)} · 확인 ${escapeHtml(senateCurrent.checked_on)}</p>` : ''}
                 ${incomingHtml(chamberData?.incoming, people, today)}
             </section>
             <section class="elections-quadrant" aria-label="의석 분포">
@@ -293,16 +332,19 @@ export const usaLegislature = (country, chamber, { today = dateInWashington() } 
                 ${hemicycle(groups)}
                 ${seatLegend(groups)}
                 <p class="elections-panel-note">재임 의원${date ? ` · 명부 ${escapeHtml(date)}` : ''}${chamber === 'house' ? ' · 표결권 기준' : ''}</p>
+                ${senateCurrent?.members_url ? `<p class="elections-panel-note">${sourceLink('50개 주 상원 공식 명부', senateCurrent.members_url)} · 확인 ${escapeHtml(senateCurrent.checked_on)}</p>` : ''}
+                ${allies.length ? `<p class="elections-panel-note">${allies.map((id) => nameHtml('', id, people)).join(' · ')} · 무소속이며 ${sourceLink(partyKo(caucusing.party_abbr) + ' 의원총회에 참여', caucusing.source_url)}</p>` : ''}
             </section>
         </div>
         <div class="elections-chamber-quadrants" style="margin-top:10px">
             <section class="elections-quadrant" aria-label="상임위">
                 <h4 class="section-title">상임위</h4>
-                ${committeePanel(chamber, committees, congress.standing_committee_cards?.[chamber], people)}
+                ${committeePanel(chamber, committees, congress.standing_committee_cards?.[chamber], people,
+                    senateCurrent ? chamberData?.special_committees : null)}
             </section>
             <section class="elections-quadrant" aria-label="공석과 주요 일정">
                 <h4 class="section-title">공석 · 주요 일정</h4>
-                ${vacancyPanel(chamber, congress)}
+                ${vacancyPanel(chamber, congress, vacancies, senateCurrent?.seats_url)}
                 ${agendaPanel(chamber, agenda, today)}
             </section>
         </div>

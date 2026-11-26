@@ -63,3 +63,30 @@ test('Senate voting groups do not count as documented affiliations', () => {
     assert.match(html, /상원 일정/);
     assert.doesNotMatch(html, /Group A|예산기한/);
 });
+
+test('Senate official snapshot displays officers, independents and verified meetings within the term', () => {
+    const snapshot = structuredClone(country);
+    const { congress } = snapshot.ui_ready;
+    congress.summary.senate_by_party = { GOP: 53, DEM: 45, IND: 2 };
+    congress.senate_members.push(member('S000002', 'Two, Senator', 'IND', 'VT', null));
+    const { rosters, agenda } = snapshot.us_congress_dashboard;
+    rosters.people.S000002 = { name: 'Senator Two', official_url: 'https://official.senate.gov/' };
+    rosters.chambers.senate.current = {
+        checked_on: '2026-11-26', ends_before: '2027-01-03', vacancies: 0,
+        leadership_url: 'https://www.senate.gov/senators/leadership.htm',
+        seats_url: 'https://www.senate.gov/about/parties-leadership/party-division.shtml',
+        independent_caucus: { member_ids: ['S000002'], party_abbr: 'DEM', source_url: 'https://www.senate.gov/' },
+        leaders: [{ name: 'Senator Two', bioguide_id: 'S000002', title: '대외협력위원장', party_abbr: 'IND', caucus_party_abbr: 'DEM', featured: true },
+          { name: 'Former member', bioguide_id: 'S000003', title: '위원장', party_abbr: 'DEM', featured: true }],
+    };
+    agenda.milestones.push({ date: '2026-12-01', chambers: ['senate'], kind: 'committee', title_ko: '상원 인준 청문회' });
+
+    const html = usaLegislature(snapshot, 'senate', { today: '2026-11-26' });
+    assert.ok(html.includes('의원 공석 · <strong>0석'));
+    assert.match(html, /href="https:\/\/official\.senate\.gov\/"[^>]*>Senator Two/);
+    assert.ok(html.includes('민주당 의원총회에 참여'));
+    assert.ok(html.includes('상원 청문회·위원회 일정 1건'));
+    assert.doesNotMatch(html, /Former member/);
+    const later = usaLegislature(snapshot, 'senate', { today: '2027-01-03' });
+    assert.doesNotMatch(later, /상원 공식 의석·공석 집계|의원총회에 참여|상원 인준 청문회/);
+});
