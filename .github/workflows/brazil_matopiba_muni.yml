@@ -1,0 +1,35 @@
+name: MATOPIBA soy municipal check
+
+# One-off research run: collects SIDRA municipal yields + NASA POWER weather
+# for the twelve MATOPIBA municipalities, trains ridge per municipality and
+# tests the El Nino analog shift. Not scheduled.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/matopiba-muni]
+    paths: ["New for anti/scripts/yield_model/brazil/matopiba_municipal.py"]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas numpy scipy scikit-learn
+      - name: Municipal models
+        working-directory: "New for anti/scripts/yield_model"
+        run: python -m brazil.matopiba_municipal
+      - name: Commit results
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/scripts/yield_model/brazil/training_muni" \
+                  "New for anti/scripts/yield_model/brazil/models_muni" \
+                  "New for anti/scripts/yield_model/brazil/condition/matopiba_muni_summary.json"
+          git commit -m "chore: MATOPIBA municipal soy check" || exit 0
+          for i in 1 2 3; do git push && exit 0; git pull --rebase --autostash; done
+          git push
