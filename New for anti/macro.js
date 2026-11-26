@@ -671,6 +671,10 @@ const mmPanelNum = (v, unit) => (Number.isFinite(v)
 const mmPanelView = (p) => {
     if (!p) return '<p class="fin-note">패널 데이터가 없습니다.</p>';
     const note = p.note_ko ? `<p class="fin-note">${finEsc(p.note_ko)}</p>` : '';
+    // Several charts on one tab, stacked on the same date axis (SOMA with TGA underneath).
+    if (p.type === 'charts') {
+        return `${(p.charts || []).map((c) => `<div class="mm-panel-stacked"><p class="mm-panel-sub">${finEsc((c.series || [])[0]?.label || c.label || '')}</p>${mmPanelView(c)}</div>`).join('')}${note}`;
+    }
     if (p.type === 'hbar') {
         const rows = p.rows || [];
         const hi = Math.max(...rows.map((r) => Math.abs(r.value) || 0), 1e-9);
@@ -3036,6 +3040,27 @@ const mmNewsItems = (items) => items.map((it) => `
                 <span class="mm-news-meta">${finEsc(it.source || '')}${it.published_at ? ` · ${finEsc(String(it.published_at).slice(0, 10))}` : ''}</span>
             </a>`).join('');
 
+// A card can carry a small summary block above its news (the SOMA card's duration: how much of the Treasury
+// market's rate risk the Fed holds, and what QT hands back to private holders month by month).
+const mmDurationBlock = (r) => {
+    if (!r || !(r.rows || []).length) return '';
+    const bars = r.bars || [];
+    const hi = Math.max(...bars.map((b) => Math.abs(b.value) || 0), 1e-9);
+    return `
+        <div class="mm-dur">
+            <p class="mm-news-head">${finEsc(r.title || '')} <span class="mm-news-meta">${finEsc(r.asof || '')}</span></p>
+            ${r.rows.map((x) => `<div class="mm-dur-row"><span>${finEsc(x.label)}</span><b>${finEsc(x.value)}</b></div>`).join('')}
+            ${bars.length ? `<div class="mm-dur-bars">${bars.map((b) => {
+                const h = `${(Math.abs(b.value) / hi * 100).toFixed(0)}%`;
+                return `<span class="mm-dur-bar" title="${finEsc(`${b.date} ${b.value >= 0 ? '+' : ''}${b.value}십억$`)}">
+                    <span class="mm-dur-h top">${b.value > 0 ? `<i class="up" style="height:${h}"></i>` : ''}</span>
+                    <span class="mm-dur-h bot">${b.value < 0 ? `<i class="dn" style="height:${h}"></i>` : ''}</span></span>`;
+            }).join('')}</div>
+                <div class="mm-dur-axis"><span>${finEsc(bars[0].date)}</span><span>${finEsc(bars[bars.length - 1].date)}</span></div>` : ''}
+            ${r.note_ko ? `<p class="mm-news-foot">${finEsc(r.note_ko)}</p>` : ''}
+        </div>`;
+};
+
 // Official releases first (wire_card_news.py: Fed, BEA, Treasury, BLS links), press articles behind a
 // toggle (free Google News RSS). The toggle is two radio buttons and CSS -- no handler, survives re-render.
 const mmNewsRail = (ind) => {
@@ -3045,7 +3070,7 @@ const mmNewsRail = (ind) => {
         const n = ++MM_NEWS_SEQ;
         const first = official.length ? 'off' : 'press';
         return `
-    <aside class="mm-news">
+    <aside class="mm-news">${mmDurationBlock(ind.duration_rail)}
         <p class="mm-news-head">관련 뉴스</p>
         <div class="mm-news-tabs">
             <input type="radio" class="mm-nt-off" id="mm-nt-off-${n}" name="mm-nt-${n}" ${first === 'off' ? 'checked' : ''}>
@@ -3059,7 +3084,7 @@ const mmNewsRail = (ind) => {
     </aside>`;
     }
     return `
-    <aside class="mm-news">
+    <aside class="mm-news">${mmDurationBlock(ind.duration_rail)}
         <p class="mm-news-head">관련 뉴스</p>
         <p class="mm-news-empty">관련 뉴스 없음 · API 연결 대기</p>
         ${ind.news_query ? `<p class="mm-news-q">검색어: <code>${finEsc(ind.news_query)}</code></p>` : ''}
