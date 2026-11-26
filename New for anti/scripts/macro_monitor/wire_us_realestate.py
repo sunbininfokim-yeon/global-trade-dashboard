@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""US '부동산' tab: fetch the series in macro_monitor/us_realestate.py (FRED, keyless) and graft them into
-public/data/macro_monitor_v1.json as their own category.
+"""US '부동산' tab (and two growth cards): fetch the series in macro_monitor/us_realestate.py (FRED and the
+Census construction workbook, keyless) and graft them into public/data/macro_monitor_v1.json.
 
     python3 wire_us_realestate.py
 
@@ -33,12 +33,22 @@ def main() -> int:
             cache[sid] = ups.fetch_fred(sid)
         return cache[sid]
 
+    census_cache: dict[str, dict] = {}
+
+    def census() -> dict[str, ups.Points]:
+        if "x" not in census_cache:
+            census_cache["x"] = ure.fetch_census_private()
+        return census_cache["x"]
+
     patches, failures = {}, []
     for sid, spec in ure.SPECS.items():
         try:
-            pts = ure.series_for(sid, fred)
+            pts = ure.series_for(sid, fred, census)
             patches[sid] = ups.build_patch(spec, pts, retrieved_at=retrieved)
             patches[sid]["note_ko"] += ure.extra_note(sid, pts)
+            if sid == "industrial_capex":
+                patches[sid]["panels"] = ure.capex_panels(ure.capex_raw(fred, census))
+                patches[sid]["ui"] = {"first_panel": "capex_index"}
         except Exception as exc:  # noqa: BLE001 -- one series failing must not block the others
             failures.append(f"{sid}: {exc}")
     changed = ure.apply(pack, patches)
