@@ -1,10 +1,44 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from macro_monitor.cpi.forward_validation import shift
+from build_us_cpi_internal_watch import SCHEMA, make_report, publish
+from macro_monitor.cpi.monthly import shift
 from macro_monitor.cpi.internal_watch import AUTO, INS, NEW, REPAIR, assess, features, vehicle
 
 
 class InternalWatchTests(unittest.TestCase):
+    def test_artifact_uses_latest_observed_headline_and_requires_official_history(self):
+        series = {"id": "all_items", "series_id": "CUSR0000SA0", "observations": [
+            {"date": "2026-09", "data_status": "observed", "index": 100.0},
+            {"date": "2026-10", "data_status": "observed", "index": 102.0},
+            {"date": "2026-11", "data_status": "not_published", "index": None},
+        ]}
+        history = {"schema_version": "us-cpi-api-history-v1",
+                   "source": {"data_status": "official_observed"}, "series": [series]}
+        mapping = {"relationships": []}
+        report = make_report(history, mapping)
+        self.assertEqual(report["reference_period"], "2026-10")
+        self.assertAlmostEqual(report["items"]["all_items"]["mom_pct"], 2)
+        history["retrieved_at"] = "irrelevant API retrieval timestamp"
+        self.assertEqual(make_report(history, mapping), report)
+        with self.assertRaises(ValueError):
+            make_report(history, mapping, "2026-11")
+        history["source"]["data_status"] = "fixture_synth"
+        with self.assertRaises(ValueError):
+            make_report(history, mapping)
+
+    def test_publish_deterministic_and_preserves_newer_month(self):
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "internal.json"
+            report = {"schema_version": SCHEMA, "reference_period": "2026-10"}
+            self.assertTrue(publish(report, path))
+            body = path.read_bytes()
+            self.assertFalse(publish(report, path))
+            with self.assertRaises(ValueError):
+                publish({**report, "reference_period": "2026-09"}, path)
+            self.assertEqual(path.read_bytes(), body)
+
     def test_spike_uses_only_prior_calendar_months(self):
         t = "2026-10"
         data = {shift(t, -i): .1 for i in range(1, 25)}

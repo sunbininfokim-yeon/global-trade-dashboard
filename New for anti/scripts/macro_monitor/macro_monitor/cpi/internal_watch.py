@@ -2,7 +2,7 @@
 from math import ceil
 from statistics import mean
 
-from .forward_validation import monthly_changes, shift
+from .monthly import monthly_changes, shift
 
 NEW, USED, PARTS, REPAIR, INS = AUTO = (
     "new_vehicles", "used_cars_and_trucks", "motor_vehicle_parts",

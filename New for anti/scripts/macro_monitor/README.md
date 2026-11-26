@@ -67,7 +67,8 @@ python3 build_us_cpi_forward_validation.py --vehicle-only
 ### 비식료 CPI 주간 및 발표 D-3 운영 인수 (#1149)
 
 **내부 파급 감시는 순위에서 독립한다.** 월간 BLS 이력이 갱신되면
-`python3 -B build_us_cpi_internal_watch.py`를 실행한다. 외부 시세·캘린더·TOP3 없이 실행되며
+`python3 -B build_us_cpi_internal_watch.py --out ../../public/data/us_cpi_internal_watch_v1.json`을 실행한다.
+외부 시세·캘린더·TOP3·추가 Python 패키지 없이 실행되며
 `--month YYYY-MM`으로 당시까지의 월만 선택할 수 있다(최신 개정본). 주간 JSON에도 동일한
 `internal_monitor`가 들어간다. 본문 기본 보기는 전체 감시 결과이고, 칩 클릭은 필터일 뿐이다.
 모든 저장된 SA 계열의 전월비를 자기 과거 36개월 P90과 비교(최소 유효 24개월).
@@ -77,6 +78,25 @@ vehicle_replay는 미래 3개월이 모두 관측된 과거 월에서 [조건 �
 집계한다. 신차: 중고차·부품·정비 중 2개 이상이 이후 3개월 평균 양수이며 직전 3개월보다 빨라졌는지,
 비교군은 신차 비급등 월. 잔류 압력: 보험료 이후 3개월 평균 MoM이 직전 3개월보다 낮아졌는지,
 비교군은 다른 보험료 급등 월. 겹치는 월·개정 이력을 사용한 기술통계이며 인과·예측 확률이 아니다.
+
+Claude 운영 연결: `.github/workflows/us_public_series_refresh.yml`의 기존
+`python build_us_cpi_api_history.py` 호출을 아래 명령 묶음으로 교체한다.
+이미 설정된 `BLS_API_KEY` 외에 새 등록·시크릿은 없다.
+
+```bash
+if python build_us_cpi_api_history.py; then
+  python -B build_us_cpi_internal_watch.py --out ../../public/data/us_cpi_internal_watch_v1.json ||
+    echo "::warning::US CPI internal watch refresh failed; prior snapshot preserved"
+else
+  echo "::warning::BLS history refresh failed; skipping internal watch"
+fi
+```
+
+기존 `git add` 목록에 `New for anti/public/data/us_cpi_internal_watch_v1.json`을 추가하되
+최초 생성이 실패할 때 없는 파일을 일괄 stage하지 않도록 파일 존재를 가드한다.
+이 작업은 기존 갱신과 같은 커밋/경합 재시도를 사용한다. 스냅샷은 새 월 또는 실제 데이터 개정 시에만 변경되며,
+더 오래된 기준월로 역행하지 않는다. 미국 CPI 본문은 이 독립 파일을 우선 사용하고, 선택 중인 발표월과
+`reference_period`가 일치하는 경우에만 판정을 표시한다. 우측 외부 가격 실행 실패와 무관하다.
 
 운영 명령은 위의 연구용 미리보기 대신 아래 하나를 쓴다. API 키·LLM·주간 재학습 없이
 기존 본문 데이터와 외부 시세를 한 JSON으로 조립한다. 공용 UI/Actions는 Claude 소유이며 이 PR에서 활성화하지 않는다.

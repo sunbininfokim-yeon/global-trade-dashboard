@@ -3,30 +3,12 @@
 from __future__ import annotations
 
 import math
-import re
-from typing import Any, Iterable, Mapping
+from typing import Any, Mapping
 
 import numpy as np
 
 
-def shift(month: str, offset: int) -> str:
-    if not re.fullmatch(r"[0-9]{4}-(0[1-9]|1[0-2])", month):
-        raise ValueError(f"invalid reference month: {month}")
-    serial = int(month[:4]) * 12 + int(month[5:]) - 1 + offset
-    return f"{serial // 12:04d}-{serial % 12 + 1:02d}"
-
-
-def monthly_changes(points: Iterable[tuple[str, float | None]]) -> dict[str, float]:
-    levels: dict[str, float] = {}
-    for month, value in points:
-        shift(month, 0)
-        if value is not None and math.isfinite(value) and value > 0:
-            levels[month] = value
-    return {
-        month: (levels[month] / levels[prev] - 1) * 100
-        for month in sorted(levels)
-        if (prev := shift(month, -1)) in levels
-    }
+from .monthly import monthly_changes, shift
 
 
 def candidate_specs(vehicle: Mapping, external: Mapping, structure: Mapping) -> list[dict[str, Any]]:
