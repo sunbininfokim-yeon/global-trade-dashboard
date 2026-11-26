@@ -179,8 +179,8 @@ test('current funding context reproduces the reviewed source profile', () => {
 });
 
 test('context does not assert current funding beyond its review window or CR deadline', () => {
-  assert.equal(contextState(context,new Date('2026-11-05T12:00:00Z')),'reviewed');
-  for(const day of ['2026-10-30T12:00:00Z','2026-11-13T12:00:00Z','2026-12-12T12:00:00Z']) {
+  assert.equal(contextState(context,new Date('2026-11-26T12:00:00Z')),'reviewed');
+  for(const day of ['2026-11-25T12:00:00Z','2026-12-04T12:00:00Z','2026-12-12T12:00:00Z']) {
     assert.equal(contextState(context,new Date(day)),'needs_review');
     const html=renderContext(context,new Date(day));
     assert.match(html,/현황 재확인 필요/);
@@ -191,8 +191,8 @@ test('context does not assert current funding beyond its review window or CR dea
   const extended=structuredClone(context);extended.review_valid_until='2027-01-01';
   assert.equal(contextState(extended,new Date('2026-12-12T12:00:00Z')),'needs_review');
   assert.match(renderContext(extended,new Date('2026-12-12T12:00:00Z')),/현재 효력·후속 법률은 재확인이 필요/);
-  assert.equal(contextState(context,new Date('2026-11-13T04:59:59Z')),'reviewed');
-  assert.equal(contextState(context,new Date('2026-11-13T05:00:00Z')),'needs_review');
+  assert.equal(contextState(context,new Date('2026-12-04T04:59:59Z')),'reviewed');
+  assert.equal(contextState(context,new Date('2026-12-04T05:00:00Z')),'needs_review');
 });
 
 test('resolved CR conditions and dated negotiation positions have separate labels', () => {
