@@ -38,6 +38,8 @@ name: Refresh macro public series
 # 월마다 계산(config/ust_mspd_wam_v1.json 에 누적, 새 달만 받음)하고, 그달 말 수익률곡선(FRED)·연준 보유(뉴욕연준 SOMA)로
 # 듀레이션 공급(DV01·10년물 환산, 민간 보유분)까지 붙이고, 재무부 조치(config/ust_toolkit_events_v1.json)
 # 전후 30년물 금리(FRED DGS30)를 붙인다.
+# DKW 10년물 요인(wire_us_dkw.py): 연준 이사회 DKW_updates.csv(키 없음)로 10년물 카드의 'DKW 금리 변동 요인' 패널을
+# 매일 확인한다. 연준이 월말 값을 새로 올린 날만 바뀐다.
 # 연체율 카드 통합(wire_credit_merge.py): 미국·한국 각각 연체 카드 하나에 부문별 연체율·상각률을 색이 다른 선으로 모은다.
 # 흡수된 카드는 config/hidden_cards_v1.json 으로 숨긴다(삭제하지 않음, 원래 파이프라인이 계속 갱신).
 # 미국 부동산 탭(wire_us_realestate.py): 모기지 금리·스프레드, 케이스-실러, 가격/임대료, 은행 CRE 대출(H.8),
@@ -95,7 +97,7 @@ jobs:
         run: pip install pytest beautifulsoup4 openpyxl xlrd pdfplumber
       - name: Tests
         working-directory: New for anti/scripts/macro_monitor
-        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_idn_public_series.py tests/test_world_public_series.py tests/test_gdp_contrib.py tests/test_hidden_flags.py tests/test_source_notices.py tests/test_cpi_api.py tests/test_us_realestate.py ../oil_balance/tests/test_oil_balance.py -v
+        run: python -m pytest tests/test_us_public_series.py tests/test_jp_public_series.py tests/test_kr_public_series.py tests/test_export_public_series.py tests/test_za_public_series.py tests/test_asia_public_series.py tests/test_ru_public_series.py tests/test_che_public_series.py tests/test_aus_public_series.py tests/test_idn_public_series.py tests/test_world_public_series.py tests/test_gdp_contrib.py tests/test_hidden_flags.py tests/test_source_notices.py tests/test_cpi_api.py tests/test_us_realestate.py tests/test_wire_us_dkw.py ../oil_balance/tests/test_oil_balance.py -v
       - name: Refresh, commit, push (recompute on top of main if the push races)
         env:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
@@ -110,7 +112,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           refresh() {
             (cd "New for anti/scripts/oil_balance" && python build_oil_balance.py --follow-steo 14) || true
-            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_us_realestate.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_cn_official.py; python wire_free_cards.py; python wire_kr_bank_credit.py; python wire_kr_nonbank_credit.py; python wire_credit_merge.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python wire_us_cpi_contrib.py; python archive_kr_cpi_base2020.py; python wire_kr_cpi_contrib.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_toolkit_feed.py; python wire_ust_auctions.py; python wire_ust_maturity.py; python wire_us_monetary.py; python wire_cb_balance_sheets.py; python wire_kr_money_debt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
+            (cd "New for anti/scripts/macro_monitor" && python build_fima_repo.py; python wire_us_public_series.py; python wire_us_realestate.py; python wire_us_dkw.py; python wire_jp_public_series.py; python wire_kr_public_series.py; python wire_export_series.py; python wire_za_public_series.py; python wire_asia_public_series.py; python wire_ru_public_series.py; python wire_che_public_series.py; python wire_aus_public_series.py; python wire_idn_public_series.py; python wire_world_public_series.py; python wire_cn_official.py; python wire_free_cards.py; python wire_kr_bank_credit.py; python wire_kr_nonbank_credit.py; python wire_credit_merge.py; python wire_gdp_contrib.py; python wire_cpi_items.py; python build_us_cpi_api_history.py; python build_us_pce_history.py; python wire_us_inflation_observed.py; python wire_us_cpi_contrib.py; python archive_kr_cpi_base2020.py; python wire_kr_cpi_contrib.py; python build_hedge_fund_ust.py; python build_fed_qe_qt_history.py; python build_fed_balance_sheet.py; python wire_fed_balance_sheet.py; python wire_fed_qeqt.py; python wire_ust_toolkit_feed.py; python wire_ust_auctions.py; python wire_ust_maturity.py; python wire_us_monetary.py; python wire_cb_balance_sheets.py; python wire_kr_money_debt.py; python remove_unsourced_cards.py; python apply_source_notices.py; python apply_hidden_flags.py) || true
           }
           for attempt in 1 2 3; do
             refresh
