@@ -1,8 +1,9 @@
 {
-  "note": "Reviewed per-issuer industry kits that a KSIC code alone gets wrong. corp_code -> kit in pe_cr_inputs.json. The builder also applies a rule: 도매·중개(G461/G467/G468) + a trading-house name (인터내셔널·상사·코퍼레이션) -> trading_house.",
+  "note": "Reviewed per-issuer industry kits that a KSIC code alone gets wrong. corp_code -> kit in pe_cr_inputs.json. The builder also applies a rule: 도매·중개(G461/G467/G468) + a trading-house name (인터내셔널·상사·코퍼레이션) -> trading_house. conglomerate: 업종이 다른 사업부문이 한 회사에 묶인 경우(삼성물산 = 상사·건설·바이오·식음·패션·리조트) -> 부문별로 나눠 봄.",
   "overrides": {
     "00124504": "trading_house",
     "00120076": "trading_house",
-    "00164812": "trading_house"
+    "00164812": "trading_house",
+    "00149655": "conglomerate"
   }
 }

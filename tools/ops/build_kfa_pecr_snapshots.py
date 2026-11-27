@@ -569,9 +569,10 @@ def notes_packet(dart: Dart, year: int, fs: str, fy_rows: list) -> tuple[dict | 
     return (res if found else None), ','.join(found) or 'none'
 
 
-def segments_packet(dart: Dart, year: int, fs: str, fy_rows: list) -> tuple[dict | None, str]:
-    """사업부문 / 제품 / 지역 breakdowns from the FY XBRL (dart_kfa/segments.py)."""
-    from dart_kfa.segments import labels_from_zip, segment_breakdowns  # noqa: E402
+def segments_packet(dart: Dart, year: int, fs: str, fy_rows: list, prior: list | None = None) -> tuple[dict | None, str]:
+    """사업부문 / 제품 / 지역 breakdowns from the FY XBRL (dart_kfa/segments.py), plus a
+    multi-year segment history from the two earlier FY reports' XBRL."""
+    from dart_kfa.segments import labels_from_zip, segment_breakdowns, segment_history  # noqa: E402
     from dart_kfa.xbrl_notes import instance_from_zip  # noqa: E402
     receipt = fy_rows[0].get('rcept_no') if fy_rows else None
     blob = dart.get_bytes('fnlttXbrl.xml', rcept_no=receipt, reprt_code=REPRT['FY']) if receipt else None
@@ -582,6 +583,24 @@ def segments_packet(dart: Dart, year: int, fs: str, fy_rows: list) -> tuple[dict
     res = segment_breakdowns(instance_from_zip(blob), fs_div=fs, fiscal_year_end=f'{year}-12-31',
                              labels=labels_from_zip(blob), face_revenue=face)
     res['receipt'] = receipt
+    earlier = []
+    for p in prior or []:
+        rows = p['filings']['FY']['response']['list']
+        rc = rows[0].get('rcept_no') if rows else None
+        b = dart.get_bytes('fnlttXbrl.xml', rcept_no=rc, reprt_code=REPRT['FY']) if rc else None
+        if not b:
+            continue
+        fy_p = p['fiscal_year_end']
+        face_p = next((num(r.get('thstrm_amount')) for sj in ('IS', 'CIS') for r in rows
+                       if r.get('sj_div') == sj and r.get('account_id') == 'ifrs-full_Revenue'), None)
+        try:
+            earlier.append(segment_breakdowns(instance_from_zip(b), fs_div=fs, fiscal_year_end=fy_p,
+                                              labels=labels_from_zip(b), face_revenue=face_p))
+        except Exception as exc:  # noqa: BLE001 -- history is optional
+            print(f'  segments FY{fy_p[:4]}: {exc}', file=sys.stderr)
+    hist = segment_history(res, earlier)
+    if hist:
+        res['history'] = hist
     kinds = ','.join(f"{b['kind']}{'' if b['reconciles'] else '?'}" for b in res['breakdowns']) or 'none'
     return (res if res['breakdowns'] else None), kinds
 
@@ -813,7 +832,7 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     except Exception as exc:  # noqa: BLE001
         notes, notes_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
     try:
-        segments, segments_note = segments_packet(dart, year, fs, fy_rows)
+        segments, segments_note = segments_packet(dart, year, fs, fy_rows, prior)
     except Exception as exc:  # noqa: BLE001
         segments, segments_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
     try:

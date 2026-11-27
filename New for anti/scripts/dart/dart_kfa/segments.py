@@ -46,6 +46,9 @@ RECONCILING = {"ifrs-full:EliminationOfIntersegmentAmountsMember", "ifrs-full:Ma
                "ifrs-full:UnallocatedAmountsMember", "ifrs-full:CorporateMember"}
 REVENUE = ("Revenue", "RevenueFromContractsWithCustomers")
 OPERATING = ("OperatingIncomeLoss", "ProfitLossFromOperatingActivities")
+ASSETS = ("Assets",)
+DA = ("DepreciationAndAmortisationExpense", "DepreciationDepletionAndAmortisationExpense")
+MEASURES = {"revenue": REVENUE, "op": OPERATING, "assets": ASSETS, "da": DA}
 KIND_LABEL = {"segment": "사업부문", "product": "제품·서비스", "geography": "지역"}
 TOLERANCE = 0.015
 
@@ -121,7 +124,10 @@ def segment_breakdowns(instance: bytes, *, fs_div: str, fiscal_year_end: str, la
         if axes:
             if consol not in (None, CONSOL_TOTAL):
                 return None
-            return AXES[axes[0]], dims[axes[0]]
+            # 삼성물산 FY2024 tags each segment twice: with OperatingSegmentsMember
+            # (before inter-segment elimination, matching the total row) and
+            # without (external revenue). Kept apart, the first preferred.
+            return AXES[axes[0]], dims[axes[0]], "gross" if consol == CONSOL_TOTAL else "plain"
         if consol is None:
             return None
         if consol == CONSOL_TOTAL:
@@ -134,13 +140,16 @@ def segment_breakdowns(instance: bytes, *, fs_div: str, fiscal_year_end: str, la
     for f in facts:
         if not (f["unit"] and f["unit"].upper() == currency):
             continue
-        measure = "revenue" if f["concept"] in REVENUE else "op" if f["concept"] in OPERATING else None
+        measure = next((m for m, cs in MEASURES.items() if f["concept"] in cs), None)
         if not measure:
             continue
         ctx = contexts.get(f["context"])
         if ctx is None or ctx["typed"]:
             continue
-        period = periods.get((ctx["start"], ctx["end"]))
+        if measure == "assets":      # a balance: the two year-end instants
+            period = {end.isoformat(): "cur", prior_end.isoformat(): "prior"}.get(ctx["instant"])
+        else:
+            period = periods.get((ctx["start"], ctx["end"]))
         if not period:
             continue
         hit = classify(ctx)
@@ -150,16 +159,18 @@ def segment_breakdowns(instance: bytes, *, fs_div: str, fiscal_year_end: str, la
             value = Decimal(f["text"])
         except InvalidOperation:
             continue
-        rank = (REVENUE if measure == "revenue" else OPERATING).index(f["concept"])
-        cells.setdefault((hit[0], hit[1], measure, period), {}).setdefault(rank, set()).add(value)
+        rank = MEASURES[measure].index(f["concept"])
+        variant = hit[2] if len(hit) > 2 else "plain"
+        cells.setdefault((hit[0], hit[1], measure, period), {}).setdefault(rank, {}).setdefault(variant, set()).add(value)
 
     def value(kind, member, measure, period):
         by_rank = cells.get((kind, member, measure, period)) or {}
         for rank in sorted(by_rank):
-            vals = by_rank[rank]
-            if len(vals) == 1:
+            variants = by_rank[rank]
+            vals = variants.get("gross") or variants.get("plain")
+            if vals and len(vals) == 1:
                 return float(next(iter(vals)))
-            return None           # contexts disagree: leave it out
+            return None           # contexts disagree within a variant: leave it out
         return None
 
     totals = {m: value("total", None, m, "cur") for m in ("revenue", "op")}
@@ -186,8 +197,11 @@ def segment_breakdowns(instance: bytes, *, fs_div: str, fiscal_year_end: str, la
             continue
         peers = [k for k in families if k[0] == kind and k[1] != "_standard"]
         if peers:
-            target = max(peers, key=lambda k: len(families[k]))
-            families[target] |= members
+            # join every filer-specific table of that kind: picking only the largest
+            # broke once segment assets brought a bigger assets-only table in
+            # (HD한국조선해양 lost 기타부문 and stopped reconciling).
+            for target in peers:
+                families[target] |= members
             del families[(kind, fam)]
 
     out = []
@@ -197,7 +211,9 @@ def segment_breakdowns(instance: bytes, *, fs_div: str, fiscal_year_end: str, la
             local = member.split(":")[-1]
             row = {"member": local, "label": _clean_label(labels.get(local), member),
                    "revenue": value(ckind, member, "revenue", "cur"), "revenue_prior": value(ckind, member, "revenue", "prior"),
-                   "op": value(ckind, member, "op", "cur"), "op_prior": value(ckind, member, "op", "prior")}
+                   "op": value(ckind, member, "op", "cur"), "op_prior": value(ckind, member, "op", "prior"),
+                   "assets": value(ckind, member, "assets", "cur"), "assets_prior": value(ckind, member, "assets", "prior"),
+                   "da": value(ckind, member, "da", "cur")}
             if row["revenue"] is None and row["op"] is None:
                 continue
             (adjustments if _is_adjustment(member, row["label"]) else rows).append(row)
@@ -231,9 +247,15 @@ def segment_breakdowns(instance: bytes, *, fs_div: str, fiscal_year_end: str, la
                 r["revenue_yoy"] = r["revenue"] / r["revenue_prior"] - 1
             if r["op"] is not None and r["op_prior"] and r["op_prior"] > 0:
                 r["op_yoy"] = r["op"] / r["op_prior"] - 1
+            if r["op"] is not None and r["assets"]:
+                avg = (r["assets"] + r["assets_prior"]) / 2 if r["assets_prior"] else r["assets"]
+                r["roa"] = r["op"] / avg if avg > 0 else None          # segment operating profit ÷ segment assets
+            if r["op"] is not None and r["da"] is not None and r["revenue"]:
+                r["ebitda_margin"] = (r["op"] + abs(r["da"])) / r["revenue"]
         out.append({
             "kind": kind, "label": KIND_LABEL[kind], "table": fam, "rows": rows,
             "has_operating_income": any(r["op"] is not None for r in rows),
+            "has_assets": any(r["assets"] is not None for r in rows),
             "sum_revenue": parts, "total_revenue_reported": totals["revenue"],
             "reconciling_items": ({**(reconciling.get("revenue") or {}), **{a["label"]: a["revenue"] for a in adjustments}}
                                   if kind == "segment" else {a["label"]: a["revenue"] for a in adjustments}) or None,
@@ -243,3 +265,25 @@ def segment_breakdowns(instance: bytes, *, fs_div: str, fiscal_year_end: str, la
     out.sort(key=lambda b: (order[b["kind"]], not b["reconciles"], -len(b["rows"])))
     return {"fiscal_year_end": fiscal_year_end, "fs_div": fs_div, "breakdowns": out,
             "source": "OpenDART 재무제표 원본 XBRL (fnlttXbrl.xml) 영업부문·수익 구분 주석"}
+
+
+def segment_history(current: dict, earlier: list[dict]) -> dict:
+    """Revenue / operating profit by segment label across the FY reports given
+    (each carries 당기 and 전기), newest filing winning for a year. Only the
+    reconciled 사업부문 table of each year is used, matched by Korean label."""
+    hist = {}
+    for doc in [current, *earlier]:
+        if not doc:
+            continue
+        fy = int(str(doc.get("fiscal_year_end", "0000"))[:4])
+        seg = next((b for b in doc.get("breakdowns", []) if b["kind"] == "segment" and b["reconciles"]), None)
+        if not seg:
+            continue
+        for r in seg["rows"]:
+            for year, rev, op in ((fy, r.get("revenue"), r.get("op")), (fy - 1, r.get("revenue_prior"), r.get("op_prior"))):
+                cell = hist.setdefault(r["label"], {}).setdefault(str(year), {})
+                if rev is not None:
+                    cell.setdefault("revenue", rev)
+                if op is not None:
+                    cell.setdefault("op", op)
+    return {k: dict(sorted(v.items())) for k, v in hist.items() if len(v) >= 2}

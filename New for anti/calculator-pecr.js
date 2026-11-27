@@ -521,7 +521,7 @@ const pecrLoadPeers = async (snap) => {
 };
 
 // --- 업종 핵심 지표 (investor_metrics.industry; 종합상사 / 광업·제련) ---------
-const KIT_TITLE = { trading_house: '종합상사', mining_smelting: '광업·비철 제련' };
+const KIT_TITLE = { trading_house: '종합상사', mining_smelting: '광업·비철 제련', conglomerate: '복합기업' };
 const KIT_FMT = { dso: 'days', dio: 'days', impairment: 'money' };
 const kitIndustryHtml = (snap) => {
     const ind = snap.investor_metrics?.industry;
@@ -634,15 +634,50 @@ const SEG_CHECK = { segment_total: '보고서의 부문 합계 행', income_stat
 const segPct = (v, sign = false) => (Number.isFinite(v) ? `${sign && v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%` : '—');
 const segTableHtml = (b, fy) => {
     const op = b.has_operating_income;
+    const assets = b.has_assets && op;
+    const opSum = op ? b.rows.reduce((a, r) => a + Math.max(r.op || 0, 0), 0) : 0;
     const adj = Object.entries(b.reconciling_items || {}).filter(([, v]) => Number.isFinite(v) && v !== 0);
     return `<div class="co-table-wrap"><table class="co-table pecr-table">
-        <thead><tr><th>${finEsc(b.label)}</th><th>매출 FY${fy}</th><th>비중</th><th>전년비</th>${op ? '<th>영업이익</th><th>이익률</th><th>이익 전년비</th>' : ''}</tr></thead>
+        <thead><tr><th>${finEsc(b.label)}</th><th>매출 FY${fy}</th><th>비중</th><th>전년비</th>${op ? '<th>영업이익</th><th>이익률</th><th>이익 전년비</th><th>이익 기여</th>' : ''}${assets ? '<th>부문 자산</th><th>자산수익률</th><th>EBITDA 마진</th>' : ''}</tr></thead>
         <tbody>${b.rows.map((r) => `<tr><td>${finEsc(r.label)}</td><td class="pecr-num">${pecrNum(r.revenue)}</td><td class="pecr-num">${segPct(r.share)}</td>
             <td class="pecr-num">${segPct(r.revenue_yoy, true)}</td>${op ? `<td class="pecr-num">${pecrNum(r.op)}</td><td class="pecr-num">${segPct(r.margin)}</td>
-            <td class="pecr-num">${segPct(r.op_yoy, true)}</td>` : ''}</tr>`).join('')}
-        ${adj.map(([k, v]) => `<tr class="pecr-median"><td>${finEsc(/Elimination|제거/.test(k) ? '부문간 거래 제거' : /Reconcil|조정/.test(k) ? '연결 조정' : k)}</td><td class="pecr-num">${pecrNum(v)}</td><td colspan="${op ? 5 : 2}"></td></tr>`).join('')}
+            <td class="pecr-num">${segPct(r.op_yoy, true)}</td><td class="pecr-num">${opSum > 0 && r.op > 0 ? segPct(r.op / opSum) : '—'}</td>` : ''}${assets
+                ? `<td class="pecr-num">${pecrNum(r.assets)}</td><td class="pecr-num">${segPct(r.roa)}</td><td class="pecr-num">${segPct(r.ebitda_margin)}</td>` : ''}</tr>`).join('')}
+        ${adj.map(([k, v]) => `<tr class="pecr-median"><td>${finEsc(/Elimination|제거/.test(k) ? '부문간 거래 제거' : /Reconcil|조정/.test(k) ? '연결 조정' : k)}</td><td class="pecr-num">${pecrNum(v)}</td><td colspan="${(op ? 6 : 2) + (assets ? 3 : 0)}"></td></tr>`).join('')}
         </tbody></table></div>`;
 };
+const segHistoryHtml = (snap) => {
+    const h = snap.segments?.history;
+    if (!h) return '';
+    const labels = Object.keys(h).filter((k) => !/공통|합계/.test(k));
+    const years = [...new Set(labels.flatMap((k) => Object.keys(h[k])))].sort().slice(-5);
+    if (years.length < 2 || !labels.length) return '';
+    const cell = (k, y, m) => pecrNum(h[k][y]?.[m]);
+    return `<div class="co-table-wrap"><table class="co-table pecr-table">
+        <thead><tr><th>부문</th>${years.map((y) => `<th>FY${y}</th>`).join('')}</tr></thead><tbody>
+        ${labels.map((k) => `<tr><td><b>${finEsc(k)}</b> 매출</td>${years.map((y) => `<td class="pecr-num">${cell(k, y, 'revenue')}</td>`).join('')}</tr>
+            ${years.some((y) => Number.isFinite(h[k][y]?.op)) ? `<tr><td class="fin-note">　영업이익</td>${years.map((y) => `<td class="pecr-num">${cell(k, y, 'op')}</td>`).join('')}</tr>` : ''}`).join('')}
+        </tbody></table></div>
+        <p class="fin-note">사업보고서 3개(각각 당기·전기)의 영업부문 주석을 부문 이름으로 이어 붙였습니다. 부문 매출은 부문간 거래 제거 전 기준일 수 있습니다.</p>`;
+};
+
+// 복합기업(삼성물산 등): 업종이 다른 사업이 한 회사에 묶여 있어 부문별로 나눠 본다.
+const conglomerateHtml = (snap) => {
+    if (snap.pe_cr?.industry !== 'conglomerate') return '';
+    const seg = (snap.segments?.breakdowns || []).find((b) => b.kind === 'segment' && b.reconciles && b.has_operating_income);
+    if (!seg) return '';
+    const fy = String(snap.segments.fiscal_year_end || '').slice(0, 4);
+    const bl = snap.order_backlog;
+    const con = seg.rows.find((r) => /건설/.test(r.label));
+    const backlogNote = bl && con?.revenue
+        ? `<p class="fin-note"><b>건설 부문 수주잔고</b> ${pecrNum(bl.backlog)} — 건설 매출 ${pecrNum(con.revenue)}의 ${(bl.backlog / con.revenue).toFixed(1)}년치 (${finEsc(bl.period_end)} 기준).</p>` : '';
+    return `<section class="pecr-section"><h3>부문별로 분리해 보기 — 복합기업 (FY${finEsc(fy)})</h3>
+        <p class="fin-note">업종이 다른 사업이 한 회사에 묶여 있어 연결 합산 비율(이익률·회전율)은 평균이라 의미가 약합니다. 부문마다 매출·이익·자산수익률을 따로 보고,
+            가치도 부문별로 매겨 더하는 방식(합산가치, SOTP)이 맞습니다.</p>
+        ${segTableHtml(seg, fy)}${backlogNote}${segHistoryHtml(snap)}
+    </section>`;
+};
+
 const segmentsHtml = (snap) => {
     const seg = snap.segments;
     if (!seg || !(seg.breakdowns || []).length) return '';
@@ -659,6 +694,7 @@ const segmentsHtml = (snap) => {
         ${shown.map((b) => `${segTableHtml(b, fy)}<p class="fin-note">${b.reconciles
             ? `항목의 합이 ${finEsc(SEG_CHECK[b.reconciled_against] || '총매출')}과 맞습니다(±1.5%).`
             : `<b class="pecr-flag">일부 항목만 공시 — 참고용.</b> 항목 합 ${pecrNum(b.sum_revenue)}, 손익계산서 매출 ${pecrNum(b.face_revenue)}의 ${Math.round(b.sum_revenue / b.face_revenue * 100)}%.`}</p>`).join('')}
+        ${snap.pe_cr?.industry === 'conglomerate' ? '' : segHistoryHtml(snap)}
         <p class="fin-note">출처: FY${finEsc(fy)} 사업보고서 원본 XBRL의 영업부문·수익 구분 주석(접수 ${finEsc(seg.receipt || '—')}). 부문 매출은 부문간 거래 제거 전 금액일 수 있습니다.
             제품별 단가·출하량(예: HBM 비중)은 공시되지 않습니다.</p></section>`;
 };
@@ -849,7 +885,7 @@ const invMetricsView = (snap) => {
     const inv = snap.investor_metrics;
     if (!inv) return '<p class="fin-note">이 스냅샷에는 투자지표가 아직 없습니다. 다음 엔진 재생성 때 채워집니다.</p>';
     const live = pecrLive(snap);
-    return financialKpisHtml(snap) + kitIndustryHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + noteItemsHtml(snap) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
+    return conglomerateHtml(snap) + financialKpisHtml(snap) + kitIndustryHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + noteItemsHtml(snap) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
         + `<p class="fin-note">재무제표: OpenDART 사업보고서 FY${(inv.years || [])[0] || ''}~FY${inv.fiscal_year} ${snap.fs_div === 'OFS' ? '별도' : '연결'}.
             배당: 사업보고서 배당에 관한 사항. 자기주식: 자기주식 취득 및 처분 현황. 시세가 필요한 값(PEG, 시가 Z, 수익률)은 일별 시가총액으로 계산합니다.</p>`;
 };
