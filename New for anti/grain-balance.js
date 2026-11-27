@@ -33,7 +33,11 @@
             [data-grain] details.gb-risks > summary::-webkit-details-marker { display:none; }
             [data-grain] details.gb-risks > summary .chev { color:#fdba74; transition:transform .15s; }
             [data-grain] details.gb-risks[open] > summary .chev { transform:rotate(90deg); }
-            [data-grain] details.gb-risks > summary .hint { font-size:12px; color:#94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; }`;
+            [data-grain] details.gb-risks > summary .hint { font-size:12px; color:#94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; }
+            [data-grain] details.gb-fold > summary { list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+            [data-grain] details.gb-fold > summary::-webkit-details-marker { display:none; }
+            [data-grain] details.gb-fold > summary .chev { color:#94a3b8; transition:transform .15s; }
+            [data-grain] details.gb-fold[open] > summary .chev { transform:rotate(90deg); }`;
         document.head.appendChild(css);
     }
 
@@ -71,14 +75,16 @@
     const dmt = (kt) => `${kt >= 0 ? '+' : '−'}${mt(Math.abs(kt))}`;
 
     // USDA's outlook this month against last month's, same season.
-    function revisionHtml(rv) {
+    // Shows this month's number, with the change from last month in brackets.
+    function revisionHtml(rv, cur, release) {
         if (!rv) return '';
-        const month = (rv.vs_release.match(/(\d{1,2})월/) || [])[1] || '전';
-        const row = (label, x) => (x ? `<div class="gb-line"><span>${label}</span><span>${dmt(x.change_kt)} ${pct(x.change_pct)}</span></div>` : '');
+        const prev = (rv.vs_release.match(/(\d{1,2})월/) || [])[1];
+        const now = ((release || '').match(/(\d{1,2})월/) || [])[1];
+        const row = (label, x, v) => (x ? `<div class="gb-line"><span>${label}</span><span>${v != null ? `${mt(v)} ` : ''}<span class="stock-note">(${prev ? `${prev}월 대비 ` : '전월 대비 '}${dmt(x.change_kt)}, ${pct(x.change_pct)})</span></span></div>` : '');
         const movers = (rv.producers || []).filter((m) => Math.abs(m.change_kt) >= 50)
             .map((m) => `${esc(m.country_ko)} ${dmt(m.change_kt)}`).join(' · ');
-        return `<p class="trade-rank-group-head" style="margin-top:10px;">USDA 전망 수정 (${esc(month)}월 발표 대비)</p>
-            ${row('세계 생산', rv.production)}${row('기말재고', rv.ending_stocks)}${row('세계 수출', rv.exports)}
+        return `<p class="trade-rank-group-head" style="margin-top:10px;">USDA 전망${now ? ` (${esc(now)}월 발표)` : ''}</p>
+            ${row('세계 생산', rv.production, cur?.production_kt)}${row('기말재고', rv.ending_stocks, cur?.ending_stocks_kt)}${row('세계 수출', rv.exports, cur?.exports_kt)}
             ${movers ? `<div class="stock-note" style="margin-top:2px;">생산 수정: ${movers}</div>` : '<div class="stock-note" style="margin-top:2px;">주요 생산국 전망은 그대로</div>'}`;
     }
     function riskHtml(r) {
@@ -130,7 +136,7 @@
         const rows = [row('production', '생산', '세계의'), row('consumption', '소비', '세계의'),
             row('imports', '수입', '세계 수입의'), row('ending_stocks', '기말재고', '세계 재고의')].join('');
         if (!rows) return '';
-        return `<p class="trade-rank-group-head" style="margin-top:10px;">${title} (전년 대비)</p>${rows}`;
+        return `<details class="gb-fold"><summary><span class="trade-rank-group-head" style="margin:0;">${title} 생산·소비·수입·기말재고 (전년 대비)</span><span class="chev">▸</span></summary>${rows}</details>`;
     }
 
     // Korea's suppliers and the calls on the fields they ship from.
@@ -172,7 +178,7 @@
                 ${more}
                 <div class="stock-note">생육 중인 산지 날씨 판정: 불리 ${t.unfavorable ?? 0} · 보통 ${t.neutral ?? 0} · 유리 ${t.favorable ?? 0}</div>
             </details>` : '<div class="stock-note" style="margin-top:10px;">주요 리스크: 눈에 띄는 것 없음</div>'}
-            ${revisionHtml(c.revision)}
+            ${revisionHtml(c.revision, cur, c.release)}
             ${priceCheckHtml(c.price_check)}
             ${igcHtml(c.igc)}
             ${koreaSourcesHtml(c.korea_sources)}
