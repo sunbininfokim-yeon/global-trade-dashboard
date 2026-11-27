@@ -41,6 +41,8 @@ const MS_FILES = {
     direction: 'us_kr_direction_v1.json',
     // 한국 → 미국 반도체 (kr_to_us_semiconductor.py, #1121), hand-run for now.
     krus: 'kr_us_semiconductor_v1.json',
+    // 예측 vs 실제 for 한국 → 미국 (publish_kr_us_semiconductor.py, daily 16:10 KST).
+    krush: 'kr_us_semiconductor_history_v1.json',
     // Forecast vs actual, one row per session (build_us_kr_direction_history.py).
     directionHistory: 'us_kr_direction_history.json',
     // BTC/ETH, 김치 프리미엄, stablecoins, perp OI/funding, Upbit turnover (scripts/crypto).
@@ -59,7 +61,7 @@ const msDayLabel = (iso) => {
     const wd = '일월화수목금토'[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
     return `${m}/${d}(${wd})`;
 };
-const msPct0 = (x) => `${Math.round(x * 100)}%`;
+const msPct0 = (x) => (Number.isFinite(x) ? `${Math.round(x * 100)}%` : '—');
 // 48-52% reads as 중립 (user decision 2026-11-07; 45-55 was tried first and
 // narrowed). In replays of 10/23-11/6 only a handful of the 66 open/close
 // probabilities landed near 50, so the band marks genuinely split days only.
@@ -1805,6 +1807,66 @@ const msKrUsSection = (D) => {
     </section>`;
 };
 
+// 예측 vs 실제 · 한국 → 미국. Three kinds of rows, never mixed in one score:
+// the engine's walk-forward validation (2016~), replays after the model
+// froze, and live forecasts issued before the US open.
+const msKrUsHistorySection = (D) => {
+    const H = D.krush && D.krush.schema_version === 'kr-us-semiconductor-history-v1' ? D.krush : null;
+    if (!H) return '';
+    const names = H.names_ko || {};
+    const order = ['mu', 'sox', 'nvda', 'amd', 'avgo'];
+    const pct = (a, b) => (b ? `${Math.round((a / b) * 100)}%` : '—');
+    const fwd = H.forward_score || {};
+    const rows = H.rows || [];
+    const live = rows.filter((r) => r.kind === 'live').length;
+    const fwdRow = (k) => {
+        const o = (fwd[k] || {}).opening || {}, c = (fwd[k] || {}).closing || {};
+        return [`${finEsc(names[k] || k)}${k === 'mu' ? ' <b>(본 모델)</b>' : ''}`,
+            o.n ? `${pct(o.hit, o.n)} <small>${o.hit}/${o.n}</small>` : '—',
+            c.n ? `${pct(c.hit, c.n)} <small>${c.hit}/${c.n}</small>` : '—'];
+    };
+    const oos = H.oos || {};
+    const oosRow = (k) => {
+        const o = (oos[k] || {}).opening;
+        const c = (oos[k] || {}).closing;
+        if (!o) return null;
+        return [`${finEsc(names[k] || k)}${k === 'mu' ? ' <b>(본 모델)</b>' : ''}`,
+            `${o.start.slice(0, 4)}~ · ${msNum(o.n)}일`,
+            `${Math.round(o.hit * 100)}%`, `${Math.round(o.recall_up * 100)}% / ${Math.round(o.recall_down * 100)}%`,
+            `${o.brier.toFixed(4)} <small>(기준 ${o.brier_market.toFixed(4)})</small>`,
+            c ? `${Math.round(c.hit * 100)}%` : '—'];
+    };
+    const recent = rows.slice(-20).reverse();
+    const mu = (r) => ((r.p || {}).mu || {});
+    const act = (r) => ((r.actual || {}).mu || {});
+    const mark = (p, a) => (!Number.isFinite(p) || !Number.isFinite(a) || a === 0 || Math.round(p * 100) === 50 ? ''
+        : (p > 0.5) === (a > 0) ? ' <span class="fin-up">✓</span>' : ' <span class="fin-down">✗</span>');
+    const oosMu = ((oos.mu || {}).opening || {}).recent;
+    return `
+    <section class="fin-block fin-block-wide">
+        <div class="ms-dir-section-head"><h2>예측 vs 실제 · 한국 → 미국 반도체</h2><span class="ms-dir-badge is-muted">누적 ${rows.length}일 (실시간 ${live} · 재현 ${rows.length - live})</span></div>
+        <p class="fin-lead">매일 한국 장 마감 뒤(16:10 KST) 동결 모델로 그날 밤 미국 시가·종가 방향을 내고, 미국 장이 끝나면 실제값(전 거래일 종가 대비)으로 채점합니다. 50% 기준으로 방향이 같으면 적중, 보합은 뺍니다.</p>
+        <h3 class="fin-sub">모델 동결 뒤 누적 적중률 (실시간 + 재현)</h3>
+        ${msTable(['종목', '시가 방향', '종가 방향'], order.map(fwdRow))}
+        ${recent.length ? `
+        <h3 class="fin-sub">마이크론 · 최근 ${recent.length}일</h3>
+        ${msTable(['미국 날짜', '구분', '시가 상승 확률', '실제 시가', '종가 상승 확률', '실제 종가'], recent.map((r) => [
+            finEsc(r.date), r.kind === 'live' ? '실시간' : '재현',
+            msPct0(mu(r).opening), r.actual ? `<span class="${msSignCls(act(r).open)}">${finEsc(msKrUsPct(act(r).open))}</span>${mark(mu(r).opening, act(r).open)}` : '대기',
+            msPct0(mu(r).closing), r.actual ? `<span class="${msSignCls(act(r).close)}">${finEsc(msKrUsPct(act(r).close))}</span>${mark(mu(r).closing, act(r).close)}` : '대기']))}` : ''}
+        ${Object.keys(oos).length ? `
+        <h3 class="fin-sub">과거 순차 검증 (매 분기 그 이전 자료로만 학습)</h3>
+        ${msTable(['종목', '기간', '시가 적중', '상승 / 하락 포착', '시가 Brier', '종가 적중'], order.map(oosRow).filter(Boolean))}
+        ${oosMu ? `<details class="ms-details"><summary>마이크론 시가 · 순차 검증 최근 20일</summary>
+        ${msTable(['미국 날짜', '시가 상승 확률', '실제'], oosMu.dates.slice(-20).map((d, i, arr) => {
+            const j = oosMu.dates.length - arr.length + i;
+            const p = oosMu.p_up[j], up = oosMu.up[j];
+            return [finEsc(d), msPct0(p), `${up ? '<span class="fin-up">상승</span>' : '<span class="fin-down">하락</span>'}${(p > 0.5) === (up === 1) ? ' ✓' : ' ✗'}`];
+        }).reverse())}</details>` : ''}` : ''}
+        <p class="fin-note">${(H.notes_ko || []).map(finEsc).join(' ')} Brier는 낮을수록 좋고, 기준은 한국 종목 없이 미국 전일 가격·코스피만 쓴 모델입니다. 모델 ${finEsc(String(H.model_id || '').slice(0, 7))} · ${finEsc(H.trained_through || '')}까지 학습.</p>
+    </section>`;
+};
+
 // --- ③ US → KR 관찰 ----------------------------------------------------------
 const msUsKr = (D) => {
     const t = D.transmission || {};
@@ -1841,6 +1903,7 @@ const msUsKr = (D) => {
     <div class="ms-flow">${msFlowRow('🇰🇷 한국 장 마감', '15:30 KST', '🇺🇸 그날 밤 미국 장', '시가 방향 · 미국 개장 전 확정')}</div>
     ${msKrUsSection(D)}
     ${msDirectionHistorySection(D)}
+    ${msKrUsHistorySection(D)}
     ${observed ? `
     <h2 class="ms-predict-h">참고 · 현재 관찰되는 연결 (시험 자료)</h2>
     <section class="fin-block fin-block-wide">
