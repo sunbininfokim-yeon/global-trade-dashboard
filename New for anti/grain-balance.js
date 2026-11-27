@@ -78,6 +78,14 @@
     // Shows this month's number, with the change from last month in brackets.
     function revisionHtml(rv, cur, release) {
         if (!rv) return '';
+        if (rv.unchanged_since) {
+            const m = (rv.unchanged_since.match(/(\d{4})년 (\d{1,2})월/) || []);
+            return `<p class="trade-rank-group-head" style="margin-top:10px;">USDA 전망${m[2] ? ` (${esc(m[1])}년 ${esc(m[2])}월 갱신)` : ''}</p>
+                ${cur?.production_kt != null ? `<div class="gb-line"><span>세계 생산</span><span>${mt(cur.production_kt)}</span></div>` : ''}
+                ${cur?.ending_stocks_kt != null ? `<div class="gb-line"><span>기말재고</span><span>${mt(cur.ending_stocks_kt)}</span></div>` : ''}
+                ${cur?.exports_kt != null ? `<div class="gb-line"><span>세계 수출</span><span>${mt(cur.exports_kt)}</span></div>` : ''}
+                <div class="stock-note" style="margin-top:2px;">${m[2] ? `${esc(m[2])}월 이후 수정 없음` : '이번 달 수정 없음'}${rv.note_ko ? ` · ${esc(rv.note_ko)}` : ''}</div>`;
+        }
         const prev = (rv.vs_release.match(/(\d{1,2})월/) || [])[1];
         const now = ((release || '').match(/(\d{1,2})월/) || [])[1];
         const row = (label, x, v) => (x ? `<div class="gb-line"><span>${label}</span><span>${v != null ? `${mt(v)} ` : ''}<span class="stock-note">(${prev ? `${prev}월 대비 ` : '전월 대비 '}${dmt(x.change_kt)}, ${pct(x.change_pct)})</span></span></div>` : '');
