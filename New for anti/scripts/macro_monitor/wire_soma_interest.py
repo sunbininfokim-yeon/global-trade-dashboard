@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""SOMA card: 'SOMA + TGA' tab and the duration rail; government interest card: 'GDP 대비' and '평균 금리' tabs.
+"""SOMA card: 'SOMA + TGA' tab and the duration rail; government interest card: 'GDP 대비' and '평균 금리' tabs;
+national debt card: '듀레이션' (years) and '만기별 잔액' tabs.
 See macro_monitor/us_fiscal_soma.py.
 
     python3 wire_soma_interest.py
@@ -52,6 +53,14 @@ def main() -> int:
         if rail and soma.get("duration_rail") != rail:
             soma["duration_rail"] = rail
             changed.append("duration_rail")
+
+    debt = by.get("sovereign_debt")
+    store = ROOT / "config" / "ust_mspd_wam_v1.json"
+    if debt and store.exists():
+        if put_panel(debt, fs.debt_duration_panel(json.loads(store.read_text(encoding="utf-8"))["months"])):
+            changed.append("debt_duration")
+        if put_panel(debt, fs.maturity_wall_copy(by.get("ust_debt_wam"))):
+            changed.append("debt_maturity_wall")
 
     intr = by.get("sovereign_interest")
     if intr:
