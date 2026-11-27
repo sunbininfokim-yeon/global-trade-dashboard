@@ -11,17 +11,24 @@ const RESOURCE = 'uscode.house.gov:titles';
 // 2026-11-22) to /download.html; the release point text is unchanged.
 const DOWNLOAD_URL = 'https://uscode.house.gov/download.html';
 
-requireEnv('SUPABASE_URL');
-requireEnv('SUPABASE_SERVICE_ROLE_KEY');
+function parseReleasePoint(html) {
+  const text = String(html).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ');
+  const match = text.match(/Current Release Point\s+Public Law\s+(\d+-\d+)/i);
+  if (!match) throw new Error('U.S. Code current release point missing; existing data preserved');
+  return match[1];
+}
 
 async function run() {
+  requireEnv('SUPABASE_URL');
+  requireEnv('SUPABASE_SERVICE_ROLE_KEY');
   const runId = await startSyncRun(RESOURCE, {});
   try {
     const html = await fetchJson(DOWNLOAD_URL, { headers: { accept: 'text/html' } }, {
       label: 'U.S. Code download page', maxRetries: 4,
     });
-    const release = html.match(/Public\s+Law\s+(\d+-\d+)/i)?.[1] || null;
+    const release = parseReleasePoint(html);
     const existing = await supabaseGet('us_code_titles', { select: 'title_number,title_name,is_reserved,official_url,raw_source' });
+    if (!existing.length) throw new Error('U.S. Code title seeds missing; sync state preserved');
     const rows = existing.map((title) => ({
       ...title, source_release_point: release, source_updated_at: new Date().toISOString(),
       raw_source: { ...(title.raw_source || {}), source: 'uscode.house.gov', download_url: DOWNLOAD_URL },
@@ -35,4 +42,7 @@ async function run() {
     throw error;
   }
 }
-run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });
+module.exports = { parseReleasePoint, run };
+if (require.main === module) {
+  run().catch((error) => { console.error(error.stack || error.message); process.exitCode = 1; });
+}

@@ -91,10 +91,11 @@ jobs:
           node-version: '22'
 
       - name: Validate scripts
+        id: validate
         run: |
           node --check scripts/lib/sync-utils.js
           node --check scripts/sync-congress.js
-          node --test scripts/lib/congress-incremental.test.cjs
+          node --test scripts/lib/congress-incremental.test.cjs scripts/lib/policy-sync-isolation.test.cjs
           node --check scripts/sync-federal-register.js
           node --check scripts/backfill-eo-text-relations.js
           node --check scripts/sync-public-laws.js
@@ -105,9 +106,11 @@ jobs:
           node scripts/lib/eo-agency-directives.test.js
 
       - name: Sync Congress.gov bills
+        id: congress
         run: node scripts/sync-congress.js
 
       - name: Sync Federal Register executive orders and regulations
+        id: federal_register
         if: ${{ !cancelled() }}
         run: node scripts/sync-federal-register.js
 
@@ -116,11 +119,12 @@ jobs:
         run: node scripts/sync-us-code.js
 
       - name: Sync Public Law index
+        id: public_laws
         if: ${{ !cancelled() }}
         run: node scripts/sync-public-laws.js
 
       - name: Refresh policy document embeddings
-        if: ${{ success() }}
+        if: ${{ !cancelled() && steps.validate.outcome == 'success' && (steps.congress.outcome == 'success' || steps.federal_register.outcome == 'success' || steps.public_laws.outcome == 'success') }}
         env:
           MAX_SEARCH_DOCUMENTS: ${{ inputs.max_search_documents || '100' }}
           POLICY_SEARCH_CACHE_DIR: ${{ runner.temp }}/policy-search-cache
@@ -130,7 +134,7 @@ jobs:
 
       # Collection handoff does not authorize mail delivery. Enable separately.
       - name: Notify favorited bill/EO changes
-        if: ${{ success() && vars.POLICY_FAVORITES_MAIL_ENABLED == 'true' }}
+        if: ${{ !cancelled() && steps.validate.outcome == 'success' && steps.congress.outcome == 'success' && steps.federal_register.outcome == 'success' && vars.POLICY_FAVORITES_MAIL_ENABLED == 'true' }}
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: node scripts/notify-favorites.js
