@@ -383,7 +383,7 @@ const pecrLoad = async (corpCode) => {
     if (!corpCode) return null;
     const idx = await pecrIndex();
     if (!idx[corpCode]) return null;
-    const [snap] = await Promise.all([loadFirstJson(finDataPaths(`kfa_pecr/${corpCode}_v1.json`)), pecrMarket()]);
+    const [snap] = await Promise.all([loadFirstJson(finDataPaths(`kfa_pecr/${corpCode}_v1.json`)), pecrMarket(), pecrFisis()]);
     return snap;
 };
 
@@ -391,6 +391,12 @@ const pecrLoad = async (corpCode) => {
 // tools/ops/fetch_kfa_market.py writes the daily close and 시가총액 for every
 // snapshot company; the snapshot's valuation_bases hold the denominators.
 // Dividing here keeps PER/PBR/EV current without rerunning the engine.
+let PECR_FISIS = null;
+const pecrFisis = async () => {
+    if (PECR_FISIS) return PECR_FISIS;
+    PECR_FISIS = (await loadFirstJson(finDataPaths('kfa_fisis_insurance_v1.json')).catch(() => null)) || { insurers: {} };
+    return PECR_FISIS;
+};
 let PECR_MARKET = null;
 const pecrMarket = async () => {
     if (PECR_MARKET) return PECR_MARKET;
@@ -593,6 +599,31 @@ const noteItemsHtml = (snap) => {
     </section>`;
 };
 
+// --- 보험사 CSM (FISIS, kfa_fisis_insurance_v1.json) ----------------------
+const fisisCsmHtml = (snap) => {
+    const ins = PECR_FISIS?.insurers?.[snap.corp_code];
+    if (!ins) return '';
+    const qs = Object.keys(ins.quarters || {}).sort();
+    const pts = qs.filter((q) => Number.isFinite(ins.quarters[q].csm)).map((q) => ({ q, ...ins.quarters[q] }));
+    if (!pts.length) return '';
+    const last = pts[pts.length - 1], prev = pts[pts.length - 2];
+    const chg = prev && prev.csm ? last.csm / prev.csm - 1 : null;
+    const ratio = Number.isFinite(last.insurance_liabilities) && last.insurance_liabilities ? last.csm / last.insurance_liabilities : null;
+    const lbl = (q) => `${q.slice(2, 4)}.${q.slice(4, 6)}`;
+    const bars = typeof finPeriodBars === 'function' && pts.length >= 2
+        ? finPeriodBars(pts.map((x) => ({ label: lbl(x.q), value: x.csm })), (v) => pecrNum(v)) : '';
+    return `<div class="fin-cards">
+            <div class="fin-card pecr-card"><span class="fin-card-title">보험계약마진(CSM)</span><span class="fin-card-value">${pecrNum(last.csm)}</span>
+                <p class="fin-card-plain">앞으로 보험 서비스를 제공하며 이익으로 풀려 나올 미실현 이익의 저량. ${lbl(last.q)} 기준${Number.isFinite(chg) ? `, 직전 분기 대비 ${(chg * 100).toFixed(1)}%` : ''}.</p></div>
+            ${Number.isFinite(last.risk_adjustment) ? `<div class="fin-card pecr-card"><span class="fin-card-title">위험조정(RA)</span><span class="fin-card-value">${pecrNum(last.risk_adjustment)}</span>
+                <p class="fin-card-plain">비금융위험에 대한 보상으로 쌓아 둔 부채. CSM과 함께 미래 이익의 원천.</p></div>` : ''}
+            ${Number.isFinite(ratio) ? `<div class="fin-card pecr-card"><span class="fin-card-title">CSM ÷ 보험계약부채</span><span class="fin-card-value">${(ratio * 100).toFixed(1)}%</span>
+                <p class="fin-card-plain">보험계약부채 중 아직 이익으로 인식하지 않은 마진의 비중.</p></div>` : ''}
+        </div>
+        ${bars ? `<p class="pecr-q-title">분기별 CSM</p>${bars}` : ''}
+        <p class="fin-note">출처: 금융감독원 FISIS ${finEsc(ins.fisis_name || '')} — 책임준비금 적립현황(23.3월 이후). <b>개별 회사(별도) 기준</b>이라 연결 재무제표와 다를 수 있습니다.</p>`;
+};
+
 // --- 업권 지표 (snapshot.financial_kpis; dart_kfa/financial_kpis.py) ---------
 const FIN_KIND = { basel: '은행(지주)', kics: '보험', ncr: '증권', credit_finance: '카드·캐피탈' };
 const FIN_LABEL = {
@@ -612,6 +643,7 @@ const financialKpisHtml = (snap) => {
     const comp = Object.entries(f.computed || {}).filter(([k]) => FIN_LABEL[k]);
     const rep = Object.entries(f.reported || {});
     return `<section class="pecr-section"><h3>업권 지표 — ${finEsc(FIN_KIND[f.kind] || f.kind)}</h3>
+        ${f.kind === 'kics' ? fisisCsmHtml(snap) : ''}
         ${rep.length ? `<div class="co-table-wrap"><table class="co-table pecr-table">
             <thead><tr><th>공시 지표</th><th>값</th><th>추이</th><th>출처 표</th></tr></thead><tbody>
             ${rep.map(([, v]) => `<tr><td><b>${finEsc(v.label)}</b>${v.subsidiary ? ' <span class="pecr-badge">주요 종속회사</span>' : ''}</td>
@@ -624,7 +656,7 @@ const financialKpisHtml = (snap) => {
         <div class="fin-cards">${comp.map(([k, v]) => `<div class="fin-card pecr-card"><span class="fin-card-title">${finEsc(FIN_LABEL[k][0])}</span>
             <span class="fin-card-value">${finFmt(FIN_LABEL[k][1], v.value)}</span><p class="fin-card-plain">${finEsc(v.basis || '')}</p></div>`).join('')}</div>
         <p class="fin-note">카드 아래 값은 FY${finEsc(f.fiscal_year || '')} 연결 재무제표 본문으로 계산했습니다. "대용"이라고 쓴 값은 감독기준 산식과 분모가 달라 공시 지표와 차이가 납니다.
-            ${f.kind === 'kics' ? '보험계약마진(CSM) 잔액은 회사마다 공시 양식이 달라 아직 자동 추출하지 않습니다.' : ''}</p>
+            ${f.kind === 'kics' && !PECR_FISIS?.insurers?.[snap.corp_code] ? '이 보험사는 FISIS 회사 목록과 이름이 맞지 않아 CSM을 아직 붙이지 못했습니다.' : ''}</p>
     </section>`;
 };
 
