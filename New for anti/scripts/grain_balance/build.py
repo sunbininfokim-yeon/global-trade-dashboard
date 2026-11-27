@@ -538,6 +538,22 @@ def release_of(df):
     return f"{int(last.Calendar_Year)}년 {int(last.Month)}월 USDA WASDE"
 
 
+# Commodities USDA does not revise every month: FAS publishes coffee in June
+# and December and citrus in January and July, so between those reports PSD
+# carries the same numbers and a month-on-month change reads as zero.
+SEMIANNUAL_KO = {"coffee": "USDA 커피 전망은 6월·12월 반기 보고서에서만 바뀝니다",
+                 "orange": "USDA 오렌지 전망은 1월·7월 반기 보고서에서만 바뀝니다",
+                 "orange_juice": "USDA 오렌지주스 전망은 1월·7월 반기 보고서에서만 바뀝니다"}
+
+
+def crop_release(g, release):
+    """This commodity's own last PSD update, labelled like the WASDE one when
+    it moved with this month's WASDE."""
+    last = g.sort_values(["Calendar_Year", "Month"]).iloc[-1]
+    own = f"{int(last.Calendar_Year)}년 {int(last.Month)}월"
+    return release if release.startswith(own) else f"{own} USDA PSD"
+
+
 def release_key(release):
     m = re.match(r"(\d{4})년 (\d{1,2})월", release)
     return f"{int(m.group(1))}-{int(m.group(2)):02d}"
@@ -545,7 +561,7 @@ def release_key(release):
 
 def _snapshot(c):
     cur = c["current"]
-    return {"season": cur["season"], "production_kt": cur["production_kt"],
+    return {"season": cur["season"], "release": c["release"], "production_kt": cur["production_kt"],
             "ending_stocks_kt": cur["ending_stocks_kt"], "exports_kt": cur["exports_kt"],
             "producers": {p["country"]: p["production_kt"] for p in c["producers"]}}
 
@@ -577,10 +593,16 @@ def add_revisions(crops, release):
         return
     base = older[-1]
     for k, c in crops.items():
+        if c["release"] != release:
+            # Not revised this month: say since when instead of printing zeros.
+            c["revision"] = {"unchanged_since": c["release"], "note_ko": SEMIANNUAL_KO.get(k)}
+            log(f"{k}: last PSD update {c['release']}, no month-on-month revision")
+            continue
         old = base["crops"].get(k)
         if not old or old["season"] != c["current"]["season"]:
             continue
-        rev = {"vs_release": base["release"]}
+        # A crop USDA did not revise last month keeps its older label there.
+        rev = {"vs_release": old.get("release", base["release"])}
         for field in ("production_kt", "ending_stocks_kt", "exports_kt"):
             new_v, old_v = c["current"].get(field), old.get(field)
             if new_v is None or old_v is None:
@@ -596,7 +618,7 @@ def add_revisions(crops, release):
                            "change_pct": round((p["production_kt"] / o - 1) * 100, 1) if o else None})
         rev["producers"] = sorted(movers, key=lambda m: -abs(m["change_kt"]))[:4]
         c["revision"] = rev
-        month = re.search(r"(\d{1,2})월", base["release"]).group(1)
+        month = re.search(r"(\d{1,2})월", rev["vs_release"]).group(1)
         flags = []
         prod = rev.get("production", {}).get("change_pct")
         if prod is not None and prod <= REV_PROD_PCT:
@@ -654,7 +676,7 @@ def main(argv):
             log(f"{key}: no PSD rows ({commodity})")
             continue
         try:
-            crops[key] = crop_block(key, g, release)
+            crops[key] = crop_block(key, g, crop_release(g, release))
         except (KeyError, ValueError) as exc:
             log(f"{key}: skipped ({exc!r}); attributes {sorted(g.Attribute_Description.unique())}")
             continue
