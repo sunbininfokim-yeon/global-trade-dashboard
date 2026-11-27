@@ -1,6 +1,6 @@
 {
   "schema_version": "liquidity-intel-v1",
-  "generated_at": "2026-11-26T21:28:00.785041+00:00",
+  "generated_at": "2026-11-27T08:22:59.815872+00:00",
   "model": {
     "name": "macro_liquidity_official_v1",
     "description": "QRA / Fed official liquidity + priority-reporter ARTICLES mined for liquidity indicators (FIMA, TGA, RRP, FX intervention…) — not reporter news fluff.",
@@ -18,13 +18,12 @@
   },
   "liquidity": {
     "bias": "tightening",
-    "score": 2.0,
+    "score": 1.85,
     "headline_ko": "유동성: 재무부 순발행·현금 잔고 신호가 타이트 쪽으로 기울음 · 지정기자 분석 테마 반영",
     "drivers": [
       "qra_net_borrowing_up",
       "tga_cash_high",
-      "reporter_tightening_theme",
-      "reporter_tga_focus"
+      "reporter_tightening_theme"
     ],
     "qra": {
       "title": "Treasury Announces Marketable Borrowing Estimates | U.S. Department of the Treasury",
@@ -143,23 +142,14 @@
       {
         "author": "양영빈",
         "articles_scanned": 8,
-        "articles_with_hits": 3,
+        "articles_with_hits": 2,
         "top_indicators": [
           {
             "id": "qra",
-            "score": 7.2,
+            "score": 4.8,
             "label_ko": "QRA·순발행",
             "evidence": [
-              "2차 QRA가 국채 시장에 대해 말해 주는 것은? [이코노미21 양영빈] 11월 4일(현지 시간)에 발표된 2차 QRA",
-              "중됐던 미 재무부의 2026년 4분기 및 2027년 1분기 국채발행계획(QRA, Quarterly Refunding Announcement) 1차 성명서와 재원조달표(Sources an"
-            ]
-          },
-          {
-            "id": "tga",
-            "score": 1.3,
-            "label_ko": "TGA 재무부 일반계정",
-            "evidence": [
-              "년 1분기 무려 8000억달러에 달하는 초대형 차입 계획과 1조달러라는 재무부 일반계정(T"
+              "2차 QRA가 국채 시장에 대해 말해 주는 것은? [이코노미21 양영빈] 11월 4일(현지 시간)에 발표된 2차 QRA"
             ]
           },
           {
@@ -172,20 +162,17 @@
           }
         ],
         "themes_ko": [
-          "QRA·순발행 (점수 7.2)",
-          "TGA 재무부 일반계정 (점수 1.3)",
+          "QRA·순발행 (점수 4.8)",
           "FOMC·금리 유동성 (점수 0.85)"
         ],
         "hint_weights": {
-          "tightening": 7.2,
-          "tga": 1.3,
+          "tightening": 4.8,
           "policy": 0.85
         },
         "reporter_signals": [
-          "reporter_tightening_theme",
-          "reporter_tga_focus"
+          "reporter_tightening_theme"
         ],
-        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마",
+        "headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 1개 테마",
         "per_article": [
           {
             "title": "[연준와처] 전쟁 후과를 보여준 10월 CPI…시장예상 웃돌아",
@@ -222,48 +209,19 @@
                 ]
               }
             ]
-          },
-          {
-            "title": "내년 1분기 8천억달러 차입 쓰나미와 41.1조달러 부채한도라는 시한폭탄",
-            "url": "http://www.economy21.co.kr/news/articleView.html?idxno=1017353",
-            "published": "2026-11-03 14:44",
-            "author": "양영빈",
-            "indicators": [
-              {
-                "id": "qra",
-                "label_ko": "QRA·순발행",
-                "mentions": 2,
-                "hint": "tightening",
-                "evidence": [
-                  "중됐던 미 재무부의 2026년 4분기 및 2027년 1분기 국채발행계획(QRA, Quarterly Refunding Announcement) 1차 성명서와 재원조달표(Sources an",
-                  "년 4분기 및 2027년 1분기 국채발행계획(QRA, Quarterly Refunding Announcement) 1차 성명서와 재원조달표(Sources and Uses Table), 그리고 재무"
-                ]
-              },
-              {
-                "id": "tga",
-                "label_ko": "TGA 재무부 일반계정",
-                "mentions": 1,
-                "hint": "tga",
-                "evidence": [
-                  "년 1분기 무려 8000억달러에 달하는 초대형 차입 계획과 1조달러라는 재무부 일반계정(T"
-                ]
-              }
-            ]
           }
         ],
         "finance_panel_fields": {
           "reporter_liquidity_primary": "qra",
           "reporter_liquidity_primary_ko": "QRA·순발행",
           "reporter_liquidity_themes": [
-            "QRA·순발행 (점수 7.2)",
-            "TGA 재무부 일반계정 (점수 1.3)",
+            "QRA·순발행 (점수 4.8)",
             "FOMC·금리 유동성 (점수 0.85)"
           ],
           "reporter_liquidity_signals": [
-            "reporter_tightening_theme",
-            "reporter_tga_focus"
+            "reporter_tightening_theme"
           ],
-          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마"
+          "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 1개 테마"
         }
       }
     ],
@@ -277,20 +235,18 @@
       "reporter_liquidity_primary": "qra",
       "reporter_liquidity_primary_ko": "QRA·순발행",
       "reporter_liquidity_themes": [
-        "QRA·순발행 (점수 7.2)",
-        "TGA 재무부 일반계정 (점수 1.3)",
+        "QRA·순발행 (점수 4.8)",
         "FOMC·금리 유동성 (점수 0.85)"
       ],
       "reporter_liquidity_signals": [
-        "reporter_tightening_theme",
-        "reporter_tga_focus"
+        "reporter_tightening_theme"
       ],
-      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마"
+      "reporter_liquidity_headline_ko": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 1개 테마"
     }
   },
   "ticker_items": [
     {
-      "id": "qra-636052234141",
+      "id": "qra-360858963264",
       "published_at": null,
       "source": {
         "id": "us_treasury",
@@ -323,7 +279,7 @@
       "event_type": "qra"
     },
     {
-      "id": "fed-289493657776",
+      "id": "fed-10682667150",
       "published_at": "Wed, 28 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -354,7 +310,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-956278703049",
+      "id": "fed-60344966812",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -385,7 +341,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-446608981497",
+      "id": "fed-954507233864",
       "published_at": "Wed, 16 Sep 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -416,7 +372,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-33000003058",
+      "id": "fed-165547336111",
       "published_at": "Wed, 29 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -447,7 +403,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-208185415204",
+      "id": "fed-337003788033",
       "published_at": "Wed, 17 Jun 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -478,7 +434,7 @@
       "event_type": "fomc"
     },
     {
-      "id": "fed-541837143855",
+      "id": "fed-441233851222",
       "published_at": "Tue, 24 Nov 2026 19:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -509,7 +465,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-436433088018",
+      "id": "fed-5195485299",
       "published_at": "Tue, 13 Oct 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -540,7 +496,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-169288308345",
+      "id": "fed-105060797662",
       "published_at": "Thu, 8 Oct 2026 20:30:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -571,7 +527,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-740877282702",
+      "id": "fed-549968161276",
       "published_at": "Tue, 25 Aug 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -602,7 +558,7 @@
       "event_type": "press"
     },
     {
-      "id": "fed-785391023702",
+      "id": "fed-188163801193",
       "published_at": "Tue, 14 Jul 2026 18:00:00 GMT",
       "source": {
         "id": "federal_reserve",
@@ -633,7 +589,7 @@
       "event_type": "press"
     },
     {
-      "id": "liq-ind-896235696825",
+      "id": "liq-ind-864620455584",
       "published_at": null,
       "source": {
         "id": "reporter_liquidity",
@@ -645,11 +601,11 @@
       "category": "liquidity_indicator",
       "commodities": [],
       "title": {
-        "original": "QRA·순발행 · TGA 재무부 일반계정 · FOMC·금리 유동성",
+        "original": "QRA·순발행 · FOMC·금리 유동성",
         "original_lang": "ko",
-        "ko": "[유동성지표·양영빈] QRA·순발행 · TGA 재무부 일반계정 · FOMC·금리 유동성"
+        "ko": "[유동성지표·양영빈] QRA·순발행 · FOMC·금리 유동성"
       },
-      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 2개 테마",
+      "summary": "[유동성 분석·양영빈] 최근 기사 핵심 지표: QRA·순발행 · 외 1개 테마",
       "scores": {
         "commodity": 0,
         "diplomacy": 0,
@@ -659,27 +615,17 @@
       },
       "rank_reasons": [
         "indicator:qra",
-        "reporter_tightening_theme",
-        "reporter_tga_focus"
+        "reporter_tightening_theme"
       ],
       "translation_status": "ok",
       "event_type": "liquidity_indicator",
       "indicators": [
         {
           "id": "qra",
-          "score": 7.2,
+          "score": 4.8,
           "label_ko": "QRA·순발행",
           "evidence": [
-            "2차 QRA가 국채 시장에 대해 말해 주는 것은? [이코노미21 양영빈] 11월 4일(현지 시간)에 발표된 2차 QRA",
-            "중됐던 미 재무부의 2026년 4분기 및 2027년 1분기 국채발행계획(QRA, Quarterly Refunding Announcement) 1차 성명서와 재원조달표(Sources an"
-          ]
-        },
-        {
-          "id": "tga",
-          "score": 1.3,
-          "label_ko": "TGA 재무부 일반계정",
-          "evidence": [
-            "년 1분기 무려 8000억달러에 달하는 초대형 차입 계획과 1조달러라는 재무부 일반계정(T"
+            "2차 QRA가 국채 시장에 대해 말해 주는 것은? [이코노미21 양영빈] 11월 4일(현지 시간)에 발표된 2차 QRA"
           ]
         },
         {
@@ -729,7 +675,7 @@
     "ticker_items": 12,
     "qra_parsed": true,
     "reporter_analyses": 1,
-    "reporter_indicator_hits": 3,
+    "reporter_indicator_hits": 2,
     "sources_ok": 5,
     "sources_failed": 0
   }
