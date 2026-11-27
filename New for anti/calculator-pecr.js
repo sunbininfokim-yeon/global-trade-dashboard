@@ -108,6 +108,21 @@ const pecrFmt = (fmt, v) => {
 const pecrCard = (snap, key) => {
     const cards = snap?.pe_cr?.cards || {};
     const strict = cards[key];
+    const liq = snap?.liquidity;
+    if (strict && (strict.value === null || strict.value === undefined) && liq) {
+        if (key === 'debt_due_within_1y' && (liq.latest || liq.fy)) {
+            const x = liq.latest || liq.fy;
+            return { ...strict, key, basis: 'reported', value: x.total, reason: null, period_end: x.period_end,
+                definition: x.basis, parts: x.parts.map((q) => ({ input: q.key, label: q.account || q.label, value: q.value, period_end: x.period_end })) };
+        }
+        if (key === 'ccc_days' && liq.ccc_wide && !/^not_applicable/.test(strict.reason || '')) {
+            const c = liq.ccc_wide;
+            return { ...strict, key, basis: 'reported', value: c.value, reason: null, definition: c.basis,
+                parts: [{ input: 'dso', label: `매출채권 회전일수 (${c.receivables_account || ''})`, value: null, days: c.dso },
+                    { input: 'dio', label: '재고 회전일수', value: null, days: c.dio },
+                    { input: 'dpo', label: `− 매입채무 회전일수 (${c.payables_account || ''})`, value: null, days: c.dpo }] };
+        }
+    }
     const alt = PECR_FALLBACK[key] && cards[PECR_FALLBACK[key]];
     if (strict && strict.value !== null && strict.value !== undefined) return { ...strict, key, basis: 'strict' };
     if (alt && alt.value !== null && alt.value !== undefined) return { ...alt, key, basis: 'reported' };
@@ -874,6 +889,41 @@ const invFccrHtml = (snap) => {
     </section>`;
 };
 
+// --- 1년 내 만기 차입금 · 만기 구간 · PF 보증 (snapshot.liquidity) ------------
+const LADDER_ORDER = ['borrowings', 'bonds', 'lease', 'contingent', 'financial_liabilities'];
+const liquidityHtml = (snap) => {
+    const L = snap.liquidity;
+    if (!L || !(L.fy || L.latest)) return '';
+    const cols = [L.fy, L.latest].filter(Boolean);
+    const keys = [...new Set(cols.flatMap((c) => c.parts.map((x) => x.key)))];
+    const label = (k) => cols.flatMap((c) => c.parts).find((x) => x.key === k)?.label || k;
+    const val = (c, k) => c.parts.find((x) => x.key === k)?.value;
+    const ratio = (v, d = 2) => (Number.isFinite(v) ? `${v.toFixed(d)}배` : '—');
+    const lad = L.ladders || {};
+    const ladders = LADDER_ORDER.filter((k) => lad[k]).map((k) => {
+        const x = lad[k];
+        return `<tr><td>${finEsc(x.label)}${x.partial ? ' <span class="pecr-badge">일부(자회사 표)</span>' : ''}</td>
+            <td>${x.buckets.map((b) => `${finEsc(b.bucket)} <b>${pecrNum(b.value)}</b>`).join(' · ')}</td></tr>`;
+    }).join('');
+    const pf = lad.contingent;
+    return `<section class="pecr-section"><h3>1년 내 만기 차입금 — 갚거나 차환해야 할 이자부 부채</h3>
+        <div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>종류</th>${cols.map((c) => `<th>${finEsc(c.period_end)}</th>`).join('')}</tr></thead><tbody>
+            ${keys.map((k) => `<tr><td>${finEsc(label(k))}</td>${cols.map((c) => `<td class="pecr-num">${pecrNum(val(c, k))}</td>`).join('')}</tr>`).join('')}
+            <tr class="pecr-median"><td>합계</td>${cols.map((c) => `<td class="pecr-num">${pecrNum(c.total)}</td>`).join('')}</tr>
+            <tr><td>현금·단기금융상품 ÷ 만기 차입</td>${cols.map((c) => `<td class="pecr-num">${ratio(c.cover_by_cash)}</td>`).join('')}</tr>
+            <tr><td>총차입금 중 1년 내 비중</td>${cols.map((c) => `<td class="pecr-num">${Number.isFinite(c.share_of_debt) ? `${(c.share_of_debt * 100).toFixed(0)}%` : '—'}</td>`).join('')}</tr>
+            ${Number.isFinite(L.fy?.to_ebitda) ? `<tr><td>만기 차입 ÷ EBITDA</td><td class="pecr-num">${ratio(L.fy.to_ebitda, 1)}</td>${L.latest ? '<td></td>' : ''}</tr>` : ''}
+        </tbody></table></div>
+        <p class="fin-note">유동부채 전체가 아니라 이자가 붙는 차입만 셉니다(매입채무·미지급금·선수금 같은 영업부채 제외). 현금 배수가 1 미만이면 1년 안에 차환하거나 영업현금으로 갚아야 합니다.</p>
+        ${ladders ? `<div class="co-table-wrap"><table class="co-table pecr-table"><thead><tr><th>만기 구간 (${finEsc(L.ladders.period_end || '')})</th><th>금액</th></tr></thead>
+            <tbody>${ladders}</tbody></table></div><p class="fin-note">${finEsc(L.ladders.basis || '')}</p>` : ''}
+        ${pf ? `<p class="fin-note"><b>PF·보증 우발채무</b>: 1년 내 ${pecrNum(pf.within_1y)} — 재무상태표 차입금에는 없지만 시행사가 못 갚으면 떠안는 금액입니다.</p>` : ''}
+        ${L.net_debt_wide && snap.valuation_bases?.fy?.net_debt_card === 'net_debt_name_matched'
+            ? `<p class="fin-note">이 회사는 차입금 일부가 표준 계정코드 없이 공시돼, 계정명으로 찾은 순차입금 ${pecrNum(L.net_debt_wide.value)}을 EV에 씁니다.</p>` : ''}
+    </section>`;
+};
+
 // --- 카드 상세: 계산 근거 + 분기별 변화 (card.parts, snapshot.quarterly) -------
 // Clicking an engine card (or the live EV row) opens a box under it: how the
 // value was built from which accounts of which filing, and the same quantity
@@ -975,7 +1025,7 @@ const pecrPartsHtml = (snap, card) => {
         const src = x.filing ? `${REPORT_NAME[x.report] || x.report || ''} ${x.period_end || ''}${x.opening ? ' (기초)' : ''} · 접수 ${x.filing}`
             : (x.period_end || '');
         return `<tr><td>${PART_SIGN[x.input] || ''} ${finEsc(name)}${x.label && x.label !== name ? ` <span class="fin-note">(공시 계정: ${finEsc(x.label)})</span>` : ''}</td>
-            <td class="pecr-num">${Number.isFinite(x.value) ? pecrNum(x.value) : '—'}</td><td class="fin-note">${finEsc(src)}</td></tr>`;
+            <td class="pecr-num">${Number.isFinite(x.days) ? `${Math.round(x.days)}일` : Number.isFinite(x.value) ? pecrNum(x.value) : '—'}</td><td class="fin-note">${finEsc(src)}</td></tr>`;
     });
     return `<div class="co-table-wrap"><table class="co-table pecr-table"><thead><tr><th>구성 요소</th><th>금액</th><th>출처</th></tr></thead>
         <tbody>${rows.join('')}</tbody></table></div>
@@ -1055,7 +1105,7 @@ const pecrViewHtml = (data, view) => {
         return pecrHead(snap) + (financial
             ? pecrRegulatory(snap) + pecrFunding(snap) + pecrSection(snap, 'capital_structure', { hideEmpty: true }) + pecrSection(snap, 'cash_flow', { hideEmpty: true })
               + '<p class="fin-note">금융회사는 산업기업용 CR 지표(EBITDA, 순차입금, 이자보상배율 등)를 적용하지 않습니다. 업권별 지표는 기본 탭에 있습니다.</p>'
-            : pecrSignals(snap) + (snap.investor_metrics ? invScoresHtml(snap.investor_metrics, pecrLive(snap)) : '')
+            : pecrSignals(snap) + liquidityHtml(snap) + (snap.investor_metrics ? invScoresHtml(snap.investor_metrics, pecrLive(snap)) : '')
               + lens.map((id) => pecrSection(snap, id)).join('') + pecrFunding(snap));
     }
     if (view === 'pe') {

@@ -513,6 +513,42 @@ def regulatory_series(dart: Dart, corp: str, year: int, company: dict, fs: str):
     return res, f'{kind}:{len(res["series"])}_periods'
 
 
+def liquidity_packet(dart: Dart, year: int, fs: str, fy_rows: list, filings: dict, result: dict,
+                     bases: dict) -> tuple[dict | None, str]:
+    """1년 내 만기 차입금(유형별), 만기 구간표, 넓힌 CCC·순차입금, PF 보증 만기
+    (dart_kfa/liquidity.py). The newest quarter's balance sheet is shown next to the year end."""
+    from dart_kfa.liquidity import ccc_wide, flag_partial, maturity_ladders, net_debt_wide, refinancing, total_debt  # noqa: E402
+    from dart_kfa.xbrl_notes import instance_from_zip, parse_instance  # noqa: E402
+    if result.get('industry') == 'financial':
+        return None, 'not_applicable:financial'
+    ebitda = (bases.get('fy') or {}).get('ebitda')
+    out = {'fy': refinancing(fy_rows, ebitda), 'net_debt_wide': net_debt_wide(fy_rows), 'ccc_wide': ccc_wide(fy_rows),
+           'period_end': f'{year}-12-31'}
+    if out['fy']:
+        out['fy']['period_end'] = f'{year}-12-31'
+    for bucket, label in (('Q3', '09-30'), ('H1', '06-30'), ('Q1', '03-31')):
+        r = report(dart, dart_corp(fy_rows), year + 1, bucket, fs)
+        rows = r['response']['list'] if r['response']['status'] == '000' else []
+        latest = refinancing(rows, None) if rows else None
+        if latest:
+            out['latest'] = {**latest, 'period_end': f'{year + 1}-{label}', 'report': bucket}
+            break
+    receipt = fy_rows[0].get('rcept_no') if fy_rows else None
+    blob = dart.get_bytes('fnlttXbrl.xml', rcept_no=receipt, reprt_code=REPRT['FY']) if receipt else None
+    if blob:
+        ctx, facts = parse_instance(instance_from_zip(blob))
+        ladders = maturity_ladders(ctx, facts, fs_div=fs, instant=f'{year}-12-31')
+        gross, parts = total_debt(fy_rows)
+        lease = sum(p['value'] for p in parts if p['key'].startswith('lease')) or None
+        out['ladders'] = flag_partial(ladders, borrowings_bs=(gross - (lease or 0)) if gross else None, lease_bs=lease) or None
+    found = [k for k in ('fy', 'latest', 'net_debt_wide', 'ccc_wide', 'ladders') if out.get(k)]
+    return (out if found else None), ','.join(found) or 'none'
+
+
+def dart_corp(rows: list) -> str:
+    return (rows[0].get('corp_code') if rows else None) or ''
+
+
 def notes_packet(dart: Dart, year: int, fs: str, fy_rows: list) -> tuple[dict | None, str]:
     """연구개발비·자산화, 주식보상, 재고평가손실, 충당부채 종류별 (dart_kfa/note_items.py)."""
     from dart_kfa.note_items import note_items  # noqa: E402
@@ -758,6 +794,17 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
     regulatory, regulatory_note = regulatory_series(dart, corp, year, company, fs)
     bases = valuation_bases(dart, corp, year, fs, fy_rows, result.get('cards') or {})
     try:
+        liquidity, liquidity_note = liquidity_packet(dart, year, fs, fy_rows, filings, result, bases)
+    except Exception as exc:  # noqa: BLE001
+        liquidity, liquidity_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
+    # Live EV's net debt: the name-matched figure when it finds more debt lines than
+    # the engine's id-only reported basis (삼성전자 단기차입금 17.6조 has no standard id).
+    wide = (liquidity or {}).get('net_debt_wide')
+    fyb = bases.get('fy') or {}
+    eng_gross = ((result.get('cards') or {}).get('gross_debt_reported') or {}).get('value')
+    if wide and fyb.get('net_debt_card') != 'net_debt' and (eng_gross is None or wide['gross'] > eng_gross * 1.001):
+        fyb['net_debt'], fyb['net_debt_card'] = wide['value'], 'net_debt_name_matched'
+    try:
         quarterly, quarterly_note = quarterly_packet(dart, corp, year, fs, filings, stock, today)
     except Exception as exc:  # noqa: BLE001
         quarterly, quarterly_note = None, f'error:{type(exc).__name__}: {exc}'[:200]
@@ -804,6 +851,8 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
         'segments': segments,
         'note_items': notes,
         'quarterly': quarterly,
+        'liquidity': liquidity,
+        'liquidity_input': liquidity_note,
         'quarterly_input': quarterly_note,
         'note_items_input': notes_note,
         'segments_input': segments_note,
@@ -817,7 +866,7 @@ def build_one(dart: Dart, corp: str, stock: str | None, today: dt.date) -> dict:
 
 
 # Bump when the snapshot's content changes, so every company is rebuilt once.
-BUILDER_VERSION = '2026-11-26.1'
+BUILDER_VERSION = '2026-11-27.1'
 NAVER_RANK = 'https://m.stock.naver.com/api/stocks/marketValue/{market}?page={page}&pageSize=100'
 EXTRA_TARGETS = ROOT / 'New for anti' / 'scripts' / 'dart' / 'config' / 'kfa_pecr_extra_targets.json'
 
