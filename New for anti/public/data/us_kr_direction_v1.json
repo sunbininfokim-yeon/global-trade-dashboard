@@ -1,8 +1,8 @@
 {
   "schema_version": "us-kr-direction-display-v1",
-  "status": "unavailable",
+  "status": "retrospective_replay",
   "target_date": "2026-11-27",
-  "generated_at": "2026-11-26T23:00:03.940488+00:00",
+  "generated_at": "2026-11-27T01:32:31.393776+00:00",
   "KR_source_date": "2026-11-26",
   "US_source_date": "2026-11-25",
   "forecast_cutoff_KST": "2026-11-27T08:30:00+09:00",
@@ -30,18 +30,116 @@
     "flat_probability": "not estimated; do not interpret binary complements as a three-class forecast",
     "reference_only": "recent base rate only; probabilities are not a model direction signal"
   },
-  "cards": [],
+  "cards": [
+    {
+      "ticker": "005930",
+      "label_ko": "삼성전자",
+      "scores": {
+        "opening_up": {
+          "probability": 0.3977101418719125,
+          "score_0_100": 39.77101418719125,
+          "direction": "DOWN",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.3977101418719125,
+          "down_probability": 0.6022898581280876
+        },
+        "closing_up": {
+          "probability": 0.46692485129394945,
+          "score_0_100": 46.692485129394946,
+          "direction": "DOWN",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.46692485129394945,
+          "down_probability": 0.5330751487060506
+        },
+        "direction_persists": {
+          "probability": 0.7575757558441847,
+          "score_0_100": 75.75757558441848,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        },
+        "opening_extends": {
+          "probability": 0.49494951009868016,
+          "score_0_100": 49.49495100986802,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        }
+      }
+    },
+    {
+      "ticker": "000660",
+      "label_ko": "SK하이닉스",
+      "scores": {
+        "opening_up": {
+          "probability": 0.30835032570674786,
+          "score_0_100": 30.835032570674787,
+          "direction": "DOWN",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.30835032570674786,
+          "down_probability": 0.6916496742932521
+        },
+        "closing_up": {
+          "probability": 0.42985870261649367,
+          "score_0_100": 42.98587026164937,
+          "direction": "DOWN",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.42985870261649367,
+          "down_probability": 0.5701412973835063
+        },
+        "direction_persists": {
+          "probability": 0.676767676965397,
+          "score_0_100": 67.6767676965397,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        },
+        "opening_extends": {
+          "probability": 0.4848484818619135,
+          "score_0_100": 48.48484818619135,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        }
+      }
+    },
+    {
+      "ticker": "KOSPI",
+      "label_ko": "KOSPI",
+      "scores": {
+        "opening_up": {
+          "probability": 0.47517432747717686,
+          "score_0_100": 47.517432747717685,
+          "direction": "DOWN",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.47517432747717686,
+          "down_probability": 0.5248256725228231
+        },
+        "closing_up": {
+          "probability": 0.3994279049240229,
+          "score_0_100": 39.94279049240229,
+          "direction": "DOWN",
+          "information_state": "model_score_with_calibration",
+          "up_probability": 0.3994279049240229,
+          "down_probability": 0.6005720950759771
+        },
+        "direction_persists": {
+          "probability": 0.7227723562163977,
+          "score_0_100": 72.27723562163976,
+          "direction": "REFERENCE_ONLY",
+          "information_state": "recent_base_rate_only"
+        },
+        "opening_extends": {
+          "probability": 0.5471048744886843,
+          "score_0_100": 54.71048744886843,
+          "direction": "EXTEND",
+          "information_state": "model_score_with_calibration"
+        }
+      }
+    }
+  ],
   "refresh": {
-    "status": "unavailable",
-    "checked_at": "2026-11-26T23:00:03.940488+00:00",
+    "status": "retrospective_replay",
+    "checked_at": "2026-11-27T01:32:31.393776+00:00",
     "reasons": [
-      "missing or invalid required source data"
+      "11/26 15007은 11/26 23:35 KST에 들어왔지만 08:30 전 로컬 실행이 이뤄지지 않아 통합 전망이 비었음. 같은 동결 엔진을 나중에 재생한 값이며 사전 예측이 아님."
     ]
-  },
-  "last_available": {
-    "target_date": "2026-11-26",
-    "generated_at": "2026-11-26T08:34:50.667483+00:00",
-    "status": "retrospective_replay"
   },
   "factors": {
     "options": {
@@ -561,5 +659,10 @@
         }
       }
     }
+  },
+  "last_available": {
+    "target_date": "2026-11-27",
+    "generated_at": "2026-11-26T23:00:03.940488+00:00",
+    "status": "unavailable"
   }
 }
