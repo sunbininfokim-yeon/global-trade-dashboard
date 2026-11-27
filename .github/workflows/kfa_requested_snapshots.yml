@@ -1,0 +1,67 @@
+name: KFA requested snapshots
+
+# Builds engine snapshots for companies readers searched that had none yet
+# (the calculator queues them at /api/kfa-request -- unlisted filers, small
+# caps outside the daily universe, US tickers). Every 30 minutes, at most 8
+# Korean and 5 US companies per run, so a burst of searches cannot use up the
+# OpenDART quota the daily batch relies on. Listed in deploy.yml's
+# workflow_run so the new files are published right after.
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kfa-requested-snapshots
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read the request queue
+        id: queue
+        run: python -u tools/ops/kfa_requested.py >> "$GITHUB_OUTPUT"
+      - name: Build Korean requests
+        if: steps.queue.outputs.KR != ''
+        continue-on-error: true
+        env:
+          DART_API_KEY: ${{ secrets.DART_API }}
+        run: python -u tools/ops/build_kfa_pecr_snapshots.py --cache "$RUNNER_TEMP/dart" --workers 4 --max-calls 600 --max-minutes 25 ${{ steps.queue.outputs.KR }}
+      - name: Build US requests
+        if: steps.queue.outputs.US != ''
+        continue-on-error: true
+        run: python -u tools/ops/build_kfa_sec_snapshots.py --cache "$RUNNER_TEMP/sec" ${{ steps.queue.outputs.US }}
+      - name: Market caps for the new listings
+        if: steps.queue.outputs.KR != '' || steps.queue.outputs.US != ''
+        continue-on-error: true
+        run: python -u tools/ops/fetch_kfa_market.py
+      - name: Refuse to publish a key
+        run: |
+          if grep -rqF "${{ secrets.DART_API }}" 'New for anti/public/data/kfa_pecr'; then echo 'key found in output'; exit 1; fi
+      - name: Commit snapshots
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/kfa_pecr' 'New for anti/public/data/kfa_market_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore: build requested KFA snapshots"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1

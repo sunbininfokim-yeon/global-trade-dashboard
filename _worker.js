@@ -88,6 +88,12 @@ export default {
             return await handleDartFinancials(request, env);
         }
 
+        // Company calculator: ask for a PE/CR engine snapshot of a company that
+        // has none yet (unlisted filers, small caps outside the daily universe).
+        if (url.pathname === '/api/kfa-request') {
+            return await handleKfaRequest(request, env, url);
+        }
+
         // Multi-country official reports (US/JP/CN/EU…)
         if (url.pathname.startsWith('/api/official-reports')) {
             return await handleOfficialReports(request, env);
@@ -765,6 +771,41 @@ async function handleCommodityReports(request, env) {
         count: items.length,
         items,
     });
+}
+
+// --- 엔진 스냅샷 요청 큐 ------------------------------------------------------
+// The calculator calls /api/kfa-request?corp=<8-digit DART code> (or
+// ?ticker=<US ticker>) when a company has no engine snapshot. Requests sit in
+// KV for a week; .github/workflows/kfa_requested_snapshots.yml reads
+// ?list=1 every 30 minutes, builds them, and the deploy publishes the files.
+// Only well-formed codes are stored, the queue is capped, and nothing about
+// the requester is kept.
+const KFA_REQ_KEY = 'kfa:requests:v1';
+const KFA_REQ_TTL_MS = 7 * 24 * 3600 * 1000;
+const KFA_REQ_MAX = 300;
+
+async function handleKfaRequest(request, env, url) {
+    if (!env.API_CACHE) return jsonWithCache({ ok: false, reason: 'no_kv' }, 0);
+    const now = Date.now();
+    const raw = await env.API_CACHE.get(KFA_REQ_KEY, 'json').catch(() => null);
+    const list = (Array.isArray(raw) ? raw : []).filter((r) => now - (r.at || 0) < KFA_REQ_TTL_MS);
+    if (url.searchParams.get('list') === '1') {
+        return jsonWithCache({ count: list.length, requests: list }, 60);
+    }
+    const corp = (url.searchParams.get('corp') || '').trim();
+    const ticker = (url.searchParams.get('ticker') || '').trim().toUpperCase();
+    let entry = null;
+    if (/^\d{8}$/.test(corp)) entry = { corp, market: 'KR' };
+    else if (/^[A-Z][A-Z0-9.\-]{0,9}$/.test(ticker)) entry = { ticker, market: 'US' };
+    if (!entry) return jsonWithCache({ ok: false, reason: 'invalid_code' }, 0);
+    const key = entry.corp || entry.ticker;
+    const existing = list.find((r) => (r.corp || r.ticker) === key);
+    if (!existing) {
+        list.push({ ...entry, at: now });
+        while (list.length > KFA_REQ_MAX) list.shift();
+        await env.API_CACHE.put(KFA_REQ_KEY, JSON.stringify(list), { expirationTtl: 8 * 24 * 3600 });
+    }
+    return jsonWithCache({ ok: true, queued: key, since: (existing || { at: now }).at, position: list.length }, 0);
 }
 
 /** JSON response with the same edge cache window the other snapshot routes use. */

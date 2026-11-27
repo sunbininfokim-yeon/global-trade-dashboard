@@ -1115,6 +1115,20 @@ const pecrBindDetails = (out, snap) => {
     }));
 };
 
+// --- 엔진 분석 요청 (스냅샷이 없는 회사) -------------------------------------
+// Searching a company without a snapshot queues it (/api/kfa-request); a
+// workflow builds the queue every 30 minutes. One request per company per page.
+const PECR_REQUESTED = {};
+const pecrRequest = ({ corp, ticker }) => {
+    const key = corp || ticker;
+    if (!key || PECR_REQUESTED[key]) return;
+    PECR_REQUESTED[key] = { at: Date.now(), state: 'sending' };
+    const q = corp ? `corp=${encodeURIComponent(corp)}` : `ticker=${encodeURIComponent(ticker)}`;
+    fetch(`/api/kfa-request?${q}`).then((r) => r.json())
+        .then((d) => { PECR_REQUESTED[key] = { at: d.since || Date.now(), state: d.ok ? 'queued' : 'rejected' }; })
+        .catch(() => { PECR_REQUESTED[key].state = 'failed'; });
+};
+
 // --- Views ---------------------------------------------------------------------
 const pecrHead = (snap) => {
     const p = snap.pe_cr || {};
@@ -1131,8 +1145,9 @@ const pecrViewHtml = (data, view) => {
     PECR_CUR = snap?.currency || 'KRW';
     if (!snap) {
         return `<div class="fin-empty"><p class="fin-empty-title">이 기업은 아직 PE·CR 엔진 스냅샷이 없습니다</p>
-            <p>엔진 스냅샷은 OpenDART 원본 공시로 매일 새벽 미리 계산합니다. 대상은 코스피·코스닥 시가총액 상위 각 500개사이고, 새 정기보고서가 나온 회사부터 다시 만듭니다.
-               이 회사는 아직 대상이 아니거나 이번 주기에서 아직 처리되지 않았습니다. 기본 탭의 지표는 그대로 볼 수 있습니다.</p></div>`;
+            <p>이 회사의 엔진 분석을 자동으로 요청했습니다. 요청은 30분마다 처리돼, 보통 <b>30분~1시간 뒤 다시 열면</b> 투자지표·CR·PE·딜 탭이 채워집니다
+               (비상장사 포함, OpenDART에 사업보고서가 있는 회사). 그동안 기본 탭의 지표는 그대로 볼 수 있습니다.</p>
+            <p class="fin-note">매일 새벽에는 코스피·코스닥 시가총액 상위 각 500개사와 미국 대형주를 새 공시 기준으로 다시 계산합니다.</p></div>`;
     }
     const financial = snap.pe_cr?.industry === 'financial';
     if (view === 'metrics') return pecrHead(snap) + invMetricsView(snap);
