@@ -46,10 +46,14 @@ HEADS = ("opening", "closing")
 RECENT_OOS = 120
 
 
-def fetch(directory: Path, rng: str = "max") -> None:
+def fetch(directory: Path, start: str = "2014-01-01") -> None:
+    # An explicit period keeps daily bars; range=max makes Yahoo coarsen to 3mo.
+    p1 = int(pd.Timestamp(start, tz="UTC").timestamp())
+    p2 = int(pd.Timestamp.now(tz="UTC").timestamp()) + 86400
     for key, symbol in eng.SYMBOLS.items():
         r = requests.get("https://query1.finance.yahoo.com/v8/finance/chart/" + quote(symbol, safe=""),
-                         params={"range": rng, "interval": "1d"}, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+                         params={"period1": p1, "period2": p2, "interval": "1d"},
+                         headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
         r.raise_for_status()
         (directory / (key + ".json")).write_bytes(r.content)
 
