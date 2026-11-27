@@ -44,7 +44,7 @@ def _main() -> int:
                    help="Refresh only KOSPI index flows in an existing report; preserve ticker data")
     # 180 trading days ~ 8 months, so the UI's 6-month window is fully covered.
     # Naver serves 60 rows a request, so this costs 3 paged calls per ticker.
-    p.add_argument("--page-size", type=int, default=180)
+    p.add_argument("--page-size", type=int, default=250)  # one year of trading days
     p.add_argument("--bins", type=int, default=12)
     p.add_argument("--top", type=int, default=10, help="Marcap top-N and/or high-vol top-N")
     p.add_argument(

@@ -1,0 +1,44 @@
+name: KR to US semiconductor daily
+# 한국 → 미국 반도체 방향 (kr_to_us_semiconductor.py, #1121): after the Korean
+# close and before the US open, issue today's forecast with the frozen model,
+# settle earlier forecasts against the actual US open/close, and refresh the
+# engine's own walk-forward validation. Never trains, never rewrites a live
+# forecast. A US or Korean holiday only settles.
+on:
+  schedule:
+    - cron: '10 7 * * 1-5'  # 16:10 KST: KRX closed (15:30), NYSE not yet open.
+  workflow_dispatch:
+concurrency:
+  group: kr-us-semiconductor
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      MM: New for anti/scripts/market_microstructure
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: New for anti/scripts/market_microstructure/requirements-us-kr-preopen.txt
+      - name: Install frozen runtime
+        run: pip install -r "$MM/requirements-us-kr-preopen.txt"
+      - name: Publisher contract tests
+        run: python -m unittest discover -s "$MM/tests" -p test_publish_kr_us_semiconductor.py
+      - name: Issue, settle and validate
+        working-directory: New for anti/scripts/market_microstructure
+        run: python publish_kr_us_semiconductor.py
+      - name: Commit
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "New for anti/public/data/kr_us_semiconductor_v1.json" "New for anti/public/data/kr_us_semiconductor_history_v1.json"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: KR to US semiconductor forecast and history'
+          bash tools/ops/git_push_retry.sh
