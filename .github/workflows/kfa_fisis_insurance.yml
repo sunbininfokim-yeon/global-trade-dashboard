@@ -1,0 +1,52 @@
+name: KFA FISIS insurance
+
+# Insurer CSM (보험계약마진) and IFRS 17 P&L by quarter from FSS FISIS for every
+# insurer with an engine snapshot (tools/ops/fetch_kfa_fisis.py). FISIS needs a
+# free registration key (secrets.FISIS_API_KEY). Quarterly data, so weekly is
+# enough; a pull request touching the script runs it without committing.
+
+on:
+  schedule:
+    - cron: '0 22 * * 0'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'tools/ops/fetch_kfa_fisis.py'
+      - '.github/workflows/kfa_fisis_insurance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch FISIS insurer series
+        env:
+          FISIS_API_KEY: ${{ secrets.FISIS_API_KEY }}
+        run: python -u tools/ops/fetch_kfa_fisis.py
+      - name: Show result (pull request)
+        if: github.event_name == 'pull_request'
+        run: python3 -c "import json;d=json.load(open('New for anti/public/data/kfa_fisis_insurance_v1.json'));[print(k,v['fisis_name'],len(v['quarters']),sorted(v['quarters'])[-1],v['quarters'][sorted(v['quarters'])[-1]]) for k,v in d['insurers'].items()]"
+      - name: Commit
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'New for anti/public/data/kfa_fisis_insurance_v1.json'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore: refresh FISIS insurer CSM'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1
