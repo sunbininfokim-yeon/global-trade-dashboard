@@ -141,6 +141,20 @@ than anything tried so far in this package (a full crop simulator needs
 cultivar genetic coefficients, daily soil-layer water balance, phenology
 staging) and was not attempted here.
 
+### 6b. All twelve municipalities + ENSO shift -- still negative (2026-11-26)
+
+The eight untested municipalities (MA/PI/TO) were run, and each of the twelve
+also got the El Nino analog shift test (`enso_check`, same rule as
+`enso_analog.py`). Rule fixed before the run: municipal modelling replaces the
+state number only if at least 6 of 12 earn the ridge model or the shift.
+
+Result: 3 of 12 (Uruçuí +8.3%, Campos Lindos +0.9%, Baixa Grande +0.0%), and
+Uruçuí's 5-year holdout is worse than trend (8.6% vs 5.4%). No municipality
+passes the ENSO shift (best: Formoso +3.9%/+2.3%, fails the last-ten bar).
+MATOPIBA soy stays on the state trend. Details:
+`condition/matopiba_muni_summary.json`; rerun with the dispatch-only
+`brazil_matopiba_muni.yml` workflow.
+
 ## 7. MATOPIBA ML(RF/XGBoost) 실험 -- 미미한 개선, 결론 유지 (2026-08-04)
 
 새 파일: `brazil/matopiba_ml_experiment.py`. 새 데이터 수집 없음 -- 6번 섹션에서

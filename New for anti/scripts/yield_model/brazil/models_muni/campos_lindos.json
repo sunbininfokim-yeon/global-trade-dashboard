@@ -1,0 +1,110 @@
+{
+  "key": "campos_lindos",
+  "crop": "soja",
+  "n_seasons": 32,
+  "trained_years": [
+    1994,
+    2025
+  ],
+  "features": [
+    "heat_vpd_stress",
+    "heat_days_35",
+    "heat_excess",
+    "days_late",
+    "precip_rep",
+    "gwetroot_rep_mean",
+    "gwetroot_stress_days",
+    "heat_x_drought",
+    "oni_season"
+  ],
+  "trend": {
+    "log_poly_coef": [
+      -0.00032859431516159304,
+      8.743694193391134
+    ],
+    "degree": 1,
+    "form": "recent10",
+    "window": 10
+  },
+  "scaler": {
+    "mean": [
+      1.4363482619933352,
+      2.0,
+      1.4959999999999993,
+      10.9,
+      407.38700000000006,
+      0.438625988700565,
+      5.8,
+      1.3,
+      0.23174999999999998
+    ],
+    "scale": [
+      1.7614507422797892,
+      3.3763886032268267,
+      2.544783684323679,
+      14.404513181638594,
+      137.29015041509717,
+      0.08857812228201477,
+      12.576167937809993,
+      2.9681644159311658,
+      1.1336263989957185
+    ]
+  },
+  "ridge": {
+    "alpha": 587.8016072274912,
+    "coef": [
+      0.0005848231236235362,
+      0.000988833975230665,
+      0.0009491594391928271,
+      -0.00040558564939927364,
+      -0.0013433598037563255,
+      -0.0010574973130969701,
+      0.00111439281063098,
+      0.001107528676843754,
+      -0.00039764908326411373
+    ],
+    "intercept": 1.3312570574633472e-15
+  },
+  "beats_trend": true,
+  "skill_vs_trend_full": 0.009131044649498543,
+  "skill_vs_trend_recent": 0.009131044649498543,
+  "sigma_kg_ha": 504.2620151779722,
+  "top_effects": [
+    {
+      "feature": "precip_rep",
+      "effect_pct": -0.13
+    },
+    {
+      "feature": "gwetroot_stress_days",
+      "effect_pct": 0.11
+    },
+    {
+      "feature": "heat_x_drought",
+      "effect_pct": 0.11
+    },
+    {
+      "feature": "gwetroot_rep_mean",
+      "effect_pct": -0.11
+    },
+    {
+      "feature": "heat_days_35",
+      "effect_pct": 0.1
+    },
+    {
+      "feature": "heat_excess",
+      "effect_pct": 0.09
+    },
+    {
+      "feature": "heat_vpd_stress",
+      "effect_pct": 0.06
+    },
+    {
+      "feature": "days_late",
+      "effect_pct": -0.04
+    },
+    {
+      "feature": "oni_season",
+      "effect_pct": -0.04
+    }
+  ]
+}

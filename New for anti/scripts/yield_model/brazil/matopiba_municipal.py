@@ -296,6 +296,57 @@ def backtest_one(key, n_years=5):
     return bt, mape, tmape
 
 
+def enso_check(key):
+    """El Nino analog shift on this municipality's own trend, same pass rule
+    as brazil/enso_analog.py: >3% RMSE cut over all folds and the last ten,
+    still positive at 0.35 and 0.75 C kernels."""
+    from . import enso_analog as E
+
+    path = os.path.join(TRAINING, f"{key}.csv")
+    mpath = os.path.join(MODELS, f"{key}.json")
+    if not (os.path.exists(path) and os.path.exists(mpath)):
+        return None
+    t = json.load(open(mpath, encoding="utf-8"))["trend"]
+    degree, window = t["degree"], t.get("window")
+    series = E.load_nino34()
+    df = pd.read_csv(path).dropna(subset=["yield_kg_ha"])
+    df["n34"] = [E.sowing_nino34(series, int(y), CROP) for y in df.year]
+    df = df.dropna(subset=["n34"]).reset_index(drop=True)
+    y, Y, n = df.year.values.astype(float), df.yield_kg_ha.values.astype(float), df.n34.values
+
+    def skill(bw):
+        truth, base, adj = [], [], []
+        for i, yr in enumerate(y):
+            tr = y < yr
+            if tr.sum() < E.DIRECT_MIN_PAST:
+                continue
+            trend = fit_trend(y[tr], Y[tr], degree, window)
+            res = np.log(Y[tr]) - trend(y[tr])
+            w = E.weights(n[tr], n[i], bw)
+            shift = float(np.sum(w * res) / w.sum() - res.mean())
+            b = float(np.exp(trend(yr)))
+            truth.append(Y[i]); base.append(b); adj.append(b * np.exp(shift))
+        truth, base, adj = map(np.array, (truth, base, adj))
+
+        def sk(sl=slice(None)):
+            return float(1 - np.sqrt(np.mean((truth[sl] - adj[sl]) ** 2))
+                         / np.sqrt(np.mean((truth[sl] - base[sl]) ** 2)))
+        return round(sk(), 4), round(sk(slice(-10, None)), 4)
+
+    main_bw, lo, hi = skill(E.BANDWIDTH), skill(0.35), skill(0.75)
+    passes = (min(main_bw) > E.MIN_GAIN and min(lo) > 0 and min(hi) > 0)
+    return {"skill": main_bw[0], "skill_last10": main_bw[1],
+            "skill_bw035": lo, "skill_bw075": hi, "passes": bool(passes)}
+
+
+# Pre-registered (2026-11-26), before the eight untested municipalities ran:
+# municipal modelling replaces the state number only if at least half of the
+# twelve municipalities earn either the ridge model (beats trend on all and
+# recent folds) or the ENSO shift (rule in enso_check). Otherwise MATOPIBA soy
+# stays on the state trend and the negative result is recorded.
+SUMMARY = os.path.join(HERE, "condition", "matopiba_muni_summary.json")
+
+
 def main():
     keys = sys.argv[1:] or list(MUNICIPALITIES.keys())
     summary = []
@@ -315,6 +366,7 @@ def main():
             "skill": artifact["skill_vs_trend_recent"],
             "beats": artifact["beats_trend"],
             "mape": mape, "tmape": tmape,
+            "enso": enso_check(key),
         })
         log("")
 
@@ -326,6 +378,14 @@ def main():
         verdict = "usable" if s["beats"] else "no skill"
         log(f"{s['key']:20} {s['n']:7d} {s['skill']:+9.1%} {h:>14}  {verdict}")
     log("=" * 78)
+    earned = [s["key"] for s in summary
+              if s["beats"] or (s["enso"] or {}).get("passes")]
+    verdict = ("municipal" if len(earned) * 2 >= len(MUNICIPALITIES) else "state trend")
+    log(f"earned: {earned} -> {verdict}")
+    with open(SUMMARY, "w", encoding="utf-8") as f:
+        json.dump({"rule": "half of 12 municipalities earn ridge or ENSO shift",
+                   "earned": earned, "verdict": verdict, "municipalities": summary},
+                  f, indent=1, default=float)
     return 0
 
 
