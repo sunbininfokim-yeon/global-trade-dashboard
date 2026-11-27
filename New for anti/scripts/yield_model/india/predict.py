@@ -213,7 +213,7 @@ def predict_one(cfg, year, oni, dmi):
         "enso_direct": {k: v for k, v in direct.items() if k != "log"} if direct else None,
         "point": point_kg,
         "range_68": [point_kg - sigma, point_kg + sigma],
-        "range_95": [point_kg - 1.96 * sigma, point_kg + 1.96 * sigma],
+        "range_95": [point_kg - 2.5 * sigma, point_kg + 2.5 * sigma],
         "sigma": sigma,
         "beats_trend": model["beats_trend"],
         "skill_vs_trend": model["recent_skill_vs_trend"],
