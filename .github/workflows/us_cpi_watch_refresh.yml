@@ -1,0 +1,48 @@
+name: Refresh US CPI watch
+
+# 미국 CPI 주간·발표 D-3 감시 (#1149, refresh_us_cpi_watch.py). 매일 돌지만 실제 수집은 미국 동부 금요일과
+# BLS 발표 D-3~D-1에만 한다(그 밖의 날은 캘린더만 확인하고 'not due'). 외부 시세(EIA 휘발유·제트연료, Zillow
+# 임대료 등)와 본문 데이터를 public/data/us_cpi_watch_v1.json 한 파일로 묶는다. 실패하거나 더 오래된
+# 결과는 기존 파일을 덮지 않는다. 키 없음. 수동 실행에서 force=true 면 일정과 무관하게 수집.
+
+on:
+  schedule:
+    - cron: '17 21 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Refresh outside the scheduled windows'
+        type: boolean
+        default: false
+
+concurrency:
+  group: us-cpi-watch
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: pip install numpy scipy statsmodels pytest
+      - name: Tests
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -m pytest tests/test_cpi_watch.py tests/test_cpi_watch_refresh.py tests/test_cpi_internal_watch.py -v
+      - name: Refresh
+        working-directory: New for anti/scripts/macro_monitor
+        run: python -B refresh_us_cpi_watch.py --out ../../public/data/us_cpi_watch_v1.json ${{ inputs.force && '--force' || '' }}
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          f="New for anti/public/data/us_cpi_watch_v1.json"
+          [ -f "$f" ] || { echo "no watch file yet"; exit 0; }
+          git add "$f"
+          git commit -m "chore: refresh US CPI watch" || exit 0
+          bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"

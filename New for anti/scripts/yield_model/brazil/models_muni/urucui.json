@@ -1,0 +1,94 @@
+{
+  "key": "urucui",
+  "crop": "soja",
+  "n_seasons": 38,
+  "trained_years": [
+    1984,
+    2025
+  ],
+  "features": [
+    "heat_vpd_stress",
+    "heat_days_35",
+    "heat_excess",
+    "days_late",
+    "precip_rep",
+    "gwetroot_rep_mean",
+    "oni_season"
+  ],
+  "trend": {
+    "log_poly_coef": [
+      0.030981903425627788,
+      -54.541316577378424
+    ],
+    "degree": 1,
+    "form": "deg1",
+    "window": null
+  },
+  "scaler": {
+    "mean": [
+      1.9781240212706859,
+      4.368421052631579,
+      5.498157894736842,
+      14.105263157894736,
+      292.2531578947368,
+      0.4865914362176627,
+      -0.046118421052631614
+    ],
+    "scale": [
+      1.9828055305069852,
+      6.317982075546369,
+      8.875917700593039,
+      18.058078049047328,
+      118.31940022234336,
+      0.06344864373366821,
+      1.0316001713881366
+    ]
+  },
+  "ridge": {
+    "alpha": 24.244620170823307,
+    "coef": [
+      0.003613164161966143,
+      -0.011645903485277224,
+      -0.010265769178329226,
+      0.02710316783046928,
+      0.086670211581952,
+      -0.05993414473260492,
+      -0.09006346971632638
+    ],
+    "intercept": -2.0005742064717042e-14
+  },
+  "beats_trend": true,
+  "skill_vs_trend_full": 0.023648071858012654,
+  "skill_vs_trend_recent": 0.08347872363089615,
+  "sigma_kg_ha": 658.7756425427414,
+  "top_effects": [
+    {
+      "feature": "oni_season",
+      "effect_pct": -8.61
+    },
+    {
+      "feature": "precip_rep",
+      "effect_pct": 9.05
+    },
+    {
+      "feature": "gwetroot_rep_mean",
+      "effect_pct": -5.82
+    },
+    {
+      "feature": "days_late",
+      "effect_pct": 2.75
+    },
+    {
+      "feature": "heat_days_35",
+      "effect_pct": -1.16
+    },
+    {
+      "feature": "heat_excess",
+      "effect_pct": -1.02
+    },
+    {
+      "feature": "heat_vpd_stress",
+      "effect_pct": 0.36
+    }
+  ]
+}

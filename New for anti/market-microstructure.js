@@ -2976,9 +2976,9 @@ const msDerivatives = (D) => {
             콜·풋 매수·매도·순매수는 당일 외국인 거래 흐름입니다. 외국인 미결제약정, 신규 포지션, 헤지 목적 또는 다음 가격 방향을 확정하지 않습니다.</p>
     </section>
 
-    ${msFlowSection(D)}
-
     ${msCtaSection(D)}
+
+    ${msFlowSection(D)}
 
     ${msOptionOiSection(D)}
 
