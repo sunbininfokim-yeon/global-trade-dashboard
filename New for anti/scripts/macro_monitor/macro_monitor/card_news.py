@@ -33,6 +33,36 @@ GNEWS = "https://news.google.com/rss/search?q={q}&{loc}"
 LOC = {"en": "hl=en-US&gl=US&ceid=US:en", "ko": "hl=ko&gl=KR&ceid=KR:ko"}
 KEEP_OFFICIAL, KEEP_PRESS, PRESS_DAYS = 6, 8, 45
 
+# Official pages for sources with no free feed (or one that refuses automated readers): linked, never fetched.
+LINKS = {
+    "h41": ("연준 H.4.1 대차대조표 — 최신", "https://www.federalreserve.gov/releases/h41/"),
+    "h6": ("연준 H.6 통화량(M2) — 최신", "https://www.federalreserve.gov/releases/h6/"),
+    "h8": ("연준 H.8 은행 자산·부채 — 최신", "https://www.federalreserve.gov/releases/h8/"),
+    "g17": ("연준 G.17 산업생산·가동률 — 최신", "https://www.federalreserve.gov/releases/g17/"),
+    "g19": ("연준 G.19 소비자신용 — 최신", "https://www.federalreserve.gov/releases/g19/"),
+    "chargeoff": ("연준 대출 연체율·상각률 통계 — 최신", "https://www.federalreserve.gov/releases/chargeoff/"),
+    "sloos": ("연준 고위대출담당자 설문(SLOOS) — 최신", "https://www.federalreserve.gov/data/sloos.htm"),
+    "z1": ("연준 Z.1 금융계정 — 최신", "https://www.federalreserve.gov/releases/z1/"),
+    "sofr": ("뉴욕연준 SOFR — 최신", "https://www.newyorkfed.org/markets/reference-rates/sofr"),
+    "fima": ("뉴욕연준 FIMA 레포 창구", "https://www.newyorkfed.org/markets/fima-repo-facility"),
+    "yield": ("미 재무부 일별 국채 금리 — 최신", "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve"),
+    "real_yield": ("미 재무부 일별 실질 금리(TIPS) — 최신", "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_real_yield_curve"),
+    "buyback": ("미 재무부 바이백 결과 — 최신", "https://www.treasurydirect.gov/auctions/buybacks/"),
+    "debt": ("미 재무부 Debt to the Penny — 최신", "https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/"),
+    "mts": ("미 재무부 월간 재정보고서(MTS) — 최신", "https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/"),
+    "fdic_qbp": ("FDIC 분기 은행 보고서(QBP) — 최신", "https://www.fdic.gov/quarterly-banking-profile"),
+    "claims": ("미 노동부 주간 실업수당 청구 — 최신", "https://www.dol.gov/ui/data.pdf"),
+    "eia_elec": ("EIA 전력 월보 — 최신", "https://www.eia.gov/electricity/monthly/"),
+    "cleveland": ("클리블랜드 연은 절사평균 CPI — 최신", "https://www.clevelandfed.org/indicators-and-data/median-cpi"),
+    "mxp": ("BLS 수출입물가 보도자료 — 최신", "https://www.bls.gov/news.release/ximpim.nr0.htm"),
+    "pmms": ("프레디맥 주간 모기지 금리(PMMS) — 최신", "https://www.freddiemac.com/pmms"),
+    "case_shiller": ("S&P 케이스-실러 주택가격지수 — 최신", "https://www.spglobal.com/spdji/en/index-family/indicators/sp-corelogic-case-shiller/"),
+    "census_c30": ("센서스 건설 지출 — 최신", "https://www.census.gov/construction/c30/current/index.html"),
+    "fred_hy": ("ICE BofA 하이일드 OAS (FRED) — 최신", "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"),
+    "fred_sahm": ("Sahm 규칙 실시간 지표 (FRED) — 최신", "https://fred.stlouisfed.org/series/SAHMREALTIME"),
+    "fred_bei": ("10년 기대인플레이션 BEI (FRED) — 최신", "https://fred.stlouisfed.org/series/T10YIE"),
+}
+
 BLS_LINKS = {
     "cpi": ("BLS 소비자물가지수(CPI) 보도자료 — 최신", "https://www.bls.gov/news.release/cpi.nr0.htm"),
     "jobs": ("BLS 고용상황(Employment Situation) 보도자료 — 최신", "https://www.bls.gov/news.release/empsit.nr0.htm"),
@@ -62,10 +92,65 @@ CARDS: dict[str, tuple[tuple[str, ...], str, str, str]] = {
     "core_cpi_yoy": (("bls:cpi",), "US core CPI inflation", "미국 근원 CPI", r"cpi|inflation|물가"),
     "nfp": (("bls:jobs",), "US nonfarm payrolls jobs report", "미국 비농업 고용", r"payroll|jobs|employment|고용"),
     "unemployment": (("bls:jobs",), "US unemployment rate jobs report", "미국 실업률", r"unemployment|jobless|jobs|실업"),
+    # liquidity
+    "net_liquidity": (("fed", "link:h41"), "Fed liquidity reserves TGA reverse repo", "연준 유동성 지준 TGA", r"liquidity|reserve|tga|repo|유동성|지준"),
+    "hedge_fund_ust": (("link:z1",), "hedge funds Treasury basis trade", "헤지펀드 국채 베이시스 트레이드", r"hedge fund|basis trade|헤지펀드|베이시스"),
+    "fima_repo": (("link:fima",), "Fed FIMA repo facility foreign central banks dollars", "연준 FIMA 레포 달러", r"fima|repo|dollar|레포|달러"),
+    "m2_vs_2019": (("link:h6",), "US M2 money supply", "미국 M2 통화량", r"m2|money supply|통화량"),
+    "m2_yoy": (("link:h6",), "US M2 money supply growth", "미국 M2 증가율", r"m2|money supply|통화량"),
+    "ust_buybacks": (("treasury:buyback", "link:buyback"), "Treasury buyback", "미 재무부 국채 바이백", r"buyback|바이백|환매"),
+    "npl_noncurrent": (("link:fdic_qbp",), "FDIC banks noncurrent loans", "미국 은행 부실채권 FDIC", r"fdic|noncurrent|bank|loan|부실|은행"),
+    "delinq_all": (("link:chargeoff",), "US bank loan delinquency charge-offs", "미국 은행 대출 연체율", r"delinquen|charge-off|loan|연체|상각"),
+    # rates
+    "sofr": (("link:sofr", "fed"), "SOFR secured overnight financing rate", "SOFR 금리", r"sofr|repo|funding|레포"),
+    "sofr_iorb": (("link:sofr", "fed"), "SOFR IORB spread repo funding pressure", "SOFR 지준부리 레포 금리", r"sofr|ioer|iorb|repo|funding|레포"),
+    "bond_3m": (("link:yield",), "Treasury bill yields", "미국 단기국채 금리", r"bill|treasur|yield|국채|금리"),
+    "bond_2y": (("link:yield",), "2-year Treasury yield", "미국 2년물 국채 금리", r"2-year|two-year|treasur|yield|2년물"),
+    "bond_10y": (("link:yield",), "10-year Treasury yield", "미국 10년물 국채 금리", r"10-year|ten-year|treasur|yield|10년물"),
+    "tips_10y": (("link:real_yield",), "TIPS real yields", "미국 실질금리 TIPS", r"tips|real yield|실질금리"),
+    "spread_10y3m": (("link:yield",), "yield curve inversion 10-year 3-month", "미국 장단기 금리차 역전", r"yield curve|inver|spread|커브|금리차|역전"),
+    "spread_10y2y": (("link:yield",), "yield curve 2s10s steepening", "미국 장단기 금리차 2년 10년", r"yield curve|2s10s|steep|spread|커브|금리차"),
+    "sovereign_debt": (("link:debt", "treasury:refunding"), "US national debt", "미국 국가부채", r"debt|deficit|부채|적자"),
+    "sovereign_interest": (("link:mts",), "US interest costs on federal debt", "미국 국채 이자 비용", r"interest|debt|이자|부채"),
+    "hy_oas": (("link:fred_hy",), "high yield bond spreads junk", "하이일드 채권 스프레드", r"high.yield|junk|spread|credit|하이일드|스프레드"),
+    "sovereign_ratings": ((), "US credit rating Moody's S&P Fitch", "미국 신용등급", r"rating|moody|fitch|s&p|신용등급"),
+    # fx / equity
+    "dxy": ((), "dollar index DXY", "달러인덱스", r"dollar|dxy|달러"),
+    "eurusd": ((), "euro dollar EUR/USD", "유로 달러 환율", r"euro|eur|유로"),
+    "usdjpy": ((), "dollar yen USD/JPY", "엔달러 환율", r"yen|jpy|엔"),
+    "spx": ((), "S&P 500 stocks", "S&P500 지수", r"s&p|stocks|wall street|증시|S&P"),
+    "ndx": ((), "Nasdaq 100 tech stocks", "나스닥 지수", r"nasdaq|tech|나스닥"),
+    "rut": ((), "Russell 2000 small caps", "러셀2000 소형주", r"russell|small.cap|러셀|소형주"),
+    "vix": ((), "VIX volatility index", "VIX 변동성 지수", r"vix|volatil|변동성|공포"),
+    # growth
+    "electricity_generation": (("link:eia_elec",), "US electricity demand power generation data centers", "미국 전력 수요 발전량", r"electric|power|grid|전력|발전"),
+    "sahm": (("link:fred_sahm", "bls:jobs"), "Sahm rule recession indicator", "샴의 법칙 경기침체", r"sahm|recession|샴|침체"),
+    "initial_claims": (("link:claims",), "US initial jobless claims", "미국 신규 실업수당 청구", r"jobless|claims|실업수당"),
+    "auto_loans": (("link:g19",), "US auto loans consumer credit", "미국 자동차 대출", r"auto loan|car loan|consumer credit|자동차 대출|소비자신용"),
+    "ip_semis": (("link:g17",), "US semiconductor production chips factory output", "미국 반도체 생산", r"semiconductor|chip|industrial production|반도체|산업생산"),
+    "cu_manufacturing": (("link:g17",), "US capacity utilization manufacturing output", "미국 제조업 가동률", r"capacity utilization|manufactur|industrial production|가동률|제조업"),
+    # inflation
+    "trimmed_mean_cpi": (("link:cleveland", "bls:cpi"), "Cleveland Fed trimmed mean median CPI", "클리블랜드 연은 절사평균 CPI", r"trimmed|median|cpi|inflation|물가"),
+    "export_price_yoy": (("link:mxp",), "US export prices", "미국 수출물가", r"export price|import price|수출물가"),
+    "import_price_yoy": (("link:mxp",), "US import prices tariffs", "미국 수입물가", r"import price|수입물가"),
+    "bei_10y": (("link:fred_bei",), "breakeven inflation expectations TIPS", "기대인플레이션 BEI", r"breakeven|inflation expectation|기대인플레"),
+    # real estate
+    "mortgage_30y": (("link:pmms",), "30-year mortgage rate Freddie Mac", "미국 모기지 금리", r"mortgage|모기지"),
+    "mortgage_spread": (("link:pmms",), "mortgage rate spread Treasury MBS", "모기지 금리 스프레드 MBS", r"mortgage|mbs|spread|모기지"),
+    "home_price_yoy": (("link:case_shiller",), "Case-Shiller US home prices", "미국 집값 케이스실러", r"home price|house price|case-shiller|집값|주택가격"),
+    "price_to_rent": (("link:case_shiller",), "US home prices rents affordability", "미국 집값 임대료", r"home price|rent|afford|집값|임대료"),
+    "bank_cre_loans": (("link:h8",), "commercial real estate loans banks", "상업용 부동산 대출 은행", r"commercial real estate|cre|office|상업용 부동산"),
+    "sloos_cre": (("link:sloos",), "senior loan officer survey lending standards commercial real estate", "연준 대출 태도 설문 상업용 부동산", r"loan officer|lending standard|cre|commercial real estate|대출"),
+    "sloos_mortgage_demand": (("link:sloos",), "mortgage demand loan officer survey", "주택담보대출 수요", r"mortgage|loan officer|demand|주택담보|모기지"),
+    "industrial_capex": (("link:census_c30", "bea:^GDP"), "data center construction spending capex", "데이터센터 건설 투자", r"data center|construction|capex|factory|데이터센터|설비투자|건설"),
 }
 
 # Subjects every country has: the headline must also say it is about the US.
-GENERIC = {"cpi_yoy", "core_cpi_yoy", "gdp", "gdpnow", "pce_yoy", "core_pce_yoy", "nfp", "unemployment"}
+GENERIC = {"cpi_yoy", "core_cpi_yoy", "gdp", "gdpnow", "pce_yoy", "core_pce_yoy", "nfp", "unemployment",
+           "m2_vs_2019", "m2_yoy", "bond_3m", "bond_2y", "bond_10y", "spread_10y3m", "spread_10y2y", "sovereign_debt",
+           "sovereign_interest", "sovereign_ratings", "initial_claims", "electricity_generation", "auto_loans", "ip_semis",
+           "cu_manufacturing", "trimmed_mean_cpi", "export_price_yoy", "import_price_yoy", "mortgage_30y", "home_price_yoy",
+           "price_to_rent", "bank_cre_loans", "industrial_capex", "npl_noncurrent", "delinq_all"}
 US_MARK = re.compile(r"\bU\.?S\.?\b|\bUS\b|America|\bFed\b|Federal Reserve|\bBLS\b|\bBEA\b|미국|美|연준", re.I)
 
 EXCLUDE = re.compile(r"bitcoin|crypto|\bcoin\b|token|비트코인|코인|horoscope|lottery", re.I)
@@ -122,6 +207,9 @@ def official_for(card: str, feeds: dict[str, list[dict[str, Any]]], treasury: li
         elif kind == "bls":
             title, url = BLS_LINKS[arg]
             out.append({"title": title, "url": url, "source": "BLS", "published_at": None, "static": True})
+        elif kind == "link":
+            title, url = LINKS[arg]
+            out.append({"title": title, "url": url, "source": "공식", "published_at": None, "static": True})
     dated = sorted([x for x in out if x.get("published_at")], key=lambda x: x["published_at"], reverse=True)
     static = [x for x in out if not x.get("published_at")]
     return [{k: v for k, v in x.items() if k != "name"} for x in static + dated][:KEEP_OFFICIAL]

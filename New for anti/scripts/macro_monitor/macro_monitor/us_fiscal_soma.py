@@ -125,3 +125,37 @@ def interest_gdp_panel(mts: list[dict[str, Any]], gdp: list[tuple[str, float]], 
                        {"label": "연방 이자 지출(OMB) / GDP", "values": [round(net[y], 2) if y in net else None for y in years]}],
             "note_ko": "회계연도(10~9월) 기준. 국채이자 = 월간 재무제표(MTS) '공공부채 이자' 합계 ÷ 그 회계연도 네 분기 명목 GDP(BEA) 평균. "
                        "옆 선은 백악관 예산관리국(OMB)이 집계한 연방 이자 지출의 GDP 비율(FRED FYOIGDA188S, 1년 늦게 나옴)로, 다른 공식 자료로 같은 값을 확인하는 용도입니다."}
+
+
+# ---------------------------------------------------------------- national debt card
+
+CLASS_KO = {"bills": "단기채(Bills)", "notes": "중기채(Notes)", "bonds": "장기채(Bonds)", "tips": "물가연동채(TIPS)"}
+
+
+def debt_duration_panel(months: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Modified duration of marketable Treasury debt in years, month-end: DV01 / (market value x 1bp), all debt and
+    by class, with the weighted average maturity (years) beside it. DV01 and market value come from
+    wire_ust_maturity.py, security by security on that month's yield curve (TIPS on the real curve)."""
+    rows = [m for m in months if (m.get("duration") or {}).get("dv01_mn") and (m["duration"].get("mv_bn"))]
+    if not rows:
+        return None
+    dur = lambda dv01_mn, mv_bn: round(dv01_mn / (mv_bn * 1000 * 1e-4), 2) if dv01_mn and mv_bn else None   # noqa: E731
+    series = [{"label": "시장성 국채 전체", "values": [dur(m["duration"]["dv01_mn"], m["duration"]["mv_bn"]) for m in rows]},
+              {"label": "평균만기(WAM, 년)", "values": [round(m["wam_months"] / 12, 2) if m.get("wam_months") else None for m in rows]}]
+    for k, lab in CLASS_KO.items():
+        series.append({"label": lab, "values": [dur((m["duration"].get("dv01_by_class_mn") or {}).get(k),
+                                                    (m["duration"].get("mv_by_class_bn") or {}).get(k)) for m in rows]})
+    last = rows[-1]
+    return {"id": "debt_duration", "label": "듀레이션", "type": "lines", "unit": "년", "compare_ko": "직전 달",
+            "dates": [m["date"][:7] for m in rows], "series": series,
+            "note_ko": f"시장에 나와 있는 국채(시장성)의 수정 듀레이션 = 금리 1bp 변화 때 가치 변화(DV01) ÷ (시가 × 0.01%), 월말, 년. "
+                       f"{last['date'][:7]} 전체 {series[0]['values'][-1]}년, 평균만기 {series[1]['values'][-1]}년. 듀레이션이 평균만기보다 짧은 건 "
+                       f"이자를 만기 전에 나눠 받기 때문이고, 금리가 오르면 같은 채권의 듀레이션도 짧아집니다. 종목별 쿠폰·만기를 그달 말 "
+                       f"수익률곡선(FRED, 물가연동채는 실질금리 곡선)으로 계산(재무부 MSPD 종목 명세). 정부 내 보유(사회보장기금 등 비시장성)는 빠집니다."}
+
+
+def maturity_wall_copy(wam: dict[str, Any] | None) -> dict[str, Any] | None:
+    p = next((x for x in (wam or {}).get("panels") or [] if x.get("id") == "maturity_wall"), None)
+    if not p:
+        return None
+    return {**p, "id": "debt_maturity_wall", "label": "만기별 잔액"}

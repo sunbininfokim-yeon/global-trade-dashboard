@@ -149,6 +149,7 @@ def summarize(rows: list[dict[str, Any]], horizon: int = 10, curve: list[tuple[f
     wall: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
     wsum = total = 0.0
     dv = defaultdict(float)
+    mv = defaultdict(float)                   # market value (price x par), the base of a duration in years
     dv_pub = 0.0
     pv_tot = pv_pub = 0.0                     # the same holdings on last month's curve (flow decomposition)
     for r in rows:
@@ -172,6 +173,7 @@ def summarize(rows: list[dict[str, Any]], horizon: int = 10, curve: list[tuple[f
             price, md = price_duration(yrs, (_num(r.get("interest_rate_pct")) or 0) / 100, _yield(cv, yrs), cls)
             d1 = amt * price * md * 0.1            # $bn x years x 1bp -> $mn per bp
             dv[cls] += d1
+            mv[cls] += amt * price
             held = min(soma.get(r.get("security_class2_desc") or "", 0.0), amt) if soma is not None else 0.0
             if soma is not None:
                 dv_pub += d1 * (amt - held) / amt
@@ -188,6 +190,7 @@ def summarize(rows: list[dict[str, Any]], horizon: int = 10, curve: list[tuple[f
         per_bn_10y = _dv01_10y(curve)
         tot = sum(dv.values())
         duration = {"dv01_mn": round(tot, 1), "dv01_by_class_mn": {k: round(v, 1) for k, v in dv.items()},
+                    "mv_bn": round(sum(mv.values()), 1), "mv_by_class_bn": {k: round(v, 1) for k, v in mv.items()},
                     "teneq_bn": round(tot / per_bn_10y, 1), "curve_10y_pct": round(_yield(curve, 10) * 100, 3)}
         if soma is not None:
             duration |= {"dv01_public_mn": round(dv_pub, 1), "teneq_public_bn": round(dv_pub / per_bn_10y, 1),

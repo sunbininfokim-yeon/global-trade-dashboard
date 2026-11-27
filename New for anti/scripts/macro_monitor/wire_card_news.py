@@ -3,7 +3,8 @@
 
     python3 wire_card_news.py
 
-Runs after wire_ust_toolkit_feed.py (it reuses that Treasury feed). A feed or query that fails keeps the card's
+Runs last among the card builders (after wire_ust_toolkit_feed.py, whose Treasury feed it reuses, and after every
+wire that rebuilds a US card -- wire_us_monetary.py, wire_ust_auctions.py, ... -- which would drop the news otherwise). A feed or query that fails keeps the card's
 previous list; exit status 1 names what failed. Keyless.
 """
 
@@ -34,7 +35,7 @@ def main() -> int:
         if card not in present:
             continue
         srcs = cn.CARDS[card][0]
-        if all(s.split(":")[0] in ("bls", "treasury") or s.split(":")[0] in feeds for s in srcs):
+        if all(s.split(":")[0] in ("bls", "treasury", "link") or s.split(":")[0] in feeds for s in srcs):
             official[card] = cn.official_for(card, feeds, treasury)
         try:
             press[card] = cn.press_for(card, google, date.today())
