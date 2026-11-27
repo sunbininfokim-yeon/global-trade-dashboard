@@ -148,8 +148,64 @@ export default {
             return;
         }
         ctx.waitUntil(warmComtradeCache(env));
+        // The hourly tick also checks the 한국은행 금통위 calendar (see bokPolicyTick).
+        ctx.waitUntil(bokPolicyTick(env, event.scheduledTime));
     }
 };
+
+
+// === 한국은행 금통위 결정문·의사록 트리거 ======================================
+//
+// cb_policy_refresh.yml 은 GitHub cron 으로 15:10 KST 예약이지만 실제로는 다음 날
+// 02시 전후에 돌아(2026-11), 회의 당일 결정문이 반나절 넘게 늦게 올라갔다.
+// 그래서 매시 정각 cron 이 KST 시각을 보고 직접 workflow_dispatch 한다.
+//   - 회의일 11:00 KST (결정 발표 약 1시간 뒤), 13:00 KST 재시도.
+//   - 의사록 예상일(최근 지연일 기준, 보통 회의 19일 뒤 화요일 16:00 공개)부터
+//     7일 동안 매일 19:00 KST. 공개돼 releases 가 released 로 바뀌면 멈춘다.
+// 일정은 public/data/cb_policy_v1.json 의 KOR.schedule.meeting_dates / releases.
+// 이미 반영된 내용이면 workflow 가 커밋하지 않으므로 재시도는 무해하다.
+const CB_POLICY_WORKFLOW_URL =
+    'https://api.github.com/repos/sunbininfokim-yeon/global-trade-dashboard/actions/workflows/cb_policy_refresh.yml/dispatches';
+
+async function bokPolicyTick(env, scheduledTime) {
+    const kst = new Date((scheduledTime || Date.now()) + 9 * 3600 * 1000);
+    const hour = kst.getUTCHours();
+    if (![11, 13, 19].includes(hour)) return;
+    const today = kst.toISOString().slice(0, 10);
+
+    let kor = null;
+    try {
+        const res = await env.ASSETS.fetch(new Request('https://assets.local/public/data/cb_policy_v1.json'));
+        if (res.ok) kor = (await res.json()).KOR || null;
+    } catch (_) { /* no file: nothing to schedule from */ }
+    if (!kor) return;
+
+    const meetingDay = ((kor.schedule || {}).meeting_dates || []).includes(today);
+    const minutesDue = (kor.releases || []).some((r) => {
+        if (r.kind !== 'minutes' || r.status !== 'expected' || !r.date) return false;
+        const days = (Date.parse(today) - Date.parse(r.date)) / 86400000;
+        return days >= 0 && days <= 7;
+    });
+    const why = (hour === 11 || hour === 13) && meetingDay ? `meeting day ${today} ${hour}:00 KST`
+        : hour === 19 && minutesDue ? `minutes due ${today} 19:00 KST` : null;
+    if (!why) return;
+
+    if (!env.GH_DISPATCH_TOKEN) {
+        console.log(`bok dispatch skipped (${why}): GH_DISPATCH_TOKEN is not set`);
+        return;
+    }
+    const res = await fetch(CB_POLICY_WORKFLOW_URL, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${env.GH_DISPATCH_TOKEN}`,
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+            'User-Agent': 'global-trade-dashboard-worker',
+        },
+        body: JSON.stringify({ ref: 'main' }),
+    });
+    console.log(`bok dispatch (${why}): HTTP ${res.status}${res.ok ? '' : ' ' + (await res.text()).slice(0, 200)}`);
+}
 
 
 // === 개장전 방향 예측 트리거 =================================================
