@@ -145,7 +145,9 @@ def main():
             "point_basis": r["point_basis"],
             "features_filled": r["features_filled"],
             "last_actual": r["last_actual"],
-            "enso": {"state": enso_state, "oni_growing_season": enso_val},
+            "enso": {"state": enso_state, "oni_growing_season": enso_val,
+                     # El Nino analog shift folded into the point (enso_direct.py).
+                     "direct": r.get("enso_direct")},
             "iod": {"state": iod_state, "dmi_growing_season": iod_val},
             "skill": {
                 "method": ("forward chaining, trend refit inside each fold, "
