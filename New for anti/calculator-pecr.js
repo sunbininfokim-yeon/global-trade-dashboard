@@ -108,6 +108,21 @@ const pecrFmt = (fmt, v) => {
 const pecrCard = (snap, key) => {
     const cards = snap?.pe_cr?.cards || {};
     const strict = cards[key];
+    const liq = snap?.liquidity;
+    if (strict && (strict.value === null || strict.value === undefined) && liq) {
+        if (key === 'debt_due_within_1y' && (liq.latest || liq.fy)) {
+            const x = liq.latest || liq.fy;
+            return { ...strict, key, basis: 'reported', value: x.total, reason: null, period_end: x.period_end,
+                definition: x.basis, parts: x.parts.map((q) => ({ input: q.key, label: q.account || q.label, value: q.value, period_end: x.period_end })) };
+        }
+        if (key === 'ccc_days' && liq.ccc_wide && !/^not_applicable/.test(strict.reason || '')) {
+            const c = liq.ccc_wide;
+            return { ...strict, key, basis: 'reported', value: c.value, reason: null, definition: c.basis,
+                parts: [{ input: 'dso', label: `매출채권 회전일수 (${c.receivables_account || ''})`, value: null, days: c.dso },
+                    { input: 'dio', label: '재고 회전일수', value: null, days: c.dio },
+                    { input: 'dpo', label: `− 매입채무 회전일수 (${c.payables_account || ''})`, value: null, days: c.dpo }] };
+        }
+    }
     const alt = PECR_FALLBACK[key] && cards[PECR_FALLBACK[key]];
     if (strict && strict.value !== null && strict.value !== undefined) return { ...strict, key, basis: 'strict' };
     if (alt && alt.value !== null && alt.value !== undefined) return { ...alt, key, basis: 'reported' };
@@ -368,7 +383,7 @@ const pecrLoad = async (corpCode) => {
     if (!corpCode) return null;
     const idx = await pecrIndex();
     if (!idx[corpCode]) return null;
-    const [snap] = await Promise.all([loadFirstJson(finDataPaths(`kfa_pecr/${corpCode}_v1.json`)), pecrMarket()]);
+    const [snap] = await Promise.all([loadFirstJson(finDataPaths(`kfa_pecr/${corpCode}_v1.json`)), pecrMarket(), pecrFisis()]);
     return snap;
 };
 
@@ -376,6 +391,12 @@ const pecrLoad = async (corpCode) => {
 // tools/ops/fetch_kfa_market.py writes the daily close and 시가총액 for every
 // snapshot company; the snapshot's valuation_bases hold the denominators.
 // Dividing here keeps PER/PBR/EV current without rerunning the engine.
+let PECR_FISIS = null;
+const pecrFisis = async () => {
+    if (PECR_FISIS) return PECR_FISIS;
+    PECR_FISIS = (await loadFirstJson(finDataPaths('kfa_fisis_insurance_v1.json')).catch(() => null)) || { insurers: {} };
+    return PECR_FISIS;
+};
 let PECR_MARKET = null;
 const pecrMarket = async () => {
     if (PECR_MARKET) return PECR_MARKET;
@@ -506,7 +527,7 @@ const pecrLoadPeers = async (snap) => {
 };
 
 // --- 업종 핵심 지표 (investor_metrics.industry; 종합상사 / 광업·제련) ---------
-const KIT_TITLE = { trading_house: '종합상사', mining_smelting: '광업·비철 제련' };
+const KIT_TITLE = { trading_house: '종합상사', mining_smelting: '광업·비철 제련', conglomerate: '복합기업' };
 const KIT_FMT = { dso: 'days', dio: 'days', impairment: 'money' };
 const kitIndustryHtml = (snap) => {
     const ind = snap.investor_metrics?.industry;
@@ -578,6 +599,31 @@ const noteItemsHtml = (snap) => {
     </section>`;
 };
 
+// --- 보험사 CSM (FISIS, kfa_fisis_insurance_v1.json) ----------------------
+const fisisCsmHtml = (snap) => {
+    const ins = PECR_FISIS?.insurers?.[snap.corp_code];
+    if (!ins) return '';
+    const qs = Object.keys(ins.quarters || {}).sort();
+    const pts = qs.filter((q) => Number.isFinite(ins.quarters[q].csm)).map((q) => ({ q, ...ins.quarters[q] }));
+    if (!pts.length) return '';
+    const last = pts[pts.length - 1], prev = pts[pts.length - 2];
+    const chg = prev && prev.csm ? last.csm / prev.csm - 1 : null;
+    const ratio = Number.isFinite(last.insurance_liabilities) && last.insurance_liabilities ? last.csm / last.insurance_liabilities : null;
+    const lbl = (q) => `${q.slice(2, 4)}.${q.slice(4, 6)}`;
+    const bars = typeof finPeriodBars === 'function' && pts.length >= 2
+        ? finPeriodBars(pts.map((x) => ({ label: lbl(x.q), value: x.csm })), (v) => pecrNum(v)) : '';
+    return `<div class="fin-cards">
+            <div class="fin-card pecr-card"><span class="fin-card-title">보험계약마진(CSM)</span><span class="fin-card-value">${pecrNum(last.csm)}</span>
+                <p class="fin-card-plain">앞으로 보험 서비스를 제공하며 이익으로 풀려 나올 미실현 이익의 저량. ${lbl(last.q)} 기준${Number.isFinite(chg) ? `, 직전 분기 대비 ${(chg * 100).toFixed(1)}%` : ''}.</p></div>
+            ${Number.isFinite(last.risk_adjustment) ? `<div class="fin-card pecr-card"><span class="fin-card-title">위험조정(RA)</span><span class="fin-card-value">${pecrNum(last.risk_adjustment)}</span>
+                <p class="fin-card-plain">비금융위험에 대한 보상으로 쌓아 둔 부채. CSM과 함께 미래 이익의 원천.</p></div>` : ''}
+            ${Number.isFinite(ratio) ? `<div class="fin-card pecr-card"><span class="fin-card-title">CSM ÷ 보험계약부채</span><span class="fin-card-value">${(ratio * 100).toFixed(1)}%</span>
+                <p class="fin-card-plain">보험계약부채 중 아직 이익으로 인식하지 않은 마진의 비중.</p></div>` : ''}
+        </div>
+        ${bars ? `<p class="pecr-q-title">분기별 CSM</p>${bars}` : ''}
+        <p class="fin-note">출처: 금융감독원 FISIS ${finEsc(ins.fisis_name || '')} — 책임준비금 적립현황(23.3월 이후). <b>개별 회사(별도) 기준</b>이라 연결 재무제표와 다를 수 있습니다.</p>`;
+};
+
 // --- 업권 지표 (snapshot.financial_kpis; dart_kfa/financial_kpis.py) ---------
 const FIN_KIND = { basel: '은행(지주)', kics: '보험', ncr: '증권', credit_finance: '카드·캐피탈' };
 const FIN_LABEL = {
@@ -597,6 +643,7 @@ const financialKpisHtml = (snap) => {
     const comp = Object.entries(f.computed || {}).filter(([k]) => FIN_LABEL[k]);
     const rep = Object.entries(f.reported || {});
     return `<section class="pecr-section"><h3>업권 지표 — ${finEsc(FIN_KIND[f.kind] || f.kind)}</h3>
+        ${f.kind === 'kics' ? fisisCsmHtml(snap) : ''}
         ${rep.length ? `<div class="co-table-wrap"><table class="co-table pecr-table">
             <thead><tr><th>공시 지표</th><th>값</th><th>추이</th><th>출처 표</th></tr></thead><tbody>
             ${rep.map(([, v]) => `<tr><td><b>${finEsc(v.label)}</b>${v.subsidiary ? ' <span class="pecr-badge">주요 종속회사</span>' : ''}</td>
@@ -609,7 +656,7 @@ const financialKpisHtml = (snap) => {
         <div class="fin-cards">${comp.map(([k, v]) => `<div class="fin-card pecr-card"><span class="fin-card-title">${finEsc(FIN_LABEL[k][0])}</span>
             <span class="fin-card-value">${finFmt(FIN_LABEL[k][1], v.value)}</span><p class="fin-card-plain">${finEsc(v.basis || '')}</p></div>`).join('')}</div>
         <p class="fin-note">카드 아래 값은 FY${finEsc(f.fiscal_year || '')} 연결 재무제표 본문으로 계산했습니다. "대용"이라고 쓴 값은 감독기준 산식과 분모가 달라 공시 지표와 차이가 납니다.
-            ${f.kind === 'kics' ? '보험계약마진(CSM) 잔액은 회사마다 공시 양식이 달라 아직 자동 추출하지 않습니다.' : ''}</p>
+            ${f.kind === 'kics' && !PECR_FISIS?.insurers?.[snap.corp_code] ? '이 보험사는 FISIS 회사 목록과 이름이 맞지 않아 CSM을 아직 붙이지 못했습니다.' : ''}</p>
     </section>`;
 };
 
@@ -619,15 +666,50 @@ const SEG_CHECK = { segment_total: '보고서의 부문 합계 행', income_stat
 const segPct = (v, sign = false) => (Number.isFinite(v) ? `${sign && v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%` : '—');
 const segTableHtml = (b, fy) => {
     const op = b.has_operating_income;
+    const assets = b.has_assets && op;
+    const opSum = op ? b.rows.reduce((a, r) => a + Math.max(r.op || 0, 0), 0) : 0;
     const adj = Object.entries(b.reconciling_items || {}).filter(([, v]) => Number.isFinite(v) && v !== 0);
     return `<div class="co-table-wrap"><table class="co-table pecr-table">
-        <thead><tr><th>${finEsc(b.label)}</th><th>매출 FY${fy}</th><th>비중</th><th>전년비</th>${op ? '<th>영업이익</th><th>이익률</th><th>이익 전년비</th>' : ''}</tr></thead>
+        <thead><tr><th>${finEsc(b.label)}</th><th>매출 FY${fy}</th><th>비중</th><th>전년비</th>${op ? '<th>영업이익</th><th>이익률</th><th>이익 전년비</th><th>이익 기여</th>' : ''}${assets ? '<th>부문 자산</th><th>자산수익률</th><th>EBITDA 마진</th>' : ''}</tr></thead>
         <tbody>${b.rows.map((r) => `<tr><td>${finEsc(r.label)}</td><td class="pecr-num">${pecrNum(r.revenue)}</td><td class="pecr-num">${segPct(r.share)}</td>
             <td class="pecr-num">${segPct(r.revenue_yoy, true)}</td>${op ? `<td class="pecr-num">${pecrNum(r.op)}</td><td class="pecr-num">${segPct(r.margin)}</td>
-            <td class="pecr-num">${segPct(r.op_yoy, true)}</td>` : ''}</tr>`).join('')}
-        ${adj.map(([k, v]) => `<tr class="pecr-median"><td>${finEsc(/Elimination|제거/.test(k) ? '부문간 거래 제거' : /Reconcil|조정/.test(k) ? '연결 조정' : k)}</td><td class="pecr-num">${pecrNum(v)}</td><td colspan="${op ? 5 : 2}"></td></tr>`).join('')}
+            <td class="pecr-num">${segPct(r.op_yoy, true)}</td><td class="pecr-num">${opSum > 0 && r.op > 0 ? segPct(r.op / opSum) : '—'}</td>` : ''}${assets
+                ? `<td class="pecr-num">${pecrNum(r.assets)}</td><td class="pecr-num">${segPct(r.roa)}</td><td class="pecr-num">${segPct(r.ebitda_margin)}</td>` : ''}</tr>`).join('')}
+        ${adj.map(([k, v]) => `<tr class="pecr-median"><td>${finEsc(/Elimination|제거/.test(k) ? '부문간 거래 제거' : /Reconcil|조정/.test(k) ? '연결 조정' : k)}</td><td class="pecr-num">${pecrNum(v)}</td><td colspan="${(op ? 6 : 2) + (assets ? 3 : 0)}"></td></tr>`).join('')}
         </tbody></table></div>`;
 };
+const segHistoryHtml = (snap) => {
+    const h = snap.segments?.history;
+    if (!h) return '';
+    const labels = Object.keys(h).filter((k) => !/공통|합계/.test(k));
+    const years = [...new Set(labels.flatMap((k) => Object.keys(h[k])))].sort().slice(-5);
+    if (years.length < 2 || !labels.length) return '';
+    const cell = (k, y, m) => pecrNum(h[k][y]?.[m]);
+    return `<div class="co-table-wrap"><table class="co-table pecr-table">
+        <thead><tr><th>부문</th>${years.map((y) => `<th>FY${y}</th>`).join('')}</tr></thead><tbody>
+        ${labels.map((k) => `<tr><td><b>${finEsc(k)}</b> 매출</td>${years.map((y) => `<td class="pecr-num">${cell(k, y, 'revenue')}</td>`).join('')}</tr>
+            ${years.some((y) => Number.isFinite(h[k][y]?.op)) ? `<tr><td class="fin-note">　영업이익</td>${years.map((y) => `<td class="pecr-num">${cell(k, y, 'op')}</td>`).join('')}</tr>` : ''}`).join('')}
+        </tbody></table></div>
+        <p class="fin-note">사업보고서 3개(각각 당기·전기)의 영업부문 주석을 부문 이름으로 이어 붙였습니다. 부문 매출은 부문간 거래 제거 전 기준일 수 있습니다.</p>`;
+};
+
+// 복합기업(삼성물산 등): 업종이 다른 사업이 한 회사에 묶여 있어 부문별로 나눠 본다.
+const conglomerateHtml = (snap) => {
+    if (snap.pe_cr?.industry !== 'conglomerate') return '';
+    const seg = (snap.segments?.breakdowns || []).find((b) => b.kind === 'segment' && b.reconciles && b.has_operating_income);
+    if (!seg) return '';
+    const fy = String(snap.segments.fiscal_year_end || '').slice(0, 4);
+    const bl = snap.order_backlog;
+    const con = seg.rows.find((r) => /건설/.test(r.label));
+    const backlogNote = bl && con?.revenue
+        ? `<p class="fin-note"><b>건설 부문 수주잔고</b> ${pecrNum(bl.backlog)} — 건설 매출 ${pecrNum(con.revenue)}의 ${(bl.backlog / con.revenue).toFixed(1)}년치 (${finEsc(bl.period_end)} 기준).</p>` : '';
+    return `<section class="pecr-section"><h3>부문별로 분리해 보기 — 복합기업 (FY${finEsc(fy)})</h3>
+        <p class="fin-note">업종이 다른 사업이 한 회사에 묶여 있어 연결 합산 비율(이익률·회전율)은 평균이라 의미가 약합니다. 부문마다 매출·이익·자산수익률을 따로 보고,
+            가치도 부문별로 매겨 더하는 방식(합산가치, SOTP)이 맞습니다.</p>
+        ${segTableHtml(seg, fy)}${backlogNote}${segHistoryHtml(snap)}
+    </section>`;
+};
+
 const segmentsHtml = (snap) => {
     const seg = snap.segments;
     if (!seg || !(seg.breakdowns || []).length) return '';
@@ -644,6 +726,7 @@ const segmentsHtml = (snap) => {
         ${shown.map((b) => `${segTableHtml(b, fy)}<p class="fin-note">${b.reconciles
             ? `항목의 합이 ${finEsc(SEG_CHECK[b.reconciled_against] || '총매출')}과 맞습니다(±1.5%).`
             : `<b class="pecr-flag">일부 항목만 공시 — 참고용.</b> 항목 합 ${pecrNum(b.sum_revenue)}, 손익계산서 매출 ${pecrNum(b.face_revenue)}의 ${Math.round(b.sum_revenue / b.face_revenue * 100)}%.`}</p>`).join('')}
+        ${snap.pe_cr?.industry === 'conglomerate' ? '' : segHistoryHtml(snap)}
         <p class="fin-note">출처: FY${finEsc(fy)} 사업보고서 원본 XBRL의 영업부문·수익 구분 주석(접수 ${finEsc(seg.receipt || '—')}). 부문 매출은 부문간 거래 제거 전 금액일 수 있습니다.
             제품별 단가·출하량(예: HBM 비중)은 공시되지 않습니다.</p></section>`;
 };
@@ -834,7 +917,7 @@ const invMetricsView = (snap) => {
     const inv = snap.investor_metrics;
     if (!inv) return '<p class="fin-note">이 스냅샷에는 투자지표가 아직 없습니다. 다음 엔진 재생성 때 채워집니다.</p>';
     const live = pecrLive(snap);
-    return financialKpisHtml(snap) + kitIndustryHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + noteItemsHtml(snap) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
+    return conglomerateHtml(snap) + financialKpisHtml(snap) + kitIndustryHtml(snap) + segmentsHtml(snap) + backlogHtml(snap) + invGrowthHtml(inv, live) + invReturnsHtml(inv) + invQualityHtml(inv) + noteItemsHtml(snap) + invScoresHtml(inv, live) + invShareholderHtml(inv, live)
         + `<p class="fin-note">재무제표: OpenDART 사업보고서 FY${(inv.years || [])[0] || ''}~FY${inv.fiscal_year} ${snap.fs_div === 'OFS' ? '별도' : '연결'}.
             배당: 사업보고서 배당에 관한 사항. 자기주식: 자기주식 취득 및 처분 현황. 시세가 필요한 값(PEG, 시가 Z, 수익률)은 일별 시가총액으로 계산합니다.</p>`;
 };
@@ -871,6 +954,41 @@ const invFccrHtml = (snap) => {
             <span class="fin-card-value">${Number.isFinite(f.value) ? `${invX(f.value, 1)}배` : '—'}</span>
             <p class="fin-card-plain">${Number.isFinite(f.value) ? `(EBITDA ${pecrNum(f.ebitda)} − 설비투자 ${pecrNum(f.capex)}) ÷ (이자 지급 ${pecrNum(f.interest_paid)} + 리스 상환 ${f.lease_missing ? '미확인' : pecrNum(f.lease_principal_paid)}).
                 투자까지 하고 남은 현금으로 이자·리스료를 몇 번 낼 수 있는지. 인수금융 약정은 보통 1.1~1.25배 이상을 요구합니다.` : finEsc(invReason(f.reason))}</p></div></div>
+    </section>`;
+};
+
+// --- 1년 내 만기 차입금 · 만기 구간 · PF 보증 (snapshot.liquidity) ------------
+const LADDER_ORDER = ['borrowings', 'bonds', 'lease', 'contingent', 'financial_liabilities'];
+const liquidityHtml = (snap) => {
+    const L = snap.liquidity;
+    if (!L || !(L.fy || L.latest)) return '';
+    const cols = [L.fy, L.latest].filter(Boolean);
+    const keys = [...new Set(cols.flatMap((c) => c.parts.map((x) => x.key)))];
+    const label = (k) => cols.flatMap((c) => c.parts).find((x) => x.key === k)?.label || k;
+    const val = (c, k) => c.parts.find((x) => x.key === k)?.value;
+    const ratio = (v, d = 2) => (Number.isFinite(v) ? `${v.toFixed(d)}배` : '—');
+    const lad = L.ladders || {};
+    const ladders = LADDER_ORDER.filter((k) => lad[k]).map((k) => {
+        const x = lad[k];
+        return `<tr><td>${finEsc(x.label)}${x.partial ? ' <span class="pecr-badge">일부(자회사 표)</span>' : ''}</td>
+            <td>${x.buckets.map((b) => `${finEsc(b.bucket)} <b>${pecrNum(b.value)}</b>`).join(' · ')}</td></tr>`;
+    }).join('');
+    const pf = lad.contingent;
+    return `<section class="pecr-section"><h3>1년 내 만기 차입금 — 갚거나 차환해야 할 이자부 부채</h3>
+        <div class="co-table-wrap"><table class="co-table pecr-table">
+            <thead><tr><th>종류</th>${cols.map((c) => `<th>${finEsc(c.period_end)}</th>`).join('')}</tr></thead><tbody>
+            ${keys.map((k) => `<tr><td>${finEsc(label(k))}</td>${cols.map((c) => `<td class="pecr-num">${pecrNum(val(c, k))}</td>`).join('')}</tr>`).join('')}
+            <tr class="pecr-median"><td>합계</td>${cols.map((c) => `<td class="pecr-num">${pecrNum(c.total)}</td>`).join('')}</tr>
+            <tr><td>현금·단기금융상품 ÷ 만기 차입</td>${cols.map((c) => `<td class="pecr-num">${ratio(c.cover_by_cash)}</td>`).join('')}</tr>
+            <tr><td>총차입금 중 1년 내 비중</td>${cols.map((c) => `<td class="pecr-num">${Number.isFinite(c.share_of_debt) ? `${(c.share_of_debt * 100).toFixed(0)}%` : '—'}</td>`).join('')}</tr>
+            ${Number.isFinite(L.fy?.to_ebitda) ? `<tr><td>만기 차입 ÷ EBITDA</td><td class="pecr-num">${ratio(L.fy.to_ebitda, 1)}</td>${L.latest ? '<td></td>' : ''}</tr>` : ''}
+        </tbody></table></div>
+        <p class="fin-note">유동부채 전체가 아니라 이자가 붙는 차입만 셉니다(매입채무·미지급금·선수금 같은 영업부채 제외). 현금 배수가 1 미만이면 1년 안에 차환하거나 영업현금으로 갚아야 합니다.</p>
+        ${ladders ? `<div class="co-table-wrap"><table class="co-table pecr-table"><thead><tr><th>만기 구간 (${finEsc(L.ladders.period_end || '')})</th><th>금액</th></tr></thead>
+            <tbody>${ladders}</tbody></table></div><p class="fin-note">${finEsc(L.ladders.basis || '')}</p>` : ''}
+        ${pf ? `<p class="fin-note"><b>PF·보증 우발채무</b>: 1년 내 ${pecrNum(pf.within_1y)} — 재무상태표 차입금에는 없지만 시행사가 못 갚으면 떠안는 금액입니다.</p>` : ''}
+        ${L.net_debt_wide && snap.valuation_bases?.fy?.net_debt_card === 'net_debt_name_matched'
+            ? `<p class="fin-note">이 회사는 차입금 일부가 표준 계정코드 없이 공시돼, 계정명으로 찾은 순차입금 ${pecrNum(L.net_debt_wide.value)}을 EV에 씁니다.</p>` : ''}
     </section>`;
 };
 
@@ -975,7 +1093,7 @@ const pecrPartsHtml = (snap, card) => {
         const src = x.filing ? `${REPORT_NAME[x.report] || x.report || ''} ${x.period_end || ''}${x.opening ? ' (기초)' : ''} · 접수 ${x.filing}`
             : (x.period_end || '');
         return `<tr><td>${PART_SIGN[x.input] || ''} ${finEsc(name)}${x.label && x.label !== name ? ` <span class="fin-note">(공시 계정: ${finEsc(x.label)})</span>` : ''}</td>
-            <td class="pecr-num">${Number.isFinite(x.value) ? pecrNum(x.value) : '—'}</td><td class="fin-note">${finEsc(src)}</td></tr>`;
+            <td class="pecr-num">${Number.isFinite(x.days) ? `${Math.round(x.days)}일` : Number.isFinite(x.value) ? pecrNum(x.value) : '—'}</td><td class="fin-note">${finEsc(src)}</td></tr>`;
     });
     return `<div class="co-table-wrap"><table class="co-table pecr-table"><thead><tr><th>구성 요소</th><th>금액</th><th>출처</th></tr></thead>
         <tbody>${rows.join('')}</tbody></table></div>
@@ -1029,6 +1147,20 @@ const pecrBindDetails = (out, snap) => {
     }));
 };
 
+// --- 엔진 분석 요청 (스냅샷이 없는 회사) -------------------------------------
+// Searching a company without a snapshot queues it (/api/kfa-request); a
+// workflow builds the queue every 30 minutes. One request per company per page.
+const PECR_REQUESTED = {};
+const pecrRequest = ({ corp, ticker }) => {
+    const key = corp || ticker;
+    if (!key || PECR_REQUESTED[key]) return;
+    PECR_REQUESTED[key] = { at: Date.now(), state: 'sending' };
+    const q = corp ? `corp=${encodeURIComponent(corp)}` : `ticker=${encodeURIComponent(ticker)}`;
+    fetch(`/api/kfa-request?${q}`).then((r) => r.json())
+        .then((d) => { PECR_REQUESTED[key] = { at: d.since || Date.now(), state: d.ok ? 'queued' : 'rejected' }; })
+        .catch(() => { PECR_REQUESTED[key].state = 'failed'; });
+};
+
 // --- Views ---------------------------------------------------------------------
 const pecrHead = (snap) => {
     const p = snap.pe_cr || {};
@@ -1045,8 +1177,9 @@ const pecrViewHtml = (data, view) => {
     PECR_CUR = snap?.currency || 'KRW';
     if (!snap) {
         return `<div class="fin-empty"><p class="fin-empty-title">이 기업은 아직 PE·CR 엔진 스냅샷이 없습니다</p>
-            <p>엔진 스냅샷은 OpenDART 원본 공시로 매일 새벽 미리 계산합니다. 대상은 코스피·코스닥 시가총액 상위 각 500개사이고, 새 정기보고서가 나온 회사부터 다시 만듭니다.
-               이 회사는 아직 대상이 아니거나 이번 주기에서 아직 처리되지 않았습니다. 기본 탭의 지표는 그대로 볼 수 있습니다.</p></div>`;
+            <p>이 회사의 엔진 분석을 자동으로 요청했습니다. 요청은 30분마다 처리돼, 보통 <b>30분~1시간 뒤 다시 열면</b> 투자지표·CR·PE·딜 탭이 채워집니다
+               (비상장사 포함, OpenDART에 사업보고서가 있는 회사). 그동안 기본 탭의 지표는 그대로 볼 수 있습니다.</p>
+            <p class="fin-note">매일 새벽에는 코스피·코스닥 시가총액 상위 각 500개사와 미국 대형주를 새 공시 기준으로 다시 계산합니다.</p></div>`;
     }
     const financial = snap.pe_cr?.industry === 'financial';
     if (view === 'metrics') return pecrHead(snap) + invMetricsView(snap);
@@ -1055,7 +1188,7 @@ const pecrViewHtml = (data, view) => {
         return pecrHead(snap) + (financial
             ? pecrRegulatory(snap) + pecrFunding(snap) + pecrSection(snap, 'capital_structure', { hideEmpty: true }) + pecrSection(snap, 'cash_flow', { hideEmpty: true })
               + '<p class="fin-note">금융회사는 산업기업용 CR 지표(EBITDA, 순차입금, 이자보상배율 등)를 적용하지 않습니다. 업권별 지표는 기본 탭에 있습니다.</p>'
-            : pecrSignals(snap) + (snap.investor_metrics ? invScoresHtml(snap.investor_metrics, pecrLive(snap)) : '')
+            : pecrSignals(snap) + liquidityHtml(snap) + (snap.investor_metrics ? invScoresHtml(snap.investor_metrics, pecrLive(snap)) : '')
               + lens.map((id) => pecrSection(snap, id)).join('') + pecrFunding(snap));
     }
     if (view === 'pe') {

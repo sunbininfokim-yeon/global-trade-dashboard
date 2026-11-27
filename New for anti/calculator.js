@@ -276,6 +276,7 @@ const loadCompany = async (out, inst) => {
     let engineView = null;
     const usKey = `us_${sym.replace(/[.\s]/g, '-')}`;
     const engine = { pecr: await pecrLoad(usKey).catch(() => null), pecrPeers: null };
+    if (!engine.pecr) pecrRequest({ ticker: sym });
     CO_DCF.growth = null;      // 새 기업이면 그 기업의 이력에서 다시 잡는다
     CO_STRUCT_OPEN = null;
     CO_OPEN_CARD = null;
@@ -772,6 +773,7 @@ const loadKfaCompany = async (out, inst, code, corpCode = null) => {
     // its snapshot has something to show there (funding maturities).
     const corp = data.meta?.corp_code || corpCode;
     data.pecr = await pecrLoad(corp).catch(() => null);
+    if (!data.pecr && corp) pecrRequest({ corp });     // no snapshot yet: queue an engine build
     const financial = !!data.entity_policy?.is_financial_entity || data.pecr?.pe_cr?.industry === 'financial';
     const basic = (data.view_presets?.views || {}).basic || { cards: [], models: [] };
     const views = { basic };

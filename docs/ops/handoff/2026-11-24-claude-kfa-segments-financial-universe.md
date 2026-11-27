@@ -69,3 +69,16 @@ focus 는 기존 카드 키만 사용. 이전에는 이들이 manufacturing 또�
 - 빌더: 카드 `inputs` 를 버리지 않고 `parts`(계정명·금액·기준일·접수번호·보고서)로 압축. 스냅샷 `quarterly`.
   월말 종가: 국내 fchart.stock.naver.com, 미국 api.stock.naver.com chart. BUILDER_VERSION 2026-11-26.1 / us2.
 - 화면: 엔진 카드 클릭 → 상세 박스(구성 요소·출처·분기 막대·분기 표). 딜 탭 EV 행 클릭 → 오늘 시세 EV 근거.
+
+## 추가 (PR 5, 2026-11-27): 만기 차입금·PF·CCC/EV 확대, 보험 CSM(FISIS), 복합기업 분리, 검색 자동 분석
+
+- `dart_kfa/liquidity.py`: 이자부 유동부채 유형별(계정 id → 계정명), 현금 배수·비중·÷EBITDA, 최신 분기, XBRL 만기 구간
+  (재무상태표 대비 50% 미만이면 `partial`), PF·금융보증 만기, 넓힌 CCC(기타채권 포함 표시), 계정명 순차입금.
+  실시간 EV 는 계정명 순차입금이 더 많은 차입을 찾을 때 사용(삼성전자 단기차입금 17.6조가 표준코드 없음).
+- `segments.py`: 부문 자산·D&A(부문 ROA·EBITDA 마진), 같은 부문의 부문간거래 포함/제외 두 태그 분리(삼성물산 FY2024),
+  표준 멤버는 같은 종류 모든 표에 합류, `segment_history`(사업보고서 3개). 키트 `conglomerate`(삼성물산 검토 지정).
+- FISIS: `tools/ops/fetch_kfa_fisis.py` + `kfa_fisis_insurance.yml`(주 1회) → `kfa_fisis_insurance_v1.json`.
+  SH156/SI152 A113 보험계약마진, A112 위험조정, A111 최선추정. 손익(SH155/SI151)은 연초 누적. 개별(별도) 기준.
+  FISIS 키는 무료 가입 키 — 사용자 승인(2026-11-27)으로 키 없는 원칙의 예외.
+- 검색 자동 분석: Worker 경로 `/api/kfa-request`(KV 큐), `kfa_requested.py` + `kfa_requested_snapshots.yml`(30분마다,
+  국내 8·미국 5개). 화면이 스냅샷 없는 회사를 열면 자동 요청.
