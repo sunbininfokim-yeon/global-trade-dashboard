@@ -99,6 +99,9 @@ def energy_obs(points, ref, today):
             "matched_weeks": len(slots), "prior_month_matched_weeks_pct": round(pct, 3) if slots else None}
 
 
+PUBLISH_ZORI = False
+
+
 def rate_events(events, key, ref, today):
     matched = []
     for event in events:
@@ -148,6 +151,14 @@ def refresh(today, force=False, fetch=get):
             row["observation"] = rate_events(events, key, ref, today)
         if key == "zori" and row["observation"]["reference_period"] < shift(ref, -2):
             row["observation"]["status"] = "stale"
+    # Zillow's redistribution terms are not confirmed (#1149 README): the published file keeps the source link
+    # and drops the values. Set PUBLISH_ZORI = True once the terms allow it.
+    if not PUBLISH_ZORI:
+        for row in report["external_prices"]:
+            if row["id"] == "zori":
+                row["observation"] = {"status": "source_link_only", "withheld": "redistribution_terms_unconfirmed"}
+        if isinstance(report.get("zori_research"), dict):
+            report["zori_research"]["diagnostic"] = None
     report["briefing"] = {"mode": mode, "as_of_eastern": today.isoformat(), "release_date": day.isoformat(),
                           "target_reference_period": ref, "calendar_source": CALENDAR,
                           "calendar_status": calendar_status,
