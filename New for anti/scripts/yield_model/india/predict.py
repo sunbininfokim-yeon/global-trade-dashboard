@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 
 from . import climate as C
+from . import enso_direct as D
 from . import icrisat
 from .collect import (
     END_YEAR,
@@ -165,8 +166,17 @@ def predict_one(cfg, year, oni, dmi):
     model_effect_pct = (np.exp(weather_log) - 1) * 100
     # A model that lost to the trend out of sample does not get to move the
     # published number; its would-be adjustment is kept for reference.
+    basis = "model" if model["beats_trend"] else "trend"
+    direct = None
     if not model["beats_trend"]:
         weather_log = 0.0
+        # The ridge lost to the trend, but where the El Nino analog shift beat
+        # the same trend in its own pre-registered test (enso_direct.ON), the
+        # published number moves by that shift.
+        direct = D.direct_fill(cfg.key, year, history)
+        if direct:
+            weather_log = direct["log"]
+            basis = "enso_analog"
     point_kg = float(np.exp(trend_log + weather_log))
     sigma = model["uncertainty"]["sigma_kg_ha"]
     if unk.any():
@@ -199,10 +209,11 @@ def predict_one(cfg, year, oni, dmi):
         "trend": trend_kg,
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
         "model_weather_effect_pct": model_effect_pct,
-        "point_basis": "model" if model["beats_trend"] else "trend",
+        "point_basis": basis,
+        "enso_direct": {k: v for k, v in direct.items() if k != "log"} if direct else None,
         "point": point_kg,
         "range_68": [point_kg - sigma, point_kg + sigma],
-        "range_95": [point_kg - 1.96 * sigma, point_kg + 1.96 * sigma],
+        "range_95": [point_kg - 2.5 * sigma, point_kg + 2.5 * sigma],
         "sigma": sigma,
         "beats_trend": model["beats_trend"],
         "skill_vs_trend": model["recent_skill_vs_trend"],

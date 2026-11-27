@@ -204,7 +204,7 @@ def predict_one(cfg, year, oni):
         "weather_effect_pct": (np.exp(weather_log) - 1) * 100,
         "point": point_val,
         "range_68": [point_val - sigma, point_val + sigma],
-        "range_95": [point_val - 1.96 * sigma, point_val + 1.96 * sigma],
+        "range_95": [point_val - 2.5 * sigma, point_val + 2.5 * sigma],
         "sigma": sigma,
         "uncertainty_basis": model["uncertainty"]["basis"],
         "beats_trend": model["beats_trend"],

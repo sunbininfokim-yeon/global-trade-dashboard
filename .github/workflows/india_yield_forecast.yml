@@ -69,6 +69,9 @@ jobs:
         run: |
           python -m india.collect
           python -m india.train
+          # Re-score the El Nino analog switch on the new tables; a region whose
+          # result flips is reported, not silently kept on.
+          python -m india.enso_direct || echo "::warning::india.enso_direct: ON set disagrees with the backtest"
 
       - name: Run forecast
         # No API keys: India Data Portal, NASA POWER, NOAA CPC and NOAA PSL are all open.
@@ -83,7 +86,8 @@ jobs:
           git add "New for anti/public/data/india_yield_forecast.json" \
                   "New for anti/scripts/yield_model/india/data/idp_apy.csv" \
                   "New for anti/scripts/yield_model/india/training" \
-                  "New for anti/scripts/yield_model/india/models"
+                  "New for anti/scripts/yield_model/india/models" \
+                  "New for anti/scripts/yield_model/india/enso_direct_backtest.json"
           git commit -m "chore: weekly India regional yield forecast refresh" || exit 0
           # Non-fast-forward race: a bare push drops this refresh when another
           # scheduled job lands a commit on main first. Rebase and retry.

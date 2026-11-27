@@ -1,11 +1,11 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
+from tests.poll_config_fixture import SNAPSHOT_DAY, PUBLIC_SNAPSHOT_DAY, load_pinned_finance
 import copy, hashlib, json, unittest
 from pathlib import Path
 from election_watch.governor_matchups import apply_matchups
 from election_watch.live_polls import normalize, summarize
 from election_watch.poll_targets import apply_targets
 from election_watch.poll_primary_supplements import merge_primary_supplements
-from election_watch.state_evidence import build_state, load_finance
+from election_watch.state_evidence import build_state
 from test_poll_pa_primary import Response
 
 ROOT=Path(__file__).resolve().parents[1]; CONFIG=ROOT/'config/usa_polls'
@@ -114,7 +114,7 @@ class NorthCarolinaPrimaryTests(unittest.TestCase):
     def test_legal_name_identity_change_is_rejected_and_primary_spending_stays_separate(self):
         inputs=[read(CONFIG/'state_evidence_plan_2026.json'),read(CONFIG/'targets_2026.json'),
             read(ROOT/'config/federal_matchups/2026.json'),read(ROOT/'config/governor_matchups/2026.json'),
-            read(PUBLIC/'usa_election_live_polls_v1.json'),load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL),
+            read(PUBLIC/'usa_election_live_polls_v1.json'),load_pinned_finance(),
             read(ROOT/'config/usa_state_campaign_finance_sources_v1.json')]
         ids=read(CONFIG/'state_finance_identities_2026.json')
         state=build_state('NC','A',*inputs,PUBLIC_SNAPSHOT_DAY,identity_reviews=ids)

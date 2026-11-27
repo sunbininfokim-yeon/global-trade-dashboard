@@ -1,0 +1,43 @@
+name: Refresh US Congress agenda
+
+# House weekly floor schedule (docs.house.gov Atom + XML) and the Senate's
+# Congressional Record RSS (GovInfo) for the USA 상원·하원 blocks.
+# Script: New for anti/scripts/election_watch/refresh_usa_congress_agenda.py
+# Output: New for anti/public/data/usa_congress_agenda_v1.json
+# It only rewrites the file when the agenda or a source's health changes.
+
+on:
+  schedule:
+    # Weekdays, after the House posts the week and after the evening Record.
+    - cron: '17 13,23 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: us-congress-agenda
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        working-directory: New for anti/scripts/election_watch
+        run: python3 -m unittest tests.test_usa_congress_agenda -v
+      - name: Refresh
+        working-directory: New for anti/scripts/election_watch
+        run: python3 refresh_usa_congress_agenda.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898281+github-actions[bot]@users.noreply.github.com"
+          git add "New for anti/public/data/usa_congress_agenda_v1.json"
+          git commit -m "chore: refresh US Congress agenda" || exit 0
+          bash "$GITHUB_WORKSPACE/tools/ops/git_push_retry.sh"

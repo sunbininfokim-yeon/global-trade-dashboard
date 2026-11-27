@@ -5561,7 +5561,21 @@ const renderEnsoDirect = (d) => {
     const sk = num(d.backtest_skill);
     const sk10 = num(d.backtest_skill_last10);
     return `<div class="climate-sub">엘니뇨 유사 연도 반영 ${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%
-        ${sk !== null ? ` · 과거 검증 오차 ${Math.round(sk * 100)}% 감소${sk10 !== null ? `(최근 10년 ${Math.round(sk10 * 100)}%)` : ''}` : ''}</div>`;
+        ${sk !== null ? ` · 과거 검증 오차 ${Math.round(sk * 100)}% 감소${sk10 !== null ? `(최근 10년 ${Math.round(sk10 * 100)}%)` : ''}` : ''}</div>
+        ${renderEnsoBasis(d)}`;
+};
+
+// How few seasons the shift rests on. A beyond-record Nino3.4 leans on the
+// two or three warmest years, so say which and how they came in.
+const renderEnsoBasis = (d) => {
+    const neff = num(d?.effective_seasons);
+    const an = (d?.analogs || []).filter(a => (a.weight ?? 0) >= 0.1);
+    if (neff === null && !an.length) return '';
+    const yrs = an.map(a => `${a.year}(${a.departure_pct >= 0 ? '+' : ''}${Number(a.departure_pct).toFixed(0)}%)`).join('·');
+    const n34 = num(d.nino34_sowing);
+    return `<div class="climate-sub">근거 ${yrs || '—'}${neff !== null ? ` · 실질 표본 ${neff.toFixed(1)}시즌` : ''}
+        ${d.beyond_record ? `<br>파종기 Niño3.4 ${n34 !== null ? `${n34 >= 0 ? '+' : ''}${n34.toFixed(1)}°C` : ''}가 관측 기록 밖이라 가장 따뜻했던 몇 해에 기댄 값.
+        과거 유일한 기록 밖 사례(인도 동부 벼 2015)는 실제가 보정보다 더 나빴다.` : ''}</div>`;
 };
 
 // The satellite correction moves the point on top of the weather effect, so

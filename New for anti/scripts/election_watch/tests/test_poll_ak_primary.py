@@ -1,4 +1,4 @@
-from tests.poll_config_fixture import SNAPSHOT_DAY, PINNED_FINANCE_NATIONAL
+from tests.poll_config_fixture import SNAPSHOT_DAY, load_pinned_finance
 import copy,hashlib,io,json,unittest
 from pathlib import Path
 from election_watch.live_polls import normalize,summarize
@@ -32,8 +32,8 @@ class AlaskaPrimaryTests(unittest.TestCase):
   self.assertEqual(ids,{'Mary Peltola':'S6AK00276','Dan S. Sullivan':'S4AK00214','Gerald L. Heikes':'S8AK00140','Daniel J. Sullivan Jr.':None})
   self.assertEqual(self.policy['races']['USA:AK:senate']['candidates']['Dan Sullivan']['candidate_id'],'S4AK00214')
   self.assertIsNone(self.policy['races']['USA:AK:senate']['candidates']['Daniel J. Sullivan Jr.']['candidate_id'])
-  from election_watch.state_evidence import load_finance,candidate_finance
-  asset=load_finance(PUBLIC/'usa_election_finance_index_v1.json', 2026, national_file=PINNED_FINANCE_NATIONAL)['races']['USA:AK:senate']
+  from election_watch.state_evidence import candidate_finance
+  asset=load_pinned_finance()['races']['USA:AK:senate']
   for c in roster['candidates']:
    result=candidate_finance(c,asset,'senate')
    self.assertEqual(result['join_status'],'same_reviewed_candidate_id' if c['candidate_id'] else 'candidate_finance_not_linked')

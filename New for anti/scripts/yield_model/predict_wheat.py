@@ -258,7 +258,7 @@ def predict(crop, year):
         "crop": crop, "year": year, "unit": model["unit"],
         "trend": trend, "weather_effect": resid, "point": trend + resid,
         "range_68": [trend + resid - sigma, trend + resid + sigma],
-        "range_95": [trend + resid - 1.96 * sigma, trend + resid + 1.96 * sigma],
+        "range_95": [trend + resid - 2.5 * sigma, trend + resid + 2.5 * sigma],
         "sigma": sigma, "base_sigma": model["uncertainty"]["sigma"],
         "critical_days": prov, "observed_share": observed_share,
         "train_window_years": model.get("train_window_years"),

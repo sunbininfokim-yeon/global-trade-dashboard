@@ -1,5 +1,16 @@
 {
   "_comment": "Manual overrides for apply_hidden_flags.py, as \"ISO:indicator_id\". show = keep visible even though demo; hide = hide even though observed.",
   "show": [],
-  "hide": []
+  "hide": [
+    "KOR:capital_delinq",
+    "KOR:card_delinq",
+    "KOR:delinq_all",
+    "KOR:early_delinq",
+    "KOR:sb_delinq",
+    "USA:chargeoff_all",
+    "USA:delinq_business",
+    "USA:delinq_card",
+    "USA:delinq_mortgage"
+  ],
+  "_hide_why": "USA delinq_card/mortgage/business, chargeoff_all and KOR delinq_all/early_delinq/sb/card/capital_delinq are folded into one card per country (wire_credit_merge.py reads them; their pipelines keep them current)."
 }

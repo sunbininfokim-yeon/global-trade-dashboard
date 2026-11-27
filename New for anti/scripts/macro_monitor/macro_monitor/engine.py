@@ -10,7 +10,7 @@ from typing import Any
 
 from .explainers import KIT_EXPLAINERS, USA_EXPLAINERS
 from .issuance_layers import attach_issuance_layers
-from .series import build_indicator, format_value, localize_news_query, month_ends
+from .series import build_indicator, format_value, localize_news_fields, month_ends
 
 
 _CONFIG_DIR = Path(__file__).resolve().parents[1] / "config"
@@ -1554,8 +1554,7 @@ def build_country_pack(
         )
 
     for i in indicators:
-        if i.get("news_query"):
-            i["news_query"] = localize_news_query(i["news_query"], iso3, country["name_en"])
+        localize_news_fields(i, iso3, country["name_en"], country.get("stats_agency"))
     active_cats = [c for c in CATEGORIES_ORDER if by_category.get(c)]
     pack: dict[str, Any] = {
         "iso3": iso3,

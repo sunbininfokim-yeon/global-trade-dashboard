@@ -39,6 +39,8 @@ const MS_FILES = {
     flow: 'krx_deriv_flow_v1.json',
     // US→KR preopen direction runner output (#868), research only.
     direction: 'us_kr_direction_v1.json',
+    // 한국 → 미국 반도체 (kr_to_us_semiconductor.py, #1121), hand-run for now.
+    krus: 'kr_us_semiconductor_v1.json',
     // Forecast vs actual, one row per session (build_us_kr_direction_history.py).
     directionHistory: 'us_kr_direction_history.json',
     // BTC/ETH, 김치 프리미엄, stablecoins, perp OI/funding, Upbit turnover (scripts/crypto).
@@ -1744,27 +1746,64 @@ const msUsToKrBlock = (D) => `
 // so each card shows 전망 준비 중 plus the frozen model's past validation;
 // numbers are copied from docs/ops/handoff/2026-11-25-codex-kr-us-semiconductor*.md.
 const MS_KRUS_CARDS = [
-    { ticker: 'MU', name: '마이크론', input: 'SK하이닉스의 코스피 대비 움직임',
+    { key: 'mu', ticker: 'MU', name: '마이크론', input: 'SK하이닉스의 코스피 대비 움직임',
       validation: '2016~2026년 2,531거래일 · 상승 출발일 83% 포착 · 하락 출발일 44% 포착',
       status: '하이닉스 후보 모델 학습 완료 · 매일 발행 연결 준비 중' },
-    { ticker: 'SNDK', name: '샌디스크', input: '삼성전자·SK하이닉스의 코스피 대비 움직임',
+    { key: 'sndk', ticker: 'SNDK', name: '샌디스크', input: '삼성전자·SK하이닉스의 코스피 대비 움직임',
       validation: '2026년 211거래일 · Brier 0.216 → 0.185 (연구 중)',
-      status: '과거 비교 완료 · 동결 모델과 매일 발행 필요' },
+      status: '과거 비교 완료 · 동결 모델 준비 중 (현재 엔진에 없음)' },
 ];
-const msKrUsSection = () => `
-    <section class="fin-block fin-block-wide">
-        <div class="ms-dir-section-head"><h2>마이크론·샌디스크 시가 방향</h2><span class="ms-dir-badge is-muted">전망 준비 중</span></div>
-        <p class="fin-lead">오늘 한국 장에서 삼성전자·SK하이닉스가 코스피보다 얼마나 강했는지로, 오늘 밤 미국 시가가 전 거래일 종가보다 오를지 봅니다. 공통 입력은 미국 전 거래일 가격과 한국 당일 코스피입니다.</p>
-        <div class="ms-dir-grid">${MS_KRUS_CARDS.map((c) => `
+// Values come from kr_us_semiconductor_v1.json (engine output, written by
+// hand-run until a scheduled publisher exists). A replay is labelled so and
+// paired with the actual US open; the next session is shown as pending.
+const msKrUsPct = (v) => (Number.isFinite(v) ? `${v >= 0 ? '+' : ''}${(v * 100).toFixed(2)}%` : '확인 중');
+const msKrUsSection = (D) => {
+    const K = D.krus && D.krus.schema_version === 'kr-us-semiconductor-display-v1' ? D.krus : null;
+    const L = (K && K.latest) || null;
+    const nx = (K && K.next) || null;
+    const byKey = Object.fromEntries(((L && L.cards) || []).map((c) => [c.key, c]));
+    const replay = L && L.status === 'retrospective_replay';
+    const head = L ? `${msDayLabel(L.target_date_us)} 미국장 · 한국 ${msDayLabel(L.kr_source_date)} 마감 반영${replay ? ' · 과거 재현' : ''}` : '';
+    const card = (meta) => {
+        const c = byKey[meta.key];
+        if (!c) return `
             <div class="ms-dir-card">
-                <div class="ms-dir-head"><span class="ms-dir-title">${finEsc(c.name)} · ${finEsc(c.ticker)}</span></div>
+                <div class="ms-dir-head"><span class="ms-dir-title">${finEsc(meta.name)} · ${finEsc(meta.ticker)}</span></div>
                 <div class="ms-dir-empty">—</div>
-                <p class="ms-dir-note">${finEsc(c.status)}</p>
-                <p class="ms-dir-note">입력 · ${finEsc(c.input)}</p>
-                <p class="ms-dir-note">과거 검증 · ${finEsc(c.validation)}</p>
-            </div>`).join('')}</div>
-        <p class="fin-note">상승 출발일 83% 포착은 실제로 오른 날을 오른다고 본 비율이고, 하락 출발일 44%는 내린 날을 내린다고 본 비율입니다. 하락은 절반도 못 잡습니다. 한국 가격이 미국을 움직였다는 인과는 확인되지 않았습니다.</p>
+                <p class="ms-dir-note">${finEsc(meta.status)}</p>
+                <p class="ms-dir-note">입력 · ${finEsc(meta.input)}</p>
+                <p class="ms-dir-note">과거 검증 · ${finEsc(meta.validation)}</p>
+            </div>`;
+        const a = c.actual_open_return;
+        const hit = Number.isFinite(a) && a !== 0 && Math.round(c.opening_up * 100) !== 50 ? ((c.opening_up > 0.5) === (a > 0) ? ' ✓ 방향 일치' : ' ✗ 방향 불일치') : '';
+        return `
+            <div class="ms-dir-card">
+                <div class="ms-dir-head"><span class="ms-dir-title">${finEsc(meta.name)} · ${finEsc(meta.ticker)}</span></div>
+                ${msDirSplitRow('시가 · 전 거래일 종가 대비', { probability: c.opening_up }, replay)}
+                ${msDirSplitRow('종가 · 전 거래일 종가 대비', { probability: c.closing_up }, replay)}
+                <p class="ms-dir-note">${finEsc(head)}</p>
+                <p class="ms-dir-note"><b>실제 시가 ${finEsc(msKrUsPct(a))}</b> · 전 거래일 종가 대비${hit}</p>
+                <p class="ms-dir-note">입력 · ${finEsc(meta.input)}</p>
+                <p class="ms-dir-note">과거 검증 · ${finEsc(meta.validation)}</p>
+            </div>`;
+    };
+    const others = ((L && L.cards) || []).filter((c) => c.key !== 'mu');
+    return `
+    <section class="fin-block fin-block-wide">
+        <div class="ms-dir-section-head"><h2>마이크론·샌디스크 시가 방향</h2><span class="ms-dir-badge is-muted">${L ? (replay ? '과거 재현 · 사전 예측 아님' : '연구용') : '전망 준비 중'}</span></div>
+        <p class="fin-lead">한국 장에서 삼성전자·SK하이닉스가 코스피보다 얼마나 강했는지로, 그날 밤 미국 시가가 전 거래일 종가보다 오를지 봅니다. 공통 입력은 미국 전 거래일 가격과 한국 당일 코스피입니다.</p>
+        ${nx ? `<p class="fin-note ms-warn"><b>다음 전망 · ${finEsc(msDayLabel(nx.target_date_us))} 미국장</b> — ${finEsc(nx.note_ko || '')}</p>` : ''}
+        <div class="ms-dir-grid">${MS_KRUS_CARDS.map(card).join('')}</div>
+        ${others.length ? `
+        <details class="ms-details"><summary>다른 미국 반도체 (한국 종목 추가 효과 미확인 · 참고)</summary>
+        ${msTable(['종목', '시가 상승 확률', '종가 상승 확률', '실제 시가'], others.map((c) => [
+            `${finEsc(c.name_ko)} · ${finEsc(c.ticker)}`, msPct0(c.opening_up), msPct0(c.closing_up),
+            `<span class="${msSignCls(c.actual_open_return)}">${finEsc(msKrUsPct(c.actual_open_return))}</span>`]))}
+        </details>` : ''}
+        <p class="fin-note">상승 출발일 83% 포착은 실제로 오른 날을 오른다고 본 비율이고, 하락 출발일 44%는 내린 날을 내린다고 본 비율입니다. 하락은 절반도 못 잡습니다. 한국 가격이 미국을 움직였다는 인과는 확인되지 않았습니다.
+            ${K ? `모델 ${finEsc(String(K.model_id || '').slice(0, 7))}.` : ''}</p>
     </section>`;
+};
 
 // --- ③ US → KR 관찰 ----------------------------------------------------------
 const msUsKr = (D) => {
@@ -1800,7 +1839,7 @@ const msUsKr = (D) => {
     return `
     <h2 class="ms-predict-h">한국 → 미국 · 오늘 밤 미국 반도체 방향</h2>
     <div class="ms-flow">${msFlowRow('🇰🇷 한국 장 마감', '15:30 KST', '🇺🇸 그날 밤 미국 장', '시가 방향 · 미국 개장 전 확정')}</div>
-    ${msKrUsSection()}
+    ${msKrUsSection(D)}
     ${msDirectionHistorySection(D)}
     ${observed ? `
     <h2 class="ms-predict-h">참고 · 현재 관찰되는 연결 (시험 자료)</h2>
@@ -2944,9 +2983,9 @@ const msDerivatives = (D) => {
             콜·풋 매수·매도·순매수는 당일 외국인 거래 흐름입니다. 외국인 미결제약정, 신규 포지션, 헤지 목적 또는 다음 가격 방향을 확정하지 않습니다.</p>
     </section>
 
-    ${msFlowSection(D)}
-
     ${msCtaSection(D)}
+
+    ${msFlowSection(D)}
 
     ${msOptionOiSection(D)}
 

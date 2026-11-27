@@ -29,8 +29,13 @@ HF = ROOT / "hedge_fund_ust_v1.json"
 STEP = 2  # weeks per retained point
 
 # Components that the stack now shows in context. The indicators survive; only
-# their chips go.
-FOLDED_CHIPS = {"fed_ust_holdings", "fed_mbs", "discount_window"}
+# their chips go. SOMA Treasuries came back as a chip of their own (2026-11-26,
+# user request): they are watched as a level in their own right (QT pace,
+# maturity split), not only as a band of the total.
+FOLDED_CHIPS = {"fed_mbs", "discount_window"}
+RESTORED_CHIPS = {"fed_ust_holdings": "fed_total_assets"}     # chip -> the chip it sits after
+CHIP_FIELDS = ("label_ko", "unit", "value", "display", "asof", "observed_at", "source", "data_status",
+               "change_1m_pct", "change_1y_pct", "chart_type", "note_ko")
 
 
 def main() -> int:
@@ -87,6 +92,14 @@ def main() -> int:
     before = len(liq)
     liq[:] = [c for c in liq if c.get("id") not in FOLDED_CHIPS]
     dropped = before - len(liq)
+    for cid, after in RESTORED_CHIPS.items():
+        src = by_id.get(cid)
+        if not src:
+            continue
+        chip = {"id": cid, **{k: src[k] for k in CHIP_FIELDS if k in src}}
+        liq[:] = [c for c in liq if c.get("id") != cid]
+        at = next((i + 1 for i, c in enumerate(liq) if c.get("id") == after), len(liq))
+        liq.insert(at, chip)
 
     # Hedge fund Treasuries go beside ON RRP: same trade, opposite end.
     added = None

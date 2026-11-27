@@ -1,8 +1,10 @@
 import { countryEvents, readableSpectrum, screenStatus } from '../data/selectors.js';
 import { escapeHtml, formatDate, personLinkHtml, stateLabel } from '../ui.js';
-import { usaSections } from './special/usa.js';
-import { usaLegislature } from './special/usa-legislature.js?v=2';
+import { usaSections } from './special/usa.js?v=2';
+import { mountUsaElectionResults, usaElectionResults } from './special/usa-election-results.js';
+import { usaLegislature } from './special/usa-legislature.js?v=5';
 import { usaExecutive } from './special/usa-executive.js';
+import { usaExecutivePanels } from './special/usa-governors.js';
 import { chinaSections } from './special/china.js';
 import { cnMapLegendHtml } from './special/chn-leaders.js';
 import { personnelCategories, personnelPartHtml, OFFICE_LABELS } from './special/personnel-roster.js';
@@ -19,9 +21,11 @@ import { raceProgressContent } from './special/race-progress.js?v=2';
 import { electionRecordsHtml } from './special/election-records.js?v=2';
 import { israelAnalysisPlaceholder, mountIsraelAnalysis } from './special/israel-analysis.js?v=3';
 
+const isUsaChamber = (country, section) => country.iso3 === 'USA' && ['house', 'senate'].includes(section);
+
 const RACE_PROGRESS_TAB = ['선거 진행 상황', 'race_progress'];
 const genericSections = [['지도', 'subnational_map'], ['행정부·정부', 'executive'], ['의회', 'legislature'], ['정당', 'factions'], ['일정', 'calendar'], RACE_PROGRESS_TAB];
-// USA already declares its own race_progress tab (2026 선거 과정); China/Iran's
+// USA already declares its own race_progress tab (선거 결과); China/Iran's
 // custom tab sets predate this screen, so it's appended here rather than
 // duplicated into their own files.
 const baseSectionsFor = (iso3) => iso3 === 'USA' ? usaSections
@@ -92,7 +96,7 @@ const baseTabsFor = (country) => {
     tabs.splice(execAt >= 0 ? execAt : Math.min(1, tabs.length), 0, ...offices);
     if (cats.has('executive') && !keys.has('executive')) tabs.splice(tabs.findIndex(([, k]) => k === officeKey('pm')) + 1 || 1, 0, ['행정부', 'executive']);
     if (cats.has('local') && !keys.has('local_gov')) {
-        const legAt = tabs.findIndex(([, key]) => key === 'legislature');
+        const legAt = tabs.findIndex(([, key]) => key === (country.iso3 === 'USA' ? 'house' : 'legislature'));
         tabs.splice(legAt >= 0 ? legAt + 1 : tabs.length, 0, LOCAL_TAB);
     }
     return tabs;
@@ -212,14 +216,20 @@ const specialContent = (country, section) => {
     if (section === 'power_structure' && isDivided(country)) return dividedAuthorityHtml(country);
     if (section.startsWith('camp_')) return campHtml(country, section);
     if (section === 'subnational_map' && isDivided(country)) return controlMapSummaryHtml(country);
-    if (section === 'race_progress') return raceProgressContent(country);
+    if (section === 'race_progress') {
+        return country.iso3 === 'USA'
+            ? usaElectionResults(country.us_election_results_dashboard, country.us_governor_dashboard)
+            : raceProgressContent(country);
+    }
     if (section === 'elections') return electionsContent(country);
     if (section.startsWith('office_') || section === 'local_gov') return personnelPart(country, section) || null;
     if (country.iso3 === 'CHN' && section === 'party') return chnParty(country);
     if (country.iso3 === 'CHN' && section === 'military') return chnMilitary(country);
     if (country.iso3 === 'CHN' && section === 'state_council') return chnStateCouncil(country);
-    if (country.iso3 === 'USA' && section === 'legislature') return usaLegislature(country);
-    if (country.iso3 === 'USA' && section === 'executive') return usaExecutive(country);
+    if (isUsaChamber(country, section)) return usaLegislature(country, section);
+    if (country.iso3 === 'USA' && section === 'executive') {
+        return usaExecutivePanels(usaExecutive(country), country.us_governor_dashboard);
+    }
     if (country.iso3 === 'JPN' && section === 'executive') return jpnExecutive(country);
     if (country.iso3 === 'JPN' && section === 'legislature') return jpnLegislature(country);
     if (country.iso3 === 'JPN' && section === 'factions') return jpnFactions(country);
@@ -235,6 +245,12 @@ const specialContent = (country, section) => {
 // screen the manifest already rates, and never invents content: it only
 // believes the renderer that just produced some.
 const effectiveStatus = (manifest, country, section) => {
+    if (isUsaChamber(country, section)) {
+        return country.ui_ready?.congress?.summary ? 'ready' : 'disabled';
+    }
+    if (country.iso3 === 'USA' && section === 'race_progress') {
+        return country.us_election_results_dashboard ? 'partial' : 'disabled';
+    }
     const status = screenStatus(manifest, country.iso3, section);
     if (status !== 'disabled' || section === 'calendar') return status;
     return specialContent(country, section) || personnelPart(country, section) ? 'partial' : status;
@@ -286,7 +302,8 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
         host?.roots?.modal?.classList.remove('israel-analysis-host');
         const label = tabs.find(([, tabKey]) => tabKey === key)?.[0] || '';
         const status = effectiveStatus(manifest, country, key);
-        const missing = screenFor(key)?.missing || [];
+        const usaResults = country.iso3 === 'USA' && key === 'race_progress';
+        const missing = usaResults ? [] : screenFor(key)?.missing || [];
         active = key;
         markActive();
         onRoute?.({ screen: key });
@@ -305,6 +322,10 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
                 if (action === 'policy-committees') host?.openPolicyCommittee?.();
             },
         });
+        if (usaResults) {
+            mountUsaElectionResults(host?.roots?.modal?.querySelector('[data-usa-election-results]'),
+                country.us_election_results_dashboard, country.us_governor_dashboard);
+        }
         if (country.iso3 === 'ISR' && key === 'election_analysis') {
             mountIsraelAnalysis(host?.roots?.modal?.querySelector('[data-israel-analysis]'), country.israel_analysis);
         }
@@ -370,5 +391,11 @@ export const renderCountryShell = (root, { country, manifest, onBack, modal, hos
             body: regionCardHtml(country, feature, leaders),
         });
     };
-    return { openSection: (key) => { if (tabs.some(([, tabKey]) => tabKey === key)) openSection(key); }, openArea };
+    return {
+        openSection(key) {
+            const section = country.iso3 === 'USA' && ['legislature', 'factions'].includes(key) ? 'house' : key;
+            if (tabs.some(([, tabKey]) => tabKey === section)) openSection(section);
+        },
+        openArea,
+    };
 };

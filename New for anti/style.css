@@ -2316,6 +2316,14 @@ body.trade-map-mode .right-pane {
 
 .shipping-kpi small { color: #64748b; font-size: 11px; margin-top: 8px; }
 
+/* The commodity overview row needs room for a sparkline under the headline
+   value, so it can't center-justify like a plain .shipping-kpi. */
+.shipping-kpi.has-sparkline { justify-content: flex-start; min-height: 150px; }
+.shipping-kpi-spark { position: relative; height: 42px; margin-top: 10px; }
+.shipping-kpi-spark canvas { display: block; }
+
+.shipping-commodity-overview { margin-bottom: 4px; }
+
 .shipping-grid {
     display: grid;
     gap: 18px;
@@ -4108,6 +4116,18 @@ body.mypage-mode #chart-view::-webkit-scrollbar-thumb { background: rgba(148, 16
 .pecr-table .pecr-self td { color: #f1f5f9; font-weight: 600; }
 .pecr-table .pecr-median td { border-top: 1px solid var(--border); color: #cbd5e1; font-style: italic; }
 .pecr-na { color: #475569; }
+.pecr-card.co-clickable { cursor: pointer; }
+.pecr-card.co-clickable:hover, .pecr-card.open { border-color: rgba(148, 163, 184, .55); }
+tr.co-clickable { cursor: pointer; }
+tr.co-clickable:hover td { background: rgba(148, 163, 184, .08); }
+.fin-cards > .pecr-detail { grid-column: 1 / -1; }
+.pecr-detail { margin: 4px 0 14px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: rgba(15, 23, 42, .55); }
+.pecr-q-title { font-size: 12.5px; font-weight: 620; color: #e2e8f0; margin: 2px 0 8px; }
+.pecr-q { margin-top: 12px; }
+.pecr-stack { width: 100%; height: auto; display: block; }
+.pecr-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 4px 0 8px; font-size: 11.5px; color: #94a3b8; }
+.pecr-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.pecr-legend i.dot { width: 7px; height: 7px; border-radius: 50%; background: #f1f5f9; }
 .pecr-flag { color: #fca5a5; font-size: 11.5px; }
 .fin-card-value small { font-size: 12px; font-weight: 600; margin-left: 4px; color: #cbd5e1; }
 .fin-card-value small.pecr-sig-on { color: #fca5a5; }
@@ -5165,6 +5185,33 @@ body.macro-night .mm-hint { background: rgba(6, 11, 22, .88); }
 .mm-tk-num { font-size: 10px; fill: #0f172a; font-weight: 700; }
 .mm-bb-band { display: inline-block; width: 14px; height: 8px; background: rgba(167,139,250,.3); margin: 0 4px 0 12px; vertical-align: middle; }
 .mm-news-empty { font-size: 11.5px; color: #64748b; margin: 0 0 8px; }
+.mm-cpi-watch { margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.06); }
+.mm-cpi-watch-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: 12.5px; color: #e2e8f0; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.mm-cpi-watch-row b { color: #fca5a5; font-variant-numeric: tabular-nums; }
+.mm-cpi-watch-row em { grid-column: 1 / span 2; font-style: normal; font-size: 11px; color: #94a3b8; }
+.mm-cpi-alert { border: 1px solid rgba(251,191,36,.35); background: rgba(251,191,36,.07); border-radius: 8px; padding: 9px 10px; margin-bottom: 12px; }
+.mm-cpi-alert-title { font-size: 12.5px; color: #fde68a; font-weight: 600; margin: 0 0 6px; }
+.mm-cpi-alert-line { font-size: 11.5px; color: #cbd5e1; margin: 2px 0; }
+.mm-cpi-alert a { color: #7dd3fc; }
+.mm-cpi-ext { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.mm-dur { margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.mm-dur-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: #cbd5e1; padding: 4px 0; }
+.mm-dur-row b { color: #f1f5f9; font-weight: 600; font-variant-numeric: tabular-nums; }
+.mm-dur-bars { display: flex; gap: 3px; height: 56px; margin-top: 8px; }
+.mm-dur-bar { flex: 1; display: flex; flex-direction: column; }
+.mm-dur-h { flex: 1; display: flex; }
+.mm-dur-h.top { align-items: flex-end; border-bottom: 1px solid rgba(148,163,184,.3); }
+.mm-dur-h.bot { align-items: flex-start; }
+.mm-dur-h i { display: block; width: 100%; }
+.mm-dur-h i.up { background: #f97316; }
+.mm-dur-h i.dn { background: #38bdf8; }
+.mm-dur-axis { display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-top: 2px; }
+.mm-panel-sub { font-size: 12px; color: #cbd5e1; margin: 10px 0 2px; }
+.mm-news-tabs > input { position: absolute; opacity: 0; pointer-events: none; }
+.mm-news-tabs > label { display: inline-block; font-size: 11.5px; padding: 3px 9px; margin: 0 4px 8px 0; border-radius: 6px; border: 1px solid rgba(148,163,184,.25); color: #94a3b8; cursor: pointer; }
+.mm-news-tabs > input:checked + label { background: rgba(56,189,248,.15); border-color: #38bdf8; color: #e0f2fe; }
+.mm-news-tabs .mm-news-list { display: none; }
+.mm-news-tabs .mm-nt-off:checked ~ .mm-news-off, .mm-news-tabs .mm-nt-press:checked ~ .mm-news-press { display: block; }
 .mm-news-q { font-size: 10.5px; color: #475569; margin: 0; }
 .mm-news-q code { background: rgba(148,163,184,.1); padding: 1px 4px; border-radius: 3px; }
 .mm-news-foot { font-size: 10px; color: #334155; margin: 14px 0 0; line-height: 1.5; }
