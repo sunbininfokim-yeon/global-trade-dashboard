@@ -1,6 +1,6 @@
 {
   "schema_version": "ticker-v1",
-  "generated_at": "2026-11-28T01:56:39.308474+00:00",
+  "generated_at": "2026-11-28T10:18:08.666303+00:00",
   "model": {
     "name": "commodity_diplomacy_rss_v1",
     "description": "RSS multi-region ticker: regional priority (MENA/IN/TR/JP/CN/TW/RU + commodity specialists) over Western majors; politics admitted with diplomacy+trade bridge, elections, governance polls, cabinet reshuffles; horse-race national polls rejected; importance = country-tier × info-grade; main display language Korean.",
@@ -73,21 +73,21 @@
     "cabinet_reshuffle": true
   },
   "stats": {
-    "sources_ok": 31,
-    "sources_failed": 7,
-    "raw_items": 682,
-    "scored_items": 70,
+    "sources_ok": 33,
+    "sources_failed": 5,
+    "raw_items": 762,
+    "scored_items": 74,
     "selected_items": 24,
     "region_histogram": {
       "commodity_specialist": 9,
+      "russia": 3,
+      "turkey": 2,
       "india": 2,
-      "russia": 2,
       "japan": 2,
       "china": 2,
-      "turkey": 2,
-      "taiwan": 2,
       "west": 1,
-      "mena": 2
+      "mena": 1,
+      "taiwan": 2
     },
     "min_importance": 0.35
   },
@@ -96,7 +96,7 @@
       "source_id": "aljazeera_en",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 103,
+      "elapsed_ms": 136,
       "error": null,
       "mode": "live"
     },
@@ -104,7 +104,7 @@
       "source_id": "iran_intl",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 485,
+      "elapsed_ms": 540,
       "error": null,
       "mode": "live"
     },
@@ -112,7 +112,7 @@
       "source_id": "arab_news",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 80,
+      "elapsed_ms": 86,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -120,7 +120,7 @@
       "source_id": "tehran_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 1072,
+      "elapsed_ms": 1433,
       "error": null,
       "mode": "live"
     },
@@ -128,7 +128,7 @@
       "source_id": "middle_east_eye",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 198,
+      "elapsed_ms": 204,
       "error": null,
       "mode": "live"
     },
@@ -136,32 +136,32 @@
       "source_id": "aa_world",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 2703,
+      "elapsed_ms": 2891,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "daily_sabah",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 330,
-      "error": "HTTPError: HTTP Error 502: Bad Gateway",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 853,
+      "error": null,
       "mode": "live"
     },
     {
       "source_id": "hurriyet_daily",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 529,
+      "elapsed_ms": 688,
       "error": null,
       "mode": "live"
     },
     {
       "source_id": "the_hindu",
-      "ok": false,
-      "count": 0,
-      "elapsed_ms": 42,
-      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "ok": true,
+      "count": 40,
+      "elapsed_ms": 87,
+      "error": null,
       "mode": "live"
     },
     {
@@ -176,7 +176,7 @@
       "source_id": "et_commodities",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 544,
+      "elapsed_ms": 460,
       "error": null,
       "mode": "live"
     },
@@ -184,7 +184,7 @@
       "source_id": "business_standard_markets",
       "ok": true,
       "count": 35,
-      "elapsed_ms": 90,
+      "elapsed_ms": 142,
       "error": null,
       "mode": "live"
     },
@@ -192,7 +192,7 @@
       "source_id": "ndtv_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 221,
+      "elapsed_ms": 272,
       "error": null,
       "mode": "live"
     },
@@ -200,7 +200,7 @@
       "source_id": "xinhua_world",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 1814,
+      "elapsed_ms": 787,
       "error": null,
       "mode": "live"
     },
@@ -208,7 +208,7 @@
       "source_id": "china_daily_world",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 697,
+      "elapsed_ms": 421,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -216,7 +216,7 @@
       "source_id": "cgtn_world",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 401,
+      "elapsed_ms": 619,
       "error": null,
       "mode": "live"
     },
@@ -224,7 +224,7 @@
       "source_id": "scmp",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 516,
+      "elapsed_ms": 589,
       "error": null,
       "mode": "live"
     },
@@ -232,7 +232,7 @@
       "source_id": "nhk_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 628,
+      "elapsed_ms": 524,
       "error": null,
       "mode": "live"
     },
@@ -240,7 +240,7 @@
       "source_id": "nhk_top",
       "ok": true,
       "count": 7,
-      "elapsed_ms": 50,
+      "elapsed_ms": 70,
       "error": null,
       "mode": "live"
     },
@@ -248,7 +248,7 @@
       "source_id": "japan_times",
       "ok": true,
       "count": 30,
-      "elapsed_ms": 598,
+      "elapsed_ms": 511,
       "error": null,
       "mode": "live"
     },
@@ -256,7 +256,7 @@
       "source_id": "nikkei_asia",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 93,
+      "elapsed_ms": 122,
       "error": null,
       "mode": "live"
     },
@@ -264,7 +264,7 @@
       "source_id": "cna",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 265,
+      "elapsed_ms": 141,
       "error": null,
       "mode": "live"
     },
@@ -272,7 +272,7 @@
       "source_id": "taipei_times",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 47,
+      "elapsed_ms": 779,
       "error": null,
       "mode": "live"
     },
@@ -280,7 +280,7 @@
       "source_id": "ltn",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 77,
+      "elapsed_ms": 318,
       "error": null,
       "mode": "live"
     },
@@ -288,7 +288,7 @@
       "source_id": "udn",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 63,
+      "elapsed_ms": 261,
       "error": null,
       "mode": "live"
     },
@@ -296,7 +296,7 @@
       "source_id": "tass_en",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 870,
+      "elapsed_ms": 1188,
       "error": null,
       "mode": "live"
     },
@@ -304,7 +304,7 @@
       "source_id": "tass_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 1014,
+      "elapsed_ms": 1033,
       "error": null,
       "mode": "live"
     },
@@ -312,7 +312,7 @@
       "source_id": "interfax_ru",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 2272,
+      "elapsed_ms": 1759,
       "error": null,
       "mode": "live"
     },
@@ -320,7 +320,7 @@
       "source_id": "rt_ru",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 2953,
+      "elapsed_ms": 3523,
       "error": null,
       "mode": "live"
     },
@@ -328,7 +328,7 @@
       "source_id": "ship_and_bunker",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 462,
+      "elapsed_ms": 407,
       "error": "HTTPError: HTTP Error 404: Not Found",
       "mode": "live"
     },
@@ -336,7 +336,7 @@
       "source_id": "oilprice",
       "ok": true,
       "count": 15,
-      "elapsed_ms": 315,
+      "elapsed_ms": 622,
       "error": null,
       "mode": "live"
     },
@@ -344,7 +344,7 @@
       "source_id": "mining_com",
       "ok": false,
       "count": 0,
-      "elapsed_ms": 146,
+      "elapsed_ms": 234,
       "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     },
@@ -352,7 +352,7 @@
       "source_id": "world_grain",
       "ok": true,
       "count": 0,
-      "elapsed_ms": 372,
+      "elapsed_ms": 420,
       "error": null,
       "mode": "live"
     },
@@ -360,7 +360,7 @@
       "source_id": "hellenic_shipping",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 91,
+      "elapsed_ms": 125,
       "error": null,
       "mode": "live"
     },
@@ -368,7 +368,7 @@
       "source_id": "seatrade",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 774,
+      "elapsed_ms": 1002,
       "error": null,
       "mode": "live"
     },
@@ -376,7 +376,7 @@
       "source_id": "bbc_business",
       "ok": true,
       "count": 40,
-      "elapsed_ms": 141,
+      "elapsed_ms": 86,
       "error": null,
       "mode": "live"
     },
@@ -384,7 +384,7 @@
       "source_id": "bloomberg_markets",
       "ok": true,
       "count": 20,
-      "elapsed_ms": 332,
+      "elapsed_ms": 455,
       "error": null,
       "mode": "live"
     },
@@ -392,7 +392,7 @@
       "source_id": "ft_commodities",
       "ok": true,
       "count": 25,
-      "elapsed_ms": 282,
+      "elapsed_ms": 385,
       "error": null,
       "mode": "live"
     }
@@ -424,9 +424,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.897,
-        "importance": 4.847,
-        "final": 5.61
+        "freshness": 0.711,
+        "importance": 3.843,
+        "final": 4.448
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -468,9 +468,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.67,
-        "importance": 2.399,
-        "final": 2.777
+        "freshness": 0.531,
+        "importance": 1.902,
+        "final": 2.202
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -485,47 +485,6 @@
       "country_tier": "A",
       "info_grade": "2",
       "country_hint": "USA"
-    },
-    {
-      "id": "33072bf9dea3ec4a",
-      "published_at": "2026-11-27T13:46:48+00:00",
-      "source": {
-        "id": "ndtv_world",
-        "name": "NDTV World",
-        "region": "india",
-        "slant": null
-      },
-      "url": "https://www.ndtv.com/world-news/he-swam-through-a-war-zone-what-he-saw-could-haunt-the-gulf-for-decades-12385683#publisher=newsstand",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "He Swam Through A War Zone. What He Saw Could Haunt The Gulf For Decades",
-        "original_lang": "en",
-        "ko": "그는 전쟁터를 헤엄쳐 건넜습니다. 그가 목격한 것은 수십 년 동안 걸프 지역을 괴롭힐 수 있습니다."
-      },
-      "summary": "For Pugh, the Strait of Hormuz is not just a shipping lane or a strategic chokepoint.",
-      "scores": {
-        "commodity": 2.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.713,
-        "importance": 2.283,
-        "final": 2.591
-      },
-      "rank_reasons": [
-        "region:india*1.30",
-        "category:commodity",
-        "tier:A*1.00/g1",
-        "commodity:shipping:2",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "IND"
     },
     {
       "id": "96ecf62981a4b511",
@@ -552,9 +511,9 @@
         "diplomacy": 2.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.791,
-        "importance": 2.102,
-        "final": 2.433
+        "freshness": 0.627,
+        "importance": 1.666,
+        "final": 1.929
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -586,7 +545,7 @@
       "title": {
         "original": "Tanker rates bounce amid heightened Hormuz hostilities",
         "original_lang": "en",
-        "ko": "호르무즈 해협에서의 적대 행위 격화로 유조선 운임이 급등했습니다."
+        "ko": "호르무즈 해협에서의 군사적 긴장 고조로 유조선 운임이 급등했습니다."
       },
       "summary": "IEA sees no return to pre-war confidence in the Strait of Hormuz as a safe, reliable energy corridor.",
       "scores": {
@@ -611,40 +570,79 @@
       "country_hint": "USA"
     },
     {
-      "id": "461f1bcbbeb9bb3b",
-      "published_at": "2026-11-28T01:17:51+00:00",
+      "id": "98770c1edc706085",
+      "published_at": "2026-11-28T09:22:53+00:00",
       "source": {
-        "id": "rt_ru",
-        "name": "RT Russian",
+        "id": "tass_ru",
+        "name": "ТАСС",
         "region": "russia",
         "slant": null
       },
-      "url": "https://russiatoday.ru/world/news/1715139-zapad-ukraina-mezhdunarodnoe-pravo?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
-      "category": "commodity",
-      "commodities": [
-        "rice"
-      ],
+      "url": "https://tass.ru/mezhdunarodnaya-panorama/28364763",
+      "category": "election",
+      "commodities": [],
       "title": {
-        "original": "Мирошник: Запад делает вид, что его не касается международное гуманитарное право",
+        "original": "Крупнейшая партия Кипра проводит президентские праймериз",
         "original_lang": "ru",
-        "ko": "미로슈니크: 서방은 국제인도법이 자신들과 관련이 없는 것처럼 행동합니다."
+        "ko": "키프로스의 최대 정당이 대통령 후보 경선을 실시합니다."
       },
-      "summary": "Страны Запада, финансирующие террористическую тактику Киева, игнорируют нормы международного гуманитарного права, заявил посол по особым поручениям МИД России Родион Мирошник. Читать далее",
+      "summary": "На право получения официальной номинации претендуют два кандидата: бывший лидер \"Демократического сбора\" Авероф Неофиту и парламентарий ДИСИ от Никосии Йоргос Памборидис",
       "scores": {
-        "commodity": 1.0,
-        "diplomacy": 2.0,
-        "election": 0.0,
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.982,
-        "importance": 1.391,
-        "final": 1.548
+        "freshness": 0.975,
+        "importance": 1.075,
+        "final": 1.196
       },
       "rank_reasons": [
         "region:russia*1.25",
+        "category:election",
+        "tier:A*1.00/g1",
+        "election:presidential:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "RUS",
+      "election_type": "presidential"
+    },
+    {
+      "id": "8dc43628d0144439",
+      "published_at": "2026-11-27T11:19:00+00:00",
+      "source": {
+        "id": "daily_sabah",
+        "name": "Daily Sabah",
+        "region": "turkey",
+        "slant": null
+      },
+      "url": "https://www.dailysabah.com/business/economy/turkiye-russia-extend-gas-supply-contract-signlng-supply-deal",
+      "category": "commodity",
+      "commodities": [
+        "gas"
+      ],
+      "title": {
+        "original": "Türkiye, Russia extend gas supply contract, sign LNG supply deal",
+        "original_lang": "en",
+        "ko": "튀르키예, 러시아와 가스 공급 계약 연장 및 LNG 공급 계약 체결"
+      },
+      "summary": "Gazprom, Russia's state-controlled gas giant, and BOTAŞ, Türkiye's state-owned pipeline and gas company, have extended their natural gas supply contract by three years on existing...",
+      "scores": {
+        "commodity": 3.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.528,
+        "importance": 1.052,
+        "final": 1.194
+      },
+      "rank_reasons": [
+        "region:turkey*1.30",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:rice:1",
-        "diplomacy:2"
+        "commodity:gas:3",
+        "bridge:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
@@ -669,7 +667,7 @@
       "title": {
         "original": "The Oil Glut Everyone Expected Is Looking Increasingly Elusive",
         "original_lang": "en",
-        "ko": "모두가 예상했던 석유 과잉 공급이 점점 실현되기 어려워 보입니다."
+        "ko": "모두가 예상했던 석유 과잉 공급이 점점 더 불확실해지고 있습니다."
       },
       "summary": "Brent rebounded to $96 as Houthi attacks and tightening physical supplies raise the prospect of $100 oil despite oversupply forecasts. Friday, November 27, 2026 Oil prices are set to post a slight weekly gain, ending a three-week cold streak, with ICE Brent moving up to $96 per b",
       "scores": {
@@ -677,9 +675,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.782,
-        "importance": 1.294,
-        "final": 1.498
+        "freshness": 0.62,
+        "importance": 1.026,
+        "final": 1.188
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -694,44 +692,126 @@
       "country_hint": "USA"
     },
     {
-      "id": "1a1af35f8b1a0a48",
-      "published_at": "2026-11-27T16:42:57+00:00",
+      "id": "2c3646cf2529f0e0",
+      "published_at": "2026-11-28T08:17:48+00:00",
       "source": {
         "id": "tass_en",
         "name": "TASS",
         "region": "russia",
         "slant": null
       },
-      "url": "https://tass.com/economy/2226141",
+      "url": "https://tass.com/economy/2226351",
       "category": "commodity",
       "commodities": [
-        "gas"
+        "gold",
+        "silver"
       ],
       "title": {
-        "original": "Gas prices in Europe to continue growing after rejecting Russian LNG — Gazprom",
+        "original": "Russia sees prospects for exploring metal deposits in Tajikistan — Rosatom",
         "original_lang": "en",
-        "ko": "러시아산 LNG 수입 거부로 유럽의 가스 가격이 계속 상승할 전망 — 가즈프롬"
+        "ko": "러시아, 타지키스탄의 금속 매장지 탐사 가능성 전망 — 로사톰"
       },
-      "summary": "Europe intends to completely phase out Russian liquefied natural gas starting January 1, 2027",
+      "summary": "According to Tajikistan’s Ministry of Industry and New Technologies, a total of 800 deposits have been identified in the country, with around 100 deposits of gold, silver, lead, antimony, tungsten, and precious and semiprecious stones currently being developed",
       "scores": {
-        "commodity": 3.0,
+        "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.25,
-        "freshness": 0.774,
-        "importance": 1.282,
-        "final": 1.426
+        "freshness": 0.946,
+        "importance": 1.044,
+        "final": 1.162
       },
       "rank_reasons": [
         "region:russia*1.25",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:gas:3"
+        "commodity:gold:1",
+        "commodity:silver:1"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "RUS"
+    },
+    {
+      "id": "0b185f820e370815",
+      "published_at": "2026-11-28T07:24:49+00:00",
+      "source": {
+        "id": "business_standard_markets",
+        "name": "Business Standard Markets",
+        "region": "india",
+        "slant": null
+      },
+      "url": "https://www.business-standard.com/markets/news/indian-markets-rebound-in-november-after-months-of-underperformance-hsbc-126112800271_1.html",
+      "category": "commodity",
+      "commodities": [
+        "oil"
+      ],
+      "title": {
+        "original": "Indian markets rebound in November after months of underperformance: HSBC",
+        "original_lang": "en",
+        "ko": "수개월간의 부진한 성과 이후 11월에 반등한 인도 시장: HSBC"
+      },
+      "summary": "Indian financial markets have staged a broad-based recovery in November, reversing months of underperformance against emerging-market peers as falling crude oil prices, a correction in global artificial intelligence-related investments and renewed foreign fund inflows improved in",
+      "scores": {
+        "commodity": 2.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.3,
+        "freshness": 0.923,
+        "importance": 1.019,
+        "final": 1.157
+      },
+      "rank_reasons": [
+        "region:india*1.30",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:oil:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "IND"
+    },
+    {
+      "id": "e735bd03e3f62001",
+      "published_at": "2026-08-07T12:57:08+00:00",
+      "source": {
+        "id": "nhk_business",
+        "name": "NHK (Business)",
+        "region": "japan",
+        "slant": null
+      },
+      "url": "http://www3.nhk.or.jp/news/html/20260807/k10015199621000.html",
+      "category": "cabinet_reshuffle",
+      "commodities": [],
+      "title": {
+        "original": "食料品の消費税減税 ねらいは カギを握る片山財務相に聞く",
+        "original_lang": "ja",
+        "ko": "식료품 소비세 감세 목표는 열쇠를 쥔 가타야마 재무상에게 듣는다"
+      },
+      "summary": "暮らしに関わる食料品の消費税減税。カギを握る片山財務大臣が閣議決定後、NHKのインタビューに応じました。財源は確保できるのか。足元の財務省内に反対論はないのか。ニュースウオッチ9の広内キャスターが直撃しました。",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 1.2,
+        "region_weight": 1.25,
+        "freshness": 0.35,
+        "importance": 0.978,
+        "final": 1.088
+      },
+      "rank_reasons": [
+        "region:japan*1.25",
+        "category:cabinet_reshuffle",
+        "tier:A*1.00/g1",
+        "election:cabinet_reshuffle:1.2",
+        "cabinet_reshuffle"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "1",
+      "country_hint": "JPN",
+      "election_type": "cabinet_reshuffle"
     },
     {
       "id": "79b324de7aec1aed",
@@ -759,9 +839,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.648,
-        "importance": 1.183,
-        "final": 1.369
+        "freshness": 0.514,
+        "importance": 0.938,
+        "final": 1.085
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -802,9 +882,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.769,
-        "importance": 1.182,
-        "final": 1.368
+        "freshness": 0.61,
+        "importance": 0.937,
+        "final": 1.085
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -836,7 +916,7 @@
       "title": {
         "original": "South Sudan Readies Licensing Round to Boost Oil Production",
         "original_lang": "en",
-        "ko": "남수단, 석유 생산량 증대를 위한 라이선스 입찰 라운드 준비"
+        "ko": "남수단, 석유 생산량 증대를 위한 입찰 라운드 준비"
       },
       "summary": "South Sudan plans to launch a licensing round for five blocks as it looks to boost its oil production in the coming years, caretaker Petroleum Minister Awow Daniel Chuang said at an industry event in the country. The upcoming licensing round is part of South Sudan’s push to comme",
       "scores": {
@@ -844,9 +924,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.708,
-        "importance": 1.172,
-        "final": 1.357
+        "freshness": 0.561,
+        "importance": 0.929,
+        "final": 1.076
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -858,6 +938,47 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "USA"
+    },
+    {
+      "id": "f6ce378a9cb7d979",
+      "published_at": "2026-11-28T09:10:09+00:00",
+      "source": {
+        "id": "rt_ru",
+        "name": "RT Russian",
+        "region": "russia",
+        "slant": null
+      },
+      "url": "https://russiatoday.ru/world/news/1715252-liviya-kompensacii-kiev?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "category": "commodity",
+      "commodities": [
+        "gas"
+      ],
+      "title": {
+        "original": "МИД: Ливия потребует от Киева компенсации ущерба за удар по порту Бенгази",
+        "original_lang": "ru",
+        "ko": "리비아 외무부: 리비아는 벵가지 항구 공격에 대한 피해 보상을 키이우에 요구할 것이다"
+      },
+      "summary": "Власти Ливии намерены потребовать от Киева компенсации за удар по порту Бенгази. Об этом заявил министр иностранных дел заседающего на востоке страны правительства Абд аль-Хади аль-Хувейдж. Читать далее",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.969,
+        "importance": 0.954,
+        "final": 1.061
+      },
+      "rank_reasons": [
+        "region:russia*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:gas:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "RUS"
     },
     {
       "id": "d80af6da9ae7cf4d",
@@ -884,9 +1005,9 @@
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.573,
-        "importance": 1.141,
-        "final": 1.295
+        "freshness": 0.454,
+        "importance": 0.905,
+        "final": 1.027
       },
       "rank_reasons": [
         "region:india*1.30",
@@ -899,6 +1020,86 @@
       "country_tier": "A",
       "info_grade": "3",
       "country_hint": "IND"
+    },
+    {
+      "id": "d4b0e952df5b6029",
+      "published_at": "2026-11-28T05:21:19+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/week-asia/politics/article/3376115/sarawak-state-election-retreat-anwar-and-rivals-brings-ruling-gps-closer-victory",
+      "category": "election",
+      "commodities": [],
+      "title": {
+        "original": "Sarawak state election: retreat by Anwar and rivals brings ruling GPS closer to victory",
+        "original_lang": "en",
+        "ko": "사라왁 주 선거: 안와르와 경쟁자들의 철수로 여당 GPS의 승리 가능성 높아져"
+      },
+      "summary": "The move by Malaysia’s Prime Minister Anwar Ibrahim and his political rivals to sit out next month’s election in Sarawak has led to the state’s ruling coalition, Gabungan Parti Sarawak (GPS), coming in striking distance of victory on Saturday even before a single ballot is cast. ",
+      "scores": {
+        "commodity": 0,
+        "diplomacy": 0.0,
+        "election": 2.0,
+        "region_weight": 1.25,
+        "freshness": 0.872,
+        "importance": 0.923,
+        "final": 1.027
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:election",
+        "tier:A*1.00/g3",
+        "election:local:2"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN",
+      "election_type": "local"
+    },
+    {
+      "id": "35e974ab9a9bfacd",
+      "published_at": "2026-11-28T06:00:13+00:00",
+      "source": {
+        "id": "scmp",
+        "name": "South China Morning Post",
+        "region": "china",
+        "slant": null
+      },
+      "url": "https://www.scmp.com/news/china/article/3376116/chinese-engineers-defy-hormuz-blockade-install-abu-dhabi-drilling-rigs",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Chinese engineers defy Hormuz blockade to install Abu Dhabi drilling rigs",
+        "original_lang": "en",
+        "ko": "중국 엔지니어들이 호르무즈 봉쇄를 뚫고 아부다비에 시추 설비를 설치하다"
+      },
+      "summary": "As fighter jets screamed just above, a group of Chinese engineers defied wartime blockades in the Strait of Hormuz to deliver and install drilling rigs on an Abu Dhabi island. A team from Honghua Group, a unit of state-owned Dongfang Electric Group, transited the strait into the ",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 1.0,
+        "election": 0.0,
+        "region_weight": 1.25,
+        "freshness": 0.888,
+        "importance": 0.873,
+        "final": 0.972
+      },
+      "rank_reasons": [
+        "region:china*1.25",
+        "category:commodity",
+        "tier:A*1.00/g3",
+        "commodity:shipping:1",
+        "diplomacy:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "A",
+      "info_grade": "3",
+      "country_hint": "CHN"
     },
     {
       "id": "4d2ff41885a42cb9",
@@ -915,7 +1116,7 @@
       "title": {
         "original": "Taiwan goes to polls in tight local elections as China watches",
         "original_lang": "en",
-        "ko": "중국의 주시 속에서 대만이 치열한 지방 선거에 돌입하다"
+        "ko": "중국의 주시 속에 대만이 치열한 지방 선거에 돌입하다"
       },
       "summary": "For the opposition Kuomintang, which advocates friendlier ties with China, the results could reorder the field for the 2028 presidential election.",
       "scores": {
@@ -923,9 +1124,9 @@
         "diplomacy": 0.0,
         "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.978,
-        "importance": 1.078,
-        "final": 1.2
+        "freshness": 0.775,
+        "importance": 0.855,
+        "final": 0.951
       },
       "rank_reasons": [
         "region:japan*1.25",
@@ -964,9 +1165,9 @@
         "diplomacy": 1.0,
         "election": 0.0,
         "region_weight": 1.35,
-        "freshness": 0.689,
-        "importance": 1.035,
-        "final": 1.198
+        "freshness": 0.546,
+        "importance": 0.821,
+        "final": 0.95
       },
       "rank_reasons": [
         "region:commodity_specialist*1.35",
@@ -981,286 +1182,119 @@
       "country_hint": "TUR"
     },
     {
-      "id": "e735bd03e3f62001",
-      "published_at": "2026-08-07T12:57:08+00:00",
+      "id": "f4957e42b00d272c",
+      "published_at": "2026-11-28T06:39:08+00:00",
       "source": {
-        "id": "nhk_business",
-        "name": "NHK (Business)",
-        "region": "japan",
+        "id": "bloomberg_markets",
+        "name": "Bloomberg Markets",
+        "region": "west",
         "slant": null
       },
-      "url": "http://www3.nhk.or.jp/news/html/20260807/k10015199621000.html",
-      "category": "cabinet_reshuffle",
-      "commodities": [],
-      "title": {
-        "original": "食料品の消費税減税 ねらいは カギを握る片山財務相に聞く",
-        "original_lang": "ja",
-        "ko": "식료품 소비세 감면 목표는 핵심을 쥐고 있는 가타야마 재무상에게 듣는다"
-      },
-      "summary": "暮らしに関わる食料品の消費税減税。カギを握る片山財務大臣が閣議決定後、NHKのインタビューに応じました。財源は確保できるのか。足元の財務省内に反対論はないのか。ニュースウオッチ9の広内キャスターが直撃しました。",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 0.0,
-        "election": 1.2,
-        "region_weight": 1.25,
-        "freshness": 0.35,
-        "importance": 0.978,
-        "final": 1.088
-      },
-      "rank_reasons": [
-        "region:japan*1.25",
-        "category:cabinet_reshuffle",
-        "tier:A*1.00/g1",
-        "election:cabinet_reshuffle:1.2",
-        "cabinet_reshuffle"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "JPN",
-      "election_type": "cabinet_reshuffle"
-    },
-    {
-      "id": "da4142e0f591d48f",
-      "published_at": "2026-11-28T01:00:11+00:00",
-      "source": {
-        "id": "scmp",
-        "name": "South China Morning Post",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3376084/trade-gold-and-culture-russian-envoy-pushes-closer-ties-hong-kong",
+      "url": "https://www.bloomberg.com/news/articles/2026-11-28/rbi-steps-up-gold-loan-scrutiny-as-bullion-rout-signals-strain",
       "category": "commodity",
       "commodities": [
         "gold"
       ],
       "title": {
-        "original": "Trade, gold and culture: Russian envoy pushes for closer ties with Hong Kong",
+        "original": "RBI Steps Up Gold Loan Scrutiny as Bullion Rout Signals Strain",
         "original_lang": "en",
-        "ko": "무역, 금, 문화: 홍콩과의 관계 강화에 나선 러시아 특사"
+        "ko": "RBI, 금값 폭락이 위기를 예고함에 따라 금 담보 대출 심사 강화"
       },
-      "summary": "Russian businesses in Hong Kong are finding ways to overcome hurdles brought about by Western-led sanctions, the country’s top diplomat in the city has said, noting that the issue is part of an “ongoing dialogue” with authorities and he hopes more Russian cultural events will tak",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.974,
-        "importance": 0.959,
-        "final": 1.067
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:gold:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "102be082661b66db",
-      "published_at": "2026-11-26T03:12:46+00:00",
-      "source": {
-        "id": "cgtn_world",
-        "name": "CGTN",
-        "region": "china",
-        "slant": null
-      },
-      "url": "https://news.cgtn.com/news/2026-11-26/Hormuz-tensions-rise-as-US-Iran-standoff-deepens-1SnAD635EaI/p.html?UTM_Source=cgtn&UTM_Medium=rss&UTM_Campaign=World",
-      "category": "commodity",
-      "commodities": [
-        "gas",
-        "oil",
-        "shipping"
-      ],
-      "title": {
-        "original": "Hormuz tensions rise as US-Iran standoff deepens",
-        "original_lang": "en",
-        "ko": "미국과 이란의 대치 국면이 심화되면서 호르무즈 해협의 긴장이 고조되고 있습니다."
-      },
-      "summary": "Iran's military said on Wednesday that several oil tankers and a liquefied natural gas (LNG) carrier had caught fire after striking naval mines in waters east of the Strait of Hormuz and off its southern coast.",
-      "scores": {
-        "commodity": 4.0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.35,
-        "importance": 0.924,
-        "final": 1.028
-      },
-      "rank_reasons": [
-        "region:china*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:oil:1",
-        "commodity:gas:2",
-        "commodity:shipping:1",
-        "diplomacy:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "CHN"
-    },
-    {
-      "id": "aa3250bed3fdf065",
-      "published_at": "2026-11-27T07:15:22+00:00",
-      "source": {
-        "id": "aa_world",
-        "name": "Anadolu Agency",
-        "region": "turkey",
-        "slant": null
-      },
-      "url": "https://www.aa.com.tr/en/world/russia-extends-jet-fuel-export-ban-until-march-2027/4139951",
-      "category": "diplomacy",
-      "commodities": [],
-      "title": {
-        "original": "Russia extends jet fuel export ban until March 2027",
-        "original_lang": "en",
-        "ko": "러시아, 항공기 연료 수출 금지 조치 2027년 3월까지 연장"
-      },
-      "summary": "Restriction takes effect on Dec. 1, as government seeks to stabilize domestic fuel market",
-      "scores": {
-        "commodity": 0,
-        "diplomacy": 1.0,
-        "election": 0.0,
-        "region_weight": 1.3,
-        "freshness": 0.595,
-        "importance": 0.744,
-        "final": 0.844
-      },
-      "rank_reasons": [
-        "region:turkey*1.30",
-        "category:diplomacy",
-        "tier:A*1.00/g1",
-        "diplomacy:1",
-        "bridge:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "1",
-      "country_hint": "RUS"
-    },
-    {
-      "id": "dfb6510574cee169",
-      "published_at": "2026-11-28T01:19:47+00:00",
-      "source": {
-        "id": "ltn",
-        "name": "Liberty Times",
-        "region": "taiwan",
-        "slant": "pan_green"
-      },
-      "url": "https://ent.ltn.com.tw/news/breakingnews/5656024",
-      "category": "commodity",
-      "commodities": [
-        "silver"
-      ],
-      "title": {
-        "original": "「美人魚」陳惠珠辭世享耆壽92歲！嫁日本武術大師成「台灣空手道之母」",
-        "original_lang": "zh-TW",
-        "ko": "'인어공주' 천후이주가 향년 92세로 별세했습니다! 일본 무술의 거장과 결혼하여 '대만의 가라데의 어머니'가 되다"
-      },
-      "summary": "民國40、50年代紅極一時的影星「美人魚」陳惠珠辭世，享耆壽92歲，她年輕時不僅是泳壇名將，曾5度拿下省運會仰式金牌，還曾赴日本接受舞蹈及表演訓練，登上台日大銀幕，後來嫁給日本...…",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.25,
-        "freshness": 0.983,
-        "importance": 0.543,
-        "final": 0.604
-      },
-      "rank_reasons": [
-        "region:taiwan*1.25",
-        "category:commodity",
-        "tier:A*1.00/g3",
-        "commodity:silver:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "A",
-      "info_grade": "3",
-      "country_hint": "JPN"
-    },
-    {
-      "id": "2be713ec6027e549",
-      "published_at": "2026-11-27T05:01:01+00:00",
-      "source": {
-        "id": "ft_commodities",
-        "name": "FT Commodities",
-        "region": "west",
-        "slant": null
-      },
-      "url": "https://www.ft.com/content/2586bde3-a1e1-463c-b5fc-0775e8512d28?syn-25a6b1a6=1",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
-      "title": {
-        "original": "Venezuelan oil magnate defends contentious deal with Trump",
-        "original_lang": "en",
-        "ko": "베네수엘라 석유 재벌, 트럼프와의 논란이 되는 거래를 옹호하다"
-      },
-      "summary": "Alejandro Betancourt tells FT he welcomes scrutiny of agreement that hands huge share of country’s crude supply to US",
+      "summary": "India’s banking regulator is stepping up scrutiny of the nation’s $247 billion gold-loan sector as a sharp drop in bullion prices erodes the collateral that lenders demand from borrowers, according to people familiar with the matter.",
       "scores": {
         "commodity": 2.0,
         "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 0.55,
-        "freshness": 0.559,
-        "importance": 0.711,
-        "final": 0.567
+        "freshness": 0.904,
+        "importance": 0.998,
+        "final": 0.796
       },
       "rank_reasons": [
         "region:west*0.55",
         "category:commodity",
         "tier:A*1.00/g3",
-        "commodity:oil:2",
-        "bridge:1"
+        "commodity:gold:2"
       ],
       "translation_status": "ok",
       "country_tier": "A",
       "info_grade": "3",
-      "country_hint": "USA"
+      "country_hint": "IND"
     },
     {
-      "id": "467218a7d7c16029",
-      "published_at": "2026-11-27T12:12:10+00:00",
+      "id": "67a888e94ef0499b",
+      "published_at": "2026-11-28T09:35:15+00:00",
+      "source": {
+        "id": "aljazeera_en",
+        "name": "Al Jazeera",
+        "region": "mena",
+        "slant": null
+      },
+      "url": "https://www.aljazeera.com/news/2026/11/28/yemen-governmen-forces-hit-houthi-positions-as-un-warns-of-hunger-crisis?traffic_source=rss",
+      "category": "commodity",
+      "commodities": [
+        "shipping"
+      ],
+      "title": {
+        "original": "Yemen government forces hit Houthi positions as UN warns of hunger crisis",
+        "original_lang": "en",
+        "ko": "예멘 정부군, 후티 반군 진지 공격... 유엔, 기아 위기 경고"
+      },
+      "summary": "About 1.8 million people face emergency levels of hunger in government-held areas, according to the UN.",
+      "scores": {
+        "commodity": 1.0,
+        "diplomacy": 0.0,
+        "election": 0.0,
+        "region_weight": 1.4,
+        "freshness": 0.981,
+        "importance": 0.39,
+        "final": 0.46
+      },
+      "rank_reasons": [
+        "region:mena*1.40",
+        "category:commodity",
+        "tier:B*0.72/g3",
+        "commodity:shipping:1"
+      ],
+      "translation_status": "ok",
+      "country_tier": "B",
+      "info_grade": "3",
+      "country_hint": "SAU"
+    },
+    {
+      "id": "1ca122ec1c172b8a",
+      "published_at": "2026-11-28T09:39:40+00:00",
       "source": {
         "id": "aa_world",
         "name": "Anadolu Agency",
         "region": "turkey",
         "slant": null
       },
-      "url": "https://www.aa.com.tr/en/world/turkiye-pakistan-saudi-arabia-to-hold-2nd-meeting-of-mecca-pact-committee/4140411",
+      "url": "https://www.aa.com.tr/en/middle-east/saudi-led-coalition-says-it-destroyed-houthi-ballistic-missile-targeting-southern-region/4141283",
       "category": "commodity",
       "commodities": [
         "shipping"
       ],
       "title": {
-        "original": "Türkiye, Pakistan, Saudi Arabia to hold 2nd meeting of Mecca pact committee",
+        "original": "Saudi-led coalition says it destroyed Houthi ballistic missile targeting southern region",
         "original_lang": "en",
-        "ko": "튀르키예, 파키스탄, 사우디아라비아, 제2차 메카 협정 위원회 회의 개최 예정"
+        "ko": "사우디아라비아 주도 연합군, 남부 지역을 겨냥한 후티 반군의 탄도미사일을 파괴했다고 밝혀"
       },
-      "summary": "Turkish foreign minister expected to condemn Houthi attacks, call for unified response to Israeli actions, and review alliance's institutionalization, according to ministry sources",
+      "summary": "'Air defenses intercepted, destroyed ballistic missile launched by terrorist Houthi militia toward southern region,' says coalition spokesman",
       "scores": {
         "commodity": 1.0,
-        "diplomacy": 1.0,
+        "diplomacy": 0.0,
         "election": 0.0,
         "region_weight": 1.3,
-        "freshness": 0.683,
-        "importance": 0.484,
-        "final": 0.549
+        "freshness": 0.983,
+        "importance": 0.391,
+        "final": 0.443
       },
       "rank_reasons": [
         "region:turkey*1.30",
         "category:commodity",
         "tier:B*0.72/g3",
-        "commodity:shipping:1",
-        "diplomacy:1"
+        "commodity:shipping:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
@@ -1268,31 +1302,31 @@
       "country_hint": "TUR"
     },
     {
-      "id": "923170755a5054f9",
-      "published_at": "2026-11-28T01:02:00+00:00",
+      "id": "8d40b553cee19f22",
+      "published_at": "2026-11-28T09:58:00+00:00",
       "source": {
         "id": "ltn",
         "name": "Liberty Times",
         "region": "taiwan",
         "slant": "pan_green"
       },
-      "url": "https://news.ltn.com.tw/news/politics/breakingnews/5654813",
+      "url": "https://news.ltn.com.tw/news/politics/breakingnews/5656385",
       "category": "election",
       "commodities": [],
       "title": {
-        "original": "選舉效應！連動「立委補選、2028」骨牌 攸關鄭麗文、黃國昌黨魁寶座",
+        "original": "花蓮縣長選舉開票 三腳督拉鋸中！（不斷更新）",
         "original_lang": "zh-TW",
-        "ko": "선거 효과! '입법위원 보궐선거, 2028년' 도미노와 연동되어 정려문, 황국창의 당수 자리에 영향을 미침"
+        "ko": "화롄현 현장 선거 개표 중, 3자 대결이 치열하게 전개되고 있습니다! (지속 업데이트)"
       },
-      "summary": "2026九合一地方選舉今（28）日下午4時開始開票，選舉結果除了確立未來四年朝野地方版圖，更將觸發多名現任區域及原住民立委轉任縣市長後的「立委補選」連鎖效應。此外，本場選舉也將...…",
+      "summary": "2026年九合一地方選舉正在如火如荼開票中，花蓮縣長選情陷入三腳督激戰，由國民黨候選人游淑貞對決無黨籍候選人張峻、魏嘉賢，本報特別為讀者整理開票情形。 三立電視 3號-游...…",
       "scores": {
         "commodity": 0,
         "diplomacy": 0.0,
         "election": 1.0,
         "region_weight": 1.25,
-        "freshness": 0.975,
-        "importance": 0.372,
-        "final": 0.413
+        "freshness": 0.991,
+        "importance": 0.378,
+        "final": 0.42
       },
       "rank_reasons": [
         "region:taiwan*1.25",
@@ -1307,84 +1341,43 @@
       "election_type": "local"
     },
     {
-      "id": "0dac4fb30d205e5a",
-      "published_at": "2026-11-27T21:11:27+00:00",
+      "id": "66dd3dd3d80f5e79",
+      "published_at": "2026-11-28T04:33:45+00:00",
       "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
+        "id": "cna",
+        "name": "CNA (Taiwan center wire)",
+        "region": "taiwan",
+        "slant": "center"
       },
-      "url": "https://www.aljazeera.com/economy/2026/11/27/why-are-families-going-hungry-in-northern-yemen-even-where-food-is-on-sale?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "oil"
-      ],
+      "url": "https://www.cna.com.tw/news/aipl/202611280058.aspx",
+      "category": "election",
+      "commodities": [],
       "title": {
-        "original": "Why are families going hungry in northern Yemen even where food is on sale?",
-        "original_lang": "en",
-        "ko": "식량을 구할 수 있는 곳임에도 불구하고 예멘 북부의 가족들이 굶주리는 이유는 무엇인가요?"
+        "original": "澎湖地方選舉 6位縣長候選人完成投票",
+        "original_lang": "zh-TW",
+        "ko": "펑후 지방 선거에서 6명의 현장 후보자가 투표를 완료했습니다."
       },
-      "summary": "Flour and oil still reach markets in Hodeidah and Sanaa. But high costs and lack of work and aid put it out of reach.",
+      "summary": "（中央社澎湖縣28日）地方公職人員選舉今天投票，澎湖縣6位縣長候選人都在上午完成投票，各投開票所秩序良好，由於天氣良好，預估投票率會提高。",
       "scores": {
-        "commodity": 1.0,
+        "commodity": 0,
         "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.877,
-        "importance": 0.348,
-        "final": 0.411
+        "election": 1.0,
+        "region_weight": 1.25,
+        "freshness": 0.853,
+        "importance": 0.325,
+        "final": 0.362
       },
       "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
+        "region:taiwan*1.25",
+        "category:election",
         "tier:B*0.72/g3",
-        "commodity:oil:1"
+        "election:local:1"
       ],
       "translation_status": "ok",
       "country_tier": "B",
       "info_grade": "3",
-      "country_hint": "SAU"
-    },
-    {
-      "id": "2fb3ef427487c90e",
-      "published_at": "2026-11-27T17:41:24+00:00",
-      "source": {
-        "id": "aljazeera_en",
-        "name": "Al Jazeera",
-        "region": "mena",
-        "slant": null
-      },
-      "url": "https://www.aljazeera.com/news/2026/11/27/mecca-pact-allies-condemn-heinous-houthi-attacks-on-saudi-arabia?traffic_source=rss",
-      "category": "commodity",
-      "commodities": [
-        "shipping"
-      ],
-      "title": {
-        "original": "Mecca pact allies condemn ‘heinous’ Houthi attacks on Saudi Arabia",
-        "original_lang": "en",
-        "ko": "메카 협정 동맹국들, 사우디아라비아에 대한 후티 반군의 '잔혹한' 공격을 규탄"
-      },
-      "summary": "Officials from Pakistan, Saudi Arabia and Turkiye pledge to protect the kingdom's security during talks in Islamabad.",
-      "scores": {
-        "commodity": 1.0,
-        "diplomacy": 0.0,
-        "election": 0.0,
-        "region_weight": 1.4,
-        "freshness": 0.795,
-        "importance": 0.316,
-        "final": 0.373
-      },
-      "rank_reasons": [
-        "region:mena*1.40",
-        "category:commodity",
-        "tier:B*0.72/g3",
-        "commodity:shipping:1"
-      ],
-      "translation_status": "ok",
-      "country_tier": "B",
-      "info_grade": "3",
-      "country_hint": "SAU"
+      "country_hint": "TWN",
+      "election_type": "local"
     }
   ]
 }
