@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-27T13:56:20.159594+00:00",
+  "generated_at": "2026-11-28T00:04:34.823400+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -205,20 +205,6 @@
       "significance": 2.64
     },
     {
-      "series_id": "EU_ECB_POLICY",
-      "label_ko": "ECB 정책",
-      "country": "EUR",
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "title": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
-      "published_at": "2026-11-10T16:45:00+00:00",
-      "site_slot": "finance.policy",
-      "significance": 2.64
-    },
-    {
       "series_id": "US_EIA_ENERGY",
       "label_ko": "EIA 에너지",
       "country": "USA",
@@ -272,6 +258,20 @@
       "title": "Japanese Government Bonds Held by the Bank of Japan",
       "url": "http://www.boj.or.jp/en/statistics/boj/other/mei/release/2026/mei261110.xlsx",
       "published_at": "2026-11-12T08:00:00+00:00",
+      "site_slot": "finance.policy",
+      "significance": 2.306
+    },
+    {
+      "series_id": "JP_BOJ_POLICY",
+      "label_ko": "일본은행 정책·공표",
+      "country": "JPN",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "title": "Bank of Japan Accounts (November 10)",
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261110.htm",
+      "published_at": "2026-11-12T01:00:00+00:00",
       "site_slot": "finance.policy",
       "significance": 2.306
     }
@@ -714,41 +714,6 @@
         "original": "Philip R. Lane: The practice and science of monetary policy communication: the ECB experience",
         "original_lang": "en",
         "ko": "[EUR·금융] Philip R. Lane: The practice and science of monetary policy communication: the ECB experience"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.64,
-        "final": 2.64
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:EU_ECB_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
-      "id": "4fe1c1d659136215",
-      "published_at": "2026-11-10T16:45:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "EU_ECB_POLICY",
-      "title": {
-        "original": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Philip R. Lane: The science and practice of monetary policy communication: the ECB experience"
       },
       "summary": "",
       "scores": {
@@ -1672,6 +1637,41 @@
       "translation_status": "skipped",
       "event_type": "official_report",
       "site_slot": "finance.policy"
+    },
+    {
+      "id": "b8f8b23a57b91026",
+      "published_at": "2026-11-12T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261110.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (November 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 10)"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
     }
   ],
   "pending_review": [
@@ -1777,6 +1777,17 @@
     {
       "title": "Minutes of the Securities Lending Committee meeting – September 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/september/securities-lending-committee-meeting-september-2026",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Banknote imagery advisory group minutes – 15 July 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
       "country": "GBR",
       "domains": [
         "economy",
@@ -2239,41 +2250,6 @@
       "site_slot": "finance.policy"
     },
     {
-      "id": "4fe1c1d659136215",
-      "published_at": "2026-11-10T16:45:00+00:00",
-      "source": {
-        "id": "eu_ecb_press",
-        "name": "ECB",
-        "region": "eur",
-        "slant": null
-      },
-      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
-      "category": "official_report",
-      "commodities": [],
-      "domains": [
-        "finance",
-        "economy"
-      ],
-      "series_id": "EU_ECB_POLICY",
-      "title": {
-        "original": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
-        "original_lang": "en",
-        "ko": "[EUR·금융] Philip R. Lane: The science and practice of monetary policy communication: the ECB experience"
-      },
-      "summary": "",
-      "scores": {
-        "significance": 2.64,
-        "final": 2.64
-      },
-      "rank_reasons": [
-        "domains:economy,finance",
-        "series:EU_ECB_POLICY"
-      ],
-      "translation_status": "skipped",
-      "event_type": "official_report",
-      "site_slot": "finance.policy"
-    },
-    {
       "id": "8fa41b5e42079fbe",
       "published_at": "2026-11-19T07:30:00+00:00",
       "source": {
@@ -3169,6 +3145,41 @@
         "original": "Japanese Government Bonds Held by the Bank of Japan",
         "original_lang": "en",
         "ko": "[JPN·경제] Japanese Government Bonds Held by the Bank of Japan"
+      },
+      "summary": "",
+      "scores": {
+        "significance": 2.306,
+        "final": 2.306
+      },
+      "rank_reasons": [
+        "domains:economy,finance",
+        "series:JP_BOJ_POLICY"
+      ],
+      "translation_status": "skipped",
+      "event_type": "official_report",
+      "site_slot": "finance.policy"
+    },
+    {
+      "id": "b8f8b23a57b91026",
+      "published_at": "2026-11-12T01:00:00+00:00",
+      "source": {
+        "id": "jp_boj_whatsnew",
+        "name": "Bank of Japan",
+        "region": "jpn",
+        "slant": null
+      },
+      "url": "http://www.boj.or.jp/en/statistics/boj/other/acmai/release/2026/ac261110.htm",
+      "category": "official_report",
+      "commodities": [],
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "series_id": "JP_BOJ_POLICY",
+      "title": {
+        "original": "Bank of Japan Accounts (November 10)",
+        "original_lang": "en",
+        "ko": "[JPN·경제] Bank of Japan Accounts (November 10)"
       },
       "summary": "",
       "scores": {
