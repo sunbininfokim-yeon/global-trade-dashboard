@@ -1,6 +1,6 @@
 {
   "schema_version": "official-reports-v1",
-  "generated_at": "2026-11-28T00:04:34.823400+00:00",
+  "generated_at": "2026-11-28T07:56:13.737675+00:00",
   "model": {
     "name": "official_reports_learnable_v1",
     "description": "Official sources only (US/JP/CN/EU/UK public RSS·HTML). Domains: economy/finance/diplomacy/security/agriculture. Series catalog + label_history for collaborative learning. No Dropbox.",
@@ -15,10 +15,10 @@
     }
   },
   "stats": {
-    "sources_ok": 10,
-    "sources_failed": 0,
-    "raw_items": 178,
-    "scored": 178,
+    "sources_ok": 9,
+    "sources_failed": 1,
+    "raw_items": 172,
+    "scored": 172,
     "selected": 40,
     "indicators": 13
   },
@@ -88,9 +88,9 @@
     },
     {
       "source_id": "us_usda_fas_newsroom",
-      "ok": true,
-      "count": 6,
-      "error": null,
+      "ok": false,
+      "count": 0,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
       "mode": "live"
     }
   ],
@@ -1676,17 +1676,6 @@
   ],
   "pending_review": [
     {
-      "title": "USDA Announces $14 Million Funding Opportunity for Food for Peace International Food Relief Partnership",
-      "url": "https://www.fas.usda.gov/newsroom/usda-announces-14-million-funding-opportunity-food-peace-international-relief-partnership",
-      "country": "USA",
-      "domains": [
-        "economy",
-        "agriculture"
-      ],
-      "significance": 2.236,
-      "suggest": "label promote|keep|drop + series_id later"
-    },
-    {
       "title": "Philip R. Lane: Climate change and monetary policy",
       "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261123~b5816801a0.en.pdf",
       "country": "EUR",
@@ -1788,6 +1777,17 @@
     {
       "title": "Banknote imagery advisory group minutes – 15 July 2026",
       "url": "https://www.bankofengland.co.uk/minutes/2026/july/banknote-advisory-minutes-15-july",
+      "country": "GBR",
+      "domains": [
+        "economy",
+        "finance"
+      ],
+      "significance": 1.978,
+      "suggest": "label promote|keep|drop + series_id later"
+    },
+    {
+      "title": "Minutes of the SONIA Stakeholder Advisory Group - 25 September 2026",
+      "url": "https://www.bankofengland.co.uk/minutes/2026/september/sonia-stakeholder-advisory-group-25-september-2026",
       "country": "GBR",
       "domains": [
         "economy",
